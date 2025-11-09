@@ -1,5 +1,6 @@
 import loginService from './auth/loginService.js';
 
+
 // Re-export all methods from loginService
 const authService = {
   login: loginService.login.bind(loginService),
