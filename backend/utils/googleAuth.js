@@ -4,7 +4,6 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-
 /**
  * Verify Google OAuth token and extract user info
  * @param {String} token - Google OAuth token from frontend
