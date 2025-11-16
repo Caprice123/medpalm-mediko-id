@@ -1,0 +1,99 @@
+import { useState } from "react"
+import { Avatar, Button, Container, CreditsDisplay, Logo, UserInfo, UserName, UserSection } from "./Navbar.styles"
+import { useEffect } from "react"
+import { logout } from '@store/auth/action'
+import { fetchCreditBalance } from '@store/credit/action'
+import { getUserData } from '@utils/authToken'
+import { useDispatch, useSelector } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import CreditPurchase from '@components/CreditPurchase'
+
+export const Navbar = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const { balance } = useSelector(state => state.credit)
+    const [user, setUser] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
+
+    // Get user data
+    useEffect(() => {
+        const userData = getUserData()
+        setUser(userData)
+    }, [])
+
+    // Handle logout
+    
+  const handleLogout = () => {
+    const onSuccess = () => {
+      navigate('/sign-in')
+    }
+    dispatch(logout(onSuccess))
+  }
+
+  
+  const handleTopUp = () => {
+    setIsPurchaseModalOpen(true)
+  }
+
+  const handlePurchaseSuccess = async () => {
+    // Refresh user data after successful purchase
+    await dispatch(fetchCreditBalance())
+  }
+
+
+    return (
+        <>
+        <Container>
+            <Logo>
+                <Link to="/dashboard">
+                    <span>🏥</span>
+                    <span>MedPalm</span>
+                </Link>
+            </Logo>
+            <UserSection>
+            <CreditsDisplay>
+                💎 {balance} Kredit
+            </CreditsDisplay>
+            <Button variant="outline" onClick={handleTopUp}>
+                Isi Ulang
+            </Button>
+            {user && (
+                <UserInfo>
+                {user.picture ? (
+                    <Avatar src={user.picture} alt={user.name} />
+                ) : (
+                    <Avatar as="div" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #0e7490, #14b8a6)',
+                    color: 'white',
+                    fontWeight: '600'
+                    }}>
+                    {user.name?.charAt(0).toUpperCase()}
+                    </Avatar>
+                )}
+                <UserName>{user.name}</UserName>
+                </UserInfo>
+            )}
+            {user?.role === 'admin' && (
+                <Button onClick={() => navigate('/admin')}>
+                Admin Panel
+                </Button>
+            )}
+            <Button variant="outline" onClick={handleLogout}>
+                Keluar
+            </Button>
+            </UserSection>
+        </Container>
+
+        {/* Credit Purchase Modal */}
+        <CreditPurchase
+            isOpen={isPurchaseModalOpen}
+            onClose={() => setIsPurchaseModalOpen(false)}
+            onPurchaseSuccess={handlePurchaseSuccess}
+        />
+        </>
+    )
+}

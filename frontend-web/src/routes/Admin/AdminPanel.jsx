@@ -126,16 +126,6 @@ function AdminPanel() {
 
   return (
     <AdminContainer>
-      <Header>
-        <Logo>
-          <span>🏥</span>
-          <span>MedPalm Admin</span>
-        </Logo>
-        <BackButton onClick={() => navigate('/dashboard')}>
-          Kembali ke Dashboard
-        </BackButton>
-      </Header>
-
       <MainContent>
         <TabContainer>
           <Tab

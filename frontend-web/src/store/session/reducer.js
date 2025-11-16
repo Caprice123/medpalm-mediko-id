@@ -10,6 +10,9 @@ const initialState = {
   // Session history
   sessions: [],
   sessionDetail: null,
+  sessionAttempts: [],
+  currentSessionAttempt: null,
+  attemptDetail: null,
 
   // Loading states
   loading: {
@@ -17,14 +20,16 @@ const initialState = {
     isSubmittingAnswer: false,
     isCompletingSession: false,
     isLoadingSessions: false,
-    isLoadingDetail: false
+    isLoadingDetail: false,
+    isLoadingAttempts: false,
+    isLoadingAttemptDetail: false
   },
 
   // Pagination for history
   pagination: {
-    total: 0,
-    limit: 20,
-    offset: 0
+    limit: 30,
+    offset: 0,
+    isLastPage: false
   },
 
   error: null
@@ -44,6 +49,9 @@ const sessionSlice = createSlice({
     setCurrentQuestionIndex: (state, action) => {
       state.currentQuestionIndex = action.payload
     },
+    setCurrentSessionAttempt: (state, action) => {
+        state.currentSessionAttempt = action.payload
+    },
     addAnswer: (state, action) => {
       state.answers.push(action.payload)
     },
@@ -60,6 +68,12 @@ const sessionSlice = createSlice({
     },
     setSessionDetail: (state, action) => {
       state.sessionDetail = action.payload
+    },
+    setSessionAttempts: (state, action) => {
+        state.sessionAttempts = action.payload
+    },
+    setAttemptDetail: (state, action) => {
+        state.attemptDetail = action.payload
     },
 
     // Pagination

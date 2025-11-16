@@ -28,12 +28,18 @@ export default {
     },
     sessions: {
         create: `${API_BASE_URL}/api/v1/sessions`,
-        startExercise: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}/start`,
-        createExercise: `${API_BASE_URL}/api/v1/sessions/exercise`,
-        submitAnswer: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}/answer`,
-        complete: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}/complete`,
         list: `${API_BASE_URL}/api/v1/sessions`,
         detail: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}`,
+        exercise: {
+            create: `${API_BASE_URL}/api/v1/sessions/exercise`,
+            attempts: {
+                get: (learningSessionId) => `${API_BASE_URL}/api/v1/exercises/${learningSessionId}/attempts`,
+                detail: (attemptId) => `${API_BASE_URL}/api/v1/exercises/attempts/${attemptId}`,
+                create: (learningSessionId) => `${API_BASE_URL}/api/v1/exercises/${learningSessionId}/attempts`,
+                start: (attemptId) => `${API_BASE_URL}/api/v1/exercises/attempts/${attemptId}/start`,
+                complete: (attemptId) => `${API_BASE_URL}/api/v1/exercises/attempts/${attemptId}/complete`,
+            }
+        }
     },
     features: {
         list: `${API_BASE_URL}/api/v1/features`,

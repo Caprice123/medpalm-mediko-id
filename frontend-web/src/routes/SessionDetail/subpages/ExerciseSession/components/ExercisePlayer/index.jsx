@@ -2,22 +2,28 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { completeSession } from '@store/session/action'
-import { BlankInput } from './ExercisePlayer.styles'
+import { BackLink, BlankInput, Button, Container, ContentWrapper, HeaderNav, LoadingSpinner, NavigationButtons, Progress, ProgressBar, QuestionCard, QuestionDot, QuestionIndicators, QuestionNumber, QuestionStats, QuestionText, TopicTitle } from './ExercisePlayer.styles'
 
-function ExercisePlayer({ sessionId }) {
+function ExercisePlayer({ attemptId, onComplete }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { topicSnapshot } = useSelector(state => state.session)
+  const { attemptDetail } = useSelector(state => state.session)
   const { isCompletingSession } = useSelector(state => state.session.loading)
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [userAnswers, setUserAnswers] = useState({}) // Store all answers: { questionId: { answer: '', timeTaken: 0 } }
+  const [userAnswers, setUserAnswers] = useState({}) // Store all answers: { questionId: { answers: ['', '', ...], timeTaken: 0 } }
   const [questionStartTimes, setQuestionStartTimes] = useState({})
 
-  const currentQuestion = topicSnapshot?.questions?.[currentQuestionIndex]
-  const totalQuestions = topicSnapshot?.questions?.length || 0
+  const questions = attemptDetail?.questions || []
+  const currentQuestion = questions[currentQuestionIndex]
+  const totalQuestions = questions.length
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100
-  const answeredCount = Object.keys(userAnswers).length
+
+  // Count questions that have at least one blank filled
+  const answeredCount = Object.keys(userAnswers).filter(qId => {
+    const answer = userAnswers[qId]
+    return answer?.answers && answer.answers.some(a => a && a.trim() !== '')
+  }).length
 
   useEffect(() => {
     // Track time for current question
@@ -29,20 +35,26 @@ function ExercisePlayer({ sessionId }) {
     }
   }, [currentQuestion, questionStartTimes])
 
-  const handleAnswerChange = (value) => {
+  const handleAnswerChange = (blankIndex, value) => {
     if (!currentQuestion) return
 
     const timeTaken = questionStartTimes[currentQuestion.id]
       ? Math.floor((Date.now() - questionStartTimes[currentQuestion.id]) / 1000)
       : 0
 
-    setUserAnswers(prev => ({
-      ...prev,
-      [currentQuestion.id]: {
-        answer: value,
-        timeTaken
+    setUserAnswers(prev => {
+      const currentAnswers = prev[currentQuestion.id]?.answers || []
+      const newAnswers = [...currentAnswers]
+      newAnswers[blankIndex] = value
+
+      return {
+        ...prev,
+        [currentQuestion.id]: {
+          answers: newAnswers,
+          timeTaken
+        }
       }
-    }))
+    })
   }
 
   const handlePrevious = () => {
@@ -76,25 +88,27 @@ function ExercisePlayer({ sessionId }) {
     }
 
     try {
-      // Format answers for backend
+      // Format answers for backend - join multiple blanks with semicolon
       const formattedAnswers = Object.entries(userAnswers).map(([questionId, data]) => ({
         questionId: parseInt(questionId),
-        userAnswer: data.answer,
+        userAnswer: Array.isArray(data.answers) ? data.answers.join(';') : (data.answer || ''),
         timeTakenSeconds: data.timeTaken
       }))
 
-      await dispatch(completeSession(sessionId, formattedAnswers))
+      await dispatch(completeSession(attemptId, formattedAnswers))
 
-      // Reload the page to fetch updated session with results
-      window.location.reload()
+      // Call onComplete callback to refresh attempts and show results
+      if (onComplete) {
+        await onComplete(attemptId)
+      }
     } catch (error) {
       alert('Gagal submit jawaban: ' + (error.message || 'Terjadi kesalahan'))
     }
   }
 
-  const renderQuestionText = (text) => {
-    const parts = text.split('____')
-    const currentAnswer = userAnswers[currentQuestion?.id]?.answer || ''
+  const renderQuestionText = (questionText) => {
+    const parts = questionText.split('____')
+    const currentAnswers = userAnswers[currentQuestion?.id]?.answers || []
 
     return (
       <>
@@ -105,8 +119,8 @@ function ExercisePlayer({ sessionId }) {
               <BlankInput
                 type="text"
                 placeholder="____"
-                value={currentAnswer}
-                onChange={(e) => handleAnswerChange(e.target.value)}
+                value={currentAnswers[index] || ''}
+                onChange={(e) => handleAnswerChange(index, e.target.value)}
                 autoFocus={index === 0}
               />
             )}
@@ -116,7 +130,7 @@ function ExercisePlayer({ sessionId }) {
     )
   }
 
-  if (!topicSnapshot || !currentQuestion) {
+  if (!attemptDetail || !questions.length || !currentQuestion) {
     return <Container>Loading...</Container>
   }
 
@@ -124,13 +138,13 @@ function ExercisePlayer({ sessionId }) {
 
   return (
     <Container>
-      <HeaderNav>
+      {/* <HeaderNav>
         <BackLink onClick={() => navigate('/dashboard')}>
           ← Kembali ke Dashboard
         </BackLink>
         <TopicTitle>{topicSnapshot.title}</TopicTitle>
         <div></div>
-      </HeaderNav>
+      </HeaderNav> */}
 
       <ContentWrapper>
         <ProgressBar>
@@ -138,16 +152,19 @@ function ExercisePlayer({ sessionId }) {
         </ProgressBar>
 
         <QuestionIndicators>
-        {topicSnapshot.questions.map((q, index) => (
-          <QuestionDot
-            key={q.id}
-            current={index === currentQuestionIndex}
-            answered={!!userAnswers[q.id]?.answer}
-            onClick={() => handleJumpToQuestion(index)}
-          >
-            {index + 1}
-          </QuestionDot>
-        ))}
+        {questions.map((q, index) => {
+          const hasAnswer = userAnswers[q.id]?.answers?.some(a => a && a.trim() !== '')
+          return (
+            <QuestionDot
+              key={q.id}
+              current={index === currentQuestionIndex}
+              answered={hasAnswer}
+              onClick={() => handleJumpToQuestion(index)}
+            >
+              {index + 1}
+            </QuestionDot>
+          )
+        })}
       </QuestionIndicators>
 
       <QuestionCard>
@@ -156,7 +173,7 @@ function ExercisePlayer({ sessionId }) {
         </QuestionNumber>
 
         <QuestionText>
-          {renderQuestionText(currentQuestion.question)}
+          {renderQuestionText(currentQuestion.question_text)}
         </QuestionText>
 
         <NavigationButtons>

@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { getToken } from '@utils/authToken'
+import { Navbar } from '../components/Navbar'
 
 const PrivateRoute = ({ children }) => {
   const token = getToken()
@@ -10,7 +11,13 @@ const PrivateRoute = ({ children }) => {
   }
 
   // Render children if authenticated
-  return children
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+
+  )
 }
 
 export default PrivateRoute

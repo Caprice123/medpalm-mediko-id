@@ -1,6 +1,43 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
+  min-height: 100vh;
+  background: #f9fafb;
+`
+
+export const HeaderNav = styled.div`
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+export const BackLink = styled.button`
+  background: transparent;
+  border: none;
+  color: #0891b2;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #0e7490;
+  }
+`
+
+export const HeaderTitle = styled.div`
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+`
+
+export const ContentWrapper = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;

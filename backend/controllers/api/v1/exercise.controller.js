@@ -18,6 +18,41 @@ class ExerciseController {
     })
   }
 
+  async attempts(req, res) {
+    const { userLearningSessionId } = req.params
+    const { limit, offset } = req.query
+    const userId = req.user.id
+
+    const result = await GetListAttemptsService.call({
+        userLearningSessionId,
+        userId,
+        limit,
+        offset
+    })
+
+    return res.status(200).json({
+        success: true,
+        data: result.data,
+        pagination: result.pagination
+    })
+  }
+
+  async createAttempts(req, res) {
+    const { userLearningSessionId } = req.params
+    const userId = req.user.id
+
+    const result = await CreateNewAttemptService.call({
+        userLearningSessionId,
+        userId
+    })
+
+    return res.status(201).json({
+        success: true,
+        data: result,
+        message: 'New attempt created successfully'
+    })
+  }
+
   async create(req, res) {
     const { sessionId, exerciseTopicId } = req.body
     const userId = req.user.id
@@ -38,74 +73,6 @@ class ExerciseController {
             total_questions: result.exerciseSession.total_questions
         },
         message: 'Exercise session created successfully'
-    })
-  }
-
-  async start(req, res) {
-      const { userLearningSessionId, topicId } = req.body
-      const userId = req.user.id
-  
-      const result = await StartExerciseWithTopicService.call({
-        userLearningSessionId,
-        exerciseTopicId: topicId,
-        userId
-      })
-  
-      return res.status(200).json({
-        success: true,
-        data: {
-          attempt: result.attempt,
-          topic_snapshot: result.topicSnapshot
-        },
-        message: 'Exercise started successfully'
-      })
-  }
-
-  async attempts(req, res) {
-    const { userLearningSessionId } = req.params
-    const userId = req.user.id
-
-    const attempts = await GetListAttemptsService.call({
-        userLearningSessionId,
-        userId
-    })
-
-    return res.status(200).json({
-        success: true,
-        data: AttemptSerializer.serialize(attempts)
-    })
-  }
-
-  async createNewAttempt(req, res) {
-    const { userLearningSessionId } = req.params
-    const userId = req.user.id
-
-    const result = await CreateNewAttemptService.call({
-        userLearningSessionId,
-        userId
-    })
-
-    return res.status(201).json({
-        success: true,
-        data: result,
-        message: 'New attempt created successfully'
-    })
-  }
-
-  async completeAttempt(req, res) {
-    const { attemptId, answers } = req.body
-    const userId = req.user.id
-
-    const result = await CompleteSessionService.call({
-        attemptId,
-        userId,
-        answers
-    })
-
-    return res.status(200).json({
-        success: true,
-        data: result,
-        message: 'Attempt completed successfully'
     })
   }
 }

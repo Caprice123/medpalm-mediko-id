@@ -15,99 +15,6 @@ const DashboardContainer = styled.div`
   background: #f0fdfa;
 `
 
-const Header = styled.header`
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-
-  @media (max-width: 768px) {
-    padding: 1rem 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-`
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0891b2;
-`
-
-const UserSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-
-  @media (max-width: 768px) {
-    gap: 1rem;
-    width: 100%;
-    justify-content: space-between;
-  }
-`
-
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`
-
-const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #0891b2;
-`
-
-const UserName = styled.span`
-  font-weight: 500;
-  color: #374151;
-
-  @media (max-width: 480px) {
-    display: none;
-  }
-`
-
-const CreditsDisplay = styled.div`
-  background: linear-gradient(135deg, #0e7490, #14b8a6);
-  color: white;
-  padding: 0.5rem 1.25rem;
-  border-radius: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(14, 116, 144, 0.2);
-`
-
-const Button = styled.button`
-  background: ${props => props.variant === 'outline' ? 'transparent' : '#0891b2'};
-  color: ${props => props.variant === 'outline' ? '#0891b2' : 'white'};
-  border: 2px solid #0891b2;
-  padding: 0.5rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    background: ${props => props.variant === 'outline' ? '#0891b2' : '#0e7490'};
-    color: white;
-    transform: translateY(-2px);
-  }
-
-  @media (max-width: 480px) {
-    padding: 0.4rem 0.875rem;
-    font-size: 0.875rem;
-  }
-`
-
 const MainContent = styled.main`
   max-width: 1280px;
   margin: 0 auto;
@@ -221,16 +128,6 @@ const UseButton = styled.button`
     transform: none;
     box-shadow: none;
   }
-`
-
-const ErrorMessage = styled.div`
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  font-size: 0.875rem;
 `
 
 // Modal Styles
@@ -362,10 +259,12 @@ const SessionCard = styled.div`
   align-items: center;
   gap: 1rem;
   transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     border-color: #0891b2;
     box-shadow: 0 4px 12px rgba(14, 116, 144, 0.1);
+    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {
@@ -443,6 +342,7 @@ function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
 
+  console.log(sessions)
   useEffect(() => {
     // Get user data from localStorage
     const userData = getUserData()
@@ -479,24 +379,15 @@ function Dashboard() {
     setIsModalOpen(false)
 
     try {
-      // Create session (doesn't deduct credits yet)
+      // Create session and first attempt
       const sessionData = await dispatch(createSession('exercise'))
 
-      // Navigate to session detail page
-      navigate(`/session/${sessionData.exercise_session_id}`)
+      // Navigate to first attempt detail page
+      navigate(`/session/${sessionData.id}`)
     } catch (error) {
       console.error('Failed to create session:', error)
       alert('Gagal membuat sesi: ' + (error.message || 'Terjadi kesalahan'))
     }
-  }
-
-  const handleTopUp = () => {
-    setIsPurchaseModalOpen(true)
-  }
-
-  const handlePurchaseSuccess = () => {
-    // Refresh user data after successful purchase
-    fetchUserData()
   }
 
   const formatDate = (date) => {
@@ -507,53 +398,12 @@ function Dashboard() {
       hour: '2-digit',
       minute: '2-digit'
     }
+    console.log(date)
     return new Date(date).toLocaleDateString('id-ID', options)
   }
 
   return (
     <DashboardContainer>
-      <Header>
-        <Logo>
-          <span>🏥</span>
-          <span>MedPalm</span>
-        </Logo>
-        <UserSection>
-          <CreditsDisplay>
-            💎 {balance} Kredit
-          </CreditsDisplay>
-          <Button variant="outline" onClick={handleTopUp}>
-            Isi Ulang
-          </Button>
-          {user && (
-            <UserInfo>
-              {user.picture ? (
-                <Avatar src={user.picture} alt={user.name} />
-              ) : (
-                <Avatar as="div" style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'linear-gradient(135deg, #0e7490, #14b8a6)',
-                  color: 'white',
-                  fontWeight: '600'
-                }}>
-                  {user.name?.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
-              <UserName>{user.name}</UserName>
-            </UserInfo>
-          )}
-          {user?.role === 'admin' && (
-            <Button onClick={() => navigate('/admin')}>
-              Admin Panel
-            </Button>
-          )}
-          <Button variant="outline" onClick={handleLogout}>
-            Keluar
-          </Button>
-        </UserSection>
-      </Header>
-
       <MainContent>
         {/* Session History Section */}
         <SessionsSection>
@@ -576,13 +426,16 @@ function Dashboard() {
           ) : sessions.length > 0 ? (
             <SessionsList>
               {sessions.map((session) => (
-                <SessionCard key={session.id}>
+                <SessionCard
+                  key={session.id}
+                  onClick={() => navigate(`/session/${session.id}`)}
+                >
                   <SessionIcon>📚</SessionIcon>
                   <SessionInfo>
-                    <SessionName>{session.topic_title || 'Untitled'}</SessionName>
-                    <SessionDate>{formatDate(session.started_at)}</SessionDate>
+                    <SessionName>{session.title || 'Untitled'}</SessionName>
+                    <SessionDate>{formatDate(session.createdAt)}</SessionDate>
                   </SessionInfo>
-                  <SessionCredit>-{session.credits_used} kredit</SessionCredit>
+                  {/* <SessionCredit>-{session.credits_used} kredit</SessionCredit> */}
                 </SessionCard>
               ))}
             </SessionsList>
@@ -635,13 +488,6 @@ function Dashboard() {
           </ModalContent>
         </ModalOverlay>
       )}
-
-      {/* Credit Purchase Modal */}
-      <CreditPurchase
-        isOpen={isPurchaseModalOpen}
-        onClose={() => setIsPurchaseModalOpen(false)}
-        onPurchaseSuccess={handlePurchaseSuccess}
-      />
     </DashboardContainer>
   )
 }

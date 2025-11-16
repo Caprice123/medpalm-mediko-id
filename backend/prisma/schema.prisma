@@ -111,6 +111,8 @@ model exercise_session_attempts {
     exercise_session_id         Int
     attempt_number              Int                           @default(1)
     status                      String                        @default("not_started")
+    correct_question            Int?
+    total_question              Int?
     score                       Int                           @default(0)
     started_at                  DateTime                      @default(now())
     completed_at                DateTime?

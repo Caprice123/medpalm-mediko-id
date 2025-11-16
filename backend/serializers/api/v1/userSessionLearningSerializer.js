@@ -1,11 +1,11 @@
 export class UserLearningSessionSerializer {
     static serialize(user_learning_sessions) {
-        return user_learning_sessions.map(plan => ({
-            id: plan.id,
-            title: plan.title,
-            type: plan.type,
-            creditUsed: plan.credit_used,
-            createdAt: plan.created_at,
+        return user_learning_sessions.map(sessions => ({
+            id: sessions.id,
+            title: sessions.title,
+            type: sessions.type,
+            creditUsed: sessions.credit_used,
+            createdAt: sessions.created_at,
         }))
     }
 }

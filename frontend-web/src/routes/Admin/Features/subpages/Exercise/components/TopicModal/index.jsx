@@ -232,6 +232,28 @@ const FileName = styled.span`
   font-weight: 600;
 `
 
+const PDFLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid #8b5cf6;
+  border-radius: 8px;
+  color: #8b5cf6;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  }
+`
+
 const QuestionsList = styled.div`
   display: flex;
   flex-direction: column;
@@ -643,7 +665,10 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
     type: 'text',
     content: '',
     file: null,
-    numberOfQuestions: 10
+    numberOfQuestions: 10,
+    pdf_url: '',
+    pdf_key: '',
+    pdf_filename: ''
   })
   const [questions, setQuestions] = useState([])
   const [isGenerating, setIsGenerating] = useState(false)
@@ -681,7 +706,10 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
         type: 'text',
         content: '',
         file: null,
-        numberOfQuestions: 10
+        numberOfQuestions: 10,
+        pdf_url: '',
+        pdf_key: '',
+        pdf_filename: ''
       })
       setQuestions([])
     }
@@ -716,12 +744,25 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
       setIsGenerating(true)
 
       let generatedQuestions
+      let pdfInfo = {}
 
       if (formData.type === 'pdf') {
         // Generate questions from PDF
-        generatedQuestions = await dispatch(
+        const result = await dispatch(
           generateQuestionsFromPDF(formData.file, formData.numberOfQuestions)
         )
+        generatedQuestions = result.questions
+        pdfInfo = {
+          pdf_url: result.pdf_url,
+          pdf_key: result.pdf_key,
+          pdf_filename: result.pdf_filename
+        }
+
+        // Store PDF info in form data
+        setFormData(prev => ({
+          ...prev,
+          ...pdfInfo
+        }))
       } else {
         // Generate questions from text
         generatedQuestions = await dispatch(
@@ -773,6 +814,8 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
         content_type: formData.type,
         content: formData.type === 'text' ? formData.content : '',
         pdf_url: formData.pdf_url || '',
+        pdf_key: formData.pdf_key || '',
+        pdf_filename: formData.pdf_filename || '',
         tags: formData.tags,
         questions: questions.map((q, index) => ({
           question: q.question,
@@ -875,7 +918,10 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
       type: 'text',
       content: '',
       file: null,
-      numberOfQuestions: 10
+      numberOfQuestions: 10,
+      pdf_url: '',
+      pdf_key: '',
+      pdf_filename: ''
     })
     setQuestions([])
     onClose()
@@ -1005,6 +1051,16 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
                       </div>
                     </label>
                   </FileUpload>
+                  {formData.pdf_url && (
+                    <PDFLink
+                      href={formData.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>📎</span>
+                      <span>Lihat PDF yang telah diupload: {formData.pdf_filename}</span>
+                    </PDFLink>
+                  )}
                 </FormGroup>
               )}
 

@@ -133,9 +133,16 @@ export const generateQuestionsFromPDF = (pdfFile, questionCount = 10) => async (
 
     const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, formData)
 
-    const questions = response.data.data || response.data.questions || []
+    const data = response.data.data || {}
+    const questions = data.questions || []
+    const pdfInfo = {
+      pdf_url: data.pdf_url,
+      pdf_key: data.pdf_key,
+      pdf_filename: data.pdf_filename
+    }
+
     dispatch(setGeneratedQuestions(questions))
-    return questions
+    return { questions, ...pdfInfo }
   } catch (err) {
     handleApiError(err, dispatch)
     throw err

@@ -14,4 +14,7 @@ router.post('/', asyncHandler(sessionController.create.bind(sessionController)))
 // Get user's session history
 router.get('/', asyncHandler(sessionController.getUserSessions.bind(sessionController)))
 
+// Get attempt detail
+router.get('/:sessionId', asyncHandler(sessionController.show.bind(sessionController)))
+
 export default router

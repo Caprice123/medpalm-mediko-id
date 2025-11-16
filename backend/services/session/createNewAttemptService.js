@@ -12,11 +12,9 @@ export class CreateNewAttemptService extends BaseService {
     const result = await prisma.$transaction(async (tx) => {
       // Verify the user_learning_session exists and belongs to the user
       const userLearningSession = await tx.user_learning_sessions.findUnique({
-        where: { id: parseInt(userLearningSessionId), userId },
+        where: { id: parseInt(userLearningSessionId), user_id: userId },
         include: {
-          exercise_sessions: {
-            take: 1
-          }
+          exercise_session: true
         }
       })
 
@@ -25,7 +23,7 @@ export class CreateNewAttemptService extends BaseService {
       }
 
       // Get the exercise session for this learning session
-      const exerciseSession = userLearningSession.exercise_sessions[0]
+      const exerciseSession = userLearningSession.exercise_session
 
       if (!exerciseSession) {
         throw new ValidationError('No exercise session found')
@@ -36,7 +34,7 @@ export class CreateNewAttemptService extends BaseService {
         data: {
           exercise_session_id: exerciseSession.id,
           attempt_number: exerciseSession.number_of_attempts + 1,
-          status: 'not_started'
+          status: 'active'
         }
       })
 

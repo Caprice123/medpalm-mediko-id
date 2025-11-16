@@ -14,15 +14,15 @@ export class CompleteSessionService extends BaseService {
       const attempt = await tx.exercise_session_attempts.findUnique({
         where: { id: parseInt(attemptId) },
         include: {
-          exercise_session_questions: {
-            orderBy: { order: 'asc' }
-          },
-          exercise_session_answers: true,
           exercise_session: {
             include: {
-              user_learning_sessions: true
+              user_learning_session: true,
+              exercise_session_questions: {
+                orderBy: { order: 'asc' }
+              }
             }
-          }
+          },
+          exercise_session_answers: true
         }
       })
 
@@ -38,15 +38,15 @@ export class CompleteSessionService extends BaseService {
         throw new ValidationError(`Attempt is not active. Current status: ${attempt.status}`)
       }
 
-      let correctCount = attempt.score || 0
+      let correctCount = 0
       let answerResults = []
 
       // Process answers if provided
       if (answers && answers.length > 0) {
-        // Create a map of question_id to session question for quick lookup
+        // Create a map of question id to session question for quick lookup
         const sessionQuestionsMap = {}
-        attempt.exercise_session_questions.forEach(q => {
-          sessionQuestionsMap[q.question_id] = q
+        attempt.exercise_session.exercise_session_questions.forEach(q => {
+          sessionQuestionsMap[q.id] = q
         })
 
         // Process each answer
@@ -90,11 +90,24 @@ export class CompleteSessionService extends BaseService {
       const updatedAttempt = await tx.exercise_session_attempts.update({
         where: { id: parseInt(attemptId) },
         data: {
-          score: correctCount,
-          status: 'completed',
-          completed_at: new Date()
+            correct_question: correctCount,
+            score: Math.floor(correctCount / attempt.exercise_session.total_question * 100),
+            status: 'completed',
+            completed_at: new Date()
         }
       })
+
+      // Calculate percentage
+      const totalQuestions = attempt.exercise_session.exercise_session_questions.length
+      const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0
+
+      return {
+        attempt: updatedAttempt,
+        score: correctCount,
+        total_questions: totalQuestions,
+        percentage,
+        answers: answerResults
+      }
     })
 
     return result

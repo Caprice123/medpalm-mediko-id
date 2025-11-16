@@ -1,6 +1,11 @@
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import {
   Container,
+  HeaderNav,
+  BackLink,
+  HeaderTitle,
+  ContentWrapper,
   ResultCard,
   ScoreCircle,
   ScoreNumber,
@@ -23,18 +28,17 @@ import {
   AnswerDetails
 } from './SessionResults.styles'
 
-function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
-  const { sessionDetail } = useSelector(state => state.session)
+function SessionResults({ attemptMetadata, attemptDetail, onViewHistory, onTryAgain }) {
+  const navigate = useNavigate()
 
-  // Get data from sessionDetail (from fetchSessionDetail) or from sessionData prop (from complete)
-  const data = sessionData || sessionDetail
-  const topicSnapshot = data?.topic_snapshot
-  const answers = data?.answers || []
+  // Use attemptMetadata and attemptDetail from props
+  const questions = attemptDetail?.questions || []
+  const answers = attemptDetail?.answers || []
 
-  const percentage = data?.percentage || 0
-  const totalQuestions = data?.total_questions || 0
-  const correctAnswers = data?.score || 0
-  const creditsUsed = data?.credits_used || 0
+  const totalQuestions = attemptMetadata?.totalQuestion || 0
+  const correctAnswers = attemptMetadata?.correctQuestion || 0
+  const percentage = attemptMetadata?.score || 0
+  const creditsUsed = attemptMetadata?.credits_used || 0
 
   const getResultMessage = () => {
     if (percentage >= 80) return 'Luar Biasa!'
@@ -45,6 +49,15 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
 
   return (
     <Container>
+      <HeaderNav>
+        <BackLink onClick={() => navigate('/dashboard')}>
+          ← Kembali ke Dashboard
+        </BackLink>
+        <HeaderTitle>Hasil Latihan</HeaderTitle>
+        <div></div>
+      </HeaderNav>
+
+      <ContentWrapper>
       <ResultCard>
         <ScoreCircle percentage={percentage}>
           <ScoreNumber>{percentage}%</ScoreNumber>
@@ -69,10 +82,6 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
             <StatValue>{totalQuestions}</StatValue>
             <StatLabel>Total Soal</StatLabel>
           </StatCard>
-          <StatCard>
-            <StatValue>{creditsUsed}</StatValue>
-            <StatLabel>Kredit Digunakan</StatLabel>
-          </StatCard>
         </StatsGrid>
 
         <ButtonGroup>
@@ -88,9 +97,9 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
       <AnswersSection>
         <SectionTitle>Review Jawaban Anda</SectionTitle>
 
-        {topicSnapshot?.questions.map((question, index) => {
-          // Find answer by question_id
-          const answer = answers.find(a => a.question_id === question.id)
+        {questions.map((question, index) => {
+          // Find answer by exercise_session_question_id
+          const answer = answers.find(a => a.exercise_session_question_id === question.id)
           const isCorrect = answer?.is_correct
 
           return (
@@ -102,7 +111,7 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
                 </AnswerStatus>
               </AnswerHeader>
 
-              <AnswerQuestion>{question.question}</AnswerQuestion>
+              <AnswerQuestion>{question.question_text}</AnswerQuestion>
 
               <AnswerDetails>
                 <div>
@@ -110,12 +119,12 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
                 </div>
                 {!isCorrect && (
                   <div style={{ marginTop: '0.5rem' }}>
-                    <strong>Jawaban Benar:</strong> {answer?.answer_text || question.answer}
+                    <strong>Jawaban Benar:</strong> {question.answer_text}
                   </div>
                 )}
-                {(answer?.explanation || question.explanation) && (
+                {question.explanation && (
                   <div style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
-                    <strong>Penjelasan:</strong> {answer?.explanation || question.explanation}
+                    <strong>Penjelasan:</strong> {question.explanation}
                   </div>
                 )}
               </AnswerDetails>
@@ -123,6 +132,7 @@ function SessionResults({ sessionData, onViewHistory, onTryAgain }) {
           )
         })}
       </AnswersSection>
+      </ContentWrapper>
     </Container>
   )
 }
