@@ -1,6 +1,5 @@
 import { GetUserSessionsService } from '../../../services/session/getUserSessionsService.js'
 import { CreateSessionService } from '../../../services/session/createSessionService.js'
-import { GetAttemptDetailService } from '../../../services/session/getAttemptDetailService.js'
 import { UserLearningSessionSerializer } from '../../../serializers/api/v1/userSessionLearningSerializer.js'
 import { GetSessionDetailService } from '../../../services/session/getSessionDetailService.js'
 
@@ -22,10 +21,6 @@ class SessionController {
       data: UserLearningSessionSerializer.serialize(result.data),
       pagination: result.pagination
     })
-  }
-
-  async getUserSessions(req, res) {
-    return this.index(req, res)
   }
 
   // Create a new learning session

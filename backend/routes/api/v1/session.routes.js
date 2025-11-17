@@ -8,11 +8,11 @@ const router = express.Router()
 // All routes require authentication
 router.use(authenticateToken)
 
+// Get user's session history
+router.get('/', asyncHandler(sessionController.index.bind(sessionController)))
+
 // Create a new exercise session
 router.post('/', asyncHandler(sessionController.create.bind(sessionController)))
-
-// Get user's session history
-router.get('/', asyncHandler(sessionController.getUserSessions.bind(sessionController)))
 
 // Get attempt detail
 router.get('/:sessionId', asyncHandler(sessionController.show.bind(sessionController)))

@@ -1,7 +1,6 @@
-import { CreateNewAttemptService } from '../../../../services/session/createNewAttemptService.js'
-import { CompleteSessionService } from '../../../../services/session/completeSessionService.js'
-import { StartExerciseWithTopicService } from '../../../../services/exercise/startExerciseWithTopicService.js'
-import { GetAttemptDetailService } from '../../../../services/session/getAttemptDetailService.js'
+import { CompleteExerciseAttemptService } from "../../../../services/exercise/attempts/completeExerciseAttemptService.js"
+import { GetAttemptDetailService } from "../../../../services/exercise/attempts/getAttemptDetailService.js"
+import { StartExerciseWithTopicService } from "../../../../services/exercise/startExerciseWithTopicService.js"
 
 class ExerciseAttemptsController {
   async detail(req, res) {
@@ -47,7 +46,7 @@ class ExerciseAttemptsController {
     const { answers } = req.body
     const userId = req.user.id
 
-    const result = await CompleteSessionService.call({
+    const result = await CompleteExerciseAttemptService.call({
         attemptId,
         userId,
         answers

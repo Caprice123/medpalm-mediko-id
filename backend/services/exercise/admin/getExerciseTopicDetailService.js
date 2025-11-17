@@ -1,6 +1,6 @@
-import { ValidationError } from "../../errors/validationError.js"
-import prisma from "../../prisma/client.js"
-import { BaseService } from "../baseService.js"
+import { ValidationError } from "../../../errors/validationError.js"
+import prisma from "../../../prisma/client.js"
+import { BaseService } from "../../baseService.js"
 
 export class GetExerciseTopicDetailService extends BaseService {
     static async call(topicId) {
