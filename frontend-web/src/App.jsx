@@ -8,6 +8,40 @@ import { Provider, useDispatch } from 'react-redux'
 import { store } from './store/store'
 import Middleware from '@middleware/Middleware'
 import { GlobalStyles } from './theme/GlobalStyles'
+import { ToastContainer, Slide } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import GlobalErrorHandler from '@components/GlobalErrorHandler'
+import styled from 'styled-components'
+
+const StyledToastContainer = styled(ToastContainer)`
+  .Toastify__toast {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .Toastify__toast-icon svg {
+    fill: white;
+  }
+
+  .Toastify__close-button {
+    color: white;
+    opacity: 0.8;
+  }
+
+  .Toastify__close-button:hover {
+    opacity: 1;
+  }
+
+  .Toastify__progress-bar {
+    background: white;
+    height: 4px;
+  }
+`
 
 const AxiosInterceptorSetup = () => {
     const navigate = useNavigate();
@@ -29,9 +63,21 @@ function App() {
             <Router>
                 <AxiosInterceptorSetup />
                 <Middleware />
+                <GlobalErrorHandler />
                 <AppRouter />
-				<GlobalStyles />
-			</Router>
+                <GlobalStyles />
+                <StyledToastContainer
+                  position="top-center"
+                  autoClose={3000}
+                  hideProgressBar
+                  newestOnTop
+                  closeOnClick
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  transition={Slide}
+                />
+            </Router>
         </Provider>
     </GoogleOAuthProvider>
   )

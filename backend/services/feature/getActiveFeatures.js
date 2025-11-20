@@ -14,6 +14,9 @@ export class GetActiveFeaturesService extends BaseService {
         "flashcard_feature_description",
         "flashcard_credit_cost",
         "flashcard_session_type",
+        "summary_notes_feature_title",
+        "summary_notes_feature_description",
+        "summary_notes_credit_cost",
     ])
 
     const features = []
@@ -37,6 +40,17 @@ export class GetActiveFeaturesService extends BaseService {
         cost: parseInt(featureConstants.flashcard_credit_cost) || 0,
         icon: '🎴',
         sessionType: featureConstants.flashcard_session_type
+      })
+    }
+
+    // Summary Notes feature
+    if (featureConstants.summary_notes_feature_title) {
+      features.push({
+        name: featureConstants.summary_notes_feature_title,
+        description: featureConstants.summary_notes_feature_description,
+        cost: parseInt(featureConstants.summary_notes_credit_cost) || 0,
+        icon: '📝',
+        sessionType: 'summary_notes'
       })
     }
 

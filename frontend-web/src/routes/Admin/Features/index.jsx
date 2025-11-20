@@ -3,6 +3,7 @@ import FeaturesList from './components/FeaturesList'
 import FeatureConfig from './components/FeatureConfig'
 import Exercise from './subpages/Exercise'
 import Flashcard from './subpages/Flashcard'
+import SummaryNotes from './subpages/SummaryNotes'
 import {
   Container,
   HeaderSection,
@@ -30,6 +31,15 @@ const FEATURES_DATA = [
     cost: 10,
     isActive: true,
     color: '#06b6d4'
+  },
+  {
+    id: 10,
+    name: 'Ringkasan Materi',
+    description: 'Ringkasan materi kedokteran yang disusun dengan format mudah dipahami',
+    icon: '📝',
+    cost: 5,
+    isActive: true,
+    color: '#10b981'
   }
 ]
 
@@ -68,6 +78,11 @@ function Features() {
     if (selectedFeature?.id === 8) {
       // Flashcard Belajar
       return <Flashcard onBack={handleBackToList} />
+    }
+
+    if (selectedFeature?.id === 10) {
+      // Ringkasan Materi
+      return <SummaryNotes onBack={handleBackToList} />
     }
 
     // Default feature config for other features

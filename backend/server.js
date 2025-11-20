@@ -10,12 +10,15 @@ import exerciseRoutes from './routes/api/v1/exercise.routes.js';
 import exerciseAttemptRoutes from './routes/api/v1/exercises/attempts.routes.js';
 import flashcardRoutes from './routes/api/v1/flashcard.routes.js';
 import flashcardAttemptRoutes from './routes/api/v1/flashcards/attempts.routes.js';
+import summaryNoteRoutes from './routes/api/v1/summaryNote.routes.js';
 import tagRoutes from './routes/api/v1/tag.routes.js';
 import sessionRoutes from './routes/api/v1/session.routes.js';
 import featureRoutes from './routes/api/v1/feature.routes.js';
 import adminCreditPlanRoutes from './routes/admin/v1/creditPlan.routes.js';
 import adminExerciseRoutes from './routes/admin/v1/exercise.routes.js';
 import adminFlashcardRoutes from './routes/admin/v1/flashcard.routes.js';
+import adminSummaryNoteRoutes from './routes/admin/v1/summaryNote.routes.js';
+import adminConstantRoutes from './routes/admin/v1/constant.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
 
 dotenv.config();
@@ -46,6 +49,7 @@ app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/exercises/attempts', exerciseAttemptRoutes);
 app.use('/api/v1/flashcards', flashcardRoutes);
 app.use('/api/v1/flashcards/attempts', flashcardAttemptRoutes);
+app.use('/api/v1/summary-notes', summaryNoteRoutes);
 app.use('/api/v1/tags', tagRoutes);
 app.use('/api/v1/sessions', sessionRoutes);
 app.use('/api/v1/features', featureRoutes);
@@ -54,6 +58,8 @@ app.use('/api/v1/features', featureRoutes);
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);
 app.use('/admin/v1/exercises', adminExerciseRoutes);
 app.use('/admin/v1/flashcards', adminFlashcardRoutes);
+app.use('/admin/v1/summary-notes', adminSummaryNoteRoutes);
+app.use('/admin/v1/constants', adminConstantRoutes);
 
 
 // Error handling middleware (must be last)

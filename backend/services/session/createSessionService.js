@@ -9,7 +9,7 @@ export class CreateSessionService extends BaseService {
       throw new ValidationError('User ID and Session Type are required')
     }
 
-    const supportedSessionTypes = ["exercise", "flashcard"]
+    const supportedSessionTypes = ["exercise", "flashcard", "summary_notes"]
     if (!supportedSessionTypes.includes(sessionType)) {
       throw new ValidationError("Tipe sesi tidak didukung")
     }
@@ -22,6 +22,8 @@ export class CreateSessionService extends BaseService {
         title = 'Latihan Soal'
       } else if (sessionType === 'flashcard') {
         title = 'Flashcard Belajar'
+      } else if (sessionType === 'summary_notes') {
+        title = 'Ringkasan Materi'
       }
 
       const userLearningSession = await tx.user_learning_sessions.create({

@@ -67,4 +67,17 @@ export default {
     features: {
         list: `${API_BASE_URL}/api/v1/features`,
     },
+    summaryNotes: {
+        // User endpoints
+        list: `${API_BASE_URL}/api/v1/summary-notes`,
+        start: `${API_BASE_URL}/api/v1/summary-notes/sessions/start`,
+        session: (sessionId) => `${API_BASE_URL}/api/v1/summary-notes/sessions/${sessionId}`,
+
+        // Admin endpoints
+        admin: {
+            list: `${API_BASE_URL}/admin/v1/summary-notes`,
+            detail: (id) => `${API_BASE_URL}/admin/v1/summary-notes/${id}`,
+            generate: `${API_BASE_URL}/admin/v1/summary-notes/generate`,
+        }
+    },
 }

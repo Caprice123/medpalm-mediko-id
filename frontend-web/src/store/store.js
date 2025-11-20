@@ -8,6 +8,7 @@ import flashcard from "./flashcard";
 import tags from "./tags/reducer";
 import session from "./session/reducer";
 import feature from "./feature/reducer";
+import summaryNotes from "./summaryNotes";
 
 export const rootReducer = combineReducers({
     auth,
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
     tags,
     session,
     feature,
+    summaryNotes,
 })
 
 export const store = configureStore({

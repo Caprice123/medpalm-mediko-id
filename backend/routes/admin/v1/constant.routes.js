@@ -1,15 +1,14 @@
 import express from 'express'
 import constantController from '../../../controllers/admin/v1/constant.controller.js'
 import { asyncHandler } from '../../../utils/asyncHandler.js'
+import { authenticateToken, requireAdmin } from '../../../middleware/auth.middleware.js'
 
 const router = express.Router()
 
-// Note: Authentication and admin check are handled by parent router
+// Get constants (optionally filtered by keys)
+router.get('/', authenticateToken, requireAdmin, asyncHandler(constantController.index.bind(constantController)))
 
-// Get exercise constants (optionally filtered by keys)
-router.get('/', asyncHandler(constantController.index.bind(constantController)))
-
-// Update exercise constants
-router.put('/', asyncHandler(constantController.update.bind(constantController)))
+// Update constants
+router.put('/', authenticateToken, requireAdmin, asyncHandler(constantController.update.bind(constantController)))
 
 export default router

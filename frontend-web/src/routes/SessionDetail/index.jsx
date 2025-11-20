@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchSessionDetail } from '@store/session/action'
 import ExerciseSessionSubpage from './subpages/ExerciseSession'
 import FlashcardSessionSubpage from './subpages/FlashcardSession'
+import SummaryNotesSessionSubpage from './subpages/SummaryNotesSession'
 import { LoadingContainer, LoadingSpinner } from './SessionDetail.styles'
 
 function SessionDetail() {
@@ -39,6 +40,10 @@ function SessionDetail() {
 
   if (sessionType === 'flashcard') {
     return <FlashcardSessionSubpage sessionId={sessionId} />
+  }
+
+  if (sessionType === 'summary_notes') {
+    return <SummaryNotesSessionSubpage sessionId={sessionId} />
   }
 
   // Default to exercise
