@@ -93,6 +93,7 @@ export class StartFlashcardWithDeckService extends BaseService {
       // Create card snapshots for database
       const cardSnapshots = deck.flashcard_cards.map((card, index) => ({
         flashcard_session_id: attempt.flashcard_session.id,
+        original_card_id: card.id,
         front_text: card.front || '',
         back_text: card.back || '',
         order: card.order !== undefined ? card.order : index

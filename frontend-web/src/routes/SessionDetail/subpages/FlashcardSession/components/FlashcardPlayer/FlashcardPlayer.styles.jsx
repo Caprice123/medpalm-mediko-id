@@ -234,3 +234,101 @@ export const Dot = styled.div`
     transform: scale(1.2);
   }
 `
+
+// Feedback Section Styles
+export const FeedbackSection = styled.div`
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 2px solid #e9ecef;
+`
+
+export const FeedbackBadge = styled.div`
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 12px;
+
+  ${props => {
+    switch (props.type) {
+      case 'correct':
+        return `
+          background: #d4edda;
+          color: #155724;
+          border: 2px solid #28a745;
+        `
+      case 'almost':
+        return `
+          background: #fff3cd;
+          color: #856404;
+          border: 2px solid #ffc107;
+        `
+      case 'incorrect':
+        return `
+          background: #f8d7da;
+          color: #721c24;
+          border: 2px solid #dc3545;
+        `
+      default:
+        return ''
+    }
+  }}
+`
+
+export const FeedbackText = styled.div`
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 16px;
+`
+
+export const AnswerComparison = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`
+
+export const ComparisonRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`
+
+export const ComparisonLabel = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`
+
+export const ComparisonValue = styled.div`
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+
+  ${props => {
+    if (props.correct) {
+      return `
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      `
+    }
+    if (props.wrong) {
+      return `
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      `
+    }
+    return `
+      background: #e9ecef;
+      color: #495057;
+      border-left: 4px solid #6c757d;
+    `
+  }}
+`

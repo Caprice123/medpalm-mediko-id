@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model constants {
@@ -301,6 +300,7 @@ model flashcard_sessions {
 model flashcard_session_cards {
   id                      Int                       @id @default(autoincrement())
   flashcard_session_id    Int
+  original_card_id        Int?                      // references flashcard_cards.id for progress tracking
   front_text              String
   back_text               String
   order                   Int
@@ -311,6 +311,7 @@ model flashcard_session_cards {
 
   @@index([flashcard_session_id])
   @@index([order])
+  @@index([original_card_id])
 }
 
 model flashcard_session_attempts {
@@ -336,6 +337,8 @@ model flashcard_session_answers {
   flashcard_session_attempt_id Int
   flashcard_session_card_id    Int
   user_answer                  String
+  is_correct                   Boolean?
+  similarity_score             Float?                       // 0.0 to 1.0
   time_taken_seconds           Int?
   answered_at                  DateTime                     @default(now())
 
@@ -345,6 +348,22 @@ model flashcard_session_answers {
   @@index([flashcard_session_attempt_id])
   @@index([flashcard_session_card_id])
   @@index([answered_at])
+}
+
+// Track user progress per card across all sessions
+model user_card_progress {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  card_id         Int      // references flashcard_cards.id
+  times_correct   Int      @default(0)
+  times_incorrect Int      @default(0)
+  last_reviewed   DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  @@unique([user_id, card_id])
+  @@index([user_id])
+  @@index([card_id])
 }
 
 model user_sessions {
