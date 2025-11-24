@@ -4,6 +4,7 @@ import prisma from '../../prisma/client.js';
 import { ValidationError } from '../../errors/validationError.js';
 import { AuthorizationError } from '../../errors/authorizationError.js';
 import { verifyGoogleToken } from '../../utils/googleAuth.js';
+import { UpdateStatisticService, STAT_KEYS } from '../statistic/updateStatisticService.js';
 
 
 
@@ -45,6 +46,9 @@ class AuthService {
           isActive: true
         }
       });
+
+      // Increment total users statistic
+      await UpdateStatisticService.increment(STAT_KEYS.TOTAL_USERS);
     } else {
       // Update user info from Google if changed
       user = await prisma.users.update({

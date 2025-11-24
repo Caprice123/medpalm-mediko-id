@@ -8,6 +8,7 @@ import flashcard from "./flashcard";
 import tags from "./tags/reducer";
 import session from "./session/reducer";
 import feature from "./feature/reducer";
+import statistic from "./statistic/reducer";
 import summaryNotes from "./summaryNotes";
 
 export const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ export const rootReducer = combineReducers({
     tags,
     session,
     feature,
+    statistic,
     summaryNotes,
 })
 

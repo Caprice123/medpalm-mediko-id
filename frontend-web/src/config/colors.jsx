@@ -1,40 +1,47 @@
-// Medical theme color palette - Teal gradient theme
+// Medical theme color palette - Blue and Green theme
 export const colors = {
-  // Primary colors - Teal gradient
+  // Primary colors - Blue
   primary: {
-    main: '#0e7490',      // Primary dark cyan
-    light: '#14b8a6',     // Teal-500 - Lighter variant for gradient end
-    dark: '#164e63',      // Very dark cyan for text
-    hover: '#0891b2',     // Cyan-600 - Hover state
+    main: '#6BB9E8',      // Primary light blue
+    light: '#8ECDF0',     // Lighter blue
+    dark: '#4A9ED4',      // Darker blue
+    hover: '#5AAFE5',     // Blue hover state
   },
 
   // Gradient colors
   gradient: {
-    start: '#0e7490',     // Gradient start (dark cyan)
-    end: '#14b8a6',       // Gradient end (teal)
-    light1: '#67e8f9',    // Light cyan for accents
-    light2: '#a7f3d0',    // Light green for accents
+    start: '#6BB9E8',     // Gradient start (light blue)
+    end: '#8DC63F',       // Gradient end (lime green)
+    light1: '#A8D8F0',    // Light blue for accents
+    light2: '#B8E986',    // Light green for accents
   },
 
-  // Secondary colors - Complementary teal shades
+  // Secondary colors - Green shades
   secondary: {
-    main: '#0891b2',      // Cyan-600
-    light: '#67e8f9',     // Light cyan
-    dark: '#155e75',      // Cyan-900
+    main: '#8DC63F',      // Lime green
+    light: '#A8D86A',     // Light green
+    dark: '#6BA32E',      // Darker green
+  },
+
+  // Accent colors - Complementary
+  accent: {
+    main: '#4A9ED4',      // Deeper blue
+    light: '#8ECDF0',     // Light blue
+    dark: '#3B7EAA',      // Dark blue
   },
 
   // Curio-specific colors
   curio: {
-    inputBg: '#f0fdfa',   // Very light teal for input backgrounds
-    inputText: '#164e63', // Dark cyan for input text
+    inputBg: '#F8FAFC',   // Very light gray for input backgrounds
+    inputText: '#1E293B', // Dark slate for input text
     cardBg: '#ffffff',    // White for cards
   },
 
-  // Success/Health - Green
+  // Success/Health - Green (using brand green)
   success: {
-    main: '#10B981',      // Emerald-500
-    light: '#34D399',     // Emerald-400
-    dark: '#059669',      // Emerald-600
+    main: '#8DC63F',      // Brand lime green
+    light: '#A8D86A',     // Light green
+    dark: '#6BA32E',      // Darker green
   },
 
   // Warning - Amber
@@ -69,10 +76,10 @@ export const colors = {
 
   // Background colors
   background: {
-    default: '#F9FAFB',        // Light gray background
+    default: '#F8FAFC',        // Light slate background
     paper: '#FFFFFF',          // Card/Paper background
     dark: '#0F172A',           // Dark mode background
-    lightGradient: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)', // Light teal gradient
+    lightGradient: 'linear-gradient(135deg, #F0F9FF 0%, #F0FDF4 100%)', // Light blue to green gradient
   },
 
   // Text colors

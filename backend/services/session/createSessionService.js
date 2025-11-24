@@ -1,6 +1,7 @@
 import prisma from '../../prisma/client.js'
 import { BaseService } from '../baseService.js'
 import { ValidationError } from '../../errors/validationError.js'
+import { UpdateStatisticService, STAT_KEYS } from '../statistic/updateStatisticService.js'
 
 export class CreateSessionService extends BaseService {
   static async call({ userId, sessionType = 'exercise' }) {
@@ -82,6 +83,9 @@ export class CreateSessionService extends BaseService {
         firstAttempt
       }
     })
+
+    // Increment total sessions statistic
+    await UpdateStatisticService.increment(STAT_KEYS.TOTAL_SESSIONS)
 
     return result
   }

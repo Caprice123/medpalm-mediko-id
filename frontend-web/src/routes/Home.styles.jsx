@@ -4,7 +4,7 @@ import { colors } from '@config/colors';
 
 export const LandingContainer = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: #F8FAFC;
   position: relative;
   overflow-x: hidden;
 `;
@@ -15,9 +15,9 @@ export const Navbar = styled.nav`
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(240, 253, 250, 0.95);
+  background: rgba(248, 250, 252, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(14, 116, 144, 0.08);
+  border-bottom: 1px solid rgba(107, 185, 232, 0.15);
   padding: 1rem 2rem;
   z-index: 1000;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -42,7 +42,7 @@ export const Logo = styled.div`
   gap: 0.75rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0891b2;
+  color: ${colors.primary.main};
   cursor: pointer;
 `;
 
@@ -67,7 +67,7 @@ export const NavLink = styled.a`
   transition: color 0.3s;
 
   &:hover {
-    color: #0891b2;
+    color: ${colors.primary.main};
   }
 
   @media (max-width: 768px) {
@@ -86,7 +86,7 @@ export const CTAButton = styled(Link)`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 116, 144, 0.3);
+    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.4);
   }
 
   @media (max-width: 768px) {
@@ -109,7 +109,7 @@ export const HeroSection = styled.section`
     right: -5%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(14, 116, 144, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(107, 185, 232, 0.08) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 20s ease-in-out infinite;
   }
@@ -121,7 +121,7 @@ export const HeroSection = styled.section`
     left: -5%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(20, 184, 166, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(141, 198, 63, 0.06) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 25s ease-in-out infinite reverse;
   }
@@ -171,16 +171,16 @@ export const Badge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(8, 145, 178, 0.1);
+  background: rgba(107, 185, 232, 0.1);
   padding: 0.5rem 1.25rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(8, 145, 178, 0.2);
+  border: 1px solid rgba(107, 185, 232, 0.25);
   animation: slideInDown 0.6s ease-out;
-  color: #0891b2;
-  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.1);
+  color: ${colors.primary.dark};
+  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.15);
 
   @keyframes slideInDown {
     from {
@@ -200,7 +200,7 @@ export const HeroTitle = styled.h1`
   line-height: 1.1;
   margin-bottom: 1.5rem;
   animation: slideInLeft 0.8s ease-out 0.2s both;
-  background: linear-gradient(135deg, #0e7490 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -260,7 +260,7 @@ export const HeroButtons = styled.div`
 `;
 
 export const PrimaryButton = styled(Link)`
-  background: linear-gradient(135deg, #0e7490 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
   color: white;
   padding: 1rem 2rem;
   border-radius: 12px;
@@ -268,11 +268,11 @@ export const PrimaryButton = styled(Link)`
   font-size: 1.125rem;
   transition: all 0.3s;
   border: none;
-  box-shadow: 0 4px 15px rgba(14, 116, 144, 0.3);
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
 
   &:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(14, 116, 144, 0.4);
+    box-shadow: 0 8px 25px rgba(141, 198, 63, 0.5);
   }
 
   @media (max-width: 480px) {
@@ -283,20 +283,20 @@ export const PrimaryButton = styled(Link)`
 
 export const SecondaryButton = styled.a`
   background: transparent;
-  color: #0891b2;
+  color: ${colors.primary.main};
   padding: 1rem 2rem;
   border-radius: 12px;
   font-weight: 600;
   font-size: 1.125rem;
-  border: 2px solid #0891b2;
+  border: 2px solid ${colors.primary.main};
   transition: all 0.3s;
   cursor: pointer;
 
   &:hover {
-    background: #0891b2;
+    background: ${colors.primary.main};
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3);
+    box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
   }
 
   @media (max-width: 480px) {
@@ -342,9 +342,9 @@ export const FeaturePreviewCard = styled.div`
   }
 
   &:hover {
-    border-color: #0891b2;
+    border-color: ${colors.primary.main};
     transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(8, 145, 178, 0.15);
+    box-shadow: 0 10px 30px rgba(107, 185, 232, 0.2);
   }
 
   @keyframes slideInRight {
@@ -378,7 +378,7 @@ export const PreviewTitle = styled.div`
   font-weight: 600;
   font-size: 1.125rem;
   margin-bottom: 0.25rem;
-  color: #0891b2;
+  color: ${colors.primary.dark};
 `;
 
 export const PreviewDescription = styled.div`
@@ -412,20 +412,20 @@ export const SectionBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(8, 145, 178, 0.1);
-  color: #0891b2;
+  background: rgba(107, 185, 232, 0.1);
+  color: ${colors.primary.dark};
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  border: 1px solid rgba(8, 145, 178, 0.2);
+  border: 1px solid rgba(107, 185, 232, 0.25);
 `;
 
 export const SectionTitle = styled.h2`
   font-size: 2.75rem;
   font-weight: 800;
-  color: #0891b2;
+  color: ${colors.primary.dark};
   margin-bottom: 1rem;
 
   @media (max-width: 768px) {
@@ -464,16 +464,16 @@ export const FeatureCard = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    border-color: ${colors.gradient.end};
+    border-color: ${colors.primary.main};
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(14, 116, 144, 0.15);
+    box-shadow: 0 10px 25px rgba(107, 185, 232, 0.2);
   }
 `;
 
 export const FeatureIcon = styled.div`
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%);
+  background: linear-gradient(135deg, rgba(107, 185, 232, 0.15) 0%, rgba(141, 198, 63, 0.15) 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -490,7 +490,7 @@ export const FeatureIcon = styled.div`
 export const FeatureTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0891b2;
+  color: ${colors.primary.dark};
   margin-bottom: 0.75rem;
 `;
 
@@ -538,9 +538,9 @@ export const StepCard = styled.div`
 
   &:hover {
     background: white;
-    border-color: #d1d5db;
+    border-color: ${colors.primary.main};
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(14, 116, 144, 0.12);
+    box-shadow: 0 10px 25px rgba(107, 185, 232, 0.15);
   }
 
   &:not(:last-child)::after {
@@ -584,19 +584,19 @@ export const StepNumber = styled.div`
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0 auto 1.5rem;
-  box-shadow: 0 4px 15px rgba(14, 116, 144, 0.3);
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
   transition: all 0.3s ease;
 
   ${StepCard}:hover & {
     transform: scale(1.15);
-    box-shadow: 0 6px 25px rgba(14, 116, 144, 0.4);
+    box-shadow: 0 6px 25px rgba(141, 198, 63, 0.5);
   }
 `;
 
 export const StepTitle = styled.h3`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0891b2;
+  color: ${colors.primary.dark};
   margin-bottom: 0.75rem;
 `;
 
@@ -673,7 +673,7 @@ export const CTAContent = styled.div`
 export const CTATitle = styled.h2`
   font-size: 3rem;
   font-weight: 800;
-  color: #0891b2;
+  color: ${colors.primary.dark};
   margin-bottom: 1.5rem;
 
   @media (max-width: 768px) {
@@ -697,7 +697,7 @@ export const CTAButtonLarge = styled(Link)`
   font-weight: 700;
   font-size: 1.25rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(14, 116, 144, 0.3);
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
   position: relative;
   overflow: hidden;
 
@@ -714,7 +714,7 @@ export const CTAButtonLarge = styled(Link)`
 
   &:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(20, 184, 166, 0.5);
+    box-shadow: 0 8px 30px rgba(141, 198, 63, 0.5);
 
     &::before {
       left: 100%;
@@ -794,7 +794,7 @@ export const FooterLink = styled.a`
   cursor: pointer;
 
   &:hover {
-    color: #0891b2;
+    color: ${colors.primary.main};
   }
 `;
 
@@ -811,11 +811,11 @@ export const TrustBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(8, 145, 178, 0.08);
+  background: rgba(107, 185, 232, 0.08);
   padding: 0.625rem 1.25rem;
   border-radius: 50px;
   font-size: 0.875rem;
-  border: 1px solid rgba(8, 145, 178, 0.15);
+  border: 1px solid rgba(107, 185, 232, 0.2);
   margin-top: 2rem;
   color: #6b7280;
   position: relative;
@@ -873,8 +873,8 @@ export const TestimonialCard = styled.div`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(14, 116, 144, 0.12);
-    border-color: #d1d5db;
+    box-shadow: 0 10px 25px rgba(107, 185, 232, 0.15);
+    border-color: ${colors.primary.main};
   }
 `;
 
@@ -910,11 +910,160 @@ export const AuthorInfo = styled.div``;
 
 export const AuthorName = styled.div`
   font-weight: 600;
-  color: #0891b2;
+  color: ${colors.primary.dark};
   margin-bottom: 0.25rem;
 `;
 
 export const AuthorRole = styled.div`
   font-size: 0.875rem;
   color: #6b7280;
+`;
+
+// Pricing Section
+export const PricingSection = styled.section`
+  padding: 6rem 2rem;
+  background: transparent;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 4rem 1.5rem;
+  }
+`;
+
+export const PricingGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+`;
+
+export const PricingCard = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 2px solid ${props => props.$isPopular ? colors.primary.main : '#e5e7eb'};
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: ${props => props.$isPopular ? '0 10px 40px rgba(107, 185, 232, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+
+  ${props => props.$isPopular && `
+    transform: scale(1.05);
+
+    @media (max-width: 768px) {
+      transform: scale(1);
+    }
+  `}
+
+  &:hover {
+    transform: ${props => props.$isPopular ? 'scale(1.08)' : 'translateY(-4px)'};
+    box-shadow: 0 15px 40px rgba(107, 185, 232, 0.25);
+    border-color: ${colors.primary.main};
+
+    @media (max-width: 768px) {
+      transform: translateY(-4px);
+    }
+  }
+`;
+
+export const PopularBadge = styled.div`
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  color: white;
+  padding: 0.375rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+export const PricingName = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: ${colors.primary.dark};
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+export const PricingCredits = styled.div`
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+export const PricingPrice = styled.div`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #374151;
+  text-align: center;
+  margin-bottom: 1rem;
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #6b7280;
+  }
+`;
+
+export const PricingDescription = styled.p`
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+`;
+
+export const PricingButton = styled(Link)`
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  ${props => props.$isPopular ? `
+    background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(141, 198, 63, 0.5);
+    }
+  ` : `
+    background: transparent;
+    color: ${colors.primary.main};
+    border: 2px solid ${colors.primary.main};
+
+    &:hover {
+      background: ${colors.primary.main};
+      color: white;
+    }
+  `}
+`;
+
+export const DiscountBadge = styled.span`
+  background: #FEF3C7;
+  color: #D97706;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
 `;

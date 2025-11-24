@@ -450,3 +450,14 @@ model summary_note_sessions {
   @@index([user_learning_session_id])
   @@index([summary_note_id])
 }
+
+// ============= Platform Statistics =============
+
+model statistics {
+  id                 Int      @id @default(autoincrement())
+  key                String   @unique
+  value              Int      @default(0)
+  updated_at         DateTime @default(now()) @updatedAt
+
+  @@index([key])
+}

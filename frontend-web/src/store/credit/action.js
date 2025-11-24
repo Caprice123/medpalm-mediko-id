@@ -1,7 +1,7 @@
 import { actions } from '@store/credit/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, patchWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
+import { getWithToken, getPublic, patchWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -143,7 +143,8 @@ export const fetchActiveCreditPlans = () => async (dispatch) => {
     dispatch(setLoading({ key: 'isPlansLoading', value: true }))
     dispatch(clearError())
 
-    const response = await getWithToken(`${Endpoints.creditPlans}/active`)
+    // Use public endpoint for landing page (no auth required)
+    const response = await getPublic(`${Endpoints.creditPlans}/active`)
 
     dispatch(setPlans(response.data.data))
 

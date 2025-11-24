@@ -54,3 +54,13 @@ export function patchWithToken(url, requestBody = null, additionalHeaders = {}) 
 export function deleteWithToken(url, additionalHeaders = {}) {
     return makeRequestWithToken("DELETE", url, null, null, additionalHeaders)
 }
+
+// Public request methods (no authentication required)
+export function getPublic(url, params = null) {
+    return api({
+        method: "GET",
+        params: params,
+        url: url,
+        headers: { "Content-Type": "application/json" }
+    })
+}

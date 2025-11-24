@@ -4,7 +4,7 @@ export default {
     Root: "/",
     Login: "/api/v1/login",
     Logout: "/api/v1/logout",
-    creditPlans: `${API_BASE_URL}/api/credit-plans`,
+    creditPlans: `${API_BASE_URL}/api/v1/credit-plans`,
     credits: `${API_BASE_URL}/api/credits`,
     tags: {
         list: `${API_BASE_URL}/api/v1/tags`,
@@ -66,6 +66,9 @@ export default {
     },
     features: {
         list: `${API_BASE_URL}/api/v1/features`,
+    },
+    statistics: {
+        list: `${API_BASE_URL}/api/v1/statistics`,
     },
     summaryNotes: {
         // User endpoints

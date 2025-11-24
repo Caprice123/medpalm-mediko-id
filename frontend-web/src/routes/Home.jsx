@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   LandingContainer,
   Navbar,
@@ -34,11 +35,6 @@ import {
   FeatureTitle,
   FeatureDescription,
   HowItWorksSection,
-  StepsGrid,
-  StepCard,
-  StepNumber,
-  StepTitle,
-  StepDescription,
   StatsSection,
   StatsGrid,
   StatCard,
@@ -68,11 +64,53 @@ import {
   FooterLinks,
   FooterLink,
   FooterBottom,
+  PricingSection,
+  PricingGrid,
+  PricingCard,
+  PopularBadge,
+  PricingName,
+  PricingCredits,
+  PricingPrice,
+  PricingDescription,
+  PricingButton,
+  DiscountBadge,
 } from './Home.styles'
 
 import { ParallaxProvider, Parallax } from 'react-scroll-parallax'
+import { useInView } from 'react-intersection-observer'
+import CountUp from 'react-countup'
+import { useAppDispatch, useAppSelector } from '@store/store'
+import { fetchFeatures } from '@store/feature/action'
+import { fetchStatistics } from '@store/statistic/action'
+import { fetchActiveCreditPlans } from '@store/credit/action'
 
 function Home() {
+  const dispatch = useAppDispatch()
+
+  // Get data from Redux store
+  const features = useAppSelector((state) => state.feature.features)
+  const statistics = useAppSelector((state) => state.statistic.statistics)
+  const creditPlans = useAppSelector((state) => state.credit.plans)
+
+  // Intersection observer for stats section
+  const { ref: statsRef, inView: statsInView } = useInView({
+    threshold: 0.3,
+    triggerOnce: true
+  })
+
+  useEffect(() => {
+    // Dispatch Redux actions to fetch data
+    dispatch(fetchFeatures())
+    dispatch(fetchStatistics())
+    dispatch(fetchActiveCreditPlans())
+
+    // Refresh statistics every 30 seconds
+    const statsInterval = setInterval(() => {
+      dispatch(fetchStatistics())
+    }, 30000)
+
+    return () => clearInterval(statsInterval)
+  }, [dispatch])
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
@@ -104,56 +142,52 @@ function Home() {
         <HeroSection>
           <Parallax speed={-5}>
             <HeroContent>
-          <HeroText>
-            <Badge>
-              ✨ Platform Pembelajaran Medis AI
-            </Badge>
-            <HeroTitle>
-              Belajar Kedokteran Lebih Cerdas dengan AI
-            </HeroTitle>
-            <HeroSubtitle>
-              Platform revolusioner untuk mahasiswa kedokteran yang menggunakan AI
-              untuk mengubah konten medis menjadi pembelajaran interaktif dengan sistem kredit yang fleksibel.
-            </HeroSubtitle>
-            <HeroButtons>
-              <PrimaryButton to="/sign-in">
-                Mulai Sekarang
-              </PrimaryButton>
-              <SecondaryButton onClick={() => scrollToSection('features')}>
-                Pelajari Lebih Lanjut
-              </SecondaryButton>
-            </HeroButtons>
-            <TrustBadge>
-              🔒 Dipercaya oleh 1,000+ Mahasiswa Kedokteran
-            </TrustBadge>
-          </HeroText>
+              <HeroText>
+                <Badge>
+                  🎓 Platform #1 untuk Mahasiswa Kedokteran Indonesia
+                </Badge>
+                <HeroTitle>
+                  Cara mahasiswa kedokteran terbaik sukses — kini di genggaman Anda, didukung AI.
+                </HeroTitle>
+                <HeroSubtitle>
+                  18.000+ flashcards, 20.000+ bank soal, simulasi OSCE berbasis AI, AI yang menjawab dengan referensi textbook dan jurnal ilmiah, medical calculators, serta AI assistant untuk menyusun laporan studi kasus dan skripsi.
+                </HeroSubtitle>
+                <HeroButtons>
+                  <PrimaryButton to="/sign-in">
+                    Mulai Gratis Sekarang
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => scrollToSection('features')}>
+                    Lihat Fitur
+                  </SecondaryButton>
+                </HeroButtons>
+              </HeroText>
 
-          <HeroVisual>
-            <FeaturePreviewCard>
-              <PreviewIcon>📚</PreviewIcon>
-              <PreviewText>
-                <PreviewTitle>Katalog Lengkap</PreviewTitle>
-                <PreviewDescription>7 fitur pembelajaran interaktif</PreviewDescription>
-              </PreviewText>
-            </FeaturePreviewCard>
-            <FeaturePreviewCard>
-              <PreviewIcon>💳</PreviewIcon>
-              <PreviewText>
-                <PreviewTitle>Sistem Kredit</PreviewTitle>
-                <PreviewDescription>Akses fitur dengan kredit fleksibel</PreviewDescription>
-              </PreviewText>
-            </FeaturePreviewCard>
-            <FeaturePreviewCard>
-              <PreviewIcon>🎯</PreviewIcon>
-              <PreviewText>
-                <PreviewTitle>Topik Terstruktur</PreviewTitle>
-                <PreviewDescription>Materi dari admin yang terpercaya</PreviewDescription>
-              </PreviewText>
-            </FeaturePreviewCard>
-            </HeroVisual>
-          </HeroContent>
-        </Parallax>
-      </HeroSection>
+              <HeroVisual>
+                <FeaturePreviewCard>
+                  <PreviewIcon>📚</PreviewIcon>
+                  <PreviewText>
+                    <PreviewTitle>18.000+ Flashcards</PreviewTitle>
+                    <PreviewDescription>Materi lengkap semua blok</PreviewDescription>
+                  </PreviewText>
+                </FeaturePreviewCard>
+                <FeaturePreviewCard>
+                  <PreviewIcon>📝</PreviewIcon>
+                  <PreviewText>
+                    <PreviewTitle>20.000+ Bank Soal</PreviewTitle>
+                    <PreviewDescription>Latihan UKMPPD & ujian blok</PreviewDescription>
+                  </PreviewText>
+                </FeaturePreviewCard>
+                <FeaturePreviewCard>
+                  <PreviewIcon>🤖</PreviewIcon>
+                  <PreviewText>
+                    <PreviewTitle>AI Assistant</PreviewTitle>
+                    <PreviewDescription>Referensi textbook & jurnal</PreviewDescription>
+                  </PreviewText>
+                </FeaturePreviewCard>
+              </HeroVisual>
+            </HeroContent>
+          </Parallax>
+        </HeroSection>
 
       {/* Features Section */}
       <Parallax speed={3}>
@@ -163,65 +197,54 @@ function Home() {
             <SectionBadge>🚀 Fitur Unggulan</SectionBadge>
             <SectionTitle>Semua yang Anda Butuhkan untuk Belajar</SectionTitle>
             <SectionSubtitle>
-              7 fitur pembelajaran yang dirancang khusus untuk mahasiswa kedokteran
+              Fitur pembelajaran yang dirancang khusus untuk mahasiswa kedokteran
             </SectionSubtitle>
           </SectionHeader>
 
           <Parallax speed={-2}>
             <FeaturesGrid>
-            <FeatureCard>
-              <FeatureIcon>🎯</FeatureIcon>
-              <FeatureTitle>Pembelajaran Interaktif</FeatureTitle>
-              <FeatureDescription>
-                Akses 7 fitur pembelajaran yang dirancang khusus untuk meningkatkan
-                pemahaman materi kedokteran dengan metode yang interaktif dan engaging.
-              </FeatureDescription>
-            </FeatureCard>
+              {features.length > 0 ? (
+                features.map((feature, index) => (
+                  <FeatureCard key={index}>
+                    <FeatureIcon>{feature.icon}</FeatureIcon>
+                    <FeatureTitle>{feature.name}</FeatureTitle>
+                    <FeatureDescription>
+                      {feature.description}
+                      {feature.cost > 0 && (
+                        <span style={{ display: 'block', marginTop: '0.5rem', fontWeight: '600', color: '#8DC63F' }}>
+                          {feature.cost} kredit per sesi
+                        </span>
+                      )}
+                    </FeatureDescription>
+                  </FeatureCard>
+                ))
+              ) : (
+                <>
+                  <FeatureCard>
+                    <FeatureIcon>🎓</FeatureIcon>
+                    <FeatureTitle>Bank Soal</FeatureTitle>
+                    <FeatureDescription>
+                      20.000+ soal latihan untuk persiapan UKMPPD dan ujian blok dengan pembahasan lengkap.
+                    </FeatureDescription>
+                  </FeatureCard>
 
-            <FeatureCard>
-              <FeatureIcon>💳</FeatureIcon>
-              <FeatureTitle>Sistem Kredit Fleksibel</FeatureTitle>
-              <FeatureDescription>
-                Gunakan kredit untuk mengakses fitur yang Anda butuhkan. Kredit akan
-                otomatis terpotong saat menggunakan fitur tertentu.
-              </FeatureDescription>
-            </FeatureCard>
+                  <FeatureCard>
+                    <FeatureIcon>🎴</FeatureIcon>
+                    <FeatureTitle>Flashcards</FeatureTitle>
+                    <FeatureDescription>
+                      18.000+ flashcard interaktif untuk membantu mengingat materi kedokteran dengan efektif.
+                    </FeatureDescription>
+                  </FeatureCard>
 
-            <FeatureCard>
-              <FeatureIcon>📊</FeatureIcon>
-              <FeatureTitle>Dashboard Pribadi</FeatureTitle>
-              <FeatureDescription>
-                Lihat riwayat fitur yang telah Anda akses, pantau penggunaan kredit,
-                dan kelola pembelajaran Anda dalam satu tempat.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>📚</FeatureIcon>
-              <FeatureTitle>Topik Terstruktur</FeatureTitle>
-              <FeatureDescription>
-                Setiap fitur memiliki topik yang sudah dikonfigurasi oleh admin,
-                memastikan konten yang relevan dan terstruktur dengan baik.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>🔐</FeatureIcon>
-              <FeatureTitle>Keamanan Terjamin</FeatureTitle>
-              <FeatureDescription>
-                Login aman dengan Google OAuth, data Anda terlindungi dengan
-                enkripsi tingkat enterprise.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>⚡</FeatureIcon>
-              <FeatureTitle>Responsif & Cepat</FeatureTitle>
-              <FeatureDescription>
-                Akses dari perangkat apapun - mobile, tablet, atau PC. Interface
-                yang responsif dan performa yang cepat.
-              </FeatureDescription>
-            </FeatureCard>
+                  <FeatureCard>
+                    <FeatureIcon>📝</FeatureIcon>
+                    <FeatureTitle>Summary Notes</FeatureTitle>
+                    <FeatureDescription>
+                      Ringkasan materi yang terstruktur untuk review cepat sebelum ujian.
+                    </FeatureDescription>
+                  </FeatureCard>
+                </>
+              )}
             </FeaturesGrid>
           </Parallax>
         </SectionContent>
@@ -233,42 +256,41 @@ function Home() {
       <HowItWorksSection id="how-it-works">
         <SectionContent>
           <SectionHeader>
-            <SectionBadge>📖 Cara Kerja</SectionBadge>
-            <SectionTitle>Mulai Belajar dalam 3 Langkah Mudah</SectionTitle>
+            <SectionBadge>🎬 Lihat Demo</SectionBadge>
+            <SectionTitle>Cara Kerja MedPalm</SectionTitle>
             <SectionSubtitle>
-              Proses yang sederhana dan cepat untuk memulai perjalanan belajar Anda
+              Tonton video demo untuk melihat bagaimana MedPalm dapat membantu pembelajaran Anda
             </SectionSubtitle>
           </SectionHeader>
 
           <Parallax speed={-1}>
-            <StepsGrid>
-            <StepCard>
-              <StepNumber>1</StepNumber>
-              <StepTitle>Daftar & Login</StepTitle>
-              <StepDescription>
-                Buat akun dengan mudah menggunakan Google. Proses pendaftaran
-                hanya membutuhkan beberapa detik.
-              </StepDescription>
-            </StepCard>
-
-            <StepCard>
-              <StepNumber>2</StepNumber>
-              <StepTitle>Pilih Fitur</StepTitle>
-              <StepDescription>
-                Lihat popup katalog fitur yang tersedia, pilih fitur yang ingin
-                Anda gunakan dari 7 opsi yang tersedia.
-              </StepDescription>
-            </StepCard>
-
-            <StepCard>
-              <StepNumber>3</StepNumber>
-              <StepTitle>Mulai Belajar</StepTitle>
-              <StepDescription>
-                Pilih topik yang telah dikonfigurasi admin, kredit akan otomatis
-                terpotong, dan Anda siap belajar!
-              </StepDescription>
-            </StepCard>
-            </StepsGrid>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '800px',
+              margin: '0 auto',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 50px rgba(107, 185, 232, 0.2)'
+            }}>
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                <iframe
+                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                  title="MedPalm Demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '16px'
+                  }}
+                />
+              </div>
+            </div>
           </Parallax>
         </SectionContent>
       </HowItWorksSection>
@@ -276,7 +298,7 @@ function Home() {
 
     {/* Stats Section */}
     <Parallax speed={-3}>
-      <StatsSection id="stats">
+      <StatsSection id="stats" ref={statsRef}>
         <SectionContent>
           <SectionHeader>
             <SectionTitle>
@@ -286,27 +308,154 @@ function Home() {
 
           <StatsGrid>
             <StatCard>
-              <StatValue>1,000+</StatValue>
+              <StatValue>
+                {statsInView && (
+                  <CountUp
+                    end={statistics.totalUsers}
+                    duration={2.5}
+                    separator=","
+                    suffix="+"
+                    useEasing={true}
+                    preserveValue={true}
+                  />
+                )}
+                {!statsInView && '0+'}
+              </StatValue>
               <StatLabel>Mahasiswa Aktif</StatLabel>
             </StatCard>
 
             <StatCard>
-              <StatValue>7</StatValue>
-              <StatLabel>Fitur Pembelajaran</StatLabel>
+              <StatValue>
+                {statsInView && (
+                  <CountUp
+                    end={statistics.totalFlashcards}
+                    duration={2.5}
+                    separator=","
+                    suffix="+"
+                    useEasing={true}
+                    preserveValue={true}
+                  />
+                )}
+                {!statsInView && '0+'}
+              </StatValue>
+              <StatLabel>Flashcards</StatLabel>
             </StatCard>
 
             <StatCard>
-              <StatValue>10,000+</StatValue>
+              <StatValue>
+                {statsInView && (
+                  <CountUp
+                    end={statistics.totalSessions}
+                    duration={2.5}
+                    separator=","
+                    suffix="+"
+                    useEasing={true}
+                    preserveValue={true}
+                  />
+                )}
+                {!statsInView && '0+'}
+              </StatValue>
               <StatLabel>Sesi Belajar</StatLabel>
             </StatCard>
 
             <StatCard>
-              <StatValue>95%</StatValue>
+              <StatValue>
+                {statsInView && (
+                  <CountUp
+                    end={statistics.satisfactionRate}
+                    duration={2.5}
+                    suffix="%"
+                    useEasing={true}
+                    preserveValue={true}
+                  />
+                )}
+                {!statsInView && '0%'}
+              </StatValue>
               <StatLabel>Tingkat Kepuasan</StatLabel>
             </StatCard>
           </StatsGrid>
         </SectionContent>
       </StatsSection>
+    </Parallax>
+
+    {/* Pricing Section */}
+    <Parallax speed={2}>
+      <PricingSection id="pricing">
+        <SectionContent>
+          <SectionHeader>
+            <SectionBadge>💰 Paket Kredit</SectionBadge>
+            <SectionTitle>Pilih Paket yang Sesuai</SectionTitle>
+            <SectionSubtitle>
+              Dapatkan kredit untuk mengakses semua fitur pembelajaran premium
+            </SectionSubtitle>
+          </SectionHeader>
+
+          <Parallax speed={-1}>
+            <PricingGrid>
+              {creditPlans.length > 0 ? (
+                creditPlans.map((plan) => (
+                  <PricingCard key={plan.id} $isPopular={plan.isPopular}>
+                    {plan.isPopular && <PopularBadge>Paling Populer</PopularBadge>}
+                    <PricingName>{plan.name}</PricingName>
+                    <PricingCredits>{plan.credits.toLocaleString()} Kredit</PricingCredits>
+                    <PricingPrice>
+                      Rp {Number(plan.price).toLocaleString('id-ID')}
+                      {plan.discount > 0 && (
+                        <DiscountBadge>Hemat {plan.discount}%</DiscountBadge>
+                      )}
+                    </PricingPrice>
+                    <PricingDescription>
+                      {plan.description || 'Akses semua fitur pembelajaran premium'}
+                    </PricingDescription>
+                    <PricingButton to="/sign-in">
+                      Pilih Paket
+                    </PricingButton>
+                  </PricingCard>
+                ))
+              ) : (
+                <>
+                  <PricingCard>
+                    <PricingName>Starter</PricingName>
+                    <PricingCredits>50 Kredit</PricingCredits>
+                    <PricingPrice>Rp 25.000</PricingPrice>
+                    <PricingDescription>
+                      Cocok untuk mencoba fitur-fitur dasar platform
+                    </PricingDescription>
+                    <PricingButton to="/sign-in">Pilih Paket</PricingButton>
+                  </PricingCard>
+
+                  <PricingCard $isPopular>
+                    <PopularBadge>Paling Populer</PopularBadge>
+                    <PricingName>Standard</PricingName>
+                    <PricingCredits>200 Kredit</PricingCredits>
+                    <PricingPrice>
+                      Rp 75.000
+                      <DiscountBadge>Hemat 25%</DiscountBadge>
+                    </PricingPrice>
+                    <PricingDescription>
+                      Pilihan terbaik untuk belajar rutin setiap minggu
+                    </PricingDescription>
+                    <PricingButton to="/sign-in">Pilih Paket</PricingButton>
+                  </PricingCard>
+
+                  <PricingCard>
+                    <PricingName>Premium</PricingName>
+                    <PricingCredits>500 Kredit</PricingCredits>
+                    <PricingPrice>
+                      Rp 150.000
+                      <DiscountBadge>Hemat 40%</DiscountBadge>
+                    </PricingPrice>
+                    <PricingDescription>
+                      Untuk persiapan intensif UKMPPD dan ujian blok
+                    </PricingDescription>
+                    <PricingButton to="/sign-in">Pilih Paket</PricingButton>
+                  </PricingCard>
+                </>
+              )}
+            </PricingGrid>
+          </Parallax>
+        </SectionContent>
+      </PricingSection>
     </Parallax>
 
     {/* Testimonial Section */}
