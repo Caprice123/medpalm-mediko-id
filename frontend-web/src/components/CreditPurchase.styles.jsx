@@ -18,7 +18,7 @@ export const Modal = styled.div`
 export const ModalContent = styled.div`
   background: white;
   border-radius: 16px;
-  max-width: 1000px;
+  max-width: 1200px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -75,231 +75,152 @@ export const ModalBody = styled.div`
   padding: 2rem;
 `
 
+export const FilterTabs = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+`
+
+export const FilterTab = styled.button`
+  background: ${props => props.$active
+    ? 'linear-gradient(135deg, #6BB9E8, #8DC63F)'
+    : 'transparent'};
+  color: ${props => props.$active ? 'white' : '#6b7280'};
+  border: 2px solid ${props => props.$active ? 'transparent' : '#e5e7eb'};
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    ${props => !props.$active && `
+      border-color: #6BB9E8;
+      color: #6BB9E8;
+      background: rgba(107, 185, 232, 0.05);
+    `}
+  }
+`
+
 export const PlansGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 `
 
 export const PlanCard = styled.div`
-  background: ${props => props.isPopular
-    ? 'linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%)'
-    : 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)'};
-  border: 2px solid ${props => props.isPopular ? '#0891b2' : '#e5e7eb'};
+  background: white;
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 2rem;
+  border: 2px solid #e5e7eb;
   position: relative;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: ${props => props.isPopular
-      ? 'linear-gradient(90deg, #0891b2, #14b8a6, #0891b2)'
-      : '#e5e7eb'};
-    background-size: 200% 100%;
-    animation: ${props => props.isPopular ? 'shimmer 3s linear infinite' : 'none'};
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(14, 116, 144, 0.2);
-    border-color: ${props => props.isPopular ? '#14b8a6' : '#0891b2'};
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(107, 185, 232, 0.25);
+    border-color: #6BB9E8;
   }
 `
 
 export const PopularBadge = styled.div`
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
   color: white;
-  padding: 0.375rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  padding: 0.375rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5), 0 0 20px rgba(236, 72, 153, 0.3);
-  animation: pulseGlow 2s ease-in-out infinite;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-
-  @keyframes pulseGlow {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5), 0 0 20px rgba(236, 72, 153, 0.3);
-    }
-    50% {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.6), 0 0 30px rgba(236, 72, 153, 0.5);
-    }
-  }
-
-  &::before {
-    content: '🔥';
-    margin-right: 0.25rem;
-    animation: flicker 1.5s ease-in-out infinite;
-  }
-
-  @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-  }
-`
-
-export const IconWrapper = styled.div`
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(20, 184, 166, 0.1));
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  margin: 0 auto 0.75rem;
-  transition: all 0.3s ease;
-
-  ${PlanCard}:hover & {
-    transform: rotate(10deg) scale(1.1);
-    background: linear-gradient(135deg, rgba(8, 145, 178, 0.2), rgba(20, 184, 166, 0.2));
-  }
+  letter-spacing: 0.5px;
 `
 
 export const PlanName = styled.h3`
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #0891b2, #14b8a6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 0.75rem 0;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
   text-align: center;
-`
-
-export const StatsContainer = styled.div`
-  background: rgba(8, 145, 178, 0.05);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(8, 145, 178, 0.1);
 `
 
 export const PlanCredits = styled.div`
   font-size: 2.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #0891b2, #14b8a6);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 0.25rem;
-  text-align: center;
-  line-height: 1;
-`
-
-export const CreditsLabel = styled.div`
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.75rem;
-`
-
-export const PriceContainer = styled.div`
-  text-align: center;
+  line-height: 1.3;
 `
 
 export const PlanPrice = styled.div`
   font-size: 1.5rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  color: #374151;
+  text-align: center;
+  margin-bottom: 1rem;
 
   span {
     font-size: 0.875rem;
+    font-weight: 400;
     color: #6b7280;
-    font-weight: 500;
   }
 `
 
-export const PricePerCredit = styled.div`
-  font-size: 0.7rem;
+export const DiscountBadge = styled.span`
+  background: #FEF3C7;
+  color: #D97706;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+`
+
+export const PlanDescription = styled.p`
+  font-size: 0.875rem;
   color: #6b7280;
-  font-weight: 500;
-`
-
-export const DiscountInfo = styled.div`
   text-align: center;
-  margin-bottom: 0.75rem;
-`
-
-export const OriginalPrice = styled.div`
-  font-size: 0.75rem;
-  color: #9ca3af;
-  text-decoration: line-through;
-  margin-bottom: 0.25rem;
-`
-
-export const DiscountBadge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  padding: 0.375rem 0.75rem;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2);
-  animation: wiggle 1s ease-in-out infinite;
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-3deg); }
-    75% { transform: rotate(3deg); }
-  }
-
-  &::before {
-    content: '🎉';
-  }
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  min-height: 42px;
 `
 
 export const PurchaseButton = styled.button`
   width: 100%;
-  background: linear-gradient(135deg, #0e7490, #14b8a6);
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.5rem;
   border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(14, 116, 144, 0.3);
+  transition: all 0.3s ease;
+  text-align: center;
+  display: block;
+  border: none;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(14, 116, 144, 0.4);
-    background: linear-gradient(135deg, #0891b2, #14b8a6);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
+    box-shadow: 0 6px 20px rgba(141, 198, 63, 0.5);
   }
 
   &:disabled {
@@ -315,6 +236,7 @@ export const LoadingState = styled.div`
   text-align: center;
   padding: 3rem;
   color: #6b7280;
+  font-size: 1rem;
 `
 
 export const EmptyState = styled.div`
@@ -333,35 +255,55 @@ export const ErrorMessage = styled.div`
   font-size: 0.875rem;
 `
 
+// Legacy exports for backward compatibility
+export const IconWrapper = styled.div`
+  display: none;
+`
+
+export const StatsContainer = styled.div`
+  display: contents;
+`
+
+export const CreditsLabel = styled.div`
+  display: none;
+`
+
+export const PriceContainer = styled.div`
+  display: contents;
+`
+
+export const PricePerCredit = styled.div`
+  display: none;
+`
+
+export const PlanFeatures = styled.ul`
+  display: none;
+`
+
+export const FeatureItem = styled.li`
+  display: none;
+`
+
 export const InfoSection = styled.div`
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  display: none;
 `
 
 export const InfoTitle = styled.h4`
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0891b2;
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: none;
 `
 
 export const InfoText = styled.p`
-  font-size: 0.875rem;
-  color: #0f766e;
-  line-height: 1.6;
-  margin: 0;
+  display: none;
 `
 
 export const StepsList = styled.ol`
-  margin: 0.5rem 0 0 1.5rem;
-  padding: 0;
-  font-size: 0.875rem;
-  color: #0f766e;
-  line-height: 1.8;
+  display: none;
+`
+
+export const DiscountInfo = styled.div`
+  display: none;
+`
+
+export const OriginalPrice = styled.div`
+  display: none;
 `

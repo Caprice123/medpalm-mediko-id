@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchActiveCreditPlans, purchaseCredits } from '@store/credit/action'
+import { fetchPricingPlans, purchasePricingPlan } from '@store/pricing/action'
 import {
   Modal,
   ModalContent,
@@ -11,126 +11,105 @@ import {
   PlansGrid,
   PlanCard,
   PopularBadge,
-  IconWrapper,
   PlanName,
-  StatsContainer,
   PlanCredits,
-  CreditsLabel,
-  PriceContainer,
   PlanPrice,
-  PricePerCredit,
-  DiscountInfo,
-  OriginalPrice,
   DiscountBadge,
   PurchaseButton,
   LoadingState,
   EmptyState,
   ErrorMessage,
-  InfoSection,
-  InfoTitle,
-  StepsList
+  FilterTabs,
+  FilterTab,
+  PlanDescription
 } from './CreditPurchase.styles'
 
 function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
   const dispatch = useDispatch()
-  const plans = useSelector(state => state.credit.plans)
-  const loading = useSelector(state => state.credit.loading.isPlansLoading)
-  const error = useSelector(state => state.credit.error)
-  const purchasing = useSelector(state => state.credit.loading.isPurchaseLoading)
+  const plans = useSelector(state => state.pricing.plans)
+  const loading = useSelector(state => state.pricing.loading.isPlansLoading)
+  const error = useSelector(state => state.pricing.error)
+  const purchasing = useSelector(state => state.pricing.loading.isPurchaseLoading)
+
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [purchasingPlanId, setPurchasingPlanId] = useState(null)
 
   useEffect(() => {
-    if (isOpen && plans.length === 0) {
-      dispatch(fetchActiveCreditPlans())
+    if (isOpen) {
+      dispatch(fetchPricingPlans())
     }
-  }, [isOpen, dispatch, plans.length])
+  }, [isOpen, dispatch])
 
   const handlePurchase = async (plan) => {
     try {
-      await new Promise((resolve, reject) => {
-        dispatch(purchaseCredits(
-          plan.id,
-          'xendit',
-          (data) => {
-            const { paymentInfo } = data
+      setPurchasingPlanId(plan.id)
 
-            // If Xendit invoice URL is available, redirect to it
-            if (paymentInfo.invoiceUrl) {
-              // Open payment page in new window
-              window.open(paymentInfo.invoiceUrl, '_blank')
+      const result = await dispatch(purchasePricingPlan(plan.id, 'xendit'))
 
-              alert(
-                `Payment page opened in new window!\n\n` +
-                `Plan: ${plan.name}\n` +
-                `Credits: ${plan.credits}\n` +
-                `Amount: ${formatPrice(paymentInfo.amount)}\n\n` +
-                `Please complete the payment. Your credits will be added automatically after payment confirmation.\n\n` +
-                `If the payment window didn't open, click OK to open it.`
-              )
+      const { paymentInfo } = result.data
 
-              // Fallback: if user clicks OK, open again
-              window.open(paymentInfo.invoiceUrl, '_blank')
-            } else {
-              // Manual payment fallback
-              alert(
-                `Purchase initiated!\n\n` +
-                `Plan: ${plan.name}\n` +
-                `Credits: ${plan.credits}\n` +
-                `Amount: ${formatPrice(paymentInfo.amount)}\n\n` +
-                `Payment Reference: ${paymentInfo.reference}\n\n` +
-                `Please complete the manual payment and wait for admin approval.`
-              )
-            }
+      // If Xendit invoice URL is available, redirect to it
+      if (paymentInfo?.invoiceUrl) {
+        window.open(paymentInfo.invoiceUrl, '_blank')
 
-            if (onPurchaseSuccess) {
-              onPurchaseSuccess(data)
-            }
+        alert(
+          `Payment page opened in new window!\n\n` +
+          `Plan: ${plan.name}\n` +
+          `Type: ${getBundleTypeLabel(plan.bundleType)}\n` +
+          `Amount: Rp ${Number(plan.price).toLocaleString('id-ID')}\n\n` +
+          `Please complete the payment. ${getPlanBenefitText(plan)}\n\n` +
+          `If the payment window didn't open, click OK to open it.`
+        )
 
-            resolve(data)
-          },
-          (err) => {
-            alert('Purchase failed: ' + (err.response?.data?.message || err.message))
-            reject(err)
-          }
-        ))
-      })
+        window.open(paymentInfo.invoiceUrl, '_blank')
+      } else {
+        alert(
+          `Purchase initiated!\n\n` +
+          `Plan: ${plan.name}\n` +
+          `Type: ${getBundleTypeLabel(plan.bundleType)}\n` +
+          `Amount: Rp ${Number(plan.price).toLocaleString('id-ID')}\n\n` +
+          `Payment Reference: ${paymentInfo?.reference || 'Pending'}\n\n` +
+          `Please complete the manual payment and wait for admin approval.`
+        )
+      }
+
+      if (onPurchaseSuccess) {
+        onPurchaseSuccess(result)
+      }
 
       onClose()
     } catch (err) {
-      // Error already handled in callback
+      alert('Purchase failed: ' + (err.response?.data?.message || err.message))
       console.error('Purchase error:', err)
+    } finally {
+      setPurchasingPlanId(null)
     }
   }
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(price)
-  }
-
-  const calculateDiscountedPrice = (price, discount) => {
-    return price - (price * discount / 100)
-  }
-
-  const planIcons = {
-    'basic': '📋',
-    'starter': '🚀',
-    'standard': '⭐',
-    'premium': '💎',
-    'professional': '👑',
-    'enterprise': '🏆'
-  }
-
-  const getPlanIcon = (planName) => {
-    const planNameLower = planName.toLowerCase()
-    for (const [key, icon] of Object.entries(planIcons)) {
-      if (planNameLower.includes(key)) {
-        return icon
-      }
+  const getBundleTypeLabel = (type) => {
+    const labels = {
+      credits: 'Paket Kredit',
+      subscription: 'Langganan',
+      hybrid: 'Paket Hybrid'
     }
-    return '💳'
+    return labels[type] || type
   }
+
+  const getPlanBenefitText = (plan) => {
+    if (plan.bundleType === 'credits') {
+      return `You will receive ${plan.creditsIncluded} credits after payment confirmation.`
+    } else if (plan.bundleType === 'subscription') {
+      return `Your subscription will be activated for ${plan.durationMonths} month(s) after payment confirmation.`
+    } else if (plan.bundleType === 'hybrid') {
+      return `You will receive ${plan.creditsIncluded} credits and ${plan.durationMonths} month(s) subscription after payment confirmation.`
+    }
+    return 'Your purchase will be processed after payment confirmation.'
+  }
+
+  const filteredPlans = plans.filter(plan => {
+    if (activeFilter === 'all') return true
+    return plan.bundleType === activeFilter
+  })
 
   if (!isOpen) return null
 
@@ -138,88 +117,89 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
     <Modal onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <ModalTitle>Isi Ulang Kredit</ModalTitle>
+          <ModalTitle>Pilih Paket yang Sesuai</ModalTitle>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
 
         <ModalBody>
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <InfoSection>
-            <InfoTitle>
-              <span>ℹ️</span>
-              Cara Membeli Kredit
-            </InfoTitle>
-            <StepsList>
-              <li>Pilih paket kredit yang sesuai dengan kebutuhan Anda</li>
-              <li>Klik tombol "Beli Sekarang" untuk memulai transaksi</li>
-              <li>Anda akan menerima referensi pembayaran</li>
-              <li>Lakukan pembayaran sesuai instruksi yang diberikan</li>
-              <li>Admin akan memverifikasi pembayaran Anda</li>
-              <li>Kredit akan otomatis ditambahkan setelah disetujui</li>
-            </StepsList>
-          </InfoSection>
+          <FilterTabs>
+            <FilterTab
+              $active={activeFilter === 'all'}
+              onClick={() => setActiveFilter('all')}
+            >
+              Semua Paket
+            </FilterTab>
+            <FilterTab
+              $active={activeFilter === 'credits'}
+              onClick={() => setActiveFilter('credits')}
+            >
+              Kredit
+            </FilterTab>
+            <FilterTab
+              $active={activeFilter === 'subscription'}
+              onClick={() => setActiveFilter('subscription')}
+            >
+              Berlangganan
+            </FilterTab>
+            <FilterTab
+              $active={activeFilter === 'hybrid'}
+              onClick={() => setActiveFilter('hybrid')}
+            >
+              Paket Hybrid
+            </FilterTab>
+          </FilterTabs>
 
           {loading ? (
-            <LoadingState>Memuat paket kredit...</LoadingState>
-          ) : plans.length > 0 ? (
+            <LoadingState>Memuat paket...</LoadingState>
+          ) : filteredPlans.length > 0 ? (
             <PlansGrid>
-              {plans.map((plan) => {
-                const isPopular = plan.isPopular
-                const hasDiscount = plan.discount > 0
-                const finalPrice = hasDiscount
-                  ? calculateDiscountedPrice(plan.price, plan.discount)
-                  : plan.price
-                const pricePerCredit = (finalPrice / plan.credits).toFixed(0)
+              {filteredPlans.map((plan) => (
+                <PlanCard key={plan.id}>
+                  {plan.isPopular && <PopularBadge>Paling Populer</PopularBadge>}
+                  <PlanName>{plan.name}</PlanName>
 
-                return (
-                  <PlanCard key={plan.id} isPopular={isPopular}>
-                    {isPopular && <PopularBadge>POPULER</PopularBadge>}
+                  <PlanCredits>
+                    {plan.bundleType === 'subscription' ? (
+                      `${plan.durationDays || 0} Hari Akses`
+                    ) : plan.bundleType === 'hybrid' ? (
+                      <>
+                        {(plan.creditsIncluded || 0).toLocaleString()} Kredit
+                        <br />
+                        {plan.durationDays || 0} Hari
+                      </>
+                    ) : (
+                      `${(plan.creditsIncluded || 0).toLocaleString()} Kredit`
+                    )}
+                  </PlanCredits>
 
-                    <IconWrapper>{getPlanIcon(plan.name)}</IconWrapper>
-                    <PlanName>{plan.name}</PlanName>
+                  <PlanPrice>
+                    Rp {Number(plan.price || 0).toLocaleString('id-ID')}
+                    {plan.discount > 0 && (
+                      <DiscountBadge>Hemat {plan.discount}%</DiscountBadge>
+                    )}
+                  </PlanPrice>
 
-                    <StatsContainer>
-                      <PlanCredits>{plan.credits.toLocaleString()}</PlanCredits>
-                      <CreditsLabel>Kredit</CreditsLabel>
+                  <PlanDescription>
+                    {plan.description || 'Akses semua fitur pembelajaran premium'}
+                  </PlanDescription>
 
-                      {hasDiscount && (
-                        <DiscountInfo>
-                          <OriginalPrice>
-                            {formatPrice(plan.price)}
-                          </OriginalPrice>
-                          <DiscountBadge>
-                            HEMAT {plan.discount}%
-                          </DiscountBadge>
-                        </DiscountInfo>
-                      )}
-
-                      <PriceContainer>
-                        <PlanPrice>
-                          {formatPrice(finalPrice)}
-                        </PlanPrice>
-                        <PricePerCredit>
-                          {formatPrice(pricePerCredit)}/kredit
-                        </PricePerCredit>
-                      </PriceContainer>
-                    </StatsContainer>
-
-                    <PurchaseButton
-                      onClick={() => handlePurchase(plan)}
-                      disabled={purchasing === plan.id}
-                    >
-                      {purchasing === plan.id ? 'Memproses...' : 'Beli Sekarang'}
-                    </PurchaseButton>
-                  </PlanCard>
-                )
-              })}
+                  <PurchaseButton
+                    onClick={() => handlePurchase(plan)}
+                    disabled={purchasingPlanId === plan.id}
+                  >
+                    {purchasingPlanId === plan.id ? 'Memproses...' : 'Pilih Paket'}
+                  </PurchaseButton>
+                </PlanCard>
+              ))}
             </PlansGrid>
           ) : (
             <EmptyState>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>
-              <div>Tidak ada paket kredit tersedia</div>
+              <div>Tidak ada paket tersedia</div>
               <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                Silakan coba lagi nanti
+                Pilih kategori lain atau coba lagi nanti
               </div>
             </EmptyState>
           )}

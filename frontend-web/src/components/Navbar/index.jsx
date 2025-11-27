@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { Avatar, Button, Container, CreditsDisplay, Logo, UserInfo, UserName, UserSection } from "./Navbar.styles"
+import { Avatar, Button, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection } from "./Navbar.styles"
 import { useEffect } from "react"
 import { logout } from '@store/auth/action'
 import { fetchCreditBalance } from '@store/credit/action'
+import { fetchUserStatus } from '@store/pricing/action'
 import { getUserData } from '@utils/authToken'
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
@@ -12,6 +13,7 @@ export const Navbar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { balance } = useSelector(state => state.credit)
+    const { userStatus } = useSelector(state => state.pricing)
     const [user, setUser] = useState(null)
     const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
 
@@ -19,7 +21,9 @@ export const Navbar = () => {
     useEffect(() => {
         const fetchUserData = async () => {
           try {
-            // Fetch credit balance
+            // Fetch user status (subscription + credits)
+            await dispatch(fetchUserStatus())
+            // Also fetch credit balance for backward compatibility
             await dispatch(fetchCreditBalance())
           } catch (error) {
             console.error('Failed to fetch user data:', error)
@@ -48,6 +52,7 @@ export const Navbar = () => {
 
   const handlePurchaseSuccess = async () => {
     // Refresh user data after successful purchase
+    await dispatch(fetchUserStatus())
     await dispatch(fetchCreditBalance())
   }
 
@@ -62,12 +67,21 @@ export const Navbar = () => {
                 </Link>
             </Logo>
             <UserSection>
-            <CreditsDisplay>
-                💎 {balance} Kredit
-            </CreditsDisplay>
-            <Button variant="outline" onClick={handleTopUp}>
-                Isi Ulang
-            </Button>
+            <StatusSection>
+              {userStatus?.hasActiveSubscription && userStatus?.subscription && (
+                <>
+                  <StatusItem>
+                    <span>⭐</span>
+                    <span>{userStatus?.subscription?.pricing_plan?.name || 'Premium'}</span>
+                  </StatusItem>
+                  <StatusDivider />
+                </>
+              )}
+              <StatusItem>
+                <span>💎</span>
+                <span>{userStatus?.creditBalance ?? balance}</span>
+              </StatusItem>
+            </StatusSection>
             {user && (
                 <UserInfo>
                 {user.picture ? (
@@ -84,14 +98,17 @@ export const Navbar = () => {
                     {user.name?.charAt(0).toUpperCase()}
                     </Avatar>
                 )}
-                <UserName>{user.name}</UserName>
+                {/* <UserName>{user.name}</UserName> */}
                 </UserInfo>
             )}
             {user?.role === 'admin' && (
                 <Button onClick={() => navigate('/admin')}>
-                Admin Panel
+                Admin
                 </Button>
             )}
+            <Button variant="outline" onClick={handleTopUp}>
+                Top Up
+            </Button>
             <Button variant="outline" onClick={handleLogout}>
                 Keluar
             </Button>
