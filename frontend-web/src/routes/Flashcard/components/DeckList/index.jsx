@@ -1,5 +1,4 @@
-import { useDeckList } from './hook'
-import { useSelector } from 'react-redux'
+import { useState } from 'react'
 import {
   Container,
   Header,
@@ -14,11 +13,7 @@ import {
   Tag,
   DeckFooter,
   CardCount,
-  CostBadge,
   StartButton,
-  LoadingContainer,
-  LoadingSpinner,
-  CreditBadge,
   FilterSection,
   FilterGroup,
   FilterLabel,
@@ -27,10 +22,18 @@ import {
   DeckDescription
 } from './DeckList.styles'
 
-const DeckList = ({ sessionId }) => {
-  const { balance } = useSelector(state => state.credit)
-  const { decks, loading } = useSelector(state => state.flashcard)
-  const { filters, handleFilterChange, handleStartDeck } = useDeckList(sessionId)
+const DeckList = ({ decks, onSelectDeck }) => {
+  const [filters, setFilters] = useState({
+    university: '',
+    semester: ''
+  })
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }))
+  }
 
   // Get unique universities and semesters for filters
   const universities = [...new Set(
@@ -61,9 +64,6 @@ const DeckList = ({ sessionId }) => {
             Pilih deck flashcard untuk memulai sesi belajar Anda
           </Subtitle>
         </div>
-        <CreditBadge>
-          💎 {balance} Kredit
-        </CreditBadge>
       </Header>
 
       <DeckSelectionContainer>
@@ -95,14 +95,7 @@ const DeckList = ({ sessionId }) => {
           </FilterGroup>
         </FilterSection>
 
-        {loading?.isDecksLoading ? (
-          <LoadingContainer>
-            <LoadingSpinner />
-            <div style={{ marginTop: '1rem', color: '#6b7280' }}>
-              Memuat deck...
-            </div>
-          </LoadingContainer>
-        ) : filteredDecks.length === 0 ? (
+        {filteredDecks.length === 0 ? (
           <EmptyState>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎴</div>
             <h3>Belum Ada Deck</h3>
@@ -126,17 +119,11 @@ const DeckList = ({ sessionId }) => {
                 </TagContainer>
 
                 <DeckFooter>
-                  <div>
-                    <CardCount>
-                      {deck.cardCount || deck.cards?.length || 0} Kartu
-                    </CardCount>
-                    <CostBadge>
-                      💎 {deck.cost || 10} kredit
-                    </CostBadge>
-                  </div>
+                  <CardCount>
+                    {deck.cardCount || deck.cards?.length || 0} Kartu
+                  </CardCount>
                   <StartButton
-                    onClick={() => handleStartDeck(deck)}
-                    disabled={balance < (deck.cost || 10)}
+                    onClick={() => onSelectDeck(deck)}
                   >
                     Mulai Belajar
                   </StartButton>

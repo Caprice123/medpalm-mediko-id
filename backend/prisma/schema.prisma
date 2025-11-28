@@ -285,14 +285,12 @@ model flashcard_sessions {
   flashcard_deck_id        Int?
   total_cards              Int
   credits_used             Int                          @default(0)
-  number_of_attempts       Int                          @default(0)
   created_at               DateTime                     @default(now())
   updated_at               DateTime                     @default(now())
 
   user_learning_session        user_learning_sessions       @relation(fields: [user_learning_session_id], references: [id], onDelete: Cascade)
   flashcard_deck               flashcard_decks?             @relation(fields: [flashcard_deck_id], references: [id])
   flashcard_session_cards      flashcard_session_cards[]
-  flashcard_session_attempts   flashcard_session_attempts[]
 
   @@index([user_learning_session_id])
   @@index([flashcard_deck_id])
@@ -308,47 +306,10 @@ model flashcard_session_cards {
   created_at              DateTime                  @default(now())
 
   flashcard_session           flashcard_sessions        @relation(fields: [flashcard_session_id], references: [id], onDelete: Cascade)
-  flashcard_session_answers   flashcard_session_answers[]
 
   @@index([flashcard_session_id])
   @@index([order])
   @@index([original_card_id])
-}
-
-model flashcard_session_attempts {
-  id                         Int                          @id @default(autoincrement())
-  flashcard_session_id       Int
-  attempt_number             Int                          @default(1)
-  status                     String                       @default("not_started")
-  started_at                 DateTime?
-  completed_at               DateTime?
-  created_at                 DateTime                     @default(now())
-  updated_at                 DateTime                     @default(now())
-
-  flashcard_session          flashcard_sessions           @relation(fields: [flashcard_session_id], references: [id], onDelete: Cascade)
-  flashcard_session_answers  flashcard_session_answers[]
-
-  @@index([flashcard_session_id])
-  @@index([started_at])
-  @@index([status])
-}
-
-model flashcard_session_answers {
-  id                           Int                          @id @default(autoincrement())
-  flashcard_session_attempt_id Int
-  flashcard_session_card_id    Int
-  user_answer                  String
-  is_correct                   Boolean?
-  similarity_score             Float?                       // 0.0 to 1.0
-  time_taken_seconds           Int?
-  answered_at                  DateTime                     @default(now())
-
-  flashcard_session_attempt    flashcard_session_attempts   @relation(fields: [flashcard_session_attempt_id], references: [id], onDelete: Cascade)
-  flashcard_session_card       flashcard_session_cards      @relation(fields: [flashcard_session_card_id], references: [id], onDelete: Cascade)
-
-  @@index([flashcard_session_attempt_id])
-  @@index([flashcard_session_card_id])
-  @@index([answered_at])
 }
 
 // Track user progress per card across all sessions

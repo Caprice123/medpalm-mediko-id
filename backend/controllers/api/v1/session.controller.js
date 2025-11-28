@@ -2,6 +2,8 @@ import { GetUserSessionsService } from '../../../services/session/getUserSession
 import { CreateSessionService } from '../../../services/session/createSessionService.js'
 import { UserLearningSessionSerializer } from '../../../serializers/api/v1/userSessionLearningSerializer.js'
 import { GetSessionDetailService } from '../../../services/session/getSessionDetailService.js'
+import { StartFlashcardWithDeckService } from '../../../services/flashcard/startFlashcardWithDeckService.js'
+import { SubmitFlashcardAnswersService } from '../../../services/flashcard/submitFlashcardAnswersService.js'
 
 class SessionController {
   // Get user's session history
@@ -57,6 +59,47 @@ class SessionController {
     return res.status(200).json({
       success: true,
       data: attemptDetail
+    })
+  }
+
+  // Start flashcard session with a deck
+  async startFlashcard(req, res) {
+    const { sessionId } = req.params
+    const { deckId } = req.body
+    const userId = req.user.id
+
+    const result = await StartFlashcardWithDeckService.call({
+      userLearningSessionId: sessionId,
+      flashcardDeckId: deckId,
+      userId
+    })
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        session: result.session,
+        deck_snapshot: result.deckSnapshot
+      },
+      message: 'Flashcard session started successfully'
+    })
+  }
+
+  // Submit flashcard answers
+  async submitFlashcardAnswers(req, res) {
+    const { sessionId } = req.params
+    const { answers } = req.body
+    const userId = req.user.id
+
+    const result = await SubmitFlashcardAnswersService.call({
+      userLearningSessionId: sessionId,
+      userId,
+      answers
+    })
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Flashcard answers submitted successfully'
     })
   }
 }

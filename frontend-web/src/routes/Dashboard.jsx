@@ -2,17 +2,12 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { colors } from '@config/colors'
-import { logout } from '@store/auth/action'
-import { fetchCreditBalance, fetchCreditTransactions, deductCredits } from '@store/credit/action'
-import { createSession, fetchSessions } from '@store/session/action'
+import { createSession } from '@store/session/action'
 import { fetchFeatures } from '@store/feature/action'
 import { getUserData } from '@utils/authToken'
-import CreditPurchase from '@components/CreditPurchase'
-import Pagination from '@components/Pagination'
 
 const DashboardContainer = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 63px);
   background: #f0fdfa;
 `
 
@@ -131,229 +126,6 @@ const UseButton = styled.button`
   }
 `
 
-// Modal Styles
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-  backdrop-filter: blur(4px);
-`
-
-const ModalContent = styled.div`
-  background: white;
-  border-radius: 16px;
-  max-width: 900px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-
-  @media (max-width: 768px) {
-    max-width: 100%;
-    border-radius: 16px 16px 0 0;
-    max-height: 95vh;
-  }
-`
-
-const ModalHeader = styled.div`
-  padding: 2rem;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1;
-  border-radius: 16px 16px 0 0;
-`
-
-const ModalTitle = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0891b2;
-  margin: 0;
-`
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #6b7280;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #f3f4f6;
-    color: #374151;
-  }
-`
-
-const ModalBody = styled.div`
-  padding: 2rem;
-`
-
-// Session History Styles
-const SessionsSection = styled.div`
-  margin-bottom: 3rem;
-`
-
-const SectionHeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-`
-
-const CreateSessionButton = styled.button`
-  background: linear-gradient(135deg, #0e7490, #14b8a6);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(14, 116, 144, 0.3);
-  }
-`
-
-const SessionsList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const SessionCard = styled.div`
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  min-height: 180px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #0891b2, #14b8a6);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover {
-    border-color: #0891b2;
-    box-shadow: 0 8px 24px rgba(8, 145, 178, 0.15), 0 4px 12px rgba(8, 145, 178, 0.1);
-    transform: translateY(-4px);
-
-    &::before {
-      opacity: 1;
-    }
-  }
-`
-
-const SessionIcon = styled.div`
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, rgba(8, 145, 178, 0.15), rgba(20, 184, 166, 0.15));
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  flex-shrink: 0;
-  border: 1px solid rgba(8, 145, 178, 0.2);
-  transition: all 0.3s ease;
-
-  ${SessionCard}:hover & {
-    background: linear-gradient(135deg, rgba(8, 145, 178, 0.25), rgba(20, 184, 166, 0.25));
-    transform: scale(1.05);
-  }
-`
-
-const SessionInfo = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-`
-
-const SessionName = styled.div`
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #0e7490;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
-
-  ${SessionCard}:hover & {
-    color: #0891b2;
-  }
-`
-
-const SessionDate = styled.div`
-  font-size: 0.875rem;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-
-  &::before {
-    content: '📅';
-    font-size: 0.75rem;
-  }
-`
-
-const SessionCredit = styled.div`
-  font-weight: 600;
-  color: #0891b2;
-  white-space: nowrap;
-`
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 3rem 1rem;
@@ -381,56 +153,42 @@ function Dashboard() {
 
   // Redux selectors
   const { balance } = useSelector(state => state.credit)
-  const { sessions } = useSelector(state => state.session)
-  const { isLoadingSessions } = useSelector(state => state.session.loading)
   const { features } = useSelector(state => state.feature)
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
 
   const [user, setUser] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const perPage = 30
 
-  const { pagination } = useSelector(state => state.session)
-
-  console.log(sessions)
   useEffect(() => {
     // Get user data from localStorage
     const userData = getUserData()
     setUser(userData)
 
-    // Fetch user credit balance, sessions, and features
+    // Fetch features
     fetchUserData()
-  }, [dispatch, currentPage])
+  }, [dispatch])
 
   const fetchUserData = async () => {
     try {
-      // Fetch sessions from actual session endpoint
-      await dispatch(fetchSessions(null, currentPage, perPage))
-
       // Fetch features
       await dispatch(fetchFeatures())
     } catch (error) {
-      console.error('Failed to fetch user data:', error)
+      console.error('Failed to fetch features:', error)
     }
   }
 
   const handleUseFeature = async (feature) => {
-    // Close modal
-    setIsModalOpen(false)
-
     try {
       // Determine session type based on feature
-      // Feature ID 8 = Flashcard Belajar
-      // All others default to 'exercise'
       const sessionType = feature.sessionType
 
-    //   console.log(feature)
-      // Create session and first attempt
-      const sessionData = await dispatch(createSession(sessionType))
+      // For flashcard, navigate to dedicated flashcard page
+      if (sessionType === 'flashcard') {
+        navigate('/flashcards')
+        return
+      }
 
-      // Navigate to first attempt detail page
+      // For other session types, create session and navigate to session detail
+      const sessionData = await dispatch(createSession(sessionType))
       navigate(`/session/${sessionData.id}`)
     } catch (error) {
       console.error('Failed to create session:', error)
@@ -438,112 +196,46 @@ function Dashboard() {
     }
   }
 
-  const formatDate = (date) => {
-    const options = {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }
-    return new Date(date).toLocaleDateString('id-ID', options)
-  }
-
   return (
     <DashboardContainer>
       <MainContent>
-        {/* Session History Section */}
-        <SessionsSection>
-          <SectionHeaderRow>
-            <div>
-              <PageTitle>Riwayat Sesi</PageTitle>
-              <PageSubtitle>Lihat semua sesi pembelajaran yang telah Anda akses</PageSubtitle>
-            </div>
-            <CreateSessionButton onClick={() => setIsModalOpen(true)}>
-              <span>+</span>
-              Buat Sesi Baru
-            </CreateSessionButton>
-          </SectionHeaderRow>
+        <PageTitle>Fitur Pembelajaran</PageTitle>
+        <PageSubtitle>Pilih fitur yang ingin Anda gunakan untuk memulai pembelajaran</PageSubtitle>
 
-          {isLoadingSessions ? (
-            <EmptyState>
-              <EmptyStateIcon>⏳</EmptyStateIcon>
-              <EmptyStateText>Memuat riwayat sesi...</EmptyStateText>
-            </EmptyState>
-          ) : sessions.length > 0 ? (
-            <>
-              <SessionsList>
-                {sessions.map((session) => (
-                  <SessionCard
-                    key={session.id}
-                    onClick={() => navigate(`/session/${session.id}`)}
+        {isLoadingFeatures ? (
+          <EmptyState>
+            <EmptyStateIcon>⏳</EmptyStateIcon>
+            <EmptyStateText>Memuat fitur...</EmptyStateText>
+          </EmptyState>
+        ) : features.length > 0 ? (
+          <CatalogGrid>
+            {features.map((feature) => (
+              <CatalogCard key={feature.id}>
+                <CardIcon>{feature.icon}</CardIcon>
+                <CardTitle>{feature.name}</CardTitle>
+                <CardDescription>{feature.description}</CardDescription>
+                <CardFooter>
+                  <CreditCost>
+                    💎 {feature.cost} kredit
+                  </CreditCost>
+                  <UseButton
+                    onClick={() => handleUseFeature(feature)}
+                    disabled={balance < feature.cost}
                   >
-                    <SessionIcon>📚</SessionIcon>
-                    <SessionInfo>
-                      <SessionName>{session.title || 'Untitled'}</SessionName>
-                      <SessionDate>{formatDate(session.createdAt)}</SessionDate>
-                    </SessionInfo>
-                    {/* <SessionCredit>-{session.credits_used} kredit</SessionCredit> */}
-                  </SessionCard>
-                ))}
-              </SessionsList>
-
-              <Pagination
-                currentPage={currentPage}
-                isLastPage={pagination?.isLastPage ?? true}
-                onPageChange={setCurrentPage}
-                isLoading={isLoadingSessions}
-              />
-            </>
-          ) : (
-            <EmptyState>
-              <EmptyStateIcon>📋</EmptyStateIcon>
-              <EmptyStateText>Belum ada sesi</EmptyStateText>
-              <EmptyStateSubtext>Klik "Buat Sesi Baru" untuk memulai pembelajaran pertama Anda</EmptyStateSubtext>
-            </EmptyState>
-          )}
-        </SessionsSection>
+                    Gunakan Fitur
+                  </UseButton>
+                </CardFooter>
+              </CatalogCard>
+            ))}
+          </CatalogGrid>
+        ) : (
+          <EmptyState>
+            <EmptyStateIcon>📚</EmptyStateIcon>
+            <EmptyStateText>Tidak ada fitur tersedia</EmptyStateText>
+            <EmptyStateSubtext>Silakan hubungi administrator</EmptyStateSubtext>
+          </EmptyState>
+        )}
       </MainContent>
-
-      {/* Feature Catalog Modal */}
-      {isModalOpen && (
-        <ModalOverlay onClick={() => setIsModalOpen(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>Pilih Fitur Pembelajaran</ModalTitle>
-              <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
-            </ModalHeader>
-            <ModalBody>
-              {isLoadingFeatures ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                  Memuat fitur...
-                </div>
-              ) : (
-                <CatalogGrid>
-                  {features.map((feature) => (
-                    <CatalogCard key={feature.id}>
-                      <CardIcon>{feature.icon}</CardIcon>
-                      <CardTitle>{feature.name}</CardTitle>
-                      <CardDescription>{feature.description}</CardDescription>
-                      <CardFooter>
-                        <CreditCost>
-                          💎 {feature.cost} kredit
-                        </CreditCost>
-                        <UseButton
-                          onClick={() => handleUseFeature(feature)}
-                          disabled={balance < feature.cost}
-                        >
-                          Gunakan Fitur
-                        </UseButton>
-                      </CardFooter>
-                    </CatalogCard>
-                  ))}
-                </CatalogGrid>
-              )}
-            </ModalBody>
-          </ModalContent>
-        </ModalOverlay>
-      )}
     </DashboardContainer>
   )
 }

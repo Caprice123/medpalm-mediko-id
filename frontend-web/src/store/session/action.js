@@ -312,29 +312,27 @@ export const createNewAttempt = (learningSessionId) => async (dispatch) => {
   }
 }
 
-// ============= Flashcard Session Actions =============
+// ============= Flashcard Actions (Sessionless) =============
 
 /**
- * Start flashcard with deck selection
+ * Start flashcard deck (no session required)
  */
-export const startFlashcardWithDeck = (userLearningSessionId, attemptId, deckId) => async (dispatch) => {
+export const startFlashcardDeck = (deckId) => async (dispatch) => {
   try {
-    dispatch(setLoading({ key: 'isCreatingSession', value: true }))
+    dispatch(setLoading({ key: 'isStartingFlashcard', value: true }))
     dispatch(clearError())
 
-    const response = await putWithToken(Endpoints.sessions.flashcard.attempts.start(attemptId), {
-      userLearningSessionId,
+    const response = await postWithToken(Endpoints.flashcards.start, {
       deckId
     })
 
     const data = response.data.data
 
-    dispatch(setTopicSnapshot(data.deck_snapshot))
+    // Set deck snapshot for player
+    dispatch(setTopicSnapshot(data.deck))
     dispatch(setCurrentSession({
-      id: data.attempt.id,
-      attemptNumber: data.attempt.attempt_number,
-      creditsUsed: data.attempt.credits_used,
-      totalCards: data.deck_snapshot.cards.length
+      deckId: deckId,
+      totalCards: data.deck.cards.length
     }))
     dispatch(setCurrentQuestionIndex(0))
 
@@ -343,21 +341,21 @@ export const startFlashcardWithDeck = (userLearningSessionId, attemptId, deckId)
     handleApiError(err, dispatch)
     throw err
   } finally {
-    dispatch(setLoading({ key: 'isCreatingSession', value: false }))
+    dispatch(setLoading({ key: 'isStartingFlashcard', value: false }))
   }
 }
 
 /**
- * Complete flashcard session with answers
+ * Submit flashcard progress (updates spaced repetition data)
  */
-export const completeFlashcardSession = (attemptId, answers = []) => async (dispatch) => {
+export const submitFlashcardProgress = (deckId, answers = []) => async (dispatch) => {
   try {
-    dispatch(setLoading({ key: 'isCompletingSession', value: true }))
+    dispatch(setLoading({ key: 'isSubmittingAnswers', value: true }))
     dispatch(clearError())
 
-    const response = await putWithToken(
-      Endpoints.sessions.flashcard.attempts.complete(attemptId),
-      { answers }
+    const response = await postWithToken(
+      Endpoints.flashcards.submit,
+      { deckId, answers }
     )
 
     const data = response.data.data
@@ -367,95 +365,12 @@ export const completeFlashcardSession = (attemptId, answers = []) => async (disp
     handleApiError(err, dispatch)
     throw err
   } finally {
-    dispatch(setLoading({ key: 'isCompletingSession', value: false }))
+    dispatch(setLoading({ key: 'isSubmittingAnswers', value: false }))
   }
 }
 
 /**
- * Fetch all flashcard attempts for a learning session
+ * @deprecated Use submitFlashcardProgress instead
+ * Backward compatibility for old session-based flashcard flow
  */
-export const fetchFlashcardAttempts = (learningSessionId, page = 1, perPage = 30) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isLoadingAttempts', value: true }))
-    dispatch(clearError())
-
-    const queryParams = { page, perPage }
-    const response = await getWithToken(Endpoints.sessions.flashcard.attempts.get(learningSessionId), queryParams)
-
-    const { data, pagination } = response.data
-
-    dispatch(setSessionAttempts(data || []))
-    dispatch(setPagination({
-      limit: pagination.limit,
-      offset: pagination.offset,
-      isLastPage: pagination.isLastPage
-    }))
-
-    return pagination
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
-  } finally {
-    dispatch(setLoading({ key: 'isLoadingAttempts', value: false }))
-  }
-}
-
-/**
- * Fetch flashcard attempt detail
- */
-export const fetchFlashcardAttemptDetail = (attemptId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isLoadingAttemptDetail', value: true }))
-    dispatch(clearError())
-
-    const response = await getWithToken(Endpoints.sessions.flashcard.attempts.detail(attemptId))
-
-    const data = response.data.data
-
-    // Store attempt detail (cards, answers, and metadata) for FlashcardPlayer
-    const attemptDetail = {
-      id: data.id,
-      attempt_number: data.attempt_number,
-      flashcard_session_id: data.flashcard_session_id,
-      user_learning_session_id: data.user_learning_session_id,
-      deck_id: data.deck_id,
-      deck_title: data.deck_title,
-      deck_description: data.deck_description,
-      started_at: data.started_at,
-      completed_at: data.completed_at,
-      total_cards: data.total_cards,
-      credits_used: data.credits_used,
-      cards: data.cards || [],
-      answers: data.answers || []
-    }
-    dispatch(setAttemptDetail(attemptDetail))
-
-    return attemptDetail
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
-  } finally {
-    dispatch(setLoading({ key: 'isLoadingAttemptDetail', value: false }))
-  }
-}
-
-/**
- * Create a new flashcard attempt for a learning session
- */
-export const createNewFlashcardAttempt = (learningSessionId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isCreatingAttempt', value: true }))
-    dispatch(clearError())
-
-    const response = await postWithToken(Endpoints.sessions.flashcard.attempts.create(learningSessionId), {})
-
-    const data = response.data.data
-
-    return data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
-  } finally {
-    dispatch(setLoading({ key: 'isCreatingAttempt', value: false }))
-  }
-}
+export const submitFlashcardAnswers = submitFlashcardProgress

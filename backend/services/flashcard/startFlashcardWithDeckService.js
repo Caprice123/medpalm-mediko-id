@@ -4,41 +4,34 @@ import { ValidationError } from '../../errors/validationError.js'
 import { GetConstantsService } from '../constant/getConstantsService.js'
 
 export class StartFlashcardWithDeckService extends BaseService {
-  static async call({ userLearningSessionId, attemptId, flashcardDeckId, userId }) {
+  static async call({ userLearningSessionId, flashcardDeckId, userId }) {
     // Get credit cost from constants BEFORE transaction
     const constants = await GetConstantsService.call(['flashcard_credit_cost'])
     const creditCost = parseInt(constants.flashcard_credit_cost)
 
     const result = await prisma.$transaction(async (tx) => {
-      // Get the attempt directly
-      const attempt = await tx.flashcard_session_attempts.findUnique({
-        where: { id: parseInt(attemptId) },
+      // Get the flashcard session
+      const flashcardSession = await tx.flashcard_sessions.findFirst({
+        where: {
+          user_learning_session_id: parseInt(userLearningSessionId)
+        },
         include: {
-          flashcard_session: {
-            include: {
-              user_learning_session: true
-            }
-          }
+          user_learning_session: true
         }
       })
 
-      if (!attempt) {
-        throw new ValidationError('Attempt not found')
+      if (!flashcardSession) {
+        throw new ValidationError('Flashcard session not found')
       }
 
-      // Verify user owns this attempt
-      if (attempt.flashcard_session.user_learning_session.user_id !== parseInt(userId)) {
+      // Verify user owns this session
+      if (flashcardSession.user_learning_session.user_id !== parseInt(userId)) {
         throw new ValidationError('Unauthorized')
       }
 
-      // Verify the attempt belongs to the specified learning session
-      if (attempt.flashcard_session.user_learning_session_id !== parseInt(userLearningSessionId)) {
-        throw new ValidationError('Attempt does not belong to this session')
-      }
-
       // Check if deck already selected
-      if (attempt.flashcard_session.flashcard_deck_id) {
-        throw new ValidationError("You have already selected a deck")
+      if (flashcardSession.flashcard_deck_id) {
+        throw new ValidationError("You have already selected a deck for this session")
       }
 
       // Get the deck with cards
@@ -71,32 +64,48 @@ export class StartFlashcardWithDeckService extends BaseService {
         throw new ValidationError('Insufficient credits')
       }
 
-      // Create deck snapshot
-      const deckSnapshot = {
-        id: deck.id,
-        title: deck.title || 'Untitled',
-        description: deck.description || '',
-        content_type: deck.content_type || 'text',
-        tags: (deck.flashcard_deck_tags || []).map(t => ({
-          id: t.tags?.id || t.id,
-          name: t.tags?.name || t.name || '',
-          type: t.tags?.type || t.type || ''
-        })),
-        cards: deck.flashcard_cards.map((card, index) => ({
-          id: card.id,
-          front: card.front || '',
-          back: card.back || '',
-          order: card.order !== undefined ? card.order : index
-        }))
-      }
+      // Get user's progress for cards in this deck to implement spaced repetition
+      const cardIds = deck.flashcard_cards.map(card => card.id)
+      const userProgress = await tx.user_card_progress.findMany({
+        where: {
+          user_id: parseInt(userId),
+          card_id: { in: cardIds }
+        }
+      })
 
-      // Create card snapshots for database
-      const cardSnapshots = deck.flashcard_cards.map((card, index) => ({
-        flashcard_session_id: attempt.flashcard_session.id,
+      // Create a map of card_id to progress
+      const progressMap = {}
+      userProgress.forEach(progress => {
+        progressMap[progress.card_id] = progress
+      })
+
+      // Sort cards by performance (worst performers first for spaced repetition)
+      // Priority: more incorrect answers → less correct answers → last reviewed (oldest first)
+      const sortedCards = [...deck.flashcard_cards].sort((a, b) => {
+        const aProgress = progressMap[a.id] || { times_incorrect: 0, times_correct: 0, last_reviewed: new Date(0) }
+        const bProgress = progressMap[b.id] || { times_incorrect: 0, times_correct: 0, last_reviewed: new Date(0) }
+
+        // First priority: cards with more incorrect answers come first
+        if (bProgress.times_incorrect !== aProgress.times_incorrect) {
+          return bProgress.times_incorrect - aProgress.times_incorrect
+        }
+
+        // Second priority: cards with fewer correct answers come first
+        if (aProgress.times_correct !== bProgress.times_correct) {
+          return aProgress.times_correct - bProgress.times_correct
+        }
+
+        // Third priority: older reviewed cards come first (for cards never reviewed, use oldest date)
+        return new Date(aProgress.last_reviewed) - new Date(bProgress.last_reviewed)
+      })
+
+      // Create card snapshots for database with new spaced-repetition order
+      const cardSnapshots = sortedCards.map((card, index) => ({
+        flashcard_session_id: flashcardSession.id,
         original_card_id: card.id,
         front_text: card.front || '',
         back_text: card.back || '',
-        order: card.order !== undefined ? card.order : index
+        order: index  // New order based on spaced repetition
       }))
 
       await tx.flashcard_session_cards.createMany({
@@ -105,20 +114,11 @@ export class StartFlashcardWithDeckService extends BaseService {
 
       // Update flashcard session with deck
       await tx.flashcard_sessions.update({
-        where: { id: attempt.flashcard_session.id },
+        where: { id: flashcardSession.id },
         data: {
           flashcard_deck_id: flashcardDeckId,
-          total_cards: deck.flashcard_cards.length,
+          total_cards: sortedCards.length,
           credits_used: creditCost
-        }
-      })
-
-      // Update attempt started_at and status
-      const updatedAttempt = await tx.flashcard_session_attempts.update({
-        where: { id: attempt.id },
-        data: {
-          started_at: new Date(),
-          status: 'active'
         }
       })
 
@@ -140,12 +140,31 @@ export class StartFlashcardWithDeckService extends BaseService {
           balanceBefore: userCredit.balance,
           balanceAfter: userCredit.balance - creditCost,
           description: `Started flashcard: ${deck.title}`,
-          sessionId: attempt.flashcard_session.id
+          sessionId: flashcardSession.id
         }
       })
 
+      // Create deck snapshot with sorted cards
+      const deckSnapshot = {
+        id: deck.id,
+        title: deck.title || 'Untitled',
+        description: deck.description || '',
+        content_type: deck.content_type || 'text',
+        tags: (deck.flashcard_deck_tags || []).map(t => ({
+          id: t.tags?.id || t.id,
+          name: t.tags?.name || t.name || '',
+          type: t.tags?.type || t.type || ''
+        })),
+        cards: sortedCards.map((card, index) => ({
+          id: card.id,
+          front: card.front || '',
+          back: card.back || '',
+          order: index  // Spaced repetition order
+        }))
+      }
+
       return {
-        attempt: updatedAttempt,
+        session: flashcardSession,
         deckSnapshot
       }
     })

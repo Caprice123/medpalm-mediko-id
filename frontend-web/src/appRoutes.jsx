@@ -3,6 +3,7 @@ import Home from '@routes/Home';
 import Dashboard from '@routes/Dashboard';
 import AdminPanel from '@routes/Admin/AdminPanel';
 import SessionDetail from '@routes/SessionDetail';
+import FlashcardPage from '@routes/Flashcard';
 import PrivateRoute from '@middleware/PrivateRoute';
 import { AuthRoute } from './routes/Auth/routes';
 
@@ -14,6 +15,14 @@ const appRoutes = [
         element: (
             <PrivateRoute>
                 <Dashboard />
+            </PrivateRoute>
+        )
+    },
+    {
+        path: '/flashcards',
+        element: (
+            <PrivateRoute>
+                <FlashcardPage />
             </PrivateRoute>
         )
     },

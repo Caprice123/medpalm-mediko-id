@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { submitFlashcardAnswers } from '../../../../../../store/session/action'
+import { useSelector } from 'react-redux'
 import {
   PlayerContainer,
   ProgressBar,
@@ -23,10 +21,18 @@ import {
   PrimaryButton,
   SecondaryButton,
   CardDots,
-  Dot
+  Dot,
+  BackButton,
+  FeedbackSection,
+  FeedbackBadge,
+  FeedbackText,
+  AnswerComparison,
+  ComparisonRow,
+  ComparisonLabel,
+  ComparisonValue
 } from './FlashcardPlayer.styles'
 
-const FlashcardPlayer = ({ sessionId }) => {
+const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
@@ -36,8 +42,6 @@ const FlashcardPlayer = ({ sessionId }) => {
   const [startTime, setStartTime] = useState(Date.now())
 
   const { topicSnapshot } = useSelector(state => state.session)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   // Cards are already sorted by spaced repetition from backend
   const cards = topicSnapshot?.cards || []
@@ -46,7 +50,7 @@ const FlashcardPlayer = ({ sessionId }) => {
   const isLastCard = currentCardIndex === cards.length - 1
 
   useEffect(() => {
-    // Reset when moving to next card - NO flip animation
+    // Reset when moving to next card
     setIsFlipped(false)
     setShowFeedback(false)
     setCurrentFeedback(null)
@@ -92,7 +96,6 @@ const FlashcardPlayer = ({ sessionId }) => {
   }
 
   const handleSubmitAnswer = () => {
-    // Calculate similarity for backend (but don't show to user)
     const correctAnswer = currentCard.back || currentCard.back_text
     const similarity = calculateSimilarity(currentAnswer, correctAnswer)
 
@@ -102,11 +105,9 @@ const FlashcardPlayer = ({ sessionId }) => {
       correctAnswer
     })
 
-    // Flip card and show feedback
     setIsFlipped(true)
     setShowFeedback(true)
 
-    // Save answer
     const timeTaken = Math.floor((Date.now() - startTime) / 1000)
     const newAnswer = {
       cardId: currentCard.id,
@@ -124,10 +125,8 @@ const FlashcardPlayer = ({ sessionId }) => {
     }
 
     if (isLastCard) {
-      // Submit all answers to backend
-      handleSubmit(userAnswers)
+      handleComplete(userAnswers)
     } else {
-      // Move to next card - state reset handled by useEffect
       setCurrentCardIndex(currentCardIndex + 1)
     }
   }
@@ -135,26 +134,15 @@ const FlashcardPlayer = ({ sessionId }) => {
   const handlePrevious = () => {
     if (currentCardIndex > 0) {
       setCurrentCardIndex(currentCardIndex - 1)
-      // Restore previous answer if exists
       if (userAnswers[currentCardIndex - 1]) {
         setCurrentAnswer(userAnswers[currentCardIndex - 1].userAnswer)
       }
     }
   }
-  const handleSubmit = async (allAnswers) => {
+
+  const handleComplete = async (allAnswers) => {
     if (window.confirm('Submit all your answers? Your progress will be saved for spaced repetition.')) {
-      try {
-        // Submit answers to update spaced repetition data
-        await dispatch(submitFlashcardAnswers(sessionId, allAnswers))
-
-        alert('Sesi selesai! Progress Anda telah disimpan.')
-
-        // Navigate back to dashboard
-        navigate('/dashboard')
-      } catch (error) {
-        console.error('Failed to submit answers:', error)
-        alert('Gagal menyimpan progress: ' + (error.message || 'Terjadi kesalahan'))
-      }
+      onSubmit(allAnswers)
     }
   }
 
@@ -164,6 +152,11 @@ const FlashcardPlayer = ({ sessionId }) => {
 
   return (
     <PlayerContainer>
+      {/* Back Button */}
+      <BackButton onClick={onBack}>
+        ← Kembali ke Daftar Deck
+      </BackButton>
+
       {/* Progress Bar */}
       <ProgressBar>
         <ProgressText>
@@ -183,7 +176,7 @@ const FlashcardPlayer = ({ sessionId }) => {
           <CardFront>
             <CardLabel>Question</CardLabel>
             <CardContent>
-              <p>{currentCard.front_text || currentCard.front}</p>
+              <p>{currentCard.front || currentCard.front_text}</p>
             </CardContent>
           </CardFront>
 
@@ -191,7 +184,7 @@ const FlashcardPlayer = ({ sessionId }) => {
           <CardBack>
             <CardLabel>Correct Answer</CardLabel>
             <CardContent>
-              <p>{currentCard.back_text || currentCard.back}</p>
+              <p>{currentCard.back || currentCard.back_text}</p>
             </CardContent>
           </CardBack>
         </Flashcard>
@@ -209,6 +202,57 @@ const FlashcardPlayer = ({ sessionId }) => {
         />
       </AnswerSection>
 
+      {/* Feedback Section */}
+      {showFeedback && currentFeedback && (
+        <FeedbackSection>
+          {currentFeedback.similarity >= 0.9 ? (
+            <>
+              <FeedbackBadge type="correct">✓ Jawaban Benar!</FeedbackBadge>
+              <FeedbackText>
+                Selamat! Jawaban Anda benar dengan tingkat kemiripan {(currentFeedback.similarity * 100).toFixed(1)}%
+              </FeedbackText>
+            </>
+          ) : currentFeedback.similarity >= 0.7 ? (
+            <>
+              <FeedbackBadge type="almost">⚠ Hampir Benar</FeedbackBadge>
+              <FeedbackText>
+                Jawaban Anda hampir benar dengan tingkat kemiripan {(currentFeedback.similarity * 100).toFixed(1)}%, namun masih dianggap salah.
+                <br />
+                <strong style={{ color: '#dc3545', marginTop: '8px', display: 'block' }}>
+                  💡 Kartu ini akan ditampilkan lebih awal di sesi berikutnya untuk dipelajari kembali.
+                </strong>
+              </FeedbackText>
+            </>
+          ) : (
+            <>
+              <FeedbackBadge type="incorrect">✗ Jawaban Salah</FeedbackBadge>
+              <FeedbackText>
+                Jawaban Anda kurang tepat dengan tingkat kemiripan {(currentFeedback.similarity * 100).toFixed(1)}%.
+                <br />
+                <strong style={{ color: '#dc3545', marginTop: '8px', display: 'block' }}>
+                  💡 Kartu ini akan ditampilkan lebih awal di sesi berikutnya untuk dipelajari kembali.
+                </strong>
+              </FeedbackText>
+            </>
+          )}
+
+          <AnswerComparison>
+            <ComparisonRow>
+              <ComparisonLabel>Jawaban Anda:</ComparisonLabel>
+              <ComparisonValue wrong={currentFeedback.similarity < 0.9}>
+                {currentFeedback.userAnswer || '(kosong)'}
+              </ComparisonValue>
+            </ComparisonRow>
+            <ComparisonRow>
+              <ComparisonLabel>Jawaban Yang Benar:</ComparisonLabel>
+              <ComparisonValue correct>
+                {currentFeedback.correctAnswer}
+              </ComparisonValue>
+            </ComparisonRow>
+          </AnswerComparison>
+        </FeedbackSection>
+      )}
+
       {/* Submit Answer Button */}
       {!showFeedback && (
         <ShowAnswerSection>
@@ -217,7 +261,6 @@ const FlashcardPlayer = ({ sessionId }) => {
           </ShowAnswerButton>
         </ShowAnswerSection>
       )}
-
 
       {/* Navigation Buttons */}
       <NavigationButtons>

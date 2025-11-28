@@ -29,6 +29,8 @@ export default {
     flashcards: {
         // User endpoints
         decks: `${API_BASE_URL}/api/v1/flashcards/decks`,
+        start: `${API_BASE_URL}/api/v1/flashcards/start`,
+        submit: `${API_BASE_URL}/api/v1/flashcards/submit`,
 
         // Admin endpoints
         admin: {
@@ -43,6 +45,10 @@ export default {
         create: `${API_BASE_URL}/api/v1/sessions`,
         list: `${API_BASE_URL}/api/v1/sessions`,
         detail: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}`,
+        flashcard: {
+            start: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}/flashcard/start`,
+            submit: (sessionId) => `${API_BASE_URL}/api/v1/sessions/${sessionId}/flashcard/submit`,
+        },
         exercise: {
             create: `${API_BASE_URL}/api/v1/sessions/exercise`,
             attempts: {
@@ -51,16 +57,6 @@ export default {
                 create: (learningSessionId) => `${API_BASE_URL}/api/v1/exercises/${learningSessionId}/attempts`,
                 start: (attemptId) => `${API_BASE_URL}/api/v1/exercises/attempts/${attemptId}/start`,
                 complete: (attemptId) => `${API_BASE_URL}/api/v1/exercises/attempts/${attemptId}/complete`,
-            }
-        },
-        flashcard: {
-            create: `${API_BASE_URL}/api/v1/sessions/flashcard`,
-            attempts: {
-                get: (learningSessionId) => `${API_BASE_URL}/api/v1/flashcards/${learningSessionId}/attempts`,
-                detail: (attemptId) => `${API_BASE_URL}/api/v1/flashcards/attempts/${attemptId}`,
-                create: (learningSessionId) => `${API_BASE_URL}/api/v1/flashcards/${learningSessionId}/attempts`,
-                start: (attemptId) => `${API_BASE_URL}/api/v1/flashcards/attempts/${attemptId}/start`,
-                complete: (attemptId) => `${API_BASE_URL}/api/v1/flashcards/attempts/${attemptId}/complete`,
             }
         }
     },

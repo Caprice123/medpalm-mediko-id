@@ -1,6 +1,6 @@
 import { GetFlashcardDecksService } from '../../../services/flashcard/getFlashcardDecksService.js'
-import { GetListFlashcardAttemptsService } from '../../../services/flashcard/attempts/getListFlashcardAttemptsService.js'
-import { CreateNewFlashcardAttemptService } from '../../../services/flashcard/attempts/createNewFlashcardAttemptService.js'
+import { StartFlashcardDeckService } from '../../../services/flashcard/startFlashcardDeckService.js'
+import { SubmitFlashcardProgressService } from '../../../services/flashcard/submitFlashcardProgressService.js'
 
 class FlashcardController {
   async getDecks(req, res) {
@@ -14,38 +14,36 @@ class FlashcardController {
     })
   }
 
-  async attempts(req, res) {
-    const { userLearningSessionId } = req.params
-    const { page, perPage } = req.query
+  async startDeck(req, res) {
+    const { deckId } = req.body
     const userId = req.user.id
 
-    const result = await GetListFlashcardAttemptsService.call({
-      userLearningSessionId,
-      userId,
-      page: page ? parseInt(page) : 1,
-      perPage: perPage ? parseInt(perPage) : 30
+    const result = await StartFlashcardDeckService.call({
+      flashcardDeckId: deckId,
+      userId
     })
 
     return res.status(200).json({
       success: true,
-      data: result.data,
-      pagination: result.pagination
+      data: result,
+      message: 'Flashcard deck started successfully'
     })
   }
 
-  async createAttempt(req, res) {
-    const { userLearningSessionId } = req.params
+  async submitProgress(req, res) {
+    const { deckId, answers } = req.body
     const userId = req.user.id
 
-    const result = await CreateNewFlashcardAttemptService.call({
-      userLearningSessionId,
-      userId
+    const result = await SubmitFlashcardProgressService.call({
+      deckId,
+      userId,
+      answers
     })
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       data: result,
-      message: 'New attempt created successfully'
+      message: 'Flashcard progress submitted successfully'
     })
   }
 }

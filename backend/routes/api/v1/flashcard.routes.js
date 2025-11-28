@@ -10,7 +10,11 @@ router.use(authenticateToken)
 
 // Deck endpoints (for regular users)
 router.get('/decks', asyncHandler(flashcardController.getDecks.bind(flashcardController)))
-router.get('/:userLearningSessionId/attempts', asyncHandler(flashcardController.attempts.bind(flashcardController)))
-router.post('/:userLearningSessionId/attempts', asyncHandler(flashcardController.createAttempt.bind(flashcardController)))
+
+// Start flashcard deck (no session required)
+router.post('/start', asyncHandler(flashcardController.startDeck.bind(flashcardController)))
+
+// Submit flashcard answers (no session required)
+router.post('/submit', asyncHandler(flashcardController.submitProgress.bind(flashcardController)))
 
 export default router
