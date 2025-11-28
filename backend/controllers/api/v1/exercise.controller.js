@@ -1,6 +1,8 @@
 import { GetExerciseTopicsService } from '../../../services/exercise/getExerciseTopicsService.js'
 import { GetListAttemptsService } from '../../../services/exercise/attempts/getListAttemptsService.js'
 import { CreateNewAttemptService } from '../../../services/exercise/attempts/createNewAttemptService.js'
+import { StartExerciseTopicService } from '../../../services/exercise/startExerciseTopicService.js'
+import { SubmitExerciseProgressService } from '../../../services/exercise/submitExerciseProgressService.js'
 
 class ExerciseController {
   async getTopics(req, res) {
@@ -14,6 +16,41 @@ class ExerciseController {
     })
   }
 
+  // Sessionless exercise endpoints
+  async startTopic(req, res) {
+    const { topicId } = req.body
+    const userId = req.user.id
+
+    const result = await StartExerciseTopicService.call({
+      exerciseTopicId: topicId,
+      userId
+    })
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Exercise topic started successfully'
+    })
+  }
+
+  async submitProgress(req, res) {
+    const { topicId, answers } = req.body
+    const userId = req.user.id
+
+    const result = await SubmitExerciseProgressService.call({
+      topicId,
+      userId,
+      answers
+    })
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Exercise progress submitted successfully'
+    })
+  }
+
+  // Legacy session-based endpoints (kept for backward compatibility)
   async attempts(req, res) {
     const { userLearningSessionId } = req.params
     const { page, perPage } = req.query

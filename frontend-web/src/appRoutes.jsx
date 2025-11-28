@@ -4,6 +4,7 @@ import Dashboard from '@routes/Dashboard';
 import AdminPanel from '@routes/Admin/AdminPanel';
 import SessionDetail from '@routes/SessionDetail';
 import FlashcardPage from '@routes/Flashcard';
+import ExercisePage from '@routes/Exercise';
 import PrivateRoute from '@middleware/PrivateRoute';
 import { AuthRoute } from './routes/Auth/routes';
 
@@ -23,6 +24,14 @@ const appRoutes = [
         element: (
             <PrivateRoute>
                 <FlashcardPage />
+            </PrivateRoute>
+        )
+    },
+    {
+        path: '/exercises',
+        element: (
+            <PrivateRoute>
+                <ExercisePage />
             </PrivateRoute>
         )
     },

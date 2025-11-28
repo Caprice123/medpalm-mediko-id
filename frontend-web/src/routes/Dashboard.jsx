@@ -24,7 +24,7 @@ const MainContent = styled.main`
 const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  color: #0891b2;
+  color: #06b6d4;
   margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
@@ -55,15 +55,15 @@ const CatalogCard = styled.div`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(14, 116, 144, 0.15);
-    border-color: #0891b2;
+    box-shadow: 0 10px 25px rgba(6, 182, 212, 0.15);
+    border-color: #06b6d4;
   }
 `
 
 const CardIcon = styled.div`
   width: 60px;
   height: 60px;
-  background: rgba(8, 145, 178, 0.1);
+  background: rgba(6, 182, 212, 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@ const CardIcon = styled.div`
 const CardTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #0891b2;
+  color: #06b6d4;
   margin-bottom: 0.5rem;
 `
 
@@ -96,14 +96,14 @@ const CardFooter = styled.div`
 
 const CreditCost = styled.span`
   font-weight: 600;
-  color: #0891b2;
+  color: #06b6d4;
   display: flex;
   align-items: center;
   gap: 0.25rem;
 `
 
 const UseButton = styled.button`
-  background: linear-gradient(135deg, #0e7490, #14b8a6);
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -115,7 +115,7 @@ const UseButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 116, 144, 0.3);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
   }
 
   &:disabled {
@@ -187,6 +187,12 @@ function Dashboard() {
         return
       }
 
+      // For exercise, navigate to dedicated exercise page
+      if (sessionType === 'exercise') {
+        navigate('/exercises')
+        return
+      }
+
       // For other session types, create session and navigate to session detail
       const sessionData = await dispatch(createSession(sessionType))
       navigate(`/session/${sessionData.id}`)
@@ -209,24 +215,35 @@ function Dashboard() {
           </EmptyState>
         ) : features.length > 0 ? (
           <CatalogGrid>
-            {features.map((feature) => (
-              <CatalogCard key={feature.id}>
-                <CardIcon>{feature.icon}</CardIcon>
-                <CardTitle>{feature.name}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-                <CardFooter>
-                  <CreditCost>
-                    💎 {feature.cost} kredit
-                  </CreditCost>
-                  <UseButton
-                    onClick={() => handleUseFeature(feature)}
-                    disabled={balance < feature.cost}
-                  >
-                    Gunakan Fitur
-                  </UseButton>
-                </CardFooter>
-              </CatalogCard>
-            ))}
+            {features.map((feature) => {
+              // Check if feature is subscription-based (flashcard or exercise)
+              const isSubscriptionBased = ['flashcard', 'exercise'].includes(feature.sessionType)
+
+              return (
+                <CatalogCard key={feature.id}>
+                  <CardIcon>{feature.icon}</CardIcon>
+                  <CardTitle>{feature.name}</CardTitle>
+                  <CardDescription>{feature.description}</CardDescription>
+                  <CardFooter>
+                    {isSubscriptionBased ? (
+                      <CreditCost style={{ color: '#10b981' }}>
+                        🎯 Subscription Required
+                      </CreditCost>
+                    ) : (
+                      <CreditCost>
+                        💎 {feature.cost} kredit
+                      </CreditCost>
+                    )}
+                    <UseButton
+                      onClick={() => handleUseFeature(feature)}
+                      disabled={!isSubscriptionBased && balance < feature.cost}
+                    >
+                      Gunakan Fitur
+                    </UseButton>
+                  </CardFooter>
+                </CatalogCard>
+              )
+            })}
           </CatalogGrid>
         ) : (
           <EmptyState>

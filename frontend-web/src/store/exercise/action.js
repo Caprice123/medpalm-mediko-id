@@ -349,3 +349,47 @@ export const updateExerciseConstants = (constants) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUpdatingConstants', value: false }))
   }
 }
+
+// ============= Sessionless Exercise Actions =============
+
+/**
+ * Start exercise topic directly (sessionless)
+ */
+export const startExerciseTopic = (topicId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isStartingExercise', value: true }))
+    dispatch(clearError())
+
+    const response = await postWithToken(Endpoints.exercises.start, { topicId })
+    const data = response.data.data
+
+    return data
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  } finally {
+    dispatch(setLoading({ key: 'isStartingExercise', value: false }))
+  }
+}
+
+/**
+ * Submit exercise answers and update progress (sessionless)
+ */
+export const submitExerciseProgress = (topicId, answers) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isSubmittingExercise', value: true }))
+    dispatch(clearError())
+
+    const response = await postWithToken(Endpoints.exercises.submit, {
+      topicId,
+      answers
+    })
+
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  } finally {
+    dispatch(setLoading({ key: 'isSubmittingExercise', value: false }))
+  }
+}

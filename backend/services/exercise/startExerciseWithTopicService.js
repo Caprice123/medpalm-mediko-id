@@ -50,9 +50,7 @@ export class StartExerciseWithTopicService extends BaseService {
       const topic = await tx.exercise_topics.findUnique({
         where: { id: parseInt(exerciseTopicId) },
         include: {
-          exercise_questions: {
-            orderBy: { order: 'asc' }
-          },
+          exercise_questions: true,
           exercise_topic_tags: {
             include: { tags: true }
           }
@@ -67,6 +65,88 @@ export class StartExerciseWithTopicService extends BaseService {
         throw new ValidationError('Topic has no questions')
       }
 
+      // Get user's historical performance for this topic to implement weighted randomization
+      // Find all previous attempts for this user on this topic
+      const previousAttempts = await tx.exercise_session_attempts.findMany({
+        where: {
+          exercise_session: {
+            user_learning_session: {
+              user_id: parseInt(userId)
+            },
+            exercise_topic_id: parseInt(exerciseTopicId)
+          },
+          status: 'completed'
+        },
+        include: {
+          exercise_session_answers: {
+            include: {
+              exercise_session_questions: true
+            }
+          }
+        }
+      })
+
+      // Build performance map: question_text -> { correct, incorrect }
+      const performanceMap = {}
+      previousAttempts.forEach(attempt => {
+        attempt.exercise_session_answers.forEach(answer => {
+          const questionText = answer.exercise_session_questions.question_text
+          if (!performanceMap[questionText]) {
+            performanceMap[questionText] = { times_correct: 0, times_incorrect: 0 }
+          }
+          if (answer.is_correct) {
+            performanceMap[questionText].times_correct++
+          } else {
+            performanceMap[questionText].times_incorrect++
+          }
+        })
+      })
+
+      // Calculate weight for each question and apply weighted randomization
+      const questionsWithWeights = topic.exercise_questions.map(question => {
+        const performance = performanceMap[question.question] || {
+          times_correct: 0,
+          times_incorrect: 0
+        }
+
+        // Weight calculation (same as flashcards):
+        // - Base weight: 1
+        // - Add 3 for each incorrect answer
+        // - Subtract 0.5 for each correct answer
+        const weight = Math.max(
+          1, // Minimum weight of 1
+          1 +
+          (performance.times_incorrect * 3) -
+          (performance.times_correct * 0.5)
+        )
+
+        return { question, weight, performance }
+      })
+
+      // Weighted random shuffle
+      const shuffledQuestions = []
+      const remainingQuestions = [...questionsWithWeights]
+
+      while (remainingQuestions.length > 0) {
+        // Calculate total weight
+        const totalWeight = remainingQuestions.reduce((sum, item) => sum + item.weight, 0)
+
+        // Pick random based on weights
+        let random = Math.random() * totalWeight
+        let selectedIndex = 0
+
+        for (let i = 0; i < remainingQuestions.length; i++) {
+          random -= remainingQuestions[i].weight
+          if (random <= 0) {
+            selectedIndex = i
+            break
+          }
+        }
+
+        shuffledQuestions.push(remainingQuestions[selectedIndex].question)
+        remainingQuestions.splice(selectedIndex, 1)
+      }
+
       // Check and deduct credits
       let userCredit = await tx.user_credits.findUnique({
         where: { userId: parseInt(userId) }
@@ -76,7 +156,7 @@ export class StartExerciseWithTopicService extends BaseService {
         throw new ValidationError('Insufficient credits')
       }
 
-      // Create topic snapshot
+      // Create topic snapshot using shuffled questions
       const topicSnapshot = {
         id: topic.id,
         title: topic.title || 'Untitled',
@@ -87,22 +167,22 @@ export class StartExerciseWithTopicService extends BaseService {
           name: t.tags?.name || t.name || '',
           type: t.tags?.type || t.type || ''
         })),
-        questions: topic.exercise_questions.map((q, index) => ({
+        questions: shuffledQuestions.map((q, index) => ({
           id: q.id,
           question: q.question || '',
           answer: q.answer || '',
           explanation: q.explanation || '',
-          order: q.order !== undefined ? q.order : index
+          order: index // Use new shuffled order
         }))
       }
 
-      // Create question snapshots for database
-      const questionSnapshots = topic.exercise_questions.map((q, index) => ({
+      // Create question snapshots for database using shuffled order
+      const questionSnapshots = shuffledQuestions.map((q, index) => ({
         exercise_session_id: attempt.exercise_session.id,
         question_text: q.question || '',
         answer_text: q.answer || '',
         explanation: q.explanation || '',
-        order: q.order !== undefined ? q.order : index
+        order: index // Use new shuffled order
       }))
 
       await tx.exercise_session_questions.createMany({
@@ -114,7 +194,7 @@ export class StartExerciseWithTopicService extends BaseService {
         where: { id: attempt.exercise_session.id },
         data: {
           exercise_topic_id: exerciseTopicId,
-          total_question: topic.exercise_questions.length,
+          total_question: shuffledQuestions.length,
           credits_used: creditCost
         }
       })

@@ -328,6 +328,23 @@ model user_card_progress {
   @@index([card_id])
 }
 
+model user_question_progress {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  question_id     Int      // references exercise_questions.id
+  topic_id        Int      // references exercise_topics.id
+  times_correct   Int      @default(0)
+  times_incorrect Int      @default(0)
+  last_reviewed   DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  @@unique([user_id, question_id])
+  @@index([user_id])
+  @@index([question_id])
+  @@index([topic_id])
+}
+
 model user_sessions {
   id           Int      @id @default(autoincrement())
   userId       Int

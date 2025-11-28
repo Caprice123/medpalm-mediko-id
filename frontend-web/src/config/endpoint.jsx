@@ -16,6 +16,8 @@ export default {
         // User endpoints
         topics: `${API_BASE_URL}/api/v1/exercises/topics`,
         createTopic: `${API_BASE_URL}/api/v1/exercises/topics`,
+        start: `${API_BASE_URL}/api/v1/exercises/start`,
+        submit: `${API_BASE_URL}/api/v1/exercises/submit`,
 
         // Admin endpoints
         admin: {
