@@ -1,6 +1,7 @@
 import { seedFeatures } from './seeds/features.seed.js'
 import { seedExerciseConstants } from './seeds/exerciseConstants.seed.js'
 import { seedFlashcardConstants } from './seeds/flashcardConstants.seed.js'
+import { seedCalculatorConstants } from './seeds/calculatorConstants.seed.js'
 
 async function main() {
   console.log('🚀 Starting database seeding...\n')
@@ -14,6 +15,9 @@ async function main() {
 
     // Run flashcard constants seeder
     await seedFlashcardConstants()
+
+    // Run calculator constants seeder
+    await seedCalculatorConstants()
 
     console.log('\n✨ Database seeding completed successfully!')
   } catch (error) {

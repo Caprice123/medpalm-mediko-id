@@ -519,3 +519,112 @@ model features {
   @@index([access_type])
   @@index([order])
 }
+
+// ============= Calculator Feature =============
+
+model calculator_topics {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String?
+  formula         String            // JavaScript expression, e.g., "weight * 2" or "(height + weight) / 2"
+  result_label    String            // Label for the result, e.g., "Total"
+  result_unit     String?           // Unit for result, e.g., "kg", "cm"
+  status          String            @default("draft")  // draft, published
+  is_active       Boolean           @default(true)
+  created_by      Int
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now())
+
+  calculator_fields       calculator_fields[]
+  calculator_classifications calculator_classifications[]
+
+  @@index([created_by])
+  @@index([status])
+  @@index([is_active])
+}
+
+model calculator_fields {
+  id                  Int               @id @default(autoincrement())
+  calculator_topic_id Int
+  key                 String            // Field key for formula reference, e.g., "weight"
+  type                String            // number, text, dropdown, radio
+  label               String            // Display label, e.g., "Berat Badan"
+  placeholder         String            // Placeholder text for input field
+  description         String?           // Helpful description
+  unit                String?           // Unit of measurement, e.g., "kg", "cm"
+  order               Int               @default(0)
+  is_required         Boolean           @default(true)
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @default(now())
+
+  calculator_topics   calculator_topics @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
+  field_options       calculator_field_options[]
+
+  @@unique([calculator_topic_id, key])
+  @@index([calculator_topic_id])
+  @@index([order])
+}
+
+model calculator_field_options {
+  id                  Int               @id @default(autoincrement())
+  calculator_field_id Int
+  value               String            // The value submitted when option is selected
+  label               String            // Display label for the option
+  order               Int               @default(0)
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @default(now())
+
+  calculator_field    calculator_fields @relation(fields: [calculator_field_id], references: [id], onDelete: Cascade)
+
+  @@index([calculator_field_id])
+  @@index([order])
+}
+
+model calculator_classifications {
+  id                  Int               @id @default(autoincrement())
+  calculator_topic_id Int
+  name                String            @default("Classification Group") // Classification group name, e.g., "Kategori BMI"
+  order               Int               @default(0)
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @default(now())
+
+  calculator_topics   calculator_topics                     @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
+  options             calculator_classification_options[]
+
+  @@index([calculator_topic_id])
+  @@index([order])
+}
+
+model calculator_classification_options {
+  id                          Int               @id @default(autoincrement())
+  calculator_classification_id Int
+  value                       String            @default("classification") // Classification value, e.g., "underweight"
+  label                       String            @default("Classification") // Classification label, e.g., "Underweight"
+  order                       Int               @default(0)
+  created_at                  DateTime          @default(now())
+  updated_at                  DateTime          @default(now())
+
+  calculator_classification   calculator_classifications                    @relation(fields: [calculator_classification_id], references: [id], onDelete: Cascade)
+  conditions                  calculator_classification_option_conditions[]
+
+  @@index([calculator_classification_id])
+  @@index([order])
+}
+
+model calculator_classification_option_conditions {
+  id                                  Int               @id @default(autoincrement())
+  calculator_classification_option_id Int
+  result_key                          String            // The key to check (usually "result" but could be specific field)
+  operator                            String            // >, <, >=, <=, ==, !=
+  value                               String            // The value to compare against
+  logical_operator                    String?           // AND, OR (null for last condition)
+  order                               Int               @default(0)
+  created_at                          DateTime          @default(now())
+  updated_at                          DateTime          @default(now())
+
+  calculator_classification_option    calculator_classification_options @relation(fields: [calculator_classification_option_id], references: [id], onDelete: Cascade)
+
+  @@index([calculator_classification_option_id])
+  @@index([order])
+}
+

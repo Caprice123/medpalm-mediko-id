@@ -21,6 +21,8 @@ import adminExerciseRoutes from './routes/admin/v1/exercise.routes.js';
 import adminFlashcardRoutes from './routes/admin/v1/flashcard.routes.js';
 import adminSummaryNoteRoutes from './routes/admin/v1/summaryNote.routes.js';
 import adminConstantRoutes from './routes/admin/v1/constant.routes.js';
+import calculatorRoutes from './routes/api/v1/calculator.routes.js';
+import adminCalculatorRoutes from './routes/admin/v1/calculator.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
 
 dotenv.config();
@@ -56,6 +58,7 @@ app.use('/api/v1/sessions', sessionRoutes);
 app.use('/api/v1/features', featureRoutes);
 app.use('/api/v1/statistics', statisticRoutes);
 app.use('/api/v1/pricing', pricingRoutes);
+app.use('/api/v1/calculators', calculatorRoutes);
 
 // Admin Routes
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);
@@ -64,6 +67,7 @@ app.use('/admin/v1/exercises', adminExerciseRoutes);
 app.use('/admin/v1/flashcards', adminFlashcardRoutes);
 app.use('/admin/v1/summary-notes', adminSummaryNoteRoutes);
 app.use('/admin/v1/constants', adminConstantRoutes);
+app.use('/admin/v1/calculators', adminCalculatorRoutes);
 
 
 // Error handling middleware (must be last)

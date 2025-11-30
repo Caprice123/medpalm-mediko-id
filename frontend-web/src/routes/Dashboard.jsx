@@ -193,6 +193,12 @@ function Dashboard() {
         return
       }
 
+      // For calculator, navigate to dedicated calculator page
+      if (!sessionType) {
+        navigate('/calculators')
+        return
+      }
+
       // For other session types, create session and navigate to session detail
       const sessionData = await dispatch(createSession(sessionType))
       navigate(`/session/${sessionData.id}`)

@@ -17,6 +17,9 @@ export class GetActiveFeaturesService extends BaseService {
         "summary_notes_feature_title",
         "summary_notes_feature_description",
         "summary_notes_credit_cost",
+        "calculator_feature_title",
+        "calculator_feature_description",
+        "calculator_credit_cost"
     ])
 
     const features = []
@@ -51,6 +54,16 @@ export class GetActiveFeaturesService extends BaseService {
         cost: parseInt(featureConstants.summary_notes_credit_cost) || 0,
         icon: '📝',
         sessionType: 'summary_notes'
+      })
+    }
+
+    // Calculator feature
+    if (featureConstants.calculator_feature_title) {
+      features.push({
+        name: featureConstants.calculator_feature_title,
+        description: featureConstants.calculator_feature_description,
+        cost: parseInt(featureConstants.calculator_credit_cost) || 0,
+        icon: '🧮'
       })
     }
 

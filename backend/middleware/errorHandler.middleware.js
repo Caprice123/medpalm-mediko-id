@@ -1,4 +1,5 @@
 import { ValidationError } from '../errors/validationError.js'
+import { NotFoundError } from '../errors/notFoundError.js'
 
 /**
  * Global error handling middleware
@@ -10,6 +11,14 @@ export const errorHandler = (err, req, res, next) => {
   // Handle ValidationError (400 Bad Request)
   if (err instanceof ValidationError) {
     return res.status(400).json({
+      success: false,
+      error: err.message
+    })
+  }
+
+  // Handle NotFoundError (404 Not Found)
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({
       success: false,
       error: err.message
     })

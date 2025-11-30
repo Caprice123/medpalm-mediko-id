@@ -4,6 +4,7 @@ import FeatureConfig from './components/FeatureConfig'
 import Exercise from './subpages/Exercise'
 import Flashcard from './subpages/Flashcard'
 import SummaryNotes from './subpages/SummaryNotes'
+import Calculator from './subpages/Calculator'
 import {
   Container,
   HeaderSection,
@@ -40,6 +41,15 @@ const FEATURES_DATA = [
     cost: 5,
     isActive: true,
     color: '#10b981'
+  },
+  {
+    id: 11,
+    name: 'Kalkulator',
+    description: 'Kalkulator medis yang dapat dikonfigurasi dengan formula custom',
+    icon: '🧮',
+    cost: 0,
+    isActive: true,
+    color: '#f59e0b'
   }
 ]
 
@@ -83,6 +93,11 @@ function Features() {
     if (selectedFeature?.id === 10) {
       // Ringkasan Materi
       return <SummaryNotes onBack={handleBackToList} />
+    }
+
+    if (selectedFeature?.id === 11) {
+      // Kalkulator
+      return <Calculator onBack={handleBackToList} />
     }
 
     // Default feature config for other features

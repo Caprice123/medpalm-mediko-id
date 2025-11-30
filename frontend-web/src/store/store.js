@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import {useSelector, useDispatch } from 'react-redux';
 import auth from "./auth";
+import calculator from "./calculator";
 import common from "./common";
 import credit from "./credit";
 import exercise from "./exercise";
@@ -14,6 +15,7 @@ import summaryNotes from "./summaryNotes";
 
 export const rootReducer = combineReducers({
     auth,
+    calculator,
     common,
     credit,
     exercise,

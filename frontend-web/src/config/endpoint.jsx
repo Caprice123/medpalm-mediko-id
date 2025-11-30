@@ -94,4 +94,19 @@ export default {
             generate: `${API_BASE_URL}/admin/v1/summary-notes/generate`,
         }
     },
+    calculators: {
+        // User endpoints
+        topics: `${API_BASE_URL}/api/v1/calculators/topics`,
+        calculate: (topicId) => `${API_BASE_URL}/api/v1/calculators/${topicId}/calculate`,
+
+        // Admin endpoints
+        admin: {
+            list: `${API_BASE_URL}/admin/v1/calculators`,
+            detail: (id) => `${API_BASE_URL}/admin/v1/calculators/${id}`,
+            create: `${API_BASE_URL}/admin/v1/calculators`,
+            update: (id) => `${API_BASE_URL}/admin/v1/calculators/${id}`,
+            delete: (id) => `${API_BASE_URL}/admin/v1/calculators/${id}`,
+            constants: `${API_BASE_URL}/admin/v1/calculators/constants`,
+        }
+    },
 }
