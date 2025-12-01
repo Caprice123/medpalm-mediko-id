@@ -6,11 +6,24 @@ export class CreateTagService extends BaseService {
     static async call({ name, type }) {
         this.validate({ name, type })
 
+        // Find or create tag group based on type
+        let tagGroup = await prisma.tag_groups.findUnique({
+            where: { name: type }
+        })
+
+        if (!tagGroup) {
+            tagGroup = await prisma.tag_groups.create({
+                data: {
+                    name: type
+                }
+            })
+        }
+
         // Check if tag with same name and type already exists
         const existingTag = await prisma.tags.findFirst({
             where: {
                 name,
-                type
+                tag_group_id: tagGroup.id
             }
         })
 
@@ -22,6 +35,7 @@ export class CreateTagService extends BaseService {
             data: {
                 name,
                 type,
+                tag_group_id: tagGroup.id,
                 is_active: true
             }
         })
@@ -34,8 +48,8 @@ export class CreateTagService extends BaseService {
             throw new ValidationError('Tag name is required')
         }
 
-        if (!type || !['university', 'semester'].includes(type)) {
-            throw new ValidationError('Type must be either "university" or "semester"')
+        if (!type || typeof type !== 'string' || type.trim().length === 0) {
+            throw new ValidationError('Type is required')
         }
     }
 }

@@ -52,7 +52,7 @@ export function patchWithToken(url, requestBody = null, additionalHeaders = {}) 
 }
 
 export function deleteWithToken(url, additionalHeaders = {}) {
-    return makeRequestWithToken("DELETE", url, null, null, additionalHeaders)
+    return makeRequestWithToken("DELETE", url, null, {}, additionalHeaders)
 }
 
 // Public request methods (no authentication required)

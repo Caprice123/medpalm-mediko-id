@@ -15,6 +15,19 @@ export class UpdateTagService extends BaseService {
             throw new ValidationError('Tag not found')
         }
 
+        // Find or create tag group based on type
+        let tagGroup = await prisma.tag_groups.findUnique({
+            where: { name: type }
+        })
+
+        if (!tagGroup) {
+            tagGroup = await prisma.tag_groups.create({
+                data: {
+                    name: type
+                }
+            })
+        }
+
         // Check if another tag with same name and type exists (excluding current tag)
         const duplicateTag = await prisma.tags.findFirst({
             where: {
@@ -34,7 +47,8 @@ export class UpdateTagService extends BaseService {
             where: { id: parseInt(tagId) },
             data: {
                 name,
-                type
+                type,
+                tag_group_id: tagGroup.id
             }
         })
 
@@ -55,8 +69,8 @@ export class UpdateTagService extends BaseService {
             throw new ValidationError('Tag name is required')
         }
 
-        if (!type || !['university', 'semester'].includes(type)) {
-            throw new ValidationError('Type must be either "university" or "semester"')
+        if (!type || typeof type !== 'string' || type.trim().length === 0) {
+            throw new ValidationError('Type is required')
         }
     }
 }

@@ -37,6 +37,11 @@ export class GetCalculatorTopicDetailService extends BaseService {
                             }
                         }
                     }
+                },
+                calculator_topic_tags: {
+                    include: {
+                        tags: true
+                    }
                 }
             }
         })
@@ -75,16 +80,21 @@ export class GetCalculatorTopicDetailService extends BaseService {
             }))
         }))
 
+        // Transform tags
+        const tags = topic.calculator_topic_tags.map(tt => tt.tags)
+
         return {
             id: topic.id,
             title: topic.title,
             description: topic.description,
+            clinical_references: topic.clinical_references,
             formula: topic.formula,
             result_label: topic.result_label,
             result_unit: topic.result_unit,
             status: topic.status,
             fields,
             classifications,
+            tags,
             created_by: topic.created_by,
             created_at: topic.created_at,
             updated_at: topic.updated_at

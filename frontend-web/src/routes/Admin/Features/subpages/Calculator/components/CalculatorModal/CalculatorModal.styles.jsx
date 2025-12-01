@@ -6,55 +6,39 @@ export const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.4);
   display: ${props => props.isOpen ? 'flex' : 'none'};
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
-  backdrop-filter: blur(4px);
 `
 
 export const Modal = styled.div`
   background: white;
-  border-radius: 16px;
+  border-radius: 8px;
   max-width: 1000px;
   width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 `
 
 export const ModalHeader = styled.div`
-  padding: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: white;
-  border-radius: 16px 16px 0 0;
+  border-radius: 8px 8px 0 0;
 `
 
 export const ModalTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
   margin: 0;
 `
 
@@ -98,17 +82,16 @@ export const FormLabel = styled.label`
 
 export const FormInput = styled.input`
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   &::placeholder {
@@ -118,20 +101,19 @@ export const FormInput = styled.input`
 
 export const FormTextarea = styled.textarea`
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.875rem;
   min-height: 80px;
   font-family: inherit;
-  transition: all 0.3s ease;
   resize: vertical;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   &::placeholder {
@@ -147,19 +129,18 @@ export const FormRow = styled.div`
 
 export const Select = styled.select`
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
   background: white;
   cursor: pointer;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `
 
@@ -181,17 +162,15 @@ export const FieldsSection = styled.div`
   margin: 1.5rem 0;
   padding: 1.25rem;
   background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
 `
 
 export const SectionTitle = styled.h4`
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #374151;
   margin: 0 0 1rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 `
 
 export const FieldsList = styled.div`
@@ -203,18 +182,16 @@ export const FieldsList = styled.div`
 export const FieldItem = styled.div`
   background: white;
   padding: 1rem;
-  border: 2px solid ${props => props.isDragging ? '#8b5cf6' : '#e5e7eb'};
-  border-radius: 8px;
+  border: 1px solid ${props => props.isDragging ? '#3b82f6' : '#e5e7eb'};
+  border-radius: 6px;
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
   cursor: ${props => props.isDragging ? 'grabbing' : 'grab'};
   opacity: ${props => props.isDragging ? 0.7 : 1};
-  transition: all 0.2s;
 
   &:hover {
-    border-color: #8b5cf6;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+    border-color: #d1d5db;
   }
 `
 
@@ -255,31 +232,29 @@ export const SmallLabel = styled.label`
 
 export const SmallInput = styled.input`
   padding: 0.5rem;
-  border: 2px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `
 
 export const SmallSelect = styled.select`
   padding: 0.5rem;
-  border: 2px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
   background: white;
   cursor: pointer;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `
 
@@ -303,21 +278,19 @@ export const RemoveButton = styled.button`
 `
 
 export const AddButton = styled.button`
-  background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
-  border: 2px dashed #8b5cf6;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
+  background: white;
+  color: #3b82f6;
+  border: 1px dashed #3b82f6;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   margin-top: 0.75rem;
-  transition: all 0.3s ease;
   width: 100%;
 
   &:hover {
-    background: rgba(139, 92, 246, 0.2);
-    border-color: #7c3aed;
+    background: #eff6ff;
   }
 `
 
@@ -444,55 +417,47 @@ export const ModalFooter = styled.div`
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-  padding: 1.5rem;
-  border-top: 2px solid #e5e7eb;
-  background: white;
-  border-radius: 0 0 16px 16px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 0 0 8px 8px;
 `
 
 export const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
   border: none;
 
   ${props => props.variant === 'primary' ? `
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: #3b82f6;
     color: white;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 
     &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+      background: #2563eb;
     }
   ` : props.variant === 'danger' ? `
     background: #ef4444;
     color: white;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 
     &:hover:not(:disabled) {
       background: #dc2626;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
     }
   ` : `
-    background: transparent;
-    color: #6b7280;
-    border: 2px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
 
     &:hover {
-      background: #f3f4f6;
-      border-color: #d1d5db;
+      background: #f9fafb;
     }
   `}
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none !important;
   }
 `
 
@@ -631,4 +596,150 @@ export const ExampleBox = styled.div`
   font-family: 'Courier New', monospace;
   font-size: 0.75rem;
   color: #374151;
+`
+
+// Clinical References Styles
+export const ReferencesList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+`
+
+export const ReferenceItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+`
+
+export const ReferenceText = styled.span`
+  flex: 1;
+  font-size: 0.875rem;
+  color: #374151;
+`
+
+export const RemoveReferenceButton = styled.button`
+  background: #fecaca;
+  color: #dc2626;
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #fca5a5;
+  }
+`
+
+export const AddReferenceWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`
+
+// Tags Styles
+export const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+`
+
+export const Tag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(8, 145, 178, 0.1));
+  border: 2px solid rgba(6, 182, 212, 0.3);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0891b2;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.2);
+  }
+`
+
+export const RemoveTagButton = styled.button`
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+`
+
+export const SelectTagContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`
+
+export const SelectTag = styled.select`
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  background: white;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+  }
+`
+
+export const AddTagButton = styled.button`
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+`
+
+export const EmptyTagsMessage = styled.div`
+  text-align: center;
+  padding: 1rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
 `

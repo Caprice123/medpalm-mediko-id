@@ -6,21 +6,31 @@ export class GetTagsService extends BaseService {
     static async call(filters = {}) {
         this.validate(filters)
 
-        const where = {
-            is_active: true
-        }
+        const where = {}
 
         // Filter by type if provided
-        if (filters.type && ['university', 'semester'].includes(filters.type)) {
-            where.type = filters.type
+        if (filters.name) {
+            where.name = filters.name
         }
 
-        const tags = await prisma.tags.findMany({
+        const tags = await prisma.tag_groups.findMany({
             where,
             orderBy: [
-                { type: 'asc' },
                 { name: 'asc' }
-            ]
+            ],
+            include: {
+                tags: {
+                    select: {
+                        id: true,
+                        name: true,
+                        is_active: true,
+                        tag_group_id: true
+                    },
+                    orderBy: [
+                        { name: 'asc' }
+                    ]
+                }
+            }
         })
 
         return tags

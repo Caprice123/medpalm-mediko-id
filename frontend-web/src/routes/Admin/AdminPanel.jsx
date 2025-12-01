@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import PricingPlans from './PricingPlans/index'
 import Transactions from './Transactions'
 import Features from './Features/index'
+import Tags from './Tags'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -147,6 +148,12 @@ function AdminPanel() {
             Kelola Fitur
           </Tab>
           <Tab
+            active={activeTab === 'tags'}
+            onClick={() => setActiveTab('tags')}
+          >
+            Kelola Tag
+          </Tab>
+          <Tab
             active={activeTab === 'pricingPlans'}
             onClick={() => setActiveTab('pricingPlans')}
           >
@@ -168,6 +175,8 @@ function AdminPanel() {
 
         <ContentArea>
           {activeTab === 'features' && <Features />}
+
+          {activeTab === 'tags' && <Tags />}
 
           {activeTab === 'pricingPlans' && <PricingPlans />}
 

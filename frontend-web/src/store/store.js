@@ -7,6 +7,7 @@ import credit from "./credit";
 import exercise from "./exercise";
 import flashcard from "./flashcard";
 import tags from "./tags/reducer";
+import tagGroups from "./tagGroups/reducer";
 import session from "./session/reducer";
 import feature from "./feature/reducer";
 import statistic from "./statistic/reducer";
@@ -21,6 +22,7 @@ export const rootReducer = combineReducers({
     exercise,
     flashcard,
     tags,
+    tagGroups,
     session,
     feature,
     statistic,

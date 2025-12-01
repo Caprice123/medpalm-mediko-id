@@ -1,13 +1,6 @@
 import styled from 'styled-components'
 
-export const Container = styled.div`
-  animation: fadeIn 0.3s ease;
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-`
+export const Container = styled.div``
 
 export const Header = styled.div`
   display: flex;
@@ -17,23 +10,18 @@ export const Header = styled.div`
 `
 
 export const BackButton = styled.button`
-  background: transparent;
-  color: #6b7280;
-  border: 2px solid #e5e7eb;
-  padding: 0.625rem;
-  border-radius: 8px;
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  width: 40px;
-  height: 40px;
+  font-size: 0.875rem;
+  font-weight: 500;
 
   &:hover {
-    background: #f3f4f6;
-    border-color: #8b5cf6;
-    color: #8b5cf6;
+    background: #f9fafb;
+    border-color: #9ca3af;
   }
 `
 
@@ -47,53 +35,27 @@ export const HeaderContent = styled.div`
 export const TitleSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
-`
-
-export const IconLarge = styled.div`
-  width: 60px;
-  height: 60px;
-  background: rgba(139, 92, 246, 0.15);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  border: 2px solid rgba(139, 92, 246, 0.3);
 `
 
 export const Title = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
   margin: 0;
 `
 
 export const AddTopicButton = styled.button`
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  font-weight: 700;
+  background: ${props => props.secondary ? 'white' : '#3b82f6'};
+  color: ${props => props.secondary ? '#374151' : 'white'};
+  border: 1px solid ${props => props.secondary ? '#d1d5db' : '#3b82f6'};
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-  }
-
-  span {
-    font-size: 1.25rem;
+    background: ${props => props.secondary ? '#f9fafb' : '#2563eb'};
   }
 `
 
@@ -109,15 +71,12 @@ export const TopicsGrid = styled.div`
 
 export const TopicCard = styled.div`
   background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 1.25rem;
-  transition: all 0.3s ease;
 
   &:hover {
-    border-color: #8b5cf6;
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
-    transform: translateY(-2px);
+    border-color: #d1d5db;
   }
 `
 
@@ -129,25 +88,21 @@ export const TopicHeader = styled.div`
 `
 
 export const TopicTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #8b5cf6;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
   margin: 0 0 0.5rem 0;
   flex: 1;
 `
 
 export const StatusBadge = styled.span`
-  background: ${props => props.published
-    ? 'rgba(16, 185, 129, 0.1)'
-    : 'rgba(139, 92, 246, 0.1)'};
-  color: ${props => props.published
-    ? '#10b981'
-    : '#8b5cf6'};
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  background: ${props => props.published ? '#dcfce7' : '#e0e7ff'};
+  color: ${props => props.published ? '#16a34a' : '#4f46e5'};
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
   font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 500;
+  text-transform: capitalize;
 `
 
 export const TopicDescription = styled.p`
@@ -194,35 +149,28 @@ export const CardActions = styled.div`
 export const ActionButton = styled.button`
   flex: 1;
   padding: 0.5rem 1rem;
-  border: 2px solid ${props => props.danger ? '#ef4444' : '#8b5cf6'};
-  background: ${props => props.danger ? 'transparent' : 'rgba(139, 92, 246, 0.1)'};
-  color: ${props => props.danger ? '#ef4444' : '#8b5cf6'};
-  border-radius: 8px;
-  font-weight: 600;
+  border: 1px solid ${props => props.danger ? '#ef4444' : '#3b82f6'};
+  background: white;
+  color: ${props => props.danger ? '#ef4444' : '#3b82f6'};
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.danger ? 'rgba(239, 68, 68, 0.1)' : '#8b5cf6'};
-    color: ${props => props.danger ? '#dc2626' : 'white'};
-    transform: translateY(-1px);
+    background: ${props => props.danger ? '#fef2f2' : '#eff6ff'};
   }
 `
 
 export const EmptyState = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  color: #6b7280;
-
-  div:first-child {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-  }
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #374151;
@@ -234,26 +182,13 @@ export const EmptyState = styled.div`
   }
 `
 
-export const EmptyIcon = styled.div`
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-`
-
-export const EmptyText = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-`
-
 // Feature Settings Styles
 export const FeatureSettingsCard = styled.div`
   background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 `
 
 export const SettingsSection = styled.div`
@@ -264,11 +199,11 @@ export const SettingsSection = styled.div`
 
 export const SettingsTitle = styled.h3`
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #374151;
   margin: 0;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
 `
 
 export const SettingsGrid = styled.div`
@@ -285,7 +220,7 @@ export const SettingItem = styled.div`
 
 export const SettingLabel = styled.label`
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
   display: flex;
   justify-content: space-between;
@@ -304,7 +239,7 @@ export const ToggleSwitch = styled.label`
     height: 0;
 
     &:checked + span {
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      background: #3b82f6;
     }
 
     &:checked + span:before {
@@ -321,7 +256,7 @@ export const ToggleSlider = styled.span`
   right: 0;
   bottom: 0;
   background-color: #cbd5e1;
-  transition: 0.3s;
+  transition: 0.2s;
   border-radius: 34px;
 
   &:before {
@@ -332,44 +267,39 @@ export const ToggleSlider = styled.span`
     left: 4px;
     bottom: 4px;
     background-color: white;
-    transition: 0.3s;
+    transition: 0.2s;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 `
 
 export const Select = styled.select`
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.875rem;
-  font-weight: 500;
   color: #374151;
   background: white;
   cursor: pointer;
-  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `
 
 export const Input = styled.input`
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.875rem;
-  font-weight: 500;
   color: #374151;
   background: white;
-  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   &::placeholder {
@@ -378,24 +308,17 @@ export const Input = styled.input`
 `
 
 export const SaveButton = styled.button`
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: #3b82f6;
   color: white;
   border: none;
-  padding: 0.875rem 1.75rem;
-  border-radius: 10px;
-  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   align-self: flex-start;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
+    background: #2563eb;
   }
 `

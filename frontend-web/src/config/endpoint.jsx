@@ -6,12 +6,18 @@ export default {
     Logout: "/api/v1/logout",
     creditPlans: `${API_BASE_URL}/api/v1/credit-plans`,
     credits: `${API_BASE_URL}/api/credits`,
-    tags: {
-        list: `${API_BASE_URL}/api/v1/tags`,
-        create: `${API_BASE_URL}/api/v1/tags`,
-        update: (id) => `${API_BASE_URL}/api/v1/tags/${id}`,
-        delete: (id) => `${API_BASE_URL}/api/v1/tags/${id}`,
-    },
+    // tags: {
+    //     list: `${API_BASE_URL}/api/v1/tags`,
+    //     create: `${API_BASE_URL}/api/v1/tags`,
+    //     update: (id) => `${API_BASE_URL}/api/v1/tags/${id}`,
+    //     delete: (id) => `${API_BASE_URL}/api/v1/tags/${id}`,
+    // },
+    tags: "/admin/v1/tags",
+    // tagGroups: {
+    //     list: `${API_BASE_URL}/api/v1/tag-groups`,
+    //     create: `${API_BASE_URL}/api/v1/tag-groups`,
+    // },
+    tagGroups: "/admin/v1/tag-groups",
     exercises: {
         // User endpoints
         topics: `${API_BASE_URL}/api/v1/exercises/topics`,

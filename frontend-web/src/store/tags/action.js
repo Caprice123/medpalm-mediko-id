@@ -1,98 +1,83 @@
 import { actions } from '@store/tags/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
   setTags,
-  addTag,
-  updateTag,
-  removeTag,
-  setError,
-  clearError
 } = actions
 
 // ============= Tags Actions =============
-
-/**
- * Fetch all tags
- */
-export const fetchTags = (type = null) => async (dispatch) => {
+export const fetchTags = () => async (dispatch, getState) => {
   try {
-    dispatch(setLoading({ key: 'isTagsLoading', value: true }))
-    dispatch(clearError())
+    dispatch(setLoading({ key: 'isGetListTagsLoading', value: true }))
 
+    const { tagGroupNames } = getState().tags
     const queryParams = {}
-    if (type) queryParams.type = type
+    if (tagGroupNames) queryParams.tagGroupNames = tagGroupNames.join(",")
 
-    const response = await getWithToken(Endpoints.tags.list, queryParams)
-
-    dispatch(setTags(response.data.data || response.data.tags || []))
+    const route = Endpoints.tags
+    const response = await getWithToken(route, queryParams)
+    const { data } = response.data
+    dispatch(setTags(data))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
-    dispatch(setLoading({ key: 'isTagsLoading', value: false }))
+    dispatch(setLoading({ key: 'isGetListTagsLoading', value: false }))
+  }
+}
+
+export const createTag = (form, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isCreateTagLoading', value: true }))
+
+    const route = Endpoints.tags
+    const requestBody = {
+        groupName: form.tagGroup ? JSON.parse(form.tagGroup.value).name : null,
+        name: form.name
+    }
+    await postWithToken(route, requestBody)
+    if (onSuccess) onSuccess()
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: 'isCreateTagLoading', value: false }))
+  }
+}
+
+export const updateTag = (id, form, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateTagLoading', value: true }))
+
+    const subRoute = `/${id}`
+    const route = Endpoints.tags + subRoute
+    const requestBody = {
+        groupName: form.tagGroup ? JSON.parse(form.tagGroup.value).name : null,
+        name: form.name
+    }
+    await putWithToken(route, requestBody)
+    if (onSuccess) onSuccess()
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateTagLoading', value: false }))
   }
 }
 
 /**
- * Create new tag (admin only)
+ * Create tag group (admin only)
  */
-export const createTag = (tagData) => async (dispatch) => {
+export const createTagGroup = (groupData) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isCreating', value: true }))
-    dispatch(clearError())
 
-    const response = await postWithToken(Endpoints.tags.create, tagData)
+    const response = await postWithToken(Endpoints.tagGroups.create, groupData)
 
-    const tag = response.data.data || response.data.tag
-    dispatch(addTag(tag))
-    return tag
+    return response.data.data || response.data
   } catch (err) {
     handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isCreating', value: false }))
-  }
-}
-
-/**
- * Update existing tag (admin only)
- */
-export const updateTagAction = (tagId, tagData) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isUpdating', value: true }))
-    dispatch(clearError())
-
-    const response = await putWithToken(Endpoints.tags.update(tagId), tagData)
-
-    const tag = response.data.data || response.data.tag
-    dispatch(updateTag(tag))
-    return tag
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
-  } finally {
-    dispatch(setLoading({ key: 'isUpdating', value: false }))
-  }
-}
-
-/**
- * Delete tag (admin only)
- */
-export const deleteTag = (tagId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isDeleting', value: true }))
-    dispatch(clearError())
-
-    await deleteWithToken(Endpoints.tags.delete(tagId))
-
-    dispatch(removeTag(tagId))
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
-  } finally {
-    dispatch(setLoading({ key: 'isDeleting', value: false }))
   }
 }

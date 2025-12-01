@@ -409,6 +409,58 @@ function CalculatorPage() {
                   ))}
                 </ResultDetails>
               )}
+
+              {/* Clinical References Section */}
+              {selectedCalculator.clinical_references && selectedCalculator.clinical_references.length > 0 && (
+                <ResultDetails style={{ marginTop: '2rem' }}>
+                  <h4 style={{
+                    margin: '0 0 1.5rem 0',
+                    fontSize: '1rem',
+                    fontWeight: '800',
+                    color: '#0f172a',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <span style={{ fontSize: '1.25rem' }}>📚</span> Referensi Klinis
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {selectedCalculator.clinical_references.map((reference, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '1rem 1.25rem',
+                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(124, 58, 237, 0.05))',
+                          borderLeft: '4px solid #8b5cf6',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem',
+                          color: '#475569',
+                          lineHeight: '1.6',
+                          fontWeight: '500',
+                          animation: `fadeIn 0.4s ease ${index * 0.1}s backwards`,
+                          boxShadow: '0 2px 8px rgba(139, 92, 246, 0.08)',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(124, 58, 237, 0.08))'
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.12)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(124, 58, 237, 0.05))'
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(139, 92, 246, 0.08)'
+                        }}
+                      >
+                        <span style={{ fontWeight: '700', color: '#8b5cf6', marginRight: '0.5rem' }}>
+                          {index + 1}.
+                        </span>
+                        {reference}
+                      </div>
+                    ))}
+                  </div>
+                </ResultDetails>
+              )}
             </ResultSection>
           )}
           <style>{`

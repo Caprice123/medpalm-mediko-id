@@ -115,7 +115,7 @@ function CalculatorSettingsModal({ isOpen, onClose }) {
     <Overlay isOpen={isOpen} onClick={onClose}>
       <Modal onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <ModalTitle>⚙️ Pengaturan Fitur Kalkulator</ModalTitle>
+          <ModalTitle>Pengaturan Fitur Kalkulator</ModalTitle>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
 

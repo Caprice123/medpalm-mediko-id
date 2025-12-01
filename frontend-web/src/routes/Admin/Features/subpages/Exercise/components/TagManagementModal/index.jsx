@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createTag, updateTagAction, deleteTag } from '@store/tags/action'
+import { createTag, updateTag } from '@store/tags/action'
 import styled from 'styled-components'
 
 const Overlay = styled.div`
@@ -270,7 +270,7 @@ function TagManagementModal({ isOpen, onClose }) {
     }
 
     try {
-      await dispatch(updateTagAction(tagId, { name: editingTagName, type: tagType }))
+      await dispatch(updateTag(tagId, { name: editingTagName, type: tagType }))
       alert(`Tag berhasil diupdate menjadi "${editingTagName}"`)
       setEditingTagId(null)
       setEditingTagName('')
@@ -280,16 +280,8 @@ function TagManagementModal({ isOpen, onClose }) {
   }
 
   const handleDeleteTag = async (tagId, tagName) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus tag "${tagName}"?`)) {
-      return
-    }
-
-    try {
-      await dispatch(deleteTag(tagId))
-      alert(`Tag "${tagName}" berhasil dihapus`)
-    } catch (error) {
-      alert('Gagal menghapus tag: ' + error.message)
-    }
+    alert('Delete functionality is not available. Please use the Tags management page.')
+    // Delete functionality removed - use Tags management page instead
   }
 
   const handleCancelEdit = () => {

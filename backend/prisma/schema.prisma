@@ -185,17 +185,31 @@ model exercise_topics {
 model tags {
   id                  Int                   @id @default(autoincrement())
   name                String
-  type                String
+  tag_group_id        Int?
   is_active           Boolean               @default(true)
   created_at          DateTime              @default(now())
   updated_at          DateTime              @default(now())
-  exercise_topic_tags exercise_topic_tags[]
-  flashcard_deck_tags flashcard_deck_tags[]
-  summary_note_tags   summary_note_tags[]
 
-  @@unique([name, type])
+  tag_group           tag_groups            @relation(fields: [tag_group_id], references: [id], onDelete: Cascade)
+
+  exercise_topic_tags   exercise_topic_tags[]
+  flashcard_deck_tags   flashcard_deck_tags[]
+  summary_note_tags     summary_note_tags[]
+  calculator_topic_tags calculator_topic_tags[]
+
+  @@unique([name, tag_group_id])
   @@index([is_active])
-  @@index([type])
+}
+
+model tag_groups {
+    id                  Int                   @id @default(autoincrement())
+    name                String
+    created_at          DateTime              @default(now())
+    updated_at          DateTime              @default(now())
+
+    tags                tags[]
+
+    @@unique([name])
 }
 
 model user_credits {
@@ -523,24 +537,40 @@ model features {
 // ============= Calculator Feature =============
 
 model calculator_topics {
-  id              Int               @id @default(autoincrement())
-  title           String
-  description     String?
-  formula         String            // JavaScript expression, e.g., "weight * 2" or "(height + weight) / 2"
-  result_label    String            // Label for the result, e.g., "Total"
-  result_unit     String?           // Unit for result, e.g., "kg", "cm"
-  status          String            @default("draft")  // draft, published
-  is_active       Boolean           @default(true)
-  created_by      Int
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @default(now())
+  id                    Int               @id @default(autoincrement())
+  title                 String
+  description           String?
+  clinical_references   String[]          @default([])
+  formula               String            // JavaScript expression, e.g., "weight * 2" or "(height + weight) / 2"
+  result_label          String            // Label for the result, e.g., "Total"
+  result_unit           String?           // Unit for result, e.g., "kg", "cm"
+  status                String            @default("draft")  // draft, published
+  is_active             Boolean           @default(true)
+  created_by            Int
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @default(now())
 
   calculator_fields       calculator_fields[]
   calculator_classifications calculator_classifications[]
+  calculator_topic_tags   calculator_topic_tags[]
 
   @@index([created_by])
   @@index([status])
   @@index([is_active])
+}
+
+model calculator_topic_tags {
+    id                      Int           @id @default(autoincrement())
+    calculator_topic_id     Int
+    tag_id                  Int
+    created_at              DateTime      @default(now())
+
+    calculator_topic    calculator_topics @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
+    tags                tags          @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+    @@unique([calculator_topic_id, tag_id])
+    @@index([calculator_topic_id])
+    @@index([tag_id])
 }
 
 model calculator_fields {

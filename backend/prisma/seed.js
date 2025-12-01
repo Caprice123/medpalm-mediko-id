@@ -8,7 +8,7 @@ async function main() {
 
   try {
     // Run feature seeder
-    await seedFeatures()
+    // await seedFeatures()
 
     // Run exercise constants seeder
     await seedExerciseConstants()

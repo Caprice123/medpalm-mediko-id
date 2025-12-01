@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
+import { fetchTagGroups } from '@store/tagGroups/action'
+import { fetchTags } from '../../../../../../../store/tags/action'
 
 export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) => {
   const dispatch = useDispatch()
@@ -9,6 +11,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    clinical_references: [],
+    tags: [],
     formula: '',
     result_label: '',
     result_unit: '',
@@ -17,16 +21,36 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     status: 'draft'
   })
 
+  const [newReference, setNewReference] = useState('')
+  const [selectedTagId, setSelectedTagId] = useState('')
+
   const [initialFormData, setInitialFormData] = useState(null)
   const [errors, setErrors] = useState({})
   const [draggedIndex, setDraggedIndex] = useState(null)
   const [showConfirmClose, setShowConfirmClose] = useState(false)
+
+  // Fetch tags filtered by "kategori" tag group on mount
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(fetchTags(['kategori']))
+    }
+  }, [dispatch, isOpen])
+
+  // Get category tags from tags
+  const { tags } = useSelector(state => state.tags)
+  const categoryTags = tags.find(tag => tag.name === 'kategori')?.tags ?? []
+  const selectedTags = formData.tags || []
+  const unselectedCategoryTags = categoryTags?.filter(
+    tag => !selectedTags.find(st => st.id === tag.id)
+  )
 
   useEffect(() => {
     if (calculator) {
       const data = {
         title: calculator.title,
         description: calculator.description || '',
+        clinical_references: calculator.clinical_references || [],
+        tags: calculator.tags || [],
         formula: calculator.formula,
         result_label: calculator.result_label,
         result_unit: calculator.result_unit || '',
@@ -40,6 +64,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       const data = {
         title: '',
         description: '',
+        clinical_references: [],
+        tags: [],
         formula: '',
         result_label: '',
         result_unit: '',
@@ -53,6 +79,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     setErrors({})
     setDraggedIndex(null)
     setShowConfirmClose(false)
+    setNewReference('')
+    setSelectedTagId('')
   }, [calculator, isOpen])
 
   const hasUnsavedChanges = () => {
@@ -418,6 +446,47 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     }))
   }
 
+  // Clinical References handlers
+  const addClinicalReference = () => {
+    const trimmedRef = newReference.trim()
+    if (!trimmedRef) {
+      return
+    }
+    setFormData(prev => ({
+      ...prev,
+      clinical_references: [...prev.clinical_references, trimmedRef]
+    }))
+    setNewReference('') // Clear input and hide it
+  }
+
+  const removeClinicalReference = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      clinical_references: prev.clinical_references.filter((_, i) => i !== index)
+    }))
+  }
+
+  // Tag handlers
+  const handleAddTag = () => {
+    if (!selectedTagId) return
+
+    const tagToAdd = categoryTags.find(tag => tag.id === parseInt(selectedTagId))
+    if (tagToAdd && !formData.tags.find(t => t.id === tagToAdd.id)) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tagToAdd]
+      }))
+      setSelectedTagId('')
+    }
+  }
+
+  const handleRemoveTag = (tagId) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag.id !== tagId)
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -440,10 +509,25 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
 
   return {
     formData,
+    setFormData,
     errors,
     draggedIndex,
     showConfirmClose,
     loading: loading.isCreatingTopic || loading.isUpdatingTopic,
+    // Clinical References
+    newReference,
+    setNewReference,
+    addClinicalReference,
+    removeClinicalReference,
+    // Tags
+    selectedTagId,
+    setSelectedTagId,
+    categoryTags,
+    selectedTags,
+    unselectedCategoryTags,
+    handleAddTag,
+    handleRemoveTag,
+    // Fields
     handleFieldChange,
     handleFieldItemChange,
     addField,

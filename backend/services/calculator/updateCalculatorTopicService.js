@@ -7,7 +7,7 @@ export class UpdateCalculatorTopicService extends BaseService {
     static async call(topicId, data) {
         this.validate(data)
 
-        const { title, description, formula, result_label, result_unit, fields, classifications, status, is_active } = data
+        const { title, description, clinical_references, formula, result_label, result_unit, fields, classifications, tags, status, is_active } = data
 
         // Check if topic exists
         const existingTopic = await prisma.calculator_topics.findUnique({
@@ -26,6 +26,7 @@ export class UpdateCalculatorTopicService extends BaseService {
                 data: {
                     title,
                     description,
+                    clinical_references: clinical_references !== undefined ? clinical_references : undefined,
                     formula,
                     result_label,
                     result_unit,
@@ -41,6 +42,11 @@ export class UpdateCalculatorTopicService extends BaseService {
 
             // Delete existing classifications (cascade will delete conditions and options)
             await tx.calculator_classifications.deleteMany({
+                where: { calculator_topic_id: parseInt(topicId) }
+            })
+
+            // Delete existing tags
+            await tx.calculator_topic_tags.deleteMany({
                 where: { calculator_topic_id: parseInt(topicId) }
             })
 
@@ -150,6 +156,18 @@ export class UpdateCalculatorTopicService extends BaseService {
             }
         }
 
+        // Create calculator topic tags
+        if (tags && Array.isArray(tags) && tags.length > 0) {
+            const tagData = tags.map(tag => ({
+                calculator_topic_id: parseInt(topicId),
+                tag_id: typeof tag === 'object' ? tag.id : tag
+            }))
+
+            await prisma.calculator_topic_tags.createMany({
+                data: tagData
+            })
+        }
+
         // Refetch with all relations
         const finalTopic = await prisma.calculator_topics.findUnique({
             where: { id: parseInt(topicId) },
@@ -184,6 +202,11 @@ export class UpdateCalculatorTopicService extends BaseService {
                             }
                         }
                     }
+                },
+                calculator_topic_tags: {
+                    include: {
+                        tags: true
+                    }
                 }
             }
         })
@@ -192,6 +215,7 @@ export class UpdateCalculatorTopicService extends BaseService {
             id: finalTopic.id,
             title: finalTopic.title,
             description: finalTopic.description,
+            clinical_references: finalTopic.clinical_references,
             formula: finalTopic.formula,
             result_label: finalTopic.result_label,
             result_unit: finalTopic.result_unit,
@@ -199,6 +223,7 @@ export class UpdateCalculatorTopicService extends BaseService {
             is_active: finalTopic.is_active,
             fields: finalTopic.calculator_fields,
             classifications: finalTopic.calculator_classifications,
+            tags: finalTopic.calculator_topic_tags.map(tt => tt.tags),
             created_by: finalTopic.created_by,
             created_at: finalTopic.created_at,
             updated_at: finalTopic.updated_at

@@ -43,21 +43,27 @@ class CalculatorController {
     const {
       title,
       description,
-      formula,
-      result_label,
-      result_unit,
-      fields,
-      classifications
-    } = req.body
-
-    const topic = await CreateCalculatorTopicService.call({
-      title,
-      description,
+      clinical_references,
       formula,
       result_label,
       result_unit,
       fields,
       classifications,
+      status,
+      tags
+    } = req.body
+
+    const topic = await CreateCalculatorTopicService.call({
+      title,
+      description,
+      clinical_references,
+      formula,
+      result_label,
+      result_unit,
+      fields,
+      classifications,
+      status,
+      tags,
       created_by: req.user.id
     })
 
@@ -77,24 +83,28 @@ class CalculatorController {
     const {
       title,
       description,
+      clinical_references,
       formula,
       result_label,
       result_unit,
       fields,
       classifications,
       status,
+      tags,
       is_active
     } = req.body
 
     const topic = await UpdateCalculatorTopicService.call(id, {
       title,
       description,
+      clinical_references,
       formula,
       result_label,
       result_unit,
       fields,
       classifications,
       status,
+      tags,
       is_active
     })
 

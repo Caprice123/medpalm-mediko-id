@@ -6,15 +6,17 @@ export class CreateCalculatorTopicService extends BaseService {
     static async call(data) {
         this.validate(data)
 
-        const { title, description, formula, result_label, result_unit, fields, classifications, created_by } = data
+        const { title, description, clinical_references, formula, result_label, result_unit, fields, classifications, tags, status, created_by } = data
 
         const topic = await prisma.calculator_topics.create({
             data: {
                 title,
                 description,
+                clinical_references: clinical_references || [],
                 formula,
                 result_label,
                 result_unit,
+                status,
                 created_by: parseInt(created_by),
                 calculator_fields: {
                     createMany: {
@@ -121,6 +123,18 @@ export class CreateCalculatorTopicService extends BaseService {
             }
         }
 
+        // Create calculator topic tags
+        if (tags && Array.isArray(tags) && tags.length > 0) {
+            const tagData = tags.map(tag => ({
+                calculator_topic_id: topic.id,
+                tag_id: typeof tag === 'object' ? tag.id : tag
+            }))
+
+            await prisma.calculator_topic_tags.createMany({
+                data: tagData
+            })
+        }
+
         // Refetch with all relations
         const finalTopic = await prisma.calculator_topics.findUnique({
             where: { id: topic.id },
@@ -155,6 +169,11 @@ export class CreateCalculatorTopicService extends BaseService {
                             }
                         }
                     }
+                },
+                calculator_topic_tags: {
+                    include: {
+                        tags: true
+                    }
                 }
             }
         })
@@ -163,6 +182,7 @@ export class CreateCalculatorTopicService extends BaseService {
             id: finalTopic.id,
             title: finalTopic.title,
             description: finalTopic.description,
+            clinical_references: finalTopic.clinical_references,
             formula: finalTopic.formula,
             result_label: finalTopic.result_label,
             result_unit: finalTopic.result_unit,
@@ -170,6 +190,7 @@ export class CreateCalculatorTopicService extends BaseService {
             is_active: finalTopic.is_active,
             fields: finalTopic.calculator_fields,
             classifications: finalTopic.calculator_classifications,
+            tags: finalTopic.calculator_topic_tags.map(tt => tt.tags),
             created_by: finalTopic.created_by,
             created_at: finalTopic.created_at,
             updated_at: finalTopic.updated_at

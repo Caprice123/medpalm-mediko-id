@@ -54,7 +54,19 @@ import {
   InfoBox,
   InfoIcon,
   InfoText,
-  ExampleBox
+  ExampleBox,
+  ReferencesList,
+  ReferenceItem,
+  ReferenceText,
+  RemoveReferenceButton,
+  AddReferenceWrapper,
+  TagsContainer,
+  Tag,
+  RemoveTagButton,
+  SelectTagContainer,
+  SelectTag,
+  AddTagButton,
+  EmptyTagsMessage
 } from './CalculatorModal.styles'
 
 function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
@@ -78,10 +90,21 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
   const {
     formData,
+    setFormData,
     errors,
     draggedIndex,
     showConfirmClose,
     loading,
+    newReference,
+    setNewReference,
+    addClinicalReference,
+    removeClinicalReference,
+    selectedTagId,
+    setSelectedTagId,
+    selectedTags,
+    unselectedCategoryTags,
+    handleAddTag,
+    handleRemoveTag,
     handleFieldChange,
     handleFieldItemChange,
     addField,
@@ -116,9 +139,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
         <Modal onClick={e => e.stopPropagation()}>
           <ModalHeader>
             <ModalTitle>
-              {calculator ? '✏️ Edit Calculator' : '➕ Create Calculator'}
+              {calculator ? 'Edit Calculator' : 'Create Calculator'}
             </ModalTitle>
-            <CloseButton onClick={handleClose}>✕</CloseButton>
+            <CloseButton onClick={handleClose}>×</CloseButton>
           </ModalHeader>
 
           <ModalBody>
@@ -145,6 +168,48 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                   placeholder="Jelaskan fungsi kalkulator ini dan untuk apa digunakan..."
                 />
                 <HelpText>Opsional - Deskripsi singkat tentang kalkulator</HelpText>
+              </FormGroup>
+
+              {/* Category Tags Section */}
+              <FormGroup>
+                <FormLabel>Kategori</FormLabel>
+                {selectedTags.length > 0 ? (
+                  <TagsContainer>
+                    {selectedTags.map(tag => (
+                      <Tag key={tag.id}>
+                        <span>{tag.name}</span>
+                        <RemoveTagButton type="button" onClick={() => handleRemoveTag(tag.id)}>
+                          ×
+                        </RemoveTagButton>
+                      </Tag>
+                    ))}
+                  </TagsContainer>
+                ) : (
+                  <EmptyTagsMessage>
+                    Belum ada kategori dipilih
+                  </EmptyTagsMessage>
+                )}
+                <SelectTagContainer>
+                  <SelectTag
+                    value={selectedTagId}
+                    onChange={(e) => setSelectedTagId(e.target.value)}
+                  >
+                    <option value="">-- Pilih Kategori --</option>
+                    {unselectedCategoryTags?.map(tag => (
+                      <option key={tag.id} value={tag.id}>
+                        {tag.name}
+                      </option>
+                    ))}
+                  </SelectTag>
+                  <AddTagButton
+                    type="button"
+                    onClick={handleAddTag}
+                    disabled={!selectedTagId}
+                  >
+                    + Tambah
+                  </AddTagButton>
+                </SelectTagContainer>
+                <HelpText>Pilih kategori untuk membantu mengorganisir kalkulator</HelpText>
               </FormGroup>
 
               {/* Step 2: Result Configuration */}
@@ -435,7 +500,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
                                 {/* Conditions - Collapsible */}
                                 {isExpanded && <div>
-                                  <SubLabel style={{ fontSize: '0.8rem' }}>⚙️ Kondisi untuk "{option.label || option.value || 'klasifikasi ini'}"</SubLabel>
+                                  <SubLabel style={{ fontSize: '0.8rem' }}>Kondisi untuk "{option.label || option.value || 'klasifikasi ini'}"</SubLabel>
                                   <HelpText style={{ marginTop: '0.25rem', marginBottom: '0.5rem', fontSize: '0.75rem' }}>
                                     Kondisi terakhir otomatis tanpa logical operator (null). Gunakan AND jika semua harus terpenuhi, OR jika salah satu saja.
                                   </HelpText>
@@ -568,6 +633,60 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                   <HelpText>Draft: hanya admin yang bisa lihat. Published: tersedia untuk semua user.</HelpText>
                 </FormGroup>
               </FormRow>
+
+              
+              {/* Clinical References Section */}
+              <FormGroup>
+                <FormLabel>Referensi Klinis</FormLabel>
+                {/* {formData.clinical_references && formData.clinical_references.length > 0 && (
+                  <ReferencesList>
+                    {formData.clinical_references.map((ref, index) => (
+                      <ReferenceItem key={index}>
+                        <ReferenceText>{ref}</ReferenceText>
+                        <RemoveReferenceButton
+                          type="button"
+                          onClick={() => removeClinicalReference(index)}
+                        >
+                          ×
+                        </RemoveReferenceButton>
+                      </ReferenceItem>
+                    ))}
+                  </ReferencesList>
+                )} */}
+                {formData.clinical_references.map((ref, index) => (
+                  <AddReferenceWrapper key={index} style={{ marginBottom: '0.5rem' }}>
+                    <FormInput
+                      type="text"
+                      value={ref}
+                      onChange={(e) => {
+                        setFormData(prev => {
+                            const updated = [...prev.clinical_references];
+                            updated[index] = e.target.value;
+
+                            return { ...prev, clinical_references: updated };
+                        });
+                      }}
+                      placeholder="Contoh: American Heart Association Guidelines 2020"
+                      autoFocus
+                    />
+                    <SmallButton
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, clinical_references: prev.clinical_references.filter((_, i) => i !== index) }))}
+                      style={{ background: '#f3f4f6', color: '#6b7280' }}
+                    >
+                      ✕
+                    </SmallButton>
+                  </AddReferenceWrapper>
+                ))}
+                  <AddButton
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, clinical_references: [...prev.clinical_references, ''] }))}
+                    style={{ width: '100%' }}
+                  >
+                    + Tambah Referensi
+                  </AddButton>
+                <HelpText>Tambahkan referensi klinis atau guideline untuk kalkulator ini</HelpText>
+              </FormGroup>
             </form>
           </ModalBody>
 

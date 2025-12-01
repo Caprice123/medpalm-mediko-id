@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchTags, createTag, updateTagAction, deleteTag } from '@store/tags/action'
+import { fetchTags, deleteTag } from '@store/tags/action'
 import {
   Container,
   Header,
@@ -108,21 +108,12 @@ function Tags({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>←</BackButton>
+        {onBack && <BackButton onClick={onBack}>←</BackButton>}
         <HeaderContent>
-          <TitleSection>
-            <IconLarge>🏷️</IconLarge>
-            <div>
-              <Title>Kelola Tag</Title>
-              <Subtitle>Buat grup tag dan kelola tag untuk mengorganisir konten</Subtitle>
-            </div>
-          </TitleSection>
-          <ActionsRow>
             <ActionButton onClick={handleCreateGroup}>
               <span>+</span>
               Buat Grup Tag
             </ActionButton>
-          </ActionsRow>
         </HeaderContent>
       </Header>
 
