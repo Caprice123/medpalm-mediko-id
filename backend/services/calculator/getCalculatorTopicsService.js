@@ -57,7 +57,7 @@ export class GetCalculatorTopicsService extends BaseService {
                 created_at: 'desc'
             }
         })
-
+        
         // Transform the response
         const transformedTopics = topics.map(topic => ({
             id: topic.id,
@@ -80,7 +80,7 @@ export class GetCalculatorTopicsService extends BaseService {
             created_at: topic.created_at,
             updated_at: topic.updated_at
         }))
-
+        
         return transformedTopics
     }
 }

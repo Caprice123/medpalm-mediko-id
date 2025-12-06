@@ -13,22 +13,9 @@ class CalculatorController {
     const { name, tagName } = req.query
 
     const topics = await GetCalculatorTopicsService.call({ name, tagName })
-    const publicTopics = topics.filter(topic =>
-      topic.status === 'published' && topic.is_active
-    ).map(topic => ({
-      id: topic.id,
-      title: topic.title,
-      description: topic.description,
-      result_label: topic.result_label,
-      result_unit: topic.result_unit,
-      fields: topic.fields,
-      tags: topic.tags,
-      clinical_references: topic.clinical_references
-    }))
-
     return res.status(200).json({
       success: true,
-      data: publicTopics,
+      data: topics,
       message: 'Calculator topics retrieved successfully'
     })
   }
