@@ -29,9 +29,8 @@ export class CreateAnatomyQuizService extends BaseService {
         created_by,
         anatomy_questions: {
           create: questions.map((q, index) => ({
-            question: q.label,
+            question: q.question,
             answer: q.answer,
-            explanation: q.explanation || '',
             order: q.order !== undefined ? q.order : index
           }))
         },

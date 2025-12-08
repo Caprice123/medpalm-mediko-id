@@ -70,11 +70,23 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
             {quiz.description || 'Tidak ada deskripsi'}
           </QuizDescription>
 
-          {quiz.tags && quiz.tags.length > 0 && (
+          {/* University Tags */}
+          {quiz.universityTags && quiz.universityTags.length > 0 && (
             <TagList>
-              {quiz.tags.map((qt, index) => (
-                <Tag key={index}>
-                  {/* {getTagName(qt.tag_id)} */}
+              {quiz.universityTags.map((tag) => (
+                <Tag key={tag.id} university>
+                  🏛️ {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
+          {/* Semester Tags */}
+          {quiz.semesterTags && quiz.semesterTags.length > 0 && (
+            <TagList>
+              {quiz.semesterTags.map((tag) => (
+                <Tag key={tag.id} semester>
+                  📚 {tag.name}
                 </Tag>
               ))}
             </TagList>
@@ -86,13 +98,9 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
               <StatValue>{quiz.questionCount || 0}</StatValue>
             </StatItem>
             <StatItem>
-              <StatLabel>Tags</StatLabel>
-              <StatValue>{quiz.tags?.length || 0}</StatValue>
-            </StatItem>
-            <StatItem>
               <StatLabel>Created</StatLabel>
               <StatValue>
-                {new Date(quiz.created_at).toLocaleDateString()}
+                {new Date(quiz.createdAt).toLocaleDateString("id-ID")}
               </StatValue>
             </StatItem>
           </QuizStats>

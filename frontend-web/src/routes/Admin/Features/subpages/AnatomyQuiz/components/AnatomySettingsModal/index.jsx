@@ -17,12 +17,14 @@ import {
   Button,
   LoadingSpinner
 } from './AnatomySettingsModal.styles'
+import { useFeatureSetting } from '../../hooks/subhooks/useFeatureSetting'
 
-function AnatomySettingsModal({ isOpen, form, onClose }) {
+function AnatomySettingsModal({ onClose }) {
     const { loading } = useSelector(state => state.anatomy)
+    const { form } = useFeatureSetting()
 
   return (
-    <Overlay isOpen={isOpen} onClick={onClose}>
+    <Overlay isOpen={true} onClick={onClose}>
       <Modal onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>Pengaturan Fitur Quiz Anatomi</ModalTitle>

@@ -53,7 +53,6 @@ export class UpdateAnatomyQuizService extends BaseService {
             create: questions.map((q, index) => ({
               question: q.question,
               answer: q.answer,
-              explanation: q.explanation || '',
               order: q.order !== undefined ? q.order : index
             }))
           },

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import {
   PaginationContainer,
   PaginationButton,
@@ -6,16 +6,15 @@ import {
 } from './Pagination.styles'
 
 /**
- * Reusable Pagination Component
+ * Reusable Pagination Component (isLastPage-based)
  * @param {number} currentPage - Current page number
- * @param {number} totalPages - Total number of pages (optional, if provided will show "Page X of Y")
- * @param {boolean} isLastPage - Whether this is the last page (used when totalPages is not available)
+ * @param {boolean} isLastPage - Whether this is the last page
  * @param {function} onPageChange - Callback function when page changes
  * @param {boolean} isLoading - Whether data is currently loading
  * @param {string} variant - Style variant: 'default' or 'admin' (default: 'default')
  * @param {string} language - Language: 'id' or 'en' (default: 'en')
  */
-function Pagination({
+const Pagination = memo(function Pagination({
   currentPage,
   isLastPage,
   onPageChange,
@@ -53,9 +52,6 @@ function Pagination({
 
   const t = text[language]
 
-  // Determine if next button should be disabled
-  const isNextDisabled = totalPages ? currentPage >= totalPages : (isLastPage || false)
-
   return (
     <PaginationContainer>
       <PaginationButton
@@ -67,21 +63,24 @@ function Pagination({
       </PaginationButton>
 
       <PageInfo>
-        {totalPages
-          ? `${t.page} ${currentPage} ${t.of} ${totalPages}`
-          : `${t.page} ${currentPage}`
-        }
+        {t.page} {currentPage}
       </PageInfo>
 
       <PaginationButton
         onClick={handleNext}
-        disabled={isNextDisabled || isLoading}
+        disabled={isLastPage || isLoading}
         $variant={variant}
       >
         {t.next}
       </PaginationButton>
     </PaginationContainer>
   )
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.currentPage === nextProps.currentPage &&
+    prevProps.isLastPage === nextProps.isLastPage &&
+    prevProps.isLoading === nextProps.isLoading
+  )
+})
 
 export default Pagination

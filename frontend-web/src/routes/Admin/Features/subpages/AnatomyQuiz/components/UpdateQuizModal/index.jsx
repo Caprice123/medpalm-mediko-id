@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import {
@@ -25,15 +25,15 @@ import {
   StatusToggle,
   StatusOption,
   Button
-} from './CreateQuizModal.styles'
+} from './UpdateQuizModal.styles'
 import { useSelector } from 'react-redux'
-import { useCreateQuiz } from '../../hooks/subhooks/useCreateQuiz'
+import { useUpdateQuiz } from '../../hooks/subhooks/useUpdateQuiz'
 
-const CreateQuizModal = ({ onClose }) => {
+const UpdateQuizModal = ({ onClose }) => {
     const { loading } = useSelector(state => state.anatomy)
     const { tags } = useSelector(state => state.tags)
 
-    const { form, handleImageSelect, handleAddQuestion, handleRemoveQuestion } = useCreateQuiz()
+    const { form, handleAddQuestion, handleRemoveQuestion, handleImageSelect } = useUpdateQuiz(onClose)
 
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
@@ -46,13 +46,13 @@ const CreateQuizModal = ({ onClose }) => {
   )
 
   // Handlers for tag changes - now directly update separate fields
-  const handleUniversityTagsChange = (newTags) => {
+  const handleUniversityTagsChange = useCallback((newTags) => {
     form.setFieldValue('universityTags', newTags)
-  }
+  }, [form])
 
-  const handleSemesterTagsChange = (newTags) => {
+  const handleSemesterTagsChange = useCallback((newTags) => {
     form.setFieldValue('semesterTags', newTags)
-  }
+  }, [form])
 
   const handleModalClose = () => {
     if (onClose) onClose()
@@ -63,7 +63,7 @@ const CreateQuizModal = ({ onClose }) => {
       <Modal
         isOpen={true}
         onClose={handleModalClose}
-        title={'Create Anatomy Quiz'}
+        title={'Edit Anatomy Quiz'}
         size="large"
         footer={
           <>
@@ -74,8 +74,8 @@ const CreateQuizModal = ({ onClose }) => {
               disabled={loading.isCreatingQuiz || loading.isUpdatingQuiz}
             >
               {(loading.isCreatingQuiz || loading.isUpdatingQuiz)
-                ? 'Creating...'
-                : 'Create Quiz'}
+                ? 'Updating...'
+                : 'Update Quiz'}
             </Button>
           </>
         }
@@ -238,4 +238,4 @@ const CreateQuizModal = ({ onClose }) => {
   )
 }
 
-export default CreateQuizModal
+export default UpdateQuizModal

@@ -6,7 +6,7 @@ import {
 } from '@store/anatomy/action'
 import { useUploadAttachment } from './useUploadAttachment'
 
-export const useCreateQuiz = (setUiState) => {
+export const useCreateQuiz = (closeCallback) => {
   const dispatch = useDispatch()
   const [showConfirmClose, setShowConfirmClose] = useState(false)
 
@@ -33,8 +33,8 @@ export const useCreateQuiz = (setUiState) => {
       delete quizData.semesterTags
 
       const onSuccess = () => {
-        setUiState(prev => ({ ...prev, mode: null, isCalculatorModalOpen: false }))
         resetForm()
+        onClose()
       }
 
       dispatch(createAnatomyQuiz(quizData, onSuccess))
@@ -53,7 +53,7 @@ export const useCreateQuiz = (setUiState) => {
     return JSON.stringify(form.values) !== initialFormData.current
   }, [form.values])
 
-  const onClose = useCallback((closeCallback) => {
+  const onClose = () => {
     if (hasUnsavedChanges()) {
       setShowConfirmClose(true)
       // Store the callback to call after confirmation
@@ -61,29 +61,28 @@ export const useCreateQuiz = (setUiState) => {
     } else {
       if (closeCallback) closeCallback()
     }
-  }, [hasUnsavedChanges])
+  }
 
-  const handleConfirmClose = useCallback(() => {
+  const handleConfirmClose = () => {
     setShowConfirmClose(false)
     if (onClose.closeCallback) {
       onClose.closeCallback()
       onClose.closeCallback = null
       form.resetForm()
     }
-  }, [])
+  }
 
-  const handleCancelClose = useCallback(() => {
+  const handleCancelClose = () => {
     setShowConfirmClose(false)
     onClose.closeCallback = null
-  }, [])
+  }
 
   const handleAddQuestion = () => {
     form.setFieldValue('questions', [
       ...form.values.questions,
       {
-        label: '',
+        question: '',
         answer: '',
-        explanation: '',
       }
     ])
   }
@@ -102,9 +101,9 @@ export const useCreateQuiz = (setUiState) => {
 
   return {
     form,
+    showConfirmClose,
     onChange: form.handleChange,
     onClose,
-    showConfirmClose,
     handleConfirmClose,
     handleCancelClose,
     handleAddQuestion,

@@ -3,9 +3,6 @@ import { useDispatch } from 'react-redux'
 import { fetchAdminAnatomyQuizzes } from '@store/anatomy/action'
 import { fetchTags } from '@store/tags/action'
 import { actions } from "@store/tags/reducer"
-import { useCreateQuiz } from './subhooks/useCreateQuiz'
-import { useFeatureSetting } from './subhooks/useFeatureSetting'
-import { useUpdateQuiz } from './subhooks/useUpdateQuiz'
 
 export const useAnatomyQuizSection = () => {
   const dispatch = useDispatch()
@@ -27,8 +24,5 @@ export const useAnatomyQuizSection = () => {
   return {
     uiState,
     setUiState,
-    useFeatureSetting: useFeatureSetting(setUiState),
-    useCreateQuiz: useCreateQuiz(setUiState),
-    useUpdateQuiz: useUpdateQuiz(setUiState)
   }
 }

@@ -135,7 +135,7 @@ export const fetchAdminAnatomyQuizzes = () => async (dispatch, getState) => {
 /**
  * Fetch single quiz for admin editing
  */
-export const fetchAdminAnatomyQuiz = (quizId) => async (dispatch) => {
+export const fetchAdminAnatomyQuiz = (quizId, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isQuizLoading', value: true }))
 
@@ -144,6 +144,7 @@ export const fetchAdminAnatomyQuiz = (quizId) => async (dispatch) => {
     const quiz = response.data.data || response.data.quiz
     dispatch(setSelectedQuiz(quiz))
     dispatch(setQuestions(quiz.anatomy_questions || quiz.questions || []))
+    if (onSuccess) onSuccess(quiz)
     return quiz
   } catch (err) {
     handleApiError(err, dispatch)

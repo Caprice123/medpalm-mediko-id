@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { useAnatomyQuizSection } from './hooks/useAnatomyQuizSection'
 import { actions } from '@store/anatomy/reducer'
-import { fetchAdminAnatomyQuizzes } from '@store/anatomy/action'
+import { fetchAdminAnatomyQuizzes, fetchAdminAnatomyQuiz } from '@store/anatomy/action'
 import CreateQuizModal from './components/CreateQuizModal'
 import AnatomySettingsModal from './components/AnatomySettingsModal'
 import QuizList from './components/QuizList'
@@ -17,6 +17,7 @@ import {
   ActionButton
 } from './AnatomyQuiz.styles'
 import { Filter } from './components/Filter'
+import UpdateQuizModal from './components/UpdateQuizModal'
 
 function AnatomyQuiz({ onBack }) {
   const dispatch = useDispatch()
@@ -25,15 +26,24 @@ function AnatomyQuiz({ onBack }) {
   const {
     uiState,
     setUiState,
-    useFeatureSetting,
-    useCreateQuiz,
-    useUpdateQuiz,
   } = useAnatomyQuizSection()
 
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
     dispatch(fetchAdminAnatomyQuizzes())
   }
+
+  const handleEditQuiz = async (quiz) => {
+    // Fetch full quiz details including questions
+    await dispatch(fetchAdminAnatomyQuiz(quiz.id, () => {
+        setUiState({
+          ...uiState,
+          isCalculatorModalOpen: true,
+          mode: "update",
+        })
+    }))
+  }
+  console.log(uiState)
 
   return (
     <Container>
@@ -57,7 +67,7 @@ function AnatomyQuiz({ onBack }) {
       <Filter />
 
       <QuizList
-        onEdit={(quiz) => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "update", selectedQuiz: quiz })}
+        onEdit={handleEditQuiz}
         onDelete={(id) => {
           // Handle delete
         }}
@@ -73,18 +83,17 @@ function AnatomyQuiz({ onBack }) {
         language="id"
       />
 
-      <CreateQuizModal
-        isOpen={uiState.isCalculatorModalOpen}
-        mode={uiState.mode}
-        handler={useCreateQuiz}
-        onClose={() => setUiState({ ...uiState, isCalculatorModalOpen: false, mode: null, selectedQuiz: null })}
-      />
+      { uiState.isCalculatorModalOpen && uiState.mode == "create" && (
+        <CreateQuizModal onClose={() => setUiState({ ...uiState, isCalculatorModalOpen: false, mode: null, selectedQuiz: null })} />
+      )}
 
-      <AnatomySettingsModal
-        isOpen={uiState.setIsFeatureSettingModalOpen}
-        form={useFeatureSetting.form}
-        onClose={useFeatureSetting.onClose}
-      />
+      { uiState.isCalculatorModalOpen && uiState.mode == "update" && (
+        <UpdateQuizModal onClose={() => setUiState({ ...uiState, isCalculatorModalOpen: false, mode: null, selectedQuiz: null })} />
+      )}
+
+      { uiState.setIsFeatureSettingModalOpen && (
+        <AnatomySettingsModal onClose={() => setUiState(prev => ({ ...prev, setIsFeatureSettingModalOpen: false }))}/>
+      )}
     </Container>
   )
 }

@@ -75,7 +75,11 @@ export class GetAnatomyQuizzesService extends BaseService {
       include: {
         anatomy_quiz_tags: {
           include: {
-            tags: true
+            tags: {
+              include: {
+                tag_group: true
+              }
+            }
           }
         },
         _count: {
@@ -109,21 +113,32 @@ export class GetAnatomyQuizzesService extends BaseService {
     )
 
     // Transform the response (no await needed - all URLs fetched)
-    const transformedQuizzes = paginatedQuizzes.map((quiz) => ({
-      id: quiz.id,
-      title: quiz.title,
-      description: quiz.description,
-      image_url: urlMap.get(quiz.image_key),
-      cost: parseInt(cost),
-      tags: quiz.anatomy_quiz_tags.map(t => ({
+    const transformedQuizzes = paginatedQuizzes.map((quiz) => {
+      // Separate tags by group
+      const allTags = quiz.anatomy_quiz_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,
-        tagGroupId: t.tags.tag_group_id
-      })),
-      questionCount: quiz._count.anatomy_questions,
-      createdAt: quiz.created_at,
-      updatedAt: quiz.updated_at
-    }))
+        tagGroupId: t.tags.tag_group_id,
+        tagGroupName: t.tags.tag_group?.name
+      }))
+
+      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+
+      return {
+        id: quiz.id,
+        title: quiz.title,
+        description: quiz.description,
+        image_url: urlMap.get(quiz.image_key),
+        cost: parseInt(cost),
+        tags: allTags,
+        universityTags,
+        semesterTags,
+        questionCount: quiz._count.anatomy_questions,
+        createdAt: quiz.created_at,
+        updatedAt: quiz.updated_at
+      }
+    })
 
     return {
       data: transformedQuizzes,

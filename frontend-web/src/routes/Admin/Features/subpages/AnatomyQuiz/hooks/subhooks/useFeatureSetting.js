@@ -3,8 +3,9 @@ import { featureSettingSchema } from "../../validationSchema/featureSettingSchem
 import { useDispatch } from "react-redux"
 import { updateAnatomyConstants } from "@store/anatomy/action"
 import { fetchAnatomyConstants } from "../../../../../../../store/anatomy/action"
+import { useEffect } from "react"
 
-export const useFeatureSetting = (setUiState) => {
+export const useFeatureSetting = () => {
     const dispatch = useDispatch()
     const form = useFormik({
         initialValues: {
@@ -20,18 +21,15 @@ export const useFeatureSetting = (setUiState) => {
         }
     })
 
-    const onOpen = async () => {
-        setUiState(prev => ({ ...prev, setIsFeatureSettingModalOpen: true }))
-        const constants = await dispatch(fetchAnatomyConstants())
-        form.setValues(constants)
-    }
-    const onClose = () => {
-        setUiState(prev => ({ ...prev, setIsFeatureSettingModalOpen: false }))
-    }
+    useEffect(() => {
+        const onLoad = async () => {
+            const constants = await dispatch(fetchAnatomyConstants())
+            form.setValues(constants)
+        }
+        onLoad()
+    })
 
     return {
         form,
-        onOpen,
-        onClose
     }
 }
