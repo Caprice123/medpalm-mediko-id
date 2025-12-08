@@ -6,7 +6,7 @@ import {
 } from '@store/anatomy/action'
 import { useUploadAttachment } from './useUploadAttachment'
 
-export const useCreateQuiz = () => {
+export const useCreateQuiz = (setUiState) => {
   const dispatch = useDispatch()
   const [showConfirmClose, setShowConfirmClose] = useState(false)
 
@@ -22,7 +22,7 @@ export const useCreateQuiz = () => {
       questions: [],
       status: 'draft'
     },
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       // Merge university and semester tags into single tags array
       const quizData = {
         ...values,
@@ -32,7 +32,12 @@ export const useCreateQuiz = () => {
       delete quizData.universityTags
       delete quizData.semesterTags
 
-      dispatch(createAnatomyQuiz(quizData))
+      const onSuccess = () => {
+        setUiState(prev => ({ ...prev, mode: null, isCalculatorModalOpen: false }))
+        resetForm()
+      }
+
+      dispatch(createAnatomyQuiz(quizData, onSuccess))
     }
   })
 
@@ -63,6 +68,7 @@ export const useCreateQuiz = () => {
     if (onClose.closeCallback) {
       onClose.closeCallback()
       onClose.closeCallback = null
+      form.resetForm()
     }
   }, [])
 

@@ -143,6 +143,11 @@ const Dropdown = memo(function Dropdown({
       isSearchable={false}
     />
   )
+}, (prev, next) => {
+  return prev.options.length === next.options.length &&
+    prev.value === next.value &&
+    prev.disabled === next.disabled &&
+    prev.hasError === next.hasError
 })
 
 export default Dropdown

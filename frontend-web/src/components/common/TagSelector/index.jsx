@@ -13,7 +13,6 @@ import Select from 'react-select'
  * @param {string} props.helpText - Help text shown below the selector
  */
 const TagSelector = memo(function TagSelector({
-  label,
   allTags = [],
   selectedTags = [],
   onTagsChange,
@@ -115,11 +114,8 @@ const TagSelector = memo(function TagSelector({
     </div>
   )
 }, (prev, next) => {
-    return prev.label === next.label &&
-        prev.allTags.length === next.allTags.length &&
-        prev.selectedTags.length === next.selectedTags.length &&
-        prev.placeholder === next.placeholder &&
-        prev.helpText === next.helpText
+    return prev.allTags.length === next.allTags.length &&
+        prev.selectedTags.length === next.selectedTags.length
 })
 
 export default TagSelector

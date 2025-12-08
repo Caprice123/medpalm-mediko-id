@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import {
   LoadingOverlay,
   EmptyState,
@@ -22,7 +23,9 @@ import {
   Tag
 } from './QuizList.styles'
 
-function QuizList({ quizzes, loading, onEdit, onDelete, onCreateFirst }) {
+function QuizList({ onEdit, onDelete, onCreateFirst }) { 
+  const { quizzes, loading } = useSelector((state) => state.anatomy)
+
   // Loading state
   if (loading?.isQuizzesLoading) {
     return <LoadingOverlay>Loading quizzes...</LoadingOverlay>

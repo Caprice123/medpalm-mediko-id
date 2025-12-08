@@ -60,6 +60,10 @@ const TextInput = memo(function TextInput({
       {!error && hint && <HintText>{hint}</HintText>}
     </InputWrapper>
   )
+}, (prevProps, nextProps) => {
+  return prevProps.value === nextProps.value &&
+    prevProps.error === nextProps.error &&
+    prevProps.hint === nextProps.hint
 })
 
 export default TextInput

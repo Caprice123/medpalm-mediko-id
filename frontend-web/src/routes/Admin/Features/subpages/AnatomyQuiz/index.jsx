@@ -16,8 +16,6 @@ import {
 import { Filter } from './components/Filter'
 
 function AnatomyQuiz({ onBack }) {
-  const { quizzes, loading } = useSelector((state) => state.anatomy)
-
   const {
     uiState,
     setUiState,
@@ -25,8 +23,6 @@ function AnatomyQuiz({ onBack }) {
     useCreateQuiz,
     useUpdateQuiz,
   } = useAnatomyQuizSection()
-
-  console.log("first")
 
   return (
     <Container>
@@ -50,8 +46,6 @@ function AnatomyQuiz({ onBack }) {
       <Filter />
 
       <QuizList
-        quizzes={quizzes}
-        loading={loading}
         onEdit={(quiz) => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "update", selectedQuiz: quiz })}
         onDelete={(id) => {
           // Handle delete

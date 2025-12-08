@@ -28,6 +28,7 @@
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5",
+    "react-scan": "^0.4.3",
     "react-scroll-parallax": "^3.5.0",
     "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",

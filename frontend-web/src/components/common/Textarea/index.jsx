@@ -71,6 +71,10 @@ const Textarea = memo(function Textarea({
       )}
     </TextareaWrapper>
   )
+}, (prevProps, nextProps) => {
+  return prevProps.value === nextProps.value &&
+    prevProps.error === nextProps.error &&
+    prevProps.hint === nextProps.hint
 })
 
 export default Textarea

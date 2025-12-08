@@ -27,19 +27,12 @@ import {
   Button
 } from './CreateQuizModal.styles'
 import { useSelector } from 'react-redux'
-import { useCreateQuiz } from '../../hooks/subhooks/useCreateQuiz'
-import { useUpdateQuiz } from '../../hooks/subhooks/useUpdateQuiz'
 
-const CreateQuizModal = ({ isOpen, mode, quiz, onClose }) => {
+const CreateQuizModal = ({ isOpen, mode, handler,  onClose }) => {
     const { loading } = useSelector(state => state.anatomy)
     const { tags } = useSelector(state => state.tags)
 
     // Use the appropriate hook based on mode
-    const createHandler = useCreateQuiz()
-    const updateHandler = useUpdateQuiz(null, quiz)
-
-    // Select handler based on mode
-    const handler = mode === 'update' ? updateHandler : createHandler
 
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
