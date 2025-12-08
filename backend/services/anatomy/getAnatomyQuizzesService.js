@@ -8,6 +8,14 @@ export class GetAnatomyQuizzesService extends BaseService {
   static async call(filters = {}) {
     this.validate(filters)
 
+    // Pagination parameters
+    const page = Math.max(1, parseInt(filters.page) || 1)
+    const perPage = Math.min(100, Math.max(1, parseInt(filters.perPage) || 20))
+    const skip = (page - 1) * perPage
+
+    // Fetch perPage + 1 to determine if there's a next page
+    const take = perPage + 1
+
     const where = {
       is_active: true,
       status: 'published' // Only show published quizzes to users
@@ -16,21 +24,31 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Build filter conditions for tags
     const tagFilters = []
 
+    // Multiple university filter: ?university=1,2,3
     if (filters.university) {
+      const universityIds = Array.isArray(filters.university)
+        ? filters.university.map(id => parseInt(id))
+        : filters.university.split(',').map(id => parseInt(id))
+
       tagFilters.push({
         anatomy_quiz_tags: {
           some: {
-            tag_id: parseInt(filters.university)
+            tag_id: { in: universityIds }
           }
         }
       })
     }
 
+    // Multiple semester filter: ?semester=1,2
     if (filters.semester) {
+      const semesterIds = Array.isArray(filters.semester)
+        ? filters.semester.map(id => parseInt(id))
+        : filters.semester.split(',').map(id => parseInt(id))
+
       tagFilters.push({
         anatomy_quiz_tags: {
           some: {
-            tag_id: parseInt(filters.semester)
+            tag_id: { in: semesterIds }
           }
         }
       })
@@ -41,17 +59,28 @@ export class GetAnatomyQuizzesService extends BaseService {
       where.AND = tagFilters
     }
 
+    // Search filter (title or description)
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } }
+      ]
+    }
+
+    // Optimized query with _count instead of loading all question IDs
     const quizzes = await prisma.anatomy_quizzes.findMany({
       where,
+      take,
+      skip,
       include: {
         anatomy_quiz_tags: {
           include: {
             tags: true
           }
         },
-        anatomy_questions: {
+        _count: {
           select: {
-            id: true
+            anatomy_questions: true
           }
         }
       },
@@ -60,44 +89,90 @@ export class GetAnatomyQuizzesService extends BaseService {
       }
     })
 
+    // Determine if this is the last page
+    const isLastPage = quizzes.length <= perPage
+
+    // Only return perPage items (exclude the +1 check item)
+    const paginatedQuizzes = quizzes.slice(0, perPage)
+
     // Get cost from constants
     const anatomyConstant = await GetConstantsService.call(['anatomy_quiz_cost'])
     const cost = anatomyConstant.anatomy_quiz_cost
 
-    // Transform the response to match frontend expectations
-    const transformedQuizzes = await Promise.all(quizzes.map(async (quiz) => ({
+    // Batch get signed URLs for all images (MAJOR PERFORMANCE BOOST)
+    const imageKeys = paginatedQuizzes.map(quiz => quiz.image_key)
+    const signedUrls = await idriveService.getBulkSignedUrls(imageKeys)
+
+    // Create a map for O(1) lookup
+    const urlMap = new Map(
+      imageKeys.map((key, index) => [key, signedUrls[index]])
+    )
+
+    // Transform the response (no await needed - all URLs fetched)
+    const transformedQuizzes = paginatedQuizzes.map((quiz) => ({
       id: quiz.id,
       title: quiz.title,
       description: quiz.description,
-      image_url: await idriveService.getSignedUrl(quiz.image_key),
+      image_url: urlMap.get(quiz.image_key),
       cost: parseInt(cost),
       tags: quiz.anatomy_quiz_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,
         tagGroupId: t.tags.tag_group_id
       })),
-      questionCount: quiz.anatomy_questions.length,
+      questionCount: quiz._count.anatomy_questions,
       createdAt: quiz.created_at,
       updatedAt: quiz.updated_at
-    })))
+    }))
 
-    return transformedQuizzes
+    return {
+      data: transformedQuizzes,
+      pagination: {
+        page,
+        perPage,
+        isLastPage
+      }
+    }
   }
 
   static validate(filters) {
     // Validate university filter if provided
     if (filters.university) {
-      const universityId = parseInt(filters.university)
-      if (isNaN(universityId) || universityId <= 0) {
-        throw new ValidationError('Invalid university filter')
+      const universityIds = Array.isArray(filters.university)
+        ? filters.university
+        : filters.university.split(',')
+
+      for (const id of universityIds) {
+        const universityId = parseInt(id)
+        if (isNaN(universityId) || universityId <= 0) {
+          throw new ValidationError('Invalid university filter')
+        }
       }
     }
 
     // Validate semester filter if provided
     if (filters.semester) {
-      const semesterId = parseInt(filters.semester)
-      if (isNaN(semesterId) || semesterId <= 0) {
-        throw new ValidationError('Invalid semester filter')
+      const semesterIds = Array.isArray(filters.semester)
+        ? filters.semester
+        : filters.semester.split(',')
+
+      for (const id of semesterIds) {
+        const semesterId = parseInt(id)
+        if (isNaN(semesterId) || semesterId <= 0) {
+          throw new ValidationError('Invalid semester filter')
+        }
+      }
+    }
+
+    // Validate pagination
+    if (filters.page && (isNaN(parseInt(filters.page)) || parseInt(filters.page) < 1)) {
+      throw new ValidationError('Invalid page number')
+    }
+
+    if (filters.perPage) {
+      const perPage = parseInt(filters.perPage)
+      if (isNaN(perPage) || perPage < 1 || perPage > 100) {
+        throw new ValidationError('Invalid perPage. Must be between 1 and 100')
       }
     }
   }

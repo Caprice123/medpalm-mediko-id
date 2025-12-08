@@ -1,8 +1,11 @@
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useAnatomyQuizSection } from './hooks/useAnatomyQuizSection'
+import { actions } from '@store/anatomy/reducer'
+import { fetchAdminAnatomyQuizzes } from '@store/anatomy/action'
 import CreateQuizModal from './components/CreateQuizModal'
 import AnatomySettingsModal from './components/AnatomySettingsModal'
 import QuizList from './components/QuizList'
+import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
@@ -16,6 +19,9 @@ import {
 import { Filter } from './components/Filter'
 
 function AnatomyQuiz({ onBack }) {
+  const dispatch = useDispatch()
+  const { pagination, loading } = useSelector(state => state.anatomy)
+
   const {
     uiState,
     setUiState,
@@ -23,6 +29,11 @@ function AnatomyQuiz({ onBack }) {
     useCreateQuiz,
     useUpdateQuiz,
   } = useAnatomyQuizSection()
+
+  const handlePageChange = (page) => {
+    dispatch(actions.setPage(page))
+    dispatch(fetchAdminAnatomyQuizzes())
+  }
 
   return (
     <Container>
@@ -51,6 +62,15 @@ function AnatomyQuiz({ onBack }) {
           // Handle delete
         }}
         onCreateFirst={() => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "create", selectedQuiz: null })}
+      />
+
+      <Pagination
+        currentPage={pagination.page}
+        isLastPage={pagination.isLastPage}
+        onPageChange={handlePageChange}
+        isLoading={loading.isQuizzesLoading}
+        variant="admin"
+        language="id"
       />
 
       <CreateQuizModal

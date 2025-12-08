@@ -139,8 +139,8 @@ const Dropdown = memo(function Dropdown({
       styles={customStyles}
       menuPortalTarget={usePortal ? document.body : null}
       menuPosition={usePortal ? 'fixed' : 'absolute'}
-      isClearable={false}
-      isSearchable={false}
+      isClearable
+      isSearchable
     />
   )
 }, (prev, next) => {

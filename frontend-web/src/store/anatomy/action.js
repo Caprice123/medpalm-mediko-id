@@ -6,6 +6,7 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@uti
 const {
   setLoading,
   setQuizzes,
+  setPagination,
   setSelectedQuiz,
   setQuestions,
   setCurrentQuiz,
@@ -22,7 +23,10 @@ const {
   removeQuestion,
   clearUploadedImage,
   clearSelectedQuiz,
-  clearCurrentQuiz
+  clearCurrentQuiz,
+  nextPage,
+  previousPage,
+  setPage
 } = actions
 
 // ============= User Actions =============
@@ -30,17 +34,25 @@ const {
 /**
  * Fetch all published anatomy quizzes (user endpoint)
  */
-export const fetchAnatomyQuizzes = (filter = {}) => async (dispatch) => {
+export const fetchAnatomyQuizzes = (filter = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isQuizzesLoading', value: true }))
+
+    const { pagination } = getState().anatomy
 
     const queryParams = {}
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester
+    if (filter.search) queryParams.search = filter.search
+
+    // Add pagination parameters
+    queryParams.page = filter.page || pagination.page
+    queryParams.perPage = filter.perPage || pagination.perPage
 
     const response = await getWithToken(Endpoints.anatomy.quizzes, queryParams)
 
     dispatch(setQuizzes(response.data.data || []))
+    dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -97,16 +109,22 @@ export const fetchAdminAnatomyQuizzes = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isQuizzesLoading', value: true }))
 
-    const { filter } = getState().anatomy
+    const { filter, pagination } = getState().anatomy
 
     const queryParams = {}
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester
     if (filter.status) queryParams.status = filter.status
+    if (filter.name) queryParams.search = filter.name
+
+    // Add pagination parameters
+    queryParams.page = pagination.page
+    queryParams.perPage = pagination.perPage
 
     const response = await getWithToken(Endpoints.anatomy.admin.quizzes, queryParams)
 
     dispatch(setQuizzes(response.data.data || []))
+    dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -175,7 +193,9 @@ export const createAnatomyQuiz = (quizData) => async (dispatch) => {
     const response = await postWithToken(Endpoints.anatomy.admin.quizzes, quizData)
 
     const quiz = response.data.data || response.data.quiz
-    dispatch(addQuiz(quiz))
+    // Reset to page 1 and refresh the list to show the new quiz
+    dispatch(setPage(1))
+    dispatch(fetchAdminAnatomyQuizzes())
     dispatch(clearUploadedImage())
     return quiz
   } catch (err) {
@@ -196,7 +216,8 @@ export const updateAnatomyQuiz = (quizId, quizData) => async (dispatch) => {
     const response = await putWithToken(Endpoints.anatomy.admin.quiz(quizId), quizData)
 
     const quiz = response.data.data || response.data.quiz
-    dispatch(updateQuiz(quiz))
+    // Refresh the list to show updated quiz
+    dispatch(fetchAdminAnatomyQuizzes())
     return quiz
   } catch (err) {
     handleApiError(err, dispatch)

@@ -13,15 +13,17 @@ export const Filter = () => {
     const { tags } = useSelector(state => state.tags)
 
     const onSearch = () => {
+        // Reset to page 1 when searching
+        dispatch(actions.setPage(1))
         dispatch(fetchAdminAnatomyQuizzes())
     }
 
     const universityTags = useMemo(() => {
-        return tags?.find(tag => tag.name == "university")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+        return tags?.find(tag => tag.name == "university")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
 
     const semesterTags = useMemo(() => {
-        return tags?.find(tag => tag.name == "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+        return tags?.find(tag => tag.name == "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
 
     return (
@@ -56,7 +58,7 @@ export const Filter = () => {
                         <FilterComponent.Label>Universitas</FilterComponent.Label>
                         <Dropdown
                             options={universityTags}
-                            value={filter.university ? { label: filter.university, value: filter.university } : null}
+                            value={filter.university ? universityTags.find(t => t.value === filter.university) : null}
                             onChange={(option) => dispatch(actions.updateFilter({ key: "university", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan universitas..."
                         />
@@ -66,7 +68,7 @@ export const Filter = () => {
                         <FilterComponent.Label>Semester</FilterComponent.Label>
                         <Dropdown
                             options={semesterTags}
-                            value={filter.semester ? { label: filter.semester, value: filter.semester } : null}
+                            value={filter.semester ? semesterTags.find(t => t.value === filter.semester) : null}
                             onChange={(option) => dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan semester..."
                         />

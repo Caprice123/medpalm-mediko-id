@@ -7,6 +7,11 @@ const initialState = {
   currentQuiz: null, // For user taking quiz
   quizResult: null,
   uploadedImage: null, // For admin creating quiz
+  pagination: {
+    page: 1,
+    perPage: 20,
+    isLastPage: false
+  },
   loading: {
     isQuizzesLoading: false,
     isQuizLoading: false,
@@ -36,6 +41,9 @@ const { reducer, actions } = createSlice({
     },
     setQuizzes: (state, { payload }) => {
       state.quizzes = payload
+    },
+    setPagination: (state, { payload }) => {
+      state.pagination = payload
     },
     setSelectedQuiz: (state, { payload }) => {
       state.selectedQuiz = payload
@@ -105,6 +113,19 @@ const { reducer, actions } = createSlice({
     clearCurrentQuiz: (state) => {
       state.currentQuiz = null
       state.quizResult = null
+    },
+    nextPage: (state) => {
+      if (!state.pagination.isLastPage) {
+        state.pagination.page += 1
+      }
+    },
+    previousPage: (state) => {
+      if (state.pagination.page > 1) {
+        state.pagination.page -= 1
+      }
+    },
+    setPage: (state, { payload }) => {
+      state.pagination.page = payload
     }
   }
 })

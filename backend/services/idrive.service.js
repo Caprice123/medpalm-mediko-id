@@ -114,13 +114,38 @@ class IDriveService {
         Bucket: this.bucket,
         Key: key,
       });
-      
+
       const signedUrl = await getSignedUrl(this.client, command, { expiresIn });
       console.log(signedUrl)
       return signedUrl;
     } catch (error) {
       console.error('Error generating signed URL:', error);
       throw new Error('Failed to generate signed URL: ' + error.message);
+    }
+  }
+
+  /**
+   * Get signed URLs for multiple files in bulk (PERFORMANCE OPTIMIZATION)
+   * @param {string[]} keys - Array of file keys in bucket
+   * @param {number} expiresIn - URL expiration time in seconds (default: 3600)
+   * @returns {Promise<string[]>} Array of signed URLs in the same order as keys
+   */
+  async getBulkSignedUrls(keys, expiresIn = 3600) {
+    try {
+      // Generate signed URLs in parallel
+      const signedUrlPromises = keys.map(key => {
+        const command = new GetObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        });
+        return getSignedUrl(this.client, command, { expiresIn });
+      });
+
+      const signedUrls = await Promise.all(signedUrlPromises);
+      return signedUrls;
+    } catch (error) {
+      console.error('Error generating bulk signed URLs:', error);
+      throw new Error('Failed to generate bulk signed URLs: ' + error.message);
     }
   }
 
