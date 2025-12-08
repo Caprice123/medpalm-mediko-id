@@ -5,6 +5,7 @@ import Exercise from './subpages/Exercise'
 import Flashcard from './subpages/Flashcard'
 import SummaryNotes from './subpages/SummaryNotes'
 import Calculator from './subpages/Calculator'
+import AnatomyQuiz from './subpages/AnatomyQuiz'
 import {
   Container,
   HeaderSection,
@@ -50,6 +51,15 @@ const FEATURES_DATA = [
     cost: 0,
     isActive: true,
     color: '#f59e0b'
+  },
+  {
+    id: 12,
+    name: 'Quiz Anatomi',
+    description: 'Quiz anatomi dengan gambar dan input manual untuk latihan identifikasi struktur',
+    icon: '🧠',
+    cost: 0,
+    isActive: true,
+    color: '#6BB9E8'
   }
 ]
 
@@ -98,6 +108,11 @@ function Features() {
     if (selectedFeature?.id === 11) {
       // Kalkulator
       return <Calculator onBack={handleBackToList} />
+    }
+
+    if (selectedFeature?.id === 12) {
+      // Quiz Anatomi
+      return <AnatomyQuiz onBack={handleBackToList} />
     }
 
     // Default feature config for other features

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { TextareaWrapper, Label, RequiredMark, StyledTextarea, CharCount, HintText, ErrorText } from './Textarea.styles'
 
 /**
@@ -19,7 +20,7 @@ import { TextareaWrapper, Label, RequiredMark, StyledTextarea, CharCount, HintTe
  * @param {string} props.name - Textarea name
  * @param {string} props.className - Additional CSS class
  */
-function Textarea({
+const Textarea = memo(function Textarea({
   label,
   required = false,
   value = '',
@@ -70,6 +71,6 @@ function Textarea({
       )}
     </TextareaWrapper>
   )
-}
+})
 
 export default Textarea

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { InputWrapper, Label, RequiredMark, StyledInput, HintText, ErrorText } from './TextInput.styles'
 
 /**
@@ -17,7 +18,7 @@ import { InputWrapper, Label, RequiredMark, StyledInput, HintText, ErrorText } f
  * @param {string} props.name - Input name
  * @param {string} props.className - Additional CSS class
  */
-function TextInput({
+const TextInput = memo(function TextInput({
   label,
   required = false,
   value,
@@ -59,6 +60,6 @@ function TextInput({
       {!error && hint && <HintText>{hint}</HintText>}
     </InputWrapper>
   )
-}
+})
 
 export default TextInput

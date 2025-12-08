@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import Select from 'react-select'
 
 /**
@@ -13,7 +14,7 @@ import Select from 'react-select'
  * @param {boolean} props.usePortal - Render menu in portal (default: true)
  * @param {string} props.className - Additional CSS class
  */
-function Dropdown({
+const Dropdown = memo(function Dropdown({
   options = [],
   value,
   onChange,
@@ -142,6 +143,6 @@ function Dropdown({
       isSearchable={false}
     />
   )
-}
+})
 
 export default Dropdown

@@ -9,6 +9,7 @@ import UITest from '@routes/UITest';
 import PrivateRoute from '@middleware/PrivateRoute';
 import { AuthRoute } from './routes/Auth/routes';
 import { calculatorRoutes } from './routes/Calculator/routes';
+import { anatomyQuizRoutes } from './routes/AnatomyQuiz/routes';
 
 const appRoutes = [
     { path: '/', element: <Home /> },
@@ -36,15 +37,16 @@ const appRoutes = [
                 path: '/exercises',
                 element: (
                         <ExercisePage />
-                    
+
                 )
             },
+            ...anatomyQuizRoutes,
             ...calculatorRoutes,
             {
                 path: '/admin',
                 element: (
                         <AdminPanel />
-                    
+
                 )
             },
         ]

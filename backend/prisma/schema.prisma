@@ -196,6 +196,7 @@ model tags {
   flashcard_deck_tags   flashcard_deck_tags[]
   summary_note_tags     summary_note_tags[]
   calculator_topic_tags calculator_topic_tags[]
+  anatomy_quiz_tags     anatomy_quiz_tags[]
 
   @@unique([name, tag_group_id])
   @@index([is_active])
@@ -675,5 +676,142 @@ model calculator_classification_option_conditions {
 
   @@index([calculator_classification_option_id])
   @@index([order])
+}
+
+model attachments {
+    id                                  Int               @id @default(autoincrement())
+    name String
+    recordType String
+    recordId Int
+    blobId Int
+    created_at                          DateTime          @default(now())
+    updated_at                          DateTime          @default(now())
+
+    @@index([recordType, recordId, name])
+    @@index([blobId])
+}
+
+model blobs {
+    id                                  Int               @id @default(autoincrement())
+    key String
+    filename String
+    metadata String
+    contentType String
+    byteSize Int
+    checksum String
+    uploadedAt DateTime          @default(now())
+    created_at                          DateTime          @default(now())
+    updated_at                          DateTime          @default(now())
+
+    @@index([key])
+}
+
+// ============= Anatomy Quiz Feature =============
+
+model anatomy_quizzes {
+  id                  Int                     @id @default(autoincrement())
+  title               String
+  description         String?
+  image_url           String
+  image_key           String
+  image_filename      String
+  status              String                  @default("draft")
+  is_active           Boolean                 @default(true)
+  created_by          Int
+  created_at          DateTime                @default(now())
+  updated_at          DateTime                @default(now())
+
+  anatomy_questions       anatomy_questions[]
+  anatomy_quiz_tags       anatomy_quiz_tags[]
+  anatomy_quiz_attempts   anatomy_quiz_attempts[]
+
+  @@index([created_by])
+  @@index([is_active])
+  @@index([status])
+}
+
+model anatomy_questions {
+  id              Int             @id @default(autoincrement())
+  quiz_id         Int
+  question        String
+  answer          String
+  order           Int             @default(0)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @default(now())
+
+  anatomy_quiz    anatomy_quizzes @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  anatomy_quiz_answers anatomy_quiz_answers[]
+
+  @@index([quiz_id])
+  @@index([order])
+}
+
+model anatomy_quiz_tags {
+  id              Int             @id @default(autoincrement())
+  quiz_id         Int
+  tag_id          Int
+  created_at      DateTime        @default(now())
+
+  anatomy_quiz    anatomy_quizzes @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  tags            tags            @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@unique([quiz_id, tag_id])
+  @@index([quiz_id])
+  @@index([tag_id])
+}
+
+// Simplified attempt tracking - no sessions
+model anatomy_quiz_attempts {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  quiz_id         Int
+  status          String   @default("in_progress")  // in_progress, completed
+  correct_count   Int      @default(0)
+  total_questions Int
+  score           Int      @default(0)
+  started_at      DateTime @default(now())
+  completed_at    DateTime?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  anatomy_quiz_answers anatomy_quiz_answers[]
+
+  @@index([user_id])
+  @@index([quiz_id])
+  @@index([status])
+}
+
+model anatomy_quiz_answers {
+  id               Int      @id @default(autoincrement())
+  attempt_id       Int
+  question_id      Int      // Direct reference to anatomy_questions
+  user_answer      String
+  is_correct       Boolean
+  similarity_score Float?
+  answered_at      DateTime @default(now())
+
+  anatomy_quiz_attempt anatomy_quiz_attempts @relation(fields: [attempt_id], references: [id], onDelete: Cascade)
+  anatomy_question     anatomy_questions     @relation(fields: [question_id], references: [id], onDelete: Cascade)
+
+  @@index([attempt_id])
+  @@index([question_id])
+}
+
+model user_anatomy_progress {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  question_id     Int
+  quiz_id         Int
+  times_correct   Int      @default(0)
+  times_incorrect Int      @default(0)
+  last_reviewed   DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  @@unique([user_id, question_id])
+  @@index([user_id])
+  @@index([question_id])
+  @@index([quiz_id])
 }
 

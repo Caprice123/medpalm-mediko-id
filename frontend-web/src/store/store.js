@@ -14,6 +14,7 @@ import statistic from "./statistic/reducer";
 import pricing from "./pricing/reducer";
 import summaryNotes from "./summaryNotes";
 import user from "./user";
+import anatomy from "./anatomy";
 
 export const rootReducer = combineReducers({
     auth,
@@ -30,6 +31,7 @@ export const rootReducer = combineReducers({
     pricing,
     summaryNotes,
     user,
+    anatomy,
 })
 
 export const store = configureStore({

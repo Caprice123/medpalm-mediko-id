@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'fs';
+import path from 'path';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -323,6 +324,121 @@ Hasilkan HANYA JSON array tanpa teks tambahan apapun.
    */
   validateFlashcard(flashcard) {
     if (!flashcard.front || !flashcard.back) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Generate anatomy questions from image
+   * Uses gemini-2.0-flash (vision model) to analyze anatomical images
+   * @param {string} imageFilePath - Path to the image file
+   * @param {number} questionCount - Number of questions to generate (default: 5)
+   * @returns {Promise<Array>} Array of generated questions with answers and explanations
+   */
+  async generateAnatomyQuestionsFromImage(imageFilePath, questionCount = 5) {
+    try {
+      // Check file size (max 20MB for inline images)
+      const stats = fs.statSync(imageFilePath);
+      const fileSizeMB = stats.size / (1024 * 1024);
+
+      console.log(`Processing image: ${imageFilePath} - Size: ${fileSizeMB.toFixed(2)} MB`);
+
+      if (fileSizeMB > 20) {
+        throw new Error(`Image too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
+      }
+
+      // Read image file and convert to base64
+      const imageBuffer = fs.readFileSync(imageFilePath);
+      const imageBase64 = imageBuffer.toString('base64');
+
+      // Detect mime type from file extension
+      const ext = path.extname(imageFilePath).toLowerCase();
+      const mimeTypes = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png'
+      };
+      const mimeType = mimeTypes[ext] || 'image/jpeg';
+
+      console.log('Image converted to base64, generating anatomy questions...');
+
+      // Generate questions using inline image data
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+      const prompt = `
+Kamu adalah seorang dosen anatomi medis yang ahli dalam membuat soal berdasarkan gambar anatomi.
+
+Tugas: Analisis gambar anatomi yang diberikan, lalu buatlah ${questionCount} soal berkualitas tinggi berdasarkan struktur yang terlihat dalam gambar.
+
+Format Output (JSON):
+[
+  {
+    "question": "Pertanyaan yang mengarah pada struktur spesifik dalam gambar",
+    "answer": "Nama struktur/organ yang benar",
+    "explanation": "Penjelasan lengkap tentang struktur tersebut, fungsinya, dan mengapa ini jawaban yang benar"
+  }
+]
+
+Aturan:
+1. Identifikasi semua struktur anatomi yang jelas terlihat dalam gambar
+2. Buat pertanyaan yang SPESIFIK dan mengacu pada lokasi/posisi dalam gambar
+3. Contoh pertanyaan bagus: "Struktur berbentuk kerucut di bagian tengah gambar adalah?", "Organ yang ditunjukkan oleh panah di sebelah kiri adalah?"
+4. Jawaban harus NAMA STRUKTUR yang SPESIFIK dan BENAR secara medis
+5. Jawaban maksimal 3-4 kata (nama struktur/organ)
+6. Penjelasan harus mencakup:
+   - Identifikasi struktur
+   - Lokasi anatomis
+   - Fungsi utama
+   - Ciri khas yang terlihat dalam gambar
+7. Gunakan bahasa Indonesia yang formal dan medis
+8. Pastikan pertanyaan bervariasi (jangan hanya menanyakan nama, tapi juga fungsi, lokasi relatif, dll)
+9. Output harus berupa valid JSON array
+10. Fokus pada struktur yang JELAS TERLIHAT dan dapat DIIDENTIFIKASI dari gambar
+
+Hasilkan HANYA JSON array tanpa teks tambahan apapun.
+`;
+
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: mimeType,
+            data: imageBase64,
+          },
+        },
+        { text: prompt },
+      ]);
+
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse JSON response
+      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const questions = JSON.parse(cleanedText);
+
+      console.log(`Successfully generated ${questions.length} anatomy questions from image`);
+
+      // Validate and clean questions
+      return questions.map((q, index) => ({
+        question: q.question || '',
+        answer: q.answer || '',
+        explanation: q.explanation || '',
+        order: index
+      }));
+    } catch (error) {
+      console.error('Error generating anatomy questions from image:', error);
+      throw new Error('Failed to generate anatomy questions from image: ' + error.message);
+    }
+  }
+
+  /**
+   * Validate an anatomy question format
+   * @param {Object} question - Question object to validate
+   * @returns {boolean} True if valid
+   */
+  validateAnatomyQuestion(question) {
+    if (!question.question || !question.answer || !question.explanation) {
       return false;
     }
 

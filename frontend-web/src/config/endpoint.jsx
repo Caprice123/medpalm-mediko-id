@@ -118,4 +118,18 @@ export default {
             generate: `${API_BASE_URL}/admin/v1/summary-notes/generate`,
         }
     },
+    anatomy: {
+        // User endpoints
+        quizzes: `${API_BASE_URL}/api/v1/anatomy/quizzes`,
+        quiz: (id) => `${API_BASE_URL}/api/v1/anatomy/quizzes/${id}`,
+        submit: (id) => `${API_BASE_URL}/api/v1/anatomy/quizzes/${id}/submit`,
+
+        // Admin endpoints
+        admin: {
+            uploadImage: `${API_BASE_URL}/admin/v1/anatomy/upload-image`,
+            quizzes: `${API_BASE_URL}/admin/v1/anatomy/quizzes`,
+            quiz: (id) => `${API_BASE_URL}/admin/v1/anatomy/quizzes/${id}`,
+            constants: `${API_BASE_URL}/admin/v1/anatomy/constants`,
+        }
+    },
 }

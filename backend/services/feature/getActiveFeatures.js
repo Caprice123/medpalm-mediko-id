@@ -19,7 +19,12 @@ export class GetActiveFeaturesService extends BaseService {
         "summary_notes_credit_cost",
         "calculator_feature_title",
         "calculator_feature_description",
-        "calculator_credit_cost"
+        "calculator_credit_cost",
+        "anatomy_feature_title",
+        "anatomy_feature_description",
+        "anatomy_credit_cost",
+        "anatomy_access_type",
+        "anatomy_is_active"
     ])
 
     const features = []
@@ -63,7 +68,20 @@ export class GetActiveFeaturesService extends BaseService {
         name: featureConstants.calculator_feature_title,
         description: featureConstants.calculator_feature_description,
         cost: parseInt(featureConstants.calculator_credit_cost) || 0,
-        icon: '🧮'
+        icon: '🧮',
+        sessionType: "calculator",
+      })
+    }
+
+    // Anatomy Quiz feature
+    if (featureConstants.anatomy_feature_title && featureConstants.anatomy_is_active === 'true') {
+      features.push({
+        name: featureConstants.anatomy_feature_title,
+        description: featureConstants.anatomy_feature_description,
+        cost: parseInt(featureConstants.anatomy_credit_cost) || 0,
+        icon: '🫀',
+        accessType: featureConstants.anatomy_access_type || 'subscription',
+        sessionType: "anatomy",
       })
     }
 

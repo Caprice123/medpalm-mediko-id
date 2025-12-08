@@ -193,6 +193,16 @@ function Dashboard() {
         return
       }
 
+      if (sessionType === 'calculator') {
+        navigate('/calculators')
+        return
+      }
+
+      if (sessionType === 'anatomy') {
+        navigate('/anatomy-quiz')
+        return
+      }
+
       // For calculator, navigate to dedicated calculator page
       if (!sessionType) {
         navigate('/calculators')

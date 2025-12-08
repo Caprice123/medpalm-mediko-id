@@ -88,6 +88,21 @@ class IDriveService {
   }
 
   /**
+   * Upload image file for anatomy quiz
+   * @param {string} filePath - Local image file path
+   * @param {string} quizName - Quiz name for organizing files
+   * @returns {Promise<{key: string, url: string, fileName: string}>} Uploaded file info
+   */
+  async uploadAnatomyImage(filePath, quizName) {
+    const sanitizedName = quizName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const timestamp = Date.now();
+    const ext = path.extname(filePath);
+    const fileName = `${sanitizedName}-${timestamp}${ext}`;
+
+    return this.uploadFile(filePath, 'anatomy-images', fileName);
+  }
+
+  /**
    * Get a signed URL for temporary access to a private file
    * @param {string} key - File key in bucket
    * @param {number} expiresIn - URL expiration time in seconds (default: 3600)
@@ -99,8 +114,9 @@ class IDriveService {
         Bucket: this.bucket,
         Key: key,
       });
-
+      
       const signedUrl = await getSignedUrl(this.client, command, { expiresIn });
+      console.log(signedUrl)
       return signedUrl;
     } catch (error) {
       console.error('Error generating signed URL:', error);
