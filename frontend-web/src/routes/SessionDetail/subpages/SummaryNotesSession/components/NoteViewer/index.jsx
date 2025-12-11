@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import { useState, useEffect } from 'react'
+import BlockNoteEditor from '@components/BlockNoteEditor'
+import { markdownToBlocks } from '@utils/markdownToBlocks'
 import {
   Container,
   Header,
@@ -16,8 +17,30 @@ import {
 
 function NoteViewer({ session }) {
   const navigate = useNavigate()
-
   const { summaryNote } = session || {}
+  const [parsedContent, setParsedContent] = useState(null)
+
+  // Parse content - handle both JSON blocks and markdown (legacy)
+  useEffect(() => {
+    if (!summaryNote?.content) {
+      setParsedContent(null)
+      return
+    }
+
+    try {
+      // Try to parse as JSON first
+      const parsed = JSON.parse(summaryNote.content)
+      if (Array.isArray(parsed)) {
+        setParsedContent(parsed)
+      } else {
+        setParsedContent(null)
+      }
+    } catch (e) {
+      // If not JSON, convert markdown to blocks
+      const blocks = markdownToBlocks(summaryNote.content)
+      setParsedContent(blocks)
+    }
+  }, [summaryNote])
 
   const handleBack = () => {
     navigate(-1)
@@ -67,11 +90,10 @@ function NoteViewer({ session }) {
       )}
 
       <ContentContainer>
-        <MarkdownContent>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {summaryNote.content}
-          </ReactMarkdown>
-        </MarkdownContent>
+        <BlockNoteEditor
+          initialContent={parsedContent}
+          editable={false}
+        />
       </ContentContainer>
     </Container>
   )

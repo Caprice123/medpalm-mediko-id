@@ -39,7 +39,7 @@ const Overlay = styled.div`
 const Modal = styled.div`
   background: white;
   border-radius: 16px;
-  max-width: 1000px;
+  max-width: 1200px;
   width: 100%;
   max-height: 90vh;
   display: flex;

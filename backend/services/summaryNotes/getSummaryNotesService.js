@@ -1,54 +1,81 @@
 import prisma from '../../prisma/client.js'
 import { BaseService } from '../baseService.js'
+import { ValidationError } from '../../errors/validationError.js'
 
 export class GetSummaryNotesService extends BaseService {
-  static async call({ search, university, semester, page = 1, perPage = 12 }) {
-    // Build where clause for active and published notes
+  static async call(filters = {}) {
+    this.validate(filters)
+
+    // Pagination parameters
+    const page = Math.max(1, parseInt(filters.page) || 1)
+    const perPage = Math.min(100, Math.max(1, parseInt(filters.perPage) || 12))
+    const skip = (page - 1) * perPage
+
+    // Fetch perPage + 1 to determine if there's a next page
+    const take = perPage + 1
+
     const where = {
       is_active: true,
-      status: 'published'
+      status: 'published' // Only show published notes to users
     }
 
-    // Add search filter for title
-    if (search) {
-      where.title = { contains: search, mode: 'insensitive' }
-    }
+    // Build filter conditions for tags
+    const tagFilters = []
 
-    // Add tag filters if provided
-    if (university || semester) {
-      where.summary_note_tags = {
-        some: {
-          tags: {
-            OR: [
-              ...(university ? [{
-                type: 'university',
-                name: { equals: university, mode: 'insensitive' }
-              }] : []),
-              ...(semester ? [{
-                type: 'semester',
-                name: { equals: semester, mode: 'insensitive' }
-              }] : [])
-            ]
+    // Multiple university filter: ?university=1,2,3
+    if (filters.university) {
+      const universityIds = Array.isArray(filters.university)
+        ? filters.university.map(id => parseInt(id))
+        : filters.university.split(',').map(id => parseInt(id))
+
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tag_id: { in: universityIds }
           }
         }
-      }
+      })
     }
 
-    // Get paginated summary notes (fetch one extra to check if there's a next page)
+    // Multiple semester filter: ?semester=1,2
+    if (filters.semester) {
+      const semesterIds = Array.isArray(filters.semester)
+        ? filters.semester.map(id => parseInt(id))
+        : filters.semester.split(',').map(id => parseInt(id))
+
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tag_id: { in: semesterIds }
+          }
+        }
+      })
+    }
+
+    // Apply tag filters with AND logic
+    if (tagFilters.length > 0) {
+      where.AND = tagFilters
+    }
+
+    // Search filter (title or description)
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } }
+      ]
+    }
+
+    // Get paginated summary notes
     const summaryNotes = await prisma.summary_notes.findMany({
       where,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        created_at: true,
+      take,
+      skip,
+      include: {
         summary_note_tags: {
-          select: {
+          include: {
             tags: {
-              select: {
-                id: true,
-                name: true,
-                type: true
+              include: {
+                tag_group: true
               }
             }
           }
@@ -56,46 +83,88 @@ export class GetSummaryNotesService extends BaseService {
       },
       orderBy: {
         created_at: 'desc'
-      },
-      skip: (page - 1) * perPage,
-      take: perPage + 1
+      }
     })
 
-    // Check if there's a next page
-    const hasMore = summaryNotes.length > perPage
-    const notesToReturn = hasMore ? summaryNotes.slice(0, perPage) : summaryNotes
+    // Determine if this is the last page
+    const isLastPage = summaryNotes.length <= perPage
 
-    // Transform the data
-    const notes = notesToReturn.map(note => ({
-      id: note.id,
-      title: note.title,
-      description: note.description,
-      created_at: note.created_at,
-      tags: note.summary_note_tags.map(t => t.tags)
-    }))
+    // Only return perPage items (exclude the +1 check item)
+    const paginatedNotes = summaryNotes.slice(0, perPage)
 
-    // Filter results if both university and semester are provided (need to match both)
-    let filteredNotes = notes
-    if (university && semester) {
-      filteredNotes = notes.filter(note => {
-        const hasUniversity = note.tags.some(tag =>
-          tag.type === 'university' &&
-          tag.name.toLowerCase() === university.toLowerCase()
-        )
-        const hasSemester = note.tags.some(tag =>
-          tag.type === 'semester' &&
-          tag.name.toLowerCase() === semester.toLowerCase()
-        )
-        return hasUniversity && hasSemester
-      })
-    }
+    // Transform the response
+    const transformedNotes = paginatedNotes.map((note) => {
+      // Separate tags by group
+      const allTags = note.summary_note_tags.map(t => ({
+        id: t.tags.id,
+        name: t.tags.name,
+        tagGroupId: t.tags.tag_group_id,
+        tagGroupName: t.tags.tag_group?.name
+      }))
+
+      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+
+      return {
+        id: note.id,
+        title: note.title,
+        description: note.description,
+        tags: allTags,
+        universityTags,
+        semesterTags,
+        createdAt: note.created_at,
+        updatedAt: note.updated_at
+      }
+    })
 
     return {
-      notes: filteredNotes,
+      data: transformedNotes,
       pagination: {
         page,
         perPage,
-        isLastPage: !hasMore
+        isLastPage
+      }
+    }
+  }
+
+  static validate(filters) {
+    // Validate university filter if provided
+    if (filters.university) {
+      const universityIds = Array.isArray(filters.university)
+        ? filters.university
+        : filters.university.split(',')
+
+      for (const id of universityIds) {
+        const universityId = parseInt(id)
+        if (isNaN(universityId) || universityId <= 0) {
+          throw new ValidationError('Invalid university filter')
+        }
+      }
+    }
+
+    // Validate semester filter if provided
+    if (filters.semester) {
+      const semesterIds = Array.isArray(filters.semester)
+        ? filters.semester
+        : filters.semester.split(',')
+
+      for (const id of semesterIds) {
+        const semesterId = parseInt(id)
+        if (isNaN(semesterId) || semesterId <= 0) {
+          throw new ValidationError('Invalid semester filter')
+        }
+      }
+    }
+
+    // Validate pagination
+    if (filters.page && (isNaN(parseInt(filters.page)) || parseInt(filters.page) < 1)) {
+      throw new ValidationError('Invalid page number')
+    }
+
+    if (filters.perPage) {
+      const perPage = parseInt(filters.perPage)
+      if (isNaN(perPage) || perPage < 1 || perPage > 100) {
+        throw new ValidationError('Invalid perPage. Must be between 1 and 100')
       }
     }
   }

@@ -66,7 +66,11 @@ export class GetSummaryNotesListService extends BaseService {
       include: {
         summary_note_tags: {
           include: {
-            tags: true
+            tags: {
+              include: {
+                tag_group: true
+              }
+            }
           }
         }
       },
@@ -85,21 +89,32 @@ export class GetSummaryNotesListService extends BaseService {
     const notesToReturn = hasMore ? summaryNotes.slice(0, limit) : summaryNotes
 
     // Transform the data
-    const data = notesToReturn.map(note => ({
-      id: note.id,
-      title: note.title,
-      description: note.description,
-      source_type: note.source_type,
-      status: note.status,
-      is_active: note.is_active,
-      created_at: note.created_at,
-      updated_at: note.updated_at,
-      tags: note.summary_note_tags.map(t => ({
+    const data = notesToReturn.map(note => {
+      // Separate tags by group (matching Anatomy Quiz pattern)
+      const allTags = note.summary_note_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,
-        type: t.tags.type
+        tagGroupId: t.tags.tag_group_id,
+        tagGroupName: t.tags.tag_group?.name
       }))
-    }))
+
+      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+
+      return {
+        id: note.id,
+        title: note.title,
+        description: note.description,
+        source_type: note.source_type,
+        status: note.status,
+        is_active: note.is_active,
+        created_at: note.created_at,
+        updated_at: note.updated_at,
+        tags: allTags,
+        universityTags,
+        semesterTags
+      }
+    })
 
     return {
       data,

@@ -1,24 +1,29 @@
 import { GetSummaryNotesService } from '../../../services/summaryNotes/getSummaryNotesService.js'
+import { GetSummaryNoteByIdService } from '../../../services/summaryNotes/getSummaryNoteByIdService.js'
 import { StartSummaryNoteSessionService } from '../../../services/summaryNotes/startSummaryNoteSessionService.js'
 import { GetSummaryNoteSessionService } from '../../../services/summaryNotes/getSummaryNoteSessionService.js'
 
 class SummaryNoteController {
   // Get all available summary notes for users
   async index(req, res) {
-    const { search, university, semester, page = 1, perPage = 12 } = req.query
-
-    const result = await GetSummaryNotesService.call({
-      search,
-      university,
-      semester,
-      page: parseInt(page),
-      perPage: parseInt(perPage)
-    })
+    const result = await GetSummaryNotesService.call(req.query)
 
     return res.status(200).json({
       success: true,
-      data: result.notes,
+      data: result.data,
       pagination: result.pagination
+    })
+  }
+
+  // Get a single summary note by ID
+  async show(req, res) {
+    const { id } = req.params
+
+    const note = await GetSummaryNoteByIdService.call({ noteId: id })
+
+    return res.status(200).json({
+      success: true,
+      data: note
     })
   }
 

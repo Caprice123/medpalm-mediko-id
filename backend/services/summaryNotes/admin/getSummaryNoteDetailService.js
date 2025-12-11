@@ -13,7 +13,11 @@ export class GetSummaryNoteDetailService extends BaseService {
       include: {
         summary_note_tags: {
           include: {
-            tags: true
+            tags: {
+              include: {
+                tag_group: true
+              }
+            }
           }
         }
       }
@@ -22,6 +26,17 @@ export class GetSummaryNoteDetailService extends BaseService {
     if (!summaryNote) {
       throw new ValidationError('Summary note not found')
     }
+
+    // Separate tags by group (matching Anatomy Quiz pattern)
+    const allTags = summaryNote.summary_note_tags.map(t => ({
+      id: t.tags.id,
+      name: t.tags.name,
+      tagGroupId: t.tags.tag_group_id,
+      tagGroupName: t.tags.tag_group?.name
+    }))
+
+    const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+    const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
 
     return {
       id: summaryNote.id,
@@ -37,11 +52,9 @@ export class GetSummaryNoteDetailService extends BaseService {
       created_by: summaryNote.created_by,
       created_at: summaryNote.created_at,
       updated_at: summaryNote.updated_at,
-      tags: summaryNote.summary_note_tags.map(t => ({
-        id: t.tags.id,
-        name: t.tags.name,
-        type: t.tags.type
-      }))
+      tags: allTags,
+      universityTags,
+      semesterTags
     }
   }
 }

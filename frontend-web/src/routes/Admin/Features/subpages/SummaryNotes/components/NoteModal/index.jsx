@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createSummaryNote, updateSummaryNote, generateSummaryFromDocument } from '@store/summaryNotes/action'
 import { actions } from '@store/summaryNotes/reducer'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import BlockNoteEditor from '@components/BlockNoteEditor'
 import TagSelector from '../../../Exercise/components/TagSelector'
+import { markdownToBlocks } from '@utils/markdownToBlocks'
 import {
   ModalOverlay,
   ModalContainer,
@@ -20,11 +20,6 @@ import {
   TextArea,
   Select,
   EditorContainer,
-  EditorSection,
-  EditorHeader,
-  EditorTextArea,
-  PreviewSection,
-  PreviewContent,
   UploadSection,
   UploadArea,
   UploadIcon,
@@ -34,10 +29,6 @@ import {
   GenerateButton,
   ModalFooter,
   FooterButton,
-  MarkdownHelpSection,
-  HelpTitle,
-  HelpGrid,
-  HelpItem,
   ExistingFileContainer,
   ExistingFileIcon,
   ExistingFileInfo,
@@ -58,7 +49,7 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    content: '',
+    content: null,  // Will store JSON blocks
     status: 'draft',
     tags: []
   })
@@ -74,10 +65,26 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
         combinedStatus = 'inactive'
       }
 
+      // Parse content - handle both JSON blocks and markdown (legacy)
+      let parsedContent = null
+      if (noteToEdit.content) {
+        try {
+          // Try to parse as JSON first
+          const parsed = JSON.parse(noteToEdit.content)
+          parsedContent = Array.isArray(parsed) ? parsed : null
+        } catch (e) {
+          // If not JSON, convert markdown to blocks
+          parsedContent = [{
+            type: "paragraph",
+            content: noteToEdit.content
+          }]
+        }
+      }
+
       setFormData({
         title: noteToEdit.title || '',
         description: noteToEdit.description || '',
-        content: noteToEdit.content || '',
+        content: parsedContent,
         status: combinedStatus,
         tags: noteToEdit.tags || []
       })
@@ -97,7 +104,7 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
       setFormData({
         title: '',
         description: '',
-        content: '',
+        content: null,
         status: 'draft',
         tags: []
       })
@@ -110,9 +117,12 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
 
   useEffect(() => {
     if (generatedContent?.content) {
+      // Convert generated markdown to BlockNote blocks
+      const blocks = markdownToBlocks(generatedContent.content)
+
       setFormData(prev => ({
         ...prev,
-        content: generatedContent.content
+        content: blocks
       }))
 
       // Store file info from generation
@@ -141,6 +151,14 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
       ...prev,
       tags: newTags
     }))
+  }
+
+  const handleContentChange = (blocks) => {
+    setFormData(prev => ({
+      ...prev,
+      content: blocks
+    }))
+    dispatch(clearError())
   }
 
   const handleFileChange = (e) => {
@@ -202,7 +220,7 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
       return
     }
 
-    if (!formData.content.trim()) {
+    if (!formData.content || formData.content.length === 0) {
       dispatch(setError('Konten harus diisi.'))
       return
     }
@@ -219,10 +237,13 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
         isActive = false
       }
 
+      // Stringify the blocks for storage
+      const contentString = JSON.stringify(formData.content)
+
       const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        content: formData.content,
+        content: contentString,
         status: apiStatus,
         isActive: isActive,
         tagIds: formData.tags.map(t => t.id),
@@ -401,77 +422,18 @@ function NoteModal({ isOpen, onClose, noteToEdit, onSuccess }) {
           </FormSection>
 
           <FormSection>
-            <SectionTitle>Konten Ringkasan *</SectionTitle>
+            <SectionTitle>Konten Ringkasan * (Notion-like Editor)</SectionTitle>
+            <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem' }}>
+              Type <strong>/</strong> untuk melihat pilihan format • <strong>Tab</strong> untuk indent • <strong>Shift+Tab</strong> untuk unindent
+            </p>
             <EditorContainer>
-              <EditorSection>
-                <EditorHeader>Editor (Markdown)</EditorHeader>
-                <EditorTextArea
-                  name="content"
-                  value={formData.content}
-                  onChange={handleInputChange}
-                  placeholder="Tulis konten ringkasan dalam format Markdown..."
-                  disabled={isLoading}
-                />
-              </EditorSection>
-              <PreviewSection>
-                <EditorHeader>Preview</EditorHeader>
-                <PreviewContent>
-                  {formData.content ? (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {formData.content}
-                    </ReactMarkdown>
-                  ) : (
-                    <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>
-                      Preview akan muncul di sini...
-                    </span>
-                  )}
-                </PreviewContent>
-              </PreviewSection>
+              <BlockNoteEditor
+                initialContent={formData.content}
+                onChange={handleContentChange}
+                editable={!isLoading}
+                placeholder="Tulis konten ringkasan..."
+              />
             </EditorContainer>
-
-            <MarkdownHelpSection>
-              <HelpTitle>
-                📝 Panduan Markdown
-              </HelpTitle>
-              <HelpGrid>
-                <HelpItem>
-                  <code># Judul</code> <span>→ Heading 1</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>## Sub Judul</code> <span>→ Heading 2</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>**teks**</code> <span>→ Bold</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>*teks*</code> <span>→ Italic</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>- item</code> <span>→ Bullet list</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>1. item</code> <span>→ Numbered list</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>[teks](url)</code> <span>→ Link</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>![alt](url)</code> <span>→ Gambar</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>`kode`</code> <span>→ Inline code</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>```kode```</code> <span>→ Code block</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>&gt; teks</code> <span>→ Blockquote</span>
-                </HelpItem>
-                <HelpItem>
-                  <code>| A | B |</code> <span>→ Tabel</span>
-                </HelpItem>
-              </HelpGrid>
-            </MarkdownHelpSection>
           </FormSection>
         </ModalBody>
 

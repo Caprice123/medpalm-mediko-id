@@ -17,7 +17,7 @@ export const Overlay = styled.div`
 export const Modal = styled.div`
   background: white;
   border-radius: 8px;
-  max-width: 1000px;
+  max-width: 1200px;
   width: 100%;
   max-height: 90vh;
   display: flex;

@@ -21,7 +21,7 @@ export const Container = styled.div`
 `
 
 export const Content = styled.div`
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 1;

@@ -20,26 +20,29 @@ const {
 
 // ============= User Endpoints =============
 
-export const fetchSummaryNotes = (filters = {}, page = 1, perPage = 12) => async (dispatch) => {
+export const fetchSummaryNotes = (filters, page, perPage) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isNotesLoading', value: true }))
     dispatch(clearError())
 
-    const queryParams = { page, perPage }
-    if (filters.search) queryParams.search = filters.search
-    if (filters.university) queryParams.university = filters.university
-    if (filters.semester) queryParams.semester = filters.semester
+    // If no parameters provided, get from state
+    const state = getState().summaryNotes
+    const currentFilters = filters || state.filters
+    const currentPage = page || state.pagination.page
+    const currentPerPage = perPage || state.pagination.perPage
+
+    const queryParams = {}
+    if (currentFilters.search) queryParams.search = currentFilters.search
+    if (currentFilters.university) queryParams.university = currentFilters.university
+    if (currentFilters.semester) queryParams.semester = currentFilters.semester
+
+    // Add pagination parameters
+    queryParams.page = currentPage
+    queryParams.perPage = currentPerPage
 
     const response = await getWithToken(Endpoints.summaryNotes.list, queryParams)
     dispatch(setNotes(response.data.data || []))
-
-    if (response.data.pagination) {
-      dispatch(setPagination({
-        currentPage: response.data.pagination.page,
-        perPage: response.data.pagination.perPage,
-        isLastPage: response.data.pagination.isLastPage
-      }))
-    }
+    dispatch(setPagination(response.data.pagination || { page: 1, perPage: 12, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -87,28 +90,30 @@ export const fetchSummaryNoteSession = (sessionId) => async (dispatch) => {
 
 // ============= Admin Endpoints =============
 
-export const fetchAdminSummaryNotes = (filters = {}, page = 1, perPage = 30) => async (dispatch) => {
+export const fetchAdminSummaryNotes = (filters, page, perPage) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isAdminNotesLoading', value: true }))
     dispatch(clearError())
 
-    const queryParams = { page, perPage }
-    if (filters.search) queryParams.search = filters.search
-    if (filters.university) queryParams.university = filters.university
-    if (filters.semester) queryParams.semester = filters.semester
-    if (filters.status) queryParams.status = filters.status
+    // If no parameters provided, get from state
+    const state = getState().summaryNotes
+    const currentFilters = filters || state.filters
+    const currentPage = page || state.pagination.page
+    const currentPerPage = perPage || state.pagination.perPage
+
+    const queryParams = {}
+    if (currentFilters.search) queryParams.search = currentFilters.search
+    if (currentFilters.university) queryParams.university = currentFilters.university
+    if (currentFilters.semester) queryParams.semester = currentFilters.semester
+    if (currentFilters.status) queryParams.status = currentFilters.status
+
+    // Add pagination parameters
+    queryParams.page = currentPage
+    queryParams.perPage = currentPerPage
 
     const response = await getWithToken(Endpoints.summaryNotes.admin.list, queryParams)
     dispatch(setAdminNotes(response.data.data || []))
-
-    if (response.data.pagination) {
-      dispatch(setPagination({
-        currentPage: response.data.pagination.page,
-        perPage: response.data.pagination.perPage,
-        total: response.data.pagination.total,
-        isLastPage: response.data.pagination.isLastPage
-      }))
-    }
+    dispatch(setPagination(response.data.pagination || { page: 1, perPage: 30, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

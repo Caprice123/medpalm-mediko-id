@@ -6,15 +6,18 @@ import SessionDetail from '@routes/SessionDetail';
 import FlashcardPage from '@routes/Flashcard';
 import ExercisePage from '@routes/Exercise';
 import UITest from '@routes/UITest';
+import EditorTest from '@routes/EditorTest';
 import PrivateRoute from '@middleware/PrivateRoute';
 import { AuthRoute } from './routes/Auth/routes';
 import { calculatorRoutes } from './routes/Calculator/routes';
 import { anatomyQuizRoutes } from './routes/AnatomyQuiz/routes';
+import { summaryNotesRoutes } from './routes/SummaryNotes/routes';
 
 const appRoutes = [
     { path: '/', element: <Home /> },
     { path: AuthRoute.signInRoute, element: <Login /> },
     { path: '/ui-test', element: <UITest /> },
+    { path: '/editor-test', element: <EditorTest /> },
     {
         path: "/",
         element: <PrivateRoute />,
@@ -42,6 +45,7 @@ const appRoutes = [
             },
             ...anatomyQuizRoutes,
             ...calculatorRoutes,
+            ...summaryNotesRoutes,
             {
                 path: '/admin',
                 element: (

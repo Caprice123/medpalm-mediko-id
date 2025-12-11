@@ -12,9 +12,8 @@ const initialState = {
 
   // Pagination
   pagination: {
-    currentPage: 1,
+    page: 1,
     perPage: 30,
-    total: 0,
     isLastPage: false
   },
 
@@ -95,10 +94,26 @@ const { reducer, actions } = createSlice({
     setPagination: (state, { payload }) => {
       state.pagination = { ...state.pagination, ...payload }
     },
+    setPage: (state, { payload }) => {
+      state.pagination.page = payload
+    },
+    nextPage: (state) => {
+      if (!state.pagination.isLastPage) {
+        state.pagination.page += 1
+      }
+    },
+    previousPage: (state) => {
+      if (state.pagination.page > 1) {
+        state.pagination.page -= 1
+      }
+    },
 
     // Filters
     setFilters: (state, { payload }) => {
       state.filters = { ...state.filters, ...payload }
+    },
+    updateFilter: (state, { payload: { key, value } }) => {
+      state.filters[key] = value
     },
     clearFilters: (state) => {
       state.filters = {

@@ -17,7 +17,11 @@ export class GetSummaryNoteSessionService extends BaseService {
           include: {
             summary_note_tags: {
               include: {
-                tags: true
+                tags: {
+                  include: {
+                    tag_group: true
+                  }
+                }
               }
             }
           }
@@ -34,6 +38,17 @@ export class GetSummaryNoteSessionService extends BaseService {
       throw new ValidationError('Unauthorized to view this session')
     }
 
+    // Separate tags by group
+    const allTags = session.summary_note.summary_note_tags.map(t => ({
+      id: t.tags.id,
+      name: t.tags.name,
+      tagGroupId: t.tags.tag_group_id,
+      tagGroupName: t.tags.tag_group?.name
+    }))
+
+    const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+    const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+
     return {
       id: session.id,
       user_learning_session_id: session.user_learning_session_id,
@@ -45,11 +60,9 @@ export class GetSummaryNoteSessionService extends BaseService {
         title: session.summary_note.title,
         description: session.summary_note.description,
         content: session.summary_note.content,
-        tags: session.summary_note.summary_note_tags.map(t => ({
-          id: t.tags.id,
-          name: t.tags.name,
-          type: t.tags.type
-        }))
+        tags: allTags,
+        universityTags,
+        semesterTags
       }
     }
   }
