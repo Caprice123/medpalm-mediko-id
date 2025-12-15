@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import Select from 'react-select'
+import { Label, Wrapper } from './Dropdown.styles'
 
 /**
  * Dropdown component using react-select
@@ -15,6 +16,7 @@ import Select from 'react-select'
  * @param {string} props.className - Additional CSS class
  */
 const Dropdown = memo(function Dropdown({
+    label,
   options = [],
   value,
   onChange,
@@ -22,6 +24,7 @@ const Dropdown = memo(function Dropdown({
   disabled = false,
   hasError = false,
   usePortal = false,
+  required = false,
   className = ''
 }) {
   // Custom styles for react-select
@@ -129,19 +132,27 @@ const Dropdown = memo(function Dropdown({
   }
 
   return (
-    <Select
-      className={className}
-      options={options}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      isDisabled={disabled}
-      styles={customStyles}
-      menuPortalTarget={usePortal ? document.body : null}
-      menuPosition={usePortal ? 'fixed' : 'absolute'}
-      isClearable
-      isSearchable
-    />
+    <Wrapper className={className}>
+        {label && (
+            <Label>
+                {label}
+                {required && <RequiredMark>*</RequiredMark>}
+            </Label>
+        )}
+        <Select
+          className={className}
+          options={options}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          isDisabled={disabled}
+          styles={customStyles}
+          menuPortalTarget={usePortal ? document.body : null}
+          menuPosition={usePortal ? 'fixed' : 'absolute'}
+          isClearable
+          isSearchable
+        />
+    </Wrapper>
   )
 }, (prev, next) => {
   return prev.options.length === next.options.length &&

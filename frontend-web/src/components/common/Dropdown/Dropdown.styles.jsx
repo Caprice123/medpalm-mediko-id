@@ -1,8 +1,22 @@
 import styled from 'styled-components'
 
-export const DropdownContainer = styled.div`
+export const Wrapper = styled.div`
   position: relative;
   width: 100%;
+`
+
+export const Label = styled.label`
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+`
+
+export const RequiredMark = styled.span`
+  color: #ef4444;
+  font-weight: 600;
+  margin-left: 0.25rem;
 `
 
 export const DropdownControl = styled.div`

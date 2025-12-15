@@ -18,7 +18,7 @@ export default {
     //     create: `${API_BASE_URL}/api/v1/tag-groups`,
     // },
     admin: {
-
+        constants: "/admin/v1/constants",
     },
     api: {
         calculators: "/api/v1/calculators"
@@ -131,6 +131,24 @@ export default {
             quizzes: `${API_BASE_URL}/admin/v1/anatomy/quizzes`,
             quiz: (id) => `${API_BASE_URL}/admin/v1/anatomy/quizzes/${id}`,
             constants: `${API_BASE_URL}/admin/v1/anatomy/constants`,
+        }
+    },
+    mcq: {
+        // User endpoints
+        topics: `${API_BASE_URL}/api/v1/mcq/topics`,
+        topic: (id) => `${API_BASE_URL}/api/v1/mcq/topics/${id}`,
+        submit: (id) => `${API_BASE_URL}/api/v1/mcq/topics/${id}/submit`,
+        topicSession: (id) => `${API_BASE_URL}/api/v1/mcq/topics/${id}/session`,
+        check: (id) => `${API_BASE_URL}/api/v1/mcq/topics/${id}/check`,
+        constants: `${API_BASE_URL}/api/v1/mcq/constants`,
+
+        // Admin endpoints
+        admin: {
+            generate: `${API_BASE_URL}/admin/v1/mcq/generate`,
+            uploadQuestionImage: `${API_BASE_URL}/admin/v1/mcq/upload-question-image`,
+            topics: `${API_BASE_URL}/admin/v1/mcq/topics`,
+            topic: (id) => `${API_BASE_URL}/admin/v1/mcq/topics/${id}`,
+            constants: `${API_BASE_URL}/admin/v1/mcq/constants`,
         }
     },
 }

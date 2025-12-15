@@ -444,6 +444,180 @@ Hasilkan HANYA JSON array tanpa teks tambahan apapun.
 
     return true;
   }
+
+  /**
+   * Generate multiple choice questions from text content
+   * @param {string} content - The text content to generate questions from
+   * @param {number} questionCount - Number of questions to generate (default: 10)
+   * @returns {Promise<Array>} Array of generated MCQ questions
+   */
+  async generateMCQFromText(content, questionCount = 10) {
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+      const prompt = `
+Kamu adalah seorang dosen medis yang ahli dalam membuat soal pilihan ganda untuk mahasiswa kedokteran.
+
+Tugas: Buatlah ${questionCount} soal pilihan ganda berkualitas tinggi berdasarkan materi berikut.
+
+Materi:
+${content}
+
+Format Output (JSON):
+[
+  {
+    "question": "Pertanyaan yang jelas dan spesifik",
+    "options": ["Pilihan 1", "Pilihan 2", "Pilihan 3", "Pilihan 4"],
+    "correct_answer": 0,
+    "explanation": "Penjelasan lengkap mengapa ini jawaban yang benar"
+  }
+]
+
+Aturan:
+1. Setiap pertanyaan harus memiliki minimal 4 pilihan jawaban dalam array "options"
+2. HANYA SATU jawaban yang benar
+3. Pilihan jawaban yang salah harus masuk akal (plausible distractors)
+4. Fokus pada konsep medis penting dari materi
+5. Penjelasan harus jelas dan edukatif (2-4 kalimat)
+6. Gunakan bahasa Indonesia yang formal dan medis
+7. Pastikan pertanyaan bervariasi dan mencakup berbagai aspek materi
+8. correct_answer harus berisi index (0-based) dari jawaban yang benar dalam array options
+9. Output harus berupa valid JSON array
+
+Hasilkan HANYA JSON array tanpa teks tambahan apapun.
+`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse JSON response
+      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const questions = JSON.parse(cleanedText);
+
+      // Validate and clean questions
+      return questions.map((q, index) => ({
+        question: q.question || '',
+        options: Array.isArray(q.options) ? q.options : [],
+        correct_answer: typeof q.correct_answer === 'number' ? q.correct_answer : 0,
+        explanation: q.explanation || '',
+        order: index
+      }));
+    } catch (error) {
+      console.error('Error generating MCQ from text:', error);
+      throw new Error('Failed to generate MCQ questions: ' + error.message);
+    }
+  }
+
+  /**
+   * Generate multiple choice questions from PDF file
+   * @param {string} pdfFilePath - Path to the PDF file
+   * @param {number} questionCount - Number of questions to generate
+   * @returns {Promise<Array>} Array of generated MCQ questions
+   */
+  async generateMCQFromPDF(pdfFilePath, questionCount = 10) {
+    try {
+      // Check file size (max 20MB for inline PDFs)
+      const stats = fs.statSync(pdfFilePath);
+      const fileSizeMB = stats.size / (1024 * 1024);
+
+      console.log(`Processing PDF for MCQ: ${pdfFilePath} - Size: ${fileSizeMB.toFixed(2)} MB`);
+
+      if (fileSizeMB > 20) {
+        throw new Error(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
+      }
+
+      // Read PDF file and convert to base64
+      const pdfBuffer = fs.readFileSync(pdfFilePath);
+      const pdfBase64 = pdfBuffer.toString('base64');
+
+      console.log('PDF converted to base64, generating MCQ questions...');
+
+      // Generate MCQ questions using inline PDF data
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+      const prompt = `
+Kamu adalah seorang dosen medis yang ahli dalam membuat soal pilihan ganda untuk mahasiswa kedokteran.
+
+Tugas: Analisis PDF materi medis yang diberikan (termasuk teks dan gambar/diagram jika ada), lalu buatlah ${questionCount} soal pilihan ganda berkualitas tinggi.
+
+Format Output (JSON):
+[
+  {
+    "question": "Pertanyaan yang jelas dan spesifik",
+    "options": ["Pilihan 1", "Pilihan 2", "Pilihan 3", "Pilihan 4"],
+    "correct_answer": 0,
+    "explanation": "Penjelasan lengkap mengapa ini jawaban yang benar"
+  }
+]
+
+Aturan:
+1. Setiap pertanyaan harus memiliki minimal 4 pilihan jawaban dalam array "options"
+2. HANYA SATU jawaban yang benar
+3. Pilihan jawaban yang salah harus masuk akal (plausible distractors)
+4. Fokus pada konsep medis penting dari materi
+5. Jika ada diagram/gambar, buat pertanyaan yang relevan dengan visualisasi tersebut
+6. Penjelasan harus jelas dan edukatif (2-4 kalimat)
+7. Gunakan bahasa Indonesia yang formal dan medis
+8. Pastikan pertanyaan bervariasi dan mencakup berbagai aspek materi
+9. correct_answer harus berisi index (0-based) dari jawaban yang benar dalam array options
+10. Output harus berupa valid JSON array
+
+Hasilkan HANYA JSON array tanpa teks tambahan apapun.
+`;
+
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: 'application/pdf',
+            data: pdfBase64,
+          },
+        },
+        { text: prompt },
+      ]);
+
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse JSON response
+      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const questions = JSON.parse(cleanedText);
+
+      console.log(`Successfully generated ${questions.length} MCQ questions from PDF`);
+
+      // Validate and clean questions
+      return questions.map((q, index) => ({
+        question: q.question || '',
+        options: Array.isArray(q.options) ? q.options : [],
+        correct_answer: typeof q.correct_answer === 'number' ? q.correct_answer : 0,
+        explanation: q.explanation || '',
+        order: index
+      }));
+    } catch (error) {
+      console.error('Error generating MCQ from PDF:', error);
+      throw new Error('Failed to generate MCQ questions from PDF: ' + error.message);
+    }
+  }
+
+  /**
+   * Validate an MCQ question format
+   * @param {Object} question - MCQ question object to validate
+   * @returns {boolean} True if valid
+   */
+  validateMCQ(question) {
+    if (!question.question || !question.option_a || !question.option_b ||
+        !question.option_c || !question.option_d || !question.correct_answer) {
+      return false;
+    }
+
+    // Check if correct_answer is one of a, b, c, d
+    const validAnswers = ['a', 'b', 'c', 'd'];
+    if (!validAnswers.includes(question.correct_answer.toLowerCase())) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 export default new GeminiService();

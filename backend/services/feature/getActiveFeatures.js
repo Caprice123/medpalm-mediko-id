@@ -24,7 +24,11 @@ export class GetActiveFeaturesService extends BaseService {
         "anatomy_feature_description",
         "anatomy_credit_cost",
         "anatomy_access_type",
-        "anatomy_is_active"
+        "anatomy_is_active",
+        "mcq_feature_title",
+        "mcq_feature_description",
+        "mcq_credit_cost",
+        "mcq_session_type"
     ])
 
     const features = []
@@ -82,6 +86,17 @@ export class GetActiveFeaturesService extends BaseService {
         icon: '🫀',
         accessType: featureConstants.anatomy_access_type || 'subscription',
         sessionType: "anatomy",
+      })
+    }
+
+    // Multiple Choice Quiz feature
+    if (featureConstants.mcq_feature_title) {
+      features.push({
+        name: featureConstants.mcq_feature_title,
+        description: featureConstants.mcq_feature_description,
+        cost: parseInt(featureConstants.mcq_credit_cost) || 0,
+        icon: '📝',
+        sessionType: featureConstants.mcq_session_type
       })
     }
 

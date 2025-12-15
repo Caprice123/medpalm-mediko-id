@@ -6,6 +6,7 @@ import Flashcard from './subpages/Flashcard'
 import SummaryNotes from './subpages/SummaryNotes'
 import Calculator from './subpages/Calculator'
 import AnatomyQuiz from './subpages/AnatomyQuiz'
+import MultipleChoice from './subpages/MultipleChoice'
 import {
   Container,
   HeaderSection,
@@ -60,6 +61,15 @@ const FEATURES_DATA = [
     cost: 0,
     isActive: true,
     color: '#6BB9E8'
+  },
+  {
+    id: 13,
+    name: 'Multiple Choice Quiz',
+    description: 'Quiz pilihan ganda dengan mode pembelajaran dan ujian',
+    icon: '✅',
+    cost: 0,
+    isActive: true,
+    color: '#ec4899'
   }
 ]
 
@@ -113,6 +123,11 @@ function Features() {
     if (selectedFeature?.id === 12) {
       // Quiz Anatomi
       return <AnatomyQuiz onBack={handleBackToList} />
+    }
+
+    if (selectedFeature?.id === 13) {
+      // Multiple Choice Quiz
+      return <MultipleChoice onBack={handleBackToList} />
     }
 
     // Default feature config for other features
