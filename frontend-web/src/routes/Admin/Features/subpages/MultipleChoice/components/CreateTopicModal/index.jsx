@@ -278,7 +278,6 @@ const CreateTopicModal = ({ onClose }) => {
         )}
       </FormSection>
 
-      <FormRow columns={2}>
         <FormSection>
           <Label>Number of Questions</Label>
           <Input
@@ -291,17 +290,16 @@ const CreateTopicModal = ({ onClose }) => {
           <HelpText>Pilih antara 1-50 soal</HelpText>
         </FormSection>
         <FormSection style={{ display: 'flex', alignItems: 'flex-end' }}>
-          <Button
+            <Button
             type="button"
             variant="primary"
             onClick={handleGenerate}
             disabled={loading.isGenerating || !canGenerate}
             style={{ width: '100%' }}
-          >
+            >
             {loading.isGenerating ? 'Generating...' : '✨ Generate Questions'}
-          </Button>
+            </Button>
         </FormSection>
-      </FormRow>
 
       <QuestionsSection>
         <QuestionsSectionHeader>

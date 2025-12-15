@@ -278,7 +278,6 @@ const UpdateTopicModal = ({ onClose }) => {
         )}
       </FormSection>
 
-      <FormRow columns={2}>
         <FormSection>
           <Label>Number of Questions</Label>
           <Input
@@ -301,7 +300,6 @@ const UpdateTopicModal = ({ onClose }) => {
             {loading.isGenerating ? 'Generating...' : '✨ Generate Questions'}
           </Button>
         </FormSection>
-      </FormRow>
 
       <QuestionsSection>
         <QuestionsSectionHeader>
