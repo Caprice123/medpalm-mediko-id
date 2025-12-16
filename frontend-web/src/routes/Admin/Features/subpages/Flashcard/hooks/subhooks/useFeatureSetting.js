@@ -47,8 +47,8 @@ export const useFeatureSetting = (onClose) => {
         "flashcard_generation_prompt_text_based",
         "flashcard_generation_prompt_document_based",
       ]
-      dispatch(actions.updateFilter({ key: "key", value: keys}))
-      const constants = await dispatch(fetchConstants(keys))
+      dispatch(actions.updateFilter({ key: "keys", value: keys}))
+      const constants = await dispatch(fetchConstants())
 
       // Convert string boolean to actual boolean for toggle switch
       const formattedConstants = {
