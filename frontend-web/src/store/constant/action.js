@@ -12,15 +12,16 @@ export const fetchConstants = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListConstantsLoading', value: true }))
     
-    const { keys } = getState().constant
+    const { filter } = getState().constant
     const queryParams = {}
-    if (keys && Array.isArray(keys)) {
-      queryParams.keys = keys.join(',')
+    if (filter.keys && Array.isArray(filter.keys)) {
+      queryParams.keys = filter.keys.join(',')
     }
 
     const response = await getWithToken(Endpoints.admin.constants, queryParams)
     const { data } = response.data
     dispatch(setConstants(data))
+    return data
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
