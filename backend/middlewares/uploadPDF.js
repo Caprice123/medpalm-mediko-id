@@ -39,7 +39,7 @@ const upload = multer({
 });
 
 // Make file upload optional - won't error if no file is provided
-const uploadSingle = upload.single('pdf');
+const uploadSingle = upload.single('file');
 
 export const uploadPDF = (req, res, next) => {
   uploadSingle(req, res, (err) => {
