@@ -23,8 +23,8 @@ export const login = (googleCredential, onSuccess) => async (dispatch) => {
         const tokenData = {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
-            accessTokenExpiredAt: data.accessTokenExpiresAt,
-            refreshTokenExpiredAt: data.refreshTokenExpiresAt
+            accessTokenExpiresAt: data.accessTokenExpiresAt,
+            refreshTokenExpiresAt: data.refreshTokenExpiresAt
         }
         setToken(tokenData)
 
