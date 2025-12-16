@@ -20,6 +20,13 @@ export const Container = styled.div`
   }
 `
 
+export const CalculatorSelectionContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+`
+
 export const Content = styled.div`
   max-width: 1200px;
   margin: 0 auto;

@@ -36,7 +36,16 @@ import {
   LoadingSpinner,
   EmptyState,
   EmptyIcon,
-  EmptyText
+  EmptyText,
+  ClassificationsSection,
+  ClassificationTitle,
+  ClassificationItem,
+  ClassificationName,
+  ClassificationValue,
+  ClassificationEmpty,
+  ClinicalReferencesSection,
+  ClinicalReferenceBox,
+  ClinicalReferenceItem
 } from './Detail.styles'
 import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
@@ -231,140 +240,55 @@ const CalculatorDetail = () => {
                 </form>
     
                 {result && (
-                <div style={{
-                    marginTop: '2rem',
-                    padding: '2rem',
-                    background: 'linear-gradient(to bottom, #f8fafc, #ffffff)',
-                    borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
-                }}>
-                    {/* Result Value */}
-                    <div style={{
-                    padding: '1.5rem',
-                    background: 'linear-gradient(135deg, rgba(107, 185, 232, 0.08), rgba(141, 198, 63, 0.08))',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(107, 185, 232, 0.2)',
-                    marginBottom: '1.5rem'
-                    }}>
-                    <div style={{
-                        fontSize: '0.875rem',
-                        color: '#64748b',
-                        marginBottom: '0.5rem',
-                        fontWeight: '500'
-                    }}>
-                        {result.result_label}
-                    </div>
-                    <div style={{
-                        fontSize: '2rem',
-                        fontWeight: '700',
-                        color: '#0f172a',
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        gap: '0.5rem'
-                    }}>
-                        <span>
+                <ResultSection>
+                    <ResultLabel>{result.result_label}</ResultLabel>
+                    <ResultValue>
                         {typeof result.result === 'number'
                             ? result.result.toFixed(2)
                             : result.result}
-                        </span>
                         {result.result_unit && (
-                        <span style={{ fontSize: '1.125rem', fontWeight: '600', color: '#6BB9E8' }}>
-                            {result.result_unit}
-                        </span>
+                            <ResultUnit>{result.result_unit}</ResultUnit>
                         )}
-                    </div>
-                    </div>
-    
+                    </ResultValue>
+
                     {/* Classifications */}
                     {result.classifications && result.classifications.length > 0 && (
-                    <div style={{
-                        marginBottom: '1.5rem',
-                        paddingBottom: '1.5rem',
-                        borderBottom: '1px solid #e2e8f0'
-                    }}>
-                        <div style={{
-                        fontSize: '0.875rem',
-                        fontWeight: '700',
-                        color: '#334155',
-                        marginBottom: '1rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                        }}>
-                        Interpretasi Hasil
-                        </div>
+                    <ClassificationsSection>
+                        <ClassificationTitle>Interpretasi Hasil</ClassificationTitle>
                         {result.classifications.map((classification, index) => (
-                        <div key={index} style={{
-                            marginBottom: '1rem',
-                            padding: '0.75rem',
-                            background: '#f8fafc',
-                            borderRadius: '6px',
-                            borderLeft: '3px solid #6BB9E8'
-                        }}>
-                            <div style={{
-                            fontSize: '0.813rem',
-                            color: '#475569',
-                            fontWeight: '600',
-                            marginBottom: '0.375rem'
-                            }}>
-                            {classification.name}
-                            </div>
+                        <ClassificationItem key={index}>
+                            <ClassificationName>{classification.name}</ClassificationName>
                             {classification.matched_options && classification.matched_options.length > 0 ? (
-                            <div style={{
-                                fontSize: '0.875rem',
-                                color: '#1e293b',
-                                fontWeight: '500'
-                            }}>
+                            <ClassificationValue>
                                 {classification.matched_options.join(' • ')}
-                            </div>
+                            </ClassificationValue>
                             ) : (
-                            <div style={{
-                                fontSize: '0.813rem',
-                                color: '#94a3b8',
-                                fontStyle: 'italic'
-                            }}>
+                            <ClassificationEmpty>
                                 Tidak ada klasifikasi
-                            </div>
+                            </ClassificationEmpty>
                             )}
-                        </div>
+                        </ClassificationItem>
                         ))}
-                    </div>
+                    </ClassificationsSection>
                     )}
-    
+
                     {/* Clinical References */}
                     {detail.clinical_references && detail.clinical_references.length > 0 && (
-                    <div>
-                        <div style={{
-                        fontSize: '0.875rem',
-                        fontWeight: '700',
-                        color: '#334155',
-                        marginBottom: '1rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                        }}>
-                        Referensi Klinis
-                        </div>
-                        <div style={{
-                        padding: '1rem',
-                        background: '#fefce8',
-                        borderRadius: '6px',
-                        border: '1px solid #fde047'
-                        }}>
-                        <div style={{
-                            fontSize: '0.813rem',
-                            color: '#713f12',
-                            lineHeight: '1.7'
-                        }}>
+                    <ClinicalReferencesSection>
+                        <ClassificationTitle>Referensi Klinis</ClassificationTitle>
+                        <ClinicalReferenceBox>
                             {detail.clinical_references.map((reference, index) => (
-                            <div key={index} style={{ marginBottom: index < detail.clinical_references.length - 1 ? '0.5rem' : 0 }}>
-                                <span style={{ fontWeight: '600' }}>{index + 1}.</span> {reference}
-                            </div>
+                            <ClinicalReferenceItem
+                                key={index}
+                                isLast={index === detail.clinical_references.length - 1}
+                            >
+                                <strong>{index + 1}.</strong> {reference}
+                            </ClinicalReferenceItem>
                             ))}
-                        </div>
-                        </div>
-                    </div>
+                        </ClinicalReferenceBox>
+                    </ClinicalReferencesSection>
                     )}
-                </div>
+                </ResultSection>
                 )}
             </CalculatorForm>
             </Content>

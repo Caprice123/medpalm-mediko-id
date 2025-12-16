@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: calc(100vh - 63px);
-  background: linear-gradient(135deg, #f0fdfa 0%, #cffafe 100%);
+  background: #f0fdfa;
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -565,4 +565,85 @@ export const EmptyText = styled.p`
   color: #64748b;
   margin: 0;
   font-weight: 500;
+`
+
+export const ClassificationsSection = styled.div`
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+  position: relative;
+  z-index: 1;
+`
+
+export const ClassificationTitle = styled.div`
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`
+
+export const ClassificationItem = styled.div`
+  margin-bottom: 1rem;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 12px;
+  border-left: 4px solid #06b6d4;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`
+
+export const ClassificationName = styled.div`
+  font-size: 0.875rem;
+  color: #06b6d4;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+`
+
+export const ClassificationValue = styled.div`
+  font-size: 0.9375rem;
+  color: #1e293b;
+  font-weight: 600;
+  line-height: 1.6;
+`
+
+export const ClassificationEmpty = styled.div`
+  font-size: 0.813rem;
+  color: #94a3b8;
+  font-style: italic;
+`
+
+export const ClinicalReferencesSection = styled.div`
+  position: relative;
+  z-index: 1;
+`
+
+export const ClinicalReferenceBox = styled.div`
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  border-radius: 12px;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15);
+`
+
+export const ClinicalReferenceItem = styled.div`
+  font-size: 0.875rem;
+  color: #713f12;
+  line-height: 1.8;
+  margin-bottom: ${props => props.isLast ? '0' : '0.75rem'};
+
+  strong {
+    font-weight: 700;
+    color: #92400e;
+  }
 `

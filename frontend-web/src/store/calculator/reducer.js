@@ -3,11 +3,11 @@ import { resetAllState } from '../globalAction'
 
 const initialState = {
   topics: [],
-  filter: {
-    name: undefined,
-    tagName: undefined
+  filters: {
+    name: '',
+    tagName: ''
   },
-  detail: undefined,
+  detail: null,
   loading: {
     isGetListCalculatorsLoading: false,
     isGetDetailCalculatorLoading: false,
@@ -15,6 +15,11 @@ const initialState = {
     isUpdateCalculatorLoading: false,
     isDeleteCalculatorLoading: false,
     isCalculateResultLoading: false,
+  },
+  pagination: {
+    page: 1,
+    perPage: 20,
+    isLastPage: false
   },
   error: null
 }
@@ -33,7 +38,23 @@ const { reducer, actions } = createSlice({
       state.topics = payload
     },
     updateFilter: (state, { payload: { key, value } }) => {
-      state.filter[key] = value
+      state.filters[key] = value
+    },
+    nextPage: (state) => {
+      if (!state.pagination.isLastPage) {
+        state.pagination.page += 1
+      }
+    },
+    previousPage: (state) => {
+      if (state.pagination.page > 1) {
+        state.pagination.page -= 1
+      }
+    },
+    setPage: (state, { payload }) => {
+      state.pagination.page = payload
+    },
+    updatePagination: (state, { payload }) => {
+      state.pagination = { ...state.pagination, ...payload }
     }
   },
 

@@ -74,6 +74,8 @@ export const TopicCard = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     border-color: #d1d5db;
@@ -112,8 +114,28 @@ export const TopicDescription = styled.p`
   margin-bottom: 0.75rem;
 `
 
+export const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+`
+
+export const Tag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: ${props => props.kategori ? '#dbeafe' : '#ede9fe'};
+  color: ${props => props.kategori ? '#1e40af' : '#5b21b6'};
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+`
+
 export const TopicStats = styled.div`
   display: flex;
+  justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
   border-top: 1px solid #e5e7eb;

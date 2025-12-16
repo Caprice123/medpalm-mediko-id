@@ -7,15 +7,19 @@ import { DeleteCalculatorTopicService } from '../../../services/calculator/delet
 class CalculatorController {
   /**
    * Get all calculator topics
-   * GET /admin/v1/calculators
+   * GET /admin/v1/calculators?name=xxx&tagName=xxx&page=1&perPage=20
    */
   async getTopics(req, res) {
-    const { name, tagName } = req.query
+    const { name, tagName, page, perPage } = req.query
 
-    const topics = await GetCalculatorTopicsService.call({ name, tagName })
+    const result = await GetCalculatorTopicsService.call({ name, tagName, page, perPage })
+
     return res.status(200).json({
       success: true,
-      data: topics,
+      data: {
+        topics: result.topics,
+        pagination: result.pagination
+      },
       message: 'Calculator topics retrieved successfully'
     })
   }

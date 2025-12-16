@@ -26,7 +26,6 @@ import {
 function FlashcardList({ onEdit, onDelete, onCreateFirst }) { 
   const { decks, loading } = useSelector((state) => state.flashcard)
 
-  console.log(decks)
   // Loading state
   if (loading?.isGetListDecksLoading) {
     return <LoadingOverlay>Loading flashcards...</LoadingOverlay>

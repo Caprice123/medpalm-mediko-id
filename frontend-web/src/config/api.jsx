@@ -13,9 +13,6 @@ const api = axios.create({
 const isTokenExpired = (isoString) => {
     const now = new Date(); // Current date and time
     const targetDate = new Date(isoString); // Convert ISO string to Date object
-    console.log(now)
-    console.log(isoString)
-    console.log(targetDate)
     return targetDate < now; // Check if the target date is before now
 };
 

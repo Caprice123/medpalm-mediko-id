@@ -22,7 +22,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   })
 
   const [newReference, setNewReference] = useState('')
-  const [selectedTagId, setSelectedTagId] = useState('')
 
   const [initialFormData, setInitialFormData] = useState(null)
   const [errors, setErrors] = useState({})
@@ -40,9 +39,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   const { tags } = useSelector(state => state.tags)
   const categoryTags = tags.find(tag => tag.name === 'kategori')?.tags ?? []
   const selectedTags = formData.tags || []
-  const unselectedCategoryTags = categoryTags?.filter(
-    tag => !selectedTags.find(st => st.id === tag.id)
-  )
 
   useEffect(() => {
     if (calculator) {
@@ -80,7 +76,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     setDraggedIndex(null)
     setShowConfirmClose(false)
     setNewReference('')
-    setSelectedTagId('')
   }, [calculator, isOpen])
 
   const hasUnsavedChanges = () => {
@@ -467,23 +462,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   }
 
   // Tag handlers
-  const handleAddTag = () => {
-    if (!selectedTagId) return
-
-    const tagToAdd = categoryTags.find(tag => tag.id === parseInt(selectedTagId))
-    if (tagToAdd && !formData.tags.find(t => t.id === tagToAdd.id)) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tagToAdd]
-      }))
-      setSelectedTagId('')
-    }
-  }
-
-  const handleRemoveTag = (tagId) => {
+  const handleTagsChange = (newTags) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag.id !== tagId)
+      tags: newTags
     }))
   }
 
@@ -520,13 +502,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     addClinicalReference,
     removeClinicalReference,
     // Tags
-    selectedTagId,
-    setSelectedTagId,
-    categoryTags,
     selectedTags,
-    unselectedCategoryTags,
-    handleAddTag,
-    handleRemoveTag,
+    categoryTags,
+    handleTagsChange,
     // Fields
     handleFieldChange,
     handleFieldItemChange,

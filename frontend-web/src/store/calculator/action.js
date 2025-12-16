@@ -7,22 +7,30 @@ const {
   setLoading,
   setDetail,
   setTopics,
+  updatePagination,
 } = actions
 
 // Fetch all calculator topics (admin)
 export const fetchAdminCalculatorTopics = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListCalculatorsLoading', value: true }))
-    
-    const { filter } = getState().calculator
 
-    const requestQuery = {}
-    if (filter.name) requestQuery.name = filter.name
-    if (filter.tagName) requestQuery.tagName = filter.tagName
-    
-    const route = Endpoints.api.calculators + "/topics"
-    const response = await getWithToken(route, requestQuery)
-    dispatch(setTopics(response.data.data || response.data || []))
+    const { filters, pagination } = getState().calculator
+
+    const requestQuery = {
+      page: pagination.page,
+      perPage: pagination.perPage
+    }
+    if (filters.name) requestQuery.name = filters.name
+    if (filters.tagName) requestQuery.tagName = filters.tagName
+
+    const response = await getWithToken(Endpoints.calculators.admin.list, requestQuery)
+
+    const responseData = response.data.data || response.data
+
+    // Handle paginated response
+    dispatch(setTopics(responseData.topics))
+    dispatch(updatePagination(responseData.pagination))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -131,15 +139,29 @@ export const updateCalculatorConstants = (constants) => async (dispatch) => {
 export const getCalculatorTopics = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListCalculatorsLoading', value: true }))
-    
-    const { filter } = getState().calculator
+
+    const { filters, pagination } = getState().calculator
+
     const requestQuery = {
-        name: filter.name,
-        tagName: filter.tagName,
+      page: pagination.page,
+      perPage: pagination.perPage
     }
+    if (filters.name) requestQuery.name = filters.name
+    if (filters.tagName) requestQuery.tagName = filters.tagName
+
     const route = Endpoints.api.calculators + "/topics"
     const response = await getWithToken(route, requestQuery)
-    dispatch(setTopics(response.data.data || response.data || []))
+
+    const responseData = response.data.data || response.data
+
+    // Handle paginated response
+    if (responseData.topics && responseData.pagination) {
+      dispatch(setTopics(responseData.topics))
+      dispatch(updatePagination(responseData.pagination))
+    } else {
+      // Fallback for non-paginated response
+      dispatch(setTopics(Array.isArray(responseData) ? responseData : []))
+    }
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

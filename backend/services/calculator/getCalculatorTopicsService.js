@@ -3,7 +3,13 @@ import { BaseService } from "../baseService.js"
 
 export class GetCalculatorTopicsService extends BaseService {
     static async call(filters = {}) {
-        const { name, tagName } = filters
+        const { name, tagName, page, perPage } = filters
+
+        // Pagination
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 20
+        const skip = (currentPage - 1) * itemsPerPage
+
         const where = {}
 
         // Filter by calculator name (title)
@@ -27,9 +33,10 @@ export class GetCalculatorTopicsService extends BaseService {
                 }
             }
         }
-        console.log(where)
 
         const topics = await prisma.calculator_topics.findMany({
+            skip,
+            take: itemsPerPage,
             where,
             include: {
                 calculator_fields: {
@@ -75,13 +82,23 @@ export class GetCalculatorTopicsService extends BaseService {
                 id: tt.tags.id,
                 name: tt.tags.name,
                 tag_group_id: tt.tags.tag_group_id,
-                tag_group_name: tt.tags.tag_group?.name || null
+                tag_group: {
+                    id: tt.tags.tag_group?.id,
+                    name: tt.tags.tag_group?.name
+                }
             })),
             created_by: topic.created_by,
             created_at: topic.created_at,
             updated_at: topic.updated_at
         }))
-        
-        return transformedTopics
+
+        return {
+            topics: transformedTopics,
+            pagination: {
+                page: currentPage,
+                perPage: itemsPerPage,
+                isLastPage: topics.length < itemsPerPage
+            }
+        }
     }
 }

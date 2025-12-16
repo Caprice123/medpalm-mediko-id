@@ -1,9 +1,13 @@
 import { useState, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAdminCalculatorTopics } from '@store/calculator/action'
+import { actions } from '@store/calculator/reducer'
 import CalculatorModal from './components/CalculatorModal/index'
 import CalculatorSettingsModal from './components/CalculatorSettingsModal'
 import { Filter } from './components/Filter'
 import { useCalculatorSection } from './hooks/useCalculatorSection'
 import Button from '@components/common/Button'
+import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
@@ -24,10 +28,15 @@ import {
   StatValue,
   CardActions,
   ActionButton,
-  EmptyState
+  EmptyState,
+  TagList,
+  Tag
 } from './Calculator.styles'
 
 function Calculator({ onBack }) {
+  const dispatch = useDispatch()
+  const { pagination } = useSelector(state => state.calculator)
+
   const {
     topics,
     loading,
@@ -41,6 +50,11 @@ function Calculator({ onBack }) {
   } = useCalculatorSection()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+
+  const handlePageChange = (page) => {
+    dispatch(actions.setPage(page))
+    dispatch(fetchAdminCalculatorTopics())
+  }
 
   return (
     <Container>
@@ -79,46 +93,79 @@ function Calculator({ onBack }) {
       ) : (
         <>
           <TopicsGrid>
-            {topics.map(calculator => (
-              <TopicCard key={calculator.id}>
-                <TopicHeader>
-                  <TopicTitle>{calculator.title}</TopicTitle>
-                  <StatusBadge published={calculator.status === 'published'}>
-                    {calculator.status === 'published' ? 'Published' : 'Draft'}
-                  </StatusBadge>
-                </TopicHeader>
+            {topics.map(calculator => {
+              // Filter tags by tag_group
+              const kategoriTags = calculator.tags?.filter(tag => tag.tag_group?.name === 'kategori') || []
 
-                <TopicDescription>
-                  {calculator.description || 'Tidak ada deskripsi'}
-                </TopicDescription>
+              return (
+                <TopicCard key={calculator.id}>
+                  <TopicHeader>
+                    <TopicTitle>{calculator.title}</TopicTitle>
+                    <StatusBadge published={calculator.status === 'published'}>
+                      {calculator.status === 'published' ? 'Published' : 'Draft'}
+                    </StatusBadge>
+                  </TopicHeader>
 
-                <TopicStats>
-                  <StatItem>
-                    <StatLabel>Formula</StatLabel>
-                    <StatValue style={{ fontSize: '12px', color: '#6b7280', fontFamily: 'monospace' }}>
-                      {calculator.formula?.substring(0, 30)}...
-                    </StatValue>
-                  </StatItem>
-                  <StatItem>
-                    <StatLabel>Fields</StatLabel>
-                    <StatValue>{calculator.fields_count || 0}</StatValue>
-                  </StatItem>
-                </TopicStats>
+                  <TopicDescription>
+                    {calculator.description || 'Tidak ada deskripsi'}
+                  </TopicDescription>
 
-                <CardActions>
-                  <ActionButton onClick={() => handleCalculatorClick(calculator)}>
-                    Edit
-                  </ActionButton>
-                  <ActionButton
-                    danger
-                    onClick={(e) => handleDelete(e, calculator.id)}
-                  >
-                    Delete
-                  </ActionButton>
-                </CardActions>
-              </TopicCard>
-            ))}
+                  {/* Category Tags */}
+                  {kategoriTags.length > 0 && (
+                    <TagList>
+                      {kategoriTags.map((tag) => (
+                        <Tag key={tag.id} kategori>
+                          📊 {tag.name}
+                        </Tag>
+                      ))}
+                    </TagList>
+                  )}
+
+                  <div style={{ flex: '1' }}></div>
+
+                  <TopicStats>
+                    <StatItem>
+                      <StatLabel>Fields</StatLabel>
+                      <StatValue>{calculator.fields_count || 0}</StatValue>
+                    </StatItem>
+                    <StatItem>
+                      <StatLabel>Created</StatLabel>
+                      <StatValue>
+                        {calculator.created_at
+                          ? new Date(calculator.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })
+                          : '-'}
+                      </StatValue>
+                    </StatItem>
+                  </TopicStats>
+
+                  <CardActions>
+                    <ActionButton onClick={() => handleCalculatorClick(calculator)}>
+                      Edit
+                    </ActionButton>
+                    <ActionButton
+                      danger
+                      onClick={(e) => handleDelete(e, calculator.id)}
+                    >
+                      Delete
+                    </ActionButton>
+                  </CardActions>
+                </TopicCard>
+              )
+            })}
           </TopicsGrid>
+
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isGetListCalculatorsLoading}
+            variant="admin"
+            language="id"
+          />
         </>
       )}
 

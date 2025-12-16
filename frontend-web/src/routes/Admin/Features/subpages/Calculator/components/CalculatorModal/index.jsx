@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useCalculatorModal } from './useCalculatorModal'
 import Dropdown from '@components/common/Dropdown'
+import TagSelector from '@components/common/TagSelector'
 import {
   Overlay,
   Modal,
@@ -58,13 +59,7 @@ import {
   ReferenceItem,
   ReferenceText,
   RemoveReferenceButton,
-  AddReferenceWrapper,
-  TagsContainer,
-  Tag,
-  RemoveTagButton,
-  SelectTagContainer,
-  AddTagButton,
-  EmptyTagsMessage
+  AddReferenceWrapper
 } from './CalculatorModal.styles'
 
 function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
@@ -97,12 +92,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     setNewReference,
     addClinicalReference,
     removeClinicalReference,
-    selectedTagId,
-    setSelectedTagId,
     selectedTags,
-    unselectedCategoryTags,
-    handleAddTag,
-    handleRemoveTag,
+    categoryTags,
+    handleTagsChange,
     handleFieldChange,
     handleFieldItemChange,
     addField,
@@ -171,44 +163,13 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
               {/* Category Tags Section */}
               <FormGroup>
                 <FormLabel>Kategori</FormLabel>
-                {selectedTags.length > 0 ? (
-                  <TagsContainer>
-                    {selectedTags.map(tag => (
-                      <Tag key={tag.id}>
-                        <span>{tag.name}</span>
-                        <RemoveTagButton type="button" onClick={() => handleRemoveTag(tag.id)}>
-                          ×
-                        </RemoveTagButton>
-                      </Tag>
-                    ))}
-                  </TagsContainer>
-                ) : (
-                  <EmptyTagsMessage>
-                    Belum ada kategori dipilih
-                  </EmptyTagsMessage>
-                )}
-                <SelectTagContainer>
-                  <Dropdown
-                    options={unselectedCategoryTags?.map(tag => ({
-                      value: tag.id.toString(),
-                      label: tag.name
-                    })) || []}
-                    value={selectedTagId ? {
-                      value: selectedTagId,
-                      label: unselectedCategoryTags?.find(t => t.id.toString() === selectedTagId)?.name || ''
-                    } : null}
-                    onChange={(option) => setSelectedTagId(option.value)}
-                    placeholder="-- Pilih Kategori --"
-                  />
-                  <AddTagButton
-                    type="button"
-                    onClick={handleAddTag}
-                    disabled={!selectedTagId}
-                  >
-                    + Tambah
-                  </AddTagButton>
-                </SelectTagContainer>
-                <HelpText>Pilih kategori untuk membantu mengorganisir kalkulator</HelpText>
+                <TagSelector
+                  allTags={categoryTags || []}
+                  selectedTags={selectedTags}
+                  onTagsChange={handleTagsChange}
+                  placeholder="-- Pilih Kategori --"
+                  helpText="Pilih kategori untuk membantu mengorganisir kalkulator"
+                />
               </FormGroup>
 
               {/* Step 2: Result Configuration */}

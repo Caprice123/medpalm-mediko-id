@@ -8,10 +8,11 @@ import { fetchAdminCalculatorTopics } from '@store/calculator/action'
 
 export const Filter = () => {
     const dispatch = useDispatch()
-    const { filter } = useSelector(state => state.calculator)
+    const { filters } = useSelector(state => state.calculator)
     const { tags } = useSelector(state => state.tags)
 
     const onSearch = () => {
+        dispatch(actions.setPage(1)) // Reset to page 1 when searching
         dispatch(fetchAdminCalculatorTopics())
     }
 
@@ -32,7 +33,7 @@ export const Filter = () => {
                         <FilterComponent.Label>Nama Kalkulator</FilterComponent.Label>
                         <TextInput
                             placeholder="Cari kalkulator berdasarkan nama..."
-                            value={filter.name || ''}
+                            value={filters.name || ''}
                             onChange={(e) => dispatch(actions.updateFilter({ key: "name", value: e.target.value }))}
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
@@ -47,7 +48,7 @@ export const Filter = () => {
                         <FilterComponent.Label>Kategori</FilterComponent.Label>
                         <Dropdown
                             options={tags?.[0]?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []}
-                            value={filter.tagName ? { label: filter.tagName, value: filter.tagName } : null}
+                            value={filters.tagName ? { label: filters.tagName, value: filters.tagName } : null}
                             onChange={(option) => dispatch(actions.updateFilter({ key: "tagName", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan kategori..."
                         />
