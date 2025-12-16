@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FeaturesList from './components/FeaturesList'
 import FeatureConfig from './components/FeatureConfig'
 import Exercise from './subpages/Exercise'
@@ -7,6 +7,7 @@ import SummaryNotes from './subpages/SummaryNotes'
 import Calculator from './subpages/Calculator'
 import AnatomyQuiz from './subpages/AnatomyQuiz'
 import MultipleChoice from './subpages/MultipleChoice'
+import { fetchFeatures } from '@store/feature/action'
 import {
   Container,
   HeaderSection,
@@ -14,6 +15,7 @@ import {
   LoadingState,
   ErrorMessage
 } from './Features.styles'
+import { useDispatch, useSelector } from 'react-redux'
 
 // Mock data for the 7 features
 const FEATURES_DATA = [
@@ -74,10 +76,13 @@ const FEATURES_DATA = [
 ]
 
 function Features() {
-  const [features, setFeatures] = useState(FEATURES_DATA)
+  const { features, loading } = useSelector(state => state.feature)
   const [selectedFeature, setSelectedFeature] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchFeatures())
+  }, [dispatch])
 
   const handleFeatureClick = (feature) => {
     setSelectedFeature(feature)
@@ -87,63 +92,29 @@ function Features() {
     setSelectedFeature(null)
   }
 
-  const handleUpdateFeature = (featureId, updates) => {
-    setFeatures(features.map(f =>
-      f.id === featureId ? { ...f, ...updates } : f
-    ))
-    // TODO: API call to update feature
-  }
-
-  if (loading) {
+  if (loading.isLoadingFeatures) {
     return <LoadingState>Memuat fitur...</LoadingState>
   }
 
   const renderFeaturePage = () => {
-    // Check if feature has custom subpage
-    if (selectedFeature?.id === 2) {
-      // Latihan Soal
-      return <Exercise onBack={handleBackToList} />
+    switch (selectedFeature.sessionType) {
+        case "exercise":
+            return <Exercise onBack={handleBackToList} />
+        case "flashcard":
+            return <Flashcard onBack={handleBackToList} />
+        case "summary_notes":
+            return <SummaryNotes onBack={handleBackToList} />
+        case "calculator":
+            return <Calculator onBack={handleBackToList} />
+        case "anatomy":
+            return <AnatomyQuiz onBack={handleBackToList} />
+        case "mcq":
+            return <MultipleChoice onBack={handleBackToList} />
     }
-
-    if (selectedFeature?.id === 8) {
-      // Flashcard Belajar
-      return <Flashcard onBack={handleBackToList} />
-    }
-
-    if (selectedFeature?.id === 10) {
-      // Ringkasan Materi
-      return <SummaryNotes onBack={handleBackToList} />
-    }
-
-    if (selectedFeature?.id === 11) {
-      // Kalkulator
-      return <Calculator onBack={handleBackToList} />
-    }
-
-    if (selectedFeature?.id === 12) {
-      // Quiz Anatomi
-      return <AnatomyQuiz onBack={handleBackToList} />
-    }
-
-    if (selectedFeature?.id === 13) {
-      // Multiple Choice Quiz
-      return <MultipleChoice onBack={handleBackToList} />
-    }
-
-    // Default feature config for other features
-    return (
-      <FeatureConfig
-        feature={selectedFeature}
-        onBack={handleBackToList}
-        onUpdate={handleUpdateFeature}
-      />
-    )
   }
 
   return (
     <Container>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-
       {!selectedFeature ? (
         <>
           <HeaderSection>

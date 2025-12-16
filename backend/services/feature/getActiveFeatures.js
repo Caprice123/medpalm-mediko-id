@@ -10,16 +10,20 @@ export class GetActiveFeaturesService extends BaseService {
         "exercise_feature_description",
         "exercise_credit_cost",
         "exercise_session_type",
+        "exercise_is_active",
         "flashcard_feature_title",
         "flashcard_feature_description",
         "flashcard_credit_cost",
         "flashcard_session_type",
+        "flashcard_is_active",
         "summary_notes_feature_title",
         "summary_notes_feature_description",
         "summary_notes_credit_cost",
+        "summary_notes_is_active",
         "calculator_feature_title",
         "calculator_feature_description",
         "calculator_credit_cost",
+        "calculator_is_active",
         "anatomy_feature_title",
         "anatomy_feature_description",
         "anatomy_credit_cost",
@@ -28,7 +32,8 @@ export class GetActiveFeaturesService extends BaseService {
         "mcq_feature_title",
         "mcq_feature_description",
         "mcq_credit_cost",
-        "mcq_session_type"
+        "mcq_session_type",
+        "mcq_is_active",
     ])
 
     const features = []
@@ -40,7 +45,8 @@ export class GetActiveFeaturesService extends BaseService {
         description: featureConstants.exercise_feature_description,
         cost: parseInt(featureConstants.exercise_credit_cost) || 0,
         icon: '🎓',
-        sessionType: featureConstants.exercise_session_type
+        sessionType: featureConstants.exercise_session_type,
+        isActive: featureConstants.exercise_is_active
       })
     }
 
@@ -51,7 +57,8 @@ export class GetActiveFeaturesService extends BaseService {
         description: featureConstants.flashcard_feature_description,
         cost: parseInt(featureConstants.flashcard_credit_cost) || 0,
         icon: '🎴',
-        sessionType: featureConstants.flashcard_session_type
+        sessionType: featureConstants.flashcard_session_type,
+        isActive: featureConstants.flashcard_is_active
       })
     }
 
@@ -62,7 +69,8 @@ export class GetActiveFeaturesService extends BaseService {
         description: featureConstants.summary_notes_feature_description,
         cost: parseInt(featureConstants.summary_notes_credit_cost) || 0,
         icon: '📝',
-        sessionType: 'summary_notes'
+        sessionType: 'summary_notes',
+        isActive: featureConstants.summary_notes_is_active
       })
     }
 
@@ -74,6 +82,7 @@ export class GetActiveFeaturesService extends BaseService {
         cost: parseInt(featureConstants.calculator_credit_cost) || 0,
         icon: '🧮',
         sessionType: "calculator",
+        isActive: featureConstants.calculator_is_active
       })
     }
 
@@ -86,6 +95,7 @@ export class GetActiveFeaturesService extends BaseService {
         icon: '🫀',
         accessType: featureConstants.anatomy_access_type || 'subscription',
         sessionType: "anatomy",
+        isActive: featureConstants.anatomy_is_active
       })
     }
 
@@ -96,7 +106,8 @@ export class GetActiveFeaturesService extends BaseService {
         description: featureConstants.mcq_feature_description,
         cost: parseInt(featureConstants.mcq_credit_cost) || 0,
         icon: '📝',
-        sessionType: featureConstants.mcq_session_type
+        sessionType: featureConstants.mcq_session_type,
+        isActive: featureConstants.mcq_is_active
       })
     }
 

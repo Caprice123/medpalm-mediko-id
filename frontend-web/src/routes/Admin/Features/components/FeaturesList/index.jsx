@@ -2,47 +2,42 @@ import {
   Grid,
   Card,
   CardHeader,
-  IconWrapper,
   StatusBadge,
-  FeatureName,
-  FeatureDescription,
-  CardFooter,
-  CostBadge,
-  ConfigButton
+  CardTitle,
+  Description,
+  CardActions,
+  CardActionButton,
+  CardIcon,
 } from './FeaturesList.styles'
 
+import Button from "@/components/common/Button"
+
+
+
 function FeaturesList({ features, onFeatureClick }) {
-  return (
-    <Grid>
+    return (
+        <Grid>
       {features.map((feature) => (
-        <Card
-          key={feature.id}
-          isActive={feature.isActive}
-          borderColor={feature.color}
-          onClick={() => onFeatureClick(feature)}
-        >
-          <CardHeader>
-            <IconWrapper color={feature.color}>
-              {feature.icon}
-            </IconWrapper>
-            <StatusBadge isActive={feature.isActive}>
-              {feature.isActive ? 'Aktif' : 'Nonaktif'}
-            </StatusBadge>
-          </CardHeader>
+          <Card key={feature.name}>
+            <CardHeader>
+                <CardIcon>{feature.icon}</CardIcon>
+                <StatusBadge active={feature.isActive}>
+                    {feature.isActive ? 'Aktif' : 'Nonaktif'}
+                </StatusBadge>
+            </CardHeader>
 
-          <FeatureName color={feature.color}>
-            {feature.name}
-          </FeatureName>
+            <Description>
+                <CardTitle>{feature.name}</CardTitle>
+                <p>{feature.description}</p>
+            </Description>
 
-          <FeatureDescription>
-            {feature.description}
-          </FeatureDescription>
+            <div style={{flex: "1"}}></div>
 
-          <CardFooter>
-            <ConfigButton color={feature.color}>
-              Konfigurasi
-            </ConfigButton>
-          </CardFooter>
+            <CardActions>
+                <Button variant="primary" onClick={() => onFeatureClick(feature)} style={{ flex: 1 }}>
+                    Konfigurasi
+                </Button>
+            </CardActions>
         </Card>
       ))}
     </Grid>
