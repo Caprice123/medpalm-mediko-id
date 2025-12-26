@@ -38,11 +38,10 @@ export class GetActiveFeaturesService extends BaseService {
         "chatbot_feature_description",
         "chatbot_access_type",
         "chatbot_is_active",
-        "skripsi_builder_feature_title",
-        "skripsi_builder_feature_description",
-        "skripsi_builder_credit_cost",
-        "skripsi_builder_access_type",
-        "skripsi_builder_is_active",
+        "skripsi_feature_title",
+        "skripsi_feature_description",
+        "skripsi_access_type",
+        "skripsi_is_active",
     ])
 
     const features = []
@@ -134,15 +133,15 @@ export class GetActiveFeaturesService extends BaseService {
     }
 
     // Skripsi Builder feature
-    if (featureConstants.skripsi_builder_feature_title && featureConstants.skripsi_builder_is_active === 'true') {
+    if (featureConstants.skripsi_feature_title && featureConstants.skripsi_is_active === 'true') {
       features.push({
-        name: featureConstants.skripsi_builder_feature_title,
-        description: featureConstants.skripsi_builder_feature_description,
-        cost: parseFloat(featureConstants.skripsi_builder_credit_cost) || 0,
+        name: featureConstants.skripsi_feature_title,
+        description: featureConstants.skripsi_feature_description,
+        cost: 0, // Cost is per-mode, not per-feature
         icon: '📚',
-        accessType: featureConstants.skripsi_builder_access_type || 'subscription',
+        accessType: featureConstants.skripsi_access_type || 'subscription',
         sessionType: "skripsi_builder",
-        isActive: featureConstants.skripsi_builder_is_active
+        isActive: featureConstants.skripsi_is_active
       })
     }
 

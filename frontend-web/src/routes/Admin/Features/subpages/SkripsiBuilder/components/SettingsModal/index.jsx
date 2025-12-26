@@ -52,12 +52,25 @@ function SettingsModal({ isOpen, onClose }) {
               <SectionTitle>Pengaturan Dasar</SectionTitle>
 
               <FormGroup>
+                <Label>Aktifkan Fitur</Label>
+                <ToggleSwitch>
+                  <input
+                    type="checkbox"
+                    checked={form.values.skripsi_is_active}
+                    onChange={(e) => form.setFieldValue('skripsi_is_active', e.target.checked)}
+                  />
+                  <ToggleSlider />
+                </ToggleSwitch>
+                <HintText>Aktifkan atau nonaktifkan fitur Skripsi Builder secara global</HintText>
+              </FormGroup>
+
+              <FormGroup>
                 <Label>Judul Fitur</Label>
                 <Input
                   type="text"
                   placeholder="Skripsi Builder"
-                  value={form.values.skripsi_builder_title}
-                  onChange={(e) => form.setFieldValue('skripsi_builder_title', e.target.value)}
+                  value={form.values.skripsi_feature_title}
+                  onChange={(e) => form.setFieldValue('skripsi_feature_title', e.target.value)}
                 />
               </FormGroup>
 
@@ -66,9 +79,26 @@ function SettingsModal({ isOpen, onClose }) {
                 <Input
                   type="text"
                   placeholder="Deskripsi singkat"
-                  value={form.values.skripsi_builder_description}
-                  onChange={(e) => form.setFieldValue('skripsi_builder_description', e.target.value)}
+                  value={form.values.skripsi_feature_description}
+                  onChange={(e) => form.setFieldValue('skripsi_feature_description', e.target.value)}
                 />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Tipe Akses</Label>
+                <Select
+                  value={form.values.skripsi_access_type}
+                  onChange={(e) => form.setFieldValue('skripsi_access_type', e.target.value)}
+                >
+                  <option value="subscription">Subscription Only</option>
+                  <option value="credits">Credits Only</option>
+                  <option value="subscription_and_credits">Subscription & Credits</option>
+                </Select>
+                <HintText>
+                  Subscription: hanya pengguna berlangganan yang bisa mengakses<br/>
+                  Credits: gunakan kredit per pesan<br/>
+                  Subscription & Credits: pengguna berlangganan gratis, non-subscriber bayar kredit
+                </HintText>
               </FormGroup>
 
               <Divider />
@@ -87,8 +117,8 @@ function SettingsModal({ isOpen, onClose }) {
                   <ToggleSwitch>
                     <input
                       type="checkbox"
-                      checked={form.values.ai_researcher_enabled}
-                      onChange={(e) => form.setFieldValue('ai_researcher_enabled', e.target.checked)}
+                      checked={form.values.skripsi_ai_researcher_enabled}
+                      onChange={(e) => form.setFieldValue('skripsi_ai_researcher_enabled', e.target.checked)}
                     />
                     <ToggleSlider />
                   </ToggleSwitch>
@@ -97,14 +127,14 @@ function SettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Jumlah Tab</Label>
-                  <Select
-                    value={form.values.ai_researcher_max_tabs}
-                    onChange={(e) => form.setFieldValue('ai_researcher_max_tabs', e.target.value)}
-                  >
-                    <option value="1">1 Tab</option>
-                    <option value="2">2 Tab</option>
-                    <option value="3">3 Tab</option>
-                  </Select>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    placeholder="3"
+                    value={form.values.skripsi_ai_researcher_count}
+                    onChange={(e) => form.setFieldValue('skripsi_ai_researcher_count', e.target.value)}
+                  />
                   <HintText>Jumlah tab AI Researcher yang tersedia untuk pengguna</HintText>
                 </FormGroup>
 
@@ -113,31 +143,43 @@ function SettingsModal({ isOpen, onClose }) {
                   <Dropdown
                     options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
                     value={{
-                      value: form.values.ai_researcher_model,
-                      label: aiModels.gemini[form.values.ai_researcher_model] || 'Gemini 2.5 Flash'
+                      value: form.values.skripsi_ai_researcher_model,
+                      label: aiModels.gemini[form.values.skripsi_ai_researcher_model] || 'Gemini 2.0 Flash Exp'
                     }}
-                    onChange={(option) => form.setFieldValue('ai_researcher_model', option.value)}
+                    onChange={(option) => form.setFieldValue('skripsi_ai_researcher_model', option.value)}
                   />
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>Kredit per Pesan</Label>
+                  <Label>Biaya per Pesan (Kredit)</Label>
                   <Input
                     type="number"
                     min="0"
-                    placeholder="1"
-                    value={form.values.ai_researcher_credits}
-                    onChange={(e) => form.setFieldValue('ai_researcher_credits', e.target.value)}
+                    placeholder="0"
+                    value={form.values.skripsi_ai_researcher_cost}
+                    onChange={(e) => form.setFieldValue('skripsi_ai_researcher_cost', e.target.value)}
                   />
-                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan</HintText>
+                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan (jika menggunakan credits)</HintText>
+                </FormGroup>
+
+                <FormGroup>
+                  <Label>Jumlah Pesan Konteks</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="10"
+                    value={form.values.skripsi_ai_researcher_context_messages}
+                    onChange={(e) => form.setFieldValue('skripsi_ai_researcher_context_messages', e.target.value)}
+                  />
+                  <HintText>Jumlah pesan terakhir yang akan digunakan sebagai konteks percakapan</HintText>
                 </FormGroup>
 
                 <FormGroup>
                   <Label>System Prompt</Label>
                   <Textarea
                     placeholder="Masukkan system prompt untuk AI Researcher..."
-                    value={form.values.ai_researcher_system_prompt}
-                    onChange={(e) => form.setFieldValue('ai_researcher_system_prompt', e.target.value)}
+                    value={form.values.skripsi_ai_researcher_prompt}
+                    onChange={(e) => form.setFieldValue('skripsi_ai_researcher_prompt', e.target.value)}
                     style={{ minHeight: '120px' }}
                   />
                   <HintText>
@@ -157,8 +199,8 @@ function SettingsModal({ isOpen, onClose }) {
                   <ToggleSwitch>
                     <input
                       type="checkbox"
-                      checked={form.values.paraphraser_enabled}
-                      onChange={(e) => form.setFieldValue('paraphraser_enabled', e.target.checked)}
+                      checked={form.values.skripsi_paraphraser_enabled}
+                      onChange={(e) => form.setFieldValue('skripsi_paraphraser_enabled', e.target.checked)}
                     />
                     <ToggleSlider />
                   </ToggleSwitch>
@@ -170,31 +212,43 @@ function SettingsModal({ isOpen, onClose }) {
                   <Dropdown
                     options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
                     value={{
-                      value: form.values.paraphraser_model,
-                      label: aiModels.gemini[form.values.paraphraser_model] || 'Gemini 2.5 Flash'
+                      value: form.values.skripsi_paraphraser_model,
+                      label: aiModels.gemini[form.values.skripsi_paraphraser_model] || 'Gemini 2.0 Flash Exp'
                     }}
-                    onChange={(option) => form.setFieldValue('paraphraser_model', option.value)}
+                    onChange={(option) => form.setFieldValue('skripsi_paraphraser_model', option.value)}
                   />
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>Kredit per Pesan</Label>
+                  <Label>Biaya per Pesan (Kredit)</Label>
                   <Input
                     type="number"
                     min="0"
-                    placeholder="1"
-                    value={form.values.paraphraser_credits}
-                    onChange={(e) => form.setFieldValue('paraphraser_credits', e.target.value)}
+                    placeholder="0"
+                    value={form.values.skripsi_paraphraser_cost}
+                    onChange={(e) => form.setFieldValue('skripsi_paraphraser_cost', e.target.value)}
                   />
-                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan</HintText>
+                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan (jika menggunakan credits)</HintText>
+                </FormGroup>
+
+                <FormGroup>
+                  <Label>Jumlah Pesan Konteks</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="10"
+                    value={form.values.skripsi_paraphraser_context_messages}
+                    onChange={(e) => form.setFieldValue('skripsi_paraphraser_context_messages', e.target.value)}
+                  />
+                  <HintText>Jumlah pesan terakhir yang akan digunakan sebagai konteks percakapan</HintText>
                 </FormGroup>
 
                 <FormGroup>
                   <Label>System Prompt</Label>
                   <Textarea
                     placeholder="Masukkan system prompt untuk Paraphraser..."
-                    value={form.values.paraphraser_system_prompt}
-                    onChange={(e) => form.setFieldValue('paraphraser_system_prompt', e.target.value)}
+                    value={form.values.skripsi_paraphraser_prompt}
+                    onChange={(e) => form.setFieldValue('skripsi_paraphraser_prompt', e.target.value)}
                     style={{ minHeight: '120px' }}
                   />
                   <HintText>
@@ -216,8 +270,8 @@ function SettingsModal({ isOpen, onClose }) {
                   <ToggleSwitch>
                     <input
                       type="checkbox"
-                      checked={form.values.diagram_builder_enabled}
-                      onChange={(e) => form.setFieldValue('diagram_builder_enabled', e.target.checked)}
+                      checked={form.values.skripsi_diagram_builder_enabled}
+                      onChange={(e) => form.setFieldValue('skripsi_diagram_builder_enabled', e.target.checked)}
                     />
                     <ToggleSlider />
                   </ToggleSwitch>
@@ -229,31 +283,43 @@ function SettingsModal({ isOpen, onClose }) {
                   <Dropdown
                     options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
                     value={{
-                      value: form.values.diagram_builder_model,
-                      label: aiModels.gemini[form.values.diagram_builder_model] || 'Gemini 2.5 Flash'
+                      value: form.values.skripsi_diagram_builder_model,
+                      label: aiModels.gemini[form.values.skripsi_diagram_builder_model] || 'Gemini 2.0 Flash Exp'
                     }}
-                    onChange={(option) => form.setFieldValue('diagram_builder_model', option.value)}
+                    onChange={(option) => form.setFieldValue('skripsi_diagram_builder_model', option.value)}
                   />
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>Kredit per Pesan</Label>
+                  <Label>Biaya per Pesan (Kredit)</Label>
                   <Input
                     type="number"
                     min="0"
-                    placeholder="1"
-                    value={form.values.diagram_builder_credits}
-                    onChange={(e) => form.setFieldValue('diagram_builder_credits', e.target.value)}
+                    placeholder="0"
+                    value={form.values.skripsi_diagram_builder_cost}
+                    onChange={(e) => form.setFieldValue('skripsi_diagram_builder_cost', e.target.value)}
                   />
-                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan</HintText>
+                  <HintText>Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan (jika menggunakan credits)</HintText>
+                </FormGroup>
+
+                <FormGroup>
+                  <Label>Jumlah Pesan Konteks</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="10"
+                    value={form.values.skripsi_diagram_builder_context_messages}
+                    onChange={(e) => form.setFieldValue('skripsi_diagram_builder_context_messages', e.target.value)}
+                  />
+                  <HintText>Jumlah pesan terakhir yang akan digunakan sebagai konteks percakapan</HintText>
                 </FormGroup>
 
                 <FormGroup>
                   <Label>System Prompt</Label>
                   <Textarea
                     placeholder="Masukkan system prompt untuk Diagram Builder..."
-                    value={form.values.diagram_builder_system_prompt}
-                    onChange={(e) => form.setFieldValue('diagram_builder_system_prompt', e.target.value)}
+                    value={form.values.skripsi_diagram_builder_prompt}
+                    onChange={(e) => form.setFieldValue('skripsi_diagram_builder_prompt', e.target.value)}
                     style={{ minHeight: '120px' }}
                   />
                   <HintText>

@@ -14,13 +14,13 @@ export class SkripsiAIService extends BaseService {
    * @returns {Promise<{stream: AsyncGenerator}>}
    */
   static async call({ tabId, message, tabType }) {
-    // Get tab conversation history
+    // Get tab conversation history (fetch more than needed, we'll slice based on config)
     const tab = await prisma.skripsi_tabs.findUnique({
       where: { id: tabId },
       include: {
         messages: {
           orderBy: { created_at: 'asc' },
-          take: 20 // Last 20 messages for context
+          take: 50 // Fetch up to 50, will be trimmed based on context_messages setting
         }
       }
     })
@@ -32,11 +32,13 @@ export class SkripsiAIService extends BaseService {
     // Map tab type to mode (ai_researcher_1/2/3 all use ai_researcher)
     const mode = this.getMode(tabType)
 
-    // Get constants for this mode
+    // Get constants for this mode and global settings
     const constantKeys = [
+      'skripsi_is_active',
       `skripsi_${mode}_enabled`,
       `skripsi_${mode}_model`,
-      `skripsi_${mode}_prompt`
+      `skripsi_${mode}_prompt`,
+      `skripsi_${mode}_context_messages`
     ]
 
     const constants = await prisma.constants.findMany({
@@ -47,6 +49,12 @@ export class SkripsiAIService extends BaseService {
 
     const constantsMap = {}
     constants.forEach(c => { constantsMap[c.key] = c.value })
+
+    // Check if feature is globally enabled
+    const featureActive = constantsMap['skripsi_is_active'] === 'true'
+    if (!featureActive) {
+      throw new ValidationError('Skripsi Builder feature is currently disabled')
+    }
 
     // Check if mode is enabled
     const modeEnabled = constantsMap[`skripsi_${mode}_enabled`] === 'true'
@@ -61,9 +69,10 @@ export class SkripsiAIService extends BaseService {
     }
 
     const modelName = constantsMap[`skripsi_${mode}_model`] || 'gemini-2.0-flash-exp'
+    const contextMessages = parseInt(constantsMap[`skripsi_${mode}_context_messages`] || '20')
 
-    // Build conversation history
-    const history = tab.messages.map(msg => ({
+    // Build conversation history with configurable context length
+    const history = tab.messages.slice(-contextMessages).map(msg => ({
       role: msg.sender_type === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
     }))

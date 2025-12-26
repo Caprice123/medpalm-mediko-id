@@ -9,36 +9,42 @@ export const useFeatureSetting = (onClose) => {
   const form = useFormik({
     initialValues: {
       // Basic Information
-      skripsi_builder_title: 'Skripsi Builder',
-      skripsi_builder_description: 'AI-powered skripsi writing assistant dengan multiple tabs untuk research, paraphrasing, dan diagram building',
+      skripsi_feature_title: 'Skripsi Builder',
+      skripsi_feature_description: 'Multi-tab AI assistant untuk membantu mahasiswa menyusun skripsi dengan berbagai mode bantuan',
+      skripsi_access_type: 'subscription',
+      skripsi_is_active: true,
 
       // AI Researcher
-      ai_researcher_enabled: true,
-      ai_researcher_max_tabs: '3',
-      ai_researcher_model: 'gemini-2.5-flash',
-      ai_researcher_credits: '1',
-      ai_researcher_system_prompt: 'Kamu adalah AI Research Assistant yang membantu mahasiswa dalam menulis skripsi. Tugasmu adalah melakukan research mendalam, memberikan informasi yang akurat dan terstruktur, serta menyertakan referensi yang relevan. Selalu gunakan bahasa Indonesia yang baik dan formal.',
+      skripsi_ai_researcher_enabled: true,
+      skripsi_ai_researcher_count: '3',
+      skripsi_ai_researcher_model: 'gemini-2.0-flash-exp',
+      skripsi_ai_researcher_cost: '0',
+      skripsi_ai_researcher_context_messages: '10',
+      skripsi_ai_researcher_prompt: 'Kamu adalah asisten peneliti AI yang membantu mahasiswa dalam menyusun skripsi.',
 
       // Paraphraser
-      paraphraser_enabled: true,
-      paraphraser_model: 'gemini-2.5-flash',
-      paraphraser_credits: '1',
-      paraphraser_system_prompt: 'Kamu adalah AI Paraphraser yang membantu mahasiswa menulis ulang teks dengan bahasa yang berbeda namun tetap mempertahankan makna asli. Gunakan bahasa Indonesia yang baik, formal, dan akademis. Pastikan hasil paraphrase bebas dari plagiarisme.',
+      skripsi_paraphraser_enabled: true,
+      skripsi_paraphraser_model: 'gemini-2.0-flash-exp',
+      skripsi_paraphraser_cost: '0',
+      skripsi_paraphraser_context_messages: '10',
+      skripsi_paraphraser_prompt: 'Kamu adalah asisten parafrase akademis yang membantu menulis ulang teks dengan gaya bahasa akademis.',
 
       // Diagram Builder
-      diagram_builder_enabled: true,
-      diagram_builder_model: 'gemini-2.5-flash',
-      diagram_builder_credits: '1',
-      diagram_builder_system_prompt: 'Kamu adalah AI Diagram Builder yang membantu mahasiswa membuat diagram dan visualisasi untuk skripsi mereka. Buatlah diagram yang jelas, informatif, dan mudah dipahami. Gunakan format yang sesuai dengan standar akademis.'
+      skripsi_diagram_builder_enabled: true,
+      skripsi_diagram_builder_model: 'gemini-2.0-flash-exp',
+      skripsi_diagram_builder_cost: '0',
+      skripsi_diagram_builder_context_messages: '10',
+      skripsi_diagram_builder_prompt: 'Kamu adalah asisten visualisasi yang membantu membuat diagram dan visualisasi untuk skripsi.'
     },
     onSubmit: async (values) => {
       try {
         // Convert boolean to string for backend
         const constantsToSave = {
           ...values,
-          ai_researcher_enabled: String(values.ai_researcher_enabled),
-          paraphraser_enabled: String(values.paraphraser_enabled),
-          diagram_builder_enabled: String(values.diagram_builder_enabled)
+          skripsi_is_active: String(values.skripsi_is_active),
+          skripsi_ai_researcher_enabled: String(values.skripsi_ai_researcher_enabled),
+          skripsi_paraphraser_enabled: String(values.skripsi_paraphraser_enabled),
+          skripsi_diagram_builder_enabled: String(values.skripsi_diagram_builder_enabled)
         }
         await dispatch(updateConstants(constantsToSave))
         onClose()
@@ -51,21 +57,26 @@ export const useFeatureSetting = (onClose) => {
   useEffect(() => {
     const onLoad = async () => {
       const keys = [
-        'skripsi_builder_title',
-        'skripsi_builder_description',
-        'ai_researcher_enabled',
-        'ai_researcher_max_tabs',
-        'ai_researcher_model',
-        'ai_researcher_credits',
-        'ai_researcher_system_prompt',
-        'paraphraser_enabled',
-        'paraphraser_model',
-        'paraphraser_credits',
-        'paraphraser_system_prompt',
-        'diagram_builder_enabled',
-        'diagram_builder_model',
-        'diagram_builder_credits',
-        'diagram_builder_system_prompt'
+        'skripsi_feature_title',
+        'skripsi_feature_description',
+        'skripsi_access_type',
+        'skripsi_is_active',
+        'skripsi_ai_researcher_enabled',
+        'skripsi_ai_researcher_count',
+        'skripsi_ai_researcher_model',
+        'skripsi_ai_researcher_cost',
+        'skripsi_ai_researcher_context_messages',
+        'skripsi_ai_researcher_prompt',
+        'skripsi_paraphraser_enabled',
+        'skripsi_paraphraser_model',
+        'skripsi_paraphraser_cost',
+        'skripsi_paraphraser_context_messages',
+        'skripsi_paraphraser_prompt',
+        'skripsi_diagram_builder_enabled',
+        'skripsi_diagram_builder_model',
+        'skripsi_diagram_builder_cost',
+        'skripsi_diagram_builder_context_messages',
+        'skripsi_diagram_builder_prompt'
       ]
 
       try {
@@ -74,9 +85,10 @@ export const useFeatureSetting = (onClose) => {
         // Convert string boolean to actual boolean for toggle switches
         const formattedConstants = {
           ...constants,
-          ai_researcher_enabled: constants.ai_researcher_enabled === 'true',
-          paraphraser_enabled: constants.paraphraser_enabled === 'true',
-          diagram_builder_enabled: constants.diagram_builder_enabled === 'true'
+          skripsi_is_active: constants.skripsi_is_active === 'true',
+          skripsi_ai_researcher_enabled: constants.skripsi_ai_researcher_enabled === 'true',
+          skripsi_paraphraser_enabled: constants.skripsi_paraphraser_enabled === 'true',
+          skripsi_diagram_builder_enabled: constants.skripsi_diagram_builder_enabled === 'true'
         }
 
         form.setValues(formattedConstants)

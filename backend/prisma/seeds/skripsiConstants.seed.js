@@ -58,6 +58,10 @@ Panduan:
 - Review koheren dan konsistensi
 - Berikan feedback konstruktif untuk penyempurnaan`,
   },
+  {
+    key: 'skripsi_ai_researcher_context_messages',
+    value: '10',
+  },
 
   // Paraphraser
   {
@@ -87,6 +91,10 @@ Panduan:
 - Berikan hasil yang bebas plagiarisme
 - Pastikan kalimat tetap jelas dan mudah dipahami`,
   },
+  {
+    key: 'skripsi_paraphraser_context_messages',
+    value: '10',
+  },
 
   // Diagram Builder
   {
@@ -115,6 +123,10 @@ Panduan:
 - Gunakan bahasa formal Indonesia
 - Fokus pada visualisasi yang jelas dan informatif
 - Bantu menerjemahkan konsep kompleks menjadi visual yang mudah dipahami`,
+  },
+  {
+    key: 'skripsi_diagram_builder_context_messages',
+    value: '10',
   },
 ]
 
