@@ -18,6 +18,7 @@ import anatomy from "./anatomy";
 import mcq from "./mcq";
 import constant from "./constant";
 import chatbot from "./chatbot/reducer";
+import skripsi from "./skripsi/reducer";
 
 export const rootReducer = combineReducers({
     auth,
@@ -38,6 +39,7 @@ export const rootReducer = combineReducers({
     anatomy,
     mcq,
     chatbot,
+    skripsi,
 })
 
 export const store = configureStore({

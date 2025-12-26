@@ -218,6 +218,11 @@ function Dashboard() {
         return
       }
 
+      if (sessionType === "skripsi_builder") {
+        navigate("/skripsi/sets")
+        return
+      }
+
       // For calculator, navigate to dedicated calculator page
       if (!sessionType) {
         navigate('/calculators')
@@ -248,7 +253,7 @@ function Dashboard() {
           <CatalogGrid>
             {features.map((feature) => {
               // Check if feature is subscription-based (flashcard or exercise)
-              const isSubscriptionBased = ['calculator', 'flashcard', 'exercise', 'anatomy', 'summary_notes', 'mcq'].includes(feature.sessionType)
+              const isSubscriptionBased = ['calculator', 'flashcard', 'exercise', 'anatomy', 'summary_notes', 'mcq', 'chatbot', 'skripsi_builder'].includes(feature.sessionType)
 
               return (
                 <CatalogCard key={feature.id}>

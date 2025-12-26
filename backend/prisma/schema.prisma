@@ -381,6 +381,7 @@ model users {
   user_credit          user_credits?
   user_subscription    user_subscriptions[]
   chatbot_conversations chatbot_conversations[]
+  skripsi_sets         skripsi_sets[]
 }
 
 model user_subscriptions {
@@ -1012,4 +1013,62 @@ model chatbot_message_feedbacks {
   @@index([message_id])
   @@index([user_id])
   @@index([is_helpful])
+}
+
+// Skripsi Builder Tables
+model skripsi_sets {
+  id             Int      @id @default(autoincrement())
+  user_id        Int
+  title          String
+  description    String?  @db.Text
+  editor_content String?  @db.Text
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+  is_deleted     Boolean  @default(false)
+
+  users users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tabs  skripsi_tabs[]
+
+  @@index([user_id])
+  @@index([is_deleted])
+}
+
+model skripsi_tabs {
+  id         Int      @id @default(autoincrement())
+  set_id     Int
+  tab_type   String   // 'ai_researcher_1', 'ai_researcher_2', 'ai_researcher_3', 'paraphraser', 'diagram_builder'
+  title      String?
+  content    String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  skripsi_set skripsi_sets     @relation(fields: [set_id], references: [id], onDelete: Cascade)
+  messages    skripsi_messages[]
+
+  @@index([set_id])
+  @@index([tab_type])
+}
+
+model skripsi_messages {
+  id          Int      @id @default(autoincrement())
+  tab_id      Int
+  sender_type String   // 'user' or 'ai'
+  content     String   @db.Text
+  created_at  DateTime @default(now())
+
+  skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id], onDelete: Cascade)
+
+  @@index([tab_id])
+  @@index([sender_type])
+}
+
+model skripsi_constants {
+  id                          Int      @id @default(autoincrement())
+  key                         String   @unique
+  value                       String   @db.Text
+  description                 String?  @db.Text
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @default(now())
+
+  @@index([key])
 }

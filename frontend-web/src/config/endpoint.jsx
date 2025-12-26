@@ -175,4 +175,24 @@ export default {
             constants: `${API_BASE_URL}/admin/v1/chatbot/constants`,
         }
     },
+    skripsi: {
+        // Sets endpoints
+        sets: `${API_BASE_URL}/api/v1/skripsi/sets`,
+        set: (id) => `${API_BASE_URL}/api/v1/skripsi/sets/${id}`,
+        updateSetContent: (id) => `${API_BASE_URL}/api/v1/skripsi/sets/${id}/content`,
+
+        // Tabs endpoints
+        // updateTab: (id) => `${API_BASE_URL}/api/v1/skripsi/tabs/${id}`, // Deprecated
+        tabMessages: (tabId) => `${API_BASE_URL}/api/v1/skripsi/tabs/${tabId}/messages`,
+        sendMessage: (id) => `${API_BASE_URL}/api/v1/skripsi/tabs/${id}/messages`,
+
+        // Admin endpoints
+        admin: {
+            constants: `${API_BASE_URL}/admin/v1/skripsi/constants`,
+            constant: (key) => `${API_BASE_URL}/admin/v1/skripsi/constants/${key}`,
+            sets: `${API_BASE_URL}/admin/v1/skripsi/sets`,
+            set: (id) => `${API_BASE_URL}/admin/v1/skripsi/sets/${id}`,
+            setTabs: (id) => `${API_BASE_URL}/admin/v1/skripsi/sets/${id}/tabs`,
+        }
+    },
 }

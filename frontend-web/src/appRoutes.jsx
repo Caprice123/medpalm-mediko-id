@@ -14,6 +14,7 @@ import { summaryNotesRoutes } from './routes/SummaryNotes/routes';
 import { multipleChoiceRoutes } from './routes/MultipleChoice/routes';
 import { flashcardRoutes } from './routes/Flashcard/routes';
 import { chatbotRoutes } from './routes/Chatbot/routes';
+import { skripsiRoutes } from './routes/SkripsiBuilder/routes';
 
 const appRoutes = [
     { path: '/', element: <Home /> },
@@ -44,6 +45,7 @@ const appRoutes = [
             ...multipleChoiceRoutes,
             ...flashcardRoutes,
             ...chatbotRoutes,
+            ...skripsiRoutes,
             {
                 path: '/admin',
                 element: (

@@ -4,7 +4,7 @@ export const aiModels = {
         "gemini-3-flash": "Gemini 3 Flash",
         "gemini-2.5-flash": "Gemini 2.5 Flash",
         "gemini-2.5-flash-list":  "Gemini 2.5 Flash Lite",
-        "gemini-2.5-pro": "Gemini 2.5 Pro", 
+        "gemini-2.5-pro": "Gemini 2.5 Pro",
     },
     perplexity: {
         "sonar": "Sonar",

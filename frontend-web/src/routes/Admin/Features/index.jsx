@@ -8,6 +8,7 @@ import Calculator from './subpages/Calculator'
 import AnatomyQuiz from './subpages/AnatomyQuiz'
 import MultipleChoice from './subpages/MultipleChoice'
 import Chatbot from './subpages/Chatbot'
+import SkripsiBuilder from './subpages/SkripsiBuilder'
 import { fetchFeatures } from '@store/feature/action'
 import {
   Container,
@@ -113,6 +114,10 @@ function Features() {
             return <MultipleChoice onBack={handleBackToList} />
         case "chatbot":
             return <Chatbot onBack={handleBackToList} />
+        case "skripsi_builder":
+            return <SkripsiBuilder onBack={handleBackToList} />
+        default:
+            return null
     }
   }
 

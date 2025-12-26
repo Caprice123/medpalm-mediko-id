@@ -1,0 +1,117 @@
+import { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchAdminSets, deleteAdminSet } from '@store/skripsi/action'
+import SettingsModal from './components/SettingsModal'
+import SetsList from './components/SetsList'
+import SetDetailModal from './components/SetDetailModal'
+import Pagination from '@components/Pagination'
+import {
+  Container,
+  Header,
+  BackButton,
+  HeaderContent,
+  TitleSection,
+  Title,
+  Actions,
+  ActionButton
+} from './SkripsiBuilder.styles'
+import { Filter } from './components/Filter'
+
+const SkripsiBuilderAdmin = ({ onBack }) => {
+  const dispatch = useDispatch()
+  const { pagination, loading } = useSelector(state => state.skripsi)
+
+  const [uiState, setUiState] = useState({
+    isSettingsModalOpen: false,
+    isDetailModalOpen: false,
+    selectedSet: null
+  })
+
+  useEffect(() => {
+    dispatch(fetchAdminSets({}, 1, 20))
+  }, [dispatch])
+
+  const handlePageChange = (page) => {
+    dispatch(fetchAdminSets({}, page, 20))
+  }
+
+  const handleViewSet = (set) => {
+    setUiState({
+      ...uiState,
+      isDetailModalOpen: true,
+      selectedSet: set
+    })
+  }
+
+  const handleDeleteSet = async (set) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus set "${set.title}"?`)) {
+      return
+    }
+
+    try {
+      await dispatch(deleteAdminSet(set.id))
+      await dispatch(fetchAdminSets({}, pagination.page, 20))
+    } catch (error) {
+      console.error('Failed to delete set:', error)
+    }
+  }
+
+  const handleCloseDetailModal = () => {
+    setUiState(prev => ({
+      ...prev,
+      isDetailModalOpen: false,
+      selectedSet: null
+    }))
+  }
+
+  return (
+    <Container>
+      <Header>
+        <BackButton onClick={onBack}>← Back</BackButton>
+        <HeaderContent>
+          <TitleSection>
+            <Title>Kelola Skripsi Builder</Title>
+          </TitleSection>
+          <Actions>
+            <ActionButton onClick={() => setUiState({ ...uiState, isSettingsModalOpen: true })}>
+              Pengaturan Fitur
+            </ActionButton>
+          </Actions>
+        </HeaderContent>
+      </Header>
+
+      <Filter />
+
+      <SetsList
+        onView={handleViewSet}
+        onDelete={handleDeleteSet}
+      />
+
+      <Pagination
+        currentPage={pagination.page}
+        isLastPage={pagination.isLastPage}
+        onPageChange={handlePageChange}
+        isLoading={loading.isSetsLoading}
+        variant="admin"
+        language="id"
+      />
+
+      {uiState.isSettingsModalOpen && (
+        <SettingsModal
+          isOpen={uiState.isSettingsModalOpen}
+          onClose={() => setUiState(prev => ({ ...prev, isSettingsModalOpen: false }))}
+        />
+      )}
+
+      {uiState.isDetailModalOpen && uiState.selectedSet && (
+        <SetDetailModal
+          set={uiState.selectedSet}
+          isOpen={uiState.isDetailModalOpen}
+          onClose={handleCloseDetailModal}
+        />
+      )}
+    </Container>
+  )
+}
+
+export default SkripsiBuilderAdmin
