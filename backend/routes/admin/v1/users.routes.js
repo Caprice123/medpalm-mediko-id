@@ -6,7 +6,8 @@ import usersController from '#controllers/admin/v1/users.controller'
 const router = express.Router()
 
 // All routes require authentication
-// router.use(authenticateToken, requireAdmin)
+router.use(authenticateToken)
+router.use(requireAdmin)
 
 // Get all users
 router.get('/', asyncHandler(usersController.index.bind(usersController)))

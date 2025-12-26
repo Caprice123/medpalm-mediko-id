@@ -6,7 +6,11 @@ import flashcardController from '#controllers/api/v1/flashcard.controller'
 const router = express.Router()
 
 // All routes require authentication
+const featureConstantKey = 'flashcard_is_active'
+
+// All routes require authentication
 router.use(authenticateToken)
+router.use(checkFeature(featureConstantKey))
 
 // Deck endpoints (for regular users)
 router.get('/', asyncHandler(flashcardController.getDecks.bind(flashcardController)))

@@ -5,8 +5,11 @@ import anatomyController from '#controllers/api/v1/anatomy.controller'
 
 const router = express.Router()
 
+const featureConstantKey = 'anatomy_is_active'
+
 // All routes require authentication
 router.use(authenticateToken)
+router.use(checkFeature(featureConstantKey))
 
 // Get all published anatomy quizzes
 router.get('/', asyncHandler(anatomyController.index.bind(anatomyController)))

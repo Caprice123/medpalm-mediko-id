@@ -5,14 +5,17 @@ import { asyncHandler } from '#utils/asyncHandler'
 
 const router = express.Router()
 
+router.use(authenticateToken)
+router.use(requireAdmin)
+
 // Conversation management
-router.get('/conversations', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.getConversations))
-router.get('/conversations/:id', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.getConversation))
-router.get('/conversations/:id/messages', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.getConversationMessages))
-router.delete('/conversations/:id', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.deleteConversation))
+router.get('/conversations', asyncHandler(ChatbotAdminController.getConversations))
+router.get('/conversations/:id', asyncHandler(ChatbotAdminController.getConversation))
+router.get('/conversations/:id/messages', asyncHandler(ChatbotAdminController.getConversationMessages))
+router.delete('/conversations/:id', asyncHandler(ChatbotAdminController.deleteConversation))
 
 // Constants management (settings)
-router.get('/constants', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.getConstants))
-router.put('/constants', authenticateToken, requireAdmin, asyncHandler(ChatbotAdminController.updateConstants))
+router.get('/constants', asyncHandler(ChatbotAdminController.getConstants))
+router.put('/constants', asyncHandler(ChatbotAdminController.updateConstants))
 
 export default router

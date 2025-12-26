@@ -73,7 +73,9 @@ class MessageController {
     })
 
     return res.status(200).json({
-      message: 'Feedback submitted successfully'
+        data: {
+            success: true
+        }
     })
   }
 }

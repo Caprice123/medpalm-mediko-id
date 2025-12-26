@@ -6,7 +6,11 @@ import mcqController from '#controllers/api/v1/mcq.controller'
 const router = express.Router()
 
 // All routes require authentication
+const featureConstantKey = 'mcq_is_active'
+
+// All routes require authentication
 router.use(authenticateToken)
+router.use(checkFeature(featureConstantKey))
 
 // Get MCQ constants
 router.get('/constants', asyncHandler(mcqController.getConstants.bind(mcqController)))

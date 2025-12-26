@@ -36,7 +36,6 @@ class ConversationController {
 
     return res.status(201).json({
       data: conversation,
-      message: 'Conversation created successfully'
     })
   }
 
@@ -69,7 +68,6 @@ class ConversationController {
 
     return res.status(200).json({
       data: conversation,
-      message: 'Conversation updated successfully'
     })
   }
 
@@ -84,7 +82,9 @@ class ConversationController {
     })
 
     return res.status(200).json({
-      message: 'Conversation deleted successfully'
+        data: {
+            success: true,
+        }
     })
   }
 }

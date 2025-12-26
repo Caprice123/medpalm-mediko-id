@@ -42,18 +42,22 @@ const upload = multer({
   }
 })
 
+
+router.use(authenticateToken)
+router.use(requireAdmin)
+
 // CRUD routes
-router.get('/', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.index))
-router.get('/:id', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.show))
-router.post('/', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.create))
-router.put('/:id', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.update))
-router.delete('/:id', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.destroy))
+router.get('/', asyncHandler(SummaryNotesAdminController.index))
+router.get('/:id', asyncHandler(SummaryNotesAdminController.show))
+router.post('/', asyncHandler(SummaryNotesAdminController.create))
+router.put('/:id', asyncHandler(SummaryNotesAdminController.update))
+router.delete('/:id', asyncHandler(SummaryNotesAdminController.destroy))
 
 // Generate summary from document
-router.post('/generate', authenticateToken, requireAdmin, upload.single('document'), asyncHandler(SummaryNotesAdminController.generateFromDocument))
+router.post('/generate', upload.single('document'), asyncHandler(SummaryNotesAdminController.generateFromDocument))
 
 // ChromaDB embeddings routes
-router.get('/embeddings/list', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.getEmbeddings))
-router.get('/embeddings/:id', authenticateToken, requireAdmin, asyncHandler(SummaryNotesAdminController.getEmbeddingDetail))
+router.get('/embeddings/list', asyncHandler(SummaryNotesAdminController.getEmbeddings))
+router.get('/embeddings/:id', asyncHandler(SummaryNotesAdminController.getEmbeddingDetail))
 
 export default router

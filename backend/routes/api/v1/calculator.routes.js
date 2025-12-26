@@ -6,7 +6,11 @@ import { asyncHandler } from '#utils/asyncHandler'
 const router = express.Router()
 
 // All routes require authentication
+const featureConstantKey = 'calculator_is_active'
+
+// All routes require authentication
 router.use(authenticateToken)
+router.use(checkFeature(featureConstantKey))
 
 // Calculator endpoints
 router.get('/topics', asyncHandler(calculatorController.getTopics.bind(calculatorController)))

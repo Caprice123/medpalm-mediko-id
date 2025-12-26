@@ -14,7 +14,6 @@ import tagRoutes from '#routes/api/v1/tag.routes';
 import tagGroupRoutes from '#routes/api/v1/tagGroup.routes';
 import sessionRoutes from '#routes/api/v1/session.routes';
 import featureRoutes from '#routes/api/v1/feature.routes';
-import statisticRoutes from '#routes/api/v1/statistic.routes';
 import pricingRoutes from '#routes/api/v1/pricing.routes';
 import adminCreditPlanRoutes from '#routes/admin/v1/creditPlan.routes';
 import adminPricingRoutes from '#routes/admin/v1/pricing.routes';
@@ -37,7 +36,7 @@ import skripsiRoutes from '#routes/api/v1/skripsi.routes';
 import adminSkripsiRoutes from '#routes/admin/v1/skripsi.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
-import webhookRoutes from '#routes/webhook.routes';
+import webhookRoutes from '#routes/webhook/v1/xendit.routes';
 
 dotenv.config();
 
@@ -79,7 +78,6 @@ app.use('/api/v1/tags', tagRoutes);
 app.use('/api/v1/tag-groups', tagGroupRoutes);
 app.use('/api/v1/sessions', sessionRoutes);
 app.use('/api/v1/features', featureRoutes);
-app.use('/api/v1/statistics', statisticRoutes);
 app.use('/api/v1/pricing', pricingRoutes);
 app.use('/api/v1/calculators', calculatorRoutes);
 app.use('/api/v1/anatomy', anatomyRoutes);

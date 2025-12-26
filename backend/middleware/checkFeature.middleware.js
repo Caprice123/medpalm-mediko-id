@@ -20,9 +20,8 @@ export const checkFeature = (constantKey, errorMessage = null) => {
 
       // Check if feature is enabled
       if (!constant || constant.value !== 'true') {
-        const message = errorMessage || `Feature is currently disabled`
         return res.status(403).json({
-          error: message
+          error: `Feature sedang tidak aktif`
         })
       }
 

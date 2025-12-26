@@ -6,7 +6,11 @@ import exerciseController from '#controllers/api/v1/exercise.controller'
 const router = express.Router()
 
 // All routes require authentication
+const featureConstantKey = 'exercise_is_active'
+
+// All routes require authentication
 router.use(authenticateToken)
+router.use(checkFeature(featureConstantKey))
 
 // Topic endpoints (for regular users)
 router.get('/topics', asyncHandler(exerciseController.getTopics.bind(exerciseController)))

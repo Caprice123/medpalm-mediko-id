@@ -2,8 +2,6 @@ import { GetAdminConversationsService } from '#services/chatbot/admin/getAdminCo
 import { GetAdminConversationService } from '#services/chatbot/admin/getAdminConversationService'
 import { GetAdminConversationMessagesService } from '#services/chatbot/admin/getAdminConversationMessagesService'
 import { DeleteAdminConversationService } from '#services/chatbot/admin/deleteAdminConversationService'
-import { GetChatbotConstantsService } from '#services/chatbot/admin/getChatbotConstantsService'
-import { UpdateChatbotConstantsService } from '#services/chatbot/admin/updateChatbotConstantsService'
 
 class ChatbotAdminController {
   // Get all conversations with filters
