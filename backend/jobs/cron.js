@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import prisma from '#prisma/client.js';
+import prisma from '#prisma/client';
 
 // Example: Run every day at midnight
 const dailyCleanupJob = cron.schedule('0 0 * * *', async () => {

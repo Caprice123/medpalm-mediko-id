@@ -1,7 +1,7 @@
-import { seedFeatures } from './seeds/features.seed.js'
-import { seedExerciseConstants } from './seeds/exerciseConstants.seed.js'
-import { seedFlashcardConstants } from './seeds/flashcardConstants.seed.js'
-import { seedCalculatorConstants } from './seeds/calculatorConstants.seed.js'
+import { seedFeatures } from './seeds/features.seed'
+import { seedExerciseConstants } from './seeds/exerciseConstants.seed'
+import { seedFlashcardConstants } from './seeds/flashcardConstants.seed'
+import { seedCalculatorConstants } from './seeds/calculatorConstants.seed'
 
 async function main() {
   console.log('🚀 Starting database seeding...\n')
@@ -32,6 +32,6 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    const { default: prisma } = await import('#prisma/client.js')
+    const { default: prisma } = await import('#prisma/client')
     await prisma.$disconnect()
   })
