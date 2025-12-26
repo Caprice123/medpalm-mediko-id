@@ -194,13 +194,14 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
   }
 }
 
-export const sendMessage = (tabId, message) => async (dispatch, getState) => {
+export const sendMessage = (tabId, message, onStreamUpdate = null) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isSendingMessage', value: true }))
     dispatch(clearError())
 
     // Use streaming for all messages
-    return await sendMessageStreaming(tabId, message, dispatch)
+    const result = await sendMessageStreaming(tabId, message, dispatch, onStreamUpdate)
+    return result
   } catch (err) {
     handleApiError(err, dispatch)
     throw err
@@ -210,7 +211,7 @@ export const sendMessage = (tabId, message) => async (dispatch, getState) => {
 }
 
 // Streaming message handler - character-by-character typing
-const sendMessageStreaming = async (tabId, content, dispatch) => {
+const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = null) => {
   const token = getToken()
 
   if (!token) {
@@ -232,7 +233,7 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
   // Typing speed (milliseconds per character)
   const TYPING_SPEED = 1
 
-  // Add initial streaming message
+  // Define temp messages (used for cleanup even in callback mode)
   const tempUserMessage = {
     id: `temp-user-${Date.now()}`,
     sender_type: 'user',
@@ -247,8 +248,11 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
     created_at: messageCreatedAt
   }
 
-  dispatch(addMessage({ tabId, message: tempUserMessage }))
-  dispatch(addMessage({ tabId, message: tempAiMessage }))
+  // Only add to Redux if no callback provided (for backwards compatibility)
+  if (!onStreamUpdate) {
+    dispatch(addMessage({ tabId, message: tempUserMessage }))
+    dispatch(addMessage({ tabId, message: tempAiMessage }))
+  }
 
   // Character-by-character display function
   const displayNextCharacter = () => {
@@ -256,15 +260,18 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
       isTyping = false
 
       if (streamEnded && finalData) {
-        // Remove temporary messages and add final ones
-        dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
-        dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
+        if (!onStreamUpdate) {
+          // Remove temporary messages from Redux
+          dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
+          dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
 
-        if (finalData.userMessage) {
-          dispatch(addMessage({ tabId, message: finalData.userMessage }))
-        }
-        if (finalData.aiMessage) {
-          dispatch(addMessage({ tabId, message: finalData.aiMessage }))
+          // Add final messages to Redux (only when not using callback)
+          if (finalData.userMessage) {
+            dispatch(addMessage({ tabId, message: finalData.userMessage }))
+          }
+          if (finalData.aiMessage) {
+            dispatch(addMessage({ tabId, message: finalData.aiMessage }))
+          }
         }
 
         dispatch(setLoading({ key: 'isSendingMessage', value: false }))
@@ -275,12 +282,16 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
     isTyping = true
     displayedContent = fullContent.substring(0, displayedContent.length + 1)
 
-    // Update the streaming message
-    dispatch(actions.updateMessage({
-      tabId,
-      messageId: streamingMessageId,
-      content: displayedContent
-    }))
+    // Update via callback or Redux
+    if (onStreamUpdate) {
+      onStreamUpdate(displayedContent)
+    } else {
+      dispatch(actions.updateMessage({
+        tabId,
+        messageId: streamingMessageId,
+        content: displayedContent
+      }))
+    }
 
     setTimeout(displayNextCharacter, TYPING_SPEED)
   }
@@ -337,14 +348,18 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
               finalData = data.data
 
               if (!isTyping && displayedContent.length >= fullContent.length) {
-                dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
-                dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
+                if (!onStreamUpdate) {
+                  // Remove temporary messages from Redux
+                  dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
+                  dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
 
-                if (data.data.userMessage) {
-                  dispatch(addMessage({ tabId, message: data.data.userMessage }))
-                }
-                if (data.data.aiMessage) {
-                  dispatch(addMessage({ tabId, message: data.data.aiMessage }))
+                  // Add final messages to Redux (only when not using callback)
+                  if (data.data.userMessage) {
+                    dispatch(addMessage({ tabId, message: data.data.userMessage }))
+                  }
+                  if (data.data.aiMessage) {
+                    dispatch(addMessage({ tabId, message: data.data.aiMessage }))
+                  }
                 }
 
                 dispatch(setLoading({ key: 'isSendingMessage', value: false }))
@@ -360,9 +375,15 @@ const sendMessageStreaming = async (tabId, content, dispatch) => {
     }
   } catch (error) {
     console.error('Streaming error:', error)
-    dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
-    dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
+    // Only remove from Redux if not using callback mode
+    if (!onStreamUpdate) {
+      dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
+      dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
+    }
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
     throw error
   }
+
+  // Return final data when using callback mode
+  return onStreamUpdate ? finalData : null
 }

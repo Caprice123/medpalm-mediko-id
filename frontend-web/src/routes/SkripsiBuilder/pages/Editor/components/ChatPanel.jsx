@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { useAppDispatch } from '@store/store'
 import { sendMessage, loadOlderMessages } from '@store/skripsi/action'
+import { actions } from '@store/skripsi/reducer'
 import { FaPaperPlane } from 'react-icons/fa'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -19,13 +20,77 @@ import {
   EmptyMessages
 } from '../Editor.styles'
 
+// Memoized message component - only rerenders when its own content changes
+const ChatMessage = memo(({ message, formatTime }) => (
+  <Message $sender={message.sender_type}>
+    <MessageBubble $sender={message.sender_type}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {message.content}
+      </ReactMarkdown>
+    </MessageBubble>
+    <MessageTime>{formatTime(message.created_at)}</MessageTime>
+  </Message>
+), (prevProps, nextProps) => {
+  // Only rerender if content or id changes
+  return prevProps.message.content === nextProps.message.content &&
+         prevProps.message.id === nextProps.message.id
+})
+
+// Memoized input section - manages its own state, isolated from parent
+const ChatInputSection = memo(({
+  onSendMessage,
+  isSendingMessage
+}) => {
+  const [chatInput, setChatInput] = useState('')
+
+  const handleSendMessage = () => {
+    if (!chatInput.trim()) return
+    const message = chatInput.trim()
+    setChatInput('')
+    onSendMessage(message)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
+  return (
+    <ChatInputArea>
+      <ChatInputWrapper>
+        <ChatInput
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ketik pesan... (Enter untuk kirim, Shift+Enter untuk baris baru)"
+          disabled={isSendingMessage}
+        />
+        <SendButton
+          onClick={handleSendMessage}
+          disabled={!chatInput.trim() || isSendingMessage}
+        >
+          <FaPaperPlane />
+        </SendButton>
+      </ChatInputWrapper>
+    </ChatInputArea>
+  )
+}, (prevProps, nextProps) => {
+  // Only rerender if sending state changes
+  return prevProps.isSendingMessage === nextProps.isSendingMessage
+})
+
 const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
   const dispatch = useAppDispatch()
   const chatMessagesRef = useRef(null)
-  const [chatInput, setChatInput] = useState('')
   const [isLoadingOlder, setIsLoadingOlder] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const previousScrollHeight = useRef(0)
+
+  // Local streaming state - doesn't trigger Redux updates
+  const [streamingMessage, setStreamingMessage] = useState(null)
+  const [streamingUserMessage, setStreamingUserMessage] = useState(null)
 
   // Scroll to bottom when new messages arrive or tab changes
   useEffect(() => {
@@ -80,24 +145,55 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
     return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   }
 
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || !currentTab) return
+  const handleSendMessage = useCallback(async (userMessageText) => {
+    if (!currentTab) return
+
+    // Set local streaming messages
+    const tempUserMsg = {
+      id: `temp-user-${Date.now()}`,
+      sender_type: 'user',
+      content: userMessageText,
+      created_at: new Date().toISOString()
+    }
+    const tempAiMsg = {
+      id: `temp-ai-${Date.now()}`,
+      sender_type: 'ai',
+      content: '',
+      created_at: new Date().toISOString()
+    }
+
+    setStreamingUserMessage(tempUserMsg)
+    setStreamingMessage(tempAiMsg)
 
     try {
-      await dispatch(sendMessage(currentTab.id, chatInput.trim()))
-      setChatInput('')
+      // Callback for streaming updates - updates local state only
+      const handleStreamUpdate = (content) => {
+        setStreamingMessage(prev => prev ? { ...prev, content } : null)
+      }
+
+      // This will handle streaming and return final data
+      const finalData = await dispatch(sendMessage(currentTab.id, userMessageText, handleStreamUpdate))
+
+      // Clear local streaming state first
+      setStreamingUserMessage(null)
+      setStreamingMessage(null)
+
+      // Then add final messages to Redux
+      if (finalData) {
+        if (finalData.userMessage) {
+          dispatch(actions.addMessage({ tabId: currentTab.id, message: finalData.userMessage }))
+        }
+        if (finalData.aiMessage) {
+          dispatch(actions.addMessage({ tabId: currentTab.id, message: finalData.aiMessage }))
+        }
+      }
     } catch (error) {
       console.error('Failed to send message:', error)
+      setStreamingUserMessage(null)
+      setStreamingMessage(null)
       alert('Gagal mengirim pesan')
     }
-  }
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
+  }, [currentTab, dispatch])
 
   return (
     <StyledChatPanel>
@@ -107,41 +203,42 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
             Memuat pesan lama...
           </div>
         )}
-        {currentTab?.messages?.length === 0 ? (
+        {currentTab?.messages?.length === 0 && !streamingUserMessage ? (
           <EmptyMessages>
             Belum ada percakapan. Mulai chat dengan AI untuk mendapatkan bantuan!
           </EmptyMessages>
         ) : (
-          currentTab?.messages?.map((msg, idx) => (
-            <Message key={msg.id || idx} $sender={msg.sender_type}>
-              <MessageBubble $sender={msg.sender_type}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {msg.content}
-                </ReactMarkdown>
-              </MessageBubble>
-              <MessageTime>{formatTime(msg.created_at)}</MessageTime>
-            </Message>
-          ))
+          <>
+            {currentTab?.messages?.map((msg, idx) => (
+              <ChatMessage
+                key={msg.id || idx}
+                message={msg}
+                formatTime={formatTime}
+              />
+            ))}
+            {streamingUserMessage && (
+              <ChatMessage
+                key={streamingUserMessage.id}
+                message={streamingUserMessage}
+                formatTime={formatTime}
+              />
+            )}
+            {streamingMessage && (
+              <ChatMessage
+                key={streamingMessage.id}
+                message={streamingMessage}
+                formatTime={formatTime}
+              />
+            )}
+          </>
         )}
       </ChatMessages>
 
-      <ChatInputArea>
-        <ChatInputWrapper>
-          <ChatInput
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ketik pesan... (Enter untuk kirim, Shift+Enter untuk baris baru)"
-            disabled={isSendingMessage}
-          />
-          <SendButton
-            onClick={handleSendMessage}
-            disabled={!chatInput.trim() || isSendingMessage}
-          >
-            <FaPaperPlane />
-          </SendButton>
-        </ChatInputWrapper>
-      </ChatInputArea>
+      <ChatInputSection
+        key={currentTab?.id} // Reset input when tab changes
+        onSendMessage={handleSendMessage}
+        isSendingMessage={isSendingMessage}
+      />
     </StyledChatPanel>
   )
 })

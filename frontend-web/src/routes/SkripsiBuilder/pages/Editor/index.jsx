@@ -18,9 +18,9 @@ const SkripsiEditor = () => {
   const { setId } = useParams()
   const dispatch = useAppDispatch()
 
-  // Use separate selectors to prevent unnecessary re-renders
-  const currentSet = useAppSelector((state) => state.skripsi.currentSet)
-  const currentTab = useAppSelector((state) => state.skripsi.currentTab)
+  // Use separate selectors with shallowEqual to prevent unnecessary re-renders
+  const currentSet = useAppSelector((state) => state.skripsi.currentSet, shallowEqual)
+  const currentTab = useAppSelector((state) => state.skripsi.currentTab, shallowEqual)
   const loading = useAppSelector((state) => state.skripsi.loading, shallowEqual)
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -76,6 +76,7 @@ const SkripsiEditor = () => {
   }, [hasUnsavedChanges])
 
   // Memoize individual values that change (MUST be before early returns)
+  const tabs = useMemo(() => currentSet?.tabs || [], [currentSet?.tabs])
   const currentTabId = useMemo(() => currentTab?.id, [currentTab?.id])
   const isSavingContent = useMemo(() => loading.isSavingContent, [loading.isSavingContent])
   const isSendingMessage = useMemo(() => loading.isSendingMessage, [loading.isSendingMessage])
@@ -239,7 +240,7 @@ const SkripsiEditor = () => {
       />
 
       <TabBar
-        tabs={currentSet?.tabs}
+        tabs={tabs}
         currentTabId={currentTabId}
         onTabSwitch={handleTabSwitch}
       />

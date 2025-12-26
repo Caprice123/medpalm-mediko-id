@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { EditorContent } from '@tiptap/react'
 import {
   EditorPanel as StyledEditorPanel,
@@ -7,7 +7,7 @@ import {
   EditorContent as StyledEditorContent
 } from '../Editor.styles'
 
-const EditorPanel = ({ editor }) => {
+const EditorPanel = memo(({ editor }) => {
   const [, forceUpdate] = useState({})
 
   // Force re-render only on selection changes (not on text input)
@@ -114,6 +114,8 @@ const EditorPanel = ({ editor }) => {
       </StyledEditorContent>
     </StyledEditorPanel>
   )
-}
+})
+
+EditorPanel.displayName = 'EditorPanel'
 
 export default EditorPanel
