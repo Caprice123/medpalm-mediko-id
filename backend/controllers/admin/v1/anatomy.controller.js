@@ -32,9 +32,7 @@ class AnatomyController {
     const {
       title,
       description,
-      image_url,
-      image_key,
-      image_filename,
+      blobId,
       tags,
       questions,
       status
@@ -43,9 +41,7 @@ class AnatomyController {
     const quiz = await CreateAnatomyQuizService.call({
       title,
       description,
-      image_url,
-      image_key,
-      image_filename,
+      blobId: blobId ? parseInt(blobId) : null,
       tags,
       questions,
       status: status || 'draft',
@@ -74,9 +70,7 @@ class AnatomyController {
     const {
       title,
       description,
-      image_url,
-      image_key,
-      image_filename,
+      blobId,
       tags,
       questions,
       status
@@ -86,9 +80,7 @@ class AnatomyController {
       quizId: id,
       title,
       description,
-      image_url,
-      image_key,
-      image_filename,
+      blobId: blobId ? parseInt(blobId) : null,
       tags,
       questions,
       status
@@ -122,11 +114,32 @@ class AnatomyController {
       })
     }
 
-    // Upload image to iDrive E2 cloud storage
+    // Upload image and create blob using attachmentService
+    const attachmentService = (await import('#services/attachment/attachmentService')).default
+    const blobService = (await import('#services/attachment/blobService')).default
+
+    // Upload to iDrive
     const uploadResult = await idriveService.uploadAnatomyImage(
       req.file.path,
       req.file.originalname.replace(/\.(jpg|jpeg|png)$/i, '')
     )
+
+    // Create blob record
+    const contentType = req.file.mimetype
+    const byteSize = blobService.getFileSize(req.file.path)
+    const checksum = blobService.calculateChecksum(req.file.path)
+
+    const blob = await blobService.createBlob({
+      key: uploadResult.key,
+      filename: uploadResult.fileName,
+      contentType,
+      byteSize,
+      checksum,
+      metadata: {
+        originalName: req.file.originalname,
+        uploadedFrom: 'anatomy_quiz_generation'
+      }
+    })
 
     // Generate anatomy questions from the uploaded image
     const questions = await GenerateAnatomyQuestionsService.call({
@@ -138,37 +151,11 @@ class AnatomyController {
       success: true,
       data: {
         questions: AnatomyQuestionSerializer.serialize(questions),
-        image_url: uploadResult.url,
-        image_key: uploadResult.key,
-        image_filename: uploadResult.fileName
+        blobId: blob.id
       }
     })
   }
 
-  async uploadImage(req, res) {
-    // Check if file was uploaded
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Image file is required'
-      })
-    }
-
-    // Upload image to iDrive E2 cloud storage
-    const uploadResult = await idriveService.uploadAnatomyImage(
-      req.file.path,
-      req.file.originalname.replace(/\.(jpg|jpeg|png)$/i, '')
-    )
-
-    return res.status(200).json({
-      data: {
-        image_url: await idriveService.getSignedUrl(uploadResult.key),
-        image_key: uploadResult.key,
-        image_filename: uploadResult.fileName
-      }
-    })
-  }
-  
 }
 
 export default new AnatomyController()

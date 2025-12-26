@@ -56,6 +56,17 @@ class BlobService {
   }
 
   /**
+   * Get blob by checksum
+   * @param {string} checksum - File checksum (MD5)
+   * @returns {Promise<Object>} Blob record
+   */
+  async getBlobByChecksum(checksum) {
+    return await prisma.blobs.findFirst({
+      where: { checksum }
+    });
+  }
+
+  /**
    * Delete blob by ID
    * @param {number} blobId - Blob ID
    * @returns {Promise<Object>} Deleted blob record

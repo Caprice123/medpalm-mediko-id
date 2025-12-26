@@ -714,17 +714,14 @@ model blobs {
 // ============= Anatomy Quiz Feature =============
 
 model anatomy_quizzes {
-  id             Int      @id @default(autoincrement())
-  title          String
-  description    String?
-  image_url      String
-  image_key      String
-  image_filename String
-  status         String   @default("draft")
-  is_active      Boolean  @default(true)
-  created_by     Int
-  created_at     DateTime @default(now())
-  updated_at     DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  status      String   @default("draft")
+  is_active   Boolean  @default(true)
+  created_by  Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 
   anatomy_questions     anatomy_questions[]
   anatomy_quiz_tags     anatomy_quiz_tags[]

@@ -1,5 +1,6 @@
 import { GetAnatomyQuizzesService } from '#services/anatomy/getAnatomyQuizzesService'
 import { GetAnatomyQuizDetailService } from '#services/anatomy/admin/getAnatomyQuizDetailService'
+import attachmentService from '#services/attachment/attachmentService'
 import prisma from '#prisma/client'
 
 class AnatomyController {
@@ -9,7 +10,6 @@ class AnatomyController {
     const result = await GetAnatomyQuizzesService.call({ university, semester })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })

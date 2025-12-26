@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
+import { formatFileSize } from '@utils/formatUtils'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import {
   FormSection,
   Label,
@@ -10,9 +13,12 @@ import {
   ImageUploadIcon,
   ImageUploadText,
   ImageUploadHint,
-  ImagePreview,
-  PreviewImage,
-  RemoveImageButton,
+  ExistingFileInfo,
+  FileIcon,
+  FileName,
+  FileActions,
+  PreviewButton,
+  RemoveFileButton,
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
@@ -102,42 +108,57 @@ const UpdateQuizModal = ({ onClose }) => {
 
         <FormSection>
           <Label>Upload Image *</Label>
-          <ImageUploadArea
-            hasImage={form.values.image_url}
-            onClick={() => document.getElementById('image-upload').click()}
-          >
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/jpeg,image/jpg,image/png"
-              onChange={handleImageSelect}
-              style={{ display: 'none' }}
-            />
-            {!form.values.image_url ? (
-              <>
-                <ImageUploadIcon>📤</ImageUploadIcon>
-                <ImageUploadText>
-                  {loading.isUploadingImage ? 'Uploading...' : 'Click to upload image'}
-                </ImageUploadText>
-                <ImageUploadHint>JPEG or PNG, max 5MB</ImageUploadHint>
-              </>
-            ) : (
-              <ImagePreview>
-                <PreviewImage src={form.values.image_url} alt="Preview" />
-                <RemoveImageButton
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    form.setFieldValue('image_url', '')
-                    form.setFieldValue('image_key', '')
-                    form.setFieldValue('image_filename', '')
-                  }}
-                >
-                  ×
-                </RemoveImageButton>
-              </ImagePreview>
-            )}
-          </ImageUploadArea>
-          {form.errors.image_url && <ErrorText>{form.errors.image_url}</ErrorText>}
+          {!form.values.blob.id ? (
+            <ImageUploadArea onClick={() => document.getElementById('image-upload').click()}>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png"
+                onChange={handleImageSelect}
+                style={{ display: 'none' }}
+              />
+              <ImageUploadIcon>🖼️</ImageUploadIcon>
+              <ImageUploadText>
+                {loading.isUploadingImage ? 'Uploading...' : 'Klik untuk upload gambar'}
+              </ImageUploadText>
+              <ImageUploadHint>JPEG atau PNG, max 5MB</ImageUploadHint>
+            </ImageUploadArea>
+          ) : (
+            <PhotoProvider>
+              <ExistingFileInfo>
+                <FileIcon>🖼️</FileIcon>
+                <div style={{ flex: 1 }}>
+                  <FileName>
+                    {form.values.blob.filename || 'File name'}
+                  </FileName>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
+                    {form.values.blob.size ? formatFileSize(form.values.blob.size) : 'File size'}
+                  </div>
+                </div>
+                <FileActions>
+                  <PhotoView src={form.values.blob.url}>
+                    <PreviewButton type="button">
+                      👁️ Preview
+                    </PreviewButton>
+                  </PhotoView>
+                  <RemoveFileButton
+                    type="button"
+                    onClick={() => {
+                      form.setFieldValue('blob', {
+                        id: null,
+                        url: '',
+                        filename: '',
+                        size: null
+                      })
+                    }}
+                  >
+                    Hapus
+                  </RemoveFileButton>
+                </FileActions>
+              </ExistingFileInfo>
+            </PhotoProvider>
+          )}
+          {form.errors.blob && <ErrorText>{form.errors.blob}</ErrorText>}
         </FormSection>
 
         {/* University Tags Section */}

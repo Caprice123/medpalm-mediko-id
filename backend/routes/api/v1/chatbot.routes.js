@@ -4,6 +4,7 @@ import ConversationController from '#controllers/api/v1/chatbot/conversations.co
 import MessageController from '#controllers/api/v1/chatbot/messages.controller'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
+import { checkFeature } from '#middleware/checkFeature.middleware'
 
 const router = express.Router()
 

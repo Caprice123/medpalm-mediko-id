@@ -1,15 +1,14 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateAnatomyQuizService extends BaseService {
   static async call({
     quizId,
     title,
     description,
-    image_url,
-    image_key,
-    image_filename,
+    blobId,
     tags,
     questions,
     status
@@ -42,12 +41,6 @@ export class UpdateAnatomyQuizService extends BaseService {
         data: {
           title,
           description: description || '',
-          // Only update image fields if provided (image might not change)
-          ...(image_url && {
-            image_url,
-            image_key,
-            image_filename
-          }),
           ...(status && { status }),
           anatomy_questions: {
             create: questions.map((q, index) => ({
@@ -76,6 +69,30 @@ export class UpdateAnatomyQuizService extends BaseService {
 
       return quiz
     })
+
+    // Update attachment if new blob is provided
+    if (blobId) {
+      // Delete old attachment
+      const oldAttachment = await prisma.attachments.findFirst({
+        where: {
+          recordType: 'anatomy_quiz',
+          recordId: parseInt(quizId),
+          name: 'image'
+        }
+      })
+
+      if (oldAttachment) {
+        await attachmentService.deleteAttachment(oldAttachment.id, true)
+      }
+
+      // Create new attachment
+      await attachmentService.attach({
+        blobId,
+        recordType: 'anatomy_quiz',
+        recordId: updatedQuiz.id,
+        name: 'image'
+      })
+    }
 
     return updatedQuiz
   }

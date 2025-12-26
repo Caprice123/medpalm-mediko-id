@@ -2,6 +2,7 @@ import express from 'express'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import mcqController from '#controllers/api/v1/mcq.controller'
+import { checkFeature } from '#middleware/checkFeature.middleware'
 
 const router = express.Router()
 

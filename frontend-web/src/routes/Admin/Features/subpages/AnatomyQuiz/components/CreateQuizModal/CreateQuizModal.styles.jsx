@@ -72,70 +72,91 @@ export const ImageUploadArea = styled.div`
   border-radius: 8px;
   padding: 2rem;
   text-align: center;
-  transition: all 0.2s;
   cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
 
   &:hover {
     border-color: #6BB9E8;
     background: #f0f9ff;
   }
-
-  ${props => props.hasImage && `
-    border-style: solid;
-    border-color: #10b981;
-    background: #ecfdf5;
-  `}
 `
 
 export const ImageUploadIcon = styled.div`
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  color: #9ca3af;
-`
-
-export const ImageUploadText = styled.p`
-  color: #6b7280;
-  font-size: 0.875rem;
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
 `
 
-export const ImageUploadHint = styled.p`
+export const ImageUploadText = styled.div`
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+`
+
+export const ImageUploadHint = styled.div`
   color: #9ca3af;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 `
 
-export const ImagePreview = styled.div`
-  margin-top: 1rem;
-  position: relative;
-`
-
-export const PreviewImage = styled.img`
-  width: 100%;
-  max-height: 300px;
-  object-fit: contain;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-`
-
-export const RemoveImageButton = styled.button`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+export const ExistingFileInfo = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  background: #ecfdf5;
+`
+
+export const FileIcon = styled.div`
+  font-size: 2.5rem;
+`
+
+export const FileName = styled.div`
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.9375rem;
+`
+
+export const FileActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`
+
+export const PreviewButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #6BB9E8;
+  border: 1px solid #6BB9E8;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1.25rem;
   transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background: #6BB9E8;
+    color: white;
+  }
+`
+
+export const RemoveFileButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
 
   &:hover {
     background: #dc2626;
+    color: white;
   }
 `
 

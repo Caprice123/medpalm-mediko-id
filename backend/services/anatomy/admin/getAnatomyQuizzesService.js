@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import idriveService from '#services/idrive.service'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class GetAnatomyQuizzesService extends BaseService {
   static async call(filters = {}) {
@@ -105,16 +106,16 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Only return perPage items (exclude the +1 check item)
     const paginatedQuizzes = quizzes.slice(0, perPage)
 
-    // Batch get signed URLs for all images (MAJOR PERFORMANCE BOOST)
-    const imageKeys = paginatedQuizzes.map(quiz => quiz.image_key)
-    const signedUrls = await idriveService.getBulkSignedUrls(imageKeys)
-
-    // Create a map for O(1) lookup
-    const urlMap = new Map(
-      imageKeys.map((key, index) => [key, signedUrls[index]])
+    // Get attachments for all quizzes (MAJOR PERFORMANCE BOOST)
+    const attachmentMap = await attachmentService.getBulkAttachmentsWithUrls(
+      paginatedQuizzes.map(quiz => ({
+        recordType: 'anatomy_quiz',
+        recordId: quiz.id,
+        name: 'image'
+      }))
     )
 
-    // Transform the response (no await needed - all URLs fetched)
+    // Transform the response
     const transformedQuizzes = paginatedQuizzes.map((quiz) => {
       // Separate tags by group
       const allTags = quiz.anatomy_quiz_tags.map(t => ({
@@ -127,13 +128,16 @@ export class GetAnatomyQuizzesService extends BaseService {
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
 
+      const attachment = attachmentMap.get(quiz.id)
+
       return {
         id: quiz.id,
         title: quiz.title,
         description: quiz.description,
-        image_key: quiz.image_key,
-        image_url: urlMap.get(quiz.image_key),
-        image_filename: quiz.image_filename,
+        blobId: attachment?.blobId || null,
+        image_url: attachment?.url || null,
+        image_key: attachment?.blob?.key || null,
+        image_filename: attachment?.blob?.filename || null,
         status: quiz.status,
         is_active: quiz.is_active,
         tags: allTags,

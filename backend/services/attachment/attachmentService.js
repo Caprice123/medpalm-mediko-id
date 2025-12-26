@@ -60,13 +60,22 @@ class AttachmentService {
     }
   }
 
-  async attach({ blob, recordType, recordId, name }) {
-    await prisma.attachments.create({
+  /**
+   * Create attachment record linking a record to a blob
+   * @param {Object} options - Attachment options
+   * @param {number} options.blobId - Blob ID
+   * @param {string} options.recordType - Type of record (e.g., 'anatomy_quiz', 'flashcard_card')
+   * @param {number} options.recordId - ID of the record
+   * @param {string} options.name - Attachment name/identifier (e.g., 'image', 'pdf')
+   * @returns {Promise<Object>} Created attachment
+   */
+  async attach({ blobId, recordType, recordId, name }) {
+    return await prisma.attachments.create({
       data: {
         name,
         recordType,
         recordId,
-        blobId: blob.id
+        blobId
       }
     });
   }

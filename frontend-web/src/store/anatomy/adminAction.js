@@ -62,16 +62,18 @@ export const uploadAnatomyImage = (form, onSuccess) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUploadingImage', value: true }))
 
     const formData = new FormData()
-    formData.append('image', form.file)
+    formData.append('file', form.file)
+    formData.append('type', 'anatomy')
 
-    const route = Endpoints.admin.anatomy + "/upload-image"
+    const route = "/api/v1/upload/image"
     const response = await postWithToken(route, formData)
 
     const data = response.data.data
     const imageInfo = {
-      image_url: data.image_url,
-      image_key: data.image_key,
-      image_filename: data.image_filename
+      blobId: data.blobId,
+      image_url: data.url,
+      fileName: data.fileName,
+      fileSize: data.byteSize
     }
 
     if (onSuccess) onSuccess(imageInfo)
@@ -83,12 +85,15 @@ export const uploadAnatomyImage = (form, onSuccess) => async (dispatch) => {
   }
 }
 
-export const createAnatomyQuiz = (quizData) => async (dispatch) => {
+export const createAnatomyQuiz = (quizData, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isCreateAnatomyQuizLoading', value: true }))
 
     const route = Endpoints.admin.anatomy
     await postWithToken(route, quizData)
+
+    // Refresh the list and close modal
+    if (onSuccess) onSuccess()
   } catch (err) {
     handleApiError(err, dispatch)
     throw err

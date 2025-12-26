@@ -39,8 +39,8 @@ const upload = multer({
   }
 });
 
-// Accept single image file
-const uploadSingle = upload.single('image');
+// Accept single image file (field name: 'file')
+const uploadSingle = upload.single('file');
 
 export const uploadSingleImage = (req, res, next) => {
   uploadSingle(req, res, (err) => {

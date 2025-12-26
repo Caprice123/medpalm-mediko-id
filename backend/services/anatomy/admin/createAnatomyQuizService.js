@@ -1,30 +1,26 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateAnatomyQuizService extends BaseService {
   static async call({
     title,
     description,
-    image_url,
-    image_key,
-    image_filename,
+    blobId,
     tags,
     questions,
     created_by,
     status = 'draft'
   }) {
     // Validate inputs
-    await this.validate({ title, image_url, tags, questions })
+    await this.validate({ title, blobId, tags, questions })
 
     // Create quiz with questions and tags
     const quiz = await prisma.anatomy_quizzes.create({
       data: {
         title,
         description: description || '',
-        image_url,
-        image_key,
-        image_filename,
         status,
         created_by,
         anatomy_questions: {
@@ -52,17 +48,27 @@ export class CreateAnatomyQuizService extends BaseService {
       }
     })
 
+    // Create attachment if blob is provided
+    if (blobId) {
+      await attachmentService.attach({
+        blobId,
+        recordType: 'anatomy_quiz',
+        recordId: quiz.id,
+        name: 'image'
+      })
+    }
+
     return quiz
   }
 
-  static async validate({ title, image_url, tags, questions }) {
+  static async validate({ title, blobId, tags, questions }) {
     // Validate required fields
     if (!title) {
       throw new ValidationError('Title is required')
     }
 
-    if (!image_url) {
-      throw new ValidationError('Image URL is required')
+    if (!blobId) {
+      throw new ValidationError('Image is required')
     }
 
     if (!tags || tags.length === 0) {

@@ -1,9 +1,11 @@
 import IDriveService from '#services/idrive.service'
+import blobService from '#services/attachment/blobService'
 import fs from 'fs'
+import path from 'path'
 
 class UploadController {
   /**
-   * Upload image to S3 (iDrive)
+   * Upload image to S3 (iDrive) and create blob record
    * @route POST /api/v1/upload/image
    * @param {string} type - Upload type (skripsi-editor, anatomy, flashcard, etc.)
    */
@@ -41,22 +43,59 @@ class UploadController {
 
       const folder = folderMap[type] || 'uploads'
 
-      // Upload to iDrive
-      const result = await IDriveService.uploadFile(filePath, folder)
+      // Calculate checksum before upload to check for duplicates
+      const contentType = req.file.mimetype
+      const byteSize = blobService.getFileSize(filePath)
+      const checksum = blobService.calculateChecksum(filePath)
 
-      // Generate presigned URL (expires in 7 days)
-      const presignedUrl = await IDriveService.getSignedUrl(result.key, 7 * 24 * 60 * 60)
+      // Check if blob with same checksum already exists
+      const existingBlob = await blobService.getBlobByChecksum(checksum)
 
-      // Delete temporary file
-      fs.unlinkSync(filePath)
+      let blob
+      let presignedUrl
+
+      if (existingBlob) {
+        // Blob already exists, reuse it
+        console.log(`Blob with checksum ${checksum} already exists (ID: ${existingBlob.id}), reusing...`)
+        blob = existingBlob
+        presignedUrl = await IDriveService.getSignedUrl(existingBlob.key, 7 * 24 * 60 * 60)
+
+        // Delete temporary file since we're not uploading
+        fs.unlinkSync(filePath)
+      } else {
+        // Upload to iDrive
+        console.log(`Uploading new file with checksum ${checksum}...`)
+        const result = await IDriveService.uploadFile(filePath, folder)
+
+        // Create blob record
+        blob = await blobService.createBlob({
+          key: result.key,
+          filename: req.file.originalname, // Use original filename
+          contentType,
+          byteSize,
+          checksum,
+          metadata: {
+            generatedName: result.fileName, // Store generated name in metadata
+            uploadType: type,
+            uploadedFrom: 'upload_api'
+          }
+        })
+
+        // Generate presigned URL (expires in 7 days)
+        presignedUrl = await IDriveService.getSignedUrl(result.key, 7 * 24 * 60 * 60)
+
+        // Delete temporary file
+        fs.unlinkSync(filePath)
+      }
 
       return res.status(200).json({
         success: true,
         data: {
+          blobId: blob.id,
           url: presignedUrl,
-          publicUrl: result.url,
-          key: result.key,
-          fileName: result.fileName
+          key: blob.key,
+          fileName: blob.filename, // Return original filename
+          byteSize: blob.byteSize  // Return file size
         }
       })
     } catch (error) {

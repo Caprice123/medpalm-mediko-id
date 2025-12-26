@@ -17,14 +17,7 @@ router.get('/:id', asyncHandler(anatomyController.show.bind(anatomyController)))
 router.put('/:id', asyncHandler(anatomyController.update.bind(anatomyController)))
 router.delete('/:id', asyncHandler(anatomyController.delete.bind(anatomyController)))
 
-// Upload anatomy image only (no AI generation)
-router.post(
-  '/upload-image',
-  uploadImage,
-  asyncHandler(anatomyController.uploadImage.bind(anatomyController))
-)
-
-// Generate questions from image using Gemini (preview mode)
+// Generate questions from image using Gemini (also uploads and creates blob)
 router.post(
   '/generate-from-image',
   uploadImage,

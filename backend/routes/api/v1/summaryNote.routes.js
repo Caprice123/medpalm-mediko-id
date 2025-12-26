@@ -2,6 +2,7 @@ import express from 'express'
 import SummaryNoteController from '#controllers/api/v1/summaryNote.controller'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
+import { checkFeature } from '#middleware/checkFeature.middleware'
 
 const router = express.Router()
 

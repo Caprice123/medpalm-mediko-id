@@ -1,7 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
-import idriveService from '#services/idrive.service'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class GetAnatomyQuizDetailService extends BaseService {
   static async call(quizId) {
@@ -25,10 +25,21 @@ export class GetAnatomyQuizDetailService extends BaseService {
       throw new ValidationError('Quiz not found')
     }
 
+    // Get attachment with URL
+    const attachment = await attachmentService.getAttachmentWithUrl(
+      'anatomy_quiz',
+      quiz.id,
+      'image'
+    )
+
     // Transform tags to simpler format
     const transformedQuiz = {
       ...quiz,
-      image_url: await idriveService.getSignedUrl(quiz.image_key),
+      blobId: attachment?.blobId || null,
+      image_url: attachment?.url || null,
+      image_key: attachment?.blob?.key || null,
+      image_filename: attachment?.blob?.filename || null,
+      image_size: attachment?.blob?.byteSize || null,
       tags: quiz.anatomy_quiz_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,

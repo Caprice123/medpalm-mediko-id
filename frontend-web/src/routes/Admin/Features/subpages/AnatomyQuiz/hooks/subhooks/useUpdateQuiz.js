@@ -44,33 +44,36 @@ export const useUpdateQuiz = (closeCallback) => {
     initialValues: {
       title: selectedQuiz?.title || '',
       description: selectedQuiz?.description || '',
-      image_url: selectedQuiz?.image_url || '',
-      image_key: selectedQuiz?.image_key || '',
-      image_filename: selectedQuiz?.image_filename || '',
+      blob: selectedQuiz?.blob || {
+        id: null,
+        url: '',
+        filename: '',
+        size: null
+      },
       universityTags: initialUniversityTags,
       semesterTags: initialSemesterTags,
       questions: selectedQuiz?.questions || [],
       status: selectedQuiz?.status || 'draft'
     },
     onSubmit: (values, { resetForm }) => {
-      // Merge university and semester tags into single tags array
+      // Prepare quiz data with blobId
       const quizData = {
-        ...values,
+        title: values.title,
+        description: values.description,
+        blobId: values.blob.id,
         tags: [...values.universityTags, ...values.semesterTags].map(tag => tag.id),
         questions: values.questions.map((q, index) => ({
           ...(q.id && { id: q.id }),
           question: q.question,
           answer: q.answer,
           order: index
-        }))
+        })),
+        status: values.status
       }
-      // Remove separate tag fields before submission
-      delete quizData.universityTags
-      delete quizData.semesterTags
 
       const onSuccess = () => {
         resetForm()
-        closeCallback()
+        if (closeCallback) closeCallback()
         dispatch(fetchAdminAnatomyQuizzes())
       }
 
@@ -79,9 +82,12 @@ export const useUpdateQuiz = (closeCallback) => {
   })
 
   const { form: uploadImageForm } = useUploadAttachment((imageInfo) => {
-    form.setFieldValue('image_url', imageInfo.image_url)
-    form.setFieldValue('image_key', imageInfo.image_key)
-    form.setFieldValue('image_filename', imageInfo.image_filename)
+    form.setFieldValue('blob', {
+      id: imageInfo.blobId,
+      url: imageInfo.image_url,
+      filename: imageInfo.fileName || 'File name',
+      size: imageInfo.fileSize || null
+    })
   })
 
   const hasUnsavedChanges = useCallback(() => {
@@ -127,12 +133,23 @@ export const useUpdateQuiz = (closeCallback) => {
     form.setFieldValue('questions', form.values.questions.filter((_, i) => i !== index))
   }
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = async (e) => {
     const file = e.target.files[0]
     if (!file) return
 
-    uploadImageForm.setFieldValue('file', file)
-    uploadImageForm.handleSubmit()
+    console.log('File selected:', file.name, file.size, file.type)
+
+    try {
+      await uploadImageForm.setFieldValue('file', file)
+      console.log('File value set, submitting...')
+      await uploadImageForm.submitForm()
+      console.log('Upload submitted')
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
+
+    // Reset file input to allow re-uploading the same file
+    e.target.value = ''
   }
 
   return {

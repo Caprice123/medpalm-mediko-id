@@ -8,9 +8,13 @@ export class AnatomyQuizSerializer {
       id: quiz.id,
       title: quiz.title,
       description: quiz.description,
-      image_url: quiz.image_url,
-      image_key: quiz.image_key,
-      image_filename: quiz.image_filename,
+      blob: quiz.blobId ? {
+        id: quiz.blobId,
+        url: quiz.image_url,
+        key: quiz.image_key,
+        filename: quiz.image_filename,
+        size: quiz.image_size
+      } : null,
       status: quiz.status,
       is_active: quiz.is_active,
       tags: quizTags.map(tag => ({
