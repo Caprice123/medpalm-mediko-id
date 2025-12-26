@@ -286,7 +286,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
   // Ensure token is valid and refreshed if needed
   const accessToken = await ensureValidToken()
 
-  const url = `${import.meta.env.VITE_API_BASE_URL}${Endpoints.skripsi.sendMessage(tabId)}`
+  const url = Endpoints.skripsi.sendMessage(tabId)
 
   const streamingMessageId = `streaming-${Date.now()}`
   const messageCreatedAt = new Date().toISOString()
@@ -297,6 +297,12 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
   let isTyping = false
   let streamEnded = false
   let finalData = null
+  let typingCompleteResolver = null
+
+  // Promise that resolves when typing animation completes
+  const typingCompletePromise = new Promise(resolve => {
+    typingCompleteResolver = resolve
+  })
 
   // Typing speed (milliseconds per character)
   const TYPING_SPEED = 1
@@ -327,6 +333,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
     if (displayedContent.length >= fullContent.length) {
       isTyping = false
 
+      // Only finalize when BOTH stream ended AND typing complete
       if (streamEnded && finalData) {
         if (!onStreamUpdate) {
           // Remove temporary messages from Redux
@@ -343,6 +350,11 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
         }
 
         dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+
+        // Resolve the typing complete promise
+        if (typingCompleteResolver) {
+          typingCompleteResolver()
+        }
       }
       return
     }
@@ -375,6 +387,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
   let buffer = ''
 
   try {
+    console.log('Streaming URL:', url)
+    console.log('Sending message:', content)
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -385,7 +400,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const errorText = await response.text()
+      console.error('Response error:', response.status, errorText)
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
     }
 
     const reader = response.body.getReader()
@@ -414,24 +431,8 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
             } else if (data.type === 'done') {
               streamEnded = true
               finalData = data.data
-
-              if (!isTyping && displayedContent.length >= fullContent.length) {
-                if (!onStreamUpdate) {
-                  // Remove temporary messages from Redux
-                  dispatch(actions.removeMessage({ tabId, messageId: tempUserMessage.id }))
-                  dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
-
-                  // Add final messages to Redux (only when not using callback)
-                  if (data.data.userMessage) {
-                    dispatch(addMessage({ tabId, message: data.data.userMessage }))
-                  }
-                  if (data.data.aiMessage) {
-                    dispatch(addMessage({ tabId, message: data.data.aiMessage }))
-                  }
-                }
-
-                dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-              }
+              // Don't finalize here - let the typing animation complete first
+              // The displayNextCharacter function will handle finalization
             } else if (data.type === 'error') {
               throw new Error(data.error)
             }
@@ -441,6 +442,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
         }
       }
     }
+
+    // Wait for typing animation to complete before returning
+    await typingCompletePromise
   } catch (error) {
     console.error('Streaming error:', error)
     // Only remove from Redux if not using callback mode
@@ -449,9 +453,14 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
       dispatch(actions.removeMessage({ tabId, messageId: streamingMessageId }))
     }
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+
+    // Resolve typing promise to prevent hanging
+    if (typingCompleteResolver) {
+      typingCompleteResolver()
+    }
     throw error
   }
 
-  // Return final data when using callback mode
+  // Return final data when using callback mode (after typing completes)
   return onStreamUpdate ? finalData : null
 }

@@ -17,7 +17,9 @@ import {
   ChatInputWrapper,
   ChatInput,
   SendButton,
-  EmptyMessages
+  EmptyMessages,
+  TypingIndicator,
+  TypingDot
 } from '../Editor.styles'
 
 // Memoized message component - only rerenders when its own content changes
@@ -88,9 +90,9 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
   const [hasMore, setHasMore] = useState(true)
   const previousScrollHeight = useRef(0)
 
-  // Local streaming state - doesn't trigger Redux updates
+  // Local streaming state for AI message only
   const [streamingMessage, setStreamingMessage] = useState(null)
-  const [streamingUserMessage, setStreamingUserMessage] = useState(null)
+  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false)
 
   // Scroll to bottom when new messages arrive or tab changes
   useEffect(() => {
@@ -148,38 +150,56 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!currentTab) return
 
-    // Set local streaming messages
-    const tempUserMsg = {
-      id: `temp-user-${Date.now()}`,
-      sender_type: 'user',
-      content: userMessageText,
-      created_at: new Date().toISOString()
-    }
-    const tempAiMsg = {
-      id: `temp-ai-${Date.now()}`,
-      sender_type: 'ai',
-      content: '',
-      created_at: new Date().toISOString()
-    }
-
-    setStreamingUserMessage(tempUserMsg)
-    setStreamingMessage(tempAiMsg)
-
     try {
-      // Callback for streaming updates - updates local state only
-      const handleStreamUpdate = (content) => {
-        setStreamingMessage(prev => prev ? { ...prev, content } : null)
+      // Create and immediately show user message in Redux
+      const tempUserMsg = {
+        id: `temp-user-${Date.now()}`,
+        sender_type: 'user',
+        content: userMessageText,
+        created_at: new Date().toISOString()
       }
 
-      // This will handle streaming and return final data
+      // Add user message to Redux immediately so it shows right away
+      dispatch(actions.addMessage({ tabId: currentTab.id, message: tempUserMsg }))
+
+      // Show waiting indicator
+      setIsWaitingForResponse(true)
+
+      // Prepare temp AI message for streaming
+      const tempAiMsg = {
+        id: `temp-ai-${Date.now()}`,
+        sender_type: 'ai',
+        content: '',
+        created_at: new Date().toISOString()
+      }
+
+      let firstChunkReceived = false
+
+      // Callback for streaming updates - updates local state only
+      const handleStreamUpdate = (content) => {
+        // Show AI message on first chunk (response started)
+        if (!firstChunkReceived) {
+          firstChunkReceived = true
+          setIsWaitingForResponse(false) // Hide waiting indicator
+          setStreamingMessage({ ...tempAiMsg, content })
+        } else {
+          // Update AI message content for subsequent chunks
+          setStreamingMessage(prev => prev ? { ...prev, content } : null)
+        }
+      }
+
+      // Wait for streaming to complete (including typing animation)
       const finalData = await dispatch(sendMessage(currentTab.id, userMessageText, handleStreamUpdate))
 
-      // Clear local streaming state first
-      setStreamingUserMessage(null)
+      // Clear local streaming state
       setStreamingMessage(null)
 
-      // Then add final messages to Redux
+      // Remove temp user message and add final messages from server
       if (finalData) {
+        // Remove the temp user message we added
+        dispatch(actions.removeMessage({ tabId: currentTab.id, messageId: tempUserMsg.id }))
+
+        // Add final messages with real IDs from server
         if (finalData.userMessage) {
           dispatch(actions.addMessage({ tabId: currentTab.id, message: finalData.userMessage }))
         }
@@ -189,7 +209,7 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
       }
     } catch (error) {
       console.error('Failed to send message:', error)
-      setStreamingUserMessage(null)
+      setIsWaitingForResponse(false)
       setStreamingMessage(null)
       alert('Gagal mengirim pesan')
     }
@@ -203,7 +223,7 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
             Memuat pesan lama...
           </div>
         )}
-        {currentTab?.messages?.length === 0 && !streamingUserMessage ? (
+        {currentTab?.messages?.length === 0 && !streamingMessage ? (
           <EmptyMessages>
             Belum ada percakapan. Mulai chat dengan AI untuk mendapatkan bantuan!
           </EmptyMessages>
@@ -216,12 +236,16 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
                 formatTime={formatTime}
               />
             ))}
-            {streamingUserMessage && (
-              <ChatMessage
-                key={streamingUserMessage.id}
-                message={streamingUserMessage}
-                formatTime={formatTime}
-              />
+            {isWaitingForResponse && (
+              <Message $sender="ai">
+                <MessageBubble $sender="ai">
+                  <TypingIndicator>
+                    <TypingDot delay="0s" />
+                    <TypingDot delay="0.2s" />
+                    <TypingDot delay="0.4s" />
+                  </TypingIndicator>
+                </MessageBubble>
+              </Message>
             )}
             {streamingMessage && (
               <ChatMessage

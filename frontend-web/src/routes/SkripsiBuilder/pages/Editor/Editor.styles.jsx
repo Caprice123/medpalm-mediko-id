@@ -582,3 +582,29 @@ export const EmptyMessages = styled.div`
   color: #9ca3af;
   font-size: 14px;
 `
+
+export const TypingIndicator = styled.div`
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.5rem 0;
+`
+
+export const TypingDot = styled.div`
+  width: 8px;
+  height: 8px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+  animation-delay: ${props => props.delay};
+
+  @keyframes typing {
+    0%, 60%, 100% {
+      transform: translateY(0);
+      opacity: 0.7;
+    }
+    30% {
+      transform: translateY(-10px);
+      opacity: 1;
+    }
+  }
+`

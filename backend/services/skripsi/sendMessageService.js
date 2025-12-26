@@ -141,9 +141,11 @@ export class SendMessageService extends BaseService {
    * Handle streaming response from Gemini
    */
   static async handleStreamingResponse({ tabId, setId, userId, userMessageContent, stream, messageCost, onStream, onComplete, onError }) {
-    try {
-      let fullResponse = ''
+    let fullResponse = ''
+    let userMessage = null
+    let aiMessage = null
 
+    try {
       // Process Gemini stream chunks
       for await (const chunk of stream) {
         const text = chunk.text()
@@ -162,77 +164,100 @@ export class SendMessageService extends BaseService {
       }
 
       // Streaming complete - NOW save messages to database and deduct credits
-      const userMessage = await prisma.skripsi_messages.create({
-        data: {
-          tab_id: tabId,
-          sender_type: 'user',
-          content: userMessageContent
-        }
-      })
-
-      const aiMessage = await prisma.skripsi_messages.create({
-        data: {
-          tab_id: tabId,
-          sender_type: 'ai',
-          content: fullResponse
-        }
-      })
-
-      // Deduct credits if cost > 0
-      if (messageCost > 0) {
-        await prisma.user_credits.update({
-          where: { userId: userId },
+      try {
+        userMessage = await prisma.skripsi_messages.create({
           data: {
-            balance: { decrement: messageCost }
+            tab_id: tabId,
+            sender_type: 'user',
+            content: userMessageContent
           }
         })
 
-        // Log credit transaction
-        await prisma.credit_transactions.create({
+        aiMessage = await prisma.skripsi_messages.create({
           data: {
-            user_id: userId,
-            amount: -messageCost,
-            type: 'deduction',
-            description: `Skripsi Builder - Message sent`,
-            balance_after: await prisma.user_credits.findUnique({
-              where: { userId: userId },
-              select: { balance: true }
-            }).then(c => c.balance)
+            tab_id: tabId,
+            sender_type: 'ai',
+            content: fullResponse
           }
         })
+
+        // Deduct credits if cost > 0
+        if (messageCost > 0) {
+          // Get full user credit record before deduction
+          const userCredit = await prisma.user_credits.findUnique({
+            where: { userId: userId }
+          })
+
+          // Deduct credits
+          await prisma.user_credits.update({
+            where: { userId: userId },
+            data: {
+              balance: { decrement: messageCost }
+            }
+          })
+
+          // Get updated balance
+          const creditAfter = await prisma.user_credits.findUnique({
+            where: { userId: userId },
+            select: { balance: true }
+          })
+
+          // Log credit transaction
+          await prisma.credit_transactions.create({
+            data: {
+              userId: userId,
+              userCreditId: userCredit.id,
+              amount: -messageCost,
+              type: 'deduction',
+              description: `Skripsi Builder - Message sent`,
+              balanceBefore: userCredit.balance,
+              balanceAfter: creditAfter.balance,
+              paymentStatus: 'completed'
+            }
+          })
+        }
+
+        // Update tab and set timestamps
+        await prisma.skripsi_tabs.update({
+          where: { id: tabId },
+          data: { updated_at: new Date() }
+        })
+
+        await prisma.skripsi_sets.update({
+          where: { id: setId },
+          data: { updated_at: new Date() }
+        })
+
+        // Send completion
+        onComplete({
+          userMessage: {
+            id: userMessage.id,
+            sender_type: userMessage.sender_type,
+            content: userMessage.content,
+            created_at: userMessage.created_at
+          },
+          aiMessage: {
+            id: aiMessage.id,
+            sender_type: aiMessage.sender_type,
+            content: aiMessage.content,
+            created_at: aiMessage.created_at
+          }
+        })
+      } catch (dbError) {
+        console.error('Database error after streaming:', dbError)
+        // Even if DB operations fail, we got the AI response
+        // Send error to client with the response we have
+        if (onError) {
+          onError(new Error(`Failed to save message: ${dbError.message}`))
+        }
+        throw dbError
       }
-
-      // Update tab and set timestamps
-      await prisma.skripsi_tabs.update({
-        where: { id: tabId },
-        data: { updated_at: new Date() }
-      })
-
-      await prisma.skripsi_sets.update({
-        where: { id: setId },
-        data: { updated_at: new Date() }
-      })
-
-      // Send completion
-      onComplete({
-        userMessage: {
-          id: userMessage.id,
-          sender_type: userMessage.sender_type,
-          content: userMessage.content,
-          created_at: userMessage.created_at
-        },
-        aiMessage: {
-          id: aiMessage.id,
-          sender_type: aiMessage.sender_type,
-          content: aiMessage.content,
-          created_at: aiMessage.created_at
-        }
-      })
     } catch (error) {
       console.error('Streaming error:', error)
       if (onError) {
         onError(error)
       }
+      throw error
     }
   }
 }
