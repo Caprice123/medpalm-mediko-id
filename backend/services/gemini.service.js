@@ -232,25 +232,84 @@ Hasilkan HANYA JSON array tanpa teks tambahan apapun.
   }
 
   /**
-   * Generate flashcards from PDF file
-   * @param {string} pdfFilePath - Path to the PDF file
-   * @param {number} cardCount - Number of flashcards to generate
-   * @returns {Promise<Array>} Array of generated flashcards
+   * Generate content from PDF with custom prompt (generic method)
+   * @param {Buffer} pdfBuffer - PDF buffer
+   * @param {string} prompt - Custom prompt to use
+   * @param {string} model - Model to use (default: gemini-2.5-flash)
+   * @returns {Promise<any>} Parsed JSON response
    */
-  async generateFlashcardsFromPDF(pdfFilePath, cardCount = 10) {
+  async generateFromPDFWithPrompt(pdfBuffer, prompt, model = 'gemini-2.5-flash') {
     try {
       // Check file size (max 20MB for inline PDFs)
-      const stats = fs.statSync(pdfFilePath);
-      const fileSizeMB = stats.size / (1024 * 1024);
+      const fileSizeMB = pdfBuffer.length / (1024 * 1024);
 
-      console.log(`Processing PDF for flashcards: ${pdfFilePath} - Size: ${fileSizeMB.toFixed(2)} MB`);
+      console.log(`Processing PDF buffer - Size: ${fileSizeMB.toFixed(2)} MB`);
 
       if (fileSizeMB > 20) {
         throw new Error(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
       }
 
-      // Read PDF file and convert to base64
-      const pdfBuffer = fs.readFileSync(pdfFilePath);
+      // Convert to base64
+      const pdfBase64 = pdfBuffer.toString('base64');
+
+      console.log('PDF converted to base64, generating content with custom prompt...');
+
+      // Generate content using custom prompt
+      const genModel = genAI.getGenerativeModel({ model });
+
+      const result = await genModel.generateContent([
+        {
+          inlineData: {
+            mimeType: 'application/pdf',
+            data: pdfBase64,
+          },
+        },
+        { text: prompt },
+      ]);
+
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse JSON response
+      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      return JSON.parse(cleanedText);
+    } catch (error) {
+      console.error('Error generating from PDF with custom prompt:', error);
+      throw new Error('Failed to generate from PDF: ' + error.message);
+    }
+  }
+
+  /**
+   * Generate flashcards from PDF file or buffer
+   * @param {string|Buffer} pdfFilePathOrBuffer - Path to the PDF file OR PDF buffer
+   * @param {number} cardCount - Number of flashcards to generate
+   * @returns {Promise<Array>} Array of generated flashcards
+   */
+  async generateFlashcardsFromPDF(pdfFilePathOrBuffer, cardCount = 10) {
+    try {
+      let pdfBuffer;
+
+      // Check if input is a buffer or file path
+      if (Buffer.isBuffer(pdfFilePathOrBuffer)) {
+        // Input is already a buffer
+        pdfBuffer = pdfFilePathOrBuffer;
+        console.log(`Processing PDF buffer for flashcards - Size: ${(pdfBuffer.length / (1024 * 1024)).toFixed(2)} MB`);
+      } else {
+        // Input is a file path - read from disk
+        const stats = fs.statSync(pdfFilePathOrBuffer);
+        const fileSizeMB = stats.size / (1024 * 1024);
+        console.log(`Processing PDF for flashcards: ${pdfFilePathOrBuffer} - Size: ${fileSizeMB.toFixed(2)} MB`);
+
+        pdfBuffer = fs.readFileSync(pdfFilePathOrBuffer);
+      }
+
+      // Check file size (max 20MB for inline PDFs)
+      const fileSizeMB = pdfBuffer.length / (1024 * 1024);
+      if (fileSizeMB > 20) {
+        throw new Error(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
+      }
+
+      // Convert to base64
       const pdfBase64 = pdfBuffer.toString('base64');
 
       console.log('PDF converted to base64, generating flashcards...');

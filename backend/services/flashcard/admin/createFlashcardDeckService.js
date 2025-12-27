@@ -1,13 +1,13 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
-import blobService from "../../attachment/blobService.js"
+import { BaseService } from "#services/baseService"
+import blobService from "#services/attachment/blobService"
 import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateFlashcardDeckService extends BaseService {
-    static async call({ title, description, content_type, content, blobId, tags, cards, created_by }) {
+    static async call({ title, description, content_type, content, blobId, tags, cards, status, created_by }) {
         // Validate inputs
-        await this.validate({ title, description, content_type, content, blobId, tags, cards })
+        await this.validate({ title, description, content_type, content, blobId, tags, cards, status })
 
         // Create deck with cards and tags in a transaction
         const deck = await prisma.$transaction(async (tx) => {
@@ -19,7 +19,7 @@ export class CreateFlashcardDeckService extends BaseService {
                     content_type,
                     content: content_type === 'text' ? content : null,
                     flashcard_count: cards.length,
-                    status: 'ready',
+                    status: status || 'draft',
                     created_by: created_by,
                     flashcard_cards: {
                         create: cards.map((card, index) => ({
@@ -84,7 +84,7 @@ export class CreateFlashcardDeckService extends BaseService {
         return deck
     }
 
-    static async validate({ title, content_type, content, blobId, tags, cards }) {
+    static async validate({ title, content_type, content, blobId, tags, cards, status }) {
         // Validate required fields
         if (!title) {
             throw new ValidationError('Title is required')
@@ -92,6 +92,10 @@ export class CreateFlashcardDeckService extends BaseService {
 
         if (!content_type || !['text', 'pdf'].includes(content_type)) {
             throw new ValidationError('Content type must be either "text" or "pdf"')
+        }
+
+        if (status && !['draft', 'published'].includes(status)) {
+            throw new ValidationError('Status must be either "draft" or "published"')
         }
 
         // Content validation is optional for flashcards since they use individual cards

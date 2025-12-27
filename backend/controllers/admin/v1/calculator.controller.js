@@ -15,7 +15,6 @@ class CalculatorController {
     const result = await GetCalculatorTopicsService.call({ name, tagName, page, perPage })
 
     return res.status(200).json({
-      success: true,
       data: {
         topics: result.topics,
         pagination: result.pagination
@@ -34,7 +33,6 @@ class CalculatorController {
     const topic = await GetCalculatorTopicDetailService.call(id)
 
     return res.status(200).json({
-      success: true,
       data: topic,
       message: 'Calculator topic retrieved successfully'
     })
@@ -73,7 +71,6 @@ class CalculatorController {
     })
 
     return res.status(201).json({
-      success: true,
       data: topic,
       message: 'Calculator topic created successfully'
     })
@@ -114,7 +111,6 @@ class CalculatorController {
     })
 
     return res.status(200).json({
-      success: true,
       data: topic,
       message: 'Calculator topic updated successfully'
     })
@@ -130,7 +126,6 @@ class CalculatorController {
     const result = await DeleteCalculatorTopicService.call(id)
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Calculator topic deleted successfully'
     })

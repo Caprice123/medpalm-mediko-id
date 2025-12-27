@@ -19,7 +19,6 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -37,7 +36,6 @@ class SkripsiSetsController {
     })
 
     return res.status(201).json({
-      success: true,
       data: set,
       message: 'Skripsi set created successfully'
     })
@@ -54,7 +52,6 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      success: true,
       data: set
     })
   }
@@ -73,7 +70,6 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      success: true,
       data: set,
       message: 'Skripsi set updated successfully'
     })
@@ -92,7 +88,6 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      success: true,
       data: set,
       message: 'Content saved successfully'
     })
@@ -109,7 +104,6 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      success: true,
       ...result
     })
   }

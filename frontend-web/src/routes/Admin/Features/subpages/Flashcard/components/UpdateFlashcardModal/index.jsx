@@ -200,6 +200,9 @@ const UpdateFlashcardModal = ({ onClose }) => {
     if (onClose) onClose()
   }
 
+  console.log('UpdateFlashcardModal - pdfInfo:', pdfInfo)
+  console.log('UpdateFlashcardModal - contentType:', contentType)
+
   return (
     <Modal
       isOpen={true}
@@ -285,20 +288,7 @@ const UpdateFlashcardModal = ({ onClose }) => {
 
         {contentType === 'document' ? (
           <UploadSection>
-            {/* Show existing PDF info if deck was created from PDF */}
-            {pdfInfo && !pdfFile && (
-              <ExistingFileInfo style={{ marginBottom: '1rem', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd' }}>
-                <FileIcon>📕</FileIcon>
-                <div style={{ flex: 1 }}>
-                  <FileName>{pdfInfo.pdf_filename || 'Existing PDF'}</FileName>
-                  <div style={{ fontSize: '0.85rem', color: '#0369a1', marginTop: '0.25rem' }}>
-                    Deck ini dibuat dari PDF. Upload PDF baru untuk re-generate.
-                  </div>
-                </div>
-              </ExistingFileInfo>
-            )}
-
-            {!pdfFile ? (
+            {!pdfFile && !pdfInfo ? (
               <UploadArea onClick={() => document.getElementById('pdf-upload-update').click()}>
                 <input
                   id="pdf-upload-update"
@@ -309,7 +299,7 @@ const UpdateFlashcardModal = ({ onClose }) => {
                 />
                 <UploadIcon>📤</UploadIcon>
                 <UploadText>
-                  {isGenerating ? 'Uploading...' : pdfInfo ? 'Upload PDF baru untuk re-generate' : 'Klik untuk upload PDF'}
+                  {isGenerating ? 'Uploading...' : 'Klik untuk upload PDF'}
                 </UploadText>
                 <UploadText style={{ fontSize: '0.85rem', color: '#9ca3af' }}>
                   PDF file (max 20MB)
@@ -319,12 +309,28 @@ const UpdateFlashcardModal = ({ onClose }) => {
               <ExistingFileInfo>
                 <FileIcon>📕</FileIcon>
                 <div style={{ flex: 1 }}>
-                  <FileName>{pdfFile.name}</FileName>
+                  <FileName>{pdfFile ? pdfFile.name : (pdfInfo?.pdf_filename || 'Existing PDF')}</FileName>
                   <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
                     Siap untuk di-generate menjadi flashcard
                   </div>
                 </div>
-                <RemoveFileButton onClick={() => setPdfFile(null)}>
+                <RemoveFileButton
+                  onClick={() => {
+                    if (pdfFile) {
+                      const url = URL.createObjectURL(pdfFile)
+                      window.open(url, '_blank')
+                    } else if (pdfInfo?.pdf_url) {
+                      window.open(pdfInfo.pdf_url, '_blank')
+                    }
+                  }}
+                  style={{ marginRight: '0.5rem', backgroundColor: '#3b82f6', color: 'white' }}
+                >
+                  Lihat
+                </RemoveFileButton>
+                <RemoveFileButton onClick={() => {
+                  setPdfFile(null)
+                  setPdfInfo(null)
+                }}>
                   Hapus
                 </RemoveFileButton>
               </ExistingFileInfo>

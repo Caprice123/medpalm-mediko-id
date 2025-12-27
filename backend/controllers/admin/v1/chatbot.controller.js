@@ -16,7 +16,6 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -31,7 +30,6 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: conversation
     })
   }
@@ -48,7 +46,6 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -63,7 +60,6 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       message: 'Conversation deleted successfully'
     })
   }

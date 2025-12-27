@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Dropdown from '@components/common/Dropdown'
+import ModelDropdown from '@components/common/ModelDropdown'
 import {
   Overlay,
   Modal,
@@ -109,20 +110,8 @@ function SummaryNotesSettingsModal({ isOpen, onClose }) {
 
               <FormGroup>
                 <Label>Model Generasi</Label>
-                <Dropdown
-                  options={[
-                    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro (Akurat)' },
-                    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Cepat)' },
-                    { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash (Cepat)' },
-                    { value: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash (Experimental)' }
-                  ]}
-                  value={{
-                    value: form.values.summary_notes_generation_model,
-                    label: form.values.summary_notes_generation_model === 'gemini-1.5-pro' ? 'Gemini 1.5 Pro (Akurat)' :
-                           form.values.summary_notes_generation_model === 'gemini-2.5-flash' ? 'Gemini 2.5 Flash (Cepat)' :
-                           form.values.summary_notes_generation_model === 'gemini-1.5-flash' ? 'Gemini 1.5 Flash (Cepat)' :
-                           'Gemini 2.0 Flash (Experimental)'
-                  }}
+                <ModelDropdown
+                  value={form.values.summary_notes_generation_model}
                   onChange={(option) => form.setFieldValue('summary_notes_generation_model', option.value)}
                 />
                 <HintText>Model yang digunakan untuk generate ringkasan dari dokumen</HintText>

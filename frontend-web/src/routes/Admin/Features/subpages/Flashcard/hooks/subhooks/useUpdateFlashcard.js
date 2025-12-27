@@ -91,7 +91,11 @@ export const useUpdateFlashcard = (onClose) => {
       ) || []
 
       // Add tempId to cards for drag-and-drop
-      const cardsWithTempIds = detail.flashcard_cards?.map((card, index) => ({
+      // Support both flashcard_cards (raw DB) and cards (serialized)
+      const deckCards = detail.cards || detail.flashcard_cards || []
+      console.log('Loading cards from detail:', deckCards)
+
+      const cardsWithTempIds = deckCards.map((card, index) => ({
         ...card,
         image: card.image ? {
             url: card.image.url, // Temporary presigned URL for preview
@@ -101,7 +105,9 @@ export const useUpdateFlashcard = (onClose) => {
             byteSize: card.image.byteSize,
         } : null,
         tempId: card.id || Date.now() + index
-      })) || []
+      }))
+
+      console.log('Cards with tempIds:', cardsWithTempIds)
 
       form.setValues({
         title: detail.title || '',
@@ -113,11 +119,20 @@ export const useUpdateFlashcard = (onClose) => {
       })
 
       // Set initial content based on content_type
+      console.log('Detail content_type:', detail.content_type)
+      console.log('Detail blob:', detail.blob)
+
       if (detail.content_type === 'pdf' && detail.blob) {
         setInitialContentType('document')
-        setPdfInfo({
-          blobId: detail.blob.id
-        })
+        const pdfData = {
+          blobId: detail.blob.id,
+          pdf_filename: detail.blob.filename,
+          pdf_url: detail.blob.url,
+          pdf_key: detail.blob.key,
+          pdf_size: detail.blob.size
+        }
+        console.log('Setting pdfInfo:', pdfData)
+        setPdfInfo(pdfData)
       } else if (detail.content_type === 'text' && detail.content) {
         setInitialContentType('text')
         setInitialTextContent(detail.content)

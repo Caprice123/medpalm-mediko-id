@@ -2,7 +2,6 @@ import express from 'express'
 import anatomyController from '#controllers/admin/v1/anatomy.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
-import { uploadImage } from '#middlewares/uploadImage'
 
 const router = express.Router()
 
@@ -20,7 +19,6 @@ router.delete('/:id', asyncHandler(anatomyController.delete.bind(anatomyControll
 // Generate questions from image using Gemini (also uploads and creates blob)
 router.post(
   '/generate-from-image',
-  uploadImage,
   asyncHandler(anatomyController.generateQuestionsFromImage.bind(anatomyController))
 )
 

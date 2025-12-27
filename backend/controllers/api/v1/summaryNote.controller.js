@@ -9,7 +9,6 @@ class SummaryNoteController {
     const result = await GetSummaryNotesService.call(req.query)
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -22,7 +21,6 @@ class SummaryNoteController {
     const note = await GetSummaryNoteByIdService.call({ noteId: id })
 
     return res.status(200).json({
-      success: true,
       data: note
     })
   }
@@ -39,7 +37,6 @@ class SummaryNoteController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Summary note session started successfully'
     })
@@ -56,7 +53,6 @@ class SummaryNoteController {
     })
 
     return res.status(200).json({
-      success: true,
       data: session
     })
   }

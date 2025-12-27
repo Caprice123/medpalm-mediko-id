@@ -16,7 +16,6 @@ class SkripsiTabsController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.messages,
       hasMore: result.hasMore
     })

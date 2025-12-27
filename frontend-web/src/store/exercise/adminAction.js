@@ -97,22 +97,26 @@ export const generateQuestionsFromPDF = (pdfFile, questionCount = 10) => async (
   try {
     dispatch(setLoading({ key: 'isGeneratingQuestions', value: true }))
 
-    // Create FormData for PDF upload
-    const formData = new FormData()
-    formData.append('pdf', pdfFile)
-    formData.append('questionCount', questionCount)
+    // Step 1: Upload PDF to centralized endpoint to get blobId
+    const uploadFormData = new FormData()
+    uploadFormData.append('file', pdfFile)
+    uploadFormData.append('type', 'exercise')
 
-    const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, formData)
+    const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
+    const blobId = uploadResponse.data.data.blobId
+
+    // Step 2: Generate questions from PDF
+    const generateFormData = new FormData()
+    generateFormData.append('pdf', pdfFile)
+    generateFormData.append('questionCount', questionCount)
+    generateFormData.append('blobId', blobId)
+
+    const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, generateFormData)
 
     const data = response.data.data || {}
     const questions = data.questions || []
-    const pdfInfo = {
-      pdf_url: data.pdf_url,
-      pdf_key: data.pdf_key,
-      pdf_filename: data.pdf_filename
-    }
 
-    return { questions, ...pdfInfo }
+    return { questions, blobId }
   } catch (err) {
     handleApiError(err, dispatch)
     throw err

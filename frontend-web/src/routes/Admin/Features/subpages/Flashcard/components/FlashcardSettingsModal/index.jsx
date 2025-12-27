@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Dropdown from '@components/common/Dropdown'
+import ModelDropdown from '@components/common/ModelDropdown'
 import Modal from '@components/common/Modal'
 import { useFeatureSetting } from '../../hooks/subhooks/useFeatureSetting'
 import Textarea from '@components/common/Textarea'
@@ -96,21 +97,8 @@ function FlashcardSettingsModal({ onClose }) {
         )}
         
         <FormGroup>
-            <Dropdown
-                label="Model Generasi"
-                options={[
-                { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro (Akurat)' },
-                { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Cepat)' },
-                { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash (Cepat)' },
-                { value: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash (Experimental)' }
-                ]}
-                value={{
-                value: form.values.flashcard_generation_model,
-                label: form.values.flashcard_generation_model === 'gemini-1.5-pro' ? 'Gemini 1.5 Pro (Akurat)' :
-                        form.values.flashcard_generation_model === 'gemini-2.5-flash' ? 'Gemini 2.5 Flash (Cepat)' :
-                        form.values.flashcard_generation_model === 'gemini-1.5-flash' ? 'Gemini 1.5 Flash (Cepat)' :
-                        'Gemini 2.0 Flash (Experimental)'
-                }}
+            <ModelDropdown
+                value={form.values.flashcard_generation_model}
                 onChange={(option) => form.setFieldValue('flashcard_generation_model', option.value)}
             />
             <HintText>Model yang digunakan untuk generate flashcard dari context</HintText>

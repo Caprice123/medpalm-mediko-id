@@ -31,7 +31,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result
     })
   }
@@ -48,7 +47,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result
     })
   }
@@ -69,7 +67,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result
     })
   }
@@ -90,7 +87,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result
     })
   }
@@ -111,7 +107,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result
     })
   }
@@ -127,7 +122,6 @@ class McqController {
     const constants = await GetMcqConstantsService.call({ keys: keysArray })
 
     return res.status(200).json({
-      success: true,
       data: constants
     })
   }

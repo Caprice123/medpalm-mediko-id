@@ -82,7 +82,6 @@ export const handleXenditInvoiceWebhook = async (req, res) => {
 
     // Always return 200 to acknowledge receipt
     res.status(200).json({
-      success: true,
       message: 'Webhook processed'
     })
   } catch (error) {
@@ -217,7 +216,6 @@ export const handleXenditVAWebhook = async (req, res) => {
 
     // Return 200 to acknowledge receipt
     res.status(200).json({
-      success: true,
       message: 'VA webhook processed'
     })
   } catch (error) {

@@ -1,6 +1,6 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
+import { BaseService } from "#services/baseService"
 import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateExerciseTopicService extends BaseService {

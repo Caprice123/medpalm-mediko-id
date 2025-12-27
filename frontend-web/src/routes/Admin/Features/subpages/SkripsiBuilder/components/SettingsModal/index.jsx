@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import Dropdown from '@components/common/Dropdown'
-import { aiModels } from '@config/aiModels'
+import ModelDropdown from '@components/common/ModelDropdown'
+import { aiModelsGrouped, getModelLabel } from '@config/aiModels'
 import {
   Overlay,
   Modal,
@@ -140,12 +141,8 @@ function SettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model AI</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.skripsi_ai_researcher_model,
-                      label: aiModels.gemini[form.values.skripsi_ai_researcher_model] || 'Gemini 2.0 Flash Exp'
-                    }}
+                  <ModelDropdown
+                    value={form.values.skripsi_ai_researcher_model}
                     onChange={(option) => form.setFieldValue('skripsi_ai_researcher_model', option.value)}
                   />
                 </FormGroup>
@@ -209,12 +206,8 @@ function SettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model AI</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.skripsi_paraphraser_model,
-                      label: aiModels.gemini[form.values.skripsi_paraphraser_model] || 'Gemini 2.0 Flash Exp'
-                    }}
+                  <ModelDropdown
+                    value={form.values.skripsi_paraphraser_model}
                     onChange={(option) => form.setFieldValue('skripsi_paraphraser_model', option.value)}
                   />
                 </FormGroup>
@@ -280,12 +273,8 @@ function SettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model AI</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.skripsi_diagram_builder_model,
-                      label: aiModels.gemini[form.values.skripsi_diagram_builder_model] || 'Gemini 2.0 Flash Exp'
-                    }}
+                  <ModelDropdown
+                    value={form.values.skripsi_diagram_builder_model}
                     onChange={(option) => form.setFieldValue('skripsi_diagram_builder_model', option.value)}
                   />
                 </FormGroup>

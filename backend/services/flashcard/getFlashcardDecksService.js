@@ -70,28 +70,8 @@ export class GetFlashcardDecksService extends BaseService {
             }
         })
 
-        // Transform the response to match frontend expectations
-        const transformedDecks = decks.map(deck => ({
-            id: deck.id,
-            title: deck.title,
-            description: deck.description,
-            content_type: deck.content_type,
-            status: deck.status,
-            tags: deck.flashcard_deck_tags.map(t => ({
-                id: t.tags.id,
-                name: t.tags.name,
-                tag_group: {
-                    id: t.tags.tag_group?.id,
-                    name: t.tags.tag_group?.name
-                }
-            })),
-            cardCount: deck.flashcard_cards.length,
-            createdAt: deck.created_at,
-            updatedAt: deck.updated_at,
-        }))
-
         return {
-            decks: transformedDecks,
+            decks: decks,
             pagination: {
                 page,
                 perPage,

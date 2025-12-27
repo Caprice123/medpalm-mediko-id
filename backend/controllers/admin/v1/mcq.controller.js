@@ -29,7 +29,6 @@ class McqController {
     )
 
     return res.status(200).json({
-      success: true,
       data: {
         image_url: await idriveService.getSignedUrl(uploadResult.key),
         image_key: uploadResult.key,
@@ -73,7 +72,6 @@ class McqController {
     })
 
     return res.status(201).json({
-      success: true,
       data: topic,
       message: 'MCQ topic created successfully'
     })
@@ -98,7 +96,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.topics,
       pagination: result.pagination
     })
@@ -114,7 +111,6 @@ class McqController {
     const topic = await GetMcqTopicDetailService.call({ id: parseInt(id) })
 
     return res.status(200).json({
-      success: true,
       data: topic
     })
   }
@@ -157,7 +153,6 @@ class McqController {
     })
 
     return res.status(200).json({
-      success: true,
       data: topic,
       message: 'MCQ topic updated successfully'
     })
@@ -173,7 +168,6 @@ class McqController {
     await DeleteMcqTopicService.call({ id: parseInt(id) })
 
     return res.status(200).json({
-      success: true,
       message: 'MCQ topic deleted successfully'
     })
   }
@@ -189,7 +183,6 @@ class McqController {
     const constants = await GetMcqConstantsService.call({ keys: keysArray })
 
     return res.status(200).json({
-      success: true,
       data: constants
     })
   }
@@ -204,7 +197,6 @@ class McqController {
     await UpdateMcqConstantsService.call({ constants })
 
     return res.status(200).json({
-      success: true,
       message: 'Constants updated successfully'
     })
   }
@@ -246,7 +238,6 @@ class McqController {
     }
 
     return res.status(200).json({
-      success: true,
       data: questions,
       message: 'MCQ questions generated successfully'
     })

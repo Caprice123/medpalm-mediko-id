@@ -13,3 +13,26 @@ export const aiModels = {
         "sonar-deep-research": "Sonar Deep Research",
     }
 }
+
+// Grouped AI Models by Provider (for react-select optgroup)
+export const aiModelsGrouped = [
+    {
+        label: 'GEMINI',
+        options: Object.entries(aiModels.gemini).map(([value, label]) => ({
+            value,
+            label
+        }))
+    },
+    {
+        label: 'PERPLEXITY',
+        options: Object.entries(aiModels.perplexity).map(([value, label]) => ({
+            value,
+            label
+        }))
+    }
+]
+
+// Helper to get model label from value
+export const getModelLabel = (value) => {
+    return aiModels.gemini[value] || aiModels.perplexity[value] || value
+}

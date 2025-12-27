@@ -10,7 +10,6 @@ export const getConstants = async (req, res) => {
     const result = await getSkripsiConstantsService()
 
     res.status(200).json({
-      success: true,
       message: 'Constants retrieved successfully',
       data: result.constants,
       raw: result.raw
@@ -45,7 +44,6 @@ export const updateConstant = async (req, res) => {
     const constant = await updateSkripsiConstantService(key, value)
 
     res.status(200).json({
-      success: true,
       message: 'Constant updated successfully',
       data: constant
     })
@@ -91,7 +89,6 @@ export const updateMultipleConstants = async (req, res) => {
     }
 
     res.status(200).json({
-      success: true,
       message: 'Constants updated successfully',
       data: results
     })
@@ -117,7 +114,6 @@ export const getSets = async (req, res) => {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -137,7 +133,6 @@ export const getSet = async (req, res) => {
     const set = await getAdminSkripsiSetService(parseInt(id))
 
     res.status(200).json({
-      success: true,
       data: set
     })
   } catch (error) {
@@ -156,7 +151,6 @@ export const getSetTabs = async (req, res) => {
     const tabs = await getAdminSkripsiSetTabsService(parseInt(id))
 
     res.status(200).json({
-      success: true,
       data: tabs
     })
   } catch (error) {
@@ -175,7 +169,6 @@ export const deleteSet = async (req, res) => {
     await deleteAdminSkripsiSetService(parseInt(id))
 
     res.status(200).json({
-      success: true,
       message: 'Skripsi set deleted successfully'
     })
   } catch (error) {

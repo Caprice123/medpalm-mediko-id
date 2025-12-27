@@ -26,7 +26,6 @@ export const getUserCreditBalance = async (req, res) => {
     }
 
     res.status(200).json({
-      success: true,
       data: {
         balance: userCredit.balance,
         userId: userCredit.userId
@@ -73,7 +72,6 @@ export const getUserCreditTransactions = async (req, res) => {
     ])
 
     res.status(200).json({
-      success: true,
       data: {
         transactions,
         pagination: {
@@ -382,7 +380,6 @@ export const deductCredits = async (req, res) => {
     ])
 
     res.status(200).json({
-      success: true,
       message: 'Credits deducted successfully',
       data: {
         transaction,
@@ -447,7 +444,6 @@ export const addBonusCredits = async (req, res) => {
     ])
 
     res.status(200).json({
-      success: true,
       message: 'Bonus credits added successfully',
       data: {
         transaction,
@@ -493,7 +489,6 @@ export const getAllCreditTransactions = async (req, res) => {
     ])
 
     res.status(200).json({
-      success: true,
       data: {
         transactions,
         pagination: {

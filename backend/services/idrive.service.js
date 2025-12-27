@@ -165,6 +165,75 @@ class IDriveService {
   }
 
   /**
+   * Download a file from iDrive e2 to local temporary path
+   * @param {string} key - File key in bucket
+   * @param {string} localPath - Local path to save the file (optional)
+   * @returns {Promise<string>} Path to downloaded file
+   */
+  async downloadFile(key, localPath = null) {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+
+      const response = await this.client.send(command);
+
+      // Convert stream to buffer
+      const chunks = [];
+      for await (const chunk of response.Body) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+
+      // Determine local path
+      const downloadPath = localPath || path.join('uploads', `temp-${Date.now()}${path.extname(key)}`);
+
+      // Ensure directory exists
+      const dir = path.dirname(downloadPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      // Write to file
+      fs.writeFileSync(downloadPath, buffer);
+
+      return downloadPath;
+    } catch (error) {
+      console.error('Error downloading file from iDrive e2:', error);
+      throw new Error('Failed to download file from cloud storage: ' + error.message);
+    }
+  }
+
+  /**
+   * Download a file from iDrive e2 as buffer (in-memory, no disk write)
+   * @param {string} key - File key in bucket
+   * @returns {Promise<Buffer>} File buffer
+   */
+  async downloadFileAsBuffer(key) {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+
+      const response = await this.client.send(command);
+
+      // Convert stream to buffer
+      const chunks = [];
+      for await (const chunk of response.Body) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+
+      return buffer;
+    } catch (error) {
+      console.error('Error downloading file from iDrive e2:', error);
+      throw new Error('Failed to download file from cloud storage: ' + error.message);
+    }
+  }
+
+  /**
    * Delete a file from iDrive e2
    * @param {string} key - File key in bucket
    * @returns {Promise<void>}

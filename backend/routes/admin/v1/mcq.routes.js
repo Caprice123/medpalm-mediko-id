@@ -2,8 +2,6 @@ import express from 'express'
 import mcqController from '#controllers/admin/v1/mcq.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
-import { uploadImage } from '#middlewares/uploadImage'
-import { uploadPDF } from '#middlewares/uploadPDF'
 
 const router = express.Router()
 
@@ -18,14 +16,12 @@ router.put('/constants', asyncHandler(mcqController.updateConstants.bind(mcqCont
 // Upload question image
 router.post(
   '/upload-question-image',
-  uploadImage,
   asyncHandler(mcqController.uploadQuestionImage.bind(mcqController))
 )
 
 // Generate MCQ questions from text or PDF
 router.post(
   '/generate',
-  uploadPDF,
   asyncHandler(mcqController.generate.bind(mcqController))
 )
 

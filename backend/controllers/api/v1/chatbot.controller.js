@@ -6,7 +6,6 @@ class ChatbotController {
     const config = await GetChatbotConfigService.call()
 
     return res.status(200).json({
-      success: true,
       data: config
     })
   }

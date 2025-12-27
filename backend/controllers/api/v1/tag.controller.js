@@ -14,7 +14,6 @@ class TagController {
     const tags = await GetTagsService.call({ type })
 
     return res.status(200).json({
-      success: true,
       data: tags
     })
   }
@@ -29,7 +28,6 @@ class TagController {
     const tag = await CreateTagService.call({ name, type })
 
     return res.status(201).json({
-      success: true,
       data: tag
     })
   }
@@ -45,7 +43,6 @@ class TagController {
     const tag = await UpdateTagService.call(id, { name, type })
 
     return res.status(200).json({
-      success: true,
       data: tag
     })
   }
@@ -60,7 +57,6 @@ class TagController {
     await DeleteTagService.call(id)
 
     return res.status(200).json({
-      success: true,
       message: 'Tag deleted successfully'
     })
   }

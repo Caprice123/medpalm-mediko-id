@@ -53,6 +53,9 @@ export class GetUserStatusService extends BaseService {
  */
 export class HasActiveSubscriptionService extends BaseService {
   static async call(userId) {
+    if (process.env.NODE_ENV == "development") {
+        return true
+    }
     const subscription = await prisma.user_subscriptions.findFirst({
       where: {
         user_id: userId,

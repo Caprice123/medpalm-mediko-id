@@ -9,7 +9,6 @@ class PricingPlanController {
     const result = await GetListPricingPlansService.call(req)
 
     res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })

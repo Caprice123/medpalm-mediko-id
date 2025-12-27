@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Dropdown from '@components/common/Dropdown'
+import ModelDropdown from '@components/common/ModelDropdown'
 import {
   Overlay,
   Modal,
@@ -25,7 +26,7 @@ import {
   Divider
 } from './ChatbotSettingsModal.styles'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
-import { aiModels } from '../../../../../../../config/aiModels'
+import { aiModelsGrouped, getModelLabel } from '@config/aiModels'
 
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
@@ -129,12 +130,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model AI</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.chatbot_normal_model || 'gemini-2.5-flash',
-                      label: aiModels.gemini[form.values.chatbot_normal_model] || 'Gemini 2.5 Flash'
-                    }}
+                  <ModelDropdown
+                    value={form.values.chatbot_normal_model || 'gemini-2.5-flash'}
                     onChange={(option) => form.setFieldValue('chatbot_normal_model', option.value)}
                   />
                 </FormGroup>
@@ -203,12 +200,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model AI</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.gemini).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.chatbot_validated_model || 'gemini-2.5-flash',
-                      label: aiModels.gemini[form.values.chatbot_validated_model] || 'Gemini 2.5 Flash'
-                    }}
+                  <ModelDropdown
+                    value={form.values.chatbot_validated_model || 'gemini-2.5-flash'}
                     onChange={(option) => form.setFieldValue('chatbot_validated_model', option.value)}
                   />
                 </FormGroup>
@@ -304,12 +297,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
 
                 <FormGroup>
                   <Label>Model Perplexity</Label>
-                  <Dropdown
-                    options={Object.entries(aiModels.perplexity).map(([value, label]) => ({ value, label }))}
-                    value={{
-                      value: form.values.chatbot_research_model || 'sonar',
-                      label: aiModels.perplexity[form.values.chatbot_research_model] || 'Sonar'
-                    }}
+                  <ModelDropdown
+                    value={form.values.chatbot_research_model || 'sonar'}
                     onChange={(option) => form.setFieldValue('chatbot_research_model', option.value)}
                   />
                 </FormGroup>

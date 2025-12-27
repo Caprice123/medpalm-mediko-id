@@ -1,16 +1,17 @@
 import { GetFlashcardDecksService } from '#services/flashcard/getFlashcardDecksService'
 import { StartFlashcardDeckService } from '#services/flashcard/startFlashcardDeckService'
 import { SubmitFlashcardProgressService } from '#services/flashcard/submitFlashcardProgressService'
+import { FlashcardDeckListSerializer } from '#serializers/admin/v1/flashcardDeckListSerializer'
 
 class FlashcardController {
   async getDecks(req, res) {
     const { university, semester, page, perPage } = req.query
 
-    const decks = await GetFlashcardDecksService.call({ university, semester, status: "published", page, perPage })
+    const result = await GetFlashcardDecksService.call({ university, semester, status: "published", page, perPage })
 
     return res.status(200).json({
-      success: true,
-      data: decks
+      data: FlashcardDeckListSerializer.serialize(result.decks),
+      pagination: result.pagination
     })
   }
 
@@ -24,9 +25,7 @@ class FlashcardController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
-      message: 'Flashcard deck started successfully'
     })
   }
 
@@ -41,9 +40,7 @@ class FlashcardController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
-      message: 'Flashcard progress submitted successfully'
     })
   }
 }

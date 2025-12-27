@@ -21,7 +21,6 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -34,7 +33,6 @@ class SummaryNotesAdminController {
     const summaryNote = await GetSummaryNoteDetailService.call({ id })
 
     return res.status(200).json({
-      success: true,
       data: summaryNote
     })
   }
@@ -58,7 +56,6 @@ class SummaryNotesAdminController {
     })
 
     return res.status(201).json({
-      success: true,
       data: summaryNote,
       message: 'Summary note created successfully'
     })
@@ -84,7 +81,6 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: summaryNote,
       message: 'Summary note updated successfully'
     })
@@ -97,7 +93,6 @@ class SummaryNotesAdminController {
     await DeleteSummaryNoteService.call({ id })
 
     return res.status(200).json({
-      success: true,
       message: 'Summary note deleted successfully'
     })
   }
@@ -118,7 +113,6 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Summary generated successfully'
     })
@@ -134,7 +128,6 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result.data,
       pagination: result.pagination
     })
@@ -147,7 +140,6 @@ class SummaryNotesAdminController {
     const embedding = await GetEmbeddingsService.getById(id)
 
     return res.status(200).json({
-      success: true,
       data: embedding
     })
   }

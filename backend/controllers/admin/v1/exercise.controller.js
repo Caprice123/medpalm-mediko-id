@@ -55,7 +55,6 @@ class ExerciseController {
     }
 
     return res.status(200).json({
-      success: true,
       data: responseData
     })
   }
@@ -89,7 +88,6 @@ class ExerciseController {
     })
 
     return res.status(201).json({
-      success: true,
       data: ExerciseTopicSerializer.serialize(topic),
       message: 'Topic created successfully'
     })
@@ -105,7 +103,6 @@ class ExerciseController {
     const topics = await GetExerciseTopicsService.call({ university, semester })
 
     return res.status(200).json({
-      success: true,
       data: topics
     })
   }
@@ -120,7 +117,6 @@ class ExerciseController {
     const topic = await GetExerciseTopicDetailService.call(id)
 
     return res.status(200).json({
-      success: true,
       data: ExerciseTopicSerializer.serialize(topic)
     })
   }
@@ -132,7 +128,6 @@ class ExerciseController {
     const updatedTopic = await UpdateExerciseQuestionsService.call(id, questions)
 
     return res.status(200).json({
-      success: true,
       data: ExerciseTopicSerializer.serialize(updatedTopic)
     })
   }

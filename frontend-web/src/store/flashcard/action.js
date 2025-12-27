@@ -30,12 +30,13 @@ export const fetchFlashcardDecks = () => async (dispatch, getState) => {
     const route = Endpoints.api.flashcards
     const response = await getWithToken(route, queryParams)
 
-    // Backend returns { data: { decks: [...], pagination: {...} } }
-    const responseData = response.data.data || response.data
+    const decks = response.data.data || []
+    const paginationData = response.data.pagination
 
-    // New paginated response
-    dispatch(setDecks(responseData.decks))
-    dispatch(updatePagination(responseData.pagination))
+    dispatch(setDecks(decks))
+    if (paginationData) {
+      dispatch(updatePagination(paginationData))
+    }
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

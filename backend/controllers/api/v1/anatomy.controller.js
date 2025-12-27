@@ -34,7 +34,6 @@ class AnatomyController {
     // For now, return the quiz
 
     return res.status(200).json({
-      success: true,
       data: quiz
     })
   }
@@ -86,7 +85,6 @@ class AnatomyController {
     // TODO: Save attempt to database for tracking
 
     return res.status(200).json({
-      success: true,
       data: {
         score,
         correctAnswers,

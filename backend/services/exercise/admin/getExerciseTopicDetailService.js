@@ -1,6 +1,6 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
+import { BaseService } from "#services/baseService"
 import IDriveService from '#services/idrive.service'
 
 export class GetExerciseTopicDetailService extends BaseService {

@@ -129,6 +129,18 @@ const Dropdown = memo(function Dropdown({
         backgroundColor: 'rgba(107, 185, 232, 0.15)',
       },
     }),
+    groupHeading: (provided) => ({
+      ...provided,
+      fontSize: '0.75rem',
+      fontWeight: '700',
+      color: '#6b7280',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      padding: '0.5rem 0.875rem',
+      marginTop: '0.25rem',
+      marginBottom: '0.25rem',
+      backgroundColor: '#f9fafb',
+    }),
   }
 
   return (

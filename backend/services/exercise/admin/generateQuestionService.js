@@ -1,7 +1,6 @@
 import { ValidationError } from '#errors/validationError'
-import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
-import geminiService from "../../gemini.service.js"
+import { BaseService } from "#services/baseService"
+import { GeminiService } from "#services/ai/gemini.service"
 import fs from 'fs'
 
 export class GenerateQuestionService extends BaseService {
@@ -12,9 +11,9 @@ export class GenerateQuestionService extends BaseService {
             // Generate questions using Gemini
             let questions
             if (type === 'text') {
-                questions = await geminiService.generateQuestionsFromText(content, questionCount)
+                questions = await GeminiService.generateQuestionsFromText(content, questionCount)
             } else if (type === 'pdf') {
-                questions = await geminiService.generateQuestionsFromPDF(pdfFilePath, questionCount)
+                questions = await GeminiService.generateQuestionsFromPDF(pdfFilePath, questionCount)
             }
 
             return questions

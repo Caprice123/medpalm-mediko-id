@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Dropdown from '@components/common/Dropdown'
+import ModelDropdown from '@components/common/ModelDropdown'
 import {
   Overlay,
   Modal,
@@ -109,18 +110,8 @@ function McqSettingsModal({ onClose }) {
 
               <FormGroup>
                 <Label>Model AI untuk Generasi Soal</Label>
-                <Dropdown
-                  options={[
-                    { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
-                    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
-                    { value: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash Experimental' }
-                  ]}
-                  value={{
-                    value: form.values.mcq_generation_model,
-                    label: form.values.mcq_generation_model === 'gemini-1.5-flash' ? 'Gemini 1.5 Flash' :
-                           form.values.mcq_generation_model === 'gemini-1.5-pro' ? 'Gemini 1.5 Pro' :
-                           'Gemini 2.0 Flash Experimental'
-                  }}
+                <ModelDropdown
+                  value={form.values.mcq_generation_model}
                   onChange={(option) => form.setFieldValue('mcq_generation_model', option.value)}
                 />
                 <HintText>Model AI yang digunakan untuk generate soal dari dokumen</HintText>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { generateFlashcards, generateFlashcardsFromPDF } from '@store/flashcard/adminAction'
+import { postWithToken } from '@utils/requestUtils'
+import Endpoints from '@config/endpoint'
 
 export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 'document', initialTextContent = '') => {
   const dispatch = useDispatch()
@@ -10,6 +12,8 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
   const [textContent, setTextContent] = useState(initialTextContent)
   const [pdfFile, setPdfFile] = useState(null)
   const [cardCount, setCardCount] = useState(10)
+  const [uploadedBlobId, setUploadedBlobId] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   // Update state when initial values change (when deck detail is loaded)
   useEffect(() => {
@@ -20,22 +24,42 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
     setTextContent(initialTextContent)
   }, [initialTextContent])
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0]
-    if (file) {
-      if (file.type === 'application/pdf') {
-        setPdfFile(file)
-      } else {
-        alert('Please select a PDF file')
+    if (file && file.type === 'application/pdf') {
+      setPdfFile(file)
+
+      // Immediately upload to get blobId
+      try {
+        setIsUploading(true)
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', file)
+        uploadFormData.append('type', 'flashcard')
+
+        const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
+        const blobId = uploadResponse.data.data.blobId
+
+        setUploadedBlobId(blobId)
+        if (setPdfInfo) {
+          setPdfInfo({ blobId })
+        }
+      } catch (error) {
+        console.error('Failed to upload PDF:', error)
+        alert('Failed to upload PDF. Please try again.')
+        setPdfFile(null)
+      } finally {
+        setIsUploading(false)
       }
+    } else if (file) {
+      alert('Please select a PDF file')
     }
   }
 
   const handleGenerate = async () => {
     try {
-      if (contentType === 'document' && pdfFile) {
-        // Generate from PDF
-        const result = await dispatch(generateFlashcardsFromPDF(pdfFile, cardCount))
+      if (contentType === 'document' && pdfFile && uploadedBlobId) {
+        // Generate from PDF using blobId
+        const result = await dispatch(generateFlashcardsFromPDF(pdfFile, cardCount, uploadedBlobId))
 
         // Update main form with generated cards
         const cardsWithTempIds = result.cards.map((card, index) => ({
@@ -45,14 +69,7 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
         }))
         mainForm.setFieldValue('cards', cardsWithTempIds)
 
-        // Store blob ID
-        if (setPdfInfo) {
-          setPdfInfo({
-            blobId: result.blobId
-          })
-        }
-
-        // Keep the file for potential re-generation
+        // blobId is already stored from upload
       } else if (contentType === 'text' && textContent.trim()) {
         // Generate from text
         const cards = await dispatch(generateFlashcards(textContent, 'text', cardCount))
@@ -64,8 +81,6 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
           order: index
         }))
         mainForm.setFieldValue('cards', cardsWithTempIds)
-
-        // Keep the text for potential re-generation
       }
     } catch (error) {
       console.error('Failed to generate flashcards:', error)
@@ -73,7 +88,7 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
   }
 
   const canGenerate = contentType === 'document'
-    ? pdfFile !== null
+    ? (pdfFile !== null && uploadedBlobId !== null && !isUploading)
     : textContent.trim().length > 0
 
   return {
@@ -88,6 +103,6 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating: loading.isGeneratingCards
+    isGenerating: loading.isGeneratingCards || isUploading
   }
 }

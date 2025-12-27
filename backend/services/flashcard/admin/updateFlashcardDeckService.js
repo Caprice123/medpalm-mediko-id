@@ -1,7 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
-import blobService from "../../attachment/blobService.js"
+import { BaseService } from "#services/baseService"
+import blobService from "#services/attachment/blobService"
 
 export class UpdateFlashcardDeckService extends BaseService {
     static async call(deckId, { title, description, status, tags, cards, blobId }) {

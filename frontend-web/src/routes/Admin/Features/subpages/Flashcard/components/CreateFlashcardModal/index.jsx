@@ -300,6 +300,15 @@ const CreateFlashcardModal = ({ onClose }) => {
                     Siap untuk di-generate menjadi flashcard
                   </div>
                 </div>
+                <RemoveFileButton
+                  onClick={() => {
+                    const url = URL.createObjectURL(pdfFile)
+                    window.open(url, '_blank')
+                  }}
+                  style={{ marginRight: '0.5rem', backgroundColor: '#3b82f6', color: 'white' }}
+                >
+                  Lihat
+                </RemoveFileButton>
                 <RemoveFileButton onClick={() => setPdfFile(null)}>
                   Hapus
                 </RemoveFileButton>

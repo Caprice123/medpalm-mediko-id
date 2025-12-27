@@ -3,7 +3,6 @@ import exerciseController from '#controllers/admin/v1/exercise.controller'
 import constantRoutes from './constant.routes.js'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
-import { uploadPDF } from '#middlewares/uploadPDF'
 
 const router = express.Router()
 
@@ -16,7 +15,7 @@ router.use('/constants', constantRoutes)
 
 // Generate questions using Gemini (without saving)
 router.post('/generate', asyncHandler(exerciseController.generateQuestions.bind(exerciseController)))
-router.post('/generate-from-pdf', uploadPDF, asyncHandler(exerciseController.generateQuestionsFromPDF.bind(exerciseController)))
+router.post('/generate-from-pdf', asyncHandler(exerciseController.generateQuestionsFromPDF.bind(exerciseController)))
 
 // Topic CRUD
 router.post('/topics', asyncHandler(exerciseController.create.bind(exerciseController)))

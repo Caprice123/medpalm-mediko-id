@@ -49,7 +49,6 @@ class AnatomyController {
     })
 
     return res.status(201).json({
-      success: true,
       data: AnatomyQuizSerializer.serialize(quiz),
       message: 'Anatomy quiz created successfully'
     })
@@ -148,7 +147,6 @@ class AnatomyController {
     })
 
     return res.status(200).json({
-      success: true,
       data: {
         questions: AnatomyQuestionSerializer.serialize(questions),
         blobId: blob.id

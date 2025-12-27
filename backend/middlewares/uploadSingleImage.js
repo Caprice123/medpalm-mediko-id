@@ -20,13 +20,13 @@ const storage = multer.diskStorage({
   }
 });
 
-// File filter to accept only images
+// File filter to accept images and PDFs
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'), false);
+    cb(new Error('Only image files (JPEG, PNG, GIF, WebP) and PDF files are allowed'), false);
   }
 };
 
@@ -35,7 +35,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit per image
+    fileSize: 20 * 1024 * 1024 // 20MB limit for images and PDFs
   }
 });
 
@@ -50,7 +50,7 @@ export const uploadSingleImage = (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'No image file provided'
+        message: 'No file provided'
       });
     }
     next();

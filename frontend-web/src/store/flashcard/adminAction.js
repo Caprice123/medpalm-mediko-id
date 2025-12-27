@@ -25,11 +25,12 @@ export const fetchAdminFlashcardDecks = () => async (dispatch, getState) => {
     const route = Endpoints.admin.flashcards
     const response = await getWithToken(route, queryParams)
 
-    const responseData = response.data.data || response.data
+    const decks = response.data.data || []
+    const paginationData = response.data.pagination
 
-    dispatch(setDecks(responseData.decks || []))
-    if (responseData.pagination) {
-      dispatch(updatePagination(responseData.pagination))
+    dispatch(setDecks(decks))
+    if (paginationData) {
+      dispatch(updatePagination(paginationData))
     }
   } catch (err) {
     handleApiError(err, dispatch)
@@ -82,28 +83,20 @@ export const generateFlashcards = (content, type, cardCount = 10) => async (disp
 
 /**
  * Generate flashcards from PDF using Gemini (admin only)
- * Now uses centralized upload endpoint first
+ * Only sends blobId - backend retrieves file from blob storage
  */
-export const generateFlashcardsFromPDF = (pdfFile, cardCount = 10) => async (dispatch) => {
+export const generateFlashcardsFromPDF = (pdfFile, cardCount = 10, blobId) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isGeneratingCards', value: true }))
 
-    // Step 1: Upload PDF to centralized endpoint to get blobId
-    const uploadFormData = new FormData()
-    uploadFormData.append('image', pdfFile)
-    uploadFormData.append('type', 'flashcard')
-
-    const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
-    const blobId = uploadResponse.data.data.blobId
-
-    // Step 2: Generate flashcards from PDF
-    const generateFormData = new FormData()
-    generateFormData.append('pdf', pdfFile)
-    generateFormData.append('cardCount', cardCount)
-    generateFormData.append('blobId', blobId)
+    // Generate flashcards using only blobId (no file upload)
+    const requestBody = {
+      cardCount,
+      blobId
+    }
 
     const route = Endpoints.admin.flashcards + `/generate-from-pdf`
-    const response = await postWithToken(route, generateFormData)
+    const response = await postWithToken(route, requestBody)
 
     const data = response.data.data || {}
     const cards = data.cards || []
@@ -187,19 +180,28 @@ export const deleteFlashcardDeck = (deckId) => async (dispatch) => {
 
 /**
  * Upload card image (admin only)
- * Returns the uploaded image URL
+ * Uses centralized upload endpoint
+ * Returns the uploaded image data with blobId
  */
 export const uploadCardImage = (imageFile) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUploadingImage', value: true }))
 
     const formData = new FormData()
-    formData.append('image', imageFile)
+    formData.append('file', imageFile) // Changed from 'image' to 'file'
+    formData.append('type', 'flashcard_card') // Specify type for blob categorization
 
-    const route = Endpoints.admin.flashcards + '/upload-image'
+    const route = Endpoints.api.uploadImage // Use centralized upload endpoint
     const response = await postWithToken(route, formData)
 
-    return response.data.data // { url, key, fileName }
+    const data = response.data.data
+    return {
+      url: data.url, // Presigned URL for preview
+      key: data.key, // Blob key for backend reference
+      filename: data.filename,
+      contentType: data.contentType,
+      byteSize: data.byteSize
+    }
   } catch (err) {
     handleApiError(err, dispatch)
     throw err

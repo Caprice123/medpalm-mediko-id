@@ -1,7 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
-import { BaseService } from "../../baseService.js"
-import idriveService from "../../idrive.service.js"
+import { BaseService } from "#services/baseService"
+import idriveService from "#services/idrive.service"
 
 export class GetFlashcardDeckDetailService extends BaseService {
     static async call(deckId) {

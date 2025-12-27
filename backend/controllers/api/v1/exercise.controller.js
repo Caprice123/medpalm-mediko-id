@@ -11,7 +11,6 @@ class ExerciseController {
     const topics = await GetExerciseTopicsService.call({ university, semester })
 
     return res.status(200).json({
-      success: true,
       data: topics
     })
   }
@@ -27,7 +26,6 @@ class ExerciseController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Exercise topic started successfully'
     })
@@ -44,7 +42,6 @@ class ExerciseController {
     })
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Exercise progress submitted successfully'
     })

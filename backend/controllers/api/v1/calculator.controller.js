@@ -28,7 +28,6 @@ class CalculatorController {
     }))
 
     return res.status(200).json({
-      success: true,
       data: {
         topics: publicTopics,
         pagination: result.pagination
@@ -79,7 +78,6 @@ class CalculatorController {
     }
 
     return res.status(200).json({
-      success: true,
       data: topic,
       message: 'Calculator topic detail retrieved successfully'
     })
@@ -96,7 +94,6 @@ class CalculatorController {
     const result = await CalculateResultService.call(topicId, inputs)
 
     return res.status(200).json({
-      success: true,
       data: result,
       message: 'Calculation completed successfully'
     })

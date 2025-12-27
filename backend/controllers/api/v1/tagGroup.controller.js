@@ -9,7 +9,6 @@ class TagGroupController {
     const tagGroups = await GetTagGroupsService.call()
 
     return res.status(200).json({
-      success: true,
       data: tagGroups
     })
   }

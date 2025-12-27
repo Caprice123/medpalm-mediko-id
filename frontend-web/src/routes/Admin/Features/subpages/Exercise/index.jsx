@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useExerciseSection } from './hooks/useExerciseSection'
-import { fetchExerciseTopic, fetchAdminExerciseTopics } from '@store/exercise/action'
-import TopicModal from './components/TopicModal'
+import { fetchExerciseTopic, fetchAdminExerciseTopics } from '@store/exercise/adminAction'
+import CreateTopicModal from './components/CreateTopicModal'
+import UpdateTopicModal from './components/UpdateTopicModal'
 import ExerciseSettingsModal from './components/ExerciseSettingsModal'
 import ExerciseList from './components/ExerciseList'
 import { Filter } from './components/Filter'
@@ -40,8 +41,8 @@ function LatihanSoal({ onBack }) {
     }
   }
 
-  const handleTopicSubmit = async () => {
-    await dispatch(fetchAdminExerciseTopics(filters))
+  const handleTopicClose = () => {
+    dispatch(fetchAdminExerciseTopics())
     setUiState({
       ...uiState,
       isTopicModalOpen: false,
@@ -94,23 +95,21 @@ function LatihanSoal({ onBack }) {
         })}
       />
 
-      {uiState.isTopicModalOpen && (
-        <TopicModal
-          isOpen={uiState.isTopicModalOpen}
-          onClose={() => setUiState({
-            ...uiState,
-            isTopicModalOpen: false,
-            mode: null,
-            selectedTopic: null
-          })}
-          onSuccess={handleTopicSubmit}
+      {uiState.isTopicModalOpen && uiState.mode === "create" && (
+        <CreateTopicModal
+          onClose={handleTopicClose}
+        />
+      )}
+
+      {uiState.isTopicModalOpen && uiState.mode === "update" && (
+        <UpdateTopicModal
           topicToEdit={uiState.selectedTopic}
+          onClose={handleTopicClose}
         />
       )}
 
       {uiState.isFeatureSettingOpen && (
         <ExerciseSettingsModal
-          isOpen={uiState.isFeatureSettingOpen}
           onClose={() => setUiState({ ...uiState, isFeatureSettingOpen: false })}
         />
       )}

@@ -64,7 +64,6 @@ class AuthController {
     await authService.logout(token);
 
     return res.status(200).json({
-      success: true,
       message: 'Logout successful'
     });
   }
