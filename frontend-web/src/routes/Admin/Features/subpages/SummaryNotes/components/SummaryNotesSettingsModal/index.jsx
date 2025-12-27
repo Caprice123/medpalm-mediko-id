@@ -109,7 +109,6 @@ function SummaryNotesSettingsModal({ isOpen, onClose }) {
               )}
 
               <FormGroup>
-                <Label>Model Generasi</Label>
                 <ModelDropdown
                   value={form.values.summary_notes_generation_model}
                   onChange={(option) => form.setFieldValue('summary_notes_generation_model', option.value)}

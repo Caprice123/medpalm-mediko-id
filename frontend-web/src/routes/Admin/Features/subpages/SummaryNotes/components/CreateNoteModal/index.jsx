@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 import {
   FormSection,
   Label,
@@ -35,6 +36,7 @@ const CreateNoteModal = ({ onClose }) => {
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,
+    handleImageUpload,
     uploadedFile
   } = useCreateNote(onClose)
 
@@ -65,19 +67,20 @@ const CreateNoteModal = ({ onClose }) => {
     form.setFieldValue('content', blocks)
   }
 
-  const getFileIcon = (type) => {
-    if (!type) return '📄'
-    if (type.includes('pdf')) return '📕'
-    if (type.includes('presentation') || type.includes('powerpoint')) return '📊'
-    if (type.includes('document') || type.includes('word')) return '📘'
-    return '📄'
+  // Debug logging
+  console.log('CreateNoteModal - uploadedFile:', uploadedFile)
+  if (uploadedFile) {
+    console.log('uploadedFile.name:', uploadedFile.name)
+    console.log('uploadedFile.type:', uploadedFile.type)
+    console.log('uploadedFile.size:', uploadedFile.size)
+    console.log('File icon:', getFileIcon(uploadedFile.type))
   }
 
   return (
     <Modal
       isOpen={true}
       onClose={handleModalClose}
-      title="Feature Setting"
+      title="Buat Ringkasan Baru"
       size="large"
       footer={
         <>
@@ -128,7 +131,7 @@ const CreateNoteModal = ({ onClose }) => {
               />
               <UploadIcon>📤</UploadIcon>
               <UploadText>
-                {loading.isGenerating ? 'Uploading...' : 'Klik untuk upload dokumen'}
+                {loading.isUploading ? 'Uploading...' : 'Klik untuk upload dokumen'}
               </UploadText>
               <UploadText style={{ fontSize: '0.85rem', color: '#9ca3af' }}>
                 PDF, PPTX, atau DOCX (max 50MB)
@@ -140,10 +143,21 @@ const CreateNoteModal = ({ onClose }) => {
               <div style={{ flex: 1 }}>
                 <FileName>{uploadedFile.name}</FileName>
                 <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                  Siap untuk di-generate menjadi ringkasan
+                  {formatFileSize(uploadedFile.size)}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {uploadedFile.url && (
+                  <GenerateButton
+                    as="a"
+                    href={uploadedFile.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Lihat
+                  </GenerateButton>
+                )}
                 <GenerateButton
                   onClick={handleGenerate}
                   disabled={loading.isGenerating}
@@ -171,6 +185,7 @@ const CreateNoteModal = ({ onClose }) => {
             onChange={handleContentChange}
             editable={!loading.isCreating}
             placeholder="Tulis konten ringkasan atau generate dari dokumen..."
+            onImageUpload={handleImageUpload}
           />
         </EditorContainer>
         {form.errors.content && <ErrorText>{form.errors.content}</ErrorText>}

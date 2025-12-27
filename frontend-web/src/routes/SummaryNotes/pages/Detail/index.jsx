@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
@@ -25,6 +27,8 @@ const SummaryNotesDetail = () => {
   const [note, setNote] = useState(null)
   const [parsedContent, setParsedContent] = useState(null)
   const [loading, setLoading] = useState(true)
+  const contentRef = useRef(null)
+  const [imageList, setImageList] = useState([])
 
   useEffect(() => {
     const fetchNote = async () => {

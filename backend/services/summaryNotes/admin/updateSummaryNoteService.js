@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import embeddingService from '#services/embedding/embeddingService'
 
 export class UpdateSummaryNoteService extends BaseService {
-  static async call({ id, title, description, content, markdownContent, sourceType, sourceUrl, sourceKey, sourceFilename, status, isActive, tagIds }) {
+  static async call({ id, title, description, content, markdownContent, blobId, status, isActive, tagIds }) {
     // Validate required fields
     if (!id) {
       throw new ValidationError('Summary note ID is required')
@@ -19,6 +19,16 @@ export class UpdateSummaryNoteService extends BaseService {
       throw new ValidationError('Summary note not found')
     }
 
+    // Validate blob exists if provided
+    if (blobId !== undefined && blobId !== null) {
+      const blob = await prisma.blobs.findUnique({
+        where: { id: parseInt(blobId) }
+      })
+      if (!blob) {
+        throw new ValidationError('Invalid blob ID')
+      }
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       // Build update data
       const updateData = {
@@ -29,10 +39,6 @@ export class UpdateSummaryNoteService extends BaseService {
       if (description !== undefined) updateData.description = description
       if (content !== undefined) updateData.content = content
       if (markdownContent !== undefined) updateData.markdown_content = markdownContent
-      if (sourceType !== undefined) updateData.source_type = sourceType
-      if (sourceUrl !== undefined) updateData.source_url = sourceUrl
-      if (sourceKey !== undefined) updateData.source_key = sourceKey
-      if (sourceFilename !== undefined) updateData.source_filename = sourceFilename
       if (status !== undefined) updateData.status = status
       if (isActive !== undefined) updateData.is_active = isActive
 
@@ -56,6 +62,30 @@ export class UpdateSummaryNoteService extends BaseService {
               summary_note_id: summaryNote.id,
               tag_id: tagId
             }))
+          })
+        }
+      }
+
+      // Update source document attachment if blobId provided
+      if (blobId !== undefined) {
+        // Delete existing source document attachment
+        await tx.attachments.deleteMany({
+          where: {
+            recordType: 'summary_note',
+            recordId: parseInt(id),
+            name: 'source_document'
+          }
+        })
+
+        // Create new attachment if blobId is not null
+        if (blobId) {
+          await tx.attachments.create({
+            data: {
+              name: 'source_document',
+              recordType: 'summary_note',
+              recordId: parseInt(id),
+              blobId: parseInt(blobId)
+            }
           })
         }
       }

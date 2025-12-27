@@ -53,7 +53,7 @@ export const EditorWrapper = styled.div`
   background-size: ${props => props.$isStructured ? '24px 24px' : 'auto'};
   background-position: ${props => props.$isStructured ? '-1px -1px' : '0 0'};
   border-radius: 12px;
-  padding: ${props => props.$isStructured ? '2rem' : '0'};
+  padding: ${props => props.$isStructured ? '1rem 0' : '0'};
   min-height: 400px;
 
   /* Structured mode - ensure all BlockNote elements are transparent to show grid */

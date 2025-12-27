@@ -5,6 +5,7 @@ import { GetSummaryNoteDetailService } from '#services/summaryNotes/admin/getSum
 import { DeleteSummaryNoteService } from '#services/summaryNotes/admin/deleteSummaryNoteService'
 import { GenerateSummaryFromDocumentService } from '#services/summaryNotes/admin/generateSummaryFromDocumentService'
 import { GetEmbeddingsService } from '#services/embedding/getEmbeddingsService'
+import { ValidationError } from '#errors/validationError'
 
 class SummaryNotesAdminController {
   // List all summary notes (with pagination)
@@ -39,17 +40,15 @@ class SummaryNotesAdminController {
 
   // Create new summary note
   async create(req, res) {
-    const { title, description, content, sourceType, sourceUrl, sourceKey, sourceFilename, status, tagIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, tagIds } = req.body
     const createdBy = req.user.id
 
     const summaryNote = await CreateSummaryNoteService.call({
       title,
       description,
       content,
-      sourceType,
-      sourceUrl,
-      sourceKey,
-      sourceFilename,
+      markdownContent,
+      blobId,
       status,
       tagIds,
       createdBy
@@ -57,24 +56,21 @@ class SummaryNotesAdminController {
 
     return res.status(201).json({
       data: summaryNote,
-      message: 'Summary note created successfully'
     })
   }
 
   // Update summary note
   async update(req, res) {
     const { id } = req.params
-    const { title, description, content, sourceType, sourceUrl, sourceKey, sourceFilename, status, isActive, tagIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, isActive, tagIds } = req.body
 
     const summaryNote = await UpdateSummaryNoteService.call({
       id,
       title,
       description,
       content,
-      sourceType,
-      sourceUrl,
-      sourceKey,
-      sourceFilename,
+      markdownContent,
+      blobId,
       status,
       isActive,
       tagIds
@@ -82,7 +78,6 @@ class SummaryNotesAdminController {
 
     return res.status(200).json({
       data: summaryNote,
-      message: 'Summary note updated successfully'
     })
   }
 
@@ -93,28 +88,24 @@ class SummaryNotesAdminController {
     await DeleteSummaryNoteService.call({ id })
 
     return res.status(200).json({
-      message: 'Summary note deleted successfully'
+      data: {
+        success: true
+      }
     })
   }
 
-  // Generate summary from uploaded document
+  // Generate summary from uploaded document (using blobId)
   async generateFromDocument(req, res) {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      })
+    const { blobId } = req.body
+
+    if (!blobId) {
+        throw new ValidationError("Blob id dibutuhkan")
     }
 
-    const result = await GenerateSummaryFromDocumentService.call({
-      filePath: req.file.path,
-      mimeType: req.file.mimetype,
-      filename: req.file.originalname
-    })
+    const result = await GenerateSummaryFromDocumentService.call({ blobId })
 
     return res.status(200).json({
       data: result,
-      message: 'Summary generated successfully'
     })
   }
 

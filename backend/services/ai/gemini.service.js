@@ -79,11 +79,7 @@ export class GeminiService extends BaseAiService {
         const response = await result.response;
         const text = response.text();
 
-        // Parse JSON response
-        const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const parsedContent = JSON.parse(cleanedText);
-
-        return parsedContent;
+        return text;
     }
 
     static async buildConversationHistory(conversationHistory, userMessage) {

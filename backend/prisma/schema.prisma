@@ -413,12 +413,6 @@ model summary_notes {
   content          String  @db.Text // BlockNote JSON format
   markdown_content String? @db.Text // Markdown format for testing/export
 
-  // Source document info
-  source_type     String? // 'pdf', 'pptx', 'docx', 'manual'
-  source_url      String?
-  source_key      String?
-  source_filename String?
-
   status     String   @default("draft")
   is_active  Boolean  @default(true)
   created_by Int

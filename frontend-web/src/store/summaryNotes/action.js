@@ -190,15 +190,34 @@ export const deleteSummaryNote = (noteId) => async (dispatch) => {
   }
 }
 
-export const generateSummaryFromDocument = (file) => async (dispatch) => {
+export const uploadDocument = (file) => async (dispatch) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', 'summary_note')
+
+    const response = await postWithToken(Endpoints.api.uploadImage, formData)
+    const result = response.data.data
+
+    return {
+      blobId: result.blobId,
+      filename: result.filename,
+      contentType: result.contentType,
+      byteSize: result.byteSize,
+      url: result.url // Presigned URL for viewing
+    }
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  }
+}
+
+export const generateSummaryFromDocument = (blobId) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isGenerating', value: true }))
     dispatch(clearError())
 
-    const formData = new FormData()
-    formData.append('document', file)
-
-    const response = await postWithToken(Endpoints.summaryNotes.admin.generate, formData)
+    const response = await postWithToken(Endpoints.summaryNotes.admin.generate, { blobId })
     const result = response.data.data
     dispatch(setGeneratedContent(result))
     return result

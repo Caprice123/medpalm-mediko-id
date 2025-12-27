@@ -4,19 +4,22 @@ import { useFormik } from 'formik'
 import {
   createSummaryNote,
   generateSummaryFromDocument,
-  fetchAdminSummaryNotes
+  fetchAdminSummaryNotes,
+  uploadDocument
 } from '@store/summaryNotes/action'
 import { actions } from '@store/summaryNotes/reducer'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
 import { blocksToMarkdown } from '@utils/blocksToMarkdown'
 
-const { clearGeneratedContent, setError, clearError } = actions
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+
+const { clearGeneratedContent, setError, clearError, setLoading } = actions
 
 export const useCreateNote = (onClose) => {
   const dispatch = useDispatch()
   const { generatedContent } = useSelector(state => state.summaryNotes)
-  const [uploadedFile, setUploadedFile] = useState(null)
-  const [sourceFileInfo, setSourceFileInfo] = useState(null)
+  const [blobId, setBlobId] = useState(null)
+  const [uploadedFileInfo, setUploadedFileInfo] = useState(null)
 
   const form = useFormik({
     initialValues: {
@@ -41,9 +44,6 @@ export const useCreateNote = (onClose) => {
       return errors
     },
     onSubmit: async (values) => {
-      try {
-        dispatch(clearError())
-
         // Stringify the blocks for storage
         const contentString = JSON.stringify(values.content)
 
@@ -61,10 +61,7 @@ export const useCreateNote = (onClose) => {
           status: values.status,
           isActive: true,
           tagIds: allTags.map(t => t.id),
-          sourceType: sourceFileInfo?.type || null,
-          sourceUrl: sourceFileInfo?.url || null,
-          sourceKey: sourceFileInfo?.key || null,
-          sourceFilename: sourceFileInfo?.filename || null
+          blobId: blobId || null
         }
 
         await dispatch(createSummaryNote(payload))
@@ -80,32 +77,19 @@ export const useCreateNote = (onClose) => {
         if (onClose) {
           onClose()
         }
-      } catch (err) {
-        dispatch(setError('Gagal menyimpan ringkasan. Silakan coba lagi.'))
-      }
     }
   })
   
   // Handle AI-generated content
   useEffect(() => {
-    if (generatedContent?.content) {
+    if (generatedContent?.summary) {
       // Convert generated markdown to BlockNote blocks
-      const blocks = markdownToBlocks(generatedContent.content)
+      const blocks = markdownToBlocks(generatedContent.summary)
       form.setFieldValue('content', blocks)
-
-      // Store file info from generation
-      if (generatedContent.fileInfo) {
-        setSourceFileInfo({
-          url: generatedContent.fileInfo.url,
-          key: generatedContent.fileInfo.key,
-          filename: generatedContent.fileInfo.originalFilename || generatedContent.filename,
-          type: generatedContent.mimeType
-        })
-      }
     }
   }, [generatedContent])
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0]
     if (file) {
       const allowedTypes = [
@@ -126,29 +110,75 @@ export const useCreateNote = (onClose) => {
         return
       }
 
-      setUploadedFile(file)
-      dispatch(clearError())
+      try {
+        dispatch(setLoading({ key: 'isUploading', value: true }))
+        dispatch(clearError())
+
+        // Upload file immediately to get blobId
+        const result = await dispatch(uploadDocument(file))
+
+        setBlobId(result.blobId)
+        const fileInfo = {
+          name: result.fileName || file.name, // Backend returns fileName (camelCase)
+          type: file.type, // Get from original file object (backend doesn't return contentType)
+          size: result.byteSize,
+          url: result.url // For viewing the uploaded file
+        }
+        console.log('Upload result:', result)
+        console.log('Setting uploadedFileInfo:', fileInfo)
+        setUploadedFileInfo(fileInfo)
+      } catch (error) {
+        console.error('Failed to upload file:', error)
+        dispatch(setError('Gagal upload file. Silakan coba lagi.'))
+      } finally {
+        dispatch(setLoading({ key: 'isUploading', value: false }))
+      }
     }
   }
 
   const handleGenerate = async () => {
-    if (!uploadedFile) {
+    if (!blobId) {
       dispatch(setError('Pilih file terlebih dahulu.'))
       return
     }
 
     try {
       dispatch(clearError())
-      await dispatch(generateSummaryFromDocument(uploadedFile))
+      await dispatch(generateSummaryFromDocument(blobId))
     } catch (err) {
       dispatch(setError('Gagal generate ringkasan. Silakan coba lagi.'))
     }
   }
 
   const handleRemoveFile = () => {
-    setUploadedFile(null)
-    setSourceFileInfo(null)
+    setBlobId(null)
+    setUploadedFileInfo(null)
     dispatch(clearGeneratedContent())
+  }
+
+  const handleImageUpload = async (file) => {
+    try {
+      // Validate file type (images only)
+      const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      if (!allowedImageTypes.includes(file.type)) {
+        throw new Error('Format gambar tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.')
+      }
+
+      // Validate file size (max 10MB for images)
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('Ukuran gambar maksimal 10MB.')
+      }
+
+      // Upload image to blob storage
+      const result = await dispatch(uploadDocument(file))
+
+      // Return permanent blob URL (never expires, generates fresh presigned URL on each request)
+      return `${API_BASE_URL}/api/v1/blobs/${result.blobId}`
+    } catch (error) {
+      console.error('Failed to upload image:', error)
+      dispatch(setError(error.message || 'Gagal upload gambar.'))
+      throw error
+    }
   }
 
   return {
@@ -156,7 +186,8 @@ export const useCreateNote = (onClose) => {
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,
-    uploadedFile,
-    sourceFileInfo
+    handleImageUpload,
+    uploadedFile: uploadedFileInfo,
+    blobId
   }
 }

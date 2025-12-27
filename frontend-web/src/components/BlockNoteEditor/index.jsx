@@ -8,7 +8,7 @@ import { EditorContainer, EditorWrapper, ModeToggle, ModeButton } from './BlockN
 
 
 
-function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false }) {
+function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
   const editor = useCreateBlockNote({
     initialContent: initialContent || [
@@ -17,6 +17,15 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
         content: "",
       },
     ],
+    uploadFile: onImageUpload ? async (file) => {
+      try {
+        const url = await onImageUpload(file)
+        return url
+      } catch (error) {
+        console.error('Failed to upload image:', error)
+        throw error
+      }
+    } : undefined,
   });
 
   const previousContentRef = useRef(null)

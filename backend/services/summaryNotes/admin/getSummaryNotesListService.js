@@ -105,7 +105,6 @@ export class GetSummaryNotesListService extends BaseService {
         id: note.id,
         title: note.title,
         description: note.description,
-        source_type: note.source_type,
         status: note.status,
         is_active: note.is_active,
         created_at: note.created_at,

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 import {
   FormSection,
   Label,
@@ -35,6 +36,7 @@ const UpdateNoteModal = ({ onClose }) => {
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,
+    handleImageUpload,
     uploadedFile,
     sourceFileInfo,
     handleRemoveSourceFile
@@ -65,14 +67,6 @@ const UpdateNoteModal = ({ onClose }) => {
 
   const handleContentChange = (blocks) => {
     form.setFieldValue('content', blocks)
-  }
-
-  const getFileIcon = (type) => {
-    if (!type) return '📄'
-    if (type.includes('pdf')) return '📕'
-    if (type.includes('presentation') || type.includes('powerpoint')) return '📊'
-    if (type.includes('document') || type.includes('word')) return '📘'
-    return '📄'
   }
 
   return (
@@ -127,9 +121,22 @@ const UpdateNoteModal = ({ onClose }) => {
                 Dokumen yang digunakan untuk generate ringkasan ini
               </div>
             </div>
-            <RemoveFileButton onClick={handleRemoveSourceFile}>
-              Hapus
-            </RemoveFileButton>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {sourceFileInfo.url && (
+                <GenerateButton
+                  as="a"
+                  href={sourceFileInfo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Lihat
+                </GenerateButton>
+              )}
+              <RemoveFileButton onClick={handleRemoveSourceFile}>
+                Hapus
+              </RemoveFileButton>
+            </div>
           </ExistingFileInfo>
         </FormSection>
       )}
@@ -157,20 +164,36 @@ const UpdateNoteModal = ({ onClose }) => {
                 </UploadText>
               </UploadArea>
             ) : (
-              <UploadArea style={{ background: '#f0f9ff', border: '2px solid #3b82f6' }}>
-                <FileName>📄 {uploadedFile.name}</FileName>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <ExistingFileInfo>
+                <FileIcon>{getFileIcon(uploadedFile.type)}</FileIcon>
+                <div style={{ flex: 1 }}>
+                  <FileName>{uploadedFile.name}</FileName>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
+                    {formatFileSize(uploadedFile.size)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {uploadedFile.url && (
+                    <GenerateButton
+                      as="a"
+                      href={uploadedFile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Lihat
+                    </GenerateButton>
+                  )}
                   <GenerateButton
                     onClick={handleGenerate}
                     disabled={loading.isGenerating}
                   >
-                    {loading.isGenerating ? 'Generating...' : '✨ Generate Ringkasan'}
+                    {loading.isGenerating ? 'Generating...' : '✨ Generate'}
                   </GenerateButton>
                   <RemoveFileButton onClick={handleRemoveFile}>
                     Hapus
                   </RemoveFileButton>
                 </div>
-              </UploadArea>
+              </ExistingFileInfo>
             )}
           </UploadSection>
         </FormSection>
@@ -188,6 +211,7 @@ const UpdateNoteModal = ({ onClose }) => {
             onChange={handleContentChange}
             editable={!loading.isUpdating}
             placeholder="Tulis konten ringkasan atau generate dari dokumen..."
+            onImageUpload={handleImageUpload}
           />
         </EditorContainer>
         {form.errors.content && <ErrorText>{form.errors.content}</ErrorText>}

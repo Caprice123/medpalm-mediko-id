@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import embeddingService from '#services/embedding/embeddingService'
 
 export class CreateSummaryNoteService extends BaseService {
-  static async call({ title, description, content, markdownContent, sourceType, sourceUrl, sourceKey, sourceFilename, status, tagIds, createdBy }) {
+  static async call({ title, description, content, markdownContent, blobId, status, tagIds, createdBy }) {
     // Validate required fields
     if (!title) {
       throw new ValidationError('Title is required')
@@ -18,6 +18,16 @@ export class CreateSummaryNoteService extends BaseService {
       throw new ValidationError('Created by is required')
     }
 
+    // Validate blob exists if provided
+    if (blobId) {
+      const blob = await prisma.blobs.findUnique({
+        where: { id: parseInt(blobId) }
+      })
+      if (!blob) {
+        throw new ValidationError('Invalid blob ID')
+      }
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       // Create the summary note
       const summaryNote = await tx.summary_notes.create({
@@ -26,10 +36,6 @@ export class CreateSummaryNoteService extends BaseService {
           description: description || null,
           content,
           markdown_content: markdownContent || null,
-          source_type: sourceType || null,
-          source_url: sourceUrl || null,
-          source_key: sourceKey || null,
-          source_filename: sourceFilename || null,
           status: status || 'draft',
           created_by: createdBy
         }
@@ -42,6 +48,18 @@ export class CreateSummaryNoteService extends BaseService {
             summary_note_id: summaryNote.id,
             tag_id: tagId
           }))
+        })
+      }
+
+      // Create attachment for source document if blobId provided
+      if (blobId) {
+        await tx.attachments.create({
+          data: {
+            name: 'source_document',
+            recordType: 'summary_note',
+            recordId: summaryNote.id,
+            blobId: parseInt(blobId)
+          }
         })
       }
 

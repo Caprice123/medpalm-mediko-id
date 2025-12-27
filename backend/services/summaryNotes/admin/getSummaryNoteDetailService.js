@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import idriveService from '#services/idrive.service'
 
 export class GetSummaryNoteDetailService extends BaseService {
   static async call({ id }) {
@@ -27,6 +28,18 @@ export class GetSummaryNoteDetailService extends BaseService {
       throw new ValidationError('Summary note not found')
     }
 
+    // Get source document attachment if exists
+    const sourceAttachment = await prisma.attachments.findFirst({
+      where: {
+        recordType: 'summary_note',
+        recordId: parseInt(id),
+        name: 'source_document'
+      },
+      include: {
+        blob: true
+      }
+    })
+
     // Separate tags by group (matching Anatomy Quiz pattern)
     const allTags = summaryNote.summary_note_tags.map(t => ({
       id: t.tags.id,
@@ -38,15 +51,25 @@ export class GetSummaryNoteDetailService extends BaseService {
     const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
     const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
 
+    // Generate presigned URL for source document if exists
+    let sourceUrl = null
+    let sourceFilename = null
+    let sourceContentType = null
+    if (sourceAttachment?.blob) {
+      sourceUrl = await idriveService.getSignedUrl(sourceAttachment.blob.key)
+      sourceFilename = sourceAttachment.blob.filename
+      sourceContentType = sourceAttachment.blob.contentType
+    }
+
     return {
       id: summaryNote.id,
       title: summaryNote.title,
       description: summaryNote.description,
       content: summaryNote.content,
-      source_type: summaryNote.source_type,
-      source_url: summaryNote.source_url,
-      source_key: summaryNote.source_key,
-      source_filename: summaryNote.source_filename,
+      blobId: sourceAttachment?.blobId || null,
+      sourceUrl,
+      sourceFilename,
+      sourceContentType,
       status: summaryNote.status,
       is_active: summaryNote.is_active,
       created_by: summaryNote.created_by,
