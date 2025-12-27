@@ -161,9 +161,6 @@ model exercise_topics {
   description  String?
   content_type String
   content      String?
-  pdf_url      String?
-  pdf_key      String?
-  pdf_filename String?
   status       String   @default("draft")
   is_active    Boolean  @default(true)
   created_by   Int
@@ -234,9 +231,6 @@ model flashcard_decks {
   description     String?
   content_type    String
   content         String?
-  pdf_url         String?
-  pdf_key         String?
-  pdf_filename    String?
   flashcard_count Int?
   status          String   @default("draft")
   is_active       Boolean  @default(true)
@@ -692,23 +686,28 @@ model attachments {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
+  blob blobs @relation(fields: [blobId], references: [id], onDelete: Cascade)
+
   @@index([recordType, recordId, name])
   @@index([blobId])
 }
 
 model blobs {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   key         String
   filename    String
   metadata    String
   contentType String
   byteSize    Int
   checksum    String
-  uploadedAt  DateTime @default(now())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  uploadedAt  DateTime      @default(now())
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @default(now())
+
+  attachments attachments[]
 
   @@index([key])
+  @@index([checksum])
 }
 
 // ============= Anatomy Quiz Feature =============

@@ -82,28 +82,33 @@ export const generateFlashcards = (content, type, cardCount = 10) => async (disp
 
 /**
  * Generate flashcards from PDF using Gemini (admin only)
+ * Now uses centralized upload endpoint first
  */
 export const generateFlashcardsFromPDF = (pdfFile, cardCount = 10) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isGeneratingCards', value: true }))
 
-    // Create FormData for PDF upload
-    const formData = new FormData()
-    formData.append('pdf', pdfFile)
-    formData.append('cardCount', cardCount)
+    // Step 1: Upload PDF to centralized endpoint to get blobId
+    const uploadFormData = new FormData()
+    uploadFormData.append('image', pdfFile)
+    uploadFormData.append('type', 'flashcard')
+
+    const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
+    const blobId = uploadResponse.data.data.blobId
+
+    // Step 2: Generate flashcards from PDF
+    const generateFormData = new FormData()
+    generateFormData.append('pdf', pdfFile)
+    generateFormData.append('cardCount', cardCount)
+    generateFormData.append('blobId', blobId)
 
     const route = Endpoints.admin.flashcards + `/generate-from-pdf`
-    const response = await postWithToken(route, formData)
+    const response = await postWithToken(route, generateFormData)
 
     const data = response.data.data || {}
     const cards = data.cards || []
-    const pdfInfo = {
-      pdf_url: data.pdf_url,
-      pdf_key: data.pdf_key,
-      pdf_filename: data.pdf_filename
-    }
 
-    return { cards, ...pdfInfo }
+    return { cards, blobId }
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

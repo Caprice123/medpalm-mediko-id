@@ -4,7 +4,7 @@ import { BaseService } from "../../baseService.js"
 import blobService from "../../attachment/blobService.js"
 
 export class UpdateFlashcardDeckService extends BaseService {
-    static async call(deckId, { title, description, status, tags, cards, pdf_url, pdf_key, pdf_filename }) {
+    static async call(deckId, { title, description, status, tags, cards, blobId }) {
         this.validate(deckId, { title, cards })
 
         // Check if deck exists
@@ -26,11 +26,32 @@ export class UpdateFlashcardDeckService extends BaseService {
                     description: description !== undefined ? description : deck.description,
                     status: status || deck.status,
                     flashcard_count: cards.length,
-                    pdf_url: pdf_url !== undefined ? pdf_url : deck.pdf_url,
-                    pdf_key: pdf_key !== undefined ? pdf_key : deck.pdf_key,
-                    pdf_filename: pdf_filename !== undefined ? pdf_filename : deck.pdf_filename,
                 }
             })
+
+            // Update deck PDF attachment if blobId is provided
+            if (blobId !== undefined) {
+                // Delete existing PDF attachment
+                await tx.attachments.deleteMany({
+                    where: {
+                        recordType: 'flashcard_deck',
+                        recordId: parseInt(deckId),
+                        name: 'pdf'
+                    }
+                })
+
+                // Create new PDF attachment if blobId is not null
+                if (blobId) {
+                    await tx.attachments.create({
+                        data: {
+                            name: 'pdf',
+                            recordType: 'flashcard_deck',
+                            recordId: parseInt(deckId),
+                            blobId: blobId
+                        }
+                    })
+                }
+            }
 
             // Update tags if provided
             if (tags && Array.isArray(tags)) {

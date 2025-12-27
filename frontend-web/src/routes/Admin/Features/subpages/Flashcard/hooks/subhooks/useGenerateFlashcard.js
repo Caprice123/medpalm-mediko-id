@@ -45,12 +45,10 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
         }))
         mainForm.setFieldValue('cards', cardsWithTempIds)
 
-        // Store PDF info
+        // Store blob ID
         if (setPdfInfo) {
           setPdfInfo({
-            pdf_url: result.pdf_url,
-            pdf_key: result.pdf_key,
-            pdf_filename: result.pdf_filename
+            blobId: result.blobId
           })
         }
 

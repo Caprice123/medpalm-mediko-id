@@ -55,9 +55,7 @@ export const useUpdateFlashcard = (onClose) => {
           status: values.status,
           tags: allTagIds,
           cards: cardsData,
-          pdf_url: pdfInfo?.pdf_url || null,
-          pdf_key: pdfInfo?.pdf_key || null,
-          pdf_filename: pdfInfo?.pdf_filename || null
+          blobId: pdfInfo?.blobId || null
         }
 
         console.log(payload)
@@ -115,12 +113,10 @@ export const useUpdateFlashcard = (onClose) => {
       })
 
       // Set initial content based on content_type
-      if (detail.content_type === 'pdf' && detail.pdf_url) {
+      if (detail.content_type === 'pdf' && detail.blob) {
         setInitialContentType('document')
         setPdfInfo({
-          pdf_url: detail.pdf_url,
-          pdf_key: detail.pdf_key,
-          pdf_filename: detail.pdf_filename
+          blobId: detail.blob.id
         })
       } else if (detail.content_type === 'text' && detail.content) {
         setInitialContentType('text')

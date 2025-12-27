@@ -29,6 +29,24 @@ export class GetFlashcardDeckDetailService extends BaseService {
             throw new ValidationError('Deck not found')
         }
 
+        // Fetch PDF attachment for deck if exists
+        const deckAttachment = await prisma.attachments.findFirst({
+            where: {
+                recordType: 'flashcard_deck',
+                recordId: deck.id,
+                name: 'pdf'
+            },
+            include: {
+                blob: true
+            }
+        })
+
+        // Generate presigned URL for deck PDF if blob exists
+        let deckPdfUrl = null
+        if (deckAttachment?.blob) {
+            deckPdfUrl = await idriveService.getSignedUrl(deckAttachment.blob.key, 7 * 24 * 60 * 60)
+        }
+
         // Get attachments for all cards
         const cardIds = deck.flashcard_cards.map(c => c.id)
         const attachments = await prisma.attachments.findMany({
@@ -111,6 +129,13 @@ export class GetFlashcardDeckDetailService extends BaseService {
         // Transform tags to include tag_group info
         const transformedDeck = {
             ...deck,
+            blob: deckAttachment ? {
+                id: deckAttachment.blobId,
+                url: deckPdfUrl,
+                key: deckAttachment.blob.key,
+                filename: deckAttachment.blob.filename,
+                size: deckAttachment.blob.byteSize
+            } : null,
             tags: deck.flashcard_deck_tags.map(t => ({
                 id: t.tags.id,
                 name: t.tags.name,

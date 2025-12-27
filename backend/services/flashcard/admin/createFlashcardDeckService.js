@@ -2,11 +2,12 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "../../baseService.js"
 import blobService from "../../attachment/blobService.js"
+import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateFlashcardDeckService extends BaseService {
-    static async call({ title, description, content_type, content, pdf_url, pdf_key, pdf_filename, tags, cards, created_by }) {
+    static async call({ title, description, content_type, content, blobId, tags, cards, created_by }) {
         // Validate inputs
-        await this.validate({ title, description, content_type, content, pdf_url, tags, cards })
+        await this.validate({ title, description, content_type, content, blobId, tags, cards })
 
         // Create deck with cards and tags in a transaction
         const deck = await prisma.$transaction(async (tx) => {
@@ -17,9 +18,6 @@ export class CreateFlashcardDeckService extends BaseService {
                     description: description || '',
                     content_type,
                     content: content_type === 'text' ? content : null,
-                    pdf_url: content_type === 'pdf' ? pdf_url : null,
-                    pdf_key: content_type === 'pdf' ? pdf_key : null,
-                    pdf_filename: content_type === 'pdf' ? pdf_filename : null,
                     flashcard_count: cards.length,
                     status: 'ready',
                     created_by: created_by,
@@ -48,6 +46,18 @@ export class CreateFlashcardDeckService extends BaseService {
                 }
             })
 
+            // Create attachment for deck PDF if blobId provided
+            if (blobId && content_type === 'pdf') {
+                await tx.attachments.create({
+                    data: {
+                        name: 'pdf',
+                        recordType: 'flashcard_deck',
+                        recordId: createdDeck.id,
+                        blobId: blobId
+                    }
+                })
+            }
+
             // Create attachments for cards with images
             for (let i = 0; i < cards.length; i++) {
                 const card = cards[i]
@@ -74,7 +84,7 @@ export class CreateFlashcardDeckService extends BaseService {
         return deck
     }
 
-    static async validate({ title, content_type, content, pdf_url, tags, cards }) {
+    static async validate({ title, content_type, content, blobId, tags, cards }) {
         // Validate required fields
         if (!title) {
             throw new ValidationError('Title is required')
@@ -88,6 +98,10 @@ export class CreateFlashcardDeckService extends BaseService {
         // if (content_type === 'text' && !content) {
         //     throw new ValidationError('Content is required for text type')
         // }
+
+        if (content_type === 'pdf' && !blobId) {
+            throw new ValidationError('Blob ID is required for PDF type')
+        }
 
         if (!tags || tags.length === 0) {
             throw new ValidationError('At least one tag is required')
@@ -108,6 +122,16 @@ export class CreateFlashcardDeckService extends BaseService {
 
         if (existingTags.length !== tagIds.length) {
             throw new ValidationError('Some tags are invalid or inactive')
+        }
+
+        // Validate blob exists if provided
+        if (blobId) {
+            const blob = await prisma.blobs.findUnique({
+                where: { id: blobId }
+            })
+            if (!blob) {
+                throw new ValidationError('Invalid blob ID')
+            }
         }
     }
 }

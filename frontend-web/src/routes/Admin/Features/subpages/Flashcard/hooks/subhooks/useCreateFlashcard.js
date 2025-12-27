@@ -42,11 +42,9 @@ export const useCreateFlashcard = (onClose) => {
             order: index
           })),
           tags: allTags.map(t => t.id),
-          // Include PDF info if generated from PDF
+          // Include blob ID if generated from PDF
           ...(pdfInfo && {
-            pdf_url: pdfInfo.pdf_url,
-            pdf_key: pdfInfo.pdf_key,
-            pdf_filename: pdfInfo.pdf_filename
+            blobId: pdfInfo.blobId
           })
         }
 

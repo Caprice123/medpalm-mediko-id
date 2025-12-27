@@ -4,6 +4,7 @@ import { GetFlashcardDecksService } from '#services/flashcard/getFlashcardDecksS
 import { GetFlashcardDeckDetailService } from '#services/flashcard/admin/getFlashcardDeckDetailService'
 import { UpdateFlashcardCardsService } from '#services/flashcard/admin/updateFlashcardCardsService'
 import { UpdateFlashcardDeckService } from '#services/flashcard/admin/updateFlashcardDeckService'
+import { FlashcardDeckSerializer } from '#serializers/admin/v1/flashcardDeckSerializer'
 import idriveService from '#services/idrive.service'
 import blobService from '#services/attachment/blobService'
 import path from 'path'
@@ -26,9 +27,7 @@ class FlashcardController {
       description,
       content_type,
       content,
-      pdf_url,
-      pdf_key,
-      pdf_filename,
+      blobId,
       tags,
       cards
     } = req.body
@@ -38,16 +37,16 @@ class FlashcardController {
       description,
       content_type,
       content,
-      pdf_url,
-      pdf_key,
-      pdf_filename,
+      blobId,
       tags,
-      cards, // Cards already include image_url from centralized upload
+      cards, // Cards already include image_key from centralized upload
       created_by: req.user.id
     })
 
     return res.status(201).json({
-      data: deck,
+      success: true,
+      data: FlashcardDeckSerializer.serialize(deck),
+      message: 'Deck created successfully'
     })
   }
   
@@ -57,13 +56,14 @@ class FlashcardController {
     const deck = await GetFlashcardDeckDetailService.call(id)
 
     return res.status(200).json({
-      data: deck
+      success: true,
+      data: FlashcardDeckSerializer.serialize(deck)
     })
   }
 
   async update(req, res) {
     const { id } = req.params
-    const { title, description, status, tags, cards, pdf_url, pdf_key, pdf_filename } = req.body
+    const { title, description, status, tags, cards, blobId } = req.body
 
     // Check if this is a full deck update or just cards
     if (title !== undefined || tags !== undefined) {
@@ -73,21 +73,23 @@ class FlashcardController {
         description,
         status,
         tags,
-        cards, // Cards already include image_url from centralized upload
-        pdf_url,
-        pdf_key,
-        pdf_filename
+        cards, // Cards already include image_key from centralized upload
+        blobId
       })
 
       return res.status(200).json({
-        data: updatedDeck
+        success: true,
+        data: FlashcardDeckSerializer.serialize(updatedDeck),
+        message: 'Deck updated successfully'
       })
     } else {
       // Simple cards update (backward compatibility)
       const updatedDeck = await UpdateFlashcardCardsService.call(id, cards)
 
       return res.status(200).json({
-        data: updatedDeck
+        success: true,
+        data: FlashcardDeckSerializer.serialize(updatedDeck),
+        message: 'Cards updated successfully'
       })
     }
   }
@@ -102,8 +104,16 @@ class FlashcardController {
     })
   }
 
+  /**
+   * Generate flashcards from uploaded PDF (preview mode)
+   * POST /admin/v1/flashcards/generate-from-pdf
+   *
+   * Note: This now uses the centralized upload endpoint
+   * Frontend should call /api/v1/upload/image with type=flashcard to get blobId
+   * Then pass that blobId along with the PDF file for card generation
+   */
   async generateCardsFromPDF(req, res) {
-    const { cardCount = 10 } = req.body
+    const { cardCount = 10, blobId } = req.body
 
     // Check if file was uploaded
     if (!req.file) {
@@ -113,12 +123,6 @@ class FlashcardController {
       })
     }
 
-    // Upload PDF to iDrive E2 cloud storage
-    const uploadResult = await idriveService.uploadFlashcardPDF(
-      req.file.path,
-      req.file.originalname.replace('.pdf', '')
-    )
-
     // Generate flashcards from the uploaded PDF
     const cards = await GenerateFlashcardService.call({
       pdfFilePath: req.file.path,
@@ -126,13 +130,19 @@ class FlashcardController {
       cardCount: parseInt(cardCount) || 10
     })
 
+    // If blobId was provided from centralized upload, return it
+    // Otherwise, return just the cards for backward compatibility
+    let responseData = {
+      cards: cards
+    }
+
+    if (blobId) {
+      responseData.blobId = blobId
+    }
+
     return res.status(200).json({
-      data: {
-        cards: cards,
-        pdf_url: uploadResult.url,
-        pdf_key: uploadResult.key,
-        pdf_filename: uploadResult.fileName
-      }
+      success: true,
+      data: responseData
     })
   }
 
