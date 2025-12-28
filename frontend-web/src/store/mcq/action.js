@@ -198,7 +198,7 @@ export const uploadQuestionImage = (form, onSuccess) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUploadingImage', value: true }))
 
     const formData = new FormData()
-    formData.append('image', form.file)
+    formData.append('file', form.file)
 
     const response = await postWithToken(Endpoints.mcq.admin.uploadQuestionImage, formData)
 

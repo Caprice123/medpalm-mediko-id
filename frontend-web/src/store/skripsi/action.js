@@ -179,7 +179,7 @@ export const uploadImage = (file, type = 'skripsi-editor') => async (dispatch) =
     dispatch(clearError())
 
     const formData = new FormData()
-    formData.append('image', file)
+    formData.append('file', file)
     formData.append('type', type)
 
     const response = await postWithToken(Endpoints.api.uploadImage, formData, {
