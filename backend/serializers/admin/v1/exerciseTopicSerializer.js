@@ -8,16 +8,19 @@ export class ExerciseTopicSerializer {
             id: topic.id,
             title: topic.title,
             description: topic.description,
-            type: topic.content_type,
             content_type: topic.content_type,
             content: topic.content,
-            // Support both blob object (new) and pdf_url (legacy)
-            blob: topic.blob || null,
-            pdf_url: topic.pdf_url || topic.blob?.url || null, // Backward compatibility
+            // PDF-related fields
+            pdf_url: topic.pdf_url || topic.blob?.url || null,
+            pdf_key: topic.pdf_key || topic.blob?.key || null,
+            pdf_filename: topic.pdf_filename || topic.blob?.filename || null,
             tags: topicTags.map(tag => ({
                 id: tag.tags ? tag.tags.id : (tag.tag ? tag.tag.id : tag.id),
                 name: tag.tags ? tag.tags.name : (tag.tag ? tag.tag.name : tag.name),
-                type: tag.tags ? tag.tags.type : (tag.tag ? tag.tag.type : tag.type)
+                tag_group: tag.tags?.tag_group ? {
+                    id: tag.tags.tag_group.id,
+                    name: tag.tags.tag_group.name
+                } : null
             })),
             questions: topicQuestions.map((q, index) => ({
                 id: q.id,
@@ -25,10 +28,7 @@ export class ExerciseTopicSerializer {
                 answer: q.answer,
                 explanation: q.explanation || '',
                 order: q.order !== undefined ? q.order : index
-            })),
-            questionCount: topicQuestions.length,
-            createdAt: topic.created_at,
-            updatedAt: topic.updated_at
+            }))
         }
     }
 }

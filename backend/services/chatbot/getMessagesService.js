@@ -49,29 +49,8 @@ export class GetMessagesService extends BaseService {
     const isLastPage = messages.length <= perPage
     const paginatedMessages = messages.slice(0, perPage)
 
-    const transformedMessages = paginatedMessages.map(msg => ({
-      id: msg.id,
-      senderType: msg.sender_type,
-      modeType: msg.mode_type,
-      content: msg.content,
-      creditsUsed: msg.credits_used,
-      sources: msg.chatbot_message_sources.map(src => ({
-        id: src.id,
-        sourceType: src.source_type,
-        title: src.title,
-        content: src.content,
-        url: src.url,
-        score: src.score
-      })),
-      userFeedback: msg.chatbot_message_feedbacks[0] ? {
-        isHelpful: msg.chatbot_message_feedbacks[0].is_helpful,
-        feedback: msg.chatbot_message_feedbacks[0].feedback
-      } : null,
-      createdAt: msg.created_at
-    }))
-
     return {
-      data: transformedMessages,
+      messages: paginatedMessages,
       pagination: {
         page,
         perPage,

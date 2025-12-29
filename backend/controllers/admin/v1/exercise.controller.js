@@ -2,10 +2,12 @@ import { GenerateQuestionService } from '#services/exercise/admin/generateQuesti
 import { QuestionSerializer } from '#serializers/admin/v1/questionSerializer'
 import { CreateExerciseTopicService } from '#services/exercise/admin/createExerciseTopicService'
 import { ExerciseTopicSerializer } from '#serializers/admin/v1/exerciseTopicSerializer'
+import { ExerciseTopicListSerializer } from '#serializers/admin/v1/exerciseTopicListSerializer'
 import { GetExerciseTopicsService } from '#services/exercise/getExerciseTopicsService'
 import { GetExerciseTopicDetailService } from '#services/exercise/admin/getExerciseTopicDetailService'
 import { UpdateExerciseQuestionsService } from '#services/exercise/admin/updateExerciseQuestionsService'
 import idriveService from '#services/idrive.service'
+import { ValidationError } from '#errors/validationError'
 
 class ExerciseController {
   async generateQuestions(req, res) {
@@ -31,10 +33,7 @@ class ExerciseController {
 
     // Check if file was uploaded
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'PDF file is required'
-      })
+        throw new ValidationError("PDF file is required")
     }
 
     // Generate questions from the uploaded PDF
@@ -89,7 +88,6 @@ class ExerciseController {
 
     return res.status(201).json({
       data: ExerciseTopicSerializer.serialize(topic),
-      message: 'Topic created successfully'
     })
   }
 
@@ -100,10 +98,10 @@ class ExerciseController {
   async index(req, res) {
     const { university, semester } = req.query
 
-    const topics = await GetExerciseTopicsService.call({ university, semester })
+    const result = await GetExerciseTopicsService.call({ university, semester })
 
     return res.status(200).json({
-      data: topics
+      data: ExerciseTopicListSerializer.serialize(result.topics)
     })
   }
 

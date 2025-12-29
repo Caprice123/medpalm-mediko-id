@@ -115,42 +115,9 @@ export class GetAnatomyQuizzesService extends BaseService {
       }))
     )
 
-    // Transform the response
-    const transformedQuizzes = paginatedQuizzes.map((quiz) => {
-      // Separate tags by group
-      const allTags = quiz.anatomy_quiz_tags.map(t => ({
-        id: t.tags.id,
-        name: t.tags.name,
-        tagGroupId: t.tags.tag_group_id,
-        tagGroupName: t.tags.tag_group?.name
-      }))
-
-      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-
-      const attachment = attachmentMap.get(quiz.id)
-
-      return {
-        id: quiz.id,
-        title: quiz.title,
-        description: quiz.description,
-        blobId: attachment?.blobId || null,
-        image_url: attachment?.url || null,
-        image_key: attachment?.blob?.key || null,
-        image_filename: attachment?.blob?.filename || null,
-        status: quiz.status,
-        is_active: quiz.is_active,
-        tags: allTags,
-        universityTags,
-        semesterTags,
-        questionCount: quiz._count.anatomy_questions, // From aggregate count
-        createdAt: quiz.created_at,
-        updatedAt: quiz.updated_at
-      }
-    })
-
     return {
-      data: transformedQuizzes,
+      data: paginatedQuizzes,
+      attachmentMap,
       pagination: {
         page,
         perPage,

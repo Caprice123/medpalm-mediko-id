@@ -4,9 +4,11 @@ import { GetAdminSkripsiSetsService } from '#services/skripsi/admin/getAdminSkri
 import getAdminSkripsiSetService from '#services/skripsi/admin/getAdminSkripsiSetService'
 import getAdminSkripsiSetTabsService from '#services/skripsi/admin/getAdminSkripsiSetTabsService'
 import deleteAdminSkripsiSetService from '#services/skripsi/admin/deleteAdminSkripsiSetService'
+import { SkripsiSetSerializer } from '#serializers/admin/v1/skripsiSetSerializer'
+import { SkripsiSetListSerializer } from '#serializers/admin/v1/skripsiSetListSerializer'
 
-export const getConstants = async (req, res) => {
-  try {
+class SkripsiController {
+  async getConstants(req, res) {
     const result = await getSkripsiConstantsService()
 
     res.status(200).json({
@@ -14,17 +16,9 @@ export const getConstants = async (req, res) => {
       data: result.constants,
       raw: result.raw
     })
-  } catch (error) {
-    console.error('Get constants error:', error)
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to get constants'
-    })
   }
-}
 
-export const updateConstant = async (req, res) => {
-  try {
+  async updateConstant(req, res) {
     const { key, value } = req.body
 
     if (!key) {
@@ -47,17 +41,9 @@ export const updateConstant = async (req, res) => {
       message: 'Constant updated successfully',
       data: constant
     })
-  } catch (error) {
-    console.error('Update constant error:', error)
-    res.status(400).json({
-      success: false,
-      message: error.message || 'Failed to update constant'
-    })
   }
-}
 
-export const updateMultipleConstants = async (req, res) => {
-  try {
+  async updateMultipleConstants(req, res) {
     const { constants } = req.body
 
     if (!constants || typeof constants !== 'object') {
@@ -92,18 +78,9 @@ export const updateMultipleConstants = async (req, res) => {
       message: 'Constants updated successfully',
       data: results
     })
-  } catch (error) {
-    console.error('Update multiple constants error:', error)
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to update constants'
-    })
   }
-}
 
-// Skripsi Sets Management
-export const getSets = async (req, res) => {
-  try {
+  async index(req, res) {
     const { page, perPage, userId, search } = req.query
 
     const result = await GetAdminSkripsiSetsService.call({
@@ -114,38 +91,22 @@ export const getSets = async (req, res) => {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: SkripsiSetListSerializer.serialize(result.data),
       pagination: result.pagination
     })
-  } catch (error) {
-    console.error('Get sets error:', error)
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to get sets'
-    })
   }
-}
 
-export const getSet = async (req, res) => {
-  try {
+  async show(req, res) {
     const { id } = req.params
 
     const set = await getAdminSkripsiSetService(parseInt(id))
 
     res.status(200).json({
-      data: set
-    })
-  } catch (error) {
-    console.error('Get set error:', error)
-    res.status(error.message === 'Skripsi set not found' ? 404 : 500).json({
-      success: false,
-      message: error.message || 'Failed to get set'
+      data: SkripsiSetSerializer.serialize(set)
     })
   }
-}
 
-export const getSetTabs = async (req, res) => {
-  try {
+  async getSetTabs(req, res) {
     const { id } = req.params
 
     const tabs = await getAdminSkripsiSetTabsService(parseInt(id))
@@ -153,17 +114,9 @@ export const getSetTabs = async (req, res) => {
     res.status(200).json({
       data: tabs
     })
-  } catch (error) {
-    console.error('Get set tabs error:', error)
-    res.status(error.message === 'Skripsi set not found' ? 404 : 500).json({
-      success: false,
-      message: error.message || 'Failed to get set tabs'
-    })
   }
-}
 
-export const deleteSet = async (req, res) => {
-  try {
+  async destroy(req, res) {
     const { id } = req.params
 
     await deleteAdminSkripsiSetService(parseInt(id))
@@ -171,11 +124,7 @@ export const deleteSet = async (req, res) => {
     res.status(200).json({
       message: 'Skripsi set deleted successfully'
     })
-  } catch (error) {
-    console.error('Delete set error:', error)
-    res.status(error.message === 'Skripsi set not found' ? 404 : 500).json({
-      success: false,
-      message: error.message || 'Failed to delete set'
-    })
   }
 }
+
+export default new SkripsiController()

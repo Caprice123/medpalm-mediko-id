@@ -1,0 +1,23 @@
+export class SummaryNoteListSerializer {
+  static serialize(notes) {
+    return notes.map(note => {
+      const allTags = (note.summary_note_tags || []).map(t => ({
+        id: t.tags.id,
+        name: t.tags.name,
+        tagGroupName: t.tags.tag_group?.name || null
+      }))
+
+      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+
+      return {
+        id: note.id,
+        title: note.title,
+        description: note.description,
+        universityTags,
+        semesterTags,
+        updatedAt: note.updated_at
+      }
+    })
+  }
+}

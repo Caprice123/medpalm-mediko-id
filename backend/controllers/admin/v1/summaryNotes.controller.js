@@ -5,6 +5,8 @@ import { GetSummaryNoteDetailService } from '#services/summaryNotes/admin/getSum
 import { DeleteSummaryNoteService } from '#services/summaryNotes/admin/deleteSummaryNoteService'
 import { GenerateSummaryFromDocumentService } from '#services/summaryNotes/admin/generateSummaryFromDocumentService'
 import { GetEmbeddingsService } from '#services/embedding/getEmbeddingsService'
+import { SummaryNoteSerializer } from '#serializers/admin/v1/summaryNoteSerializer'
+import { SummaryNoteListSerializer } from '#serializers/admin/v1/summaryNoteListSerializer'
 import { ValidationError } from '#errors/validationError'
 
 class SummaryNotesAdminController {
@@ -22,7 +24,7 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: SummaryNoteListSerializer.serialize(result.data),
       pagination: result.pagination
     })
   }
@@ -34,7 +36,7 @@ class SummaryNotesAdminController {
     const summaryNote = await GetSummaryNoteDetailService.call({ id })
 
     return res.status(200).json({
-      data: summaryNote
+      data: SummaryNoteSerializer.serialize(summaryNote)
     })
   }
 
@@ -55,7 +57,7 @@ class SummaryNotesAdminController {
     })
 
     return res.status(201).json({
-      data: summaryNote,
+      data: SummaryNoteSerializer.serialize(summaryNote),
     })
   }
 
@@ -77,7 +79,7 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      data: summaryNote,
+      data: SummaryNoteSerializer.serialize(summaryNote),
     })
   }
 

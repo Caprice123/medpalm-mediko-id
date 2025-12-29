@@ -37,8 +37,9 @@ export const fetchMcqTopics = () => async (dispatch, getState) => {
 
     const response = await getWithToken(Endpoints.mcq.topics, queryParams)
 
-    dispatch(setTopics(response.data.data?.topics || []))
-    dispatch(setPagination(response.data.data?.pagination || { page: 1, limit: 30, isLastPage: false }))
+    const data = response.data.data
+    dispatch(setTopics(data.topics || []))
+    dispatch(setPagination(data.pagination || { page: 1, limit: 30, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

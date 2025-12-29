@@ -4,6 +4,9 @@ import { GetMcqTopicSessionService } from '#services/mcq/getMcqTopicSessionServi
 import { SubmitMcqAnswersService } from '#services/mcq/submitMcqAnswersService'
 import { CheckMcqAnswersService } from '#services/mcq/checkMcqAnswersService'
 import { GetMcqConstantsService } from '#services/mcq/admin/getMcqConstantsService'
+import { McqTopicListSerializer } from '#serializers/api/v1/mcqTopicListSerializer'
+import { McqTopicSerializer } from '#serializers/api/v1/mcqTopicSerializer'
+import { McqTopicSessionSerializer } from '#serializers/api/v1/mcqTopicSessionSerializer'
 
 class McqController {
   /**
@@ -31,29 +34,40 @@ class McqController {
     })
 
     return res.status(200).json({
-      data: result
+      data: {
+        topics: McqTopicListSerializer.serialize(result.topics),
+        pagination: result.pagination
+      }
     })
   }
 
   /**
-   * Get single MCQ topic by ID
+   * Get single MCQ topic by ID (info/preview only)
    * GET /api/v1/mcq/topics/:id
+   *
+   * WARNING: This endpoint should NOT be used for quiz sessions as it would expose answers.
+   * Use /topics/:id/session instead for quiz/learning mode.
+   *
+   * Frontend currently uses this incorrectly - needs to be updated to use /session endpoint.
    */
   async getTopic(req, res) {
-    const { id } = req.params
-
-    const result = await GetMcqTopicByIdService.call({
-      topicId: parseInt(id)
+    const topic = await GetMcqTopicByIdService.call({
+      topicId: parseInt(req.params.id)
     })
 
+    // TEMPORARY: Include answers for backward compatibility with current frontend
+    // TODO: Update frontend to use /session endpoint, then set includeAnswers=false here
     return res.status(200).json({
-      data: result
+      data: McqTopicSerializer.serialize(topic, true) // includeAnswers=true for now
     })
   }
 
   /**
    * Get MCQ topic session (questions for learning or quiz mode)
    * GET /api/v1/mcq/topics/:id/session
+   *
+   * SECURITY: This endpoint does NOT expose correct_answer in the response.
+   * Answers are only revealed after submission via /submit or /check endpoints.
    */
   async getTopicSession(req, res) {
     const { id } = req.params
@@ -67,7 +81,7 @@ class McqController {
     })
 
     return res.status(200).json({
-      data: result
+      data: McqTopicSessionSerializer.serialize(result)
     })
   }
 

@@ -24,10 +24,6 @@ export class GetSummaryNoteDetailService extends BaseService {
       }
     })
 
-    if (!summaryNote) {
-      throw new ValidationError('Summary note not found')
-    }
-
     // Get source document attachment if exists
     const sourceAttachment = await prisma.attachments.findFirst({
       where: {
@@ -40,47 +36,19 @@ export class GetSummaryNoteDetailService extends BaseService {
       }
     })
 
-    // Separate tags by group (matching Anatomy Quiz pattern)
-    const allTags = summaryNote.summary_note_tags.map(t => ({
-      id: t.tags.id,
-      name: t.tags.name,
-      tagGroupId: t.tags.tag_group_id,
-      tagGroupName: t.tags.tag_group?.name
-    }))
-
-    const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-    const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-
-    // Generate presigned URL for source document if exists
-    let sourceUrl = null
-    let sourceFilename = null
-    let sourceContentType = null
-    let sourceByteSize = null
+    // Generate presigned URL if blob exists
     if (sourceAttachment?.blob) {
-      sourceUrl = await idriveService.getSignedUrl(sourceAttachment.blob.key)
-      sourceFilename = sourceAttachment.blob.filename
-      sourceContentType = sourceAttachment.blob.contentType
-      sourceByteSize = sourceAttachment.blob.byteSize
+      const presignedUrl = await idriveService.getSignedUrl(sourceAttachment.blob.key, 3600)
+      sourceAttachment.blob.url = presignedUrl
     }
 
-    return {
-      id: summaryNote.id,
-      title: summaryNote.title,
-      description: summaryNote.description,
-      content: summaryNote.content,
-      blobId: sourceAttachment?.blobId || null,
-      sourceUrl,
-      sourceFilename,
-      sourceContentType,
-      sourceByteSize,
-      status: summaryNote.status,
-      is_active: summaryNote.is_active,
-      created_by: summaryNote.created_by,
-      created_at: summaryNote.created_at,
-      updated_at: summaryNote.updated_at,
-      tags: allTags,
-      universityTags,
-      semesterTags
+    // Attach source document to summary note
+    summaryNote.sourceAttachment = sourceAttachment
+
+    if (!summaryNote) {
+      throw new ValidationError('Summary note not found')
     }
+
+    return summaryNote
   }
 }

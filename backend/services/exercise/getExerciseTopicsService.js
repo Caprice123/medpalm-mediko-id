@@ -61,26 +61,10 @@ export class GetExerciseTopicsService extends BaseService {
         ])
         const cost = exerciseConstant.exercise_credit_cost
 
-        // Transform the response to match frontend expectations
-        const transformedTopics = topics.map(topic => ({
-            id: topic.id,
-            title: topic.title,
-            description: topic.description,
-            content_type: topic.content_type,
-            content: topic.content,
-            pdf_url: topic.pdf_url,
-            cost: parseFloat(cost),
-            tags: topic.exercise_topic_tags.map(t => ({
-                id: t.tags.id,
-                name: t.tags.name,
-                tagGroupId: t.tags.tag_group_id
-            })),
-            questionCount: topic.exercise_questions.length,
-            createdAt: topic.created_at,
-            updatedAt: topic.updated_at
-        }))
-
-        return transformedTopics
+        return {
+            topics,
+            cost
+        }
     }
 
     static validate(filters) {

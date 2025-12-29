@@ -25,10 +25,7 @@ export class GeminiService extends BaseAiService {
         const response = await result.response;
         const text = response.text();
 
-        // Parse JSON response
-        const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const parsedContent = JSON.parse(cleanedText);
-        return parsedContent
+        return text
     }
 
     /**
@@ -40,37 +37,41 @@ export class GeminiService extends BaseAiService {
      * @returns {Promise<any>} Parsed JSON response
      */
     static async generateFromPDF(model, systemPrompt, pdfBuffer) {
-        // Check file size (max 20MB for inline PDFs)
-        const fileSizeMB = pdfBuffer.length / (1024 * 1024);
+        return this.generateFromFile(model, systemPrompt, pdfBuffer, 'application/pdf');
+    }
 
-        console.log(`Processing PDF buffer - Size: ${fileSizeMB.toFixed(2)} MB`);
+    /**
+     * Generate result from file buffer (PDF, Image, etc.) with custom prompt
+     * Uses inline base64 data (fast, simple, reliable)
+     * @param {string} model - Model name (e.g., 'gemini-2.5-flash', 'gemini-2.0-flash')
+     * @param {string} systemPrompt - System prompt
+     * @param {Buffer} fileBuffer - File buffer
+     * @param {string} mimeType - File mime type (e.g., 'application/pdf', 'image/jpeg', 'image/png')
+     * @returns {Promise<string>} Raw text response
+     */
+    static async generateFromFile(model, systemPrompt, fileBuffer, mimeType) {
+        // Check file size (max 20MB for inline files)
+        const fileSizeMB = fileBuffer.length / (1024 * 1024);
+
+        console.log(`Processing file buffer (${mimeType}) - Size: ${fileSizeMB.toFixed(2)} MB`);
 
         if (fileSizeMB > 20) {
-            throw new Error(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
+            throw new Error(`File too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
         }
 
         // Convert to base64
-        const pdfBase64 = pdfBuffer.toString('base64');
+        const fileBase64 = fileBuffer.toString('base64');
 
-        console.log('PDF converted to base64, generating content...');
+        console.log('File converted to base64, generating content...');
 
-        // Generate content using inline PDF data
+        // Generate content using inline file data
         const geminiModel = genAI.getGenerativeModel({ model: model });
-        console.log([
-            {
-                inlineData: {
-                    mimeType: 'application/pdf',
-                    data: pdfBase64,
-                },
-            },
-            { text: systemPrompt },
-        ])
 
         const result = await geminiModel.generateContent([
             {
                 inlineData: {
-                    mimeType: 'application/pdf',
-                    data: pdfBase64,
+                    mimeType: mimeType,
+                    data: fileBase64,
                 },
             },
             { text: systemPrompt },

@@ -1,6 +1,7 @@
 import { GetMessagesService } from '#services/chatbot/getMessagesService'
 import { SendMessageService } from '#services/chatbot/sendMessageService'
 import { SubmitFeedbackService } from '#services/chatbot/submitFeedbackService'
+import { ChatbotMessageSerializer } from '#serializers/api/v1/chatbotMessageSerializer'
 
 class MessageController {
   // Get messages for a conversation
@@ -17,7 +18,7 @@ class MessageController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: ChatbotMessageSerializer.serialize(result.messages),
       pagination: result.pagination
     })
   }

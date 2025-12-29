@@ -11,12 +11,10 @@ export class AnatomyQuizSerializer {
       blob: quiz.blobId ? {
         id: quiz.blobId,
         url: quiz.image_url,
-        key: quiz.image_key,
         filename: quiz.image_filename,
         size: quiz.image_size
       } : null,
       status: quiz.status,
-      is_active: quiz.is_active,
       tags: quizTags.map(tag => ({
         id: tag.tags ? tag.tags.id : tag.tag ? tag.tag.id : tag.id,
         name: tag.tags ? tag.tags.name : tag.tag ? tag.tag.name : tag.name,
@@ -30,12 +28,8 @@ export class AnatomyQuizSerializer {
         id: q.id,
         question: q.question,
         answer: q.answer,
-        explanation: q.explanation || '',
         order: q.order !== undefined ? q.order : index
-      })),
-      questionCount: quizQuestions.length,
-      createdAt: quiz.created_at,
-      updatedAt: quiz.updated_at
+      }))
     }
   }
 }

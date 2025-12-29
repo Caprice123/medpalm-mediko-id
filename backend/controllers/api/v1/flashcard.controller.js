@@ -1,7 +1,8 @@
 import { GetFlashcardDecksService } from '#services/flashcard/getFlashcardDecksService'
 import { StartFlashcardDeckService } from '#services/flashcard/startFlashcardDeckService'
 import { SubmitFlashcardProgressService } from '#services/flashcard/submitFlashcardProgressService'
-import { FlashcardDeckListSerializer } from '#serializers/admin/v1/flashcardDeckListSerializer'
+import { FlashcardDeckListSerializer } from '#serializers/api/v1/flashcardDeckListSerializer'
+import { FlashcardDeckSerializer } from '#serializers/api/v1/flashcardDeckSerializer'
 
 class FlashcardController {
   async getDecks(req, res) {
@@ -25,7 +26,9 @@ class FlashcardController {
     })
 
     return res.status(200).json({
-      data: result,
+      data: {
+        deck: FlashcardDeckSerializer.serialize(result.deck)
+      }
     })
   }
 

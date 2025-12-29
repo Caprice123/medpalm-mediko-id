@@ -86,7 +86,6 @@ class UploadController {
       }
 
       return res.status(200).json({
-        success: true,
         data: {
           blobId: blob.id,
           url: presignedUrl,

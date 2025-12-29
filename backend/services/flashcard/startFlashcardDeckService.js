@@ -160,16 +160,11 @@ export class StartFlashcardDeckService extends BaseService {
       })
 
       // Create deck snapshot with sorted cards
+      // NOTE: Flashcard needs 'back' (answer) for client-side similarity calculation
       const deckSnapshot = {
         id: deck.id,
         title: deck.title || 'Untitled',
         description: deck.description || '',
-        content_type: deck.content_type || 'text',
-        tags: (deck.flashcard_deck_tags || []).map(t => ({
-          id: t.tags?.id || t.id,
-          name: t.tags?.name || t.name || '',
-          type: t.tags?.type || t.type || ''
-        })),
         cards: sortedCards.map((card, index) => ({
           id: card.id,
           front: card.front || '',

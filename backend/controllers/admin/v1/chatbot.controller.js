@@ -2,6 +2,9 @@ import { GetAdminConversationsService } from '#services/chatbot/admin/getAdminCo
 import { GetAdminConversationService } from '#services/chatbot/admin/getAdminConversationService'
 import { GetAdminConversationMessagesService } from '#services/chatbot/admin/getAdminConversationMessagesService'
 import { DeleteAdminConversationService } from '#services/chatbot/admin/deleteAdminConversationService'
+import { ChatbotConversationSerializer } from '#serializers/admin/v1/chatbotConversationSerializer'
+import { ChatbotConversationListSerializer } from '#serializers/admin/v1/chatbotConversationListSerializer'
+import { ChatbotMessageSerializer } from '#serializers/admin/v1/chatbotMessageSerializer'
 
 class ChatbotAdminController {
   // Get all conversations with filters
@@ -16,7 +19,7 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: ChatbotConversationListSerializer.serialize(result.data),
       pagination: result.pagination
     })
   }
@@ -30,7 +33,7 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      data: conversation
+      data: ChatbotConversationSerializer.serialize(conversation)
     })
   }
 
@@ -46,7 +49,7 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: ChatbotMessageSerializer.serialize(result.messages),
       pagination: result.pagination
     })
   }
@@ -60,7 +63,9 @@ class ChatbotAdminController {
     })
 
     return res.status(200).json({
-      message: 'Conversation deleted successfully'
+      data: {
+        success: true
+      }
     })
   }
 }

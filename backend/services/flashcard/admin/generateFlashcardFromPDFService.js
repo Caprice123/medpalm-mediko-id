@@ -43,11 +43,15 @@ export class GenerateFlashcardFromPDFService extends BaseService {
 
         // Generate flashcards using PDF and custom prompt
         console.log(modelService.__method__)
-        const result = await modelService.generateFromPDF(
+        const text = await modelService.generateFromPDF(
             model,
             parsedSystemPrompt,
             pdfBuffer
         )
+
+        // Parse JSON response
+        const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+        const result = JSON.parse(cleanedText)
 
         // Ensure result is an array and has the expected structure
         const flashcards = Array.isArray(result) ? result : (result.flashcards || [])

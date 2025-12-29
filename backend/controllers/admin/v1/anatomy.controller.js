@@ -5,8 +5,10 @@ import { GetAnatomyQuizDetailService } from '#services/anatomy/admin/getAnatomyQ
 import { UpdateAnatomyQuizService } from '#services/anatomy/admin/updateAnatomyQuizService'
 import { DeleteAnatomyQuizService } from '#services/anatomy/admin/deleteAnatomyQuizService'
 import { AnatomyQuizSerializer } from '#serializers/admin/v1/anatomyQuizSerializer'
+import { AnatomyQuizListSerializer } from '#serializers/admin/v1/anatomyQuizListSerializer'
 import { AnatomyQuestionSerializer } from '#serializers/admin/v1/anatomyQuestionSerializer'
 import idriveService from '#services/idrive.service'
+import { ValidationError } from '#errors/validationError'
 
 class AnatomyController {
   async index(req, res) {
@@ -23,7 +25,7 @@ class AnatomyController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: AnatomyQuizListSerializer.serialize(result.data, result.attachmentMap),
       pagination: result.pagination
     })
   }
@@ -50,7 +52,6 @@ class AnatomyController {
 
     return res.status(201).json({
       data: AnatomyQuizSerializer.serialize(quiz),
-      message: 'Anatomy quiz created successfully'
     })
   }
 
@@ -107,10 +108,7 @@ class AnatomyController {
 
     // Check if file was uploaded
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Image file is required'
-      })
+        throw new ValidationError("Image file is required")
     }
 
     // Upload image and create blob using attachmentService

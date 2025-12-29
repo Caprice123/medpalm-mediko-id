@@ -88,32 +88,8 @@ export class GetMcqTopicsService extends BaseService {
     const hasMore = topics.length > limit
     const topicsToReturn = hasMore ? topics.slice(0, limit) : topics
 
-    // Format response
-    const formattedTopics = topicsToReturn.map(topic => {
-      const topicTags = topic.mcq_topic_tags.map(tt => ({
-        id: tt.tags.id,
-        name: tt.tags.name,
-        tagGroupId: tt.tags.tag_group_id,
-        tagGroup: {
-          name: tt.tags.tag_group?.name || null
-        }
-      }))
-
-      return {
-        id: topic.id,
-        title: topic.title,
-        description: topic.description,
-        quiz_time_limit: topic.quiz_time_limit,
-        passing_score: topic.passing_score,
-        status: topic.status,
-        question_count: topic.mcq_questions.length,
-        updated_at: topic.updated_at,
-        tags: topicTags
-      }
-    })
-
     return {
-      topics: formattedTopics,
+      topics: topicsToReturn,
       pagination: {
         page,
         limit,

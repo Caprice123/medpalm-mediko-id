@@ -35,37 +35,6 @@ export const DeckGrid = styled.div`
   }
 `
 
-export const DeckCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1.25rem;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-`
-
-export const DeckCardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  gap: 0.75rem;
-`
-
-export const DeckCardTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-  flex: 1;
-`
-
 export const DeckDescription = styled.p`
   color: #6b7280;
   font-size: 0.875rem;
@@ -132,30 +101,4 @@ export const StatValue = styled.span`
   font-size: 0.875rem;
   color: #374151;
   font-weight: 700;
-`
-
-export const StartButton = styled.button`
-  width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid #06b6d4;
-  background: white;
-  color: #0e7490;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #cffafe;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `

@@ -3,15 +3,17 @@ import { GetListAttemptsService } from '#services/exercise/attempts/getListAttem
 import { CreateNewAttemptService } from '#services/exercise/attempts/createNewAttemptService'
 import { StartExerciseTopicService } from '#services/exercise/startExerciseTopicService'
 import { SubmitExerciseProgressService } from '#services/exercise/submitExerciseProgressService'
+import { ExerciseTopicListSerializer } from '#serializers/api/v1/exerciseTopicListSerializer'
+import { ExerciseTopicSerializer } from '#serializers/api/v1/exerciseTopicSerializer'
 
 class ExerciseController {
   async getTopics(req, res) {
     const { university, semester } = req.query
 
-    const topics = await GetExerciseTopicsService.call({ university, semester })
+    const result = await GetExerciseTopicsService.call({ university, semester })
 
     return res.status(200).json({
-      data: topics
+      data: ExerciseTopicListSerializer.serialize(result.topics)
     })
   }
 
@@ -26,7 +28,9 @@ class ExerciseController {
     })
 
     return res.status(200).json({
-      data: result,
+      data: {
+        topic: ExerciseTopicSerializer.serialize(result.topic)
+      },
       message: 'Exercise topic started successfully'
     })
   }
@@ -44,42 +48,6 @@ class ExerciseController {
     return res.status(200).json({
       data: result,
       message: 'Exercise progress submitted successfully'
-    })
-  }
-
-  // Legacy session-based endpoints (kept for backward compatibility)
-  async attempts(req, res) {
-    const { userLearningSessionId } = req.params
-    const { page, perPage } = req.query
-    const userId = req.user.id
-
-    const result = await GetListAttemptsService.call({
-        userLearningSessionId,
-        userId,
-        page: page ? parseInt(page) : 1,
-        perPage: perPage ? parseInt(perPage) : 30
-    })
-
-    return res.status(200).json({
-        success: true,
-        data: result.data,
-        pagination: result.pagination
-    })
-  }
-
-  async createAttempts(req, res) {
-    const { userLearningSessionId } = req.params
-    const userId = req.user.id
-
-    const result = await CreateNewAttemptService.call({
-        userLearningSessionId,
-        userId
-    })
-
-    return res.status(201).json({
-        success: true,
-        data: result,
-        message: 'New attempt created successfully'
     })
   }
 }

@@ -32,27 +32,7 @@ export class GetSummaryNoteByIdService extends BaseService {
       throw new ValidationError('Summary note not found')
     }
 
-    // Separate tags by group
-    const allTags = note.summary_note_tags.map(t => ({
-      id: t.tags.id,
-      name: t.tags.name,
-      tagGroupId: t.tags.tag_group_id,
-      tagGroupName: t.tags.tag_group?.name
-    }))
-
-    const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-    const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-
-    return {
-      id: note.id,
-      title: note.title,
-      description: note.description,
-      content: note.content,
-      tags: allTags,
-      universityTags,
-      semesterTags,
-      createdAt: note.created_at,
-      updatedAt: note.updated_at
-    }
+    // Return raw Prisma data - serializers handle transformation
+    return note
   }
 }

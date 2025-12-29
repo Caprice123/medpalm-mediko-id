@@ -92,33 +92,9 @@ export class GetSummaryNotesService extends BaseService {
     // Only return perPage items (exclude the +1 check item)
     const paginatedNotes = summaryNotes.slice(0, perPage)
 
-    // Transform the response
-    const transformedNotes = paginatedNotes.map((note) => {
-      // Separate tags by group
-      const allTags = note.summary_note_tags.map(t => ({
-        id: t.tags.id,
-        name: t.tags.name,
-        tagGroupId: t.tags.tag_group_id,
-        tagGroupName: t.tags.tag_group?.name
-      }))
-
-      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-
-      return {
-        id: note.id,
-        title: note.title,
-        description: note.description,
-        tags: allTags,
-        universityTags,
-        semesterTags,
-        createdAt: note.created_at,
-        updatedAt: note.updated_at
-      }
-    })
-
+    // Return raw Prisma data - serializers handle transformation
     return {
-      data: transformedNotes,
+      data: paginatedNotes,
       pagination: {
         page,
         perPage,

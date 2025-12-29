@@ -97,24 +97,16 @@ export class StartExerciseTopicService extends BaseService {
       }
 
       // Create topic snapshot using shuffled questions
+      // NOTE: Do NOT include answer or explanation here - they should only be sent after submission
       const topicSnapshot = {
         id: topic.id,
         title: topic.title || 'Untitled',
         description: topic.description || '',
-        content_type: topic.content_type || 'text',
-        tags: (topic.exercise_topic_tags || []).map(t => ({
-          id: t.tags?.id || t.id,
-          name: t.tags?.name || t.name || '',
-          type: t.tags?.type || t.type || ''
-        })),
         questions: shuffledQuestions.map((q, index) => ({
           id: q.id,
           question: q.question || '',
-          answer: q.answer || '',
-          explanation: q.explanation || '',
           order: index // Use new shuffled order
-        })),
-        totalQuestions: shuffledQuestions.length
+        }))
       }
 
       return {

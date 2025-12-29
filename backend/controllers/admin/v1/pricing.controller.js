@@ -28,7 +28,6 @@ class PricingPlanController {
 
     res.status(201).json({
       data: plan,
-      message: 'Pricing plan created successfully'
     })
   }
 
@@ -38,7 +37,6 @@ class PricingPlanController {
 
     res.status(200).json({
       data: plan,
-      message: 'Pricing plan updated successfully'
     })
   }
 
@@ -48,7 +46,6 @@ class PricingPlanController {
 
     res.status(200).json({
       data: plan,
-      message: `Pricing plan ${plan.is_active ? 'activated' : 'deactivated'} successfully`
     })
   }
 }

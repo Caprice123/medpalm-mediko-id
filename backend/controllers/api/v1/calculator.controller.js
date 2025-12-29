@@ -1,5 +1,7 @@
 import { GetCalculatorTopicsService } from '#services/calculator/getCalculatorTopicsService'
 import { CalculateResultService } from '#services/calculator/calculateResultService'
+import { CalculatorTopicListSerializer } from '#serializers/api/v1/calculatorTopicListSerializer'
+import { CalculatorTopicSerializer } from '#serializers/api/v1/calculatorTopicSerializer'
 import prisma from '#prisma/client'
 
 class CalculatorController {
@@ -15,21 +17,11 @@ class CalculatorController {
     // Only return published and active calculators to users
     const publicTopics = result.topics.filter(topic =>
       topic.status === 'published' && topic.is_active
-    ).map(topic => ({
-      id: topic.id,
-      title: topic.title,
-      description: topic.description,
-      result_label: topic.result_label,
-      result_unit: topic.result_unit,
-      fields: topic.fields,
-      tags: topic.tags,
-      clinical_references: topic.clinical_references,
-      updated_at: topic.updated_at
-    }))
+    )
 
     return res.status(200).json({
       data: {
-        topics: publicTopics,
+        topics: CalculatorTopicListSerializer.serialize(publicTopics),
         pagination: result.pagination
       },
       message: 'Calculator topics retrieved successfully'
@@ -46,28 +38,19 @@ class CalculatorController {
     const topic = await prisma.calculator_topics.findUnique({
       where: { id: Number(topicId) },
       include: {
-                calculator_fields: {
-                    orderBy: {
-                        order: 'asc'
-                    },
-                    include: {
-                        field_options: {
-                            orderBy: {
-                                order: 'asc'
-                            }
-                        }
-                    }
-                },
-                calculator_topic_tags: {
-                    include: {
-                        tags: {
-                            include: {
-                                tag_group: true
-                            }
-                        }
-                    }
-                }
-            },
+        calculator_fields: {
+          orderBy: {
+            order: 'asc'
+          },
+          include: {
+            field_options: {
+              orderBy: {
+                order: 'asc'
+              }
+            }
+          }
+        }
+      }
     })
 
     if (!topic || topic.status !== 'published' || !topic.is_active) {
@@ -78,7 +61,7 @@ class CalculatorController {
     }
 
     return res.status(200).json({
-      data: topic,
+      data: CalculatorTopicSerializer.serialize(topic),
       message: 'Calculator topic detail retrieved successfully'
     })
   }

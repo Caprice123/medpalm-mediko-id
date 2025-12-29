@@ -3,6 +3,8 @@ import { GetCalculatorTopicDetailService } from '#services/calculator/getCalcula
 import { CreateCalculatorTopicService } from '#services/calculator/createCalculatorTopicService'
 import { UpdateCalculatorTopicService } from '#services/calculator/updateCalculatorTopicService'
 import { DeleteCalculatorTopicService } from '#services/calculator/deleteCalculatorTopicService'
+import { CalculatorTopicSerializer } from '#serializers/admin/v1/calculatorTopicSerializer'
+import { CalculatorTopicListSerializer } from '#serializers/admin/v1/calculatorTopicListSerializer'
 
 class CalculatorController {
   /**
@@ -16,10 +18,9 @@ class CalculatorController {
 
     return res.status(200).json({
       data: {
-        topics: result.topics,
+        topics: CalculatorTopicListSerializer.serialize(result.topics),
         pagination: result.pagination
       },
-      message: 'Calculator topics retrieved successfully'
     })
   }
 
@@ -33,8 +34,7 @@ class CalculatorController {
     const topic = await GetCalculatorTopicDetailService.call(id)
 
     return res.status(200).json({
-      data: topic,
-      message: 'Calculator topic retrieved successfully'
+      data: CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -71,8 +71,7 @@ class CalculatorController {
     })
 
     return res.status(201).json({
-      data: topic,
-      message: 'Calculator topic created successfully'
+      data: CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -111,8 +110,7 @@ class CalculatorController {
     })
 
     return res.status(200).json({
-      data: topic,
-      message: 'Calculator topic updated successfully'
+      data: CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -127,7 +125,6 @@ class CalculatorController {
 
     return res.status(200).json({
       data: result,
-      message: 'Calculator topic deleted successfully'
     })
   }
 }

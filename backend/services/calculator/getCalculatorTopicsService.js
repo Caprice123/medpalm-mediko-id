@@ -65,35 +65,9 @@ export class GetCalculatorTopicsService extends BaseService {
                 created_at: 'desc'
             }
         })
-        
-        // Transform the response
-        const transformedTopics = topics.map(topic => ({
-            id: topic.id,
-            title: topic.title,
-            description: topic.description,
-            formula: topic.formula,
-            result_label: topic.result_label,
-            result_unit: topic.result_unit,
-            status: topic.status,
-            is_active: topic.is_active,
-            fields_count: topic.calculator_fields.length,
-            fields: topic.calculator_fields,
-            tags: topic.calculator_topic_tags.map(tt => ({
-                id: tt.tags.id,
-                name: tt.tags.name,
-                tag_group_id: tt.tags.tag_group_id,
-                tag_group: {
-                    id: tt.tags.tag_group?.id,
-                    name: tt.tags.tag_group?.name
-                }
-            })),
-            created_by: topic.created_by,
-            created_at: topic.created_at,
-            updated_at: topic.updated_at
-        }))
 
         return {
-            topics: transformedTopics,
+            topics,
             pagination: {
                 page: currentPage,
                 perPage: itemsPerPage,

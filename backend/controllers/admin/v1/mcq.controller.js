@@ -6,6 +6,8 @@ import { GetMcqTopicDetailService } from '#services/mcq/admin/getMcqTopicDetailS
 import { GetMcqConstantsService } from '#services/mcq/admin/getMcqConstantsService'
 import { UpdateMcqConstantsService } from '#services/mcq/admin/updateMcqConstantsService'
 import { GenerateMcqQuestionsService } from '#services/mcq/admin/generateMcqQuestionsService'
+import { McqTopicSerializer } from '#serializers/admin/v1/mcqTopicSerializer'
+import { McqTopicListSerializer } from '#serializers/admin/v1/mcqTopicListSerializer'
 import idriveService from '#services/idrive.service'
 
 class McqController {
@@ -72,8 +74,7 @@ class McqController {
     })
 
     return res.status(201).json({
-      data: topic,
-      message: 'MCQ topic created successfully'
+      data: McqTopicSerializer.serialize(topic),
     })
   }
 
@@ -96,7 +97,7 @@ class McqController {
     })
 
     return res.status(200).json({
-      data: result.topics,
+      data: McqTopicListSerializer.serialize(result.topics),
       pagination: result.pagination
     })
   }
@@ -111,7 +112,7 @@ class McqController {
     const topic = await GetMcqTopicDetailService.call({ id: parseInt(id) })
 
     return res.status(200).json({
-      data: topic
+      data: McqTopicSerializer.serialize(topic)
     })
   }
 
@@ -154,7 +155,6 @@ class McqController {
 
     return res.status(200).json({
       data: topic,
-      message: 'MCQ topic updated successfully'
     })
   }
 
@@ -168,7 +168,9 @@ class McqController {
     await DeleteMcqTopicService.call({ id: parseInt(id) })
 
     return res.status(200).json({
-      message: 'MCQ topic deleted successfully'
+      data: {
+        success: true
+      }
     })
   }
 
@@ -197,7 +199,9 @@ class McqController {
     await UpdateMcqConstantsService.call({ constants })
 
     return res.status(200).json({
-      message: 'Constants updated successfully'
+      data: {
+        success: true
+      }
     })
   }
 
@@ -239,7 +243,6 @@ class McqController {
 
     return res.status(200).json({
       data: questions,
-      message: 'MCQ questions generated successfully'
     })
   }
 }

@@ -42,29 +42,17 @@ export class GetMcqTopicSessionService extends BaseService {
       })
     }
 
-    // Format questions based on mode
-    const questions = topic.mcq_questions.map(q => {
-      const question = {
-        id: q.id,
-        question: q.question,
-        image_url: q.image_url,
-        option_a: q.option_a,
-        option_b: q.option_b,
-        option_c: q.option_c,
-        option_d: q.option_d,
-        order: q.order
-      }
+    // NOTE: Returns raw Prisma data with user progress attached
+    // Serializers will handle transformation and security (hiding answers in quiz mode)
 
-      // In learning mode, include explanation but not correct answer
-      if (mode === 'learning') {
-        question.explanation = q.explanation
-      }
+    // Attach user progress to questions
+    const questionsWithProgress = topic.mcq_questions.map(q => {
+      const questionData = { ...q }
 
-      // Add user progress if available
       if (userId) {
         const progress = userProgress.find(p => p.question_id === q.id)
         if (progress) {
-          question.userProgress = {
+          questionData.userProgress = {
             times_correct: progress.times_correct,
             times_incorrect: progress.times_incorrect,
             last_reviewed: progress.last_reviewed
@@ -72,19 +60,15 @@ export class GetMcqTopicSessionService extends BaseService {
         }
       }
 
-      return question
+      return questionData
     })
 
     return {
       topic: {
-        id: topic.id,
-        title: topic.title,
-        description: topic.description,
-        quiz_time_limit: topic.quiz_time_limit,
-        passing_score: topic.passing_score
+        ...topic,
+        mcq_questions: questionsWithProgress
       },
-      mode,
-      questions
+      mode
     }
   }
 }

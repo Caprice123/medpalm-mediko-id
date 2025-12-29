@@ -4,6 +4,8 @@ import { GetSkripsiSetService } from '#services/skripsi/getSkripsiSetService'
 import { UpdateSkripsiSetService } from '#services/skripsi/updateSkripsiSetService'
 import { UpdateSetContentService } from '#services/skripsi/updateSetContentService'
 import { DeleteSkripsiSetService } from '#services/skripsi/deleteSkripsiSetService'
+import { SkripsiSetListSerializer } from '#serializers/api/v1/skripsiSetListSerializer'
+import { SkripsiSetSerializer } from '#serializers/api/v1/skripsiSetSerializer'
 import { convertHtmlToDocxWithImages } from './htmlToDocx.controller.js'
 
 class SkripsiSetsController {
@@ -19,7 +21,7 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      data: result.data,
+      data: SkripsiSetListSerializer.serialize(result.data),
       pagination: result.pagination
     })
   }
@@ -52,7 +54,7 @@ class SkripsiSetsController {
     })
 
     return res.status(200).json({
-      data: set
+      data: SkripsiSetSerializer.serialize(set)
     })
   }
 

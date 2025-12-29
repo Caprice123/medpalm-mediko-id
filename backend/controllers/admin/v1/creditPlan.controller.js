@@ -11,7 +11,6 @@ class CreditPlanController {
         const plans = await GetListCreditsService.call(req)
 
         res.status(200).json({
-            success: true,
             data: CreditPlanSerializer.serialize(plans)
         })
     }

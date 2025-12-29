@@ -31,10 +31,7 @@ const getAdminSkripsiSetService = async (setId) => {
     throw new Error('Skripsi set not found')
   }
 
-  return {
-    ...set,
-    user: set.users
-  }
+  return set
 }
 
 export default getAdminSkripsiSetService

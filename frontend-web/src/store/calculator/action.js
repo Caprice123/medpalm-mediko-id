@@ -94,48 +94,6 @@ export const deleteCalculatorTopic = (topicId) => async (dispatch) => {
   }
 }
 
-// ============= Constants Actions =============
-
-/**
- * Fetch calculator constants (admin only)
- */
-export const fetchCalculatorConstants = (keys = null) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isConstantsLoading', value: true }))
-    
-    const queryParams = {}
-    if (keys && Array.isArray(keys)) {
-      queryParams.keys = keys.join(',')
-    }
-
-    const response = await getWithToken(Endpoints.calculators.admin.constants, queryParams)
-
-    return response.data.data || {}
-  } catch (err) {
-    handleApiError(err, dispatch)
-  } finally {
-    dispatch(setLoading({ key: 'isConstantsLoading', value: false }))
-  }
-}
-
-/**
- * Update calculator constants (admin only)
- */
-export const updateCalculatorConstants = (constants) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isUpdatingConstants', value: true }))
-    
-    const response = await putWithToken(Endpoints.calculators.admin.constants, constants)
-
-    return response.data.data || {}
-  } catch (err) {
-    handleApiError(err, dispatch)
-  } finally {
-    dispatch(setLoading({ key: 'isUpdatingConstants', value: false }))
-  }
-}
-
-
 export const getCalculatorTopics = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListCalculatorsLoading', value: true }))

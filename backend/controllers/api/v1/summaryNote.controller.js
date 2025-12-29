@@ -2,6 +2,8 @@ import { GetSummaryNotesService } from '#services/summaryNotes/getSummaryNotesSe
 import { GetSummaryNoteByIdService } from '#services/summaryNotes/getSummaryNoteByIdService'
 import { StartSummaryNoteSessionService } from '#services/summaryNotes/startSummaryNoteSessionService'
 import { GetSummaryNoteSessionService } from '#services/summaryNotes/getSummaryNoteSessionService'
+import { SummaryNoteListSerializer } from '#serializers/api/v1/summaryNoteListSerializer'
+import { SummaryNoteSerializer } from '#serializers/api/v1/summaryNoteSerializer'
 
 class SummaryNoteController {
   // Get all available summary notes for users
@@ -9,7 +11,7 @@ class SummaryNoteController {
     const result = await GetSummaryNotesService.call(req.query)
 
     return res.status(200).json({
-      data: result.data,
+      data: SummaryNoteListSerializer.serialize(result.data),
       pagination: result.pagination
     })
   }
@@ -21,7 +23,7 @@ class SummaryNoteController {
     const note = await GetSummaryNoteByIdService.call({ noteId: id })
 
     return res.status(200).json({
-      data: note
+      data: SummaryNoteSerializer.serialize(note)
     })
   }
 

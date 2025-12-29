@@ -1,0 +1,20 @@
+export class CalculatorTopicListSerializer {
+  static serialize(topics) {
+    return topics.map(topic => ({
+      id: topic.id,
+      title: topic.title,
+      description: topic.description,
+      status: topic.status,
+      fields_count: topic.calculator_fields?.length || topic._count?.calculator_fields || 0,
+      tags: (topic.calculator_topic_tags || []).map(tt => ({
+        id: tt.tags.id,
+        name: tt.tags.name,
+        tag_group: {
+          id: tt.tags.tag_group?.id,
+          name: tt.tags.tag_group?.name
+        }
+      })),
+      created_at: topic.created_at
+    }))
+  }
+}

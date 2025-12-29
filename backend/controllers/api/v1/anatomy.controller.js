@@ -1,5 +1,7 @@
 import { GetAnatomyQuizzesService } from '#services/anatomy/getAnatomyQuizzesService'
 import { GetAnatomyQuizDetailService } from '#services/anatomy/admin/getAnatomyQuizDetailService'
+import { AnatomyQuizListSerializer } from '#serializers/api/v1/anatomyQuizListSerializer'
+import { AnatomyQuizSerializer } from '#serializers/api/v1/anatomyQuizSerializer'
 import attachmentService from '#services/attachment/attachmentService'
 import prisma from '#prisma/client'
 
@@ -10,7 +12,7 @@ class AnatomyController {
     const result = await GetAnatomyQuizzesService.call({ university, semester })
 
     return res.status(200).json({
-      data: result.data,
+      data: AnatomyQuizListSerializer.serialize(result.quizzes),
       pagination: result.pagination
     })
   }
@@ -34,7 +36,7 @@ class AnatomyController {
     // For now, return the quiz
 
     return res.status(200).json({
-      data: quiz
+      data: AnatomyQuizSerializer.serialize(quiz)
     })
   }
 

@@ -28,7 +28,11 @@ export class GenerateFlashcardFromTextService extends BaseService {
         const parsedSystemPrompt = this.buildSystemPrompt(systemPrompt, options)
         const modelService = RouterUtils.call(model)
 
-        const result = await modelService.generateFromText(model, parsedSystemPrompt)
+        const text = await modelService.generateFromText(model, parsedSystemPrompt)
+
+        // Parse JSON response
+        const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+        const result = JSON.parse(cleanedText)
 
         // Ensure result is an array and has the expected structure
         const flashcards = Array.isArray(result) ? result : (result.flashcards || [])
