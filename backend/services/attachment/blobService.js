@@ -26,7 +26,7 @@ class BlobService {
         byteSize,
         checksum,
         metadata: JSON.stringify(metadata),
-        uploadedAt: new Date()
+        uploaded_at: new Date()
       }
     });
 

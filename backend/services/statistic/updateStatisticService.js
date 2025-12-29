@@ -61,7 +61,7 @@ export class UpdateStatisticService extends BaseService {
       totalQuestions,
       totalSummaryNotes
     ] = await Promise.all([
-      prisma.users.count({ where: { isActive: true } }),
+      prisma.users.count({ where: { is_active: true } }),
       prisma.user_learning_sessions.count(),
       prisma.flashcard_cards.count(),
       prisma.exercise_questions.count(),

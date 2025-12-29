@@ -10,10 +10,8 @@ export class ExerciseTopicSerializer {
             description: topic.description,
             contentType: topic.content_type,
             content: topic.content,
-            // PDF-related fields
-            pdfUrl: topic.pdf_url || topic.blob?.url || null,
-            pdfKey: topic.pdf_key || topic.blob?.key || null,
-            pdfFilename: topic.pdf_filename || topic.blob?.filename || null,
+            status: topic.status,
+            blob: topic.blob || null,
             tags: topicTags.map(tag => ({
                 id: tag.tags ? tag.tags.id : (tag.tag ? tag.tag.id : tag.id),
                 name: tag.tags ? tag.tags.name : (tag.tag ? tag.tag.name : tag.name),

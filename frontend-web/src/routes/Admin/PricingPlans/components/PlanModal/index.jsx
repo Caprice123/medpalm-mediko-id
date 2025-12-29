@@ -109,7 +109,6 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
                   value={formData.duration_days}
                   onChange={onChange}
                   required={showDuration}
-                  min="1"
                   placeholder="e.g., 30"
                 />
               </FormGroup>

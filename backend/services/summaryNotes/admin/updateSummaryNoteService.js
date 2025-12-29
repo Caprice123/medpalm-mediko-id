@@ -71,8 +71,8 @@ export class UpdateSummaryNoteService extends BaseService {
         // Delete existing source document attachment
         await tx.attachments.deleteMany({
           where: {
-            recordType: 'summary_note',
-            recordId: parseInt(id),
+            record_type: 'summary_note',
+            record_id: parseInt(id),
             name: 'source_document'
           }
         })
@@ -82,9 +82,9 @@ export class UpdateSummaryNoteService extends BaseService {
           await tx.attachments.create({
             data: {
               name: 'source_document',
-              recordType: 'summary_note',
-              recordId: parseInt(id),
-              blobId: parseInt(blobId)
+              record_type: 'summary_note',
+              record_id: parseInt(id),
+              blob_id: parseInt(blobId)
             }
           })
         }

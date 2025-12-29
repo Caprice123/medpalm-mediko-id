@@ -1,7 +1,5 @@
 import { useSelector } from 'react-redux'
-import Dropdown from '@components/common/Dropdown'
 import ModelDropdown from '@components/common/ModelDropdown'
-import { aiModelsGrouped, getModelLabel } from '@config/aiModels'
 import {
   Overlay,
   Modal,
@@ -130,8 +128,6 @@ function SettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Tab</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="10"
                     placeholder="3"
                     value={form.values.skripsi_ai_researcher_count}
                     onChange={(e) => form.setFieldValue('skripsi_ai_researcher_count', e.target.value)}

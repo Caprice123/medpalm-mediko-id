@@ -1,17 +1,20 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import {
   createExerciseTopic,
-  fetchAdminExerciseTopics
+  fetchAdminExerciseTopics,
+  generateQuestions,
+  generateQuestionsFromPDF
 } from '@store/exercise/adminAction'
+import { upload } from '@store/common/action'
 import { KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { createTopicSchema } from '../../validationSchema/exerciseTopicSchema'
 
 export const useCreateTopic = (onClose) => {
   const dispatch = useDispatch()
-  const [pdfInfo, setPdfInfo] = useState(null)
+  const { loading } = useSelector(state => state.exercise)
+  const { loading: commonLoading } = useSelector(state => state.common)
 
   const form = useFormik({
     initialValues: {
@@ -19,7 +22,14 @@ export const useCreateTopic = (onClose) => {
       description: '',
       questions: [],
       universityTags: [],
-      semesterTags: []
+      semesterTags: [],
+      status: 'draft',
+      // Generation fields
+      contentType: 'document',
+      textContent: '',
+      pdfFile: null,
+      questionCount: 10,
+      uploadedBlobId: null
     },
     validationSchema: createTopicSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -27,15 +37,13 @@ export const useCreateTopic = (onClose) => {
         // Combine university and semester tags
         const allTags = [...values.universityTags, ...values.semesterTags]
 
+        // Build payload based on content type
         const payload = {
           title: values.title.trim(),
           description: values.description.trim(),
-          contentType: pdfInfo ? 'pdf' : 'text',
-          content: pdfInfo ? '' : '',
-          pdf_url: pdfInfo?.pdfUrl || '',
-          pdf_key: pdfInfo?.pdfKey || '',
-          pdf_filename: pdfInfo?.pdfFilename || '',
+          contentType: values.contentType === 'document' ? 'pdf' : 'text',
           tags: allTags.map(t => t.id),
+          status: values.status,
           questions: values.questions.map((q, index) => ({
             question: q.question,
             answer: q.answer,
@@ -44,14 +52,24 @@ export const useCreateTopic = (onClose) => {
           }))
         }
 
+        // Add content or blobId based on contentType
+        if (values.contentType === 'document') {
+          // Document type: send blobId, no content
+          payload.blobId = values.uploadedBlobId
+        } else {
+          // Text type: send content, no blobId
+          payload.content = values.textContent.trim()
+        }
+
+        console.log('Create payload:', payload)
+
         await dispatch(createExerciseTopic(payload))
 
         // Refresh the list
         await dispatch(fetchAdminExerciseTopics())
 
-        // Reset form and clear generated content
+        // Reset form (includes all generation fields)
         resetForm()
-        setPdfInfo(null)
 
         // Close modal
         if (onClose) {
@@ -113,12 +131,94 @@ export const useCreateTopic = (onClose) => {
     }
   }
 
+  // Handle file selection and upload
+  const handleFileSelect = async (file) => {
+    if (file.type === 'application/pdf') {
+      form.setFieldValue('pdfFile', file)
+
+      // Immediately upload PDF to get blobId
+      try {
+        const uploadResult = await dispatch(upload(file, 'exercise'))
+
+        if (uploadResult?.blobId) {
+          form.setFieldValue('uploadedBlobId', uploadResult.blobId)
+        } else {
+          throw new Error('Upload failed - no blobId returned')
+        }
+      } catch (error) {
+        console.error('Failed to upload PDF:', error)
+        alert('Gagal upload PDF. Silakan coba lagi.')
+        form.setFieldValue('pdfFile', null)
+      }
+    }
+  }
+
+  // Handle question generation
+  const handleGenerate = async () => {
+    try {
+      const { contentType, uploadedBlobId, textContent, questionCount } = form.values
+
+      if (contentType === 'document' && uploadedBlobId) {
+        // Generate from PDF using blobId (file already uploaded)
+        const result = await dispatch(generateQuestionsFromPDF(uploadedBlobId, questionCount))
+
+        if (!result || !result.questions) {
+          alert('Gagal generate soal dari PDF')
+          return
+        }
+
+        // Update form with generated questions
+        const questionsWithIds = result.questions.map((question, index) => ({
+          ...question,
+          id: Date.now() + index,
+          order: index
+        }))
+        form.setFieldValue('questions', questionsWithIds)
+      } else if (contentType === 'text' && textContent.trim()) {
+        // Generate from text
+        const questions = await dispatch(generateQuestions(textContent, 'text', questionCount))
+
+        if (!questions || questions.length === 0) {
+          return
+        }
+
+        // Update form with generated questions
+        const questionsWithIds = questions.map((question, index) => ({
+          ...question,
+          id: Date.now() + index,
+          order: index
+        }))
+        form.setFieldValue('questions', questionsWithIds)
+      } else {
+        // Validation
+        if (contentType === 'document' && !uploadedBlobId) {
+          alert('Silakan upload file PDF terlebih dahulu.')
+        } else if (contentType === 'text' && !textContent.trim()) {
+          alert('Silakan masukkan teks terlebih dahulu.')
+        }
+      }
+    } catch (error) {
+      console.error('Failed to generate questions:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat generate soal'
+      alert(`Gagal generate soal: ${errorMessage}`)
+    }
+  }
+
+  const canGenerate = form.values.contentType === 'document'
+    ? form.values.uploadedBlobId !== null && !commonLoading.isUploading
+    : form.values.textContent.trim().length > 0
+
+  const isGenerating = loading.isGeneratingQuestions || commonLoading.isUploading
+
   return {
     form,
     sensors,
     handleAddQuestion,
     handleRemoveQuestion,
     handleDragEnd,
-    setPdfInfo
+    handleFileSelect,
+    handleGenerate,
+    canGenerate,
+    isGenerating
   }
 }

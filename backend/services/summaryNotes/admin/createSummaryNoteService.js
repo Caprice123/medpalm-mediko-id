@@ -56,9 +56,9 @@ export class CreateSummaryNoteService extends BaseService {
         await tx.attachments.create({
           data: {
             name: 'source_document',
-            recordType: 'summary_note',
-            recordId: summaryNote.id,
-            blobId: parseInt(blobId)
+            record_type: 'summary_note',
+            record_id: summaryNote.id,
+            blob_id: parseInt(blobId)
           }
         })
       }

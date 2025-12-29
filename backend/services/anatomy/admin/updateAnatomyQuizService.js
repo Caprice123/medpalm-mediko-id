@@ -75,8 +75,8 @@ export class UpdateAnatomyQuizService extends BaseService {
       // Delete old attachment
       const oldAttachment = await prisma.attachments.findFirst({
         where: {
-          recordType: 'anatomy_quiz',
-          recordId: parseInt(quizId),
+          record_type: 'anatomy_quiz',
+          record_id: parseInt(quizId),
           name: 'image'
         }
       })
@@ -88,8 +88,8 @@ export class UpdateAnatomyQuizService extends BaseService {
       // Create new attachment
       await attachmentService.attach({
         blobId,
-        recordType: 'anatomy_quiz',
-        recordId: updatedQuiz.id,
+        record_type: 'anatomy_quiz',
+        record_id: updatedQuiz.id,
         name: 'image'
       })
     }

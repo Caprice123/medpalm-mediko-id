@@ -419,3 +419,25 @@ export const EmptyState = styled.div`
   color: #9ca3af;
   font-size: 0.9375rem;
 `
+
+export const StatusToggle = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+`
+
+export const StatusOption = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+
+  input {
+    cursor: pointer;
+    accent-color: #3b82f6;
+  }
+`

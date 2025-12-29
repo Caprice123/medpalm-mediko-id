@@ -100,7 +100,7 @@ export class GetEmbeddingsService {
         content: document.content,
         embedding: document.embedding,
         embeddingDimension: document.embedding?.length || 0,
-        createdAt: document.metadata?.created_at || null,
+        created_at: document.metadata?.created_at || null,
         type: document.metadata?.type || 'summary_note_chunk',
         metadata: document.metadata
       }

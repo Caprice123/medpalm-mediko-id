@@ -34,8 +34,8 @@ export class UpdateFlashcardDeckService extends BaseService {
                 // Delete existing PDF attachment
                 await tx.attachments.deleteMany({
                     where: {
-                        recordType: 'flashcard_deck',
-                        recordId: parseInt(deckId),
+                        record_type: 'flashcard_deck',
+                        record_id: parseInt(deckId),
                         name: 'pdf'
                     }
                 })
@@ -45,9 +45,9 @@ export class UpdateFlashcardDeckService extends BaseService {
                     await tx.attachments.create({
                         data: {
                             name: 'pdf',
-                            recordType: 'flashcard_deck',
-                            recordId: parseInt(deckId),
-                            blobId: blobId
+                            record_type: 'flashcard_deck',
+                            record_id: parseInt(deckId),
+                            blob_id: blobId
                         }
                     })
                 }
@@ -81,8 +81,8 @@ export class UpdateFlashcardDeckService extends BaseService {
             if (existingCards.length > 0) {
                 await tx.attachments.deleteMany({
                     where: {
-                        recordType: 'flashcard_card',
-                        recordId: { in: existingCards.map(c => c.id) }
+                        record_type: 'flashcard_card',
+                        record_id: { in: existingCards.map(c => c.id) }
                     }
                 })
             }
@@ -113,9 +113,9 @@ export class UpdateFlashcardDeckService extends BaseService {
                         await tx.attachments.create({
                             data: {
                                 name: 'image',
-                                recordType: 'flashcard_card',
-                                recordId: createdCard.id,
-                                blobId: blob.id
+                                record_type: 'flashcard_card',
+                                record_id: createdCard.id,
+                                blob_id: blob.id
                             }
                         })
                     }

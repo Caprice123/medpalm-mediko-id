@@ -4,7 +4,7 @@ import { BaseService } from "../baseService.js"
 import { GetConstantsService } from "../constant/getConstantsService.js"
 
 export class GetExerciseTopicsService extends BaseService {
-    static async call(filters = {}) {
+    static async call(filters = {}, page = 1, perPage = 20) {
         this.validate(filters)
 
         const where = {}
@@ -37,6 +37,10 @@ export class GetExerciseTopicsService extends BaseService {
             where.AND = tagFilters
         }
 
+        // Calculate pagination
+        const skip = (page - 1) * perPage
+        const take = perPage
+
         const topics = await prisma.exercise_topics.findMany({
             where,
             include: {
@@ -53,7 +57,9 @@ export class GetExerciseTopicsService extends BaseService {
             },
             orderBy: {
                 created_at: 'desc'
-            }
+            },
+            skip,
+            take
         })
 
         const exerciseConstant = await GetConstantsService.call([
@@ -61,9 +67,15 @@ export class GetExerciseTopicsService extends BaseService {
         ])
         const cost = exerciseConstant.exercise_credit_cost
 
+
         return {
             topics,
-            cost
+            cost,
+            pagination: {
+                page,
+                perPage,
+                isLastPage: topics.length < perPage || topics.length == 0
+            }
         }
     }
 

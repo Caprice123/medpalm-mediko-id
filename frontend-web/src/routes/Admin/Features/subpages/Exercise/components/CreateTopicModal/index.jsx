@@ -7,7 +7,6 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useCreateTopic } from '../../hooks/subhooks/useCreateTopic'
-import { useGenerateQuestions } from '../../hooks/subhooks/useGenerateQuestions'
 import {
   FormSection,
   Label,
@@ -37,6 +36,8 @@ import {
   EditTextarea,
   EditButtonGroup,
   ErrorText,
+  StatusToggle,
+  StatusOption,
   Button,
   HelpText,
   EmptyState
@@ -157,22 +158,20 @@ const CreateTopicModal = ({ onClose }) => {
   const { loading } = useSelector(state => state.exercise)
   const { tags } = useSelector(state => state.tags)
 
-  const { form, sensors, handleAddQuestion, handleRemoveQuestion, handleDragEnd, setPdfInfo } = useCreateTopic(onClose)
-
   const {
-    contentType,
-    setContentType,
-    textContent,
-    setTextContent,
-    pdfFile,
-    setPdfFile,
-    questionCount,
-    setQuestionCount,
+    form,
+    sensors,
+    handleAddQuestion,
+    handleRemoveQuestion,
+    handleDragEnd,
     handleFileSelect,
     handleGenerate,
     canGenerate,
     isGenerating
-  } = useGenerateQuestions(form, setPdfInfo)
+  } = useCreateTopic(onClose)
+
+  // Debug: Log current contentType on every render
+  console.log('CreateTopicModal render - contentType:', form.values.contentType)
 
   // Edit state
   const [editingQuestionId, setEditingQuestionId] = useState(null)
@@ -215,9 +214,14 @@ const CreateTopicModal = ({ onClose }) => {
       return
     }
 
+    console.log('Saving edit for question ID:', editingQuestionId)
+    console.log('Updated data:', editingQuestionData)
+
     const updatedQuestions = form.values.questions.map(q =>
-      q.id === editingQuestionId ? editingQuestionData : q
+      q.id === editingQuestionId ? { ...editingQuestionData, id: q.id } : q
     )
+
+    console.log('Updated questions array:', updatedQuestions)
     form.setFieldValue('questions', updatedQuestions)
     setEditingQuestionId(null)
     setEditingQuestionData(null)
@@ -264,8 +268,7 @@ const CreateTopicModal = ({ onClose }) => {
 
       <FormSection>
         <Label>Deskripsi</Label>
-        <Input
-          type="text"
+        <Textarea
           value={form.values.description}
           onChange={(e) => form.setFieldValue('description', e.target.value)}
           placeholder="Brief description of this topic"
@@ -304,41 +307,69 @@ const CreateTopicModal = ({ onClose }) => {
         <ContentTypeButtons>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'document'}
-            onClick={() => setContentType('document')}
+            isActive={form.values.contentType === 'document'}
+            onClick={() => {
+              console.log('Switching to document, current:', form.values.contentType)
+              form.setFieldValue('contentType', 'document')
+              console.log('After switch:', form.values.contentType)
+            }}
           >
             📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'text'}
-            onClick={() => setContentType('text')}
+            isActive={form.values.contentType === 'text'}
+            onClick={() => {
+              console.log('Switching to text, current:', form.values.contentType)
+              form.setFieldValue('contentType', 'text')
+              console.log('After switch:', form.values.contentType)
+            }}
           >
             📝 Text Content
           </ContentTypeButton>
         </ContentTypeButtons>
 
-        {contentType === 'document' ? (
+        {form.values.contentType === 'document' ? (
           <FileUpload
-            file={pdfFile ? {
-              name: pdfFile.name,
-              type: pdfFile.type,
-              size: pdfFile.size
+            file={form.values.pdfFile ? {
+              name: form.values.pdfFile.name,
+              type: form.values.pdfFile.type,
+              size: form.values.pdfFile.size
             } : null}
             onFileSelect={handleFileSelect}
-            onRemove={() => setPdfFile(null)}
+            onRemove={() => {
+              form.setFieldValue('pdfFile', null)
+              form.setFieldValue('uploadedBlobId', null)
+            }}
             isUploading={isGenerating}
             acceptedTypes={['application/pdf']}
             acceptedTypesLabel="PDF file"
             maxSizeMB={20}
             uploadText="Klik untuk upload PDF"
-            actions={<></>}
+            actions={
+              <>
+                {form.values.pdfFile && (
+                  <RemoveFileButton
+                    onClick={() => {
+                      // Check if it's a File object or just an object with URL
+                      const url = form.values.pdfFile instanceof File
+                        ? URL.createObjectURL(form.values.pdfFile)
+                        : form.values.pdfFile.url
+                      window.open(url, '_blank')
+                    }}
+                    style={{ backgroundColor: '#3b82f6', color: 'white' }}
+                  >
+                    Lihat
+                  </RemoveFileButton>
+                )}
+              </>
+            }
           />
         ) : (
           <FormSection>
             <Textarea
-              value={textContent}
-              onChange={(e) => setTextContent(e.target.value)}
+              value={form.values.textContent}
+              onChange={(e) => form.setFieldValue('textContent', e.target.value)}
               placeholder="Paste your medical study material here..."
             />
             <HelpText>Masukkan konten yang ingin di-generate menjadi soal</HelpText>
@@ -350,10 +381,8 @@ const CreateTopicModal = ({ onClose }) => {
         <Label>Jumlah Soal yang Akan Digenerate</Label>
         <Input
           type="number"
-          min="1"
-          max="50"
-          value={questionCount}
-          onChange={(e) => setQuestionCount(parseInt(e.target.value) || 10)}
+          value={form.values.questionCount}
+          onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value) || 10)}
         />
         <HelpText>Pilih antara 1-50 soal</HelpText>
       </FormSection>
@@ -361,7 +390,7 @@ const CreateTopicModal = ({ onClose }) => {
       <FormSection>
         <Button
           type="button"
-          variant="success"
+          variant="primary"
           onClick={handleGenerate}
           disabled={isGenerating || !canGenerate}
           style={{ width: '100%', padding: '0.875rem 1.5rem', fontSize: '0.9375rem' }}
@@ -412,6 +441,29 @@ const CreateTopicModal = ({ onClose }) => {
           </EmptyState>
         )}
       </QuestionsSection>
+
+      <StatusToggle>
+        <StatusOption>
+          <input
+            type="radio"
+            name="status"
+            value="draft"
+            checked={form.values.status === 'draft'}
+            onChange={(e) => form.setFieldValue('status', e.target.value)}
+          />
+          Save as Draft
+        </StatusOption>
+        <StatusOption>
+          <input
+            type="radio"
+            name="status"
+            value="published"
+            checked={form.values.status === 'published'}
+            onChange={(e) => form.setFieldValue('status', e.target.value)}
+          />
+          Publish Now
+        </StatusOption>
+      </StatusToggle>
     </Modal>
   )
 }

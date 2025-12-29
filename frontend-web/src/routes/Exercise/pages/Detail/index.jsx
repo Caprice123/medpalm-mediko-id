@@ -10,6 +10,7 @@ function ExerciseDetailPage() {
   const {
     topicSnapshot,
     isStarting,
+    result,
     handleSubmitAnswers,
     handleBackToTopicList
   } = useExerciseDetail()
@@ -42,11 +43,12 @@ function ExerciseDetailPage() {
     )
   }
 
-  // Show exercise player
+  // Show exercise player with result if available
   return (
     <PageContainer>
       <ExercisePlayer
         topic={topicSnapshot}
+        result={result}
         onSubmit={handleSubmitAnswers}
         onBack={handleBackToTopicList}
       />

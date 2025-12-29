@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Avatar, Button, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection } from "./Navbar.styles"
 import { useEffect } from "react"
 import { logout } from '@store/auth/action'
-import { fetchCreditBalance } from '@store/credit/action'
 import { fetchUserStatus } from '@store/pricing/action'
 import { getUserData } from '@utils/authToken'
 import { useDispatch, useSelector } from "react-redux"
@@ -12,7 +11,6 @@ import CreditPurchase from '@components/CreditPurchase'
 export const Navbar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { balance } = useSelector(state => state.credit)
     const { userStatus } = useSelector(state => state.pricing)
     const [user, setUser] = useState(null)
     const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
@@ -23,8 +21,6 @@ export const Navbar = () => {
           try {
             // Fetch user status (subscription + credits)
             await dispatch(fetchUserStatus())
-            // Also fetch credit balance for backward compatibility
-            await dispatch(fetchCreditBalance())
           } catch (error) {
             console.error('Failed to fetch user data:', error)
           }
@@ -53,7 +49,6 @@ export const Navbar = () => {
   const handlePurchaseSuccess = async () => {
     // Refresh user data after successful purchase
     await dispatch(fetchUserStatus())
-    await dispatch(fetchCreditBalance())
   }
 
 
@@ -72,14 +67,19 @@ export const Navbar = () => {
                 <>
                   <StatusItem>
                     <span>⭐</span>
-                    <span>{userStatus?.subscription?.pricing_plan?.name || 'Premium'}</span>
+                    <span>
+                      Active
+                      {userStatus?.subscription?.daysRemaining < 14 && (
+                        <> ({userStatus?.subscription?.daysRemaining} days left)</>
+                      )}
+                    </span>
                   </StatusItem>
                   <StatusDivider />
                 </>
               )}
               <StatusItem>
                 <span>💎</span>
-                <span>{balance}</span>
+                <span>{userStatus?.creditBalance ?? 0} Credits</span>
               </StatusItem>
             </StatusSection>
             {user && (

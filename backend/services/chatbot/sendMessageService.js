@@ -76,7 +76,7 @@ export class SendMessageService extends BaseService {
 
       // Get user's credit balance
       const userCredit = await prisma.user_credits.findUnique({
-        where: { userId: userId }
+        where: { user_id: userId }
       })
 
       if (!userCredit || userCredit.balance < messageCost) {
@@ -207,28 +207,28 @@ export class SendMessageService extends BaseService {
     // Deduct credits from user and create transaction
     if (requiresCredits && creditsUsed > 0) {
       const userCredit = await prisma.user_credits.findUnique({
-        where: { userId: userId }
+        where: { user_id: userId }
       })
 
       const newBalance = userCredit.balance - creditsUsed
 
       // Update user credit balance
       await prisma.user_credits.update({
-        where: { userId: userId },
+        where: { user_id: userId },
         data: { balance: newBalance }
       })
 
       // Create credit transaction record
       await prisma.credit_transactions.create({
         data: {
-          userId: userId,
-          userCreditId: userCredit.id,
+          user_id: userId,
+          user_credit_id: userCredit.id,
           type: 'deduction',
           amount: -creditsUsed,
-          balanceBefore: userCredit.balance,
-          balanceAfter: newBalance,
+          balance_before: userCredit.balance,
+          balance_after: newBalance,
           description: `Chatbot ${mode} mode - 1 pesan`,
-          paymentStatus: 'completed'
+          payment_status: 'completed'
         }
       })
     }
@@ -278,7 +278,7 @@ export class SendMessageService extends BaseService {
         id: userMessage.id,
         senderType: userMessage.sender_type,
         content: userMessage.content,
-        createdAt: userMessage.created_at
+        created_at: userMessage.created_at
       },
       aiMessage: {
         id: completeAiMessage.id,
@@ -294,7 +294,7 @@ export class SendMessageService extends BaseService {
           url: src.url,
           score: src.score
         })),
-        createdAt: completeAiMessage.created_at
+        created_at: completeAiMessage.created_at
       }
     }
   }
@@ -362,26 +362,26 @@ export class SendMessageService extends BaseService {
       // Deduct credits from user and create transaction
       if (requiresCredits && creditsUsed > 0) {
         const userCredit = await prisma.user_credits.findUnique({
-          where: { userId: userId }
+          where: { user_id: userId }
         })
 
         const newBalance = userCredit.balance - creditsUsed
 
         await prisma.user_credits.update({
-          where: { userId: userId },
+          where: { user_id: userId },
           data: { balance: newBalance }
         })
 
         await prisma.credit_transactions.create({
           data: {
-            userId: userId,
-            userCreditId: userCredit.id,
+            user_id: userId,
+            user_credit_id: userCredit.id,
             type: 'deduction',
             amount: -creditsUsed,
-            balanceBefore: userCredit.balance,
-            balanceAfter: newBalance,
+            balance_before: userCredit.balance,
+            balance_after: newBalance,
             description: `Chatbot ${mode} mode - 1 pesan`,
-            paymentStatus: 'completed'
+            payment_status: 'completed'
           }
         })
       }
@@ -421,7 +421,7 @@ export class SendMessageService extends BaseService {
           id: userMessage.id,
           senderType: userMessage.sender_type,
           content: userMessage.content,
-          createdAt: userMessage.created_at
+          created_at: userMessage.created_at
         },
         aiMessage: {
           id: aiMessage.id,
@@ -430,7 +430,7 @@ export class SendMessageService extends BaseService {
           content: aiMessage.content,
           creditsUsed: aiMessage.credits_used,
           sources: sources || [],
-          createdAt: aiMessage.created_at
+          created_at: aiMessage.created_at
         }
       })
     } catch (error) {
@@ -537,26 +537,26 @@ export class SendMessageService extends BaseService {
       // Deduct credits from user and create transaction
       if (requiresCredits && creditsUsed > 0) {
         const userCredit = await prisma.user_credits.findUnique({
-          where: { userId: userId }
+          where: { user_id: userId }
         })
 
         const newBalance = userCredit.balance - creditsUsed
 
         await prisma.user_credits.update({
-          where: { userId: userId },
+          where: { user_id: userId },
           data: { balance: newBalance }
         })
 
         await prisma.credit_transactions.create({
           data: {
-            userId: userId,
-            userCreditId: userCredit.id,
+            user_id: userId,
+            user_credit_id: userCredit.id,
             type: 'deduction',
             amount: -creditsUsed,
-            balanceBefore: userCredit.balance,
-            balanceAfter: newBalance,
+            balance_before: userCredit.balance,
+            balance_after: newBalance,
             description: `Chatbot ${mode} mode - 1 pesan`,
-            paymentStatus: 'completed'
+            payment_status: 'completed'
           }
         })
       }
@@ -596,7 +596,7 @@ export class SendMessageService extends BaseService {
           id: userMessage.id,
           senderType: userMessage.sender_type,
           content: userMessage.content,
-          createdAt: userMessage.created_at
+          created_at: userMessage.created_at
         },
         aiMessage: {
           id: aiMessage.id,
@@ -605,7 +605,7 @@ export class SendMessageService extends BaseService {
           content: aiMessage.content,
           creditsUsed: aiMessage.credits_used,
           sources: sources,
-          createdAt: aiMessage.created_at
+          created_at: aiMessage.created_at
         }
       })
     } catch (error) {

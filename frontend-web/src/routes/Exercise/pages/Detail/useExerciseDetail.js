@@ -11,6 +11,7 @@ export const useExerciseDetail = () => {
 
   const [topicSnapshot, setTopicSnapshot] = useState(null)
   const [isStarting, setIsStarting] = useState(false)
+  const [result, setResult] = useState(null)
 
   // Start the topic when component mounts
   useEffect(() => {
@@ -37,12 +38,10 @@ export const useExerciseDetail = () => {
   const handleSubmitAnswers = async (answers) => {
     try {
       // Submit answers to update spaced repetition data
-      const result = await dispatch(submitExerciseProgress(id, answers))
+      const submitResult = await dispatch(submitExerciseProgress(id, answers))
 
-      alert(`Latihan selesai! Skor Anda: ${result.score}% (${result.correct_questions}/${result.totalQuestions} benar)`)
-
-      // Navigate back to list
-      navigate(ExerciseRoute.initialRoute)
+      // Store result to show result view
+      setResult(submitResult)
     } catch (error) {
       console.error('Failed to submit answers:', error)
       alert('Gagal menyimpan progress: ' + (error.message || 'Terjadi kesalahan'))
@@ -57,6 +56,7 @@ export const useExerciseDetail = () => {
   return {
     topicSnapshot,
     isStarting,
+    result,
     handleSubmitAnswers,
     handleBackToTopicList
   }

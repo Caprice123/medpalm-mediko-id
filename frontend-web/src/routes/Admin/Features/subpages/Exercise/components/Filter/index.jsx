@@ -3,7 +3,7 @@ import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAdminExerciseTopics, updateExerciseFilters } from '@store/exercise/action'
+import { fetchAdminExerciseTopics, updateExerciseFilters } from '@store/exercise/adminAction'
 import { useMemo } from 'react'
 
 export const Filter = () => {

@@ -14,8 +14,8 @@ export class CreateCreditPlanService extends BaseService {
                 description: description || null,
                 credits: parseInt(credits),
                 price: parseFloat(price),
-                isActive: isActive !== undefined ? isActive : true,
-                isPopular: isPopular !== undefined ? isPopular : false,
+                is_active: isActive !== undefined ? isActive : true,
+                is_popular: isPopular !== undefined ? isPopular : false,
                 discount: discount ? parseInt(discount) : 0,
                 order: order ? parseInt(order) : 0
             }

@@ -41,15 +41,20 @@ export class GetListUsersService extends BaseService {
         const users = await prisma.users.findMany({
             where,
             include: {
-                user_subscription: {
+                user_purchases: {
                     where: {
-                        start_date: { lte: now },
-                        end_date: { gte: now }
+                        bundle_type: { in: ['subscription', 'hybrid'] },
+                        subscription_status: 'active',
+                        subscription_end: { gte: now }
+                    },
+                    orderBy: {
+                        subscription_end: 'desc'
                     },
                     take: 1,
                     select: {
-                        start_date: true,
-                        end_date: true,
+                        subscription_start: true,
+                        subscription_end: true,
+                        subscription_status: true,
                     }
                 },
                 user_credit: {

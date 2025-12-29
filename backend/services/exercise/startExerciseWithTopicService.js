@@ -149,7 +149,7 @@ export class StartExerciseWithTopicService extends BaseService {
 
       // Check and deduct credits
       let userCredit = await tx.user_credits.findUnique({
-        where: { userId: parseInt(userId) }
+        where: { user_id: parseInt(userId) }
       })
 
       if (!userCredit || userCredit.balance < creditCost) {
@@ -209,7 +209,7 @@ export class StartExerciseWithTopicService extends BaseService {
 
       // Deduct credits
       await tx.user_credits.update({
-        where: { userId: parseInt(userId) },
+        where: { user_id: parseInt(userId) },
         data: {
           balance: { decrement: creditCost }
         }
@@ -218,14 +218,14 @@ export class StartExerciseWithTopicService extends BaseService {
       // Record credit transaction
       await tx.credit_transactions.create({
         data: {
-          userId: parseInt(userId),
-          userCreditId: userCredit.id,
+          user_id: parseInt(userId),
+          user_credit_id: userCredit.id,
           type: 'deduction',
           amount: -creditCost,
-          balanceBefore: userCredit.balance,
-          balanceAfter: userCredit.balance - creditCost,
+          balance_before: userCredit.balance,
+          balance_after: userCredit.balance - creditCost,
           description: `Started exercise: ${topic.title}`,
-          sessionId: attempt.exercise_session.id
+          session_id: attempt.exercise_session.id
         }
       })
 

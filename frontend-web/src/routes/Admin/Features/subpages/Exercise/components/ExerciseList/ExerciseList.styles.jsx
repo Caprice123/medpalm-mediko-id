@@ -81,13 +81,14 @@ export const TopicCardTitle = styled.h3`
   flex: 1;
 `
 
-export const TopicType = styled.span`
-  background: ${props => props.type === 'pdf' ? '#fef3c7' : '#dbeafe'};
-  color: ${props => props.type === 'pdf' ? '#92400e' : '#1e40af'};
+export const StatusBadge = styled.span`
+  background: ${props => props.published ? '#dcfce7' : '#e0e7ff'};
+  color: ${props => props.published ? '#16a34a' : '#4f46e5'};
   padding: 0.25rem 0.625rem;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 500;
+  text-transform: capitalize;
   white-space: nowrap;
 `
 

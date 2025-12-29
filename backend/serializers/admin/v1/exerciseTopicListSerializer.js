@@ -4,7 +4,7 @@ export class ExerciseTopicListSerializer {
       id: topic.id,
       title: topic.title,
       description: topic.description,
-      contentType: topic.content_type,
+      status: topic.status,
       questionCount: topic.exercise_questions?.length || topic._count?.exercise_questions || 0,
       tags: (topic.exercise_topic_tags || []).map(t => ({
         id: t.tags.id,
@@ -15,7 +15,6 @@ export class ExerciseTopicListSerializer {
         } : null
       })),
       createdAt: topic.created_at,
-      updatedAt: topic.updated_at
     }))
   }
 }

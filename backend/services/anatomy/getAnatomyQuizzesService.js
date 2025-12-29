@@ -106,8 +106,8 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Get attachments for all quizzes (MAJOR PERFORMANCE BOOST)
     const attachmentMap = await attachmentService.getBulkAttachmentsWithUrls(
       paginatedQuizzes.map(quiz => ({
-        recordType: 'anatomy_quiz',
-        recordId: quiz.id,
+        record_type: 'anatomy_quiz',
+        record_id: quiz.id,
         name: 'image'
       }))
     )

@@ -7,7 +7,6 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useUpdateTopic } from '../../hooks/subhooks/useUpdateTopic'
-import { useGenerateQuestions } from '../../hooks/subhooks/useGenerateQuestions'
 import {
   FormSection,
   Label,
@@ -40,6 +39,8 @@ import {
   EditTextarea,
   EditButtonGroup,
   ErrorText,
+  StatusToggle,
+  StatusOption,
   Button,
   HelpText,
   EmptyState
@@ -166,26 +167,14 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
     handleAddQuestion,
     handleRemoveQuestion,
     handleDragEnd,
-    setPdfInfo,
-    pdfInfo,
-    initialContentType,
-    initialTextContent
-  } = useUpdateTopic(topicToEdit, onClose)
-
-  const {
-    contentType,
-    setContentType,
-    textContent,
-    setTextContent,
-    pdfFile,
-    setPdfFile,
-    questionCount,
-    setQuestionCount,
     handleFileSelect,
     handleGenerate,
     canGenerate,
     isGenerating
-  } = useGenerateQuestions(form, setPdfInfo, initialContentType, initialTextContent)
+  } = useUpdateTopic(topicToEdit, onClose)
+
+  // Debug: Log current contentType on every render
+  console.log('UpdateTopicModal render - contentType:', form.values.contentType)
 
   // Edit state
   const [editingQuestionId, setEditingQuestionId] = useState(null)
@@ -228,9 +217,14 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
       return
     }
 
+    console.log('Saving edit for question ID:', editingQuestionId)
+    console.log('Updated data:', editingQuestionData)
+
     const updatedQuestions = form.values.questions.map(q =>
-      q.id === editingQuestionId ? editingQuestionData : q
+      q.id === editingQuestionId ? { ...editingQuestionData, id: q.id } : q
     )
+
+    console.log('Updated questions array:', updatedQuestions)
     form.setFieldValue('questions', updatedQuestions)
     setEditingQuestionId(null)
     setEditingQuestionData(null)
@@ -244,6 +238,7 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
   const handleModalClose = () => {
     if (onClose) onClose()
   }
+console.log(form)
 
   return (
     <Modal
@@ -271,40 +266,41 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
           value={form.values.title}
           onChange={(e) => form.setFieldValue('title', e.target.value)}
           placeholder="e.g., Anatomi Jantung"
-          disabled
         />
-        <HelpText>Judul tidak dapat diubah saat update</HelpText>
         {form.errors.title && <ErrorText>{form.errors.title}</ErrorText>}
       </FormSection>
 
       <FormSection>
         <Label>Deskripsi</Label>
-        <Input
-          type="text"
+        <Textarea
           value={form.values.description}
           onChange={(e) => form.setFieldValue('description', e.target.value)}
           placeholder="Brief description of this topic"
-          disabled
         />
-        <HelpText>Deskripsi tidak dapat diubah saat update</HelpText>
       </FormSection>
 
-      {/* University Tags (Read-only) */}
+      {/* University Tags */}
       <FormSection>
         <Label>Universitas</Label>
-        <div style={{ padding: '0.75rem', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
-          {form.values.universityTags.map(tag => tag.name).join(', ') || 'Tidak ada'}
-        </div>
-        <HelpText>Tag tidak dapat diubah saat update</HelpText>
+        <TagSelector
+          allTags={universityTags}
+          selectedTags={form.values.universityTags}
+          onTagsChange={handleUniversityTagsChange}
+          placeholder="-- Pilih Universitas --"
+          helpText="Pilih universitas untuk membantu mengorganisir topik"
+        />
       </FormSection>
 
-      {/* Semester Tags (Read-only) */}
+      {/* Semester Tags */}
       <FormSection>
         <Label>Semester</Label>
-        <div style={{ padding: '0.75rem', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
-          {form.values.semesterTags.map(tag => tag.name).join(', ') || 'Tidak ada'}
-        </div>
-        <HelpText>Tag tidak dapat diubah saat update</HelpText>
+        <TagSelector
+          allTags={semesterTags}
+          selectedTags={form.values.semesterTags || []}
+          onTagsChange={handleSemesterTagsChange}
+          placeholder="-- Pilih Semester --"
+          helpText="Pilih semester untuk membantu mengorganisir topik"
+        />
       </FormSection>
 
       {/* AI Generation Section */}
@@ -313,60 +309,73 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
         <ContentTypeButtons>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'document'}
-            onClick={() => setContentType('document')}
+            isActive={form.values.contentType === 'document'}
+            onClick={() => {
+              console.log('Switching to document, current:', form.values.contentType)
+              form.setFieldValue('contentType', 'document')
+              console.log('After switch:', form.values.contentType)
+            }}
           >
             📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'text'}
-            onClick={() => setContentType('text')}
+            isActive={form.values.contentType === 'text'}
+            onClick={() => {
+              console.log('Switching to text, current:', form.values.contentType)
+              form.setFieldValue('contentType', 'text')
+              console.log('After switch:', form.values.contentType)
+            }}
           >
             📝 Text Content
           </ContentTypeButton>
         </ContentTypeButtons>
 
-        {contentType === 'document' ? (
-          <>
-            {/* Show existing PDF info if topic was created from PDF */}
-            {pdfInfo && !pdfFile && (
-              <ExistingFileInfo style={{ marginBottom: '1rem', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd' }}>
-                <FileIcon>📕</FileIcon>
-                <div style={{ flex: 1 }}>
-                  <FileName>{pdfInfo.pdfFilename || 'Existing PDF'}</FileName>
-                  <div style={{ fontSize: '0.85rem', color: '#0369a1', marginTop: '0.25rem' }}>
-                    Topik ini dibuat dari PDF. Upload PDF baru untuk re-generate.
-                  </div>
-                </div>
-              </ExistingFileInfo>
-            )}
-
+        {form.values.contentType === 'document' ? (
             <FileUpload
-              file={pdfFile ? {
-                name: pdfFile.name,
-                type: pdfFile.type,
-                size: pdfFile.size
-              } : null}
-              onFileSelect={handleFileSelect}
-              onRemove={() => setPdfFile(null)}
-              isUploading={isGenerating}
-              acceptedTypes={['application/pdf']}
-              acceptedTypesLabel="PDF file"
-              maxSizeMB={20}
-              uploadText={pdfInfo ? 'Upload PDF baru untuk re-generate' : 'Klik untuk upload PDF'}
-              actions={<></>}
+            file={form.values.pdfFile ? {
+                name: form.values.pdfFile.name,
+                type: form.values.pdfFile.type,
+                size: form.values.pdfFile.size
+            } : null}
+            onFileSelect={handleFileSelect}
+            onRemove={() => {
+                form.setFieldValue('pdfFile', null)
+                form.setFieldValue('uploadedBlobId', null)
+            }}
+            isUploading={isGenerating}
+            acceptedTypes={['application/pdf']}
+            acceptedTypesLabel="PDF file"
+            maxSizeMB={20}
+            uploadText="Klik untuk upload PDF"
+            actions={
+                <>
+                {form.values.pdfFile && (
+                    <RemoveFileButton
+                    onClick={() => {
+                        // Check if it's a File object or just an object with URL
+                        const url = form.values.pdfFile instanceof File
+                            ? URL.createObjectURL(form.values.pdfFile)
+                            : form.values.pdfFile.url
+                        window.open(url, '_blank')
+                    }}
+                    style={{ backgroundColor: '#3b82f6', color: 'white' }}
+                    >
+                    Lihat
+                    </RemoveFileButton>
+                )}
+                </>
+            }
             />
-          </>
         ) : (
-          <FormSection>
+            <FormSection>
             <Textarea
-              value={textContent}
-              onChange={(e) => setTextContent(e.target.value)}
-              placeholder="Paste your medical study material here..."
+                value={form.values.textContent}
+                onChange={(e) => form.setFieldValue('textContent', e.target.value)}
+                placeholder="Paste your medical study material here..."
             />
             <HelpText>Masukkan konten yang ingin di-generate menjadi soal</HelpText>
-          </FormSection>
+            </FormSection>
         )}
       </FormSection>
 
@@ -374,10 +383,8 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
         <Label>Jumlah Soal yang Akan Digenerate</Label>
         <Input
           type="number"
-          min="1"
-          max="50"
-          value={questionCount}
-          onChange={(e) => setQuestionCount(parseInt(e.target.value) || 10)}
+          value={form.values.questionCount}
+          onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value) || 10)}
         />
         <HelpText>Pilih antara 1-50 soal</HelpText>
       </FormSection>
@@ -385,7 +392,7 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
       <FormSection>
         <Button
           type="button"
-          variant="success"
+          variant="primary"
           onClick={handleGenerate}
           disabled={isGenerating || !canGenerate}
           style={{ width: '100%', padding: '0.875rem 1.5rem', fontSize: '0.9375rem' }}
@@ -436,6 +443,29 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
           </EmptyState>
         )}
       </QuestionsSection>
+
+      <StatusToggle>
+        <StatusOption>
+          <input
+            type="radio"
+            name="status"
+            value="draft"
+            checked={form.values.status === 'draft'}
+            onChange={(e) => form.setFieldValue('status', e.target.value)}
+          />
+          Save as Draft
+        </StatusOption>
+        <StatusOption>
+          <input
+            type="radio"
+            name="status"
+            value="published"
+            checked={form.values.status === 'published'}
+            onChange={(e) => form.setFieldValue('status', e.target.value)}
+          />
+          Publish Now
+        </StatusOption>
+      </StatusToggle>
     </Modal>
   )
 }

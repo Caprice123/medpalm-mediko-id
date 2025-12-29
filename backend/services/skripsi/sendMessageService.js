@@ -84,7 +84,7 @@ export class SendMessageService extends BaseService {
       if (messageCost > 0) {
         // Get user's credit balance
         const userCredit = await prisma.user_credits.findUnique({
-          where: { userId: userId }
+          where: { user_id: userId }
         })
 
         if (!userCredit || userCredit.balance < messageCost) {
@@ -185,12 +185,12 @@ export class SendMessageService extends BaseService {
         if (messageCost > 0) {
           // Get full user credit record before deduction
           const userCredit = await prisma.user_credits.findUnique({
-            where: { userId: userId }
+            where: { user_id: userId }
           })
 
           // Deduct credits
           await prisma.user_credits.update({
-            where: { userId: userId },
+            where: { user_id: userId },
             data: {
               balance: { decrement: messageCost }
             }
@@ -198,21 +198,21 @@ export class SendMessageService extends BaseService {
 
           // Get updated balance
           const creditAfter = await prisma.user_credits.findUnique({
-            where: { userId: userId },
+            where: { user_id: userId },
             select: { balance: true }
           })
 
           // Log credit transaction
           await prisma.credit_transactions.create({
             data: {
-              userId: userId,
-              userCreditId: userCredit.id,
+              user_id: userId,
+              user_credit_id: userCredit.id,
               amount: -messageCost,
               type: 'deduction',
               description: `Skripsi Builder - Message sent`,
-              balanceBefore: userCredit.balance,
-              balanceAfter: creditAfter.balance,
-              paymentStatus: 'completed'
+              balance_before: userCredit.balance,
+              balance_after: creditAfter.balance,
+              payment_status: 'completed'
             }
           })
         }

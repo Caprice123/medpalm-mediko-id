@@ -1,7 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
-import IDriveService from '#services/idrive.service'
+import idriveService from '#services/idrive.service'
 
 export class GetExerciseTopicDetailService extends BaseService {
     static async call(topicId) {
@@ -15,7 +15,11 @@ export class GetExerciseTopicDetailService extends BaseService {
                 },
                 exercise_topic_tags: {
                     include: {
-                        tags: true
+                        tags: {
+                            include: {
+                                tag_group: true
+                            }
+                        }
                     }
                 }
             }
@@ -25,11 +29,11 @@ export class GetExerciseTopicDetailService extends BaseService {
             throw new ValidationError('Topic not found')
         }
 
-        // Fetch PDF attachment if exists
+        // Fetch PDF attachment for topic if exists
         const attachment = await prisma.attachments.findFirst({
             where: {
-                recordType: 'exercise_topic',
-                recordId: topic.id,
+                record_type: 'exercise_topic',
+                record_id: topic.id,
                 name: 'pdf'
             },
             include: {
@@ -37,26 +41,30 @@ export class GetExerciseTopicDetailService extends BaseService {
             }
         })
 
-        // Generate presigned URL if blob exists
+        // Generate presigned URL for topic PDF if blob exists
         let pdfUrl = null
         if (attachment?.blob) {
-            pdfUrl = await IDriveService.getSignedUrl(attachment.blob.key, 7 * 24 * 60 * 60)
+            pdfUrl = await idriveService.getSignedUrl(attachment.blob.key, 7 * 24 * 60 * 60)
         }
 
-        // Transform with blob data
+        // Transform tags to include tag_group info
         const transformedTopic = {
             ...topic,
             blob: attachment ? {
-                id: attachment.blobId,
+                id: attachment.blob_id,
                 url: pdfUrl,
                 key: attachment.blob.key,
                 filename: attachment.blob.filename,
-                size: attachment.blob.byteSize
+                size: attachment.blob.byte_size
             } : null,
             tags: topic.exercise_topic_tags.map(t => ({
                 id: t.tags.id,
                 name: t.tags.name,
-                type: t.tags.type
+                type: t.tags.type,
+                tag_group: t.tags.tag_group ? {
+                    id: t.tags.tag_group.id,
+                    name: t.tags.tag_group.name
+                } : null
             }))
         }
 

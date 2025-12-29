@@ -10,7 +10,7 @@ export class CreateAnatomyQuizService extends BaseService {
     blobId,
     tags,
     questions,
-    created_by,
+    createdBy,
     status = 'draft'
   }) {
     // Validate inputs
@@ -22,7 +22,7 @@ export class CreateAnatomyQuizService extends BaseService {
         title,
         description: description || '',
         status,
-        created_by,
+        created_by: createdBy,
         anatomy_questions: {
           create: questions.map((q, index) => ({
             question: q.question,
@@ -52,8 +52,8 @@ export class CreateAnatomyQuizService extends BaseService {
     if (blobId) {
       await attachmentService.attach({
         blobId,
-        recordType: 'anatomy_quiz',
-        recordId: quiz.id,
+        record_type: 'anatomy_quiz',
+        record_id: quiz.id,
         name: 'image'
       })
     }

@@ -51,9 +51,9 @@ export class CreateFlashcardDeckService extends BaseService {
                 await tx.attachments.create({
                     data: {
                         name: 'pdf',
-                        recordType: 'flashcard_deck',
-                        recordId: createdDeck.id,
-                        blobId: blobId
+                        record_type: 'flashcard_deck',
+                        record_id: createdDeck.id,
+                        blob_id: blobId
                     }
                 })
             }
@@ -69,9 +69,9 @@ export class CreateFlashcardDeckService extends BaseService {
                         const attachment = await tx.attachments.create({
                             data: {
                                 name: 'image',
-                                recordType: 'flashcard_card',
-                                recordId: createdDeck.flashcard_cards[i].id,
-                                blobId: blob.id
+                                record_type: 'flashcard_card',
+                                record_id: createdDeck.flashcard_cards[i].id,
+                                blob_id: blob.id
                             }
                         })
                     }

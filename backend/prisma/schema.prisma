@@ -57,14 +57,16 @@ model credit_transactions {
 }
 
 model exercise_questions {
-  id              Int             @id @default(autoincrement())
-  topic_id        Int
-  question        String
-  answer          String
-  order           Int             @default(0)
-  created_at      DateTime        @default(now())
-  updated_at      DateTime        @default(now())
-  exercise_topics exercise_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  id                        Int                         @id @default(autoincrement())
+  topic_id                  Int
+  question                  String
+  answer                    String
+  explanation               String?
+  order                     Int                         @default(0)
+  created_at                DateTime                    @default(now())
+  updated_at                DateTime                    @default(now())
+  exercise_topics           exercise_topics             @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  exercise_session_questions exercise_session_questions[]
 
   @@index([order])
   @@index([topic_id])
@@ -92,9 +94,9 @@ model exercise_sessions {
 model exercise_session_questions {
   id                  Int      @id @default(autoincrement())
   exercise_session_id Int
-  question_text       String
-  answer_text         String
-  explanation         String
+  question_text       String   // Snapshot of question at time of session
+  answer_text         String   // Snapshot of answer at time of session
+  explanation         String   // Snapshot of explanation at time of session
   order               Int
   created_at          DateTime @default(now())
 
@@ -374,6 +376,7 @@ model users {
 
   user_credit           user_credits?
   user_subscription     user_subscriptions[]
+  user_purchases        user_purchases[]
   chatbot_conversations chatbot_conversations[]
   skripsi_sets          skripsi_sets[]
 }
@@ -519,6 +522,7 @@ model user_purchases {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
+  user         users         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   pricing_plan pricing_plans @relation(fields: [pricing_plan_id], references: [id])
 
   @@index([user_id])

@@ -73,9 +73,9 @@ class AttachmentService {
     return await prisma.attachments.create({
       data: {
         name,
-        recordType,
-        recordId,
-        blobId
+        record_type: recordType,
+        record_id: recordId,
+        blob_id: blobId
       }
     });
   }
@@ -107,7 +107,7 @@ class AttachmentService {
     // Manually fetch blob data
     const attachmentsWithBlobs = await Promise.all(
       attachments.map(async (attachment) => {
-        const blob = await blobService.getBlobById(attachment.blobId);
+        const blob = await blobService.getBlobById(attachment.blob_id);
         return {
           ...attachment,
           blob
@@ -205,13 +205,13 @@ class AttachmentService {
 
     // Delete blob if requested
     if (deleteBlob) {
-      const blob = await blobService.getBlobById(attachment.blobId);
+      const blob = await blobService.getBlobById(attachment.blob_id);
 
       // Delete from iDrive
       await idriveService.deleteFile(blob.key);
 
       // Delete blob record
-      await blobService.deleteBlob(attachment.blobId);
+      await blobService.deleteBlob(attachment.blob_id);
     }
   }
 

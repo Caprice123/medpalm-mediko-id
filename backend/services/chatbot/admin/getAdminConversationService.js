@@ -65,8 +65,8 @@ export class GetAdminConversationService extends BaseService {
       topic: conversation.topic,
       messageCount: conversation._count.chatbot_messages,
       messages: transformedMessages,
-      createdAt: conversation.created_at,
-      updatedAt: conversation.updated_at
+      createdAt: conversation.createdAt,
+      updatedAt: conversation.updatedAt
     }
   }
 

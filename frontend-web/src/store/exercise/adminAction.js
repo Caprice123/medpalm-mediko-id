@@ -7,6 +7,7 @@ const {
   setLoading,
   setTopics,
   setTags,
+  setFilters,
   setDetail,
   updatePagination,
 } = actions
@@ -32,10 +33,10 @@ export const fetchAdminExerciseTopics = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
 
     // Backend returns { data: { topics: [...], pagination: {...} } }
-    const responseData = response.data.data || response.data
+    const responseData = response.data
 
     // New paginated response
-    dispatch(setTopics(responseData.topics))
+    dispatch(setTopics(responseData.data))
     dispatch(updatePagination(responseData.pagination))
   } catch (err) {
     handleApiError(err, dispatch)
@@ -91,31 +92,21 @@ export const generateQuestions = (content, type, questionCount = 10) => async (d
 
 /**
  * Generate questions from PDF using Gemini (admin only)
+ * Note: File should already be uploaded via common upload action
  */
-export const generateQuestionsFromPDF = (pdfFile, questionCount = 10) => async (dispatch) => {
+export const generateQuestionsFromPDF = (blobId, questionCount = 10) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isGeneratingQuestions', value: true }))
 
-    // Step 1: Upload PDF to centralized endpoint to get blobId
-    const uploadFormData = new FormData()
-    uploadFormData.append('file', pdfFile)
-    uploadFormData.append('type', 'exercise')
-
-    const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
-    const blobId = uploadResponse.data.data.blobId
-
-    // Step 2: Generate questions from PDF
-    const generateFormData = new FormData()
-    generateFormData.append('pdf', pdfFile)
-    generateFormData.append('questionCount', questionCount)
-    generateFormData.append('blobId', blobId)
-
-    const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, generateFormData)
+    const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, {
+      blobId,
+      questionCount
+    })
 
     const data = response.data.data || {}
     const questions = data.questions || []
 
-    return { questions, blobId }
+    return { questions, blobId: data.blobId || blobId }
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -144,15 +135,16 @@ export const createExerciseTopic = (topicData) => async (dispatch) => {
 }
 
 /**
- * Update topic questions (admin only)
+ * Update topic (admin only)
+ * Supports updating title, description, status, tags, questions, and blobId
  */
-export const updateTopicQuestions = (topicId, questions) => async (dispatch) => {
+export const updateExerciseTopic = (topicId, topicData) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: true }))
 
     const response = await putWithToken(
       Endpoints.exercises.admin.topic(topicId),
-      { questions }
+      topicData
     )
 
     const topic = response.data.data || response.data.topic
@@ -162,6 +154,14 @@ export const updateTopicQuestions = (topicId, questions) => async (dispatch) => 
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
+}
+
+/**
+ * Update topic questions (admin only)
+ * @deprecated Use updateExerciseTopic instead
+ */
+export const updateTopicQuestions = (topicId, questions) => async (dispatch) => {
+  return updateExerciseTopic(topicId, { questions })(dispatch)
 }
 
 /**
@@ -215,4 +215,14 @@ export const fetchExerciseTags = (type = null) => async (dispatch) => {
   } finally {
     dispatch(setLoading({ key: 'isTagsLoading', value: false }))
   }
+}
+
+
+// ============= Filter Actions =============
+
+/**
+ * Update filters
+ */
+export const updateExerciseFilters = (filters) => (dispatch) => {
+  dispatch(setFilters(filters))
 }

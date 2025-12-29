@@ -32,8 +32,8 @@ export class GetFlashcardDeckDetailService extends BaseService {
         // Fetch PDF attachment for deck if exists
         const deckAttachment = await prisma.attachments.findFirst({
             where: {
-                recordType: 'flashcard_deck',
-                recordId: deck.id,
+                record_type: 'flashcard_deck',
+                record_id: deck.id,
                 name: 'pdf'
             },
             include: {
@@ -51,14 +51,14 @@ export class GetFlashcardDeckDetailService extends BaseService {
         const cardIds = deck.flashcard_cards.map(c => c.id)
         const attachments = await prisma.attachments.findMany({
             where: {
-                recordType: 'flashcard_card',
-                recordId: { in: cardIds },
+                record_type: 'flashcard_card',
+                record_id: { in: cardIds },
                 name: 'image'
             }
         })
 
         // Get blobs for all attachments
-        const blobIds = attachments.map(a => a.blobId)
+        const blobIds = attachments.map(a => a.blob_id)
         const blobs = await prisma.blobs.findMany({
             where: { id: { in: blobIds } }
         })
@@ -66,7 +66,7 @@ export class GetFlashcardDeckDetailService extends BaseService {
         // Create maps for quick lookup
         const attachmentMap = new Map()
         attachments.forEach(att => {
-            attachmentMap.set(att.recordId, att)
+            attachmentMap.set(att.record_id, att)
         })
 
         const blobMap = new Map()
@@ -81,7 +81,7 @@ export class GetFlashcardDeckDetailService extends BaseService {
         deck.flashcard_cards.forEach(card => {
             const attachment = attachmentMap.get(card.id)
             if (attachment) {
-                const blob = blobMap.get(attachment.blobId)
+                const blob = blobMap.get(attachment.blob_id)
                 if (blob) {
                     blobKeys.push(blob.key)
                     cardBlobKeyMap.set(card.id, blob.key)
@@ -106,7 +106,7 @@ export class GetFlashcardDeckDetailService extends BaseService {
         // Add image data to cards
         deck.flashcard_cards = deck.flashcard_cards.map(card => {
             const attachment = attachmentMap.get(card.id)
-            const blob = attachment ? blobMap.get(attachment.blobId) : null
+            const blob = attachment ? blobMap.get(attachment.blob_id) : null
 
             return {
                 ...card,
@@ -116,11 +116,11 @@ export class GetFlashcardDeckDetailService extends BaseService {
                     id: blob.id,
                     key: blob.key,
                     filename: blob.filename,
-                    contentType: blob.contentType,
-                    byteSize: blob.byteSize,
+                    contentType: blob.content_type,
+                    byteSize: blob.byte_size,
                     checksum: blob.checksum,
                     metadata: blob.metadata ? JSON.parse(blob.metadata) : {},
-                    uploadedAt: blob.uploadedAt,
+                    uploadedAt: blob.uploaded_at,
                     attachmentId: attachment.id
                 } : null
             }
@@ -130,20 +130,20 @@ export class GetFlashcardDeckDetailService extends BaseService {
         const transformedDeck = {
             ...deck,
             blob: deckAttachment ? {
-                id: deckAttachment.blobId,
+                id: deckAttachment.blob_id,
                 url: deckPdfUrl,
                 key: deckAttachment.blob.key,
                 filename: deckAttachment.blob.filename,
-                size: deckAttachment.blob.byteSize
+                size: deckAttachment.blob.byte_size
             } : null,
             tags: deck.flashcard_deck_tags.map(t => ({
                 id: t.tags.id,
                 name: t.tags.name,
                 type: t.tags.type,
-                tag_group: {
-                    id: t.tags.tag_group?.id,
-                    name: t.tags.tag_group?.name
-                }
+                tag_group: t.tags.tag_group ? {
+                    id: t.tags.tag_group.id,
+                    name: t.tags.tag_group.name
+                } : null
             }))
         }
 

@@ -15,8 +15,8 @@ export class updateCreditPlanService extends BaseService {
         if (description !== undefined) updateData.description = description
         if (credits !== undefined) updateData.credits = parseInt(credits)
         if (price !== undefined) updateData.price = parseFloat(price)
-        if (isActive !== undefined) updateData.isActive = isActive
-        if (isPopular !== undefined) updateData.isPopular = isPopular
+        if (isActive !== undefined) updateData.is_active = isActive
+        if (isPopular !== undefined) updateData.is_popular = isPopular
         if (discount !== undefined) updateData.discount = parseInt(discount)
         if (order !== undefined) updateData.order = parseInt(order)
 

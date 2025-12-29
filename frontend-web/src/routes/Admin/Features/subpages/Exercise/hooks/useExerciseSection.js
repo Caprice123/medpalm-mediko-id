@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchTags } from '@store/tags/action'
 import { actions } from "@store/tags/reducer"
-import { fetchAdminExerciseTopics } from '@store/exercise/action'
+import { fetchAdminExerciseTopics } from '@store/exercise/adminAction'
 
 export const useExerciseSection = () => {
     const dispatch = useDispatch()

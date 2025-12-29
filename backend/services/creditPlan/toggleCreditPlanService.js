@@ -11,8 +11,8 @@ export class ToggleCreditPlanService extends BaseService {
 
         // Prepare update data
         const updateData = {}
-        if (isActive !== undefined) updateData.isActive = isActive
-        if (isPopular !== undefined) updateData.isPopular = isPopular
+        if (isActive !== undefined) updateData.is_active = isActive
+        if (isPopular !== undefined) updateData.is_popular = isPopular
 
         const plan = await prisma.credit_plans.update({
             where: { id: parseInt(id) },

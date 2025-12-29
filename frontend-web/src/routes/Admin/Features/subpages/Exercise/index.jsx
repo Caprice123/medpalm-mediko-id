@@ -19,7 +19,6 @@ import {
 
 function LatihanSoal({ onBack }) {
   const dispatch = useDispatch()
-  const { filters } = useSelector(state => state.exercise)
 
   const {
     uiState,

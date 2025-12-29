@@ -61,7 +61,6 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
                 value={formData.credits}
                 onChange={onChange}
                 required
-                min="1"
                 placeholder="e.g., 100"
               />
             </FormGroup>

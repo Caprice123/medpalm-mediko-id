@@ -27,7 +27,7 @@ export class GetUserStatusService extends BaseService {
 
     // Get credit balance
     const userCredit = await prisma.user_credits.findUnique({
-      where: { userId: userId }
+      where: { user_id: userId }
     })
 
     const creditBalance = userCredit ? userCredit.balance : 0
@@ -42,7 +42,7 @@ export class GetUserStatusService extends BaseService {
         endDate: activeSubscription.subscription_end,
         daysRemaining: Math.ceil((new Date(activeSubscription.subscription_end) - new Date()) / (1000 * 60 * 60 * 24))
       } : null,
-      creditBalance: creditBalance,
+      creditBalance: parseFloat(creditBalance) || 0,
       userId: userId
     }
   }
@@ -78,7 +78,7 @@ export class HasActiveSubscriptionService extends BaseService {
 export class GetUserCreditBalanceService extends BaseService {
   static async call(userId) {
     const userCredit = await prisma.user_credits.findUnique({
-      where: { userId: userId }
+      where: { user_id: userId }
     })
 
     return userCredit ? userCredit.balance : 0

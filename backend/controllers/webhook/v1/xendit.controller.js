@@ -37,16 +37,16 @@ export const handleXenditInvoiceWebhook = async (req, res) => {
     const transactions = await prisma.credit_transactions.findMany({
       where: {
         OR: [
-          { paymentReference: invoiceId }, // Xendit invoice ID
-          { paymentReference: { contains: externalId.split('-')[0] } } // Original reference prefix
+          { payment_reference: invoiceId }, // Xendit invoice ID
+          { payment_reference: { contains: externalId.split('-')[0] } } // Original reference prefix
         ],
-        paymentStatus: 'pending'
+        payment_status: 'pending'
       },
       include: {
         creditPlan: true
       },
       orderBy: {
-        createdAt: 'desc'
+        created_at: 'desc'
       }
     })
 
@@ -104,7 +104,7 @@ async function handlePaidInvoice(transaction, paymentDetails) {
 
     // Get user credit
     const userCredit = await prisma.user_credits.findUnique({
-      where: { id: transaction.userCreditId }
+      where: { id: transaction.user_credit_id }
     })
 
     if (!userCredit) {
@@ -117,23 +117,23 @@ async function handlePaidInvoice(transaction, paymentDetails) {
     await prisma.$transaction([
       // Update user credit balance
       prisma.user_credits.update({
-        where: { id: transaction.userCreditId },
+        where: { id: transaction.user_credit_id },
         data: { balance: newBalance }
       }),
       // Update transaction status
       prisma.credit_transactions.update({
         where: { id: transaction.id },
         data: {
-          paymentStatus: 'completed',
-          balanceAfter: newBalance,
-          paymentReference: invoiceId,
-          paymentMethod: `${paymentMethod} - ${paymentChannel}`,
+          payment_status: 'completed',
+          balance_after: newBalance,
+          payment_reference: invoiceId,
+          payment_method: `${paymentMethod} - ${paymentChannel}`,
           description: `${transaction.description} (Paid via ${paymentChannel})`
         }
       })
     ])
 
-    console.log(`Payment completed for transaction ${transaction.id}. Added ${transaction.amount} credits to user ${transaction.userId}`)
+    console.log(`Payment completed for transaction ${transaction.id}. Added ${transaction.amount} credits to user ${transaction.user_id}`)
   } catch (error) {
     console.error('Error handling paid invoice:', error)
     throw error
@@ -148,7 +148,7 @@ async function handleExpiredInvoice(transaction) {
     await prisma.credit_transactions.update({
       where: { id: transaction.id },
       data: {
-        paymentStatus: 'failed',
+        payment_status: 'failed',
         description: `${transaction.description} (Invoice expired)`
       }
     })
@@ -189,8 +189,8 @@ export const handleXenditVAWebhook = async (req, res) => {
     // Find transaction by external ID
     const transaction = await prisma.credit_transactions.findFirst({
       where: {
-        paymentReference: { contains: externalId },
-        paymentStatus: 'pending'
+        payment_reference: { contains: externalId },
+        payment_status: 'pending'
       },
       include: {
         creditPlan: true
@@ -208,7 +208,7 @@ export const handleXenditVAWebhook = async (req, res) => {
     // Process payment
     await handlePaidInvoice(transaction, {
       paidAmount: amount,
-      paymentMethod: 'Virtual Account',
+      payment_method: 'Virtual Account',
       paymentChannel: bankCode,
       paidAt: transactionTimestamp,
       invoiceId: externalId

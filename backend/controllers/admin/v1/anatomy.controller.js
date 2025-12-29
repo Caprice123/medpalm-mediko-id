@@ -47,7 +47,7 @@ class AnatomyController {
       tags,
       questions,
       status: status || 'draft',
-      created_by: req.user.id
+      createdBy: req.user.id
     })
 
     return res.status(201).json({

@@ -107,14 +107,14 @@ export class StartFlashcardDeckService extends BaseService {
       // Get attachments for all cards
       const attachments = await tx.attachments.findMany({
         where: {
-          recordType: 'flashcard_card',
-          recordId: { in: cardIds },
+          record_type: 'flashcard_card',
+          record_id: { in: cardIds },
           name: 'image'
         }
       })
 
       // Get blobs for all attachments
-      const blobIds = attachments.map(a => a.blobId)
+      const blobIds = attachments.map(a => a.blob_id)
       const blobs = await tx.blobs.findMany({
         where: { id: { in: blobIds } }
       })
@@ -122,7 +122,7 @@ export class StartFlashcardDeckService extends BaseService {
       // Create maps for quick lookup
       const attachmentMap = new Map()
       attachments.forEach(att => {
-        attachmentMap.set(att.recordId, att)
+        attachmentMap.set(att.record_id, att)
       })
 
       const blobMap = new Map()
@@ -137,7 +137,7 @@ export class StartFlashcardDeckService extends BaseService {
       sortedCards.forEach(card => {
         const attachment = attachmentMap.get(card.id)
         if (attachment) {
-          const blob = blobMap.get(attachment.blobId)
+          const blob = blobMap.get(attachment.blob_id)
           if (blob) {
             blobKeys.push(blob.key)
             cardBlobKeyMap.set(card.id, blob.key)

@@ -6,7 +6,7 @@ export class AddCreditService extends BaseService {
     static async call(userId, credit) {
         const userCredit = await prisma.user_credits.findFirst({
             where: {
-                userId: userId,
+                user_id: userId,
             },
         })
         if (!userCredit) {

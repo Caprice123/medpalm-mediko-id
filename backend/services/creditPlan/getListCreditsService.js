@@ -10,7 +10,7 @@ export class GetListCreditsService extends BaseService {
             where: where,
             orderBy: [
                 { order: 'asc' },
-                { createdAt: 'desc' }
+                { created_at: 'desc' }
             ]
         })
     }

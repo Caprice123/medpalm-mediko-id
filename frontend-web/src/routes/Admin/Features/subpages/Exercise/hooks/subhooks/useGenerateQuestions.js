@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { generateQuestions } from '@store/exercise/adminAction'
-import { postWithToken } from '@utils/requestUtils'
-import Endpoints from '@config/endpoint'
+import { generateQuestions, generateQuestionsFromPDF } from '@store/exercise/adminAction'
+import { upload } from '@store/common/action'
 
 export const useGenerateQuestions = (mainForm, setPdfInfo, initialContentType = 'document', initialTextContent = '') => {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.exercise)
+  const { loading: commonLoading } = useSelector(state => state.common)
 
   const [contentType, setContentType] = useState(initialContentType)
   const [textContent, setTextContent] = useState(initialTextContent)
   const [pdfFile, setPdfFile] = useState(null)
   const [questionCount, setQuestionCount] = useState(10)
   const [uploadedBlobId, setUploadedBlobId] = useState(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   // Update state when initial values change (when topic detail is loaded)
   useEffect(() => {
@@ -24,52 +23,44 @@ export const useGenerateQuestions = (mainForm, setPdfInfo, initialContentType = 
     setTextContent(initialTextContent)
   }, [initialTextContent])
 
-  const handleFileSelect = async (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.type === 'application/pdf') {
-        setPdfFile(file)
+  const handleFileSelect = async (file) => {
+    if (file.type === 'application/pdf') {
+      setPdfFile(file)
 
-        // Immediately upload PDF to get blobId
-        try {
-          setIsUploading(true)
-          const uploadFormData = new FormData()
-          uploadFormData.append('file', file)
-          uploadFormData.append('type', 'exercise')
+      // Immediately upload PDF to get blobId using common action
+      try {
+        const uploadResult = await dispatch(upload(file, 'exercise'))
 
-          const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
-          const blobId = uploadResponse.data.data.blobId
-          setUploadedBlobId(blobId)
+        if (uploadResult?.blobId) {
+          setUploadedBlobId(uploadResult.blobId)
 
           // Store blob ID immediately
           if (setPdfInfo) {
-            setPdfInfo({ blobId })
+            setPdfInfo({ blobId: uploadResult.blobId })
           }
-        } catch (error) {
-          console.error('Failed to upload PDF:', error)
-          alert('Failed to upload PDF. Please try again.')
-          setPdfFile(null)
-        } finally {
-          setIsUploading(false)
+        } else {
+          throw new Error('Upload failed - no blobId returned')
         }
-      } else {
-        alert('Please select a PDF file')
+      } catch (error) {
+        console.error('Failed to upload PDF:', error)
+        alert('Gagal upload PDF. Silakan coba lagi.')
+        setPdfFile(null)
       }
     }
   }
 
   const handleGenerate = async () => {
     try {
-      if (contentType === 'document' && uploadedBlobId && pdfFile) {
-        // Generate from PDF using blobId
-        const formData = new FormData()
-        formData.append('file', pdfFile) // Backend still needs the file to process
-        formData.append('blobId', uploadedBlobId)
-        formData.append('questionCount', questionCount)
+      if (contentType === 'document' && uploadedBlobId) {
+        // Generate from PDF using blobId (file already uploaded)
+        const result = await dispatch(generateQuestionsFromPDF(uploadedBlobId, questionCount))
 
-        const response = await postWithToken(Endpoints.exercises.admin.generateFromPDF, formData)
-        const data = response.data.data || {}
-        const questions = data.questions || []
+        if (!result || !result.questions) {
+          alert('Gagal generate soal dari PDF')
+          return
+        }
+
+        const questions = result.questions
 
         // Update main form with generated questions
         const questionsWithIds = questions.map((question, index) => ({
@@ -79,11 +70,21 @@ export const useGenerateQuestions = (mainForm, setPdfInfo, initialContentType = 
         }))
         mainForm.setFieldValue('questions', questionsWithIds)
 
-        // Keep the file for potential re-generation
+        // Store PDF info (blobId)
+        if (setPdfInfo) {
+          setPdfInfo({
+            blobId: uploadedBlobId,
+            contentType: 'pdf'
+          })
+        }
       } else if (contentType === 'text' && textContent.trim()) {
         // Generate from text
         const questions = await dispatch(generateQuestions(textContent, 'text', questionCount))
 
+        if (!questions || questions.length === 0) {
+          return
+        }
+
         // Update main form with generated questions
         const questionsWithIds = questions.map((question, index) => ({
           ...question,
@@ -92,15 +93,30 @@ export const useGenerateQuestions = (mainForm, setPdfInfo, initialContentType = 
         }))
         mainForm.setFieldValue('questions', questionsWithIds)
 
-        // Keep the text for potential re-generation
+        // Store text content info
+        if (setPdfInfo) {
+          setPdfInfo({
+            textContent: textContent.trim(),
+            contentType: 'text'
+          })
+        }
+      } else {
+        // Validation
+        if (contentType === 'document' && !uploadedBlobId) {
+          alert('Silakan upload file PDF terlebih dahulu.')
+        } else if (contentType === 'text' && !textContent.trim()) {
+          alert('Silakan masukkan teks terlebih dahulu.')
+        }
       }
     } catch (error) {
       console.error('Failed to generate questions:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat generate soal'
+      alert(`Gagal generate soal: ${errorMessage}`)
     }
   }
 
   const canGenerate = contentType === 'document'
-    ? uploadedBlobId !== null && !isUploading
+    ? uploadedBlobId !== null && !commonLoading.isUploading
     : textContent.trim().length > 0
 
   return {
@@ -115,6 +131,6 @@ export const useGenerateQuestions = (mainForm, setPdfInfo, initialContentType = 
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating: loading.isGeneratingQuestions || isUploading
+    isGenerating: loading.isGeneratingQuestions || commonLoading.isUploading
   }
 }

@@ -13,12 +13,18 @@ export class UserSerializer {
     }
 
     static serializeOne(user) {
+        // Convert user_purchases to subscription format
+        const subscriptions = (user.user_purchases || []).map(purchase => ({
+            start_date: purchase.subscription_start,
+            end_date: purchase.subscription_end,
+        }));
+
         return {
             id: user.id,
             name: user.name,
             email: user.email,
             isActive: user.is_active,
-            userSubscriptions: UserSubscriptionSerializer.serialize(user.user_subscription),
+            userSubscriptions: UserSubscriptionSerializer.serialize(subscriptions),
             userCredits: UserCreditSerializer.serialize(user.user_credit),
         }
     }

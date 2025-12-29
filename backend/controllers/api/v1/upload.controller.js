@@ -91,8 +91,8 @@ class UploadController {
           url: presignedUrl,
           key: blob.key,
           fileName: blob.filename, // Return original filename
-          contentType: blob.contentType, // Return content type
-          byteSize: blob.byteSize  // Return file size
+          contentType: blob.content_type, // Return content type
+          byteSize: blob.byte_size  // Return file size
         }
       })
     } catch (error) {

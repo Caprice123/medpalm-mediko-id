@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFlashcardDecks } from '@store/flashcard/action'
-import { fetchCreditBalance } from '@store/credit/action'
 import { startFlashcardDeck, submitFlashcardProgress, clearSession } from '@store/session/action'
 import FlashcardListPage from './pages/List'
 import FlashcardPlayer from './components/FlashcardPlayer'
@@ -24,7 +23,6 @@ function FlashcardPage() {
   // Fetch decks when component mounts
   useEffect(() => {
     dispatch(fetchFlashcardDecks())
-    dispatch(fetchCreditBalance())
     dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
     dispatch(fetchTags())
   }, [dispatch])

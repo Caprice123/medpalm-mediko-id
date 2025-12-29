@@ -27,8 +27,8 @@ export class GetSummaryNoteDetailService extends BaseService {
     // Get source document attachment if exists
     const sourceAttachment = await prisma.attachments.findFirst({
       where: {
-        recordType: 'summary_note',
-        recordId: parseInt(id),
+        record_type: 'summary_note',
+        record_id: parseInt(id),
         name: 'source_document'
       },
       include: {

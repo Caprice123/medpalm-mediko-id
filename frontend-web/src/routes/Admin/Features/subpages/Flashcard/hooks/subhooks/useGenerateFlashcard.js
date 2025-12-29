@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { generateFlashcards, generateFlashcardsFromPDF } from '@store/flashcard/adminAction'
-import { postWithToken } from '@utils/requestUtils'
-import Endpoints from '@config/endpoint'
+import { upload } from '@store/common/action'
 
 export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 'document', initialTextContent = '') => {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.flashcard)
+  const { loading: commonLoading } = useSelector(state => state.common)
 
   const [contentType, setContentType] = useState(initialContentType)
   const [textContent, setTextContent] = useState(initialTextContent)
   const [pdfFile, setPdfFile] = useState(null)
   const [cardCount, setCardCount] = useState(10)
   const [uploadedBlobId, setUploadedBlobId] = useState(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   // Update state when initial values change (when deck detail is loaded)
   useEffect(() => {
@@ -25,33 +24,29 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
   }, [initialTextContent])
 
   const handleFileSelect = async (e) => {
-    const file = e.target.files[0]
+    const file = e.target?.files?.[0] || e
     if (file && file.type === 'application/pdf') {
       setPdfFile(file)
 
-      // Immediately upload to get blobId
+      // Immediately upload to get blobId using common action
       try {
-        setIsUploading(true)
-        const uploadFormData = new FormData()
-        uploadFormData.append('file', file)
-        uploadFormData.append('type', 'flashcard')
+        const uploadResult = await dispatch(upload(file, 'flashcard'))
 
-        const uploadResponse = await postWithToken(Endpoints.api.uploadImage, uploadFormData)
-        const blobId = uploadResponse.data.data.blobId
-
-        setUploadedBlobId(blobId)
-        if (setPdfInfo) {
-          setPdfInfo({ blobId })
+        if (uploadResult?.blobId) {
+          setUploadedBlobId(uploadResult.blobId)
+          if (setPdfInfo) {
+            setPdfInfo({ blobId: uploadResult.blobId })
+          }
+        } else {
+          throw new Error('Upload failed - no blobId returned')
         }
       } catch (error) {
         console.error('Failed to upload PDF:', error)
-        alert('Failed to upload PDF. Please try again.')
+        alert('Gagal upload PDF. Silakan coba lagi.')
         setPdfFile(null)
-      } finally {
-        setIsUploading(false)
       }
     } else if (file) {
-      alert('Please select a PDF file')
+      alert('Silakan pilih file PDF')
     }
   }
 
@@ -88,7 +83,7 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
   }
 
   const canGenerate = contentType === 'document'
-    ? (pdfFile !== null && uploadedBlobId !== null && !isUploading)
+    ? (pdfFile !== null && uploadedBlobId !== null && !commonLoading.isUploading)
     : textContent.trim().length > 0
 
   return {
@@ -103,6 +98,6 @@ export const useGenerateFlashcard = (mainForm, setPdfInfo, initialContentType = 
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating: loading.isGeneratingCards || isUploading
+    isGenerating: loading.isGeneratingCards || commonLoading.isUploading
   }
 }

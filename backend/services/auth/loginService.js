@@ -30,7 +30,7 @@ class AuthService {
       where: {
         OR: [
           { email: googleUserInfo.email },
-          { googleId: googleUserInfo.googleId }
+          { google_id: googleUserInfo.google_id }
         ]
       }
     });
@@ -42,9 +42,9 @@ class AuthService {
           email: googleUserInfo.email,
           name: googleUserInfo.name,
           picture: googleUserInfo.picture,
-          googleId: googleUserInfo.googleId,
+          google_id: googleUserInfo.google_id,
           role: 'user',
-          isActive: true
+          is_active: true
         }
       });
 
@@ -57,11 +57,11 @@ class AuthService {
         data: {
           name: googleUserInfo.name,
           picture: googleUserInfo.picture,
-          googleId: googleUserInfo.googleId
+          google_id: googleUserInfo.google_id
         }
       });
 
-      if (!user.isActive) {
+      if (!user.is_active) {
         throw new AuthorizationError('User account is inactive');
       }
     }
@@ -72,7 +72,7 @@ class AuthService {
     // Generate access token (short-lived)
     const accessToken = jwt.sign(
       {
-        userId: user.id,
+        user_id: user.id,
         email: user.email,
         role: user.role
       },
@@ -83,7 +83,7 @@ class AuthService {
     // Generate refresh token (long-lived)
     const refreshToken = jwt.sign(
       {
-        userId: user.id,
+        user_id: user.id,
         type: 'refresh'
       },
       JWT_SECRET,
@@ -100,14 +100,14 @@ class AuthService {
     // Create new session with both tokens
     await prisma.user_sessions.create({
       data: {
-        userId: user.id,
+        user_id: user.id,
         token: accessToken,
-        refreshToken: refreshToken,
-        refreshTokenExpiresAt: refreshTokenExpiresAt,
-        userAgent: userAgent || null,
-        ipAddress: ipAddress || null,
-        expiresAt: accessTokenExpiresAt,
-        isActive: true
+        refresh_token: refreshToken,
+        refresh_token_expires_at: refreshTokenExpiresAt,
+        user_agent: userAgent || null,
+        ip_address: ipAddress || null,
+        expires_at: accessTokenExpiresAt,
+        is_active: true
       }
     });
 
@@ -127,11 +127,11 @@ class AuthService {
   async deactivateUserSessions(userId) {
     await prisma.user_sessions.updateMany({
       where: {
-        userId,
-        isActive: true
+        user_id: userId,
+        is_active: true
       },
       data: {
-        isActive: false
+        is_active: false
       }
     });
   }
@@ -153,41 +153,41 @@ class AuthService {
         where: { token }
       });
 
-      if (!session || !session.isActive) {
+      if (!session || !session.is_active) {
         throw new Error('Session is invalid or expired');
       }
 
       // Check if session has expired
-      if (new Date() > session.expiresAt) {
+      if (new Date() > session.expires_at) {
         await prisma.user_sessions.update({
           where: { id: session.id },
-          data: { isActive: false }
+          data: { is_active: false }
         });
         throw new AuthorizationError('Session has expired');
       }
 
       // Get user
       const user = await prisma.users.findUnique({
-        where: { id: decoded.userId },
+        where: { id: decoded.user_id },
         select: {
           id: true,
           email: true,
           name: true,
           role: true,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true
+          is_active: true,
+          created_at: true,
+          updated_at: true
         }
       });
 
-      if (!user || !user.isActive) {
+      if (!user || !user.is_active) {
         throw new Error('User not found or inactive');
       }
 
       // Update last active time
       await prisma.user_sessions.update({
         where: { id: session.id },
-        data: { lastActiveAt: new Date() }
+        data: { last_active_at: new Date() }
       });
 
       return { user, session };
@@ -214,35 +214,35 @@ class AuthService {
 
       // Find session with this refresh token
       const session = await prisma.user_sessions.findUnique({
-        where: { refreshToken }
+        where: { refresh_token: refreshToken }
       });
 
-      if (!session || !session.isActive) {
+      if (!session || !session.is_active) {
         throw new AuthorizationError('Invalid or expired refresh token');
       }
 
       // Check if refresh token has expired
-      if (new Date() > session.refreshTokenExpiresAt) {
+      if (new Date() > session.refresh_token_expires_at) {
         await prisma.user_sessions.update({
           where: { id: session.id },
-          data: { isActive: false }
+          data: { is_active: false }
         });
         throw new AuthorizationError('Refresh token has expired');
       }
 
       // Get user
       const user = await prisma.users.findUnique({
-        where: { id: decoded.userId }
+        where: { id: decoded.user_id }
       });
 
-      if (!user || !user.isActive) {
+      if (!user || !user.is_active) {
         throw new AuthorizationError('User not found or inactive');
       }
 
       // Generate new access token
       const newAccessToken = jwt.sign(
         {
-          userId: user.id,
+          user_id: user.id,
           email: user.email,
           role: user.role
         },
@@ -253,7 +253,7 @@ class AuthService {
       // Generate new refresh token (token rotation for security)
       const newRefreshToken = jwt.sign(
         {
-          userId: user.id,
+          user_id: user.id,
           type: 'refresh'
         },
         JWT_SECRET,
@@ -272,10 +272,10 @@ class AuthService {
         where: { id: session.id },
         data: {
           token: newAccessToken,
-          refreshToken: newRefreshToken,
-          refreshTokenExpiresAt: refreshTokenExpiresAt,
-          expiresAt: accessTokenExpiresAt,
-          lastActiveAt: new Date()
+          refresh_token: newRefreshToken,
+          refresh_token_expires_at: refreshTokenExpiresAt,
+          expires_at: accessTokenExpiresAt,
+          last_active_at: new Date()
         }
       });
 
@@ -305,7 +305,7 @@ class AuthService {
     if (session) {
       await prisma.user_sessions.update({
         where: { id: session.id },
-        data: { isActive: false }
+        data: { is_active: false }
       });
     }
 
@@ -320,10 +320,10 @@ class AuthService {
     return await prisma.user_sessions.findMany({
       where: {
         userId,
-        isActive: true
+        is_active: true
       },
       orderBy: {
-        lastActiveAt: 'desc'
+        last_active_at: 'desc'
       }
     });
   }

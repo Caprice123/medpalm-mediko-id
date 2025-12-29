@@ -53,13 +53,13 @@ export class PurchasePricingPlanService extends BaseService {
       if (plan.credits_included > 0) {
         // Find or create user credits
         let userCredit = await tx.user_credits.findUnique({
-          where: { userId: userId }
+          where: { user_id: userId }
         })
 
         if (!userCredit) {
           userCredit = await tx.user_credits.create({
             data: {
-              userId: userId,
+              user_id: userId,
               balance: 0
             }
           })
@@ -70,25 +70,25 @@ export class PurchasePricingPlanService extends BaseService {
 
         // Update balance
         await tx.user_credits.update({
-          where: { userId: userId },
+          where: { user_id: userId },
           data: {
             balance: balanceAfter,
-            updatedAt: new Date()
+            updated_at: new Date()
           }
         })
 
         // Create credit transaction record
         await tx.credit_transactions.create({
           data: {
-            userId: userId,
-            userCreditId: userCredit.id,
+            user_id: userId,
+            user_credit_id: userCredit.id,
             type: plan.bundle_type === 'credits' ? 'purchase' : 'subscription_bonus',
             amount: plan.credits_included,
-            balanceBefore: balanceBefore,
-            balanceAfter: balanceAfter,
+            balance_before: balanceBefore,
+            balance_after: balanceAfter,
             description: `Credits from ${plan.name}`,
-            paymentStatus: 'completed',
-            paymentMethod: paymentMethod
+            payment_status: 'completed',
+            payment_method: paymentMethod
           }
         })
       }

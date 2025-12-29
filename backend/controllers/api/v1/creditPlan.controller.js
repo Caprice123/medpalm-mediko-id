@@ -7,11 +7,11 @@ class CreditPlanController {
     async index(req, res) {
         const plans = await prisma.credit_plans.findMany({
             where: {
-                isActive: true
+                is_active: true
             },
             orderBy: [
                 { order: 'asc' },
-                { createdAt: 'desc' }
+                { created_at: 'desc' }
             ]
         })
 

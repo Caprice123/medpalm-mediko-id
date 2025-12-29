@@ -17,7 +17,7 @@ export class GetChatbotConfigService extends BaseService {
 
     console.log(parseFloat(constantsMap.chatbot_research_cost))
     return {
-      isActive: constantsMap.chatbot_is_active === 'true',
+      is_active: constantsMap.chatbot_is_active === 'true',
       availableModes: {
         normal: constantsMap.chatbot_normal_enabled === 'true',
         validated: constantsMap.chatbot_validated_enabled === 'true',

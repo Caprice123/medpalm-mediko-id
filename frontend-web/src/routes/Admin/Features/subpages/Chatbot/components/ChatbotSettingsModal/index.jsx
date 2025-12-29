@@ -26,7 +26,6 @@ import {
   Divider
 } from './ChatbotSettingsModal.styles'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
-import { aiModelsGrouped, getModelLabel } from '@config/aiModels'
 
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
@@ -153,8 +152,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Pesan Konteks</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="50"
                     placeholder="10"
                     value={form.values.chatbot_normal_last_message_count}
                     onChange={(e) => form.setFieldValue('chatbot_normal_last_message_count', e.target.value)}
@@ -223,8 +220,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Pesan Konteks</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="50"
                     placeholder="10"
                     value={form.values.chatbot_validated_last_message_count}
                     onChange={(e) => form.setFieldValue('chatbot_validated_last_message_count', e.target.value)}
@@ -249,8 +244,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Summary Notes untuk RAG</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="10"
                     placeholder="5"
                     value={form.values.chatbot_validated_search_count}
                     onChange={(e) => form.setFieldValue('chatbot_validated_search_count', e.target.value)}
@@ -320,8 +313,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Pesan Konteks</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="50"
                     placeholder="10"
                     value={form.values.chatbot_research_last_message_count}
                     onChange={(e) => form.setFieldValue('chatbot_research_last_message_count', e.target.value)}
@@ -346,8 +337,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
                   <Label>Jumlah Sitasi</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="10"
                     placeholder="5"
                     value={form.values.chatbot_research_citations_count}
                     onChange={(e) => form.setFieldValue('chatbot_research_citations_count', e.target.value)}

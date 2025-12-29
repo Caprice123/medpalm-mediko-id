@@ -32,7 +32,7 @@ class RAGService {
         content: result.content,
         score: result.score,
         noteId: result.metadata.note_id,
-        createdAt: result.metadata.created_at
+        created_at: result.metadata.created_at
       }))
     } catch (error) {
       console.error('Error searching summary notes:', error)
@@ -139,7 +139,7 @@ class RAGService {
         content: result.content,
         score: result.score,
         noteId: result.metadata.note_id,
-        createdAt: result.metadata.created_at
+        created_at: result.metadata.created_at
       }))
     } catch (error) {
       console.error('Error performing hybrid search:', error)

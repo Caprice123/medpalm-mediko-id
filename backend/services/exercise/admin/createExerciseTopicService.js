@@ -4,19 +4,19 @@ import { BaseService } from "#services/baseService"
 import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateExerciseTopicService extends BaseService {
-    static async call({ title, description, content_type, content, blobId, tags, questions, created_by }) {
+    static async call({ title, description, contentType, content, blobId, tags, questions, status, createdBy }) {
         // Validate inputs
-        await this.validate({ title, description, content_type, content, blobId, tags, questions })
+        await this.validate({ title, description, contentType, content, blobId, tags, questions })
 
         // Create topic with questions and tags
         const topic = await prisma.exercise_topics.create({
             data: {
                 title,
                 description: description || '',
-                content_type,
-                content: content_type === 'text' ? content : null,
-                status: 'ready',
-                created_by: created_by,
+                content_type: contentType,
+                content: contentType === 'text' ? content : null,
+                status: status || 'draft',
+                created_by: createdBy,
                 exercise_questions: {
                     create: questions.map((q, index) => ({
                         question: q.question,
@@ -44,8 +44,8 @@ export class CreateExerciseTopicService extends BaseService {
         })
 
         // Create attachment if blobId is provided (for PDF content)
-        if (blobId && content_type === 'pdf') {
-            await attachmentService.createAttachment({
+        if (blobId && contentType === 'pdf') {
+            await attachmentService.attach({
                 name: 'pdf',
                 recordType: 'exercise_topic',
                 recordId: topic.id,
@@ -56,21 +56,21 @@ export class CreateExerciseTopicService extends BaseService {
         return topic
     }
 
-    static async validate({ title, content_type, content, blobId, tags, questions }) {
+    static async validate({ title, contentType, content, blobId, tags, questions }) {
         // Validate required fields
         if (!title) {
             throw new ValidationError('Title is required')
         }
 
-        if (!content_type || !['text', 'pdf'].includes(content_type)) {
+        if (!contentType || !['text', 'pdf'].includes(contentType)) {
             throw new ValidationError('Content type must be either "text" or "pdf"')
         }
 
-        if (content_type === 'text' && !content) {
+        if (contentType === 'text' && !content) {
             throw new ValidationError('Content is required for text type')
         }
 
-        if (content_type === 'pdf' && !blobId) {
+        if (contentType === 'pdf' && !blobId) {
             throw new ValidationError('Blob ID is required for PDF type')
         }
 

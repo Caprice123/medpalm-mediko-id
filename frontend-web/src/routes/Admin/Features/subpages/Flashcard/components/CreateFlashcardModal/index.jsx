@@ -303,8 +303,6 @@ const CreateFlashcardModal = ({ onClose }) => {
         <Label>Number of Cards</Label>
         <Input
           type="number"
-          min="1"
-          max="50"
           value={cardCount}
           onChange={(e) => setCardCount(parseInt(e.target.value) || 10)}
         />
