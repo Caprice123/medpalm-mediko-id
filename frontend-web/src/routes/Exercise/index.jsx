@@ -38,7 +38,7 @@ function ExercisePage() {
       // Submit answers to update spaced repetition data
       const result = await dispatch(submitExerciseProgress(currentTopicId, answers))
 
-      alert(`Latihan selesai! Skor Anda: ${result.score}% (${result.correct_questions}/${result.total_questions} benar)`)
+      alert(`Latihan selesai! Skor Anda: ${result.score}% (${result.correct_questions}/${result.totalQuestions} benar)`)
 
       // Reset state and show topic selection again
       setCurrentTopicId(null)

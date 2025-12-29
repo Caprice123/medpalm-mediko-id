@@ -73,7 +73,7 @@ function SetsList() {
               </SetDescription>
 
               <UpdatedText>
-                Terakhir diperbarui: {formatDate(set.updated_at)}
+                Terakhir diperbarui: {formatDate(set.updatedAt)}
               </UpdatedText>
 
               <CardActions>

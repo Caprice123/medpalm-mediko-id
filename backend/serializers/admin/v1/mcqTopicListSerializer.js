@@ -17,9 +17,9 @@ export class McqTopicListSerializer {
         title: topic.title,
         description: topic.description,
         status: topic.status,
-        quiz_time_limit: topic.quiz_time_limit,
-        passing_score: topic.passing_score,
-        question_count: topic._count?.mcq_questions || topic.questionCount || 0,
+        quiz_timeLimit: topic.quiz_time_limit,
+        passingScore: topic.passing_score,
+        questionCount: topic._count?.mcq_questions || topic.questionCount || 0,
         universityTags,
         semesterTags
       }

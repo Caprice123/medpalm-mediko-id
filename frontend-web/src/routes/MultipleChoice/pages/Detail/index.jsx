@@ -93,7 +93,7 @@ const Detail = () => {
             <ResultContainer>
               <ResultScore>{quizResult.score}%</ResultScore>
               <ResultLabel>
-                {quizResult.correct_questions} dari {quizResult.total_questions} jawaban benar
+                {quizResult.correct_questions} dari {quizResult.totalQuestions} jawaban benar
               </ResultLabel>
               <ResultStatus passed={quizResult.passed}>
                 {quizResult.passed ? '✅ Lulus!' : '❌ Belum Lulus'}
@@ -103,20 +103,20 @@ const Detail = () => {
             <AnswerReview>
               <ReviewTitle>Review Jawaban</ReviewTitle>
               {quizResult.answers?.map((answer, index) => (
-                <ReviewItem key={index} isCorrect={answer.is_correct}>
+                <ReviewItem key={index} isCorrect={answer.isCorrect}>
                   <ReviewQuestion>
                     {index + 1}. {answer.question}
                   </ReviewQuestion>
                   <ReviewAnswer>
                     <strong>Jawaban Anda:</strong>
                     <span>
-                      {answer.user_answer !== null && answer.options?.[answer.user_answer]
-                        ? `${String.fromCharCode(65 + answer.user_answer)}. ${answer.options[answer.user_answer]}`
+                      {answer.userAnswer !== null && answer.options?.[answer.userAnswer]
+                        ? `${String.fromCharCode(65 + answer.userAnswer)}. ${answer.options[answer.userAnswer]}`
                         : 'Tidak dijawab'}
-                      {answer.is_correct ? ' ✓' : ' ✗'}
+                      {answer.isCorrect ? ' ✓' : ' ✗'}
                     </span>
                   </ReviewAnswer>
-                  {!answer.is_correct && (
+                  {!answer.isCorrect && (
                     <ReviewAnswer>
                       <strong>Jawaban Benar:</strong>
                       <span>
@@ -125,8 +125,8 @@ const Detail = () => {
                     </ReviewAnswer>
                   )}
                   {answer.explanation && (
-                    <ExplanationBox isCorrect={answer.is_correct}>
-                      <ExplanationLabel isCorrect={answer.is_correct}>
+                    <ExplanationBox isCorrect={answer.isCorrect}>
+                      <ExplanationLabel isCorrect={answer.isCorrect}>
                         💡 Penjelasan
                       </ExplanationLabel>
                       <ExplanationText>{answer.explanation}</ExplanationText>

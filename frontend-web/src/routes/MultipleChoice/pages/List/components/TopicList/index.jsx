@@ -86,7 +86,7 @@ function TopicList({ topics }) {
               <TopicStats>
                 <StatItem>
                   <StatLabel>Soal</StatLabel>
-                  <StatValue>{topic.question_count || 0}</StatValue>
+                  <StatValue>{topic.questionCount || 0}</StatValue>
                 </StatItem>
                 {topic.quiz_time_limit > 0 && (
                   <StatItem>

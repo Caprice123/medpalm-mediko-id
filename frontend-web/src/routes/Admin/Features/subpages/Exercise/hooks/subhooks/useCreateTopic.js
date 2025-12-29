@@ -30,11 +30,11 @@ export const useCreateTopic = (onClose) => {
         const payload = {
           title: values.title.trim(),
           description: values.description.trim(),
-          content_type: pdfInfo ? 'pdf' : 'text',
+          contentType: pdfInfo ? 'pdf' : 'text',
           content: pdfInfo ? '' : '',
-          pdf_url: pdfInfo?.pdf_url || '',
-          pdf_key: pdfInfo?.pdf_key || '',
-          pdf_filename: pdfInfo?.pdf_filename || '',
+          pdf_url: pdfInfo?.pdfUrl || '',
+          pdf_key: pdfInfo?.pdfKey || '',
+          pdf_filename: pdfInfo?.pdfFilename || '',
           tags: allTags.map(t => t.id),
           questions: values.questions.map((q, index) => ({
             question: q.question,

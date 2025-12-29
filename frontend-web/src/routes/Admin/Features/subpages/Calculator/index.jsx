@@ -95,7 +95,7 @@ function Calculator({ onBack }) {
           <TopicsGrid>
             {topics.map(calculator => {
               // Filter tags by tag_group
-              const kategoriTags = calculator.tags?.filter(tag => tag.tag_group?.name === 'kategori') || []
+              const kategoriTags = calculator.tags?.filter(tag => tag.tagGroup?.name === 'kategori') || []
 
               return (
                 <TopicCard key={calculator.id}>
@@ -131,8 +131,8 @@ function Calculator({ onBack }) {
                     <StatItem>
                       <StatLabel>Created</StatLabel>
                       <StatValue>
-                        {calculator.created_at
-                          ? new Date(calculator.created_at).toLocaleDateString('en-US', {
+                        {calculator.createdAt
+                          ? new Date(calculator.createdAt).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric'

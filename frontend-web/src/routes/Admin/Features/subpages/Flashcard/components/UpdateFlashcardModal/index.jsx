@@ -270,7 +270,7 @@ const UpdateFlashcardModal = ({ onClose }) => {
         {contentType === 'document' ? (
           <FileUpload
             file={pdfFile || pdfInfo ? {
-              name: pdfFile ? pdfFile.name : (pdfInfo?.pdf_filename || 'Existing PDF'),
+              name: pdfFile ? pdfFile.name : (pdfInfo?.pdfFilename || 'Existing PDF'),
               type: pdfFile ? pdfFile.type : 'application/pdf',
               size: pdfFile?.size
             } : null}
@@ -292,8 +292,8 @@ const UpdateFlashcardModal = ({ onClose }) => {
                       if (pdfFile) {
                         const url = URL.createObjectURL(pdfFile)
                         window.open(url, '_blank')
-                      } else if (pdfInfo?.pdf_url) {
-                        window.open(pdfInfo.pdf_url, '_blank')
+                      } else if (pdfInfo?.pdfUrl) {
+                        window.open(pdfInfo.pdfUrl, '_blank')
                       }
                     }}
                     style={{ backgroundColor: '#3b82f6', color: 'white' }}

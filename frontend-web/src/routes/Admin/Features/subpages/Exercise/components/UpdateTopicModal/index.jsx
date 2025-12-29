@@ -334,7 +334,7 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
               <ExistingFileInfo style={{ marginBottom: '1rem', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd' }}>
                 <FileIcon>📕</FileIcon>
                 <div style={{ flex: 1 }}>
-                  <FileName>{pdfInfo.pdf_filename || 'Existing PDF'}</FileName>
+                  <FileName>{pdfInfo.pdfFilename || 'Existing PDF'}</FileName>
                   <div style={{ fontSize: '0.85rem', color: '#0369a1', marginTop: '0.25rem' }}>
                     Topik ini dibuat dari PDF. Upload PDF baru untuk re-generate.
                   </div>

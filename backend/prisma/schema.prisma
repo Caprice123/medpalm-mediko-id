@@ -23,37 +23,37 @@ model credit_plans {
   description         String?
   credits             Int
   price               Decimal               @db.Decimal(10, 2)
-  isActive            Boolean               @default(true)
-  isPopular           Boolean               @default(false)
+  is_active           Boolean               @default(true)
+  is_popular          Boolean               @default(false)
   discount            Int                   @default(0)
   order               Int                   @default(0)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @default(now())
+  created_at          DateTime              @default(now())
+  updated_at          DateTime              @default(now())
   credit_transactions credit_transactions[]
 }
 
 model credit_transactions {
-  id               Int           @id @default(autoincrement())
-  userId           Int
-  userCreditId     Int
-  type             String
-  amount           Decimal       @db.Decimal(10, 2)
-  balanceBefore    Decimal       @db.Decimal(10, 2)
-  balanceAfter     Decimal       @db.Decimal(10, 2)
-  description      String?
-  creditPlanId     Int?
-  sessionId        Int?
-  paymentStatus    String?
-  paymentMethod    String?
-  paymentReference String?
-  createdAt        DateTime      @default(now())
-  credit_plans     credit_plans? @relation(fields: [creditPlanId], references: [id])
-  user_credits     user_credits  @relation(fields: [userCreditId], references: [id])
+  id                Int           @id @default(autoincrement())
+  user_id           Int
+  user_credit_id    Int
+  type              String
+  amount            Decimal       @db.Decimal(10, 2)
+  balance_before    Decimal       @db.Decimal(10, 2)
+  balance_after     Decimal       @db.Decimal(10, 2)
+  description       String?
+  credit_plan_id    Int?
+  session_id        Int?
+  payment_status    String?
+  payment_method    String?
+  payment_reference String?
+  created_at        DateTime      @default(now())
+  credit_plans      credit_plans? @relation(fields: [credit_plan_id], references: [id])
+  user_credits      user_credits  @relation(fields: [user_credit_id], references: [id])
 
-  @@index([paymentStatus])
+  @@index([payment_status])
   @@index([type])
-  @@index([userCreditId])
-  @@index([userId])
+  @@index([user_credit_id])
+  @@index([user_id])
 }
 
 model exercise_questions {
@@ -344,21 +344,21 @@ model user_question_progress {
 }
 
 model user_sessions {
-  id                   Int      @id @default(autoincrement())
-  userId               Int
-  token                String   @unique
-  refreshToken         String?  @unique
-  refreshTokenExpiresAt DateTime?
-  isActive             Boolean  @default(true)
-  userAgent            String?
-  ipAddress            String?
-  expiresAt            DateTime
-  lastActiveAt         DateTime @default(now())
-  createdAt            DateTime @default(now())
+  id                        Int       @id @default(autoincrement())
+  user_id                   Int
+  token                     String    @unique
+  refresh_token             String?   @unique
+  refresh_token_expires_at  DateTime?
+  is_active                 Boolean   @default(true)
+  user_agent                String?
+  ip_address                String?
+  expires_at                DateTime
+  last_active_at            DateTime  @default(now())
+  created_at                DateTime  @default(now())
 
   @@index([token])
-  @@index([refreshToken])
-  @@index([userId])
+  @@index([refresh_token])
+  @@index([user_id])
 }
 
 model users {
@@ -366,16 +366,16 @@ model users {
   email     String   @unique
   name      String?
   picture   String?
-  googleId  String?  @unique
+  google_id String?  @unique
   role      String   @default("user")
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  is_active Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
-  user_credit          user_credits?
-  user_subscription    user_subscriptions[]
+  user_credit           user_credits?
+  user_subscription     user_subscriptions[]
   chatbot_conversations chatbot_conversations[]
-  skripsi_sets         skripsi_sets[]
+  skripsi_sets          skripsi_sets[]
 }
 
 model user_subscriptions {
@@ -392,16 +392,16 @@ model user_subscriptions {
 }
 
 model user_credits {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  balance   Decimal  @default(0) @db.Decimal(10, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  balance    Decimal  @default(0) @db.Decimal(10, 2)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
-  user                users                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                users                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
   credit_transactions credit_transactions[]
 
-  @@index([userId])
+  @@index([user_id])
 }
 
 // ============= Summary Notes Feature =============
@@ -672,31 +672,31 @@ model calculator_classification_option_conditions {
 }
 
 model attachments {
-  id         Int      @id @default(autoincrement())
-  name       String
-  recordType String
-  recordId   Int
-  blobId     Int
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  name        String
+  record_type String
+  record_id   Int
+  blob_id     Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 
-  blob blobs @relation(fields: [blobId], references: [id], onDelete: Cascade)
+  blob blobs @relation(fields: [blob_id], references: [id], onDelete: Cascade)
 
-  @@index([recordType, recordId, name])
-  @@index([blobId])
+  @@index([record_type, record_id, name])
+  @@index([blob_id])
 }
 
 model blobs {
-  id          Int           @id @default(autoincrement())
-  key         String
-  filename    String
-  metadata    String
-  contentType String
-  byteSize    Int
-  checksum    String
-  uploadedAt  DateTime      @default(now())
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @default(now())
+  id           Int           @id @default(autoincrement())
+  key          String
+  filename     String
+  metadata     String
+  content_type String
+  byte_size    Int
+  checksum     String
+  uploaded_at  DateTime      @default(now())
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @default(now())
 
   attachments attachments[]
 

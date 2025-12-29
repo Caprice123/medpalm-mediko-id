@@ -172,7 +172,7 @@ function QuizDetail() {
         <ImageSection>
           <ImageContainer>
             <QuizImage
-              src={currentQuiz.image_url}
+              src={currentQuiz.imageUrl}
               alt={currentQuiz.title}
               zoomed={imageZoomed}
               onClick={() => setImageZoomed(!imageZoomed)}

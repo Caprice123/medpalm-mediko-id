@@ -55,7 +55,7 @@ function CalculatorList() {
     <CalculatorGrid>
       {topics.map((calculator) => {
         // Get kategori tags
-        const kategoriTags = calculator.tags?.filter(tag => tag.tag_group?.name === 'kategori') || []
+        const kategoriTags = calculator.tags?.filter(tag => tag.tagGroup?.name === 'kategori') || []
 
         return (
           <CalculatorCard key={calculator.id}>
@@ -87,7 +87,7 @@ function CalculatorList() {
               </StatItem>
               <StatItem>
                 <StatLabel>Diperbarui</StatLabel>
-                <StatValue>{formatDate(calculator.updated_at || calculator.updatedAt)}</StatValue>
+                <StatValue>{formatDate(calculator.updatedAt || calculator.updatedAt)}</StatValue>
               </StatItem>
             </CalculatorStats>
 

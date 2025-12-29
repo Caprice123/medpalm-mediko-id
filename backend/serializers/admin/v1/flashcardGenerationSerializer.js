@@ -10,8 +10,8 @@ export class FlashcardGenerationSerializer {
             front: card.front || '',
             back: card.back || '',
             order: card.order !== undefined ? card.order : index,
-            image_url: card.image_url || null,
-            image_key: card.image_key || null,
+            imageUrl: card.image_url || null,
+            imageKey: card.image_key || null,
             image: card.image || null
         }))
 

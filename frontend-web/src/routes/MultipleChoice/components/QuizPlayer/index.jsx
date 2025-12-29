@@ -131,8 +131,8 @@ const QuizPlayer = ({ topic, onSubmit, onBack }) => {
 
         <QuestionText>{currentQuestion.question}</QuestionText>
 
-        {currentQuestion.image_url && (
-          <QuestionImage src={currentQuestion.image_url} alt="Question" />
+        {currentQuestion.imageUrl && (
+          <QuestionImage src={currentQuestion.imageUrl} alt="Question" />
         )}
 
         <OptionsContainer>

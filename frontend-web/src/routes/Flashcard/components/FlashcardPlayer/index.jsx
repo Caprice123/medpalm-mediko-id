@@ -177,8 +177,8 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
           <CardFront>
             <CardLabel>Question</CardLabel>
             <CardContent>
-              {currentCard.image_url && (
-                <CardImage src={currentCard.image_url} alt="Flashcard image" />
+              {currentCard.imageUrl && (
+                <CardImage src={currentCard.imageUrl} alt="Flashcard image" />
               )}
               <p>{currentCard.front || currentCard.front_text}</p>
             </CardContent>

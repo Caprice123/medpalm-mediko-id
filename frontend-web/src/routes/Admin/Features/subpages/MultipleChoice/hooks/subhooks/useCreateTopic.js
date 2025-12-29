@@ -12,7 +12,7 @@ export const useCreateTopic = (closeCallback) => {
     initialValues: {
       title: '',
       description: '',
-      content_type: 'manual',
+      contentType: 'manual',
       quiz_time_limit: 0,
       passing_score: 70,
       universityTags: [],
@@ -116,9 +116,9 @@ export const useCreateTopic = (closeCallback) => {
 
     try {
       const result = await dispatch(upload(file, 'exercise'))
-      form.setFieldValue(`questions.${questionIndex}.image_url`, result.url)
-      form.setFieldValue(`questions.${questionIndex}.image_key`, result.key)
-      form.setFieldValue(`questions.${questionIndex}.image_filename`, result.filename)
+      form.setFieldValue(`questions.${questionIndex}.imageUrl`, result.url)
+      form.setFieldValue(`questions.${questionIndex}.imageKey`, result.key)
+      form.setFieldValue(`questions.${questionIndex}.imageFilename`, result.filename)
     } catch (error) {
       console.error('Failed to upload question image:', error)
     }

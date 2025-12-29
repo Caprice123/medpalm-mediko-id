@@ -140,7 +140,7 @@ describe('Skripsi Reducer', () => {
         actions.updateSetContent({ setId: 1, editorContent: '<p>New content</p>' })
       )
 
-      expect(state.currentSet.editor_content).toBe('<p>New content</p>')
+      expect(state.currentSet.editorContent).toBe('<p>New content</p>')
     })
   })
 

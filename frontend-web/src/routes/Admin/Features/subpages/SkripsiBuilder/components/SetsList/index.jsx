@@ -68,13 +68,13 @@ function SetsList({ onView, onDelete }) {
             <StatItem>
               <StatLabel>Dibuat</StatLabel>
               <StatValue>
-                {new Date(set.created_at).toLocaleDateString("id-ID")}
+                {new Date(set.createdAt).toLocaleDateString("id-ID")}
               </StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Diupdate</StatLabel>
               <StatValue>
-                {new Date(set.updated_at).toLocaleDateString("id-ID")}
+                {new Date(set.updatedAt).toLocaleDateString("id-ID")}
               </StatValue>
             </StatItem>
           </SetStats>

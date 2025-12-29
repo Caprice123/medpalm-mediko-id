@@ -59,8 +59,8 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
           </QuizCardHeader>
 
           {/* <QuizImageContainer>
-            {quiz.image_url ? (
-              <QuizImage src={quiz.image_url} alt={quiz.title} />
+            {quiz.imageUrl ? (
+              <QuizImage src={quiz.imageUrl} alt={quiz.title} />
             ) : (
               <span style={{ color: '#9ca3af' }}>No Image</span>
             )}

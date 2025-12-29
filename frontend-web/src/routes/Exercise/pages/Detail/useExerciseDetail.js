@@ -39,7 +39,7 @@ export const useExerciseDetail = () => {
       // Submit answers to update spaced repetition data
       const result = await dispatch(submitExerciseProgress(id, answers))
 
-      alert(`Latihan selesai! Skor Anda: ${result.score}% (${result.correct_questions}/${result.total_questions} benar)`)
+      alert(`Latihan selesai! Skor Anda: ${result.score}% (${result.correct_questions}/${result.totalQuestions} benar)`)
 
       // Navigate back to list
       navigate(ExerciseRoute.initialRoute)

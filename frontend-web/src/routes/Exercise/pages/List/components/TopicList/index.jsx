@@ -105,7 +105,7 @@ function TopicList() {
                 </StatItem>
                 <StatItem>
                   <StatLabel>Diperbarui</StatLabel>
-                  <StatValue>{formatDate(topic.updated_at || topic.updatedAt)}</StatValue>
+                  <StatValue>{formatDate(topic.updatedAt || topic.updatedAt)}</StatValue>
                 </StatItem>
               </TopicStats>
 

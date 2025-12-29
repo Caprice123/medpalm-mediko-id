@@ -18,7 +18,7 @@ const TabBar = memo(({ tabs, currentTabId, onTabSwitch }) => {
           $active={currentTabId === tab.id}
           onClick={() => onTabSwitch(tab)}
         >
-          {tab.title || TAB_CONFIGS.find(c => c.type === tab.tab_type)?.title}
+          {tab.title || TAB_CONFIGS.find(c => c.type === tab.tabType)?.title}
         </Tab>
       ))}
     </StyledTabBar>

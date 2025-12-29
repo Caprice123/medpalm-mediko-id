@@ -51,8 +51,8 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
     <QuizzesGrid>
       {decks.map(quiz => {
         // Filter tags by tag_group
-        const universityTags = quiz.tags?.filter(tag => tag.tag_group?.name === 'university') || []
-        const semesterTags = quiz.tags?.filter(tag => tag.tag_group?.name === 'semester') || []
+        const universityTags = quiz.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
+        const semesterTags = quiz.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
         return (
           <QuizCard key={quiz.id}>
@@ -64,8 +64,8 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
             </QuizCardHeader>
 
             {/* <QuizImageContainer>
-              {quiz.image_url ? (
-                <QuizImage src={quiz.image_url} alt={quiz.title} />
+              {quiz.imageUrl ? (
+                <QuizImage src={quiz.imageUrl} alt={quiz.title} />
               ) : (
                 <span style={{ color: '#9ca3af' }}>No Image</span>
               )}

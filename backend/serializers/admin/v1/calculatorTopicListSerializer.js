@@ -9,12 +9,12 @@ export class CalculatorTopicListSerializer {
       tags: (topic.calculator_topic_tags || []).map(tt => ({
         id: tt.tags.id,
         name: tt.tags.name,
-        tag_group: {
+        tagGroup: {
           id: tt.tags.tag_group?.id,
           name: tt.tags.tag_group?.name
         }
       })),
-      created_at: topic.created_at
+      createdAt: topic.created_at
     }))
   }
 }

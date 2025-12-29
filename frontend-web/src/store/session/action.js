@@ -71,7 +71,7 @@ export const startExerciseWithTopic = (userLearningSessionId, attemptId, topicId
       attemptNumber: data.attempt.attempt_number,
       status: data.attempt.status,
       creditsUsed: data.attempt.credits_used,
-      totalQuestions: data.attempt.total_questions,
+      totalQuestions: data.attempt.totalQuestions,
       score: data.attempt.score
     }))
     dispatch(setCurrentQuestionIndex(0))
@@ -103,7 +103,7 @@ export const createExerciseSession = (exerciseTopicId) => async (dispatch) => {
       id: data.session_id,
       userLearningSessionId: data.user_learning_session_id,
       creditsUsed: data.credits_used,
-      totalQuestions: data.total_questions
+      totalQuestions: data.totalQuestions
     }))
     dispatch(setTopicSnapshot(data.topic_snapshot))
     dispatch(setCurrentQuestionIndex(0))
@@ -213,7 +213,7 @@ export const fetchSessionDetail = (attemptId) => async (dispatch) => {
         exerciseSessionId: data.exercise_session_id,
         status: data.status,
         creditsUsed: data.credits_used,
-        totalQuestions: data.total_questions,
+        totalQuestions: data.totalQuestions,
         score: data.score
       }))
 

@@ -53,8 +53,8 @@ function DeckList() {
     <DeckGrid>
       {decks.map((deck) => {
         // Get tag groups
-        const universityTags = deck.tags?.filter(tag => tag.tag_group?.name === 'university') || []
-        const semesterTags = deck.tags?.filter(tag => tag.tag_group?.name === 'semester') || []
+        const universityTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
+        const semesterTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
         return (
           <Card key={deck.id} shadow hoverable>
@@ -94,7 +94,7 @@ function DeckList() {
                 </StatItem>
                 <StatItem>
                   <StatLabel>Diperbarui</StatLabel>
-                  <StatValue>{formatDate(deck.updated_at || deck.updatedAt)}</StatValue>
+                  <StatValue>{formatDate(deck.updatedAt || deck.updatedAt)}</StatValue>
                 </StatItem>
               </DeckStats>
 

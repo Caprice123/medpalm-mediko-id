@@ -6,7 +6,7 @@ export class McqTopicSerializer {
       id: topic.id,
       title: topic.title,
       description: topic.description,
-      quiz_time_limit: topic.quiz_time_limit,
+      quiz_timeLimit: topic.quiz_time_limit,
       mcq_questions: questions.map(q => {
         const question = {
           id: q.id,

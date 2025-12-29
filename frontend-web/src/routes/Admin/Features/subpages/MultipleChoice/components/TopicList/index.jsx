@@ -87,7 +87,7 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
           <TopicStats>
             <StatItem>
               <StatLabel>Questions</StatLabel>
-              <StatValue>{topic.question_count || 0}</StatValue>
+              <StatValue>{topic.questionCount || 0}</StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Time Limit</StatLabel>

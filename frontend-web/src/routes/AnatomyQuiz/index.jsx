@@ -60,8 +60,8 @@ function AnatomyQuiz() {
     return tag ? tag.name : ''
   }
 
-  const universityTags = tags.filter(t => t.tag_group_id === 1)
-  const semesterTags = tags.filter(t => t.tag_group_id === 2)
+  const universityTags = tags.filter(t => t.tagGroup_id === 1)
+  const semesterTags = tags.filter(t => t.tagGroup_id === 2)
 
   return (
     <Container>
@@ -150,7 +150,7 @@ function AnatomyQuiz() {
         <QuizGrid>
           {quizzes.map(quiz => (
             <QuizCard key={quiz.id} onClick={() => handleQuizClick(quiz.id)}>
-              <QuizImage src={quiz.image_url}>
+              <QuizImage src={quiz.imageUrl}>
                 <SubscriptionBadge>Subscription Only</SubscriptionBadge>
               </QuizImage>
               <QuizCardBody>

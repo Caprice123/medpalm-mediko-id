@@ -84,7 +84,7 @@ export const useUpdateQuiz = (closeCallback) => {
   const { form: uploadImageForm } = useUploadAttachment((imageInfo) => {
     form.setFieldValue('blob', {
       id: imageInfo.blobId,
-      url: imageInfo.image_url,
+      url: imageInfo.imageUrl,
       filename: imageInfo.fileName || 'File name',
       size: imageInfo.fileSize || null
     })

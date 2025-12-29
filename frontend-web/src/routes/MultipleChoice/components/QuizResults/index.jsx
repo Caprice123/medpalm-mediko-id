@@ -34,7 +34,7 @@ import {
 const QuizResults = ({ topic, answers, onRetry, onBack }) => {
   const questions = topic.mcq_questions || []
   const totalQuestions = questions.length
-  const correctAnswers = answers.filter(a => a.is_correct).length
+  const correctAnswers = answers.filter(a => a.isCorrect).length
   const incorrectAnswers = totalQuestions - correctAnswers
   const score = Math.round((correctAnswers / totalQuestions) * 100)
   const passed = score >= topic.passing_score
@@ -79,7 +79,7 @@ const QuizResults = ({ topic, answers, onRetry, onBack }) => {
 
         {questions.map((question, qIndex) => {
           const answer = answers.find(a => a.question_id === question.id)
-          const isCorrect = answer?.is_correct
+          const isCorrect = answer?.isCorrect
 
           return (
             <QuestionCard key={question.id} correct={isCorrect}>
@@ -94,13 +94,13 @@ const QuizResults = ({ topic, answers, onRetry, onBack }) => {
 
               <QuestionText>{question.question}</QuestionText>
 
-              {question.image_url && (
-                <QuestionImage src={question.image_url} alt="Question" />
+              {question.imageUrl && (
+                <QuestionImage src={question.imageUrl} alt="Question" />
               )}
 
               <OptionsReview>
                 {question.options?.map((option, optIndex) => {
-                  const isUserAnswer = answer?.user_answer === optIndex
+                  const isUserAnswer = answer?.userAnswer === optIndex
                   const isCorrectOption = question.correct_answer === optIndex
 
                   return (

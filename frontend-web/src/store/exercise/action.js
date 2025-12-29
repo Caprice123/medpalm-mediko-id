@@ -145,9 +145,9 @@ export const generateQuestionsFromPDF = (pdfFile, questionCount = 10) => async (
     const data = response.data.data || {}
     const questions = data.questions || []
     const pdfInfo = {
-      pdf_url: data.pdf_url,
-      pdf_key: data.pdf_key,
-      pdf_filename: data.pdf_filename
+      pdf_url: data.pdfUrl,
+      pdf_key: data.pdfKey,
+      pdf_filename: data.pdfFilename
     }
 
     dispatch(setGeneratedQuestions(questions))

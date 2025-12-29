@@ -24,13 +24,13 @@ import {
 
 // Memoized message component - only rerenders when its own content changes
 const ChatMessage = memo(({ message, formatTime }) => (
-  <Message $sender={message.sender_type}>
-    <MessageBubble $sender={message.sender_type}>
+  <Message $sender={message.senderType}>
+    <MessageBubble $sender={message.senderType}>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>
         {message.content}
       </ReactMarkdown>
     </MessageBubble>
-    <MessageTime>{formatTime(message.created_at)}</MessageTime>
+    <MessageTime>{formatTime(message.createdAt)}</MessageTime>
   </Message>
 ), (prevProps, nextProps) => {
   // Only rerender if content or id changes

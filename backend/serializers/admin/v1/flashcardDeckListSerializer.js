@@ -23,7 +23,7 @@ export class FlashcardDeckListSerializer {
             tags: deckTags.map(tag => ({
                 id: tag.tags ? tag.tags.id : (tag.tag ? tag.tag.id : tag.id),
                 name: tag.tags ? tag.tags.name : (tag.tag ? tag.tag.name : tag.name),
-                tag_group: tag.tags?.tag_group ? {
+                tagGroup: tag.tags?.tag_group ? {
                     id: tag.tags.tag_group.id,
                     name: tag.tags.tag_group.name
                 } : null

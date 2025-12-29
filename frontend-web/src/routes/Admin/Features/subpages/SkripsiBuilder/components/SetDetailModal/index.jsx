@@ -114,7 +114,7 @@ function SetDetailModal({ set, isOpen, onClose }) {
                   $active={currentTab?.id === tab.id}
                   onClick={() => setCurrentTab(tab)}
                 >
-                  {tab.title || TAB_CONFIGS.find(c => c.type === tab.tab_type)?.title}
+                  {tab.title || TAB_CONFIGS.find(c => c.type === tab.tabType)?.title}
                 </Tab>
               ))}
             </TabBar>
@@ -130,13 +130,13 @@ function SetDetailModal({ set, isOpen, onClose }) {
                     </EmptyMessages>
                   ) : (
                     currentTab?.messages?.map((msg, idx) => (
-                      <Message key={idx} $sender={msg.sender_type}>
-                        <MessageBubble $sender={msg.sender_type}>
+                      <Message key={idx} $sender={msg.senderType}>
+                        <MessageBubble $sender={msg.senderType}>
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {msg.content}
                           </ReactMarkdown>
                         </MessageBubble>
-                        <MessageTime>{formatTime(msg.created_at)}</MessageTime>
+                        <MessageTime>{formatTime(msg.createdAt)}</MessageTime>
                       </Message>
                     ))
                   )}
@@ -146,8 +146,8 @@ function SetDetailModal({ set, isOpen, onClose }) {
               {/* Editor Panel */}
               <EditorPanel>
                 <EditorContent>
-                  {setData?.editor_content ? (
-                    <div dangerouslySetInnerHTML={{ __html: setData.editor_content }} />
+                  {setData?.editorContent ? (
+                    <div dangerouslySetInnerHTML={{ __html: setData.editorContent }} />
                   ) : (
                     <p style={{ color: '#9ca3af', textAlign: 'center', padding: '2rem' }}>
                       Tidak ada konten

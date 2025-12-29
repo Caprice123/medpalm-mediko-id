@@ -89,7 +89,7 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
             <StatItem>
               <StatLabel>Created</StatLabel>
               <StatValue>
-                {new Date(note.created_at).toLocaleDateString("id-ID")}
+                {new Date(note.createdAt).toLocaleDateString("id-ID")}
               </StatValue>
             </StatItem>
           </NoteStats>

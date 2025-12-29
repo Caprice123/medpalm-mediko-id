@@ -232,16 +232,16 @@ function QuizResult({ result, onBack }) {
               : 'Keep Practicing! 💪'}
           </ScoreLabel>
           <ScoreSubtext>
-            You got {result.correct_questions} out of {result.total_questions} questions correct
+            You got {result.correct_questions} out of {result.totalQuestions} questions correct
           </ScoreSubtext>
         </Header>
 
         <ContentLayout>
           {/* Left side - Image */}
           <ImageSection>
-            {result.image_url && (
+            {result.imageUrl && (
               <ImagePreview>
-                <PreviewImage src={result.image_url} alt="Quiz image" />
+                <PreviewImage src={result.imageUrl} alt="Quiz image" />
                 <ImageLabel>Reference Image</ImageLabel>
               </ImagePreview>
             )}

@@ -86,10 +86,10 @@ const AnatomyQuizDetail = () => {
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
                       <QuizMainContent>
                         {/* Quiz Image - Left Side */}
-                        {currentQuiz.image_url && (
+                        {currentQuiz.imageUrl && (
                           <QuizImageSection>
-                            <PhotoView src={currentQuiz.image_url}>
-                              <QuizImage src={currentQuiz.image_url} alt={currentQuiz.title} />
+                            <PhotoView src={currentQuiz.imageUrl}>
+                              <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
                             </PhotoView>
                           </QuizImageSection>
                         )}
@@ -145,7 +145,7 @@ const AnatomyQuizDetail = () => {
                           {quizResult.score}%
                         </ScoreDisplay>
                         <ScoreLabel>
-                          {quizResult.correct_questions} dari {quizResult.total_questions} jawaban benar
+                          {quizResult.correct_questions} dari {quizResult.totalQuestions} jawaban benar
                         </ScoreLabel>
                       </ResultScoreSection>
                       <Button
@@ -167,10 +167,10 @@ const AnatomyQuizDetail = () => {
 
                     <QuizMainContent>
                       {/* Quiz Image - Left Side */}
-                      {currentQuiz.image_url && (
+                      {currentQuiz.imageUrl && (
                         <QuizImageSection>
-                          <PhotoView src={currentQuiz.image_url}>
-                            <QuizImage src={currentQuiz.image_url} alt={currentQuiz.title} />
+                          <PhotoView src={currentQuiz.imageUrl}>
+                            <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
                           </PhotoView>
                         </QuizImageSection>
                       )}

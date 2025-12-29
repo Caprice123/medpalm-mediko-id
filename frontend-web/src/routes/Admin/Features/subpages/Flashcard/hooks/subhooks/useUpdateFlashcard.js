@@ -83,11 +83,11 @@ export const useUpdateFlashcard = (onClose) => {
     if (detail) {
       // Map tags to the format expected by TagSelector
       const universityTags = detail.tags?.filter(tag =>
-        tag.tag_group?.name === 'university'
+        tag.tagGroup?.name === 'university'
       ) || []
 
       const semesterTags = detail.tags?.filter(tag =>
-        tag.tag_group?.name === 'semester'
+        tag.tagGroup?.name === 'semester'
       ) || []
 
       // Add tempId to cards for drag-and-drop
@@ -119,10 +119,10 @@ export const useUpdateFlashcard = (onClose) => {
       })
 
       // Set initial content based on content_type
-      console.log('Detail content_type:', detail.content_type)
+      console.log('Detail contentType:', detail.contentType)
       console.log('Detail blob:', detail.blob)
 
-      if (detail.content_type === 'pdf' && detail.blob) {
+      if (detail.contentType === 'pdf' && detail.blob) {
         setInitialContentType('document')
         const pdfData = {
           blobId: detail.blob.id,
@@ -133,7 +133,7 @@ export const useUpdateFlashcard = (onClose) => {
         }
         console.log('Setting pdfInfo:', pdfData)
         setPdfInfo(pdfData)
-      } else if (detail.content_type === 'text' && detail.content) {
+      } else if (detail.contentType === 'text' && detail.content) {
         setInitialContentType('text')
         setInitialTextContent(detail.content)
       } else {

@@ -60,12 +60,12 @@ const skripsiSlice = createSlice({
     updateSetContent: (state, action) => {
       const { setId, editorContent } = action.payload
       if (state.currentSet && state.currentSet.id === setId) {
-        state.currentSet.editor_content = editorContent
+        state.currentSet.editorContent = editorContent
       }
       // Also update in sets list
       const setIndex = state.sets.findIndex(s => s.id === setId)
       if (setIndex !== -1) {
-        state.sets[setIndex].editor_content = editorContent
+        state.sets[setIndex].editorContent = editorContent
       }
     },
     addMessage: (state, action) => {

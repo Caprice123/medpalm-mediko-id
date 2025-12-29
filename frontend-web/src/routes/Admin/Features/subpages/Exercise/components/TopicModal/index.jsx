@@ -692,7 +692,7 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
         title: topicToEdit.title || '',
         description: topicToEdit.description || '',
         tags: topicToEdit.tags || [],
-        type: topicToEdit.type || topicToEdit.content_type || 'text',
+        type: topicToEdit.type || topicToEdit.contentType || 'text',
         content: topicToEdit.content || '',
         file: null,
         numberOfQuestions: 10
@@ -754,9 +754,9 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
         )
         generatedQuestions = result.questions
         pdfInfo = {
-          pdf_url: result.pdf_url,
-          pdf_key: result.pdf_key,
-          pdf_filename: result.pdf_filename
+          pdf_url: result.pdfUrl,
+          pdf_key: result.pdfKey,
+          pdf_filename: result.pdfFilename
         }
 
         // Store PDF info in form data
@@ -815,11 +815,11 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
       const topicData = {
         title: formData.title,
         description: formData.description || '',
-        content_type: formData.type,
+        contentType: formData.type,
         content: formData.type === 'text' ? formData.content : '',
-        pdf_url: formData.pdf_url || '',
-        pdf_key: formData.pdf_key || '',
-        pdf_filename: formData.pdf_filename || '',
+        pdf_url: formData.pdfUrl || '',
+        pdf_key: formData.pdfKey || '',
+        pdf_filename: formData.pdfFilename || '',
         tags: formData.tags,
         questions: questions.map((q, index) => ({
           question: q.question,
@@ -1055,14 +1055,14 @@ function TopicModal({ isOpen, onClose, onSuccess, topicToEdit = null }) {
                       </div>
                     </label>
                   </FileUpload>
-                  {formData.pdf_url && (
+                  {formData.pdfUrl && (
                     <PDFLink
-                      href={formData.pdf_url}
+                      href={formData.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <span>📎</span>
-                      <span>Lihat PDF yang telah diupload: {formData.pdf_filename}</span>
+                      <span>Lihat PDF yang telah diupload: {formData.pdfFilename}</span>
                     </PDFLink>
                   )}
                 </FormGroup>

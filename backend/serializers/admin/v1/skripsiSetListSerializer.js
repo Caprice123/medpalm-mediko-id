@@ -9,8 +9,8 @@ export class SkripsiSetListSerializer {
         email: set.users.email
       } : null,
       tabCount: set._count?.skripsi_tabs || set.tabCount || 0,
-      created_at: set.created_at,
-      updated_at: set.updated_at
+      createdAt: set.created_at,
+      updatedAt: set.updated_at
     }))
   }
 }

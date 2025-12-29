@@ -49,15 +49,15 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
     <TopicsGrid>
       {topics.map(topic => {
         // Filter tags by tag_group
-        const universityTags = topic.tags?.filter(tag => tag.tag_group?.name === 'university') || []
-        const semesterTags = topic.tags?.filter(tag => tag.tag_group?.name === 'semester') || []
+        const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
+        const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
         return (
           <TopicCard key={topic.id}>
             <TopicCardHeader>
               <TopicCardTitle>{topic.title}</TopicCardTitle>
-              <TopicType type={topic.content_type}>
-                {topic.content_type === 'text' ? '📝 Text' : '📄 PDF'}
+              <TopicType type={topic.contentType}>
+                {topic.contentType === 'text' ? '📝 Text' : '📄 PDF'}
               </TopicType>
             </TopicCardHeader>
 

@@ -72,7 +72,7 @@ const SkripsiEditor = () => {
   useEffect(() => {
     if (editor && currentSet && !editor.getText()) {
       // Load content from the set
-      const content = currentSet.editor_content || ''
+      const content = currentSet.editorContent || ''
       editor.commands.setContent(content, false) // Don't emit update event on initial load
     }
   }, [currentSet, editor])

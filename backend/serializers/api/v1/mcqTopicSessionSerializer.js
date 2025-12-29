@@ -8,15 +8,15 @@ export class McqTopicSessionSerializer {
         id: topic.id,
         title: topic.title,
         description: topic.description,
-        quiz_time_limit: topic.quiz_time_limit,
-        passing_score: topic.passing_score
+        quiz_timeLimit: topic.quiz_time_limit,
+        passingScore: topic.passing_score
       },
       mode,
       questions: questions.map((q, index) => {
         const question = {
           id: q.id,
           question: q.question,
-          image_url: q.image_url || null,
+          imageUrl: q.image_url || null,
           options: q.options,
           order: q.order !== undefined ? q.order : index
         }

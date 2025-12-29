@@ -4,7 +4,7 @@ export class SkripsiSetListSerializer {
       id: set.id,
       title: set.title,
       description: set.description,
-      updated_at: set.updated_at
+      updatedAt: set.updated_at
     }))
   }
 }

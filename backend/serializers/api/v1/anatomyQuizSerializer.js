@@ -6,7 +6,7 @@ export class AnatomyQuizSerializer {
       id: quiz.id,
       title: quiz.title,
       description: quiz.description,
-      image_url: quiz.image_url,
+      imageUrl: quiz.image_url,
       anatomy_questions: questions.map(question => ({
         id: question.id,
         question: question.question

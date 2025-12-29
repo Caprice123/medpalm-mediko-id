@@ -19,7 +19,7 @@ export class SummaryNoteListSerializer {
         is_active: note.is_active,
         universityTags,
         semesterTags,
-        created_at: note.created_at
+        createdAt: note.created_at
       }
     })
   }

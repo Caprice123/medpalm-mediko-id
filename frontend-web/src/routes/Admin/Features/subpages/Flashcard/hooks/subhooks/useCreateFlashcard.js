@@ -32,7 +32,7 @@ export const useCreateFlashcard = (onClose) => {
         const payload = {
           title: values.title.trim(),
           description: values.description.trim(),
-          content_type: pdfInfo ? 'pdf' : 'text',
+          contentType: pdfInfo ? 'pdf' : 'text',
           content: pdfInfo ? null : '',
           status: values.status,
           cards: values.cards.map((card, index) => ({

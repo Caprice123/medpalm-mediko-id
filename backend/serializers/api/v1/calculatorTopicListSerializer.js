@@ -11,7 +11,7 @@ export class CalculatorTopicListSerializer {
         tags: topicTags.map(tt => ({
           id: tt.tags ? tt.tags.id : tt.id,
           name: tt.tags ? tt.tags.name : tt.name,
-          tag_group: tt.tags?.tag_group ? {
+          tagGroup: tt.tags?.tag_group ? {
             id: tt.tags.tag_group.id,
             name: tt.tags.tag_group.name
           } : null
@@ -21,7 +21,7 @@ export class CalculatorTopicListSerializer {
           key: f.key,
           label: f.label
         })),
-        updated_at: topic.updated_at
+        updatedAt: topic.updated_at
       }
     })
   }

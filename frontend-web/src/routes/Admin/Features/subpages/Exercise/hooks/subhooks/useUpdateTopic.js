@@ -65,11 +65,11 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
     if (topicToEdit) {
       // Map tags to the format expected by TagSelector
       const universityTags = topicToEdit.tags?.filter(tag =>
-        tag.tag_group?.name === 'university'
+        tag.tagGroup?.name === 'university'
       ) || []
 
       const semesterTags = topicToEdit.tags?.filter(tag =>
-        tag.tag_group?.name === 'semester'
+        tag.tagGroup?.name === 'semester'
       ) || []
 
       // Add id to questions for drag-and-drop
@@ -87,13 +87,13 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
       })
 
       // Set initial content based on content_type
-      if (topicToEdit.content_type === 'pdf' || topicToEdit.type === 'pdf') {
+      if (topicToEdit.contentType === 'pdf' || topicToEdit.type === 'pdf') {
         setInitialContentType('pdf')
-        if (topicToEdit.pdf_url) {
+        if (topicToEdit.pdfUrl) {
           setPdfInfo({
-            pdf_url: topicToEdit.pdf_url,
-            pdf_key: topicToEdit.pdf_key,
-            pdf_filename: topicToEdit.pdf_filename
+            pdf_url: topicToEdit.pdfUrl,
+            pdf_key: topicToEdit.pdfKey,
+            pdf_filename: topicToEdit.pdfFilename
           })
         }
       } else if (topicToEdit.content) {
