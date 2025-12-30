@@ -1,8 +1,11 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetMcqTopicsService extends BaseService {
   static async call({ page = 1, limit = 30, filters = {} }) {
+    this.validate(filters)
+
     const skip = (page - 1) * limit
 
     // Build where clause
@@ -21,6 +24,34 @@ export class GetMcqTopicsService extends BaseService {
         { title: { contains: filters.search, mode: 'insensitive' } },
         { description: { contains: filters.search, mode: 'insensitive' } }
       ]
+    }
+
+    // Build filter conditions for tags
+    const tagFilters = []
+
+    if (filters.university) {
+      tagFilters.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: parseInt(filters.university)
+          }
+        }
+      })
+    }
+
+    if (filters.semester) {
+      tagFilters.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: parseInt(filters.semester)
+          }
+        }
+      })
+    }
+
+    // Apply tag filters with AND logic
+    if (tagFilters.length > 0) {
+      where.AND = tagFilters
     }
 
     // Get topics with pagination
@@ -78,7 +109,7 @@ export class GetMcqTopicsService extends BaseService {
         passing_score: topic.passing_score,
         status: topic.status,
         is_active: topic.is_active,
-        question_count: topic.mcq_questions.length,
+        question_count: topic.question_count || topic.mcq_questions.length,
         created_by: topic.created_by,
         created_at: topic.created_at,
         updated_at: topic.updated_at,
@@ -95,6 +126,24 @@ export class GetMcqTopicsService extends BaseService {
         limit,
         total,
         isLastPage: !hasMore
+      }
+    }
+  }
+
+  static validate(filters) {
+    // Validate university filter if provided
+    if (filters.university) {
+      const universityId = parseInt(filters.university)
+      if (isNaN(universityId) || universityId <= 0) {
+        throw new ValidationError('Invalid university filter')
+      }
+    }
+
+    // Validate semester filter if provided
+    if (filters.semester) {
+      const semesterId = parseInt(filters.semester)
+      if (isNaN(semesterId) || semesterId <= 0) {
+        throw new ValidationError('Invalid semester filter')
       }
     }
   }

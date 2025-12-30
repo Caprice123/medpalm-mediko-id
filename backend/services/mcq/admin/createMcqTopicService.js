@@ -7,19 +7,18 @@ export class CreateMcqTopicService extends BaseService {
   static async call({
     title,
     description,
-    content_type,
-    source_url,
-    source_key,
-    source_filename,
-    quiz_time_limit = 0,
-    passing_score = 70,
+    contentType,
+    content,
+    blobId,
+    quizTimeLimit = 0,
+    passingScore = 70,
     tags,
     questions,
-    created_by,
+    createdBy,
     status = 'draft'
   }) {
     // Validate inputs
-    await this.validate({ title, content_type, tags, questions })
+    await this.validate({ title, contentType, content, blobId, tags, questions })
 
     // Create topic with questions and tags in a transaction
     const topic = await prisma.$transaction(async (tx) => {
@@ -28,14 +27,13 @@ export class CreateMcqTopicService extends BaseService {
         data: {
           title,
           description: description || '',
-          content_type,
-          source_url: source_url || null,
-          source_key: source_key || null,
-          source_filename: source_filename || null,
-          quiz_time_limit,
-          passing_score,
+          content_type: contentType,
+          content: contentType === 'text' ? content : null,
+          question_count: questions.length,
+          quiz_time_limit: quizTimeLimit,
+          passing_score: passingScore,
           status,
-          created_by,
+          created_by: createdBy,
           mcq_topic_tags: {
             create: tags.map(tag => ({
               tag_id: typeof tag === 'object' ? Number(tag.id) : tag
@@ -43,6 +41,16 @@ export class CreateMcqTopicService extends BaseService {
           }
         }
       })
+
+      // Create attachment for topic PDF if blobId provided using attachmentService
+      if (blobId && contentType === 'pdf') {
+        await attachmentService.attach({
+          name: 'pdf',
+          recordType: 'mcq_topic',
+          recordId: createdTopic.id,
+          blobId: blobId
+        })
+      }
 
       // Create questions
       const createdQuestions = []
@@ -94,14 +102,22 @@ export class CreateMcqTopicService extends BaseService {
     return topic
   }
 
-  static async validate({ title, content_type, tags, questions }) {
+  static async validate({ title, contentType, content, blobId, tags, questions }) {
     // Validate required fields
     if (!title) {
       throw new ValidationError('Title is required')
     }
 
-    if (!content_type) {
+    if (!contentType) {
       throw new ValidationError('Content type is required')
+    }
+
+    if (contentType === 'text' && !content) {
+      throw new ValidationError('Content is required for text type')
+    }
+
+    if (contentType === 'pdf' && !blobId) {
+      throw new ValidationError('Blob ID is required for PDF type')
     }
 
     if (!tags || tags.length === 0) {
@@ -139,6 +155,16 @@ export class CreateMcqTopicService extends BaseService {
 
     if (existingTags.length !== tagIds.length) {
       throw new ValidationError('Some tags are invalid or inactive')
+    }
+
+    // Validate blob exists if provided
+    if (blobId) {
+      const blob = await prisma.blobs.findUnique({
+        where: { id: blobId }
+      })
+      if (!blob) {
+        throw new ValidationError('Invalid blob ID')
+      }
     }
   }
 }

@@ -24,11 +24,10 @@ export const Filter = () => {
         return tags?.find(tag => tag.name == "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
 
-    const statusOptions = [
-        { label: 'All', value: '' },
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' }
-    ]
+    const onChangeFilter = (key, value) => {
+        dispatch(actions.updateFilter({ key: key, value: value }))
+        dispatch(actions.setPage(1))
+    }
 
     return (
         <div style={{
@@ -48,7 +47,7 @@ export const Filter = () => {
                         <TextInput
                             placeholder="Cari topik berdasarkan nama..."
                             value={filter.search || ''}
-                            onChange={(e) => dispatch(actions.updateFilter({ key: "search", value: e.target.value }))}
+                            onChange={(e) => onChangeFilter("search", e.target.value)}
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault()
@@ -59,12 +58,22 @@ export const Filter = () => {
                     </FilterComponent.Group>
 
                     <FilterComponent.Group>
-                        <FilterComponent.Label>Status</FilterComponent.Label>
+                        <FilterComponent.Label>Universitas</FilterComponent.Label>
                         <Dropdown
-                            options={statusOptions}
-                            value={filter.status ? statusOptions.find(s => s.value === filter.status) : statusOptions[0]}
-                            onChange={(option) => dispatch(actions.updateFilter({ key: "status", value: option?.value || "" }))}
-                            placeholder="Filter berdasarkan status..."
+                            options={universityTags}
+                            value={filter.university ? universityTags.find(t => t.value === filter.university) : null}
+                            onChange={(option) => onChangeFilter("university", option?.value || "")}
+                            placeholder="Filter berdasarkan universitas..."
+                        />
+                    </FilterComponent.Group>
+
+                    <FilterComponent.Group>
+                        <FilterComponent.Label>Semester</FilterComponent.Label>
+                        <Dropdown
+                            options={semesterTags}
+                            value={filter.semester ? semesterTags.find(t => t.value === filter.semester) : null}
+                            onChange={(option) => onChangeFilter("semester", option?.value || "")}
+                            placeholder="Filter berdasarkan semester..."
                         />
                     </FilterComponent.Group>
                 </FilterComponent>

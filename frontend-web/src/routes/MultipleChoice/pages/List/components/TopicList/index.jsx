@@ -19,8 +19,8 @@ import {
   ModeButtonContainer
 } from './TopicList.styles'
 
-function TopicList({ topics }) {
-  const { loading } = useSelector((state) => state.mcq)
+function TopicList() {
+  const { topics, loading } = useSelector((state) => state.mcq)
   const navigate = useNavigate()
 
   const handleSelectMode = (topicId, mode) => {

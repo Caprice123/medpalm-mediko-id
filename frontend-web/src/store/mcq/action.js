@@ -37,8 +37,9 @@ export const fetchMcqTopics = () => async (dispatch, getState) => {
 
     const response = await getWithToken(Endpoints.mcq.topics, queryParams)
 
-    const data = response.data.data
-    dispatch(setTopics(data.topics || []))
+    const data = response.data
+    console.log(data)
+    dispatch(setTopics(data.data || []))
     dispatch(setPagination(data.pagination || { page: 1, limit: 30, isLastPage: false }))
   } catch (err) {
     handleApiError(err, dispatch)
@@ -176,23 +177,24 @@ export const fetchMcqTopicDetail = (topicId, onSuccess) => async (dispatch) => {
 /**
  * Generate MCQ questions from text or PDF (admin only)
  */
-export const generateMcqQuestions = ({ content, file, type, questionCount }, onSuccess) => async (dispatch) => {
+export const generateMcqQuestions = ({ content, type, questionCount, blobId }, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isGenerating', value: true }))
 
-    const formData = new FormData()
-    formData.append('type', type)
-    formData.append('questionCount', questionCount)
-
-    if (type === 'pdf' && file) {
-      formData.append('file', file)
+    const requestBody = {
+        type: type,
+        questionCount: questionCount
+    }
+    if (type === 'pdf') {
+      // If we have a blobId, send only the blobId (no need to send binary file)
+      requestBody.blobId = blobId
     } else if (type === 'text' && content) {
-      formData.append('content', content)
+      requestBody.content = content
     } else {
       throw new Error('Invalid generation type or missing required data')
     }
 
-    const response = await postWithToken(Endpoints.mcq.admin.generate, formData)
+    const response = await postWithToken(Endpoints.mcq.admin.generate, requestBody)
 
     const questions = response.data.data
     if (onSuccess) onSuccess(questions)

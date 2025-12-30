@@ -93,7 +93,7 @@ const Detail = () => {
             <ResultContainer>
               <ResultScore>{quizResult.score}%</ResultScore>
               <ResultLabel>
-                {quizResult.correct_questions} dari {quizResult.totalQuestions} jawaban benar
+                {quizResult.correctQuestions} dari {quizResult.totalQuestions} jawaban benar
               </ResultLabel>
               <ResultStatus passed={quizResult.passed}>
                 {quizResult.passed ? '✅ Lulus!' : '❌ Belum Lulus'}
@@ -184,7 +184,7 @@ const Detail = () => {
             <InfoItem>
               📊 Pertanyaan {currentQuestionIndex + 1} dari {totalQuestions}
             </InfoItem>
-            {mode === 'quiz' && timerActive && currentTopic.quiz_time_limit > 0 && (
+            {mode === 'quiz' && timerActive && currentTopic.quizTimeLimit > 0 && (
               <Timer warning={timer < 60}>
                 ⏰ {formatTimer(timer)}
               </Timer>

@@ -36,8 +36,7 @@ export const useFeatureSetting = (onClose) => {
         "mcq_credit_cost",
         "mcq_is_active",
         "mcq_generation_model",
-        "mcq_generation_prompt_text_based",
-        "mcq_generation_prompt_document_based",
+        "mcq_generation_prompt"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants())

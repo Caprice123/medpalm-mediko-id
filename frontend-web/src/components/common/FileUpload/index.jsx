@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 import {
   UploadSection,
@@ -36,6 +36,7 @@ const FileUpload = ({
   isUploading = false,
   uploadText = 'Click to upload file'
 }) => {
+    const ref = useRef(null)
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
     if (selectedFile && onFileSelect) {
@@ -50,8 +51,9 @@ const FileUpload = ({
   return (
     <UploadSection>
       {!file ? (
-        <UploadArea onClick={() => document.getElementById('file-upload-input').click()}>
+        <UploadArea onClick={() => ref.current.click()}>
           <input
+            ref={ref}
             id="file-upload-input"
             type="file"
             accept={acceptString}

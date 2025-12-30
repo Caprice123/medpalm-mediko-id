@@ -34,10 +34,8 @@ class McqController {
     })
 
     return res.status(200).json({
-      data: {
-        topics: McqTopicListSerializer.serialize(result.topics),
-        pagination: result.pagination
-      }
+      data: McqTopicListSerializer.serialize(result.topics),
+      pagination: result.pagination
     })
   }
 

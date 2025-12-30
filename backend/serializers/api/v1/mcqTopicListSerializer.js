@@ -7,7 +7,7 @@ export class McqTopicListSerializer {
         id: topic.id,
         title: topic.title,
         description: topic.description,
-        quiz_timeLimit: topic.quiz_time_limit,
+        quizTimeLimit: topic.quiz_time_limit,
         passingScore: topic.passing_score,
         questionCount: topic.mcq_questions?.length || topic._count?.mcq_questions || 0,
         tags: topicTags.map(tt => ({

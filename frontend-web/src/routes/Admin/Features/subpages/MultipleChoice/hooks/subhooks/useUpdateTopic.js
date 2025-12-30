@@ -1,54 +1,75 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { updateMcqTopic, fetchAdminMcqTopics } from '@store/mcq/action'
+import { updateMcqTopic, fetchAdminMcqTopics, generateMcqQuestions } from '@store/mcq/action'
 import { upload } from '@store/common/action'
 
 export const useUpdateTopic = (closeCallback) => {
   const dispatch = useDispatch()
-  const { selectedTopic } = useSelector(state => state.mcq)
+  const { selectedTopic, loading } = useSelector(state => state.mcq)
+  const { loading: commonLoading } = useSelector(state => state.common)
   const [showConfirmClose, setShowConfirmClose] = useState(false)
 
   const form = useFormik({
     initialValues: {
       title: '',
       description: '',
-      contentType: 'manual',
       quiz_time_limit: 0,
       passing_score: 70,
       universityTags: [],
       semesterTags: [],
       questions: [],
-      status: 'draft'
+      status: 'draft',
+      // Generation fields merged into Formik
+      contentType: 'document',
+      textContent: '',
+      pdfFile: null,
+      questionCount: 5,
+      uploadedBlobId: null
     },
-    onSubmit: (values, { resetForm }) => {
-      // Prepare questions with blobId instead of separate image fields
-      const questions = values.questions.map((q, index) => ({
-        question: q.question,
-        blobId: q.image?.id || null, // Send blob ID in camelCase
-        options: q.options,
-        correct_answer: q.correct_answer,
-        explanation: q.explanation || '',
-        order: index
-      }))
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        // Prepare questions with blobId instead of separate image fields
+        const questions = values.questions.map((q, index) => ({
+          question: q.question,
+          blobId: q.image?.id || null, // Send blob ID in camelCase
+          options: q.options,
+          correct_answer: q.correct_answer,
+          explanation: q.explanation || '',
+          order: index
+        }))
 
-      // Merge university and semester tags into single tags array
-      const topicData = {
-        title: values.title,
-        description: values.description,
-        contentType: values.contentType,
-        quiz_time_limit: values.quiz_time_limit,
-        passing_score: values.passing_score,
-        status: values.status,
-        questions: questions,
-        tags: [...values.universityTags, ...values.semesterTags]
+        // Build payload based on content type
+        const topicData = {
+          title: values.title.trim(),
+          description: values.description.trim(),
+          contentType: values.contentType === 'document' ? 'pdf' : 'text',
+          quiz_time_limit: values.quiz_time_limit,
+          passing_score: values.passing_score,
+          status: values.status,
+          questions: questions,
+          tags: [...values.universityTags, ...values.semesterTags].map(t => t.id)
+        }
+
+        // Add content or blobId based on contentType
+        if (values.contentType === 'document') {
+          // Document type: send blobId, no content
+          topicData.blobId = values.uploadedBlobId
+        } else {
+          // Text type: send content, no blobId
+          topicData.content = values.textContent.trim()
+        }
+
+        console.log('Update MCQ topic payload:', topicData)
+
+        await dispatch(updateMcqTopic(selectedTopic.id, topicData, () => {
+          dispatch(fetchAdminMcqTopics())
+          resetForm()
+          if (closeCallback) closeCallback()
+        }))
+      } catch (error) {
+        console.error('Failed to update topic:', error)
       }
-
-      dispatch(updateMcqTopic(selectedTopic.id, topicData, () => {
-        dispatch(fetchAdminMcqTopics())
-        resetForm()
-        if (closeCallback) closeCallback()
-      }))
     }
   })
 
@@ -58,24 +79,44 @@ export const useUpdateTopic = (closeCallback) => {
       // Map questions to include image blob object if available
       const questions = (selectedTopic.questions || selectedTopic.mcq_questions || []).map(q => ({
         ...q,
+        tempId: q.id || Date.now() + Math.random(),
         image: q.image ? {
           id: q.image.id, // Blob ID for backend
           url: q.image.url,
           key: q.image.key,
-          filename: q.image.filename
+          filename: q.image.filename,
+          contentType: q.image.contentType,
+          byteSize: q.image.byteSize
         } : null
       }))
+
+      // Set contentType based on selectedTopic
+      const contentType = selectedTopic.contentType === 'text' ? 'text' : 'document'
+
+      // Load PDF blob if exists
+      const pdfBlob = selectedTopic.pdf
+      const pdfFile = pdfBlob ? {
+        name: pdfBlob.filename,
+        type: pdfBlob.contentType,
+        size: pdfBlob.byteSize,
+        url: pdfBlob.url // Presigned URL for preview/download
+      } : null
 
       form.setValues({
         title: selectedTopic.title || '',
         description: selectedTopic.description || '',
-        contentType: selectedTopic.contentType || 'manual',
-        quiz_time_limit: selectedTopic.quiz_time_limit || 0,
-        passing_score: selectedTopic.passing_score || 70,
+        quiz_time_limit: selectedTopic.quizTimeLimit || selectedTopic.quiz_time_limit || 0,
+        passing_score: selectedTopic.passingScore || selectedTopic.passing_score || 70,
         universityTags: selectedTopic.universityTags || [],
         semesterTags: selectedTopic.semesterTags || [],
         questions: questions,
-        status: selectedTopic.status || 'draft'
+        status: selectedTopic.status || 'draft',
+        // Load existing content type and PDF
+        contentType: contentType,
+        textContent: selectedTopic.content || '',
+        pdfFile: pdfFile,
+        questionCount: 5,
+        uploadedBlobId: pdfBlob?.id || null
       })
     }
   }, [selectedTopic])
@@ -113,6 +154,7 @@ export const useUpdateTopic = (closeCallback) => {
     form.setFieldValue('questions', [
       ...form.values.questions,
       {
+        tempId: Date.now(),
         question: '',
         image: null, // Blob object: {id, url, key, filename}
         options: ['', '', '', ''], // Default 4 options
@@ -144,11 +186,16 @@ export const useUpdateTopic = (closeCallback) => {
   }
 
   const handleRemoveQuestion = (index) => {
-    form.setFieldValue('questions', form.values.questions.filter((_, i) => i !== index))
+    const updatedQuestions = form.values.questions.filter((_, i) => i !== index)
+    // Update order for remaining questions
+    const reorderedQuestions = updatedQuestions.map((q, idx) => ({
+      ...q,
+      order: idx
+    }))
+    form.setFieldValue('questions', reorderedQuestions)
   }
 
-  const handleQuestionImageSelect = async (e, questionIndex) => {
-    const file = e.target.files[0]
+  const handleQuestionImageSelect = async (file, questionIndex) => {
     if (!file) return
 
     try {
@@ -157,12 +204,108 @@ export const useUpdateTopic = (closeCallback) => {
         id: result.blobId, // Blob ID for backend
         url: result.url, // Temporary presigned URL for preview
         key: result.key,
-        filename: result.filename
+        filename: result.filename,
+        contentType: result.contentType,
+        byteSize: result.byteSize
       })
     } catch (error) {
       console.error('Failed to upload question image:', error)
+      alert('Failed to upload image. Please try again.')
     }
   }
+
+  const handleRemoveQuestionImage = (questionIndex) => {
+    form.setFieldValue(`questions.${questionIndex}.image`, null)
+  }
+
+  // Handle file selection and upload
+  const handleFileSelect = async (file) => {
+    console.log(file)
+    if (file.type === 'application/pdf') {
+      form.setFieldValue('pdfFile', file)
+
+      // Immediately upload PDF to get blobId
+      try {
+        const uploadResult = await dispatch(upload(file, 'mcq'))
+
+        if (uploadResult?.blobId) {
+          form.setFieldValue('uploadedBlobId', uploadResult.blobId)
+        } else {
+          throw new Error('Upload failed - no blobId returned')
+        }
+      } catch (error) {
+        console.error('Failed to upload PDF:', error)
+        alert('Gagal upload PDF. Silakan coba lagi.')
+        form.setFieldValue('pdfFile', null)
+      }
+    }
+  }
+
+  // Handle question generation
+  const handleGenerate = async () => {
+    try {
+      const { contentType, uploadedBlobId, textContent, questionCount } = form.values
+
+      if (contentType === 'document' && uploadedBlobId) {
+        // Generate from newly uploaded PDF
+        const questions = await dispatch(generateMcqQuestions({
+          type: 'pdf',
+          questionCount,
+          blobId: uploadedBlobId
+        }))
+
+        if (!questions || !Array.isArray(questions) || questions.length === 0) {
+          alert('Gagal generate questions dari PDF')
+          return
+        }
+
+        // Update form with generated questions
+        const questionsWithTempIds = questions.map((q, index) => ({
+          ...q,
+          tempId: Date.now() + index,
+          order: index
+        }))
+        form.setFieldValue('questions', questionsWithTempIds)
+      } else if (contentType === 'text' && textContent.trim()) {
+        // Generate from text
+        const questions = await dispatch(generateMcqQuestions({
+          content: textContent,
+          type: 'text',
+          questionCount
+        }))
+
+        if (!questions || !Array.isArray(questions) || questions.length === 0) {
+          alert('Gagal generate questions dari text')
+          return
+        }
+
+        // Update form with generated questions
+        const questionsWithTempIds = questions.map((q, index) => ({
+          ...q,
+          tempId: Date.now() + index,
+          order: index
+        }))
+        form.setFieldValue('questions', questionsWithTempIds)
+      } else {
+        // Validation
+        if (contentType === 'document' && !uploadedBlobId) {
+          alert('Silakan upload file PDF terlebih dahulu.')
+        } else if (contentType === 'text' && !textContent.trim()) {
+          alert('Silakan masukkan teks terlebih dahulu.')
+        }
+      }
+    } catch (error) {
+      console.error('Failed to generate MCQ questions:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat generate questions'
+      alert(`Gagal generate questions: ${errorMessage}`)
+    }
+  }
+
+  const canGenerate = form.values.contentType === 'document'
+    ? form.values.uploadedBlobId !== null && !commonLoading.isUploading
+    : !!form.values.textContent?.trim()
+
+  const isGenerating = loading.isGenerating || commonLoading.isUploading
 
   return {
     form,
@@ -176,5 +319,10 @@ export const useUpdateTopic = (closeCallback) => {
     handleAddOption,
     handleRemoveOption,
     handleQuestionImageSelect,
+    handleRemoveQuestionImage,
+    handleFileSelect,
+    handleGenerate,
+    canGenerate,
+    isGenerating
   }
 }

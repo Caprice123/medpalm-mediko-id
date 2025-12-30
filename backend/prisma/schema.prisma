@@ -66,7 +66,6 @@ model exercise_questions {
   created_at                DateTime                    @default(now())
   updated_at                DateTime                    @default(now())
   exercise_topics           exercise_topics             @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  exercise_session_questions exercise_session_questions[]
 
   @@index([order])
   @@index([topic_id])
@@ -820,7 +819,9 @@ model mcq_topics {
   id              Int      @id @default(autoincrement())
   title           String
   description     String?
-  content_type    String // 'pdf', 'pptx', 'docx', 'manual'
+  content_type    String // 'pdf', 'text', 'manual'
+  content         String?
+  question_count  Int?
   source_url      String?
   source_key      String?
   source_filename String?

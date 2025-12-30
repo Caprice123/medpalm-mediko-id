@@ -8,16 +8,15 @@ export class UpdateMcqTopicService extends BaseService {
     id,
     title,
     description,
-    content_type,
-    source_url,
-    source_key,
-    source_filename,
-    quiz_time_limit,
-    passing_score,
+    contentType,
+    content,
+    blobId,
+    quizTimeLimit,
+    passingScore,
     tags,
     questions,
     status,
-    is_active
+    isActive
   }) {
     // Validate topic exists
     const existingTopic = await prisma.mcq_topics.findUnique({
@@ -33,20 +32,67 @@ export class UpdateMcqTopicService extends BaseService {
       await this.validate({ tags, questions })
     }
 
+    // Validate blobId if provided
+    if (blobId) {
+      const blob = await prisma.blobs.findUnique({
+        where: { id: blobId }
+      })
+      if (!blob) {
+        throw new ValidationError('Invalid blob ID')
+      }
+    }
+
     // Update topic in transaction
     const topic = await prisma.$transaction(async (tx) => {
       // Build update data
       const updateData = {}
       if (title !== undefined) updateData.title = title
       if (description !== undefined) updateData.description = description
-      if (content_type !== undefined) updateData.content_type = content_type
-      if (source_url !== undefined) updateData.source_url = source_url
-      if (source_key !== undefined) updateData.source_key = source_key
-      if (source_filename !== undefined) updateData.source_filename = source_filename
-      if (quiz_time_limit !== undefined) updateData.quiz_time_limit = quiz_time_limit
-      if (passing_score !== undefined) updateData.passing_score = passing_score
+      if (contentType !== undefined) updateData.content_type = contentType
+      if (quizTimeLimit !== undefined) updateData.quiz_time_limit = quizTimeLimit
+      if (passingScore !== undefined) updateData.passing_score = passingScore
       if (status !== undefined) updateData.status = status
-      if (is_active !== undefined) updateData.is_active = is_active
+      if (isActive !== undefined) updateData.is_active = isActive
+
+      // Determine final contentType (use new if provided, otherwise keep existing)
+      const finalContentType = contentType !== undefined ? contentType : existingTopic.content_type
+
+      // Handle content and blob based on contentType
+      if (finalContentType === 'text') {
+        // Text content: save content, remove PDF blob
+        updateData.content = content || null
+
+        // Delete existing PDF attachment
+        await tx.attachments.deleteMany({
+          where: {
+            record_type: 'mcq_topic',
+            record_id: id,
+            name: 'pdf'
+          }
+        })
+      } else if (finalContentType === 'pdf') {
+        // PDF content: clear content, attach blob
+        updateData.content = null
+
+        // Delete existing PDF attachment first
+        await tx.attachments.deleteMany({
+          where: {
+            record_type: 'mcq_topic',
+            record_id: id,
+            name: 'pdf'
+          }
+        })
+
+        // Create new attachment if blobId is provided
+        if (blobId) {
+          await attachmentService.attach({
+            name: 'pdf',
+            recordType: 'mcq_topic',
+            recordId: id,
+            blobId: blobId
+          })
+        }
+      }
 
       // Update basic fields
       await tx.mcq_topics.update({
@@ -56,6 +102,12 @@ export class UpdateMcqTopicService extends BaseService {
 
       // Update questions if provided
       if (questions) {
+        // Update question count
+        await tx.mcq_topics.update({
+          where: { id },
+          data: { question_count: questions.length }
+        })
+
         // Get existing questions to delete their attachments
         const existingQuestions = await tx.mcq_questions.findMany({
           where: { topic_id: id }

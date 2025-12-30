@@ -60,6 +60,8 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
             {topic.description || 'Tidak ada deskripsi'}
           </TopicDescription>
 
+          <div style={{flex: "1"}}></div>
+
           {/* University Tags */}
           {topic.universityTags && topic.universityTags.length > 0 && (
             <TagList>
@@ -82,8 +84,6 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
             </TagList>
           )}
 
-          <div style={{flex: "1"}}></div>
-
           <TopicStats>
             <StatItem>
               <StatLabel>Questions</StatLabel>
@@ -92,12 +92,12 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
             <StatItem>
               <StatLabel>Time Limit</StatLabel>
               <StatValue>
-                {topic.quiz_time_limit ? `${topic.quiz_time_limit}m` : 'No limit'}
+                {topic.quizTimeLimit ? `${topic.quizTimeLimit}m` : 'No limit'}
               </StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Pass Score</StatLabel>
-              <StatValue>{topic.passing_score}%</StatValue>
+              <StatValue>{topic.passingScore}%</StatValue>
             </StatItem>
           </TopicStats>
 

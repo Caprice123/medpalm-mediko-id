@@ -9,16 +9,6 @@ const router = express.Router()
 router.use(authenticateToken)
 router.use(requireAdmin)
 
-// Constants configuration for MCQ feature
-router.get('/constants', asyncHandler(mcqController.getConstants.bind(mcqController)))
-router.put('/constants', asyncHandler(mcqController.updateConstants.bind(mcqController)))
-
-// Upload question image
-router.post(
-  '/upload-question-image',
-  asyncHandler(mcqController.uploadQuestionImage.bind(mcqController))
-)
-
 // Generate MCQ questions from text or PDF
 router.post(
   '/generate',

@@ -3,42 +3,14 @@ import { UpdateMcqTopicService } from '#services/mcq/admin/updateMcqTopicService
 import { DeleteMcqTopicService } from '#services/mcq/admin/deleteMcqTopicService'
 import { GetMcqTopicsService } from '#services/mcq/admin/getMcqTopicsService'
 import { GetMcqTopicDetailService } from '#services/mcq/admin/getMcqTopicDetailService'
-import { GetMcqConstantsService } from '#services/mcq/admin/getMcqConstantsService'
-import { UpdateMcqConstantsService } from '#services/mcq/admin/updateMcqConstantsService'
 import { GenerateMcqQuestionsService } from '#services/mcq/admin/generateMcqQuestionsService'
 import { McqTopicSerializer } from '#serializers/admin/v1/mcqTopicSerializer'
 import { McqTopicListSerializer } from '#serializers/admin/v1/mcqTopicListSerializer'
 import idriveService from '#services/idrive.service'
+import blobService from '#services/attachment/blobService'
+import { ValidationError } from '#errors/validationError'
 
 class McqController {
-  /**
-   * Upload question image
-   * POST /admin/v1/mcq/upload-question-image
-   */
-  async uploadQuestionImage(req, res) {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Image file is required'
-      })
-    }
-
-    // Upload image to iDrive E2 cloud storage
-    const uploadResult = await idriveService.uploadFile(
-      req.file.path,
-      'mcq-questions',
-      req.file.originalname.replace(/\.(jpg|jpeg|png)$/i, '')
-    )
-
-    return res.status(200).json({
-      data: {
-        image_url: await idriveService.getSignedUrl(uploadResult.key),
-        image_key: uploadResult.key,
-        image_filename: uploadResult.fileName
-      }
-    })
-  }
-
   /**
    * Create MCQ topic
    * POST /admin/v1/mcq/topics
@@ -47,12 +19,11 @@ class McqController {
     const {
       title,
       description,
-      content_type,
-      source_url,
-      source_key,
-      source_filename,
-      quiz_time_limit,
-      passing_score,
+      contentType,
+      content,
+      blobId,
+      quizTimeLimit,
+      passingScore,
       tags,
       questions,
       status
@@ -61,16 +32,15 @@ class McqController {
     const topic = await CreateMcqTopicService.call({
       title,
       description,
-      content_type,
-      source_url,
-      source_key,
-      source_filename,
-      quiz_time_limit,
-      passing_score,
+      contentType,
+      content,
+      blobId,
+      quizTimeLimit,
+      passingScore,
       tags,
       questions,
       status: status || 'draft',
-      created_by: req.user.id
+      createdBy: req.user.id
     })
 
     return res.status(201).json({
@@ -83,12 +53,14 @@ class McqController {
    * GET /admin/v1/mcq/topics
    */
   async index(req, res) {
-    const { page, limit, status, is_active, search } = req.query
+    const { page, limit, status, is_active, search, university, semester } = req.query
 
     const filters = {}
     if (status) filters.status = status
     if (is_active !== undefined) filters.is_active = is_active === 'true'
     if (search) filters.search = search
+    if (university) filters.university = university
+    if (semester) filters.semester = semester
 
     const result = await GetMcqTopicsService.call({
       page: page ? parseInt(page) : 1,
@@ -125,36 +97,34 @@ class McqController {
     const {
       title,
       description,
-      content_type,
-      source_url,
-      source_key,
-      source_filename,
-      quiz_time_limit,
-      passing_score,
+      contentType,
+      content,
+      blobId,
+      quizTimeLimit,
+      passingScore,
       tags,
       questions,
       status,
-      is_active
+      isActive
     } = req.body
 
     const topic = await UpdateMcqTopicService.call({
       id: parseInt(id),
       title,
       description,
-      content_type,
-      source_url,
-      source_key,
-      source_filename,
-      quiz_time_limit,
-      passing_score,
+      contentType,
+      content,
+      blobId,
+      quizTimeLimit,
+      passingScore,
       tags,
       questions,
       status,
-      is_active
+      isActive
     })
 
     return res.status(200).json({
-      data: topic,
+      data: McqTopicSerializer.serialize(topic),
     })
   }
 
@@ -175,59 +145,40 @@ class McqController {
   }
 
   /**
-   * Get MCQ constants
-   * GET /admin/v1/mcq/constants
-   */
-  async getConstants(req, res) {
-    const { keys } = req.query
-    const keysArray = keys ? keys.split(',') : null
-
-    const constants = await GetMcqConstantsService.call({ keys: keysArray })
-
-    return res.status(200).json({
-      data: constants
-    })
-  }
-
-  /**
-   * Update MCQ constants
-   * PUT /admin/v1/mcq/constants
-   */
-  async updateConstants(req, res) {
-    const constants = req.body
-
-    await UpdateMcqConstantsService.call({ constants })
-
-    return res.status(200).json({
-      data: {
-        success: true
-      }
-    })
-  }
-
-  /**
    * Generate MCQ questions from text or PDF
    * POST /admin/v1/mcq/generate
+   *
+   * Frontend uploads PDF to /api/v1/upload/image with type=mcq to get blobId
+   * Then passes only the blobId for question generation
+   * PDF is kept in memory (no disk write) for optimal performance
    */
   async generate(req, res) {
-    const { content, type, questionCount } = req.body
+    const { content, type, questionCount, blobId } = req.body
 
     let questions
 
     if (type === 'pdf') {
-      if (!req.file) {
-        console.log(req.file)
-        return res.status(400).json({
-          success: false,
-          message: 'PDF file is required for PDF type generation'
-        })
+      if (!blobId) {
+        throw new ValidationError("blobId is required for PDF type generation")
       }
 
+      // Get blob from database
+      const blob = await blobService.getBlobById(parseInt(blobId))
+      if (!blob) {
+        throw new ValidationError("Invalid blobId")
+      }
+
+      // Download PDF as buffer (in-memory, no disk write)
+      const pdfBuffer = await idriveService.downloadFileAsBuffer(blob.key)
+
+      // Generate MCQ questions from buffer
       questions = await GenerateMcqQuestionsService.call({
-        pdfFilePath: req.file.path,
+        pdfBuffer: pdfBuffer,
         type: 'pdf',
         questionCount: questionCount ? parseInt(questionCount) : 10
       })
+
+      // Buffer is automatically garbage collected, no cleanup needed
     } else if (type === 'text') {
       questions = await GenerateMcqQuestionsService.call({
         content,

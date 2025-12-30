@@ -1,23 +1,13 @@
-import { useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
-import { generateMcqQuestions } from '@store/mcq/action'
 import {
   FormSection,
   FormRow,
   Label,
   Input,
   Textarea,
-  Select,
-  ImageUploadArea,
-  ImageUploadIcon,
-  ImageUploadText,
-  ImageUploadHint,
-  ImagePreview,
-  PreviewImage,
-  RemoveImageButton,
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
@@ -26,7 +16,6 @@ import {
   QuestionCardHeader,
   QuestionNumber,
   RemoveQuestionButton,
-  OptionsGrid,
   OptionContainer,
   OptionLabel,
   OptionRadio,
@@ -38,7 +27,6 @@ import {
   StatusOption,
   Button,
   HelpText,
-  RemoveFileButton,
   ContentTypeButtons,
   ContentTypeButton
 } from './UpdateTopicModal.styles'
@@ -46,48 +34,23 @@ import { useSelector } from 'react-redux'
 import { useUpdateTopic } from '../../hooks/subhooks/useUpdateTopic'
 
 const UpdateTopicModal = ({ onClose }) => {
-  const dispatch = useDispatch()
   const { loading } = useSelector(state => state.mcq)
+  const { loading: commonLoading } = useSelector(state => state.common)
   const { tags } = useSelector(state => state.tags)
 
-  const [contentType, setContentType] = useState('document') // 'document' or 'text'
-  const [generationContent, setGenerationContent] = useState('')
-  const [generationFile, setGenerationFile] = useState(null)
-  const [questionCount, setQuestionCount] = useState(10)
-
-  const { form, handleAddQuestion, handleRemoveQuestion, handleAddOption, handleRemoveOption, handleQuestionImageSelect } = useUpdateTopic(onClose)
-
-  const handleFileSelect = (e) => {
-    const selectedFile = e.target.files[0]
-    if (selectedFile) {
-      setGenerationFile(selectedFile)
-    }
-  }
-
-  const handleGenerate = async () => {
-    try {
-      const type = contentType === 'document' ? 'pdf' : 'text'
-      const questions = await dispatch(generateMcqQuestions({
-        content: generationContent,
-        file: generationFile,
-        type: type,
-        questionCount
-      }))
-
-      // Replace existing questions with generated ones
-      form.setFieldValue('questions', questions)
-
-      // Reset generation inputs
-      setGenerationContent('')
-      setGenerationFile(null)
-    } catch (error) {
-      console.error('Failed to generate MCQ questions:', error)
-    }
-  }
-
-  const canGenerate = contentType === 'document'
-    ? generationFile !== null
-    : generationContent.trim().length > 0
+  const {
+    form,
+    handleAddQuestion,
+    handleRemoveQuestion,
+    handleAddOption,
+    handleRemoveOption,
+    handleQuestionImageSelect,
+    handleRemoveQuestionImage,
+    handleFileSelect,
+    handleGenerate,
+    canGenerate,
+    isGenerating
+  } = useUpdateTopic(onClose)
 
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
@@ -210,30 +173,36 @@ const UpdateTopicModal = ({ onClose }) => {
         <ContentTypeButtons>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'document'}
-            onClick={() => setContentType('document')}
+            isActive={form.values.contentType === 'document'}
+            onClick={() => form.setFieldValue('contentType', 'document')}
           >
             📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'text'}
-            onClick={() => setContentType('text')}
+            isActive={form.values.contentType === 'text'}
+            onClick={() => form.setFieldValue('contentType', 'text')}
           >
             📝 Text Content
           </ContentTypeButton>
         </ContentTypeButtons>
 
-        {contentType === 'document' ? (
+        {form.values.contentType === 'document' ? (
           <FileUpload
-            file={generationFile ? {
-              name: generationFile.name,
-              type: generationFile.type,
-              size: generationFile.size
+            file={form.values.pdfFile ? {
+              name: form.values.pdfFile.name,
+              type: form.values.pdfFile.type,
+              size: form.values.pdfFile.size,
+              url: form.values.pdfFile.url
             } : null}
-            onFileSelect={handleFileSelect}
-            onRemove={() => setGenerationFile(null)}
-            isUploading={loading.isGenerating}
+            onFileSelect={(file) => {
+              handleFileSelect(file)
+            }}
+            onRemove={() => {
+              form.setFieldValue('pdfFile', null)
+              form.setFieldValue('uploadedBlobId', null)
+            }}
+            isUploading={isGenerating}
             acceptedTypes={['application/pdf']}
             acceptedTypesLabel="PDF file"
             maxSizeMB={20}
@@ -243,8 +212,8 @@ const UpdateTopicModal = ({ onClose }) => {
         ) : (
           <FormSection>
             <Textarea
-              value={generationContent}
-              onChange={(e) => setGenerationContent(e.target.value)}
+              value={form.values.textContent}
+              onChange={(e) => form.setFieldValue('textContent', e.target.value)}
               placeholder="Paste your medical study material here..."
               style={{ minHeight: '150px' }}
             />
@@ -253,26 +222,29 @@ const UpdateTopicModal = ({ onClose }) => {
         )}
       </FormSection>
 
-        <FormSection>
-          <Label>Number of Questions</Label>
-          <Input
-            type="number"
-            value={questionCount}
-            onChange={(e) => setQuestionCount(parseInt(e.target.value))}
-          />
-          <HelpText>Pilih antara 1-50 soal</HelpText>
-        </FormSection>
-        <FormSection style={{ display: 'flex', alignItems: 'flex-end' }}>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleGenerate}
-            disabled={loading.isGenerating || !canGenerate}
-            style={{ width: '100%' }}
-          >
-            {loading.isGenerating ? 'Generating...' : '✨ Generate Questions'}
-          </Button>
-        </FormSection>
+      <FormSection>
+        <Label>Number of Questions</Label>
+        <Input
+          type="number"
+          value={form.values.questionCount}
+          onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value) || 5)}
+          min="1"
+          max="50"
+        />
+        <HelpText>Pilih antara 1-50 soal</HelpText>
+      </FormSection>
+
+      <FormSection style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={handleGenerate}
+          disabled={isGenerating || !canGenerate}
+          style={{ width: '100%' }}
+        >
+          {isGenerating ? 'Generating...' : '✨ Generate Questions'}
+        </Button>
+      </FormSection>
 
       <QuestionsSection>
         <QuestionsSectionHeader>
@@ -307,39 +279,22 @@ const UpdateTopicModal = ({ onClose }) => {
 
             <FormSection>
               <Label>Question Image (Optional)</Label>
-              <ImageUploadArea
-                hasImage={question.image?.url}
-                onClick={() => document.getElementById(`question-image-${index}`).click()}
-              >
-                <input
-                  id={`question-image-${index}`}
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png"
-                  onChange={(e) => handleQuestionImageSelect(e, index)}
-                  style={{ display: 'none' }}
-                />
-                {!question.image?.url ? (
-                  <>
-                    <ImageUploadIcon>🖼️</ImageUploadIcon>
-                    <ImageUploadText>
-                      {loading.isUploadingImage ? 'Uploading...' : 'Click to upload image'}
-                    </ImageUploadText>
-                    <ImageUploadHint>JPEG or PNG, max 5MB</ImageUploadHint>
-                  </>
-                ) : (
-                  <ImagePreview>
-                    <PreviewImage src={question.image.url} alt="Question" />
-                    <RemoveImageButton
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        form.setFieldValue(`questions.${index}.image`, null)
-                      }}
-                    >
-                      ×
-                    </RemoveImageButton>
-                  </ImagePreview>
-                )}
-              </ImageUploadArea>
+              <FileUpload
+                file={question.image ? {
+                  name: question.image.filename || 'image.jpg',
+                  type: question.image.contentType || 'image/jpeg',
+                  size: question.image.byteSize || 0,
+                  url: question.image.url
+                } : null}
+                onFileSelect={(file) => handleQuestionImageSelect(file, index)}
+                onRemove={() => handleRemoveQuestionImage(index)}
+                isUploading={commonLoading.isUploading}
+                acceptedTypes={['image/jpeg', 'image/jpg', 'image/png']}
+                acceptedTypesLabel="JPEG or PNG image"
+                maxSizeMB={5}
+                uploadText="Click to upload question image"
+                showPreview={true}
+              />
             </FormSection>
 
             <FormSection>

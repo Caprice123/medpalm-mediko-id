@@ -8,7 +8,7 @@ export class McqTopicSessionSerializer {
         id: topic.id,
         title: topic.title,
         description: topic.description,
-        quiz_timeLimit: topic.quiz_time_limit,
+        quizTimeLimit: topic.quiz_time_limit,
         passingScore: topic.passing_score
       },
       mode,

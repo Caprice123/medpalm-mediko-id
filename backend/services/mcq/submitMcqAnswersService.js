@@ -58,32 +58,12 @@ export class SubmitMcqAnswersService extends BaseService {
     const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0
     const passed = score >= topic.passing_score
 
-    // Create attempt record if userId is provided
-    if (userId) {
-      try {
-        await prisma.mcq_attempts.create({
-          data: {
-            user_id: userId,
-            topic_id: topicId,
-            score,
-            total_questions: totalQuestions,
-            correct_questions: correctCount,
-            passed,
-            completed_at: new Date()
-          }
-        })
-      } catch (error) {
-        console.error('Failed to create MCQ attempt record:', error)
-        // Don't throw error, just log it - we still want to return results
-      }
-    }
-
     return {
       score,
-      total_questions: totalQuestions,
-      correct_questions: correctCount,
+      totalQuestions: totalQuestions,
+      correctQuestions: correctCount,
       passed,
-      passing_score: topic.passing_score,
+      passingScore: topic.passing_score,
       answers: questionResults
     }
   }

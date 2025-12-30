@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useCalculatorModal } from './useCalculatorModal'
 import Dropdown from '@components/common/Dropdown'
 import TagSelector from '@components/common/TagSelector'
+import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
+import Button from '@components/common/Button'
 import {
   Overlay,
   Modal,
@@ -11,8 +14,6 @@ import {
   ModalBody,
   FormGroup,
   FormLabel,
-  FormInput,
-  FormTextarea,
   FormRow,
   HelpText,
   ErrorMessage,
@@ -24,12 +25,8 @@ import {
   FieldItemContent,
   FieldInputWrapper,
   SmallLabel,
-  SmallInput,
-  RemoveButton,
-  AddButton,
   OptionsList,
   OptionItem,
-  SmallButton,
   ClassificationsSection,
   ClassificationsList,
   ClassificationItem,
@@ -41,7 +38,6 @@ import {
   ConditionItem,
   SubLabel,
   ModalFooter,
-  Button,
   ConfirmOverlay,
   ConfirmDialog,
   ConfirmIcon,
@@ -58,7 +54,6 @@ import {
   ReferencesList,
   ReferenceItem,
   ReferenceText,
-  RemoveReferenceButton,
   AddReferenceWrapper
 } from './CalculatorModal.styles'
 
@@ -138,26 +133,27 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
             <form onSubmit={handleSubmit}>
               {/* Step 1: Basic Information */}
               <FormGroup>
-                <FormLabel>Judul Kalkulator *</FormLabel>
-                <FormInput
+                <TextInput
+                  label="Judul Kalkulator"
+                  required
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleFieldChange}
                   placeholder="Contoh: Kalkulator BMI, Kalkulator Dosis Obat"
+                  error={errors.title}
                 />
-                {errors.title && <ErrorMessage>{errors.title}</ErrorMessage>}
               </FormGroup>
 
               <FormGroup>
-                <FormLabel>Deskripsi</FormLabel>
-                <FormTextarea
+                <Textarea
+                  label="Deskripsi"
                   name="description"
                   value={formData.description}
                   onChange={handleFieldChange}
                   placeholder="Jelaskan fungsi kalkulator ini dan untuk apa digunakan..."
+                  hint="Opsional - Deskripsi singkat tentang kalkulator"
                 />
-                <HelpText>Opsional - Deskripsi singkat tentang kalkulator</HelpText>
               </FormGroup>
 
               {/* Category Tags Section */}
@@ -175,27 +171,28 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
               {/* Step 2: Result Configuration */}
               <FormRow>
                 <FormGroup>
-                  <FormLabel>Label Hasil *</FormLabel>
-                  <FormInput
+                  <TextInput
+                    label="Label Hasil"
+                    required
                     type="text"
                     name="result_label"
                     value={formData.result_label}
                     onChange={handleFieldChange}
                     placeholder="Contoh: BMI Anda, Dosis Obat"
+                    error={errors.result_label}
                   />
-                  {errors.result_label && <ErrorMessage>{errors.result_label}</ErrorMessage>}
                 </FormGroup>
 
                 <FormGroup>
-                  <FormLabel>Satuan Hasil</FormLabel>
-                  <FormInput
+                  <TextInput
+                    label="Satuan Hasil"
                     type="text"
                     name="result_unit"
                     value={formData.result_unit}
                     onChange={handleFieldChange}
                     placeholder="Contoh: kg/m², mg, ml"
+                    hint="Opsional - Satuan untuk hasil"
                   />
-                  <HelpText>Opsional - Satuan untuk hasil</HelpText>
                 </FormGroup>
               </FormRow>
 
@@ -219,16 +216,15 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
                       <FieldItemContent>
                         <FieldInputWrapper>
-                          <SmallLabel>Key * (untuk formula)</SmallLabel>
-                          <SmallInput
+                          <TextInput
+                            label="Key * (untuk formula)"
+                            size="small"
                             type="text"
                             value={field.key}
                             onChange={(e) => handleFieldItemChange(index, 'key', e.target.value)}
                             placeholder="weight"
+                            error={errors[`field_${index}_key`]}
                           />
-                          {errors[`field_${index}_key`] && (
-                            <ErrorMessage>{errors[`field_${index}_key`]}</ErrorMessage>
-                          )}
                         </FieldInputWrapper>
 
                         <FieldInputWrapper>
@@ -246,35 +242,34 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                         </FieldInputWrapper>
 
                         <FieldInputWrapper fullWidth>
-                          <SmallLabel>Label * (tampil ke user)</SmallLabel>
-                          <SmallInput
+                          <TextInput
+                            label="Label * (tampil ke user)"
+                            size="small"
                             type="text"
                             value={field.label}
                             onChange={(e) => handleFieldItemChange(index, 'label', e.target.value)}
                             placeholder="Berat Badan"
+                            error={errors[`field_${index}_label`]}
                           />
-                          {errors[`field_${index}_label`] && (
-                            <ErrorMessage>{errors[`field_${index}_label`]}</ErrorMessage>
-                          )}
                         </FieldInputWrapper>
 
                         <FieldInputWrapper fullWidth>
-                          <SmallLabel>Placeholder * (petunjuk untuk user)</SmallLabel>
-                          <SmallInput
+                          <TextInput
+                            label="Placeholder * (petunjuk untuk user)"
+                            size="small"
                             type="text"
                             value={field.placeholder}
                             onChange={(e) => handleFieldItemChange(index, 'placeholder', e.target.value)}
                             placeholder="Masukkan berat badan dalam kg"
+                            error={errors[`field_${index}_placeholder`]}
                           />
-                          {errors[`field_${index}_placeholder`] && (
-                            <ErrorMessage>{errors[`field_${index}_placeholder`]}</ErrorMessage>
-                          )}
                         </FieldInputWrapper>
 
                         {field.type === 'number' && (
                           <FieldInputWrapper fullWidth>
-                            <SmallLabel>Unit (untuk angka)</SmallLabel>
-                            <SmallInput
+                            <TextInput
+                              label="Unit (untuk angka)"
+                              size="small"
                               type="text"
                               value={field.unit || ''}
                               onChange={(e) => handleFieldItemChange(index, 'unit', e.target.value)}
@@ -289,47 +284,53 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                             <OptionsList>
                               {field.options && field.options.map((option, optIndex) => (
                                 <OptionItem key={optIndex}>
-                                  <SmallInput
+                                  <TextInput
+                                    size="small"
                                     type="text"
                                     value={option.value}
                                     onChange={(e) => handleFieldOptionChange(index, optIndex, 'value', e.target.value)}
                                     placeholder="value (male)"
                                   />
-                                  <SmallInput
+                                  <TextInput
+                                    size="small"
                                     type="text"
                                     value={option.label}
                                     onChange={(e) => handleFieldOptionChange(index, optIndex, 'label', e.target.value)}
                                     placeholder="Label (Laki-laki)"
                                   />
-                                  <SmallButton
+                                  <Button
+                                    variant="secondary"
+                                    size="small"
                                     type="button"
                                     onClick={() => removeFieldOption(index, optIndex)}
                                   >
                                     ✕
-                                  </SmallButton>
+                                  </Button>
                                 </OptionItem>
                               ))}
                             </OptionsList>
-                            <AddButton type="button" onClick={() => addFieldOption(index)} style={{ marginTop: '4px' }}>
+                            <Button variant="outline" fullWidth type="button" onClick={() => addFieldOption(index)} style={{ marginTop: '4px' }}>
                               + Tambah Option
-                            </AddButton>
+                            </Button>
                           </FieldInputWrapper>
                         )}
                       </FieldItemContent>
 
-                      <RemoveButton
+                      <Button
+                        variant="danger"
+                        size="small"
                         type="button"
                         onClick={() => removeField(index)}
                       >
                         Hapus
-                      </RemoveButton>
+                      </Button>
                     </FieldItem>
                   ))}
                 </FieldsList>
 
-                <AddButton type="button" onClick={addField}>
+                <Button variant="outline" fullWidth type="button" onClick={addField}>
                   + Tambah Field Baru
-                </AddButton>
+                </Button>
               </FieldsSection>
 
               {/* Step 4: Formula */}
@@ -343,15 +344,16 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
               </InfoBox>
 
               <FormGroup>
-                <FormLabel>Formula *</FormLabel>
-                <FormTextarea
+                <Textarea
+                  label="Formula"
+                  required
                   name="formula"
                   value={formData.formula}
                   onChange={handleFieldChange}
                   placeholder="weight / ((height/100) * (height/100))"
                   style={{ fontFamily: 'monospace', fontSize: '13px', minHeight: '100px' }}
+                  error={errors.formula}
                 />
-                {errors.formula && <ErrorMessage>{errors.formula}</ErrorMessage>}
 
                 <ExampleBox style={{ marginTop: '0.5rem' }}>
                   <strong>Contoh Formula:</strong>
@@ -391,7 +393,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                             {isClassificationExpanded ? '▼' : '▶'}
                           </div>
                           <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
-                            <SmallInput
+                            <TextInput
+                              size="small"
                               type="text"
                               value={classification.name}
                               onChange={(e) => handleClassificationChange(classIndex, 'name', e.target.value)}
@@ -399,16 +402,17 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                               style={{ borderColor: 'rgba(139, 92, 246, 0.3)' }}
                             />
                           </div>
-                          <SmallButton
+                          <Button
+                            variant="danger"
+                            size="small"
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
                               removeClassification(classIndex)
                             }}
-                            style={{ background: '#fecaca', color: '#dc2626' }}
                           >
                             ✕
-                          </SmallButton>
+                          </Button>
                         </div>
 
                         {/* Rules Section - Collapsible */}
@@ -437,7 +441,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                     {isExpanded ? '▼' : '▶'}
                                   </div>
                                   <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
-                                    <SmallInput
+                                    <TextInput
+                                      size="small"
                                       type="text"
                                       value={option.label || option.value}
                                       onChange={(e) => {
@@ -448,7 +453,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                       placeholder="Underweight"
                                     />
                                   </div>
-                                  <SmallButton
+                                  <Button
+                                    variant="secondary"
+                                    size="small"
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation()
@@ -456,7 +463,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                     }}
                                   >
                                     ✕
-                                  </SmallButton>
+                                  </Button>
                                 </div>
 
                                 {/* Conditions - Collapsible */}
@@ -471,7 +478,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                       const isLastCondition = condIndex === option.conditions.length - 1
                                       return (
                                         <ConditionItem key={condIndex}>
-                                          <SmallInput
+                                          <TextInput
+                                            size="small"
                                             type="text"
                                             value={condition.result_key}
                                             onChange={(e) => handleConditionChange(classIndex, optIndex, condIndex, 'result_key', e.target.value)}
@@ -490,7 +498,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                             value={{ value: condition.operator, label: condition.operator }}
                                             onChange={(option) => handleConditionChange(classIndex, optIndex, condIndex, 'operator', option.value)}
                                           />
-                                          <SmallInput
+                                          <TextInput
+                                            size="small"
                                             type="number"
                                             value={condition.value}
                                             onChange={(e) => handleConditionChange(classIndex, optIndex, condIndex, 'value', e.target.value)}
@@ -524,12 +533,14 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                               null
                                             </div>
                                           )}
-                                          <SmallButton
+                                          <Button
+                                            variant="secondary"
+                                            size="small"
                                             type="button"
                                             onClick={() => removeCondition(classIndex, optIndex, condIndex)}
                                           >
                                             ✕
-                                          </SmallButton>
+                                          </Button>
                                         </ConditionItem>
                                       )
                                     })}
@@ -546,7 +557,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                     </ExampleBox>
                                   )}
 
-                                  <AddButton
+                                  <Button
+                                    variant="outline"
+                                    fullWidth
                                     type="button"
                                     onClick={() => addCondition(classIndex, optIndex)}
                                     style={{
@@ -558,19 +571,21 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                     }}
                                   >
                                     + Tambah Kondisi
-                                  </AddButton>
+                                  </Button>
                                 </div>}
                               </ClassificationOptionItem>
                             )
                             })}
                           </ClassificationOptionsList>
-                          <AddButton
+                          <Button
+                            variant="outline"
+                            fullWidth
                             type="button"
                             onClick={() => addClassificationOption(classIndex)}
                             style={{ marginTop: '0.75rem' }}
                           >
                             + Tambah Jenis Klasifikasi
-                          </AddButton>
+                          </Button>
                         </div>}
                       </ClassificationItem>
                     )
@@ -578,9 +593,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                   </ClassificationsList>
                 )}
 
-                <AddButton type="button" onClick={addClassification}>
+                <Button variant="outline" fullWidth type="button" onClick={addClassification}>
                   + Tambah Grup Klasifikasi
-                </AddButton>
+                </Button>
               </ClassificationsSection>
 
               {/* Step 6: Status */}
@@ -623,7 +638,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                 )} */}
                 {formData.clinical_references.map((ref, index) => (
                   <AddReferenceWrapper key={index} style={{ marginBottom: '0.5rem' }}>
-                    <FormInput
+                    <TextInput
                       type="text"
                       value={ref}
                       onChange={(e) => {
@@ -637,22 +652,24 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                       placeholder="Contoh: American Heart Association Guidelines 2020"
                       autoFocus
                     />
-                    <SmallButton
+                    <Button
+                      variant="secondary"
+                      size="small"
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, clinical_references: prev.clinical_references.filter((_, i) => i !== index) }))}
-                      style={{ background: '#f3f4f6', color: '#6b7280' }}
                     >
                       ✕
-                    </SmallButton>
+                    </Button>
                   </AddReferenceWrapper>
                 ))}
-                  <AddButton
+                  <Button
+                    variant="outline"
+                    fullWidth
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, clinical_references: [...prev.clinical_references, ''] }))}
-                    style={{ width: '100%' }}
                   >
                     + Tambah Referensi
-                  </AddButton>
+                  </Button>
                 <HelpText>Tambahkan referensi klinis atau guideline untuk kalkulator ini</HelpText>
               </FormGroup>
             </form>

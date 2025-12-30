@@ -27,6 +27,18 @@ export class GetMcqTopicDetailService extends BaseService {
       throw new ValidationError('MCQ topic not found')
     }
 
+    // Get topic PDF attachment
+    const topicPdfAttachment = await prisma.attachments.findFirst({
+      where: {
+        record_type: 'mcq_topic',
+        record_id: id,
+        name: 'pdf'
+      },
+      include: {
+        blob: true
+      }
+    })
+
     // Get attachments for all questions
     const questionIds = topic.mcq_questions.map(q => q.id)
     const attachments = await prisma.attachments.findMany({
@@ -57,6 +69,13 @@ export class GetMcqTopicDetailService extends BaseService {
     // Get blob keys for presigned URL generation
     const blobKeys = []
     const questionBlobKeyMap = new Map()
+    let topicPdfBlobKey = null
+
+    // Add topic PDF blob key if exists
+    if (topicPdfAttachment?.blob) {
+      blobKeys.push(topicPdfAttachment.blob.key)
+      topicPdfBlobKey = topicPdfAttachment.blob.key
+    }
 
     topic.mcq_questions.forEach(question => {
       const attachment = attachmentMap.get(question.id)
@@ -74,9 +93,11 @@ export class GetMcqTopicDetailService extends BaseService {
       ? await idriveService.getBulkSignedUrls(blobKeys, 3600)
       : []
 
-    // Map presigned URLs back to questions
-    const urlMap = new Map()
+    // Map presigned URLs back
     let urlIndex = 0
+    const topicPdfUrl = topicPdfBlobKey ? presignedUrls[urlIndex++] : null
+
+    const urlMap = new Map()
     topic.mcq_questions.forEach(question => {
       if (questionBlobKeyMap.has(question.id)) {
         urlMap.set(question.id, presignedUrls[urlIndex++])
@@ -100,6 +121,16 @@ export class GetMcqTopicDetailService extends BaseService {
         } : null
       }
     })
+
+    // Add PDF blob data to topic
+    topic.pdf = topicPdfAttachment?.blob ? {
+      id: topicPdfAttachment.blob.id,
+      url: topicPdfUrl, // Presigned URL for display/download
+      key: topicPdfAttachment.blob.key,
+      filename: topicPdfAttachment.blob.filename,
+      contentType: topicPdfAttachment.blob.content_type,
+      byteSize: topicPdfAttachment.blob.byte_size
+    } : null
 
     return topic
   }

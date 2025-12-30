@@ -49,12 +49,9 @@ export const ModalHeader = styled.div`
 `
 
 export const ModalTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
   margin: 0;
 `
 
@@ -106,8 +103,8 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   }
 `
 
@@ -123,8 +120,8 @@ export const Textarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   }
 `
 
@@ -140,8 +137,8 @@ export const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   }
 `
 
@@ -153,13 +150,59 @@ export const HintText = styled.div`
 `
 
 export const VariableBadge = styled.code`
-  background: rgba(6, 182, 212, 0.1);
-  color: #06b6d4;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
   padding: 0.125rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+`
+
+export const ToggleSwitch = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + span {
+      background: #3b82f6;
+    }
+
+    &:checked + span:before {
+      transform: translateX(24px);
+    }
+  }
+`
+
+export const ToggleSlider = styled.span`
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.2s;
+  border-radius: 34px;
+
+  &:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 `
 
 export const ModalFooter = styled.div`
@@ -170,51 +213,6 @@ export const ModalFooter = styled.div`
   gap: 0.75rem;
   background: white;
   border-radius: 0 0 16px 16px;
-`
-
-export const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  justify-content: center;
-
-  ${props => props.variant === 'primary' ? `
-    background: linear-gradient(135deg, #06b6d4, #0891b2);
-    color: white;
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-  ` : `
-    background: white;
-    color: #6b7280;
-    border: 2px solid #e5e7eb;
-
-    &:hover:not(:disabled) {
-      background: #f3f4f6;
-      border-color: #d1d5db;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  `}
 `
 
 export const LoadingSpinner = styled.div`
