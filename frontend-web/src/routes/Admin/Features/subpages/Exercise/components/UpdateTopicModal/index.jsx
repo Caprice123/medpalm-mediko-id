@@ -173,9 +173,6 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
     isGenerating
   } = useUpdateTopic(topicToEdit, onClose)
 
-  // Debug: Log current contentType on every render
-  console.log('UpdateTopicModal render - contentType:', form.values.contentType)
-
   // Edit state
   const [editingQuestionId, setEditingQuestionId] = useState(null)
   const [editingQuestionData, setEditingQuestionData] = useState(null)
@@ -217,14 +214,10 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
       return
     }
 
-    console.log('Saving edit for question ID:', editingQuestionId)
-    console.log('Updated data:', editingQuestionData)
-
     const updatedQuestions = form.values.questions.map(q =>
       q.id === editingQuestionId ? { ...editingQuestionData, id: q.id } : q
     )
 
-    console.log('Updated questions array:', updatedQuestions)
     form.setFieldValue('questions', updatedQuestions)
     setEditingQuestionId(null)
     setEditingQuestionData(null)
@@ -238,7 +231,6 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
   const handleModalClose = () => {
     if (onClose) onClose()
   }
-console.log(form)
 
   return (
     <Modal
@@ -310,22 +302,14 @@ console.log(form)
           <ContentTypeButton
             type="button"
             isActive={form.values.contentType === 'document'}
-            onClick={() => {
-              console.log('Switching to document, current:', form.values.contentType)
-              form.setFieldValue('contentType', 'document')
-              console.log('After switch:', form.values.contentType)
-            }}
+            onClick={() => form.setFieldValue('contentType', 'document')}
           >
             📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
             isActive={form.values.contentType === 'text'}
-            onClick={() => {
-              console.log('Switching to text, current:', form.values.contentType)
-              form.setFieldValue('contentType', 'text')
-              console.log('After switch:', form.values.contentType)
-            }}
+            onClick={() => form.setFieldValue('contentType', 'text')}
           >
             📝 Text Content
           </ContentTypeButton>
@@ -384,7 +368,7 @@ console.log(form)
         <Input
           type="number"
           value={form.values.questionCount}
-          onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value) || 10)}
+          onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value))}
         />
         <HelpText>Pilih antara 1-50 soal</HelpText>
       </FormSection>

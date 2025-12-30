@@ -1,10 +1,10 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
-import blobService from "#services/attachment/blobService"
+import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateFlashcardDeckService extends BaseService {
-    static async call(deckId, { title, description, status, tags, cards, blobId }) {
+    static async call(deckId, { title, description, contentType, content, status, tags, cards, blobId }) {
         this.validate(deckId, { title, cards })
 
         // Check if deck exists
@@ -18,18 +18,35 @@ export class UpdateFlashcardDeckService extends BaseService {
 
         // Update deck with all fields in a transaction
         const updatedDeck = await prisma.$transaction(async (tx) => {
+            // Build update data
+            const updateData = {
+                title: title || deck.title,
+                description: description !== undefined ? description : deck.description,
+                status: status || deck.status,
+                flashcard_count: cards.length,
+            }
+
+            // Update contentType and content together
+            if (contentType !== undefined && contentType !== null) {
+                updateData.content_type = contentType
+
+                // Clear content if switching to PDF, or update it if text
+                if (contentType === 'pdf') {
+                    updateData.content = null
+                } else if (contentType === 'text' && content !== undefined) {
+                    updateData.content = content
+                }
+            } else if (content !== undefined) {
+                updateData.content = content
+            }
+
             // Update deck basic info
             await tx.flashcard_decks.update({
                 where: { id: parseInt(deckId) },
-                data: {
-                    title: title || deck.title,
-                    description: description !== undefined ? description : deck.description,
-                    status: status || deck.status,
-                    flashcard_count: cards.length,
-                }
+                data: updateData
             })
 
-            // Update deck PDF attachment if blobId is provided
+            // Update deck PDF attachment if blobId is provided using attachmentService
             if (blobId !== undefined) {
                 // Delete existing PDF attachment
                 await tx.attachments.deleteMany({
@@ -42,13 +59,11 @@ export class UpdateFlashcardDeckService extends BaseService {
 
                 // Create new PDF attachment if blobId is not null
                 if (blobId) {
-                    await tx.attachments.create({
-                        data: {
-                            name: 'pdf',
-                            record_type: 'flashcard_deck',
-                            record_id: parseInt(deckId),
-                            blob_id: blobId
-                        }
+                    await attachmentService.attach({
+                        name: 'pdf',
+                        recordType: 'flashcard_deck',
+                        recordId: parseInt(deckId),
+                        blobId: blobId
                     })
                 }
             }
@@ -106,19 +121,14 @@ export class UpdateFlashcardDeckService extends BaseService {
                 })
                 createdCards.push(createdCard)
 
-                // Create attachment if card has image
-                if (card.image_key) {
-                    const blob = await blobService.getBlobByKey(card.image_key)
-                    if (blob) {
-                        await tx.attachments.create({
-                            data: {
-                                name: 'image',
-                                record_type: 'flashcard_card',
-                                record_id: createdCard.id,
-                                blob_id: blob.id
-                            }
-                        })
-                    }
+                // Create attachment if card has image using attachmentService
+                if (card.blobId) {
+                    await attachmentService.attach({
+                        name: 'image',
+                        recordType: 'flashcard_card',
+                        recordId: createdCard.id,
+                        blobId: card.blobId
+                    })
                 }
             }
 

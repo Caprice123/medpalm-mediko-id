@@ -67,11 +67,11 @@ const { reducer, actions } = createSlice({
   },
   
     extraReducers: (builder) => {
-      builder.addCase(resetAllState, (state) => ({
-          ...initialState,
-          balance: state.balance,
-          loading: state.loading, // 🔥 preserve current loading state
-      }));
+    //   builder.addCase(resetAllState, (state) => ({
+    //       ...initialState,
+    //       balance: state.balance,
+    //       loading: state.loading, // 🔥 preserve current loading state
+    //   }));
     },
 })
 

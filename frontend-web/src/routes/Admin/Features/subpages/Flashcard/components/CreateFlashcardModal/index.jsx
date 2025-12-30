@@ -7,11 +7,8 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useCreateFlashcard } from '../../hooks/subhooks/useCreateFlashcard'
-import { useGenerateFlashcard } from '../../hooks/subhooks/useGenerateFlashcard'
-import { formatFileSize } from '@utils/fileUtils'
 import {
   FormSection,
-  FormRow,
   Label,
   Input,
   Textarea,
@@ -47,17 +44,6 @@ const SortableCard = ({ card, index, form, handleRemoveCard, handleImageUpload }
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  }
-
-  const handleImageSelect = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.type.startsWith('image/')) {
-        handleImageUpload(index, file)
-      } else {
-        alert('Please select an image file')
-      }
-    }
   }
 
   return (
@@ -133,22 +119,18 @@ const CreateFlashcardModal = ({ onClose }) => {
   const { loading } = useSelector(state => state.flashcard)
   const { tags } = useSelector(state => state.tags)
 
-  const { form, sensors, handleAddCard, handleRemoveCard, handleDragEnd, handleImageUpload, setPdfInfo } = useCreateFlashcard(onClose)
-
   const {
-    contentType,
-    setContentType,
-    textContent,
-    setTextContent,
-    pdfFile,
-    setPdfFile,
-    cardCount,
-    setCardCount,
+    form,
+    sensors,
+    handleAddCard,
+    handleRemoveCard,
+    handleDragEnd,
+    handleImageUpload,
     handleFileSelect,
     handleGenerate,
     canGenerate,
     isGenerating
-  } = useGenerateFlashcard(form, setPdfInfo)
+} = useCreateFlashcard(onClose)
 
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
@@ -242,29 +224,32 @@ const CreateFlashcardModal = ({ onClose }) => {
         <ContentTypeButtons>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'document'}
-            onClick={() => setContentType('document')}
+            isActive={form.values.contentType === 'document'}
+            onClick={() => form.setFieldValue('contentType', 'document')}
           >
             📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'text'}
-            onClick={() => setContentType('text')}
+            isActive={form.values.contentType === 'text'}
+            onClick={() => form.setFieldValue('contentType', 'text')}
           >
             📝 Text Content
           </ContentTypeButton>
         </ContentTypeButtons>
 
-        {contentType === 'document' ? (
+        {form.values.contentType === 'document' ? (
           <FileUpload
-            file={pdfFile ? {
-              name: pdfFile.name,
-              type: pdfFile.type,
-              size: pdfFile.size
+            file={form.values.pdfFile ? {
+              name: form.values.pdfFile.name,
+              type: form.values.pdfFile.type,
+              size: form.values.pdfFile.size
             } : null}
             onFileSelect={handleFileSelect}
-            onRemove={() => setPdfFile(null)}
+            onRemove={() => {
+              form.setFieldValue('pdfFile', null)
+              form.setFieldValue('uploadedBlobId', null)
+            }}
             isUploading={isGenerating}
             acceptedTypes={['application/pdf']}
             acceptedTypesLabel="PDF file"
@@ -272,16 +257,19 @@ const CreateFlashcardModal = ({ onClose }) => {
             uploadText="Klik untuk upload PDF"
             actions={
               <>
-                {pdfFile && (
-                  <RemoveFileButton
+                {form.values.pdfFile && (
+                    <RemoveFileButton
                     onClick={() => {
-                      const url = URL.createObjectURL(pdfFile)
-                      window.open(url, '_blank')
+                        // Check if it's a File object or just an object with URL
+                        const url = form.values.pdfFile instanceof File
+                        ? URL.createObjectURL(form.values.pdfFile)
+                        : form.values.pdfFile.url
+                        window.open(url, '_blank')
                     }}
                     style={{ backgroundColor: '#3b82f6', color: 'white' }}
-                  >
+                    >
                     Lihat
-                  </RemoveFileButton>
+                    </RemoveFileButton>
                 )}
               </>
             }
@@ -289,12 +277,11 @@ const CreateFlashcardModal = ({ onClose }) => {
         ) : (
           <FormSection>
             <Textarea
-              value={textContent}
-              onChange={(e) => setTextContent(e.target.value)}
+              value={form.values.textContent}
+              onChange={(e) => form.setFieldValue('textContent', e.target.value)}
               placeholder="Paste your medical study material here..."
-              style={{ minHeight: '150px' }}
             />
-            <HelpText>Masukkan konten yang ingin di-generate menjadi flashcard</HelpText>
+            <HelpText>Masukkan konten yang ingin di-generate menjadi soal</HelpText>
           </FormSection>
         )}
       </FormSection>
@@ -303,8 +290,8 @@ const CreateFlashcardModal = ({ onClose }) => {
         <Label>Number of Cards</Label>
         <Input
           type="number"
-          value={cardCount}
-          onChange={(e) => setCardCount(parseInt(e.target.value) || 10)}
+          value={form.values.cardCount}
+          onChange={(e) => form.setFieldValue('cardCount', parseInt(e.target.value))}
         />
         <HelpText>Pilih antara 1-50 kartu</HelpText>
       </FormSection>

@@ -29,8 +29,7 @@ const CreateNoteModal = ({ onClose }) => {
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,
-    handleImageUpload,
-    uploadedFile
+    handleImageUpload
   } = useCreateNote(onClose)
 
   // Get tags from both university and semester groups - memoized
@@ -104,7 +103,7 @@ const CreateNoteModal = ({ onClose }) => {
       <FormSection>
         <Label>Generate dari Dokumen (Opsional)</Label>
         <FileUpload
-          file={uploadedFile}
+          file={form.values.uploadedFile}
           onFileSelect={handleFileSelect}
           onRemove={handleRemoveFile}
           isUploading={loading.isUploading}
@@ -114,10 +113,10 @@ const CreateNoteModal = ({ onClose }) => {
           uploadText="Klik untuk upload dokumen"
           actions={
             <>
-              {uploadedFile?.url && (
+              {form.values.uploadedFile?.url && (
                 <GenerateButton
                   as="a"
-                  href={uploadedFile.url}
+                  href={form.values.uploadedFile.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}

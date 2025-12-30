@@ -22,12 +22,15 @@ export class SummaryNoteSerializer {
       content: note.content,
       status: note.status,
       is_active: note.is_active,
-      // Source document info (if exists)
-      blobId: sourceBlob?.id || null,
-      sourceUrl: sourceBlob?.url || null,
-      sourceFilename: sourceBlob?.filename || null,
-      sourceContentType: sourceBlob?.contentType || null,
-      sourceByteSize: sourceBlob?.byteSize || null,
+      // Source document blob (if exists)
+      blob: sourceBlob ? {
+        id: sourceBlob.id,
+        url: sourceBlob.url,
+        key: sourceBlob.key,
+        filename: sourceBlob.filename,
+        contentType: sourceBlob.content_type,
+        byteSize: sourceBlob.byte_size
+      } : null,
       universityTags,
       semesterTags
     }

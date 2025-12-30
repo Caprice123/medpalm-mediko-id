@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateMcqTopicService extends BaseService {
   static async call({
@@ -20,51 +21,74 @@ export class CreateMcqTopicService extends BaseService {
     // Validate inputs
     await this.validate({ title, content_type, tags, questions })
 
-    // Create topic with questions and tags
-    const topic = await prisma.mcq_topics.create({
-      data: {
-        title,
-        description: description || '',
-        content_type,
-        source_url: source_url || null,
-        source_key: source_key || null,
-        source_filename: source_filename || null,
-        quiz_time_limit,
-        passing_score,
-        status,
-        created_by,
-        mcq_questions: {
-          create: questions.map((q, index) => ({
+    // Create topic with questions and tags in a transaction
+    const topic = await prisma.$transaction(async (tx) => {
+      // Create topic with tags
+      const createdTopic = await tx.mcq_topics.create({
+        data: {
+          title,
+          description: description || '',
+          content_type,
+          source_url: source_url || null,
+          source_key: source_key || null,
+          source_filename: source_filename || null,
+          quiz_time_limit,
+          passing_score,
+          status,
+          created_by,
+          mcq_topic_tags: {
+            create: tags.map(tag => ({
+              tag_id: typeof tag === 'object' ? Number(tag.id) : tag
+            }))
+          }
+        }
+      })
+
+      // Create questions
+      const createdQuestions = []
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i]
+        const createdQuestion = await tx.mcq_questions.create({
+          data: {
+            topic_id: createdTopic.id,
             question: q.question,
-            image_url: q.image_url || null,
-            image_key: q.image_key || null,
-            image_filename: q.image_filename || null,
             options: q.options,
             correct_answer: q.correct_answer,
             explanation: q.explanation || null,
-            order: q.order !== undefined ? q.order : index
-          }))
-        },
-        mcq_topic_tags: {
-          create: tags.map(tag => ({
-            tag_id: typeof tag === 'object' ? Number(tag.id) : tag
-          }))
+            order: q.order !== undefined ? q.order : i
+          }
+        })
+        createdQuestions.push(createdQuestion)
+
+        // Create attachment if question has image using attachmentService
+        if (q.blobId) {
+          await attachmentService.attach({
+            name: 'image',
+            recordType: 'mcq_question',
+            recordId: createdQuestion.id,
+            blobId: q.blobId
+          })
         }
-      },
-      include: {
-        mcq_questions: {
-          orderBy: { order: 'asc' }
-        },
-        mcq_topic_tags: {
-          include: {
-            tags: {
-              include: {
-                tag_group: true
+      }
+
+      // Return topic with relations
+      return await tx.mcq_topics.findUnique({
+        where: { id: createdTopic.id },
+        include: {
+          mcq_questions: {
+            orderBy: { order: 'asc' }
+          },
+          mcq_topic_tags: {
+            include: {
+              tags: {
+                include: {
+                  tag_group: true
+                }
               }
             }
           }
         }
-      }
+      })
     })
 
     return topic

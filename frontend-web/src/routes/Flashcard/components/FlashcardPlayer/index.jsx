@@ -142,7 +142,7 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
   }
 
   const handleComplete = async (allAnswers) => {
-    if (window.confirm('Submit all your answers? Your progress will be saved for spaced repetition.')) {
+    if (window.confirm('Submit all your answers. Your progress will be saved for spaced repetition.')) {
       onSubmit(allAnswers)
     }
   }

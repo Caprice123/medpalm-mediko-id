@@ -22,8 +22,8 @@ class BlobService {
       data: {
         key,
         filename,
-        contentType,
-        byteSize,
+        content_type: contentType,
+        byte_size: byteSize,
         checksum,
         metadata: JSON.stringify(metadata),
         uploaded_at: new Date()

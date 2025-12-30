@@ -4,12 +4,7 @@ import { resetAllState } from '../globalAction'
 const initialState = {
   // User data
   notes: [],
-  noteSession: null,
-
-  // Admin data
-  adminNotes: [],
-  selectedNote: null,
-  generatedContent: null,
+  detail: null,
 
   // ChromaDB Embeddings
   embeddings: [],
@@ -68,40 +63,8 @@ const { reducer, actions } = createSlice({
     setNotes: (state, { payload }) => {
       state.notes = payload
     },
-    setNoteSession: (state, { payload }) => {
-      state.noteSession = payload
-    },
-    clearNoteSession: (state) => {
-      state.noteSession = null
-    },
-
-    // Admin actions
-    setAdminNotes: (state, { payload }) => {
-      state.adminNotes = payload
-    },
-    setSelectedNote: (state, { payload }) => {
-      state.selectedNote = payload
-    },
-    clearSelectedNote: (state) => {
-      state.selectedNote = null
-    },
-    setGeneratedContent: (state, { payload }) => {
-      state.generatedContent = payload
-    },
-    clearGeneratedContent: (state) => {
-      state.generatedContent = null
-    },
-    addNote: (state, { payload }) => {
-      state.adminNotes = [payload, ...state.adminNotes]
-    },
-    updateNote: (state, { payload }) => {
-      const index = state.adminNotes.findIndex(n => n.id === payload.id)
-      if (index !== -1) {
-        state.adminNotes[index] = payload
-      }
-    },
-    removeNote: (state, { payload }) => {
-      state.adminNotes = state.adminNotes.filter(n => n.id !== payload)
+    setDetail: (state, { payload }) => {
+      state.detail = payload
     },
 
     // Embeddings actions

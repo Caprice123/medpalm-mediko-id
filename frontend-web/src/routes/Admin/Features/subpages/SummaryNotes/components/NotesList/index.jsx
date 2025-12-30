@@ -22,7 +22,7 @@ import {
 } from './NotesList.styles'
 
 function NotesList({ onEdit, onDelete, onCreateFirst }) {
-  const { adminNotes, loading } = useSelector((state) => state.summaryNotes)
+  const { notes, loading } = useSelector((state) => state.summaryNotes)
 
   // Loading state
   if (loading?.isAdminNotesLoading) {
@@ -30,7 +30,7 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
   }
 
   // Empty state
-  if (adminNotes.length === 0) {
+  if (notes.length === 0) {
     return (
       <EmptyState>
         <EmptyStateIcon>📝</EmptyStateIcon>
@@ -47,7 +47,7 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
   // Data state - render notes grid
   return (
     <NotesGrid>
-      {adminNotes.map(note => (
+      {notes.map(note => (
         <NoteCard key={note.id}>
           <NoteCardHeader>
             <NoteCardTitle>{note.title}</NoteCardTitle>

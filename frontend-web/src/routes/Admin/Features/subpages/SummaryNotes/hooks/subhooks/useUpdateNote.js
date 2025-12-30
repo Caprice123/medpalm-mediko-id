@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import {
@@ -13,14 +13,11 @@ import { blocksToMarkdown } from '@utils/blocksToMarkdown'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
-const { clearGeneratedContent, setError, clearError } = actions
+const { setError } = actions
 
 export const useUpdateNote = (onClose) => {
   const dispatch = useDispatch()
-  const { generatedContent, selectedNote } = useSelector(state => state.summaryNotes)
-  const [uploadedFile, setUploadedFile] = useState(null)
-  const [blobId, setBlobId] = useState(null)
-  const [sourceFileInfo, setSourceFileInfo] = useState(null)
+  const { detail } = useSelector(state => state.summaryNotes)
 
   const form = useFormik({
     initialValues: {
@@ -29,7 +26,11 @@ export const useUpdateNote = (onClose) => {
       content: null,
       status: 'draft',
       universityTags: [],
-      semesterTags: []
+      semesterTags: [],
+      // File upload state merged into Formik
+      uploadedFile: null,
+      blobId: null,
+      sourceFileInfo: null
     },
     validate: (values) => {
       const errors = {}
@@ -45,30 +46,26 @@ export const useUpdateNote = (onClose) => {
       return errors
     },
     onSubmit: async (values) => {
-      if (!selectedNote) return
+      if (!detail) return
+      // Convert combined status to status + isActive
+      let apiStatus = values.status
+      let isActive = true
 
-      try {
-        
-
-        // Convert combined status to status + isActive
-        let apiStatus = values.status
-        let isActive = true
-
-        if (values.status === 'inactive') {
+      if (values.status === 'inactive') {
           apiStatus = 'draft'
           isActive = false
-        }
+      }
 
-        // Stringify the blocks for storage
-        const contentString = JSON.stringify(values.content)
+      // Stringify the blocks for storage
+      const contentString = JSON.stringify(values.content)
 
-        // Convert blocks to markdown
-        const markdownContent = blocksToMarkdown(values.content)
+      // Convert blocks to markdown
+      const markdownContent = blocksToMarkdown(values.content)
 
-        // Combine university and semester tags
-        const allTags = [...values.universityTags, ...values.semesterTags]
+      // Combine university and semester tags
+      const allTags = [...values.universityTags, ...values.semesterTags]
 
-        const payload = {
+      const payload = {
           title: values.title.trim(),
           description: values.description.trim(),
           content: contentString,
@@ -76,95 +73,79 @@ export const useUpdateNote = (onClose) => {
           status: apiStatus,
           isActive: isActive,
           tagIds: allTags.map(t => t.id),
-          blobId: blobId || null
-        }
+          blobId: values.blobId || null
+      }
 
-        await dispatch(updateSummaryNote(selectedNote.id, payload))
+      await dispatch(updateSummaryNote(detail.id, payload))
 
-        // Refresh the list
-        await dispatch(fetchAdminSummaryNotes({}, 1, 30))
+      // Refresh the list
+      await dispatch(fetchAdminSummaryNotes())
 
-        // Clear generated content
-        dispatch(clearGeneratedContent())
-
-        // Close modal
-        if (onClose) {
-          onClose()
-        }
-      } catch (err) {
-        dispatch(setError('Gagal update ringkasan. Silakan coba lagi.'))
+      // Close modal
+      if (onClose) {
+        onClose()
       }
     }
   })
 
   // Initialize form with existing note data
   useEffect(() => {
-    if (selectedNote) {
+    if (detail) {
       // Determine status based on is_active and status
-      let combinedStatus = selectedNote.status || 'draft'
-      if (selectedNote.is_active === false) {
+      let combinedStatus = detail.status || 'draft'
+      if (detail.is_active === false) {
         combinedStatus = 'inactive'
       }
 
       // Parse content - handle both JSON blocks and markdown (legacy)
       let parsedContent = null
-      if (selectedNote.content) {
+      if (detail.content) {
         try {
           // Try to parse as JSON first
-          const parsed = JSON.parse(selectedNote.content)
+          const parsed = JSON.parse(detail.content)
           parsedContent = Array.isArray(parsed) ? parsed : null
         } catch (e) {
           // If not JSON, convert markdown to blocks
           parsedContent = [{
             type: "paragraph",
-            content: selectedNote.content
+            content: detail.content
           }]
         }
       }
 
       // Backend already separates tags - just use them directly
-      const universityTags = selectedNote.universityTags || []
-      const semesterTags = selectedNote.semesterTags || []
+      const universityTags = detail.universityTags || []
+      const semesterTags = detail.semesterTags || []
 
-      form.setValues({
-        title: selectedNote.title || '',
-        description: selectedNote.description || '',
+      const formValues = {
+        title: detail.title || '',
+        description: detail.description || '',
         content: parsedContent,
         status: combinedStatus,
         universityTags: universityTags,
-        semesterTags: semesterTags
-      })
+        semesterTags: semesterTags,
+        uploadedFile: null,
+        blobId: null,
+        sourceFileInfo: null
+      }
 
       // Set blobId and source file info if exists
-      if (selectedNote.blobId) {
-        setBlobId(selectedNote.blobId)
-        setSourceFileInfo({
-          blobId: selectedNote.blobId,
-          url: selectedNote.sourceUrl,
-          filename: selectedNote.sourceFilename,
-          type: selectedNote.sourceContentType,
-          size: selectedNote.sourceByteSize
-        })
-      } else {
-        setBlobId(null)
-        setSourceFileInfo(null)
+      if (detail.blob) {
+        formValues.blobId = detail.blob.id
+        formValues.sourceFileInfo = {
+          blobId: detail.blob.id,
+          url: detail.blob.url,
+          filename: detail.blob.filename,
+          type: detail.blob.contentType,
+          size: detail.blob.byteSize
+        }
       }
+
+      form.setValues(formValues)
     }
-  }, [selectedNote])
+  }, [detail])
 
-  // Handle AI-generated content
-  useEffect(() => {
-    if (generatedContent?.summary) {
-      // Convert generated markdown to BlockNote blocks
-      const blocks = markdownToBlocks(generatedContent.summary)
-      form.setFieldValue('content', blocks)
-
-      // blobId is already set from the upload, no need to update it from generatedContent
-    }
-  }, [generatedContent])
-
-  const handleFileSelect = async (e) => {
-    const file = e.target.files[0]
+  const handleFileSelect = async (file) => {
     if (file) {
       const allowedTypes = [
         'application/pdf',
@@ -188,8 +169,8 @@ export const useUpdateNote = (onClose) => {
         // Upload file immediately to get blobId
         const result = await dispatch(upload(file, 'summary-notes'))
 
-        setBlobId(result.blobId)
-        setUploadedFile({
+        form.setFieldValue('blobId', result.blobId)
+        form.setFieldValue('uploadedFile', {
           name: result.filename || file.name,
           type: result.contentType || file.type,
           size: result.byteSize,
@@ -203,29 +184,25 @@ export const useUpdateNote = (onClose) => {
   }
 
   const handleGenerate = async () => {
-    if (!blobId) {
+    if (!form.values.blobId) {
       dispatch(setError('Pilih file terlebih dahulu.'))
       return
     }
 
-    try {
-      
-      await dispatch(generateSummaryFromDocument(blobId))
-    } catch (err) {
-      dispatch(setError('Gagal generate ringkasan. Silakan coba lagi.'))
-    }
+    const result = await dispatch(generateSummaryFromDocument(form.values.blobId))
+    const blocks = markdownToBlocks(result.summary)
+    form.setFieldValue('content', blocks)
   }
 
   const handleRemoveFile = () => {
-    setBlobId(null)
-    setUploadedFile(null)
-    dispatch(clearGeneratedContent())
+    form.setFieldValue('blobId', null)
+    form.setFieldValue('uploadedFile', null)
   }
 
   const handleRemoveSourceFile = () => {
-    setBlobId(null)
-    setSourceFileInfo(null)
-    setUploadedFile(null)
+    form.setFieldValue('blobId', null)
+    form.setFieldValue('sourceFileInfo', null)
+    form.setFieldValue('uploadedFile', null)
   }
 
   const handleImageUpload = async (file) => {
@@ -259,8 +236,6 @@ export const useUpdateNote = (onClose) => {
     handleGenerate,
     handleRemoveFile,
     handleRemoveSourceFile,
-    handleImageUpload,
-    uploadedFile,
-    sourceFileInfo
+    handleImageUpload
   }
 }

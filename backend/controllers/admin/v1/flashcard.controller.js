@@ -28,7 +28,7 @@ class FlashcardController {
     const {
       title,
       description,
-      content_type,
+      contentType,
       content,
       blobId,
       tags,
@@ -39,7 +39,7 @@ class FlashcardController {
     const deck = await CreateFlashcardDeckService.call({
       title,
       description,
-      content_type,
+      contentType,
       content,
       blobId,
       tags,
@@ -65,7 +65,7 @@ class FlashcardController {
 
   async update(req, res) {
     const { id } = req.params
-    const { title, description, status, tags, cards, blobId } = req.body
+    const { title, description, contentType, content, status, tags, cards, blobId } = req.body
 
     // Check if this is a full deck update or just cards
     if (title !== undefined || tags !== undefined) {
@@ -73,6 +73,8 @@ class FlashcardController {
       const updatedDeck = await UpdateFlashcardDeckService.call(id, {
         title,
         description,
+        contentType,
+        content,
         status,
         tags,
         cards, // Cards already include image_key from centralized upload

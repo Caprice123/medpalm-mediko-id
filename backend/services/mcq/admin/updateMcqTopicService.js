@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateMcqTopicService extends BaseService {
   static async call({
@@ -55,25 +56,52 @@ export class UpdateMcqTopicService extends BaseService {
 
       // Update questions if provided
       if (questions) {
+        // Get existing questions to delete their attachments
+        const existingQuestions = await tx.mcq_questions.findMany({
+          where: { topic_id: id }
+        })
+
+        // Delete attachments for existing questions
+        if (existingQuestions.length > 0) {
+          await tx.attachments.deleteMany({
+            where: {
+              record_type: 'mcq_question',
+              record_id: { in: existingQuestions.map(q => q.id) }
+            }
+          })
+        }
+
         // Delete existing questions
         await tx.mcq_questions.deleteMany({
           where: { topic_id: id }
         })
 
         // Create new questions
-        await tx.mcq_questions.createMany({
-          data: questions.map((q, index) => ({
-            topic_id: id,
-            question: q.question,
-            image_url: q.image_url || null,
-            image_key: q.image_key || null,
-            image_filename: q.image_filename || null,
-            options: q.options,
-            correct_answer: q.correct_answer,
-            explanation: q.explanation || null,
-            order: q.order !== undefined ? q.order : index
-          }))
-        })
+        const createdQuestions = []
+        for (let i = 0; i < questions.length; i++) {
+          const q = questions[i]
+          const createdQuestion = await tx.mcq_questions.create({
+            data: {
+              topic_id: id,
+              question: q.question,
+              options: q.options,
+              correct_answer: q.correct_answer,
+              explanation: q.explanation || null,
+              order: q.order !== undefined ? q.order : i
+            }
+          })
+          createdQuestions.push(createdQuestion)
+
+          // Create attachment if question has image using attachmentService
+          if (q.blobId) {
+            await attachmentService.attach({
+              name: 'image',
+              recordType: 'mcq_question',
+              recordId: createdQuestion.id,
+              blobId: q.blobId
+            })
+          }
+        }
       }
 
       // Update tags if provided

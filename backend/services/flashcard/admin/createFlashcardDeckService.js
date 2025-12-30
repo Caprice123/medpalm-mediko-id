@@ -1,13 +1,12 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
-import blobService from "#services/attachment/blobService"
 import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateFlashcardDeckService extends BaseService {
-    static async call({ title, description, content_type, content, blobId, tags, cards, status, created_by }) {
+    static async call({ title, description, contentType, content, blobId, tags, cards, status, created_by }) {
         // Validate inputs
-        await this.validate({ title, description, content_type, content, blobId, tags, cards, status })
+        await this.validate({ title, description, contentType, content, blobId, tags, cards, status })
 
         // Create deck with cards and tags in a transaction
         const deck = await prisma.$transaction(async (tx) => {
@@ -16,8 +15,8 @@ export class CreateFlashcardDeckService extends BaseService {
                 data: {
                     title,
                     description: description || '',
-                    content_type,
-                    content: content_type === 'text' ? content : null,
+                    content_type: contentType,
+                    content: contentType === 'text' ? content : null,
                     flashcard_count: cards.length,
                     status: status || 'draft',
                     created_by: created_by,
@@ -46,35 +45,27 @@ export class CreateFlashcardDeckService extends BaseService {
                 }
             })
 
-            // Create attachment for deck PDF if blobId provided
-            if (blobId && content_type === 'pdf') {
-                await tx.attachments.create({
-                    data: {
-                        name: 'pdf',
-                        record_type: 'flashcard_deck',
-                        record_id: createdDeck.id,
-                        blob_id: blobId
-                    }
+            // Create attachment for deck PDF if blobId provided using attachmentService
+            if (blobId && contentType === 'pdf') {
+                await attachmentService.attach({
+                    name: 'pdf',
+                    recordType: 'flashcard_deck',
+                    recordId: createdDeck.id,
+                    blobId: blobId
                 })
             }
 
-            // Create attachments for cards with images
+            // Create attachments for cards with images using attachmentService
             for (let i = 0; i < cards.length; i++) {
                 const card = cards[i]
-                if (card.image_key) {
-                    // Find blob by key
-                    const blob = await blobService.getBlobByKey(card.image_key)
-                    if (blob) {
-                        // Create attachment linking card to blob
-                        const attachment = await tx.attachments.create({
-                            data: {
-                                name: 'image',
-                                record_type: 'flashcard_card',
-                                record_id: createdDeck.flashcard_cards[i].id,
-                                blob_id: blob.id
-                            }
-                        })
-                    }
+                if (card.blobId) {
+                    // Create attachment linking card to blob
+                    await attachmentService.attach({
+                        name: 'image',
+                        recordType: 'flashcard_card',
+                        recordId: createdDeck.flashcard_cards[i].id,
+                        blobId: card.blobId
+                    })
                 }
             }
 
@@ -84,13 +75,13 @@ export class CreateFlashcardDeckService extends BaseService {
         return deck
     }
 
-    static async validate({ title, content_type, content, blobId, tags, cards, status }) {
+    static async validate({ title, contentType, content, blobId, tags, cards, status }) {
         // Validate required fields
         if (!title) {
             throw new ValidationError('Title is required')
         }
 
-        if (!content_type || !['text', 'pdf'].includes(content_type)) {
+        if (!contentType || !['text', 'pdf'].includes(contentType)) {
             throw new ValidationError('Content type must be either "text" or "pdf"')
         }
 
@@ -99,11 +90,11 @@ export class CreateFlashcardDeckService extends BaseService {
         }
 
         // Content validation is optional for flashcards since they use individual cards
-        // if (content_type === 'text' && !content) {
-        //     throw new ValidationError('Content is required for text type')
-        // }
+        if (contentType === 'text' && !content) {
+            throw new ValidationError('Content is required for text type')
+        }
 
-        if (content_type === 'pdf' && !blobId) {
+        if (contentType === 'pdf' && !blobId) {
             throw new ValidationError('Blob ID is required for PDF type')
         }
 

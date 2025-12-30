@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useFormik } from 'formik'
 import {
   createSummaryNote,
@@ -13,13 +12,10 @@ import { blocksToMarkdown } from '@utils/blocksToMarkdown'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
-const { clearGeneratedContent, setError, clearError } = actions
+const { setError } = actions
 
 export const useCreateNote = (onClose) => {
   const dispatch = useDispatch()
-  const { generatedContent } = useSelector(state => state.summaryNotes)
-  const [blobId, setBlobId] = useState(null)
-  const [uploadedFileInfo, setUploadedFileInfo] = useState(null)
 
   const form = useFormik({
     initialValues: {
@@ -28,7 +24,10 @@ export const useCreateNote = (onClose) => {
       content: null,
       status: 'draft',
       universityTags: [],
-      semesterTags: []
+      semesterTags: [],
+      // File upload state merged into Formik
+      uploadedFile: null,
+      blobId: null
     },
     validate: (values) => {
       const errors = {}
@@ -61,7 +60,7 @@ export const useCreateNote = (onClose) => {
           status: values.status,
           isActive: true,
           tagIds: allTags.map(t => t.id),
-          blobId: blobId || null
+          blobId: values.blobId || null
         }
 
         await dispatch(createSummaryNote(payload))
@@ -71,7 +70,6 @@ export const useCreateNote = (onClose) => {
 
         // Reset form and clear generated content
         form.resetForm()
-        dispatch(clearGeneratedContent())
 
         // Close modal
         if (onClose) {
@@ -79,18 +77,8 @@ export const useCreateNote = (onClose) => {
         }
     }
   })
-  
-  // Handle AI-generated content
-  useEffect(() => {
-    if (generatedContent?.summary) {
-      // Convert generated markdown to BlockNote blocks
-      const blocks = markdownToBlocks(generatedContent.summary)
-      form.setFieldValue('content', blocks)
-    }
-  }, [generatedContent])
 
-  const handleFileSelect = async (e) => {
-    const file = e.target.files[0]
+  const handleFileSelect = async (file) => {
     if (file) {
       const allowedTypes = [
         'application/pdf',
@@ -113,32 +101,31 @@ export const useCreateNote = (onClose) => {
       // Upload file immediately to get blobId
       const result = await dispatch(upload(file, 'summary-notes'))
 
-      setBlobId(result.blobId)
+      form.setFieldValue('blobId', result.blobId)
       const fileInfo = {
           name: result.filename || file.name,
           type: result.contentType || file.type,
           size: result.byteSize,
           url: result.url // For viewing the uploaded file
       }
-      console.log('Upload result:', result)
-      console.log('Setting uploadedFileInfo:', fileInfo)
-      setUploadedFileInfo(fileInfo)
+      form.setFieldValue('uploadedFile', fileInfo)
     }
   }
 
   const handleGenerate = async () => {
-    if (!blobId) {
+    if (!form.values.blobId) {
       dispatch(setError('Pilih file terlebih dahulu.'))
       return
     }
 
-    await dispatch(generateSummaryFromDocument(blobId))
+    const result = await dispatch(generateSummaryFromDocument(form.values.blobId))
+    const blocks = markdownToBlocks(result.summary)
+    form.setFieldValue('content', blocks)
   }
 
   const handleRemoveFile = () => {
-    setBlobId(null)
-    setUploadedFileInfo(null)
-    dispatch(clearGeneratedContent())
+    form.setFieldValue('blobId', null)
+    form.setFieldValue('uploadedFile', null)
   }
 
   const handleImageUpload = async (file) => {
@@ -165,8 +152,6 @@ export const useCreateNote = (onClose) => {
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,
-    handleImageUpload,
-    uploadedFile: uploadedFileInfo,
-    blobId
+    handleImageUpload
   }
 }

@@ -29,8 +29,6 @@ const UpdateNoteModal = ({ onClose }) => {
     handleGenerate,
     handleRemoveFile,
     handleImageUpload,
-    uploadedFile,
-    sourceFileInfo,
     handleRemoveSourceFile
   } = useUpdateNote(onClose)
 
@@ -102,22 +100,22 @@ const UpdateNoteModal = ({ onClose }) => {
       </FormSection>
 
       {/* Existing Source File Info */}
-      {sourceFileInfo && !uploadedFile && (
+      {form.values.sourceFileInfo && !form.values.uploadedFile && (
         <FormSection>
           <Label>Dokumen Sumber</Label>
           <FileUpload
             file={{
-              name: sourceFileInfo.filename,
-              type: sourceFileInfo.type,
-              size: sourceFileInfo.size
+              name: form.values.sourceFileInfo.filename,
+              type: form.values.sourceFileInfo.type,
+              size: form.values.sourceFileInfo.size
             }}
             onRemove={handleRemoveSourceFile}
             actions={
               <>
-                {sourceFileInfo.url && (
+                {form.values.sourceFileInfo.url && (
                   <GenerateButton
                     as="a"
-                    href={sourceFileInfo.url}
+                    href={form.values.sourceFileInfo.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
@@ -135,11 +133,11 @@ const UpdateNoteModal = ({ onClose }) => {
       )}
 
       {/* Upload Document Section */}
-      {!sourceFileInfo && (
+      {!form.values.sourceFileInfo && (
         <FormSection>
           <Label>Generate Ulang dari Dokumen (Opsional)</Label>
           <FileUpload
-            file={uploadedFile}
+            file={form.values.uploadedFile}
             onFileSelect={handleFileSelect}
             onRemove={handleRemoveFile}
             isUploading={loading.isUploading}
@@ -149,10 +147,10 @@ const UpdateNoteModal = ({ onClose }) => {
             uploadText="Klik untuk upload dokumen"
             actions={
               <>
-                {uploadedFile?.url && (
+                {form.values.uploadedFile?.url && (
                   <GenerateButton
                     as="a"
-                    href={uploadedFile.url}
+                    href={form.values.uploadedFile.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

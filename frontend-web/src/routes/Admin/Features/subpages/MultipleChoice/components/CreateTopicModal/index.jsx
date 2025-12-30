@@ -308,7 +308,7 @@ const CreateTopicModal = ({ onClose }) => {
             <FormSection>
               <Label>Question Image (Optional)</Label>
               <ImageUploadArea
-                hasImage={question.imageUrl}
+                hasImage={question.image?.url}
                 onClick={() => document.getElementById(`question-image-${index}`).click()}
               >
                 <input
@@ -318,7 +318,7 @@ const CreateTopicModal = ({ onClose }) => {
                   onChange={(e) => handleQuestionImageSelect(e, index)}
                   style={{ display: 'none' }}
                 />
-                {!question.imageUrl ? (
+                {!question.image?.url ? (
                   <>
                     <ImageUploadIcon>🖼️</ImageUploadIcon>
                     <ImageUploadText>
@@ -328,13 +328,11 @@ const CreateTopicModal = ({ onClose }) => {
                   </>
                 ) : (
                   <ImagePreview>
-                    <PreviewImage src={question.imageUrl} alt="Question" />
+                    <PreviewImage src={question.image.url} alt="Question" />
                     <RemoveImageButton
                       onClick={(e) => {
                         e.stopPropagation()
-                        form.setFieldValue(`questions.${index}.imageUrl`, '')
-                        form.setFieldValue(`questions.${index}.imageKey`, '')
-                        form.setFieldValue(`questions.${index}.imageFilename`, '')
+                        form.setFieldValue(`questions.${index}.image`, null)
                       }}
                     >
                       ×

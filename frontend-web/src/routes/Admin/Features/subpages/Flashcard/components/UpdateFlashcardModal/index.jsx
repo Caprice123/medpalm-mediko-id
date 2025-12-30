@@ -7,11 +7,8 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useUpdateFlashcard } from '../../hooks/subhooks/useUpdateFlashcard'
-import { useGenerateFlashcard } from '../../hooks/subhooks/useGenerateFlashcard'
-import { formatFileSize } from '@utils/fileUtils'
 import {
   FormSection,
-  FormRow,
   Label,
   Input,
   Textarea,
@@ -47,17 +44,6 @@ const SortableCard = memo(function SortableCard({ card, index, form, handleRemov
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  }
-
-  const handleImageSelect = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.type.startsWith('image/')) {
-        handleImageUpload(index, file)
-      } else {
-        alert('Please select an image file')
-      }
-    }
   }
 
   return (
@@ -140,26 +126,12 @@ const UpdateFlashcardModal = ({ onClose }) => {
     handleRemoveCard,
     handleDragEnd,
     handleImageUpload,
-    setPdfInfo,
-    pdfInfo,
-    initialContentType,
-    initialTextContent
-  } = useUpdateFlashcard(onClose)
-
-  const {
-    contentType,
-    setContentType,
-    textContent,
-    setTextContent,
-    pdfFile,
-    setPdfFile,
-    cardCount,
-    setCardCount,
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating
-  } = useGenerateFlashcard(form, setPdfInfo, initialContentType, initialTextContent)
+    isGenerating,
+    pdfInfo
+  } = useUpdateFlashcard(onClose)
 
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
@@ -253,31 +225,36 @@ const UpdateFlashcardModal = ({ onClose }) => {
         <ContentTypeButtons>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'document'}
-            onClick={() => setContentType('document')}
+            isActive={form.values.contentType === 'document'}
+            onClick={() => form.setFieldValue('contentType', 'document')}
           >
-            📄 Document (PDF)
+              📄 Document (PDF)
           </ContentTypeButton>
           <ContentTypeButton
             type="button"
-            isActive={contentType === 'text'}
-            onClick={() => setContentType('text')}
+            isActive={form.values.contentType === 'text'}
+            onClick={() => form.setFieldValue('contentType', 'text')}
           >
             📝 Text Content
           </ContentTypeButton>
         </ContentTypeButtons>
 
-        {contentType === 'document' ? (
+        {form.values.contentType === 'document' ? (
           <FileUpload
-            file={pdfFile || pdfInfo ? {
-              name: pdfFile ? pdfFile.name : (pdfInfo?.pdfFilename || 'Existing PDF'),
-              type: pdfFile ? pdfFile.type : 'application/pdf',
-              size: pdfFile?.size
+            file={form.values.pdfFile ? {
+              name: form.values.pdfFile.name,
+              type: form.values.pdfFile.type,
+              size: form.values.pdfFile.size
+            } : pdfInfo ? {
+              name: pdfInfo.pdfFilename || 'Existing PDF',
+              type: 'application/pdf',
+              size: pdfInfo.pdfSize
             } : null}
             onFileSelect={handleFileSelect}
             onRemove={() => {
-              setPdfFile(null)
-              setPdfInfo(null)
+              form.setFieldValue('pdfFile', null)
+              form.setFieldValue('uploadedBlobId', null)
+              form.setFieldValue('blobId', null)
             }}
             isUploading={isGenerating}
             acceptedTypes={['application/pdf']}
@@ -286,15 +263,16 @@ const UpdateFlashcardModal = ({ onClose }) => {
             uploadText="Klik untuk upload PDF"
             actions={
               <>
-                {(pdfFile || pdfInfo) && (
+                {(form.values.pdfFile || pdfInfo) && (
                   <RemoveFileButton
                     onClick={() => {
-                      if (pdfFile) {
-                        const url = URL.createObjectURL(pdfFile)
-                        window.open(url, '_blank')
-                      } else if (pdfInfo?.pdfUrl) {
-                        window.open(pdfInfo.pdfUrl, '_blank')
-                      }
+                        // Check if it's a new file or existing PDF
+                        if (form.values.pdfFile instanceof File) {
+                            const url = URL.createObjectURL(form.values.pdfFile)
+                            window.open(url, '_blank')
+                        } else if (pdfInfo?.pdfUrl) {
+                            window.open(pdfInfo.pdfUrl, '_blank')
+                        }
                     }}
                     style={{ backgroundColor: '#3b82f6', color: 'white' }}
                   >
@@ -307,12 +285,11 @@ const UpdateFlashcardModal = ({ onClose }) => {
         ) : (
           <FormSection>
             <Textarea
-              value={textContent}
-              onChange={(e) => setTextContent(e.target.value)}
-              placeholder="Paste your medical study material here..."
-              style={{ minHeight: '150px' }}
+                value={form.values.textContent}
+                onChange={(e) => form.setFieldValue('textContent', e.target.value)}
+                placeholder="Paste your medical study material here..."
             />
-            <HelpText>Masukkan konten yang ingin di-generate menjadi flashcard</HelpText>
+            <HelpText>Masukkan konten yang ingin di-generate menjadi soal</HelpText>
           </FormSection>
         )}
       </FormSection>
@@ -321,8 +298,8 @@ const UpdateFlashcardModal = ({ onClose }) => {
         <Label>Number of Cards</Label>
         <Input
           type="number"
-          value={cardCount}
-          onChange={(e) => setCardCount(parseInt(e.target.value) || 10)}
+          value={form.values.cardCount}
+          onChange={(e) => form.setFieldValue('cardCount', parseInt(e.target.value))}
         />
         <HelpText>Pilih antara 1-50 kartu</HelpText>
       </FormSection>

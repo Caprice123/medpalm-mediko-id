@@ -182,7 +182,7 @@ export const generateMcqQuestions = ({ content, file, type, questionCount }, onS
 
     const formData = new FormData()
     formData.append('type', type)
-    formData.append('questionCount', questionCount || 10)
+    formData.append('questionCount', questionCount)
 
     if (type === 'pdf' && file) {
       formData.append('file', file)

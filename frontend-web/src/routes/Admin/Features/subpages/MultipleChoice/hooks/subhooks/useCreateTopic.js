@@ -21,14 +21,27 @@ export const useCreateTopic = (closeCallback) => {
       status: 'draft'
     },
     onSubmit: (values, { resetForm }) => {
+      // Prepare questions with blobId instead of separate image fields
+      const questions = values.questions.map((q, index) => ({
+        question: q.question,
+        blobId: q.image?.id || null, // Send blob ID in camelCase
+        options: q.options,
+        correct_answer: q.correct_answer,
+        explanation: q.explanation || '',
+        order: index
+      }))
+
       // Merge university and semester tags into single tags array
       const topicData = {
-        ...values,
+        title: values.title,
+        description: values.description,
+        contentType: values.contentType,
+        quiz_time_limit: values.quiz_time_limit,
+        passing_score: values.passing_score,
+        status: values.status,
+        questions: questions,
         tags: [...values.universityTags, ...values.semesterTags]
       }
-      // Remove separate tag fields before submission
-      delete topicData.universityTags
-      delete topicData.semesterTags
 
       dispatch(createMcqTopic(topicData))
         .then(() => {
@@ -75,9 +88,7 @@ export const useCreateTopic = (closeCallback) => {
       ...form.values.questions,
       {
         question: '',
-        image_url: '',
-        image_key: '',
-        image_filename: '',
+        image: null, // Blob object: {id, url, key, filename}
         options: ['', '', '', ''], // Default 4 options
         correct_answer: 0, // Index of correct option
         explanation: '',
@@ -115,10 +126,13 @@ export const useCreateTopic = (closeCallback) => {
     if (!file) return
 
     try {
-      const result = await dispatch(upload(file, 'exercise'))
-      form.setFieldValue(`questions.${questionIndex}.imageUrl`, result.url)
-      form.setFieldValue(`questions.${questionIndex}.imageKey`, result.key)
-      form.setFieldValue(`questions.${questionIndex}.imageFilename`, result.filename)
+      const result = await dispatch(upload(file, 'mcq'))
+      form.setFieldValue(`questions.${questionIndex}.image`, {
+        id: result.blobId, // Blob ID for backend
+        url: result.url, // Temporary presigned URL for preview
+        key: result.key,
+        filename: result.filename
+      })
     } catch (error) {
       console.error('Failed to upload question image:', error)
     }

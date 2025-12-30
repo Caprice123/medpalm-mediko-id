@@ -258,7 +258,7 @@ const UpdateTopicModal = ({ onClose }) => {
           <Input
             type="number"
             value={questionCount}
-            onChange={(e) => setQuestionCount(parseInt(e.target.value) || 10)}
+            onChange={(e) => setQuestionCount(parseInt(e.target.value))}
           />
           <HelpText>Pilih antara 1-50 soal</HelpText>
         </FormSection>
@@ -308,7 +308,7 @@ const UpdateTopicModal = ({ onClose }) => {
             <FormSection>
               <Label>Question Image (Optional)</Label>
               <ImageUploadArea
-                hasImage={question.imageUrl}
+                hasImage={question.image?.url}
                 onClick={() => document.getElementById(`question-image-${index}`).click()}
               >
                 <input
@@ -318,7 +318,7 @@ const UpdateTopicModal = ({ onClose }) => {
                   onChange={(e) => handleQuestionImageSelect(e, index)}
                   style={{ display: 'none' }}
                 />
-                {!question.imageUrl ? (
+                {!question.image?.url ? (
                   <>
                     <ImageUploadIcon>🖼️</ImageUploadIcon>
                     <ImageUploadText>
@@ -328,13 +328,11 @@ const UpdateTopicModal = ({ onClose }) => {
                   </>
                 ) : (
                   <ImagePreview>
-                    <PreviewImage src={question.imageUrl} alt="Question" />
+                    <PreviewImage src={question.image.url} alt="Question" />
                     <RemoveImageButton
                       onClick={(e) => {
                         e.stopPropagation()
-                        form.setFieldValue(`questions.${index}.imageUrl`, '')
-                        form.setFieldValue(`questions.${index}.imageKey`, '')
-                        form.setFieldValue(`questions.${index}.imageFilename`, '')
+                        form.setFieldValue(`questions.${index}.image`, null)
                       }}
                     >
                       ×
