@@ -58,6 +58,7 @@ const { reducer, actions } = createSlice({
       builder.addCase(resetAllState, (state) => ({
           ...initialState,
           loading: state.loading, // 🔥 preserve current loading state
+          userStatus: state.userStatus, // 🔥 preserve user status (credits & subscription)
       }));
     },
 })
