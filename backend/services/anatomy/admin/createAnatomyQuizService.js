@@ -52,8 +52,8 @@ export class CreateAnatomyQuizService extends BaseService {
     if (blobId) {
       await attachmentService.attach({
         blobId,
-        record_type: 'anatomy_quiz',
-        record_id: quiz.id,
+        recordType: 'anatomy_quiz',
+        recordId: quiz.id,
         name: 'image'
       })
     }

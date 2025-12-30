@@ -98,23 +98,11 @@ export const useCreateQuiz = (closeCallback) => {
     form.setFieldValue('questions', form.values.questions.filter((_, i) => i !== index))
   }
 
-  const handleImageSelect = async (e) => {
-    const file = e.target.files[0]
+  const handleImageSelect = async (file) => {
     if (!file) return
 
-    console.log('File selected:', file.name, file.size, file.type)
-
-    try {
-      await uploadImageForm.setFieldValue('file', file)
-      console.log('File value set, submitting...')
-      await uploadImageForm.submitForm()
-      console.log('Upload submitted')
-    } catch (error) {
-      console.error('Upload error:', error)
-    }
-
-    // Reset file input to allow re-uploading the same file
-    e.target.value = ''
+    await uploadImageForm.setFieldValue('file', file)
+    await uploadImageForm.submitForm()
   }
 
   return {

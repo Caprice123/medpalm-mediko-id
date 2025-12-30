@@ -12,18 +12,14 @@ export const useUploadAttachment = (onSuccess) => {
         },
         validationSchema: uploadImageSchema,
         onSubmit: async (values) => {
-            try {
-                const result = await dispatch(upload(values.file, 'anatomy'))
-                const imageInfo = {
-                    blobId: result.blobId,
-                    image_url: result.url,
-                    fileName: result.filename,
-                    fileSize: result.byteSize
-                }
-                if (onSuccess) onSuccess(imageInfo)
-            } catch (error) {
-                console.error('Failed to upload anatomy image:', error)
+            const result = await dispatch(upload(values.file, 'anatomy'))
+            const imageInfo = {
+                blobId: result.blobId,
+                image_url: result.url,
+                fileName: result.filename,
+                fileSize: result.byteSize
             }
+            if (onSuccess) onSuccess(imageInfo)
         }
     })
 

@@ -72,7 +72,7 @@ export class UpdateAnatomyQuizService extends BaseService {
 
     // Update attachment if new blob is provided
     if (blobId) {
-      // Delete old attachment
+      // Unlink old attachment (don't delete the blob)
       const oldAttachment = await prisma.attachments.findFirst({
         where: {
           record_type: 'anatomy_quiz',
@@ -82,14 +82,14 @@ export class UpdateAnatomyQuizService extends BaseService {
       })
 
       if (oldAttachment) {
-        await attachmentService.deleteAttachment(oldAttachment.id, true)
+        await attachmentService.deleteAttachment(oldAttachment.id, false)
       }
 
       // Create new attachment
       await attachmentService.attach({
         blobId,
-        record_type: 'anatomy_quiz',
-        record_id: updatedQuiz.id,
+        recordType: 'anatomy_quiz',
+        recordId: updatedQuiz.id,
         name: 'image'
       })
     }

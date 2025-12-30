@@ -89,8 +89,8 @@ class AttachmentService {
    */
   async getAttachments(recordType, recordId, name = null) {
     const where = {
-      recordType,
-      recordId
+      record_type: recordType,
+      record_id: recordId
     };
 
     if (name) {
@@ -99,9 +99,6 @@ class AttachmentService {
 
     const attachments = await prisma.attachments.findMany({
       where,
-      include: {
-        // Note: Prisma doesn't have relations defined, so we'll do manual join
-      }
     });
 
     // Manually fetch blob data

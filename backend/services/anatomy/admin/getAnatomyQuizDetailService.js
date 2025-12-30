@@ -39,7 +39,7 @@ export class GetAnatomyQuizDetailService extends BaseService {
       image_url: attachment?.url || null,
       image_key: attachment?.blob?.key || null,
       image_filename: attachment?.blob?.filename || null,
-      imageSize: attachment?.blob?.byte_size || null,
+      image_size: attachment?.blob?.byte_size || null,
       tags: quiz.anatomy_quiz_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,
