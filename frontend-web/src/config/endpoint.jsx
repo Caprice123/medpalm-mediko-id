@@ -5,7 +5,13 @@ export default {
     Login: "/api/v1/login",
     Logout: "/api/v1/logout",
     creditPlans: `${API_BASE_URL}/api/v1/credit-plans`,
-    credits: `${API_BASE_URL}/api/credits`,
+    credits: {
+        admin: {
+            transactions: `${API_BASE_URL}/admin/v1/credits/transactions`,
+            confirm: (id) => `${API_BASE_URL}/admin/v1/credits/confirm/${id}`,
+            bonus: `${API_BASE_URL}/admin/v1/credits/bonus`,
+        }
+    },
     // tags: {
     //     list: `${API_BASE_URL}/api/v1/tags`,
     //     create: `${API_BASE_URL}/api/v1/tags`,

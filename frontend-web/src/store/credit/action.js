@@ -9,6 +9,10 @@ const {
   setPlans,
   setTransactions,
   setPagination,
+  setFilters,
+  setStats,
+  clearFilters,
+  setPage,
   addTransaction,
   updatePlan,
   addPlan
@@ -22,7 +26,6 @@ const {
 export const fetchCreditBalance = () => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isBalanceLoading', value: true }))
-    
 
     const response = await getWithToken(`${Endpoints.credits}/balance`)
 
@@ -224,24 +227,27 @@ export const toggleCreditPlanStatus = (planId) => async (dispatch) => {
 export const fetchAllTransactions = (params = {}) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isTransactionsLoading', value: true }))
-    
 
-    const { limit = 100, offset = 0, type, status } = params
+    const { page = 1, perPage = 20, type, status } = params
 
     const queryParams = {
-      limit,
-      offset,
+      page,
+      perPage,
       type,
       status,
     }
 
     const response = await getWithToken(
-      `${Endpoints.credits}/transactions/all`,
+      Endpoints.credits.admin.transactions,
       queryParams
     )
 
     dispatch(setTransactions(response.data.data.transactions))
-    dispatch(setPagination(response.data.data.pagination))
+    dispatch(setPagination({
+      page: response.data.data.pagination.page,
+      perPage: response.data.data.pagination.perPage,
+      isLastPage: response.data.data.pagination.isLastPage
+    }))
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -257,7 +263,7 @@ export const confirmPayment = (transactionId, status) => async (dispatch) => {
     
 
     await postWithToken(
-      `${Endpoints.credits}/confirm/${transactionId}`,
+      Endpoints.credits.admin.confirm(transactionId),
       { status },
     )
   } catch (err) {
@@ -270,13 +276,14 @@ export const confirmPayment = (transactionId, status) => async (dispatch) => {
  */
 export const addBonusCredits = (userId, amount, description) => async (dispatch) => {
   try {
-    
-
     await postWithToken(
-      `${Endpoints.credits}/bonus`,
+      Endpoints.credits.admin.bonus,
       { userId, amount, description },
     )
   } catch (err) {
     handleApiError(err, dispatch)
   }
 }
+
+// Export filter and pagination actions
+export { setFilters, setPage }

@@ -46,6 +46,9 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
 
       const result = await dispatch(purchasePricingPlan(plan.id, 'xendit'))
 
+      console.log('Purchase result:', result)
+      console.log('Payment info received:', result.data)
+
       const { paymentInfo } = result.data
 
       // If Xendit invoice URL is available, redirect to it

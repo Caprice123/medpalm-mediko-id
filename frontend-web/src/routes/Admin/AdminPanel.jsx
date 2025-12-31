@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { getUserData } from '@utils/authToken'
 import styled from 'styled-components'
 import PricingPlans from './PricingPlans/index'
-import Transactions from './Transactions'
 import Features from './Features/index'
 import Tags from './Tags'
 import Users from './Users'
+import TransactionList from './Transactions/components/Table'
+import Transactions from './Transactions'
 
 const AdminContainer = styled.div`
   min-height: 100vh;

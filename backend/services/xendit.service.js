@@ -21,24 +21,41 @@ const { Invoice, VirtualAcc } = xenditClient
  */
 export const createInvoice = async ({ amount, externalId, payerEmail, description }) => {
   try {
-    const invoice = await Invoice.createInvoice({
-      externalId,
+    console.log('Creating Xendit invoice with params:', {
       amount,
+      externalId,
       payerEmail,
-      description,
-      currency: 'IDR',
-      reminderTime: 1, // Reminder in minutes before expiry
-      successRedirectUrl: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
-      failureRedirectUrl: `${process.env.FRONTEND_URL}/dashboard?payment=failed`,
-      invoiceDuration: 86400, // 24 hours in seconds
-      shouldSendEmail: true,
-      items: [
-        {
-          name: description,
-          quantity: 1,
-          price: amount
-        }
-      ]
+      description
+    })
+
+    const invoice = await Invoice.createInvoice({
+      data: {
+        externalId,
+        amount,
+        payerEmail,
+        description,
+        currency: 'IDR',
+        reminderTime: 1, // Reminder in minutes before expiry
+        successRedirectUrl: `${process.env.FRONTEND_URL}/dashboard?payment=success`,
+        failureRedirectUrl: `${process.env.FRONTEND_URL}/dashboard?payment=failed`,
+        invoiceDuration: 86400, // 24 hours in seconds
+        shouldSendEmail: true,
+        items: [
+          {
+            name: description,
+            quantity: 1,
+            price: amount
+          }
+        ]
+      }
+    })
+
+    console.log('Xendit invoice raw response:', JSON.stringify(invoice, null, 2))
+    console.log('Invoice URL field check:', {
+      invoice_url: invoice.invoice_url,
+      invoiceUrl: invoice.invoiceUrl,
+      invoice_url_exists: !!invoice.invoice_url,
+      invoiceUrl_exists: !!invoice.invoiceUrl
     })
 
     return invoice
@@ -55,7 +72,9 @@ export const createInvoice = async ({ amount, externalId, payerEmail, descriptio
  */
 export const getInvoice = async (invoiceId) => {
   try {
-    const invoice = await Invoice.getInvoice({ invoiceId })
+    const invoice = await Invoice.getInvoice({
+      invoiceId
+    })
     return invoice
   } catch (error) {
     console.error('Xendit getInvoice error:', error)
@@ -70,7 +89,9 @@ export const getInvoice = async (invoiceId) => {
  */
 export const expireInvoice = async (invoiceId) => {
   try {
-    const invoice = await Invoice.expireInvoice({ invoiceId })
+    const invoice = await Invoice.expireInvoice({
+      invoiceId
+    })
     return invoice
   } catch (error) {
     console.error('Xendit expireInvoice error:', error)
@@ -104,12 +125,14 @@ export const verifyWebhookToken = (token) => {
 export const createVirtualAccount = async ({ externalId, bankCode, name, expectedAmount }) => {
   try {
     const va = await VirtualAcc.createFixedVA({
-      externalId,
-      bankCode,
-      name,
-      expectedAmount,
-      isClosed: true, // Closed VA - exact amount only
-      expirationDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+      data: {
+        externalId,
+        bankCode,
+        name,
+        expectedAmount,
+        isClosed: true, // Closed VA - exact amount only
+        expirationDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+      }
     })
 
     return va

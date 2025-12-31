@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import { NotFoundError } from '#errors/notFoundError'
 import { captureException } from '#config/sentry'
+import { AuthorizationError } from '#errors/authorizationError'
 
 /**
  * Global error handling middleware
@@ -37,6 +38,12 @@ export const errorHandler = (err, req, res, next) => {
   // Handle NotFoundError (404 Not Found) - returns custom message
   if (err instanceof NotFoundError) {
     return res.status(404).json({
+      error: err.message
+    })
+  }
+
+  if (err instanceof AuthorizationError) {
+    return res.status(401).json({
       error: err.message
     })
   }

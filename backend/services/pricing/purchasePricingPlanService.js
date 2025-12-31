@@ -16,6 +16,31 @@ export class PurchasePricingPlanService extends BaseService {
       throw new Error('Pricing plan is not active')
     }
 
+    // For Xendit payments, create purchase with pending status
+    // Credits will be granted after webhook confirms payment
+    if (paymentMethod === 'xendit') {
+      const purchase = await prisma.user_purchases.create({
+        data: {
+          user_id: userId,
+          pricing_plan_id: pricingPlanId,
+          bundle_type: plan.bundle_type,
+          subscription_start: null, // Will be set after payment
+          subscription_end: null, // Will be set after payment
+          subscription_status: null, // Will be set after payment
+          credits_granted: plan.credits_included,
+          payment_status: 'pending',
+          payment_method: paymentMethod,
+          amount_paid: plan.price
+        },
+        include: {
+          pricing_plan: true
+        }
+      })
+
+      return purchase
+    }
+
+    // For manual/other payment methods, complete immediately
     // Calculate subscription dates if needed
     let subscriptionStart = null
     let subscriptionEnd = null

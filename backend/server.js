@@ -14,6 +14,7 @@ import tagGroupRoutes from '#routes/api/v1/tagGroup.routes';
 import featureRoutes from '#routes/api/v1/feature.routes';
 import pricingRoutes from '#routes/api/v1/pricing.routes';
 import adminCreditPlanRoutes from '#routes/admin/v1/creditPlan.routes';
+import adminCreditsRoutes from '#routes/admin/v1/credits.routes';
 import adminPricingRoutes from '#routes/admin/v1/pricing.routes';
 import adminExerciseRoutes from '#routes/admin/v1/exercise.routes';
 import adminFlashcardRoutes from '#routes/admin/v1/flashcard.routes';
@@ -87,6 +88,7 @@ app.use('/api/v1/html-to-docx', htmlToDocxRoutes);
 
 // Admin Routes
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);
+app.use('/admin/v1/credits', adminCreditsRoutes);
 app.use('/admin/v1/pricing', adminPricingRoutes);
 app.use('/admin/v1/exercises', adminExerciseRoutes);
 app.use('/admin/v1/flashcards', adminFlashcardRoutes);

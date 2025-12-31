@@ -2,6 +2,8 @@ import { GetActivePricingPlansService } from '#services/pricing/getActivePricing
 import { PurchasePricingPlanService } from '#services/pricing/purchasePricingPlanService'
 import { GetUserStatusService, HasActiveSubscriptionService, GetUserCreditBalanceService } from '#services/pricing/getUserStatusService'
 import { GetUserPurchaseHistoryService } from '#services/pricing/getUserPurchaseHistoryService'
+import { createInvoice } from '#services/xendit.service'
+import prisma from '#prisma/client'
 
 class PricingController {
   /**
@@ -87,6 +89,59 @@ class PricingController {
       paymentMethod || 'manual'
     )
 
+    // If payment method is Xendit, create invoice and return URL
+    let paymentInfo = null
+    if (paymentMethod === 'xendit') {
+      try {
+        // Get user email
+        const user = await prisma.users.findUnique({
+          where: { id: userId },
+          select: { email: true, name: true }
+        })
+
+        if (!user || !user.email) {
+          return res.status(400).json({
+            error: 'User email is required for Xendit payment'
+          })
+        }
+
+        // Create Xendit invoice
+        const invoice = await createInvoice({
+          amount: Number(purchase.amount_paid),
+          externalId: `PURCHASE-${purchase.id}-${Date.now()}`,
+          payerEmail: user.email,
+          description: `${purchase.pricing_plan.name} - ${purchase.bundle_type === 'credits' ? `${purchase.credits_granted} Credits` : purchase.bundle_type === 'subscription' ? 'Subscription' : 'Hybrid Package'}`
+        })
+
+        // Debug: Log the full invoice response
+        console.log('Xendit invoice created:', JSON.stringify(invoice, null, 2))
+
+        // Store Xendit invoice ID in payment_reference
+        await prisma.user_purchases.update({
+          where: { id: purchase.id },
+          data: { payment_reference: invoice.id }
+        })
+
+        paymentInfo = {
+          invoiceUrl: invoice.invoice_url || invoice.invoiceUrl,
+          invoiceId: invoice.id,
+          expiresAt: invoice.expiry_date || invoice.expiryDate,
+          reference: invoice.id
+        }
+
+        console.log('Payment info being sent:', paymentInfo)
+      } catch (error) {
+        console.error('Error creating Xendit invoice:', error)
+        // Delete the pending purchase if invoice creation failed
+        await prisma.user_purchases.delete({
+          where: { id: purchase.id }
+        })
+        return res.status(500).json({
+          error: 'Failed to create payment invoice. Please try again.'
+        })
+      }
+    }
+
     res.status(201).json({
       data: {
         id: purchase.id,
@@ -98,9 +153,10 @@ class PricingController {
           startDate: purchase.subscription_start,
           endDate: purchase.subscription_end,
           status: purchase.subscription_status
-        } : null
+        } : null,
+        paymentInfo: paymentInfo
       },
-      message: 'Purchase completed successfully'
+      message: paymentMethod === 'xendit' ? 'Payment invoice created. Please complete payment.' : 'Purchase completed successfully'
     })
   }
 }
