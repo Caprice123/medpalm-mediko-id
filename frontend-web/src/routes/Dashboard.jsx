@@ -83,14 +83,6 @@ const FeatureFooter = styled.div`
   margin-top: auto;
 `
 
-const CreditCost = styled.span`
-  font-weight: 600;
-  color: #06b6d4;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-`
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 3rem 1rem;
@@ -112,6 +104,53 @@ const EmptyStateSubtext = styled.div`
   font-size: 0.875rem;
 `
 
+const RequirementBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background: ${props => props.$locked ? '#fee2e2' : '#dcfce7'};
+  color: ${props => props.$locked ? '#dc2626' : '#16a34a'};
+  border: 1px solid ${props => props.$locked ? '#fecaca' : '#bbf7d0'};
+`
+
+const LockIcon = styled.span`
+  font-size: 1rem;
+`
+
+const CardWrapper = styled.div`
+  position: relative;
+  opacity: ${props => props.$locked ? '0.65' : '1'};
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: ${props => props.$locked ? '0.75' : '1'};
+  }
+`
+
+const RequirementsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+`
+
+const RequirementItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: ${props => props.$met ? '#16a34a' : '#dc2626'};
+
+  span:first-child {
+    font-size: 1rem;
+  }
+`
+
 function Dashboard() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -120,6 +159,7 @@ function Dashboard() {
   const { balance } = useSelector(state => state.credit)
   const { features } = useSelector(state => state.feature)
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
+  const { userStatus } = useSelector(state => state.pricing)
 
   const [user, setUser] = useState(null)
 
@@ -208,53 +248,92 @@ function Dashboard() {
         ) : features.length > 0 ? (
           <CatalogGrid>
             {features.map((feature) => {
-              // Get access type color
-              const getAccessColor = (accessType) => {
-                switch (accessType) {
-                  case 'subscription': return '#10b981'
-                  case 'credits': return '#06b6d4'
-                  case 'subscription_and_credits': return '#f59e0b'
-                  case 'free': return '#6b7280'
-                  default: return '#06b6d4'
-                }
+              // Check user access
+              const hasActiveSubscription = userStatus?.hasActiveSubscription || false
+              const userCredits = userStatus?.creditBalance || 0
+
+              // Determine requirements
+              const needsSubscription = feature.accessType === 'subscription' ||
+                                       feature.accessType === 'subscription_and_credits'
+              const needsCredits = feature.accessType === 'credits' ||
+                                  feature.accessType === 'subscription_and_credits'
+              const isFree = feature.accessType === 'free'
+
+              // Check if requirements are met
+              const subscriptionMet = !needsSubscription || hasActiveSubscription
+              const creditsMet = !needsCredits || userCredits >= (feature.cost || 0)
+              const canUse = (subscriptionMet && creditsMet) || isFree
+
+              // Determine button text and action
+              const getButtonConfig = () => {
+                if (isFree) return { text: 'Gunakan Fitur', variant: 'primary' }
+                if (!canUse) return { text: 'Lihat Paket', variant: 'outline' }
+                return { text: 'Gunakan Fitur', variant: 'primary' }
               }
 
-              // Get icon based on access type
-              const getAccessIcon = (accessType) => {
-                switch (accessType) {
-                  case 'subscription': return '🎯'
-                  case 'credits': return '💎'
-                  case 'subscription_and_credits': return '🎯💎'
-                  case 'free': return '✨'
-                  default: return '💎'
-                }
-              }
-
-              const canUse = feature.accessType === 'subscription' ||
-                            feature.accessType === 'subscription_and_credits' ||
-                            feature.accessType === 'free' ||
-                            balance >= feature.cost
+              const buttonConfig = getButtonConfig()
 
               return (
-                <Card key={feature.id} shadow hoverable>
-                  <CardBody>
-                    <FeatureIcon>{feature.icon}</FeatureIcon>
-                    <FeatureTitle>{feature.name}</FeatureTitle>
-                    <FeatureDescription>{feature.description}</FeatureDescription>
-                    <FeatureFooter>
-                      <CreditCost style={{ color: getAccessColor(feature.accessType) }}>
-                        {getAccessIcon(feature.accessType)} {feature.accessDescription || `${feature.cost} kredit`}
-                      </CreditCost>
-                      <Button
-                        variant="primary"
-                        onClick={() => handleUseFeature(feature)}
-                        disabled={!canUse}
-                      >
-                        Gunakan Fitur
-                      </Button>
-                    </FeatureFooter>
-                  </CardBody>
-                </Card>
+                <CardWrapper key={feature.id} $locked={!canUse && !isFree}>
+                  <Card shadow hoverable>
+                    <CardBody>
+                      <FeatureIcon>{feature.icon}</FeatureIcon>
+                      <FeatureTitle>
+                        {feature.name} {!canUse && !isFree && ' 🔒'}
+                      </FeatureTitle>
+                      <FeatureDescription>{feature.description}</FeatureDescription>
+
+                      {/* Requirements Badge */}
+                      {!isFree && (
+                        <RequirementBadge $locked={!canUse}>
+                          {canUse ? '✓ Akses Tersedia' : '⚠️ Perlu Akses'}
+                        </RequirementBadge>
+                      )}
+
+                      {/* Requirements List */}
+                      {!isFree && (
+                        <RequirementsList>
+                          {needsSubscription && (
+                            <RequirementItem $met={subscriptionMet}>
+                              <span>{subscriptionMet ? '✓' : '✗'}</span>
+                              <span>
+                                {subscriptionMet
+                                  ? 'Berlangganan Aktif'
+                                  : 'Perlu Berlangganan'}
+                              </span>
+                            </RequirementItem>
+                          )}
+                          {needsCredits && (
+                            <RequirementItem $met={creditsMet}>
+                              <span>{creditsMet ? '✓' : '✗'}</span>
+                              <span>
+                                {creditsMet
+                                  ? `${feature.cost || 0} Credits (Tersedia: ${userCredits})`
+                                  : `${feature.cost || 0} Credits (Anda: ${userCredits})`}
+                              </span>
+                            </RequirementItem>
+                          )}
+                        </RequirementsList>
+                      )}
+
+                      <FeatureFooter>
+                        <Button
+                          variant={buttonConfig.variant}
+                          onClick={() => {
+                            if (!canUse && !isFree) {
+                              navigate('/pricing')
+                            } else {
+                              handleUseFeature(feature)
+                            }
+                          }}
+                          fullWidth
+                        >
+                          {buttonConfig.text}
+                        </Button>
+                      </FeatureFooter>
+                    </CardBody>
+                  </Card>
+                </CardWrapper>
               )
             })}
           </CatalogGrid>
