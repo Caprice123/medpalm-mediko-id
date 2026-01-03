@@ -102,6 +102,7 @@ export class StartExerciseTopicService extends BaseService {
         id: topic.id,
         title: topic.title || 'Untitled',
         description: topic.description || '',
+        exercise_topic_tags: topic.exercise_topic_tags || [],
         questions: shuffledQuestions.map((q, index) => ({
           id: q.id,
           question: q.question || '',

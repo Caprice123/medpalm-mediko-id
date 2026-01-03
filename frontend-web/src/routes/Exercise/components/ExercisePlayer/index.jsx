@@ -1,35 +1,78 @@
-import { useState, useEffect, useRef } from 'react'
-import Button from '@components/common/Button'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useSelector } from 'react-redux'
 import {
   Container,
   Header,
+  HeaderTop,
+  ProgressBadge,
   TopicInfo,
   BackButton,
-  QuestionCard,
-  QuestionNumber,
-  QuestionText,
-  InlineInput,
-  NavigationButtons,
+  TagList,
+  Tag,
+  ProgressBarContainer,
+  ProgressBarWrapper,
   ProgressBar,
   ProgressFill,
+  ProgressPercentage,
+  QuestionCard,
+  QuestionHeader,
+  QuestionNumber,
+  CategoryBadge,
+  QuestionText,
+  InlineInput,
+  HintBox,
+  NavigationButtons,
+  NavButton,
+  SubmitSection,
+  SubmitStatus,
+  SubmitButton,
   ResultContainer,
+  CelebrationHeader,
   ResultScore,
   ResultLabel,
-  ResultStatus,
+  StatsGrid,
+  StatCard,
+  StatIcon,
+  StatValue,
+  StatLabel,
+  Divider,
   AnswerReview,
   ReviewTitle,
   ReviewItem,
+  ReviewBadge,
   ReviewQuestion,
   ReviewAnswer,
   ExplanationBox,
   ExplanationLabel,
-  ExplanationText
+  ExplanationText,
+  ReturnButton
 } from './ExercisePlayer.styles'
 
 const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
   const inputRef = useRef(null)
+
+  // Get tag groups from Redux
+  const { tags } = useSelector(state => state.tags)
+
+  // Get tag group IDs
+  const universityGroupId = useMemo(() => {
+    return tags?.find(tag => tag.name === 'university')?.id
+  }, [tags])
+
+  const semesterGroupId = useMemo(() => {
+    return tags?.find(tag => tag.name === 'semester')?.id
+  }, [tags])
+
+  // Get tag groups using tagGroupId
+  const universityTags = useMemo(() => {
+    return topic.tags?.filter(tag => tag.tagGroupId === universityGroupId) || []
+  }, [topic.tags, universityGroupId])
+
+  const semesterTags = useMemo(() => {
+    return topic.tags?.filter(tag => tag.tagGroupId === semesterGroupId) || []
+  }, [topic.tags, semesterGroupId])
 
   // Auto-focus input when question changes
   useEffect(() => {
@@ -71,7 +114,22 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
     onSubmit(answersArray)
   }
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if (isLastQuestion) {
+        // If it's the last question and all are answered, submit
+        if (allAnswered) {
+          handleSubmit()
+        }
+      } else {
+        // Otherwise, move to next question
+        handleNext()
+      }
+    }
+  }
+
   const isLastQuestion = currentIndex === totalQuestions - 1
+  const answeredCount = Object.values(answers).filter(a => a?.trim()).length
   const allAnswered = topic.questions.every(q => answers[q.id]?.trim())
 
   // Render question text with answer highlighted for review
@@ -93,6 +151,8 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
 
   // Show result view if result exists
   if (result) {
+    const wrongAnswers = result.total_questions - result.correct_questions
+
     return (
       <Container>
         <Header>
@@ -100,42 +160,98 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
             ← Kembali
           </BackButton>
           <TopicInfo>
-            <h2>{topic.title}</h2>
+            <h2>🧠 {topic.title}</h2>
+            <p>{topic.description}</p>
+
+            {/* University Tags */}
+            {universityTags.length > 0 && (
+              <TagList>
+                {universityTags.map((tag) => (
+                  <Tag key={tag.id} university>
+                    🏛️ {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+
+            {/* Semester Tags */}
+            {semesterTags.length > 0 && (
+              <TagList>
+                {semesterTags.map((tag) => (
+                  <Tag key={tag.id} semester>
+                    📚 {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
           </TopicInfo>
         </Header>
 
         <QuestionCard>
           <ResultContainer>
+            <CelebrationHeader>
+              🎉 Kuis Selesai! 🎉
+            </CelebrationHeader>
+
             <ResultScore>{result.score}%</ResultScore>
             <ResultLabel>
               {result.correct_questions} dari {result.total_questions} jawaban benar
             </ResultLabel>
+
+            <StatsGrid>
+              <StatCard type="correct">
+                <StatIcon>✓</StatIcon>
+                <StatValue type="correct">{result.correct_questions}</StatValue>
+                <StatLabel>Benar</StatLabel>
+              </StatCard>
+
+              <StatCard type="wrong">
+                <StatIcon>✗</StatIcon>
+                <StatValue type="wrong">{wrongAnswers}</StatValue>
+                <StatLabel>Salah</StatLabel>
+              </StatCard>
+
+              <StatCard type="info">
+                <StatIcon>📊</StatIcon>
+                <StatValue type="info">{result.total_questions}</StatValue>
+                <StatLabel>Total Soal</StatLabel>
+              </StatCard>
+            </StatsGrid>
           </ResultContainer>
 
+          <Divider />
+
           <AnswerReview>
-            <ReviewTitle>Review Jawaban</ReviewTitle>
+            <ReviewTitle>📋 Review Jawaban</ReviewTitle>
             {result.answers?.map((answer, index) => {
               // Find the question object
               const question = topic.questions.find(q => q.id === answer.questionId)
 
               return (
                 <ReviewItem key={index} isCorrect={answer.isCorrect}>
+                  <ReviewBadge>
+                    {answer.isCorrect ? '✓' : '✗'}
+                  </ReviewBadge>
+
                   <ReviewQuestion>
                     {index + 1}. {renderQuestionForReview(question?.question || '', answer.correctAnswer)}
                   </ReviewQuestion>
+
                   <ReviewAnswer>
-                    <strong>Jawaban Anda:</strong>
+                    <strong>{answer.isCorrect ? '💚 Jawaban:' : '❌ Jawaban Anda:'}</strong>
                     <span>
                       {answer.userAnswer || 'Tidak dijawab'}
-                      {answer.isCorrect ? ' ✓' : ' ✗'}
+                      {answer.isCorrect && <span className="icon">✓</span>}
                     </span>
                   </ReviewAnswer>
+
                   {!answer.isCorrect && (
                     <ReviewAnswer>
-                      <strong>Jawaban Benar:</strong>
+                      <strong>✓ Jawaban Benar:</strong>
                       <span>{answer.correctAnswer}</span>
                     </ReviewAnswer>
                   )}
+
                   {answer.explanation && (
                     <ExplanationBox isCorrect={answer.isCorrect}>
                       <ExplanationLabel isCorrect={answer.isCorrect}>
@@ -149,13 +265,9 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
             })}
           </AnswerReview>
 
-          <Button
-            variant="primary"
-            onClick={onBack}
-            style={{ width: '100%', padding: '1rem', marginTop: '1rem' }}
-          >
-            Kembali ke Daftar Topik
-          </Button>
+          <ReturnButton onClick={onBack}>
+            🏠 Kembali ke Daftar Topik
+          </ReturnButton>
         </QuestionCard>
       </Container>
     )
@@ -178,6 +290,8 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
           type="text"
           value={answers[currentQuestion.id] || ''}
           onChange={(e) => handleAnswerChange(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="ketik jawaban..."
         />
         {questionParts[1]}
       </QuestionText>
@@ -187,53 +301,91 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>
-          ← Kembali
-        </BackButton>
+        <HeaderTop>
+          <BackButton onClick={onBack}>
+            ← Kembali
+          </BackButton>
+          <ProgressBadge>
+            Progress: {currentIndex + 1}/{totalQuestions}
+          </ProgressBadge>
+        </HeaderTop>
+
         <TopicInfo>
-          <h2>{topic.title}</h2>
+          <h2>🧠 {topic.title}</h2>
           <p>{topic.description}</p>
+
+          {/* University Tags */}
+          {universityTags.length > 0 && (
+            <TagList>
+              {universityTags.map((tag) => (
+                <Tag key={tag.id} university>
+                  🏛️ {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
+          {/* Semester Tags */}
+          {semesterTags.length > 0 && (
+            <TagList>
+              {semesterTags.map((tag) => (
+                <Tag key={tag.id} semester>
+                  📚 {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
         </TopicInfo>
+
+        <ProgressBarContainer>
+          <ProgressBarWrapper>
+            <ProgressBar>
+              <ProgressFill progress={progress} />
+            </ProgressBar>
+            <ProgressPercentage>{Math.round(progress)}%</ProgressPercentage>
+          </ProgressBarWrapper>
+        </ProgressBarContainer>
       </Header>
 
       <QuestionCard>
-        <ProgressBar>
-          <ProgressFill progress={progress} />
-        </ProgressBar>
-
-        <QuestionNumber>
-          Soal {currentIndex + 1} dari {totalQuestions}
-        </QuestionNumber>
 
         {renderQuestionWithInput()}
 
+        <HintBox>
+          <span>💡</span>
+          <span>Tip: Jawab dengan istilah medis yang tepat</span>
+        </HintBox>
+
         <NavigationButtons>
-          <Button
+          <NavButton
             variant="ghost"
             onClick={handlePrevious}
             disabled={currentIndex === 0}
           >
             ← Sebelumnya
-          </Button>
-          <Button
+          </NavButton>
+          <NavButton
             variant="primary"
             onClick={handleNext}
             disabled={isLastQuestion}
           >
             Selanjutnya →
-          </Button>
+          </NavButton>
         </NavigationButtons>
       </QuestionCard>
 
       {isLastQuestion && (
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={!allAnswered}
-          style={{ width: '100%', padding: '1rem', fontSize: '1.125rem' }}
-        >
-          Selesai & Lihat Hasil
-        </Button>
+        <SubmitSection>
+          <SubmitStatus incomplete={!allAnswered}>
+            {allAnswered ? '✨' : '⚡'} Kamu sudah menjawab {answeredCount} dari {totalQuestions} soal
+          </SubmitStatus>
+          <SubmitButton
+            onClick={handleSubmit}
+            disabled={!allAnswered}
+          >
+            🎯 Selesai & Lihat Hasil
+          </SubmitButton>
+        </SubmitSection>
       )}
     </Container>
   )

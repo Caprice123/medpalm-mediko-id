@@ -7,7 +7,7 @@ const spin = keyframes`
 `
 
 export const PageContainer = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 90px);
   background: #f0fdfa;
   padding: 2rem;
 

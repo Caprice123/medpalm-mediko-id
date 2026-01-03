@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { startExerciseTopic, submitExerciseProgress } from '@store/exercise/action'
+import { fetchTags } from '@store/tags/action'
+import { actions as tagActions } from '@store/tags/reducer'
 import { ExerciseRoute } from '../../routes'
 
 export const useExerciseDetail = () => {
@@ -18,6 +20,10 @@ export const useExerciseDetail = () => {
     const startTopic = async () => {
       try {
         setIsStarting(true)
+
+        // Load tags for displaying university and semester tags
+        dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+        dispatch(fetchTags())
 
         // Start exercise topic
         const result = await dispatch(startExerciseTopic(id))
