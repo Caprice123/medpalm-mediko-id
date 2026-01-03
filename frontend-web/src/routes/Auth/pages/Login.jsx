@@ -50,72 +50,60 @@ export function Login() {
 
   return (
     <LoginContainer>
+      {/* Back Button - Always visible across all screen sizes */}
+      <BackButton to="/">
+        ← Kembali ke Beranda
+      </BackButton>
+
       {/* Left Panel - Branding & Features */}
       <LeftPanel>
-        <BackButton to="/">
-          ← Kembali ke Beranda
-        </BackButton>
-
         <BrandSection>
           <LogoText>
-            <LogoIcon>🏥</LogoIcon>
-            MedPalm
+            <LogoIcon>
+              <img src="/icon.png" alt="MedPalm Logo" style={{ height: '60px' }} />
+            </LogoIcon>
           </LogoText>
-          <Tagline>Katalog Pembelajaran Medis Berbasis Kredit</Tagline>
+          <Tagline>Platform Belajar Kedokteran Berbasis AI</Tagline>
           <Description>
-            Platform pembelajaran untuk mahasiswa kedokteran dengan 7 fitur interaktif.
-            Gunakan kredit untuk mengakses fitur dan topik yang telah dikonfigurasi oleh admin.
+            18.000+ flashcards, 20.000+ soal UKMPPD, simulasi OSCE AI, dan medical calculator — semua dalam satu platform.
           </Description>
         </BrandSection>
 
         <FeaturesGrid>
           <FeatureCard>
             <FeatureIcon>📚</FeatureIcon>
-            <FeatureTitle>7 Fitur Pembelajaran</FeatureTitle>
+            <FeatureTitle>18.000+ Flashcards</FeatureTitle>
           </FeatureCard>
           <FeatureCard>
-            <FeatureIcon>💳</FeatureIcon>
-            <FeatureTitle>Sistem Kredit Fleksibel</FeatureTitle>
+            <FeatureIcon>📝</FeatureIcon>
+            <FeatureTitle>20.000+ Soal UKMPPD</FeatureTitle>
           </FeatureCard>
           <FeatureCard>
-            <FeatureIcon>🎯</FeatureIcon>
-            <FeatureTitle>Topik Terstruktur</FeatureTitle>
+            <FeatureIcon>🤖</FeatureIcon>
+            <FeatureTitle>Simulasi OSCE AI</FeatureTitle>
           </FeatureCard>
           <FeatureCard>
-            <FeatureIcon>📊</FeatureIcon>
-            <FeatureTitle>Dashboard Pribadi</FeatureTitle>
+            <FeatureIcon>🧮</FeatureIcon>
+            <FeatureTitle>Medical Calculator</FeatureTitle>
           </FeatureCard>
         </FeaturesGrid>
-
-        <StatsSection>
-          <StatItem>
-            <StatValue>1,000+</StatValue>
-            <StatLabel>Mahasiswa Aktif</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatValue>10,000+</StatValue>
-            <StatLabel>Sesi Belajar</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatValue>95%</StatValue>
-            <StatLabel>Tingkat Kepuasan</StatLabel>
-          </StatItem>
-        </StatsSection>
       </LeftPanel>
 
       {/* Right Panel - Sign In Form */}
       <RightPanel>
         <MobileLogo>
-          <MobileLogoIcon>🏥</MobileLogoIcon>
-          <MobileLogoText>MedPalm</MobileLogoText>
-          <MobileTagline>Platform Pembelajaran Medis Berbasis Kredit</MobileTagline>
+          <MobileLogoIcon>
+            <img src="/icon.jpg" alt="MedPalm Logo" style={{ height: '60px' }} />
+          </MobileLogoIcon>
+          <MobileLogoText>MedPal</MobileLogoText>
+          <MobileTagline>Platform Belajar Kedokteran Berbasis AI</MobileTagline>
         </MobileLogo>
 
         <SignInCard>
           <SignInHeader>
             <SignInTitle>Selamat Datang Kembali</SignInTitle>
             <SignInSubtitle>
-              Masuk untuk mengakses katalog pembelajaran dan pantau kredit Anda
+              Masuk untuk mengakses platform pembelajaran kedokteran berbasis AI
             </SignInSubtitle>
           </SignInHeader>
 
@@ -129,8 +117,6 @@ export function Login() {
               shape="rectangular"
             />
           </GoogleButtonWrapper>
-
-          <Divider>Login Aman dengan Google</Divider>
         </SignInCard>
       </RightPanel>
     </LoginContainer>
