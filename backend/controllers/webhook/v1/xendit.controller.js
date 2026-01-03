@@ -8,13 +8,11 @@ const prisma = new PrismaClient()
  * This is called when invoice status changes (paid, expired, etc.)
  */
 export const handleXenditInvoiceWebhook = async (req, res) => {
-  try {
     // Verify webhook token
     const callbackToken = req.headers['x-callback-token']
     if (!verifyWebhookToken(callbackToken)) {
       console.error('Invalid webhook token')
       return res.status(401).json({
-        success: false,
         message: 'Invalid webhook token'
       })
     }
@@ -89,7 +87,6 @@ export const handleXenditInvoiceWebhook = async (req, res) => {
     if (transactions.length === 0) {
       console.error(`Transaction/Purchase not found for invoice ${invoiceId} / ${externalId}`)
       return res.status(404).json({
-        success: false,
         message: 'Transaction not found'
       })
     }
@@ -120,15 +117,6 @@ export const handleXenditInvoiceWebhook = async (req, res) => {
     res.status(200).json({
       message: 'Webhook processed'
     })
-  } catch (error) {
-    console.error('Error processing Xendit webhook:', error)
-    // Still return 200 to prevent retries
-    res.status(200).json({
-      success: false,
-      message: 'Webhook processing failed',
-      error: error.message
-    })
-  }
 }
 
 /**
@@ -386,7 +374,6 @@ export const handleXenditVAWebhook = async (req, res) => {
     if (!verifyWebhookToken(callbackToken)) {
       console.error('Invalid webhook token')
       return res.status(401).json({
-        success: false,
         message: 'Invalid webhook token'
       })
     }
@@ -415,7 +402,6 @@ export const handleXenditVAWebhook = async (req, res) => {
     if (!transaction) {
       console.error(`Transaction not found for VA payment ${externalId}`)
       return res.status(404).json({
-        success: false,
         message: 'Transaction not found'
       })
     }

@@ -55,7 +55,6 @@ class CalculatorController {
 
     if (!topic || topic.status !== 'published' || !topic.is_active) {
       return res.status(404).json({
-        success: false,
         message: 'Calculator topic not found or not available'
       })
     }

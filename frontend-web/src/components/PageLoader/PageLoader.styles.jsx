@@ -1,7 +1,9 @@
 import styled from 'styled-components';
+import { colors } from '@config/colors';
 
 export const LoaderWrapper = styled.div`
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 100000;
   display: flex;
   flex-direction: column;
@@ -10,7 +12,7 @@ export const LoaderWrapper = styled.div`
   height: ${props => props.fullScreen ? '100vh' : '400px'};
   min-height: ${props => props.minHeight || 'auto'};
   background: ${props => props.fullScreen
-    ? 'linear-gradient(135deg, #1976D2 0%, #00ACC1 100%)'
+    ? `linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%)`
     : 'transparent'};
 `;
 

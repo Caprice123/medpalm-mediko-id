@@ -27,7 +27,6 @@ class AnatomyController {
     // Check if quiz is published
     if (quiz.status !== 'published') {
       return res.status(403).json({
-        success: false,
         message: 'This quiz is not available'
       })
     }
@@ -55,7 +54,6 @@ class AnatomyController {
 
     if (!quiz) {
       return res.status(404).json({
-        success: false,
         message: 'Quiz not found'
       })
     }

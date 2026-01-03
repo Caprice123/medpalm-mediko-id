@@ -187,7 +187,6 @@ class McqController {
       })
     } else {
       return res.status(400).json({
-        success: false,
         message: 'Type must be either "text" or "pdf"'
       })
     }

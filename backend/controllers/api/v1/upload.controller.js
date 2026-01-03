@@ -13,7 +13,6 @@ class UploadController {
     try {
       if (!req.file) {
         return res.status(400).json({
-          success: false,
           message: 'No file provided'
         })
       }
@@ -23,7 +22,6 @@ class UploadController {
 
       if (!filePath) {
         return res.status(400).json({
-          success: false,
           message: 'File path is missing',
           debug: { file: req.file }
         })
@@ -103,7 +101,6 @@ class UploadController {
 
       console.error('Upload error:', error)
       return res.status(500).json({
-        success: false,
         message: 'Failed to upload image',
         error: error.message
       })

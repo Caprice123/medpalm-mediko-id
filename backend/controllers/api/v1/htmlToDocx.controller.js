@@ -14,7 +14,6 @@ export const convertHtmlToDocxWithImages = async (req, res) => {
 
     if (!htmlContent) {
       return res.status(400).json({
-        success: false,
         message: 'HTML content is required'
       });
     }
