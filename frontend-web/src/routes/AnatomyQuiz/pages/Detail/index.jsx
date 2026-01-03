@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import {
@@ -6,6 +6,11 @@ import {
   Content,
   QuizForm,
   FormHeader,
+  HeaderTop,
+  BackButton,
+  TopicInfo,
+  TagList,
+  Tag,
   FormTitle,
   FormDescription,
   QuizMainContent,
@@ -48,6 +53,15 @@ const AnatomyQuizDetail = () => {
         handleBack
     } = useAnatomyQuizDetail()
 
+    // Filter tags by tag group
+    const universityTags = useMemo(() => {
+        return (currentQuiz?.tags || []).filter(tag => tag.tagGroupId === 4)
+    }, [currentQuiz?.tags])
+
+    const semesterTags = useMemo(() => {
+        return (currentQuiz?.tags || []).filter(tag => tag.tagGroupId === 5)
+    }, [currentQuiz?.tags])
+
       if (!currentQuiz) {
         return (
           <Container>
@@ -64,23 +78,42 @@ const AnatomyQuizDetail = () => {
     return (
         <Container>
             <Content>
-            <QuizForm>
                 <FormHeader>
-                <Button
-                    variant="outline"
-                    onClick={handleBack}
-                    style={{ minWidth: '44px', padding: '0.5rem 1rem' }}
-                >
-                    ← Back
-                </Button>
-                <div style={{ flex: 1, marginLeft: '1rem' }}>
-                    <FormTitle>{currentQuiz.title}</FormTitle>
-                    {currentQuiz.description && (
-                    <FormDescription>{currentQuiz.description}</FormDescription>
-                    )}
-                </div>
+                    <HeaderTop>
+                        <BackButton onClick={handleBack}>
+                            ← Kembali
+                        </BackButton>
+                    </HeaderTop>
+
+                    <TopicInfo>
+                        <h2>🧬 {currentQuiz.title}</h2>
+                        {currentQuiz.description && <p>{currentQuiz.description}</p>}
+
+                        {/* University Tags */}
+                        {universityTags.length > 0 && (
+                            <TagList>
+                                {universityTags.map((tag) => (
+                                    <Tag key={tag.id} university>
+                                        {tag.name}
+                                    </Tag>
+                                ))}
+                            </TagList>
+                        )}
+
+                        {/* Semester Tags */}
+                        {semesterTags.length > 0 && (
+                            <TagList>
+                                {semesterTags.map((tag) => (
+                                    <Tag key={tag.id} semester>
+                                        {tag.name}
+                                    </Tag>
+                                ))}
+                            </TagList>
+                        )}
+                    </TopicInfo>
                 </FormHeader>
 
+            <QuizForm>
                 {!quizResult ? (
                   <PhotoProvider>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
