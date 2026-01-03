@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { colors } from '@config/colors'
 
 export const LoadingOverlay = styled.div`
   display: flex;
@@ -88,18 +89,16 @@ export const Tag = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem 0.625rem;
-  background: ${props => {
-    if (props.kategori) return '#dbeafe'; // Blue for kategori
-    return '#ede9fe'; // Purple default
-  }};
-  color: ${props => {
-    if (props.kategori) return '#1e40af'; // Blue for kategori
-    return '#5b21b6'; // Purple default
-  }};
-  border-radius: 4px;
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+
+  ${props => props.kategori && `
+    background: #EFF6FF;
+    color: ${colors.primary.dark};
+    border: 1px solid ${colors.primary.main};
+  `}
 `
 
 export const CalculatorStats = styled.div`
@@ -135,9 +134,9 @@ export const StatValue = styled.span`
 export const SelectButton = styled.button`
   width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #06b6d4;
+  border: 1px solid ${colors.primary.main};
   background: white;
-  color: #0e7490;
+  color: ${colors.primary.dark};
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.875rem;
@@ -149,7 +148,7 @@ export const SelectButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #cffafe;
+    background: #EFF6FF;
   }
 
   &:disabled {

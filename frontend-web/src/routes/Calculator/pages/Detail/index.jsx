@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import {
   Container,
   Content,
@@ -12,7 +12,11 @@ import {
   FieldCount,
   CalculatorForm,
   FormHeader,
+  HeaderTop,
   BackButton,
+  TopicInfo,
+  TagList,
+  Tag,
   FormTitle,
   FormDescription,
   InputsSection,
@@ -25,6 +29,7 @@ import {
   FormInput,
   CalculateButton,
   ResultSection,
+  ResultHeader,
   ResultLabel,
   ResultValue,
   ResultUnit,
@@ -66,6 +71,11 @@ const CalculatorDetail = () => {
 
     // Calculation state
     const [result, setResult] = useState(null)
+
+    // Filter tags by tag group
+    const categoryTags = useMemo(() => {
+        return (detail?.tags || []).filter(tag => tag.tagGroupId === 3)
+    }, [detail?.tags])
 
     useEffect(() => {
         dispatch(getCalculatorTopicDetail(id))
@@ -127,23 +137,31 @@ const CalculatorDetail = () => {
     return (
         <Container>
             <Content>
-            <CalculatorForm>
                 <FormHeader>
-                <Button
-                    variant="outline"
-                    onClick={() => navigate(-1)}
-                    style={{ minWidth: '44px', padding: '0.5rem 1rem' }}
-                >
-                    ← Back
-                </Button>
-                <div style={{ flex: 1, marginLeft: '1rem' }}>
-                    <FormTitle>{detail.title}</FormTitle>
-                    {detail.description && (
-                    <FormDescription>{detail.description}</FormDescription>
-                    )}
-                </div>
+                    <HeaderTop>
+                        <BackButton onClick={() => navigate(-1)}>
+                            ← Kembali
+                        </BackButton>
+                    </HeaderTop>
+
+                    <TopicInfo>
+                        <h2>🧮 {detail.title}</h2>
+                        {detail.description && <p>{detail.description}</p>}
+
+                        {/* Category Tags */}
+                        {categoryTags.length > 0 && (
+                            <TagList>
+                                {categoryTags.map((tag) => (
+                                    <Tag key={tag.id} kategori>
+                                        {tag.name}
+                                    </Tag>
+                                ))}
+                            </TagList>
+                        )}
+                    </TopicInfo>
                 </FormHeader>
-    
+
+                <CalculatorForm>
                 <form onSubmit={handleCalculate}>
                 <InputsSection>
                     <Row>
@@ -241,15 +259,17 @@ const CalculatorDetail = () => {
     
                 {result && (
                 <ResultSection>
-                    <ResultLabel>{result.result_label}</ResultLabel>
-                    <ResultValue>
-                        {typeof result.result === 'number'
-                            ? result.result.toFixed(2)
-                            : result.result}
-                        {result.result_unit && (
-                            <ResultUnit>{result.result_unit}</ResultUnit>
-                        )}
-                    </ResultValue>
+                    <ResultHeader>
+                        <ResultLabel>{result.result_label}</ResultLabel>
+                        <ResultValue>
+                            {typeof result.result === 'number'
+                                ? result.result.toFixed(2)
+                                : result.result}
+                            {result.result_unit && (
+                                <ResultUnit>{result.result_unit}</ResultUnit>
+                            )}
+                        </ResultValue>
+                    </ResultHeader>
 
                     {/* Classifications */}
                     {result.classifications && result.classifications.length > 0 && (

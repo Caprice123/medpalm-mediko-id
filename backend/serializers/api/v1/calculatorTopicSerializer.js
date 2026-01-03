@@ -1,6 +1,13 @@
 export class CalculatorTopicSerializer {
   static serialize(topic) {
     const topicFields = topic.calculator_fields || topic.fields || []
+    const topicTags = (topic.calculator_topic_tags || [])
+      .filter(tt => tt.tags)
+      .map(tt => ({
+        id: tt.tags.id,
+        name: tt.tags.name,
+        tagGroupId: tt.tags.tag_group_id
+      }))
 
     return {
       id: topic.id,
@@ -9,6 +16,7 @@ export class CalculatorTopicSerializer {
       result_label: topic.result_label,
       result_unit: topic.result_unit,
       clinical_references: topic.clinical_references || [],
+      tags: topicTags,
       calculator_fields: topicFields.map((field, index) => {
         const fieldOptions = field.field_options || []
 

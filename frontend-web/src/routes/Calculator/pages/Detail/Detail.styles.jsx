@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: calc(100vh - 63px);
@@ -14,8 +15,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(8, 145, 178, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -199,50 +200,103 @@ export const CalculatorForm = styled.div`
 `
 
 export const FormHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  background: ${colors.background.paper};
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #f1f5f9;
   position: relative;
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, #06b6d4, #0891b2);
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 `
 
-export const BackButton = styled.button`
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  border: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #64748b;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+export const HeaderTop = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 1rem;
+  margin-bottom: 1rem;
+`
+
+export const BackButton = styled.button`
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   &:hover {
-    background: linear-gradient(135deg, #06b6d4, #0891b2);
-    color: white;
-    transform: translateX(-4px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+`
+
+export const TopicInfo = styled.div`
+  flex: 1;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.25rem;
+    }
   }
 
-  &:active {
-    transform: translateX(-2px) scale(0.95);
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
   }
+`
+
+export const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+`
+
+export const Tag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  ${props => props.university && `
+    background: #EFF6FF;
+    color: ${colors.primary.dark};
+    border: 1px solid ${colors.primary.main};
+  `}
+
+  ${props => props.semester && `
+    background: #ECFDF5;
+    color: ${colors.success.dark};
+    border: 1px solid ${colors.success.main};
+  `}
+
+  ${props => props.kategori && `
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #F59E0B;
+  `}
 `
 
 export const FormTitle = styled.h2`
@@ -395,133 +449,87 @@ export const CalculateButton = styled.button`
 `
 
 export const ResultSection = styled.div`
-  background: linear-gradient(135deg, #f0fdfa 0%, #cffafe 50%, #e0f2fe 100%);
-  border: 3px solid #06b6d4;
-  border-radius: 24px;
-  padding: 3rem 2rem;
+  background: ${colors.background.paper};
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+`
+
+export const ResultHeader = styled.div`
   text-align: center;
-  margin-top: 2.5rem;
-  box-shadow: 0 20px 60px rgba(6, 182, 212, 0.15);
-  position: relative;
-  overflow: hidden;
-  animation: resultPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-  @keyframes resultPop {
-    0% {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
-    animation: rotate 20s linear infinite;
-  }
-
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
 `
 
 export const ResultLabel = styled.p`
-  font-size: 0.875rem;
-  color: #64748b;
-  margin: 0 0 1rem 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem 0;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 700;
-  position: relative;
-  z-index: 1;
+  letter-spacing: 1px;
+  font-weight: 600;
 `
 
 export const ResultValue = styled.h2`
-  font-size: 4.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 2rem 0;
-  line-height: 1;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+  font-size: 3rem;
+  font-weight: 700;
+  color: ${colors.primary.main};
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
 
   @media (max-width: 768px) {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
 `
 
 export const ResultUnit = styled.span`
-  font-size: 2rem;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 700;
-  margin-left: 0.75rem;
+  font-size: 1.5rem;
+  color: #6b7280;
+  font-weight: 500;
 
   @media (max-width: 768px) {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 `
 
 export const ResultDetails = styled.div`
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 2px solid rgba(6, 182, 212, 0.2);
-  text-align: left;
-  position: relative;
-  z-index: 1;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
 `
 
 export const ResultDetailItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 16px;
-  margin-bottom: 0.75rem;
-  font-size: 0.9375rem;
-  border: 2px solid rgba(6, 182, 212, 0.15);
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: #06b6d4;
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
-  }
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #f3f4f6;
 
   &:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
   }
 `
 
 export const DetailLabel = styled.span`
-  font-weight: 600;
-  color: #64748b;
+  font-weight: 500;
+  color: #6b7280;
 `
 
 export const DetailValue = styled.span`
-  font-weight: 700;
-  color: #06b6d4;
-  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
 `
 
 export const ErrorMessage = styled.div`
@@ -570,33 +578,24 @@ export const EmptyText = styled.p`
 export const ClassificationsSection = styled.div`
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
-  position: relative;
-  z-index: 1;
+  border-bottom: 1px solid #e5e7eb;
 `
 
 export const ClassificationTitle = styled.div`
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
   margin-bottom: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 `
 
 export const ClassificationItem = styled.div`
-  margin-bottom: 1rem;
-  padding: 0.875rem 1rem;
-  background: white;
-  border-radius: 12px;
-  border-left: 4px solid #06b6d4;
-  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.08);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
-  }
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 3px solid ${colors.primary.main};
 
   &:last-child {
     margin-bottom: 0;
@@ -604,46 +603,45 @@ export const ClassificationItem = styled.div`
 `
 
 export const ClassificationName = styled.div`
-  font-size: 0.875rem;
-  color: #06b6d4;
-  font-weight: 700;
+  font-size: 0.75rem;
+  color: ${colors.primary.main};
+  font-weight: 600;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
 `
 
 export const ClassificationValue = styled.div`
-  font-size: 0.9375rem;
-  color: #1e293b;
-  font-weight: 600;
-  line-height: 1.6;
+  font-size: 0.875rem;
+  color: #111827;
+  font-weight: 500;
+  line-height: 1.5;
 `
 
 export const ClassificationEmpty = styled.div`
-  font-size: 0.813rem;
-  color: #94a3b8;
+  font-size: 0.875rem;
+  color: #9ca3af;
   font-style: italic;
 `
 
 export const ClinicalReferencesSection = styled.div`
-  position: relative;
-  z-index: 1;
+  margin-top: 1.5rem;
 `
 
 export const ClinicalReferenceBox = styled.div`
-  padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
-  border-radius: 12px;
-  border: 2px solid #fbbf24;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15);
+  padding: 1rem 1.25rem;
+  background: #fef3c7;
+  border-radius: 8px;
+  border-left: 3px solid #f59e0b;
 `
 
 export const ClinicalReferenceItem = styled.div`
   font-size: 0.875rem;
-  color: #713f12;
-  line-height: 1.8;
-  margin-bottom: ${props => props.isLast ? '0' : '0.75rem'};
+  color: #92400e;
+  line-height: 1.6;
+  margin-bottom: ${props => props.isLast ? '0' : '0.5rem'};
 
   strong {
-    font-weight: 700;
-    color: #92400e;
+    font-weight: 600;
+    color: #78350f;
   }
 `

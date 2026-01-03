@@ -49,6 +49,11 @@ class CalculatorController {
               }
             }
           }
+        },
+        calculator_topic_tags: {
+          include: {
+            tags: true
+          }
         }
       }
     })
