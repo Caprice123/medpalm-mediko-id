@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { fetchMcqTopicById, submitMcqAnswers } from '@store/mcq/action'
@@ -21,6 +21,9 @@ export const useMultipleChoiceDetail = () => {
   const [timer, setTimer] = useState(0) // Timer in seconds
   const [timerActive, setTimerActive] = useState(false)
 
+  // Ref to track if timer has been started (to differentiate initial 0 from countdown reaching 0)
+  const timerStartedRef = useRef(false)
+
   // Load topic on mount and when id changes
   useEffect(() => {
     setAnswers({})
@@ -29,24 +32,28 @@ export const useMultipleChoiceDetail = () => {
     setQuizResult(null)
     setTimer(0)
     setTimerActive(false)
+    timerStartedRef.current = false // Reset timer started flag
     dispatch(fetchMcqTopicById(id))
   }, [dispatch, id])
 
   // Start timer for quiz mode
   useEffect(() => {
-    if (currentTopic && mode === 'quiz' && currentTopic.quiz_time_limit > 0 && !quizResult) {
-      setTimer(currentTopic.quiz_time_limit * 60) // Convert minutes to seconds
+    if (currentTopic && mode === 'quiz' && currentTopic.quizTimeLimit > 0 && !quizResult) {
+      setTimer(currentTopic.quizTimeLimit * 60) // Convert minutes to seconds
       setTimerActive(true)
     }
   }, [currentTopic, mode, quizResult])
 
+  // Mark timer as started only when it's actually running (timer > 0)
+  useEffect(() => {
+    if (timer > 0 && timerActive) {
+      timerStartedRef.current = true
+    }
+  }, [timer, timerActive])
+
   // Timer countdown
   useEffect(() => {
     if (!timerActive || timer <= 0) {
-      if (timer === 0 && timerActive && mode === 'quiz') {
-        // Auto-submit when time runs out
-        handleQuizSubmit()
-      }
       return
     }
 
@@ -88,38 +95,20 @@ export const useMultipleChoiceDetail = () => {
     }
   }
 
-  // Handle learning complete
-  const handleLearningComplete = () => {
+  // Handle learning complete - submit to backend for progress tracking
+  const handleLearningComplete = async () => {
     const questions = currentTopic?.mcq_questions || []
-    let correctCount = 0
+    const formattedAnswers = questions.map(question => ({
+      question_id: question.id,
+      user_answer: answers[question.id] ?? null
+    }))
 
-    questions.forEach(question => {
-      if (answers[question.id] === question.correct_answer) {
-        correctCount++
-      }
-    })
-
-    const score = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0
-
-    setQuizResult({
-      score,
-      correct_questions: correctCount,
-      total_questions: questions.length,
-      passed: score >= (currentTopic?.passing_score || 0),
-      answers: questions.map(q => ({
-        question_id: q.id,
-        question: q.question,
-        user_answer: answers[q.id] ?? null,
-        correct_answer: q.correct_answer,
-        is_correct: answers[q.id] === q.correct_answer,
-        explanation: q.explanation,
-        options: q.options
-      }))
-    })
+    const result = await dispatch(submitMcqAnswers(id, formattedAnswers))
+    setQuizResult(result)
   }
 
   // Handle quiz submit
-  const handleQuizSubmit = async () => {
+  const handleQuizSubmit = useCallback(async () => {
     setTimerActive(false)
 
     const questions = currentTopic?.mcq_questions || []
@@ -128,13 +117,17 @@ export const useMultipleChoiceDetail = () => {
       user_answer: answers[question.id] ?? null
     }))
 
-    try {
-      const result = await dispatch(submitMcqAnswers(id, formattedAnswers))
-      setQuizResult(result)
-    } catch (error) {
-      console.error('Failed to submit quiz:', error)
+    const result = await dispatch(submitMcqAnswers(id, formattedAnswers))
+    setQuizResult(result)
+  }, [currentTopic, answers, id, dispatch])
+
+  // Auto-submit when timer reaches 0 in quiz mode
+  useEffect(() => {
+    if (timer === 0 && !timerActive && mode === 'quiz' && !quizResult && timerStartedRef.current) {
+      // Auto-submit when time runs out (only if timer was actually started)
+      handleQuizSubmit()
     }
-  }
+  }, [timer, timerActive, mode, quizResult, handleQuizSubmit])
 
   // Handle back navigation
   const handleBack = () => {

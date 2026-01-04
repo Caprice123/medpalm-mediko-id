@@ -13,9 +13,6 @@ const featureConstantKey = 'mcq_is_active'
 router.use(authenticateToken)
 router.use(checkFeature(featureConstantKey))
 
-// Get MCQ constants
-router.get('/constants', asyncHandler(mcqController.getConstants.bind(mcqController)))
-
 // Get all published MCQ topics with filters
 router.get('/topics', asyncHandler(mcqController.getTopics.bind(mcqController)))
 

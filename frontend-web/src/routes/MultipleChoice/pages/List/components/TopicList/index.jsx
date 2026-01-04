@@ -88,15 +88,15 @@ function TopicList() {
                   <StatLabel>Soal</StatLabel>
                   <StatValue>{topic.questionCount || 0}</StatValue>
                 </StatItem>
-                {topic.quiz_time_limit > 0 && (
+                {topic.quizTimeLimit > 0 && (
                   <StatItem>
                     <StatLabel>Waktu</StatLabel>
-                    <StatValue>{topic.quiz_time_limit} menit</StatValue>
+                    <StatValue>{topic.quizTimeLimit} menit</StatValue>
                   </StatItem>
                 )}
                 <StatItem>
                   <StatLabel>Passing</StatLabel>
-                  <StatValue>{topic.passing_score}%</StatValue>
+                  <StatValue>{topic.passingScore}%</StatValue>
                 </StatItem>
               </TopicStats>
 

@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   Container,
   Content,
   QuizContainer,
   Header,
+  HeaderTop,
+  BackButton,
+  TopicInfo,
+  TagList,
+  Tag,
   Title,
   Description,
   QuizInfo,
@@ -23,14 +28,22 @@ import {
   ExplanationText,
   ActionButtons,
   ResultContainer,
+  CelebrationHeader,
   ResultScore,
   ResultLabel,
-  ResultStatus,
+  StatsGrid,
+  StatCard,
+  StatIcon,
+  StatValue,
+  StatLabel,
+  Divider,
   AnswerReview,
   ReviewTitle,
   ReviewItem,
+  ReviewBadge,
   ReviewQuestion,
   ReviewAnswer,
+  ReturnButton,
   LoadingSpinner
 } from './Detail.styles'
 import Button from '@components/common/Button'
@@ -58,6 +71,15 @@ const Detail = () => {
     handleBack
   } = useMultipleChoiceDetail()
 
+  // Filter tags by tag group
+  const universityTags = useMemo(() => {
+    return (currentTopic?.tags || []).filter(tag => tag.tagGroupId === 4)
+  }, [currentTopic?.tags])
+
+  const semesterTags = useMemo(() => {
+    return (currentTopic?.tags || []).filter(tag => tag.tagGroupId === 5)
+  }, [currentTopic?.tags])
+
   if (!currentTopic) {
     return (
       <Container>
@@ -76,57 +98,109 @@ const Detail = () => {
     return (
       <Container>
         <Content>
-          <QuizContainer>
-            <Header>
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                style={{ minWidth: '44px', padding: '0.5rem 1rem' }}
-              >
-                ← Back
-              </Button>
-              <div style={{ flex: 1, marginLeft: '1rem' }}>
-                <Title>{currentTopic.title}</Title>
-              </div>
-            </Header>
+          <Header>
+            <HeaderTop>
+              <BackButton onClick={handleBack}>
+                ← Kembali
+              </BackButton>
+            </HeaderTop>
 
+            <TopicInfo>
+              <h2>📝 {currentTopic.title}</h2>
+              {currentTopic.description && <p>{currentTopic.description}</p>}
+
+              {/* University Tags */}
+              {universityTags.length > 0 && (
+                <TagList>
+                  {universityTags.map((tag) => (
+                    <Tag key={tag.id} university>
+                      {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {/* Semester Tags */}
+              {semesterTags.length > 0 && (
+                <TagList>
+                  {semesterTags.map((tag) => (
+                    <Tag key={tag.id} semester>
+                      {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
+            </TopicInfo>
+          </Header>
+
+          <QuizContainer>
             <ResultContainer>
+              <CelebrationHeader>
+                🎉 Kuis Selesai! 🎉
+              </CelebrationHeader>
+
               <ResultScore>{quizResult.score}%</ResultScore>
               <ResultLabel>
                 {quizResult.correctQuestions} dari {quizResult.totalQuestions} jawaban benar
               </ResultLabel>
-              <ResultStatus passed={quizResult.passed}>
-                {quizResult.passed ? '✅ Lulus!' : '❌ Belum Lulus'}
-              </ResultStatus>
+
+              <StatsGrid>
+                <StatCard type="correct">
+                  <StatIcon>✓</StatIcon>
+                  <StatValue type="correct">{quizResult.correctQuestions}</StatValue>
+                  <StatLabel>Benar</StatLabel>
+                </StatCard>
+
+                <StatCard type="wrong">
+                  <StatIcon>✗</StatIcon>
+                  <StatValue type="wrong">{quizResult.totalQuestions - quizResult.correctQuestions}</StatValue>
+                  <StatLabel>Salah</StatLabel>
+                </StatCard>
+
+                <StatCard type="info">
+                  <StatIcon>📊</StatIcon>
+                  <StatValue type="info">{quizResult.totalQuestions}</StatValue>
+                  <StatLabel>Total Soal</StatLabel>
+                </StatCard>
+              </StatsGrid>
             </ResultContainer>
 
+            <Divider />
+
             <AnswerReview>
-              <ReviewTitle>Review Jawaban</ReviewTitle>
+              <ReviewTitle>📋 Review Jawaban</ReviewTitle>
               {quizResult.answers?.map((answer, index) => (
-                <ReviewItem key={index} isCorrect={answer.isCorrect}>
+                <ReviewItem key={index} isCorrect={answer.is_correct}>
+                  <ReviewBadge>
+                    {answer.is_correct ? '✓' : '✗'}
+                  </ReviewBadge>
+
                   <ReviewQuestion>
                     {index + 1}. {answer.question}
                   </ReviewQuestion>
+
                   <ReviewAnswer>
-                    <strong>Jawaban Anda:</strong>
+                    <strong>{answer.is_correct ? '💚 Jawaban:' : '❌ Jawaban Anda:'}</strong>
                     <span>
-                      {answer.userAnswer !== null && answer.options?.[answer.userAnswer]
-                        ? `${String.fromCharCode(65 + answer.userAnswer)}. ${answer.options[answer.userAnswer]}`
+                      {answer.user_answer !== null && answer.options?.[answer.user_answer]
+                        ? `${String.fromCharCode(65 + answer.user_answer)}. ${answer.options[answer.user_answer]}`
                         : 'Tidak dijawab'}
-                      {answer.isCorrect ? ' ✓' : ' ✗'}
+                      {answer.is_correct && <span>✓</span>}
                     </span>
                   </ReviewAnswer>
-                  {!answer.isCorrect && (
+
+                  {!answer.is_correct && (
                     <ReviewAnswer>
-                      <strong>Jawaban Benar:</strong>
+                      <strong>✓ Jawaban Benar:</strong>
                       <span>
                         {String.fromCharCode(65 + answer.correct_answer)}. {answer.options?.[answer.correct_answer]}
                       </span>
                     </ReviewAnswer>
                   )}
+
                   {answer.explanation && (
-                    <ExplanationBox isCorrect={answer.isCorrect}>
-                      <ExplanationLabel isCorrect={answer.isCorrect}>
+                    <ExplanationBox isCorrect={answer.is_correct}>
+                      <ExplanationLabel isCorrect={answer.is_correct}>
                         💡 Penjelasan
                       </ExplanationLabel>
                       <ExplanationText>{answer.explanation}</ExplanationText>
@@ -136,15 +210,9 @@ const Detail = () => {
               ))}
             </AnswerReview>
 
-            <ActionButtons>
-              <Button
-                variant="primary"
-                onClick={handleBack}
-                style={{ width: '100%', padding: '1rem' }}
-              >
-                Kembali ke Daftar Topik
-              </Button>
-            </ActionButtons>
+            <ReturnButton onClick={handleBack}>
+              🏠 Kembali ke Daftar Topik
+            </ReturnButton>
           </QuizContainer>
         </Content>
       </Container>
@@ -152,7 +220,6 @@ const Detail = () => {
   }
 
   // Learning or Quiz mode
-  const progress = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0
   const selectedAnswer = answers[currentQuestion?.id]
   const isCorrect = selectedAnswer === currentQuestion?.correct_answer
   const allQuestionsAnswered = currentTopic?.mcq_questions?.every(q => answers[q.id] !== undefined)
@@ -160,40 +227,55 @@ const Detail = () => {
   return (
     <Container>
       <Content>
-        <QuizContainer>
-          <Header>
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              style={{ minWidth: '44px', padding: '0.5rem 1rem' }}
-            >
-              ← Back
-            </Button>
-            <div style={{ flex: 1, marginLeft: '1rem' }}>
-              <Title>{currentTopic.title}</Title>
-              {currentTopic.description && (
-                <Description>{currentTopic.description}</Description>
-              )}
-            </div>
-          </Header>
+        <Header>
+          <HeaderTop>
+            <BackButton onClick={handleBack}>
+              ← Kembali
+            </BackButton>
+          </HeaderTop>
 
+          <TopicInfo>
+            <h2>📝 {currentTopic.title}</h2>
+            {currentTopic.description && <p>{currentTopic.description}</p>}
+
+            {/* University Tags */}
+            {universityTags.length > 0 && (
+              <TagList>
+                {universityTags.map((tag) => (
+                  <Tag key={tag.id} university>
+                    {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+
+            {/* Semester Tags */}
+            {semesterTags.length > 0 && (
+              <TagList>
+                {semesterTags.map((tag) => (
+                  <Tag key={tag.id} semester>
+                    {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+          </TopicInfo>
+        </Header>
+
+        <QuizContainer>
           <QuizInfo>
             <InfoItem>
               {mode === 'learning' ? '📖 Learning Mode' : '⏱️ Quiz Mode'}
-            </InfoItem>
-            <InfoItem>
-              📊 Pertanyaan {currentQuestionIndex + 1} dari {totalQuestions}
             </InfoItem>
             {mode === 'quiz' && timerActive && currentTopic.quizTimeLimit > 0 && (
               <Timer warning={timer < 60}>
                 ⏰ {formatTimer(timer)}
               </Timer>
             )}
+            <InfoItem>
+              📊 Pertanyaan {currentQuestionIndex + 1} dari {totalQuestions}
+            </InfoItem>
           </QuizInfo>
-
-          <ProgressBar>
-            <ProgressFill progress={progress} />
-          </ProgressBar>
 
           {currentQuestion && (
             <QuestionCard>

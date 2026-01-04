@@ -49,8 +49,11 @@ class McqController {
    * Frontend currently uses this incorrectly - needs to be updated to use /session endpoint.
    */
   async getTopic(req, res) {
+    const userId = req.user?.id
+
     const topic = await GetMcqTopicByIdService.call({
-      topicId: parseInt(req.params.id)
+      topicId: parseInt(req.params.id),
+      userId // Pass userId for spaced repetition question ordering
     })
 
     // TEMPORARY: Include answers for backward compatibility with current frontend
@@ -120,21 +123,6 @@ class McqController {
 
     return res.status(200).json({
       data: result
-    })
-  }
-
-  /**
-   * Get MCQ constants
-   * GET /api/v1/mcq/constants
-   */
-  async getConstants(req, res) {
-    const { keys } = req.query
-    const keysArray = keys ? keys.split(',') : null
-
-    const constants = await GetMcqConstantsService.call({ keys: keysArray })
-
-    return res.status(200).json({
-      data: constants
     })
   }
 }
