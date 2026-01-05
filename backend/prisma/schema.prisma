@@ -474,20 +474,21 @@ model statistics {
 // ============= Pricing Plans (Unified Bundles) =============
 
 model pricing_plans {
-  id               Int      @id @default(autoincrement())
-  code             String?  @unique
-  name             String
-  description      String?
-  price            Decimal  @db.Decimal(10, 2)
-  bundle_type      String   @default("credits") // credits, subscription, hybrid
-  duration_days    Int? // for subscription/hybrid bundles
-  credits_included Int      @default(0)
-  is_active        Boolean  @default(true)
-  is_popular       Boolean  @default(false)
-  discount         Int      @default(0)
-  order            Int      @default(0)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now())
+  id                      Int      @id @default(autoincrement())
+  code                    String?  @unique
+  name                    String
+  description             String?
+  price                   Decimal  @db.Decimal(10, 2)
+  bundle_type             String   @default("credits") // credits, subscription, hybrid
+  duration_days           Int? // for subscription/hybrid bundles
+  credits_included        Int      @default(0)
+  is_active               Boolean  @default(true)
+  is_popular              Boolean  @default(false)
+  discount                Int      @default(0)
+  order                   Int      @default(0)
+  allowed_payment_method  String   @default("xendit") // comma-separated: xendit, manual
+  created_at              DateTime @default(now())
+  updated_at              DateTime @default(now())
 
   user_purchases user_purchases[]
 
@@ -509,8 +510,9 @@ model user_purchases {
   // Payment fields
   payment_status    String  @default("completed")
   payment_method    String?
-  payment_reference String?
+  payment_reference String? // Xendit invoice ID or manual payment reference
   amount_paid       Decimal @db.Decimal(10, 2)
+  // Payment evidence is stored via attachments table with name="payment_evidence"
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())

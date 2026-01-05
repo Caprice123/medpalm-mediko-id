@@ -233,7 +233,6 @@ export class SendMessageService extends BaseService {
       })
     }
 
-    // Update message count statistics
     const messageCountKey = `chatbot_${mode}_message_count`
     const currentCount = await prisma.constants.findUnique({
       where: { key: messageCountKey }
@@ -386,7 +385,6 @@ export class SendMessageService extends BaseService {
         })
       }
 
-      // Update message count statistics
       const messageCountKey = `chatbot_${mode}_message_count`
       const currentCount = await prisma.constants.findUnique({
         where: { key: messageCountKey }
@@ -561,7 +559,6 @@ export class SendMessageService extends BaseService {
         })
       }
 
-      // Update message count statistics
       const messageCountKey = `chatbot_${mode}_message_count`
       const currentCount = await prisma.constants.findUnique({
         where: { key: messageCountKey }

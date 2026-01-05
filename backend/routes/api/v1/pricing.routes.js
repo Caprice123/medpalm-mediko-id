@@ -11,6 +11,8 @@ router.get('/plans', asyncHandler(pricingController.getPlans.bind(pricingControl
 // Authenticated routes
 router.get('/status', authenticateToken, asyncHandler(pricingController.getUserStatus.bind(pricingController)))
 router.get('/history', authenticateToken, asyncHandler(pricingController.getPurchaseHistory.bind(pricingController)))
+router.get('/history/:id', authenticateToken, asyncHandler(pricingController.getPurchaseDetail.bind(pricingController)))
 router.post('/purchase', authenticateToken, asyncHandler(pricingController.purchase.bind(pricingController)))
+router.post('/history/:id/evidence', authenticateToken, asyncHandler(pricingController.attachPaymentEvidence.bind(pricingController)))
 
 export default router

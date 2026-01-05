@@ -77,15 +77,12 @@ class CreditsController {
     const where = { user_id: userId }
     if (type) where.type = type
 
-    const [transactions, total] = await Promise.all([
-      prisma.credit_transactions.findMany({
+    const transactions = await prisma.credit_transactions.findMany({
         where,
         orderBy: { created_at: 'desc' },
-        take: parseInt(limit),
+        take: parseInt(limit) + 1,
         skip: parseInt(offset)
-      }),
-      prisma.credit_transactions.count({ where })
-    ])
+      })
 
     res.status(200).json({
       data: {
@@ -100,10 +97,9 @@ class CreditsController {
           createdAt: t.created_at
         })),
         pagination: {
-          total,
           limit: parseInt(limit),
           offset: parseInt(offset),
-          hasMore: parseInt(offset) + parseInt(limit) < total
+          hasMore: transactions.length > parseInt(limit)
         }
       }
     })

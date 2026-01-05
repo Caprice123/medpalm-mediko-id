@@ -11,7 +11,6 @@ const {
   setPurchaseHistory,
   setError,
   clearError,
-  addPurchase
 } = actions
 
 /**
@@ -59,17 +58,23 @@ export const fetchUserStatus = () => async (dispatch) => {
 }
 
 /**
- * Fetch user's purchase history
+ * Fetch user's purchase history with pagination
  * Requires authentication
+ * @param {number} page - Page number (default: 1)
+ * @param {number} perPage - Items per page (default: 10)
  */
-export const fetchPurchaseHistory = () => async (dispatch) => {
+export const fetchPurchaseHistory = (page = 1, perPage = 10) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isHistoryLoading', value: true }))
-    
 
-    const response = await getWithToken(Endpoints.pricing.history)
 
-    dispatch(setPurchaseHistory(response.data.data))
+    const url = `${Endpoints.pricing.history}?page=${page}&perPage=${perPage}`
+    const response = await getWithToken(url)
+
+    dispatch(setPurchaseHistory({
+      data: response.data.data,
+      pagination: response.data.pagination
+    }))
 
   } catch (err) {
     handleApiError(err, dispatch)
@@ -87,21 +92,16 @@ export const fetchPurchaseHistory = () => async (dispatch) => {
 export const purchasePricingPlan = (pricingPlanId, paymentMethod = 'manual') => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isPurchaseLoading', value: true }))
-    
 
     const response = await postWithToken(Endpoints.pricing.purchase, {
       pricingPlanId,
       paymentMethod
     })
 
-    // Add to purchase history
-    dispatch(addPurchase(response.data.data))
-
     // Refresh user status to update subscription and credit balance
     dispatch(fetchUserStatus())
 
     return response.data
-
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {
@@ -148,7 +148,6 @@ export const fetchAllPricingPlans = (params = {}) => async (dispatch) => {
 export const createPricingPlan = (planData) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isPlansLoading', value: true }))
-    
 
     const response = await postWithToken(Endpoints.pricing.admin.create, planData)
 

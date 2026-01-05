@@ -1,3 +1,4 @@
+import Dropdown from '@components/common/Dropdown'
 import {
   Modal,
   ModalContent,
@@ -23,6 +24,28 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
 
   const showCredits = formData.bundle_type === 'credits' || formData.bundle_type === 'hybrid'
   const showDuration = formData.bundle_type === 'subscription' || formData.bundle_type === 'hybrid'
+
+  // Payment method options for dropdown
+  const paymentMethodOptions = [
+    { value: 'xendit', label: 'Xendit (Online Payment)' },
+    { value: 'manual', label: 'Manual Transfer' },
+    { value: 'xendit,manual', label: 'Both (Xendit & Manual)' }
+  ]
+
+  // Get current payment method value as dropdown option
+  const paymentMethodValue = paymentMethodOptions.find(
+    option => option.value === (formData.allowed_payment_method || 'xendit')
+  )
+
+  // Handle payment method dropdown change
+  const handlePaymentMethodChange = (selectedOption) => {
+    onChange({
+      target: {
+        name: 'allowed_payment_method',
+        value: selectedOption?.value || 'xendit'
+      }
+    })
+  }
 
   return (
     <Modal onClick={onClose}>
@@ -177,6 +200,17 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
               />
               <CheckboxLabel htmlFor="is_popular">Mark as Popular</CheckboxLabel>
             </CheckboxGroup>
+
+            <FormGroup>
+              <Dropdown
+                label="Payment Method"
+                options={paymentMethodOptions}
+                value={paymentMethodValue}
+                onChange={handlePaymentMethodChange}
+                placeholder="Select payment method..."
+                required
+              />
+            </FormGroup>
           </ModalBody>
         <ModalFooter>
         <ButtonGroup>

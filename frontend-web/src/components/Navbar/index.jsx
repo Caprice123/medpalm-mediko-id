@@ -6,7 +6,7 @@ import { fetchUserStatus } from '@store/pricing/action'
 import { getUserData } from '@utils/authToken'
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import CreditPurchase from '@components/CreditPurchase'
+// import CreditPurchase from '@components/CreditPurchase'
 import Button from '@components/common/Button'
 
 export const Navbar = () => {
@@ -43,9 +43,9 @@ export const Navbar = () => {
     dispatch(logout(onSuccess))
   }
 
-  
+
   const handleTopUp = () => {
-    setIsPurchaseModalOpen(true)
+    navigate('/topup')
   }
 
   const handlePurchaseSuccess = async () => {
@@ -174,7 +174,7 @@ export const Navbar = () => {
                 <Button
                     variant="outline"
                     onClick={() => {
-                        handleTopUp()
+                        navigate('/topup')
                         setMobileMenuOpen(false)
                     }}
                     fullWidth
@@ -198,11 +198,11 @@ export const Navbar = () => {
         </MobileMenu>
 
         {/* Credit Purchase Modal */}
-        <CreditPurchase
+        {/* <CreditPurchase
             isOpen={isPurchaseModalOpen}
             onClose={() => setIsPurchaseModalOpen(false)}
             onPurchaseSuccess={handlePurchaseSuccess}
-        />
+        /> */}
         </>
     )
 }

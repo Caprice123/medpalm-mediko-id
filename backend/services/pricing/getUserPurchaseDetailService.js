@@ -1,0 +1,91 @@
+import { ValidationError } from '#errors/validationError'
+import prisma from '#prisma/client'
+import { BaseService } from '#services/baseService'
+import { getInvoice } from '#services/xendit.service'
+import idriveService from '#services/idrive.service'
+
+export class GetUserPurchaseDetailService extends BaseService {
+  static async call(userId, purchaseId) {
+    const purchase = await prisma.user_purchases.findFirst({
+      where: {
+        id: parseInt(purchaseId),
+        user_id: userId
+      },
+      include: {
+        pricing_plan: true
+      }
+    })
+
+    if (!purchase) {
+      throw new ValidationError('Purchase not found')
+    }
+
+    // Fetch payment evidence attachments
+    const attachments = await prisma.attachments.findMany({
+      where: {
+        record_type: 'user_purchases',
+        record_id: purchase.id,
+        name: 'payment_evidence'
+      },
+      include: {
+        blob: true
+      }
+    })
+
+    const purchaseData = {
+      id: purchase.id,
+      planName: purchase.pricing_plan.name,
+      planDescription: purchase.pricing_plan.description,
+      bundleType: purchase.bundle_type,
+      amountPaid: purchase.amount_paid,
+      purchaseDate: purchase.purchase_date,
+      paymentMethod: purchase.payment_method,
+      paymentStatus: purchase.payment_status,
+      paymentReference: purchase.payment_reference,
+      // Pricing plan details
+      pricingPlan: {
+        id: purchase.pricing_plan.id,
+        code: purchase.pricing_plan.code,
+        name: purchase.pricing_plan.name,
+        description: purchase.pricing_plan.description,
+        price: purchase.pricing_plan.price,
+        creditsIncluded: purchase.pricing_plan.credits_included,
+        durationDays: purchase.pricing_plan.duration_days,
+        bundleType: purchase.pricing_plan.bundle_type
+      }
+    }
+
+    // For pending Xendit payments, fetch invoice URL
+    if (purchase.payment_status === 'pending' &&
+        purchase.payment_method === 'xendit' &&
+        purchase.payment_reference) {
+      try {
+        const invoice = await getInvoice(purchase.payment_reference)
+        purchaseData.invoiceUrl = invoice.invoice_url || invoice.invoiceUrl
+      } catch (error) {
+        console.error(`Failed to get invoice for purchase ${purchase.id}:`, error.message)
+        // Continue without invoice URL if fetch fails
+      }
+    }
+
+    // Add payment evidence if exists
+    if (attachments.length > 0) {
+      // Get blob keys for presigned URL generation
+      const blobKeys = attachments.map(attachment => attachment.blob.key)
+
+      // Generate presigned URLs (7 days expiration)
+      const presignedUrls = await idriveService.getBulkSignedUrls(blobKeys, 7 * 24 * 60 * 60)
+
+      // Map presigned URLs to attachments
+      purchaseData.paymentEvidence = attachments.map((attachment, index) => ({
+        id: attachment.id,
+        filename: attachment.blob.filename,
+        url: presignedUrls[index],
+        contentType: attachment.blob.content_type,
+        uploadedAt: attachment.created_at
+      }))
+    }
+
+    return purchaseData
+  }
+}

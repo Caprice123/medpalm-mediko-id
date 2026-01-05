@@ -22,9 +22,6 @@ export class GetConversationsListService extends BaseService {
         where.user_id = parseInt(userId)
       }
 
-      // Get total count
-      const totalCount = await prisma.chatbot_conversations.count({ where })
-
       // Get conversations with user info and message count
       const conversations = await prisma.chatbot_conversations.findMany({
         where,
@@ -42,19 +39,10 @@ export class GetConversationsListService extends BaseService {
               email: true
             }
           },
-          _count: {
-            select: {
-              chatbot_messages: {
-                where: {
-                  is_deleted: false
-                }
-              }
-            }
-          }
         },
         orderBy: { updated_at: 'desc' },
         skip: (page - 1) * perPage,
-        take: perPage
+        take: perPage + 1
       })
 
       // Format response
@@ -72,16 +60,12 @@ export class GetConversationsListService extends BaseService {
         updatedAt: conv.updated_at
       }))
 
-      const totalPages = Math.ceil(totalCount / perPage)
-
       return {
         data: formattedConversations,
         pagination: {
           page,
           perPage,
-          totalCount,
-          totalPages,
-          isLastPage: page >= totalPages
+          isLastPage: conversations.length <= perPage
         }
       }
     } catch (error) {

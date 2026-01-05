@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Select from 'react-select'
-import { Label, Wrapper } from './Dropdown.styles'
+import { Label, RequiredMark, Wrapper } from './Dropdown.styles'
 
 /**
  * Dropdown component using react-select

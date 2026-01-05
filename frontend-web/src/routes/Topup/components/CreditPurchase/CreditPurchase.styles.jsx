@@ -255,6 +255,103 @@ export const ErrorMessage = styled.div`
   font-size: 0.875rem;
 `
 
+export const PaymentMethodSelector = styled.div`
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+`
+
+export const PaymentMethodTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0891b2;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+`
+
+export const PaymentMethodOptions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+`
+
+export const PaymentMethodOption = styled.button`
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  border: 2px solid ${props => props.$selected ? '#6BB9E8' : '#e5e7eb'};
+  background: ${props => props.$selected ? 'rgba(107, 185, 232, 0.1)' : 'white'};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-size: 0.9375rem;
+
+  &:hover {
+    border-color: #6BB9E8;
+    background: rgba(107, 185, 232, 0.05);
+  }
+`
+
+export const PaymentMethodName = styled.div`
+  font-weight: 600;
+  color: #0891b2;
+  margin-bottom: 0.25rem;
+`
+
+export const PaymentMethodDescription = styled.div`
+  font-size: 0.8125rem;
+  color: #6b7280;
+`
+
+export const PaymentMethodActions = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+`
+
+export const CancelButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+
+  &:hover {
+    background: #f9fafb;
+  }
+`
+
+export const ConfirmButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.4);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(141, 198, 63, 0.5);
+  }
+
+  &:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`
+
 // Legacy exports for backward compatibility
 export const IconWrapper = styled.div`
   display: none;

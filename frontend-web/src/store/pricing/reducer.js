@@ -15,6 +15,11 @@ const initialState = {
     userId: null
   },
   purchaseHistory: [],
+  historyPagination: {
+    page: 1,
+    perPage: 10,
+    isLastPage: true
+  },
   loading: {
     isPlansLoading: false,
     isStatusLoading: false,
@@ -41,7 +46,13 @@ const { reducer, actions } = createSlice({
       state.userStatus = payload
     },
     setPurchaseHistory: (state, { payload }) => {
-      state.purchaseHistory = payload
+      state.purchaseHistory = payload.data || payload
+      if (payload.pagination) {
+        state.historyPagination = payload.pagination
+      }
+    },
+    setHistoryPagination: (state, { payload }) => {
+      state.historyPagination = payload || initialState.historyPagination
     },
     setError: (state, { payload }) => {
       state.error = payload

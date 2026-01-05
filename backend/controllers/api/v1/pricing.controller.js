@@ -2,6 +2,8 @@ import { GetActivePricingPlansService } from '#services/pricing/getActivePricing
 import { PurchasePricingPlanService } from '#services/pricing/purchasePricingPlanService'
 import { GetUserStatusService, HasActiveSubscriptionService, GetUserCreditBalanceService } from '#services/pricing/getUserStatusService'
 import { GetUserPurchaseHistoryService } from '#services/pricing/getUserPurchaseHistoryService'
+import { GetUserPurchaseDetailService } from '#services/pricing/getUserPurchaseDetailService'
+import { AttachPaymentEvidenceService } from '#services/pricing/uploadPaymentEvidenceService'
 import { createInvoice } from '#services/xendit.service'
 import prisma from '#prisma/client'
 
@@ -26,7 +28,8 @@ class PricingController {
         creditsIncluded: plan.credits_included,
         isPopular: plan.is_popular,
         discount: plan.discount,
-        order: plan.order
+        order: plan.order,
+        allowedPaymentMethods: plan.allowed_payment_method || 'xendit'
       }))
     })
   }
@@ -45,15 +48,31 @@ class PricingController {
   }
 
   /**
-   * Get user's purchase history (all payments)
+   * Get user's purchase history (all payments) with pagination
    */
   async getPurchaseHistory(req, res) {
     const userId = req.user.id
+    const { page, perPage } = req.query
 
-    const purchases = await GetUserPurchaseHistoryService.call(userId)
+    const result = await GetUserPurchaseHistoryService.call(userId, { page, perPage })
 
     res.status(200).json({
-      data: purchases
+      data: result.purchases,
+      pagination: result.pagination
+    })
+  }
+
+  /**
+   * Get purchase detail (single purchase with attachments)
+   */
+  async getPurchaseDetail(req, res) {
+    const userId = req.user.id
+    const { id } = req.params
+
+    const result = await GetUserPurchaseDetailService.call(userId, id)
+
+    res.status(200).json({
+      data: result
     })
   }
 
@@ -142,6 +161,31 @@ class PricingController {
         paymentInfo: paymentInfo
       },
       message: paymentMethod === 'xendit' ? 'Payment invoice created. Please complete payment.' : 'Purchase completed successfully'
+    })
+  }
+
+  /**
+   * Attach payment evidence for manual payment
+   */
+  async attachPaymentEvidence(req, res) {
+    const userId = req.user.id
+    const { id } = req.params
+    const { blobId } = req.body
+
+    if (!blobId) {
+      return res.status(400).json({
+        error: 'Blob ID is required'
+      })
+    }
+
+    const result = await AttachPaymentEvidenceService.call(
+      userId,
+      id,
+      blobId
+    )
+
+    res.status(200).json({
+      data: result,
     })
   }
 }

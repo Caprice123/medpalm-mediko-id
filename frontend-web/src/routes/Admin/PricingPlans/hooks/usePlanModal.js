@@ -14,12 +14,16 @@ export const usePlanModal = () => {
     is_active: true,
     is_popular: false,
     discount: 0,
-    order: 0
+    order: 0,
+    allowed_payment_method: 'xendit'
   })
 
   const openModal = (plan = null) => {
     if (plan) {
       setEditingPlan(plan)
+      // Parse allowed_payment_methods from string to array
+      let allowedMethod = plan.allowed_payment_method || 'xendit'
+
       setFormData({
         name: plan.name,
         code: plan.code || '',
@@ -31,7 +35,8 @@ export const usePlanModal = () => {
         is_active: plan.is_active !== undefined ? plan.is_active : plan.isActive,
         is_popular: plan.is_popular !== undefined ? plan.is_popular : plan.isPopular,
         discount: plan.discount || 0,
-        order: plan.order || 0
+        order: plan.order || 0,
+        allowed_payment_method: allowedMethod
       })
     } else {
       setEditingPlan(null)
@@ -46,7 +51,8 @@ export const usePlanModal = () => {
         is_active: true,
         is_popular: false,
         discount: 0,
-        order: 0
+        order: 0,
+        allowed_payment_method: 'xendit'
       })
     }
     setIsModalOpen(true)

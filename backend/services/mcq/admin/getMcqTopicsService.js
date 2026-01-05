@@ -55,34 +55,31 @@ export class GetMcqTopicsService extends BaseService {
     }
 
     // Get topics with pagination
-    const [topics, total] = await Promise.all([
-      prisma.mcq_topics.findMany({
-        where,
-        skip,
-        take: limit + 1, // Get one extra to check if there's a next page
-        orderBy: { created_at: 'desc' },
-        include: {
-          mcq_questions: {
-            select: {
-              id: true
-            }
-          },
-          mcq_topic_tags: {
-            include: {
-              tags: {
-                include: {
-                  tag_group: true
-                }
+    const topics = await prisma.mcq_topics.findMany({
+      where,
+      skip,
+      take: limit + 1, // Get one extra to check if there's a next page
+      orderBy: { created_at: 'desc' },
+      include: {
+        mcq_questions: {
+          select: {
+            id: true
+          }
+        },
+        mcq_topic_tags: {
+          include: {
+            tags: {
+              include: {
+                tag_group: true
               }
             }
           }
         }
-      }),
-      prisma.mcq_topics.count({ where })
-    ])
+      }
+    })
 
     // Check if there's a next page
-    const hasMore = topics.length > limit
+    const hasMore = topics.length <= limit
     const topicsToReturn = hasMore ? topics.slice(0, limit) : topics
 
     // Format response
@@ -124,7 +121,6 @@ export class GetMcqTopicsService extends BaseService {
       pagination: {
         page,
         limit,
-        total,
         isLastPage: !hasMore
       }
     }

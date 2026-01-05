@@ -3,6 +3,8 @@ import { GetDetailPricingPlanService } from '#services/pricing/admin/getDetailPr
 import { CreatePricingPlanService } from '#services/pricing/admin/createPricingPlanService'
 import { UpdatePricingPlanService } from '#services/pricing/admin/updatePricingPlanService'
 import { TogglePricingPlanService } from '#services/pricing/admin/togglePricingPlanService'
+import { GetPurchaseDetailService } from '#services/pricing/admin/getPurchaseDetailService'
+import { ApprovePurchaseService } from '#services/pricing/admin/approvePurchaseService'
 
 class PricingPlanController {
   async index(req, res) {
@@ -46,6 +48,40 @@ class PricingPlanController {
 
     res.status(200).json({
       data: plan,
+    })
+  }
+
+  async getPurchaseDetail(req, res) {
+    const { id } = req.params
+    const purchase = await GetPurchaseDetailService.call(id)
+
+    if (purchase.error) {
+      return res.status(purchase.statusCode || 404).json({
+        error: purchase.error
+      })
+    }
+
+    res.status(200).json({
+      data: purchase
+    })
+  }
+
+  async approvePurchase(req, res) {
+    const { id } = req.params
+    const { status } = req.body
+
+    if (!status) {
+      return res.status(400).json({
+        error: 'Status is required (completed or failed)'
+      })
+    }
+
+    await ApprovePurchaseService.call(id, status)
+
+    res.status(200).json({
+      message: {
+        success: true
+      }
     })
   }
 }

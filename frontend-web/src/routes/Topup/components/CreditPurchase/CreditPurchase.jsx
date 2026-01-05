@@ -21,10 +21,19 @@ import {
   ErrorMessage,
   FilterTabs,
   FilterTab,
-  PlanDescription
+  PlanDescription,
+  PaymentMethodSelector,
+  PaymentMethodTitle,
+  PaymentMethodOptions,
+  PaymentMethodOption,
+  PaymentMethodName,
+  PaymentMethodDescription,
+  PaymentMethodActions,
+  CancelButton,
+  ConfirmButton
 } from './CreditPurchase.styles'
 
-function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
+function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionDetail }) {
   const dispatch = useDispatch()
   const plans = useSelector(state => state.pricing.plans)
   const loading = useSelector(state => state.pricing.loading.isPlansLoading)
@@ -40,47 +49,46 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
     }
   }, [isOpen, dispatch])
 
-  const handlePurchase = async (plan) => {
+  const handlePlanSelect = (plan) => {
+    const allowedMethods = plan.allowedPaymentMethods || ['xendit']
+
+    // Determine payment method
+    // If both methods allowed, default to xendit
+    const paymentMethod = allowedMethods.includes('xendit') ? 'xendit' : 'manual'
+
+    handlePurchase(plan, paymentMethod)
+  }
+
+  const handlePurchase = async (plan, paymentMethod) => {
     try {
       setPurchasingPlanId(plan.id)
 
-      const result = await dispatch(purchasePricingPlan(plan.id, 'xendit'))
+      const result = await dispatch(purchasePricingPlan(plan.id, paymentMethod))
 
-      console.log('Purchase result:', result)
-      console.log('Payment info received:', result.data)
+      const { paymentInfo, id: purchaseId } = result.data
 
-      const { paymentInfo } = result.data
+      // Handle based on payment method
+      if (paymentMethod === 'xendit' && paymentInfo?.invoiceUrl) {
+        // For Xendit: redirect to invoice URL
+        if (onPurchaseSuccess) {
+          onPurchaseSuccess(result)
+        }
 
-      // If Xendit invoice URL is available, redirect to it
-      if (paymentInfo?.invoiceUrl) {
-        window.open(paymentInfo.invoiceUrl, '_blank')
+        // Redirect to Xendit payment page
+        window.location.href = paymentInfo.invoiceUrl
+      } else if (paymentMethod === 'manual') {
+        // For Manual: close pricing modal and open transaction detail
+        onClose()
 
-        alert(
-          `Payment page opened in new window!\n\n` +
-          `Plan: ${plan.name}\n` +
-          `Type: ${getBundleTypeLabel(plan.bundleType)}\n` +
-          `Amount: Rp ${Number(plan.price).toLocaleString('id-ID')}\n\n` +
-          `Please complete the payment. ${getPlanBenefitText(plan)}\n\n` +
-          `If the payment window didn't open, click OK to open it.`
-        )
+        if (onPurchaseSuccess) {
+          onPurchaseSuccess(result)
+        }
 
-        window.open(paymentInfo.invoiceUrl, '_blank')
-      } else {
-        alert(
-          `Purchase initiated!\n\n` +
-          `Plan: ${plan.name}\n` +
-          `Type: ${getBundleTypeLabel(plan.bundleType)}\n` +
-          `Amount: Rp ${Number(plan.price).toLocaleString('id-ID')}\n\n` +
-          `Payment Reference: ${paymentInfo?.reference || 'Pending'}\n\n` +
-          `Please complete the manual payment and wait for admin approval.`
-        )
+        // Open transaction detail modal with the created purchase
+        if (onOpenTransactionDetail && purchaseId) {
+          onOpenTransactionDetail(purchaseId)
+        }
       }
-
-      if (onPurchaseSuccess) {
-        onPurchaseSuccess(result)
-      }
-
-      onClose()
     } catch (err) {
       alert('Purchase failed: ' + (err.response?.data?.message || err.message))
       console.error('Purchase error:', err)
@@ -127,7 +135,9 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
         <ModalBody>
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <FilterTabs>
+          {/* Plan Selection */}
+          <>
+              <FilterTabs>
             <FilterTab
               $active={activeFilter === 'all'}
               onClick={() => setActiveFilter('all')}
@@ -189,7 +199,7 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
                   </PlanDescription>
 
                   <PurchaseButton
-                    onClick={() => handlePurchase(plan)}
+                    onClick={() => handlePlanSelect(plan)}
                     disabled={purchasingPlanId === plan.id}
                   >
                     {purchasingPlanId === plan.id ? 'Memproses...' : 'Pilih Paket'}
@@ -206,6 +216,7 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess }) {
               </div>
             </EmptyState>
           )}
+          </>
         </ModalBody>
       </ModalContent>
     </Modal>

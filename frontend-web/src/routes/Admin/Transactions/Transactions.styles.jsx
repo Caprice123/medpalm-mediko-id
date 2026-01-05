@@ -47,52 +47,98 @@ export const StatValue = styled.div`
 `
 
 export const StatusBadge = styled.span`
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-
   ${props => {
     switch (props.status) {
       case 'completed':
-        return 'background: #dcfce7; color: #166534;';
+        return `
+          background: #ECFDF5;
+          color: #059669;
+          border: 1px solid #10b981;
+        `
       case 'pending':
-        return 'background: #fef3c7; color: #92400e;';
+        return `
+          background: #FEF3C7;
+          color: #92400E;
+          border: 1px solid #F59E0B;
+        `
+      case 'waiting_approval':
+        return `
+          background: #EFF6FF;
+          color: #1E40AF;
+          border: 1px solid #3B82F6;
+        `
       case 'failed':
-        return 'background: #fee2e2; color: #991b1b;';
+      case 'rejected':
+        return `
+          background: #FEF2F2;
+          color: #DC2626;
+          border: 1px solid #EF4444;
+        `
       default:
-        return 'background: #f3f4f6; color: #4b5563;';
+        return `
+          background: #f3f4f6;
+          color: #4b5563;
+        `
     }
   }}
 `
 
 export const TypeBadge = styled.span`
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  display: inline-block;
-
   ${props => {
     switch (props.type) {
       case 'purchase':
       case 'credits':
-        return 'background: #dbeafe; color: #1e40af;';
+        return `
+          background: #EFF6FF;
+          color: #1E40AF;
+          border: 1px solid #3B82F6;
+        `
       case 'deduction':
-        return 'background: #fee2e2; color: #991b1b;';
+        return `
+          background: #FEF2F2;
+          color: #DC2626;
+          border: 1px solid #EF4444;
+        `
       case 'bonus':
       case 'subscription_bonus':
-        return 'background: #fae8ff; color: #86198f;';
+        return `
+          background: #fae8ff;
+          color: #86198f;
+          border: 1px solid #d946ef;
+        `
       case 'subscription':
-        return 'background: #e0e7ff; color: #3730a3;';
+        return `
+          background: #F0F9FF;
+          color: #075985;
+          border: 1px solid #0EA5E9;
+        `
       case 'hybrid':
-        return 'background: #fef3c7; color: #92400e;';
+        return `
+          background: #FEF3C7;
+          color: #92400E;
+          border: 1px solid #F59E0B;
+        `
       case 'refund':
-        return 'background: #dcfce7; color: #166534;';
+        return `
+          background: #ECFDF5;
+          color: #059669;
+          border: 1px solid #10b981;
+        `
       default:
-        return 'background: #f3f4f6; color: #4b5563;';
+        return `
+          background: #f3f4f6;
+          color: #4b5563;
+        `
     }
   }}
 `

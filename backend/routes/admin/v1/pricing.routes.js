@@ -15,4 +15,8 @@ router.post('/', asyncHandler(pricingPlanController.create.bind(pricingPlanContr
 router.put('/:id', asyncHandler(pricingPlanController.update.bind(pricingPlanController)))
 router.patch('/:id/toggle', asyncHandler(pricingPlanController.toggle.bind(pricingPlanController)))
 
+// Purchase management routes
+router.get('/purchases/:id', asyncHandler(pricingPlanController.getPurchaseDetail.bind(pricingPlanController)))
+router.post('/purchases/:id/approve', asyncHandler(pricingPlanController.approvePurchase.bind(pricingPlanController)))
+
 export default router

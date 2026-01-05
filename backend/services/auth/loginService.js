@@ -1,18 +1,12 @@
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '#prisma/client';
 import { ValidationError } from '#errors/validationError';
 import { AuthorizationError } from '#errors/authorizationError';
 import { verifyGoogleToken } from '#utils/googleAuth';
-import { UpdateStatisticService, STAT_KEYS } from '#services/statistic/updateStatisticService';
-
-
-
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m'; // Access token: 15 minutes
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d'; // Refresh token: 30 days
-const SALT_ROUNDS = 10;
 
 class AuthService {
   async login(googleToken, sessionData = {}) {
@@ -47,9 +41,6 @@ class AuthService {
           is_active: true
         }
       });
-
-      // Increment total users statistic
-      await UpdateStatisticService.increment(STAT_KEYS.TOTAL_USERS);
     } else {
       // Update user info from Google if changed
       user = await prisma.users.update({
@@ -142,59 +133,58 @@ class AuthService {
    * @returns {Object} { user, session }
    */
   async verifyToken(token) {
+    let decoded
     try {
       // Verify JWT
-      console.log(token)
-      const decoded = jwt.verify(token, JWT_SECRET);
-      console.log(decoded)
-
-      // Check if session exists and is active
-      const session = await prisma.user_sessions.findUnique({
-        where: { token }
-      });
-
-      if (!session || !session.is_active) {
-        throw new Error('Session is invalid or expired');
-      }
-
-      // Check if session has expired
-      if (new Date() > session.expires_at) {
-        await prisma.user_sessions.update({
-          where: { id: session.id },
-          data: { is_active: false }
-        });
-        throw new AuthorizationError('Session has expired');
-      }
-
-      // Get user
-      const user = await prisma.users.findUnique({
-        where: { id: decoded.user_id },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          is_active: true,
-          created_at: true,
-          updated_at: true
-        }
-      });
-
-      if (!user || !user.is_active) {
-        throw new Error('User not found or inactive');
-      }
-
-      // Update last active time
-      await prisma.user_sessions.update({
-        where: { id: session.id },
-        data: { last_active_at: new Date() }
-      });
-
-      return { user, session };
+      decoded = jwt.verify(token, JWT_SECRET);
     } catch (error) {
-      console.error('Auth verifyToken error:', error)
       throw new AuthorizationError('Invalid or expired token');
     }
+    console.log(decoded)
+
+    // Check if session exists and is active
+    const session = await prisma.user_sessions.findUnique({
+      where: { token }
+    });
+
+    if (!session || !session.is_active) {
+      throw new Error('Session is invalid or expired');
+    }
+
+    // Check if session has expired
+    if (new Date() > session.expires_at) {
+      await prisma.user_sessions.update({
+        where: { id: session.id },
+        data: { is_active: false }
+      });
+      throw new AuthorizationError('Session has expired');
+    }
+
+    // Get user
+    const user = await prisma.users.findUnique({
+      where: { id: decoded.user_id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true
+      }
+    });
+
+    if (!user || !user.is_active) {
+      throw new Error('User not found or inactive');
+    }
+
+    // Update last active time
+    await prisma.user_sessions.update({
+      where: { id: session.id },
+      data: { last_active_at: new Date() }
+    });
+
+    return { user, session };
   }
 
   /**
@@ -203,94 +193,94 @@ class AuthService {
    * @returns {Object} { accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt }
    */
   async refreshToken(refreshToken) {
+    let decodedRefreshToken
     try {
       // Verify refresh token
-      const decoded = jwt.verify(refreshToken, JWT_SECRET);
-
-      // Check if this is a refresh token
-      if (decoded.type !== 'refresh') {
-        throw new AuthorizationError('Invalid token type');
-      }
-
-      // Find session with this refresh token
-      const session = await prisma.user_sessions.findUnique({
-        where: { refresh_token: refreshToken }
-      });
-
-      if (!session || !session.is_active) {
-        throw new AuthorizationError('Invalid or expired refresh token');
-      }
-
-      // Check if refresh token has expired
-      if (new Date() > session.refresh_token_expires_at) {
-        await prisma.user_sessions.update({
-          where: { id: session.id },
-          data: { is_active: false }
-        });
-        throw new AuthorizationError('Refresh token has expired');
-      }
-
-      // Get user
-      const user = await prisma.users.findUnique({
-        where: { id: decoded.user_id }
-      });
-
-      if (!user || !user.is_active) {
-        throw new AuthorizationError('User not found or inactive');
-      }
-
-      // Generate new access token
-      const newAccessToken = jwt.sign(
-        {
-          user_id: user.id,
-          email: user.email,
-          role: user.role
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-      );
-
-      // Generate new refresh token (token rotation for security)
-      const newRefreshToken = jwt.sign(
-        {
-          user_id: user.id,
-          type: 'refresh'
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_REFRESH_EXPIRES_IN }
-      );
-
-      // Calculate new expiration dates
-      const accessTokenExpiresAt = new Date();
-      accessTokenExpiresAt.setMinutes(accessTokenExpiresAt.getMinutes() + 15);
-
-      const refreshTokenExpiresAt = new Date();
-      refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 30);
-
-      // Update session with new tokens
-      await prisma.user_sessions.update({
-        where: { id: session.id },
-        data: {
-          token: newAccessToken,
-          refresh_token: newRefreshToken,
-          refresh_token_expires_at: refreshTokenExpiresAt,
-          expires_at: accessTokenExpiresAt,
-          last_active_at: new Date()
-        }
-      });
-
-      return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-        accessTokenExpiresAt: accessTokenExpiresAt.toISOString(),
-        refreshTokenExpiresAt: refreshTokenExpiresAt.toISOString()
-      };
+      decodedRefreshToken = jwt.verify(refreshToken, JWT_SECRET);
     } catch (error) {
       if (error instanceof AuthorizationError) {
         throw error;
       }
       throw new AuthorizationError('Invalid or expired refresh token');
     }
+    // Check if this is a refresh token
+    if (decodedRefreshToken.type !== 'refresh') {
+      throw new AuthorizationError('Invalid token type');
+    }
+
+    // Find session with this refresh token
+    const session = await prisma.user_sessions.findUnique({
+      where: { refresh_token: refreshToken }
+    });
+
+    if (!session || !session.is_active) {
+      throw new AuthorizationError('Invalid or expired refresh token');
+    }
+
+    // Check if refresh token has expired
+    if (new Date() > session.refresh_token_expires_at) {
+      await prisma.user_sessions.update({
+        where: { id: session.id },
+        data: { is_active: false }
+      });
+      throw new AuthorizationError('Refresh token has expired');
+    }
+
+    // Get user
+    const user = await prisma.users.findUnique({
+      where: { id: decodedRefreshToken.user_id }
+    });
+
+    if (!user || !user.is_active) {
+      throw new AuthorizationError('User not found or inactive');
+    }
+
+    // Generate new access token
+    const newAccessToken = jwt.sign(
+      {
+        user_id: user.id,
+        email: user.email,
+        role: user.role
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    // Generate new refresh token (token rotation for security)
+    const newRefreshToken = jwt.sign(
+      {
+        user_id: user.id,
+        type: 'refresh'
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_REFRESH_EXPIRES_IN }
+    );
+
+    // Calculate new expiration dates
+    const accessTokenExpiresAt = new Date();
+    accessTokenExpiresAt.setMinutes(accessTokenExpiresAt.getMinutes() + 15);
+
+    const refreshTokenExpiresAt = new Date();
+    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 30);
+
+    // Update session with new tokens
+    await prisma.user_sessions.update({
+      where: { id: session.id },
+      data: {
+        token: newAccessToken,
+        refresh_token: newRefreshToken,
+        refresh_token_expires_at: refreshTokenExpiresAt,
+        expires_at: accessTokenExpiresAt,
+        last_active_at: new Date()
+      }
+    });
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      accessTokenExpiresAt: accessTokenExpiresAt.toISOString(),
+      refreshTokenExpiresAt: refreshTokenExpiresAt.toISOString()
+    };
   }
 
   /**
@@ -330,6 +320,3 @@ class AuthService {
 }
 
 export default new AuthService();
-
-
-
