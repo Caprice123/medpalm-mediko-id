@@ -21,6 +21,10 @@ export const ConversationItem = styled.div`
   &:active {
     transform: scale(0.99);
   }
+
+  @media (max-width: 768px) {
+    padding: 0.875rem 1rem;
+  }
 `
 
 export const ConversationHeader = styled.div`
@@ -39,12 +43,20 @@ export const ConversationTopic = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-right: 8px;
+
+  @media (max-width: 768px) {
+    font-size: 0.9375rem;
+  }
 `
 
 export const ConversationTime = styled.div`
   font-size: 12px;
   color: #9ca3af;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.6875rem;
+  }
 `
 
 export const ConversationPreview = styled.div`
@@ -53,6 +65,10 @@ export const ConversationPreview = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.8125rem;
+  }
 `
 
 export const LoadingContainer = styled.div`
@@ -63,6 +79,11 @@ export const LoadingContainer = styled.div`
   padding: 40px 20px;
   color: #6b7280;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+    font-size: 0.875rem;
+  }
 `
 
 export const LoadingSpinner = styled.div`
@@ -83,6 +104,10 @@ export const EmptyState = styled.div`
   padding: 40px 20px;
   text-align: center;
   color: #6b7280;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
 `
 
 export const EmptyIcon = styled.div`
@@ -93,4 +118,8 @@ export const EmptyIcon = styled.div`
 
 export const EmptyText = styled.div`
   font-size: 14px;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `

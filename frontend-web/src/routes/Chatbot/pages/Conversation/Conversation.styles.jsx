@@ -12,6 +12,10 @@ export const Header = styled.div`
   border-bottom: 1px solid #e5e7eb;
   padding: 1rem 1.5rem;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+  }
 `
 
 export const HeaderContent = styled.div`
@@ -20,9 +24,14 @@ export const HeaderContent = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
 `
 
 export const BackButton = styled.button`
+  display: none;
   background: none;
   border: none;
   color: #6b7280;
@@ -35,6 +44,10 @@ export const BackButton = styled.button`
   &:hover {
     background: #f3f4f6;
     color: #374151;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
   }
 `
 
@@ -51,6 +64,11 @@ export const TopicTitle = styled.h1`
 
   &:hover {
     background: #f3f4f6;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    padding: 0.375rem;
   }
 `
 
@@ -69,6 +87,11 @@ export const TopicInput = styled.input`
   &:focus {
     border-color: #0891b2;
   }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    padding: 0.375rem;
+  }
 `
 
 export const CreditBadge = styled.div`
@@ -84,6 +107,15 @@ export const CreditBadge = styled.div`
 
   span:first-child {
     font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+
+    span:first-child {
+      font-size: 0.875rem;
+    }
   }
 `
 
@@ -111,6 +143,14 @@ export const ChatArea = styled.div`
 
   &::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
   }
 `
 

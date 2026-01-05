@@ -23,6 +23,12 @@ export const UserMessage = styled.div`
 
   @media (max-width: 768px) {
     max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 0.75rem;
   }
 `
 
@@ -37,12 +43,22 @@ export const AIMessage = styled.div`
 
   @media (max-width: 768px) {
     max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 0.75rem;
   }
 `
 
 export const MessageContent = styled.div`
   font-size: 0.9375rem;
   line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 
   /* Markdown styles */
   p {
@@ -63,6 +79,12 @@ export const MessageContent = styled.div`
   h1 { font-size: 1.5rem; }
   h2 { font-size: 1.25rem; }
   h3 { font-size: 1.125rem; }
+
+  @media (max-width: 768px) {
+    h1 { font-size: 1.25rem; }
+    h2 { font-size: 1.125rem; }
+    h3 { font-size: 1rem; }
+  }
 
   ul, ol {
     margin: 0.5rem 0;
@@ -94,6 +116,11 @@ export const MessageContent = styled.div`
       padding: 0;
       color: inherit;
     }
+
+    @media (max-width: 768px) {
+      padding: 0.75rem;
+      font-size: 0.8125rem;
+    }
   }
 
   blockquote {
@@ -101,6 +128,10 @@ export const MessageContent = styled.div`
     padding-left: 1rem;
     margin: 0.75rem 0;
     color: #6b7280;
+
+    @media (max-width: 768px) {
+      padding-left: 0.75rem;
+    }
   }
 
   a {
@@ -123,12 +154,22 @@ export const MessageContent = styled.div`
     border-collapse: collapse;
     width: 100%;
     margin: 0.75rem 0;
+    display: block;
+    overflow-x: auto;
+
+    @media (max-width: 768px) {
+      font-size: 0.8125rem;
+    }
   }
 
   th, td {
     border: 1px solid #e5e7eb;
     padding: 0.5rem;
     text-align: left;
+
+    @media (max-width: 768px) {
+      padding: 0.375rem;
+    }
   }
 
   th {

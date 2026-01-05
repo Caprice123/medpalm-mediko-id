@@ -154,18 +154,20 @@ function MessageList({ isLoading, isSending }) {
     // Code blocks
     code({ node, inline, className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || '')
+      const isMobile = window.innerWidth <= 768
       return !inline ? (
         <pre style={{
           background: '#1e1e1e',
-          padding: '1rem',
+          padding: isMobile ? '0.75rem' : '1rem',
           borderRadius: '8px',
           overflow: 'auto',
-          margin: '0.5rem 0'
+          margin: '0.5rem 0',
+          fontSize: isMobile ? '0.8125rem' : '0.9375rem'
         }}>
           <code style={{
             color: '#d4d4d4',
             fontFamily: 'Monaco, Courier New, monospace',
-            fontSize: '0.9em'
+            fontSize: 'inherit'
           }} {...props}>
             {children}
           </code>
@@ -176,7 +178,7 @@ function MessageList({ isLoading, isSending }) {
           padding: '2px 6px',
           borderRadius: '4px',
           fontFamily: 'Monaco, Courier New, monospace',
-          fontSize: '0.9em',
+          fontSize: isMobile ? '0.8125em' : '0.9em',
           color: '#e83e8c'
         }} {...props}>
           {children}
@@ -202,9 +204,10 @@ function MessageList({ isLoading, isSending }) {
     },
     // Lists
     ul({ children, ...props }) {
+      const isMobile = window.innerWidth <= 768
       return (
         <ul style={{
-          marginLeft: '1.5rem',
+          marginLeft: isMobile ? '1rem' : '1.5rem',
           marginTop: '0.5rem',
           marginBottom: '0.5rem'
         }} {...props}>
@@ -213,9 +216,10 @@ function MessageList({ isLoading, isSending }) {
       )
     },
     ol({ children, ...props }) {
+      const isMobile = window.innerWidth <= 768
       return (
         <ol style={{
-          marginLeft: '1.5rem',
+          marginLeft: isMobile ? '1rem' : '1.5rem',
           marginTop: '0.5rem',
           marginBottom: '0.5rem'
         }} {...props}>
@@ -225,10 +229,11 @@ function MessageList({ isLoading, isSending }) {
     },
     // Blockquotes
     blockquote({ children, ...props }) {
+      const isMobile = window.innerWidth <= 768
       return (
         <blockquote style={{
-          borderLeft: '4px solid #d1d5db',
-          paddingLeft: '1rem',
+          borderLeft: isMobile ? '3px solid #d1d5db' : '4px solid #d1d5db',
+          paddingLeft: isMobile ? '0.75rem' : '1rem',
           marginLeft: '0',
           color: '#6b7280',
           fontStyle: 'italic'

@@ -9,6 +9,7 @@ import {
   Container,
   Header,
   HeaderContent,
+  BackButton,
   TopicTitle,
   TopicInput,
   ChatArea,
@@ -16,7 +17,7 @@ import {
   ErrorState
 } from './Conversation.styles'
 
-function ChatbotConversationPanel({ conversationId }) {
+function ChatbotConversationPanel({ conversationId, onBack }) {
   const dispatch = useDispatch()
 
   const {
@@ -179,6 +180,11 @@ function ChatbotConversationPanel({ conversationId }) {
     <Container>
       <Header>
         <HeaderContent>
+          {onBack && (
+            <BackButton onClick={onBack}>
+              ← Kembali
+            </BackButton>
+          )}
           {isEditingTitle ? (
             <TopicInput
               ref={titleInputRef}

@@ -35,7 +35,7 @@ function MessageInput({ onSend, disabled, currentMode }) {
 
   const cost = useMemo(() => {
     // Read from Redux state (fetched from backend config)
-    if (costs && costs[currentMode]) {
+    if (costs && costs[currentMode] != null) {
       return costs[currentMode]
     }
 
@@ -66,9 +66,11 @@ function MessageInput({ onSend, disabled, currentMode }) {
           {disabled ? '⏳' : '📤'}
         </SendButton>
       </InputWrapper>
-      <CostIndicator>
-        Biaya: {cost} kredit per pesan
-      </CostIndicator>
+      { cost != null && cost > 0 && (
+        <CostIndicator>
+            Biaya: {cost} kredit per pesan
+        </CostIndicator>
+      )}
     </Container>
   )
 }

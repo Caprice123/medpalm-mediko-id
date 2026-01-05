@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  min-height: calc(100vh - 63px);
-  max-height: calc(100vh - 63px);
+  min-height: calc(100vh - 92px);
+  max-height: calc(100vh - 92px);
   background: #f0fdfa;
   display: flex;
   justify-content: center;
@@ -26,6 +26,14 @@ export const LeftPanel = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    border-right: none;
+    display: ${props => props.$hidden ? 'none' : 'flex'};
+  }
 `
 
 export const RightPanel = styled.div`
@@ -34,6 +42,11 @@ export const RightPanel = styled.div`
   flex-direction: column;
   background: white;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    display: ${props => props.$hidden ? 'none' : 'flex'};
+  }
 `
 
 export const Header = styled.div`
@@ -43,6 +56,10 @@ export const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   background: white;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `
 
 export const HeaderTitle = styled.h1`
@@ -50,6 +67,10 @@ export const HeaderTitle = styled.h1`
   font-weight: 600;
   color: #1f2937;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 `
 
 export const NewChatButton = styled.button`
@@ -70,12 +91,21 @@ export const NewChatButton = styled.button`
   &:active {
     transform: scale(0.98);
   }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
 `
 
 export const SearchContainer = styled.div`
   padding: 16px 20px;
   border-bottom: 1px solid #e5e7eb;
   background: white;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+  }
 `
 
 export const SearchInput = styled.input`
@@ -95,6 +125,11 @@ export const SearchInput = styled.input`
   &::placeholder {
     color: #9ca3af;
   }
+
+  @media (max-width: 768px) {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
 `
 
 export const EmptyState = styled.div`
@@ -105,12 +140,20 @@ export const EmptyState = styled.div`
   height: 100%;
   padding: 40px;
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
 `
 
 export const EmptyIcon = styled.div`
   font-size: 4rem;
   margin-bottom: 1rem;
   opacity: 0.3;
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+  }
 `
 
 export const EmptyTitle = styled.h2`
@@ -118,6 +161,10 @@ export const EmptyTitle = styled.h2`
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 8px 0;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `
 
 export const EmptyDescription = styled.p`
@@ -125,4 +172,9 @@ export const EmptyDescription = styled.p`
   color: #6b7280;
   margin: 0;
   max-width: 400px;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+    max-width: 100%;
+  }
 `

@@ -53,11 +53,15 @@ const Chatbot = () => {
     }
   }
 
+  const handleBackToList = () => {
+    setSelectedConversationId(null)
+  }
+
   return (
     <Container>
       <ContentWrapper>
         {/* Left Panel - Conversation List */}
-        <LeftPanel>
+        <LeftPanel $hidden={!!selectedConversationId}>
         <Header>
           <HeaderTitle>Percakapan</HeaderTitle>
           <NewChatButton onClick={handleNewConversation}>
@@ -83,9 +87,12 @@ const Chatbot = () => {
       </LeftPanel>
 
       {/* Right Panel - Chat or Empty State */}
-      <RightPanel>
+      <RightPanel $hidden={!selectedConversationId}>
         {selectedConversationId ? (
-          <ConversationPanel conversationId={selectedConversationId} />
+          <ConversationPanel
+            conversationId={selectedConversationId}
+            onBack={handleBackToList}
+          />
         ) : (
           <EmptyState>
             <EmptyIcon>💬</EmptyIcon>

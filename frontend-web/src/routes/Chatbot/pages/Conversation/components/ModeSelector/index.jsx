@@ -24,9 +24,15 @@ function ModeSelector({ currentMode, onModeChange }) {
 
   // If no modes available, show message
   if (modes.length === 0) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
     return (
       <Container>
-        <div style={{ padding: '1rem', color: '#6b7280', textAlign: 'center' }}>
+        <div style={{
+          padding: isMobile ? '0.75rem' : '1rem',
+          color: '#6b7280',
+          textAlign: 'center',
+          fontSize: isMobile ? '0.875rem' : '1rem'
+        }}>
           No chat modes available
         </div>
       </Container>

@@ -7,12 +7,24 @@ export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `
 
 export const InputWrapper = styled.div`
   display: flex;
   gap: 0.75rem;
   align-items: flex-end;
+
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
 `
 
 export const Textarea = styled.textarea`
@@ -40,6 +52,12 @@ export const Textarea = styled.textarea`
     background: #f9fafb;
     cursor: not-allowed;
   }
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    max-height: 120px;
+  }
 `
 
 export const SendButton = styled.button`
@@ -64,6 +82,12 @@ export const SendButton = styled.button`
   &:disabled {
     background: #e5e7eb;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    width: 42px;
+    height: 42px;
+    font-size: 1.125rem;
   }
 `
 

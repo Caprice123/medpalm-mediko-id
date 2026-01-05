@@ -10,6 +10,16 @@ export const Container = styled.div`
   margin: 0 auto;
   width: 100%;
   flex-shrink: 0;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    gap: 0.375rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `
 
 export const ModeButton = styled.button`
@@ -34,5 +44,21 @@ export const ModeButton = styled.button`
   .cost {
     font-size: 0.75rem;
     opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    gap: 0.375rem;
+
+    .cost {
+      font-size: 0.6875rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex: 1;
+    min-width: 100%;
+    justify-content: center;
   }
 `
