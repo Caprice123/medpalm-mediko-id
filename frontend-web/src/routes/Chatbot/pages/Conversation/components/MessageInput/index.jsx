@@ -8,7 +8,7 @@ import {
   CostIndicator
 } from './MessageInput.styles'
 
-function MessageInput({ onSend, disabled, currentMode }) {
+function MessageInput({ onSend, onStop, disabled, currentMode, isStreaming }) {
   const { costs } = useSelector(state => state.chatbot)
   const [value, setValue] = useState('')
 
@@ -32,6 +32,12 @@ function MessageInput({ onSend, disabled, currentMode }) {
       setValue('')
     }
   }, [onSend, value, disabled])
+
+  const handleStopClick = useCallback(() => {
+    if (onStop) {
+      onStop()
+    }
+  }, [onStop])
 
   const cost = useMemo(() => {
     // Read from Redux state (fetched from backend config)
@@ -59,12 +65,22 @@ function MessageInput({ onSend, disabled, currentMode }) {
           disabled={disabled}
           rows={1}
         />
-        <SendButton
-          onClick={handleSendClick}
-          disabled={disabled || !value.trim()}
-        >
-          {disabled ? '⏳' : '📤'}
-        </SendButton>
+        {isStreaming ? (
+          <SendButton
+            onClick={handleStopClick}
+            style={{ background: '#ef4444' }}
+            title="Stop streaming"
+          >
+            ⏹️
+          </SendButton>
+        ) : (
+          <SendButton
+            onClick={handleSendClick}
+            disabled={disabled || !value.trim()}
+          >
+            {disabled ? '⏳' : '📤'}
+          </SendButton>
+        )}
       </InputWrapper>
       { cost != null && cost > 0 && (
         <CostIndicator>

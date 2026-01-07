@@ -23,5 +23,6 @@ router.delete('/skripsi/sets/:id', asyncHandler(SkripsiSetsController.deleteSet)
 // Skripsi Tabs - under /skripsi/tabs
 router.get('/skripsi/tabs/:tabId/messages', asyncHandler(SkripsiTabsController.getMessages))
 router.post('/skripsi/tabs/:id/messages', asyncHandler(SkripsiTabsController.sendMessage))
+router.post('/skripsi/sets/:tabId/save-partial-message', asyncHandler(SkripsiTabsController.savePartialMessage))
 
 export default router

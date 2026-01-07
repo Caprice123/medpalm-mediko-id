@@ -5,6 +5,8 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../.
 import { getToken, setToken } from '@utils/authToken'
 import api from '@config/api'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+
 const {
   setSets,
   setCurrentSet,
@@ -195,17 +197,62 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
   }
 }
 
+// Store active abort controller for stream cancellation
+let activeAbortController = null
+
 export const sendMessage = (tabId, message, onStreamUpdate = null) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isSendingMessage', value: true }))
 
+    // Create new AbortController for this stream
+    activeAbortController = new AbortController()
+
     // Use streaming for all messages
-    const result = await sendMessageStreaming(tabId, message, dispatch, onStreamUpdate)
+    const result = await sendMessageStreaming(tabId, message, dispatch, onStreamUpdate, activeAbortController)
     return result
   } catch (err) {
+    if (err.name === 'AbortError') {
+      console.log('Stream was stopped by user')
+      return null
+    }
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+    activeAbortController = null
+  }
+}
+
+export const stopStreaming = (tabId, partialContent) => async (dispatch) => {
+  try {
+    // Abort the active stream
+    if (activeAbortController) {
+      activeAbortController.abort()
+    }
+
+    // Save partial content to database
+    if (partialContent && partialContent.trim()) {
+      const accessToken = await ensureValidToken()
+      const url = `${API_BASE_URL}/api/v1/skripsi/sets/${tabId}/save-partial-message`
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ content: partialContent })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Partial message saved to database')
+        return result.data // Return the saved message with real ID
+      }
+    }
+    return null
+  } catch (error) {
+    console.error('Error stopping stream:', error)
+    return null
   }
 }
 
@@ -242,7 +289,7 @@ const ensureValidToken = async () => {
 }
 
 // Streaming message handler - character-by-character typing
-const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = null) => {
+const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = null, abortController = null) => {
   // Ensure token is valid and refreshed if needed
   const accessToken = await ensureValidToken()
 
@@ -356,7 +403,8 @@ const sendMessageStreaming = async (tabId, content, dispatch, onStreamUpdate = n
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       },
-      body: JSON.stringify({ message: content })
+      body: JSON.stringify({ message: content }),
+      signal: abortController?.signal
     })
 
     if (!response.ok) {

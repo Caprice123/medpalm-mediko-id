@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation } from '@store/chatbot/action'
+import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/action'
 import { actions } from '@store/chatbot/reducer'
 import MessageList from './components/MessageList'
 import MessageInput from './components/MessageInput'
@@ -31,6 +31,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [editedTitle, setEditedTitle] = useState('')
+  const [streamingMessage, setStreamingMessage] = useState(null)
   const chatAreaRef = useRef(null)
   const previousScrollHeight = useRef(0)
   const titleInputRef = useRef(null)
@@ -98,6 +99,14 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     }
   }, [loading.isMessagesLoading, pagination.isLastPage, loadMoreMessages])
 
+  // Track streaming message
+  useEffect(() => {
+    if (currentConversation?.messages) {
+      const streaming = currentConversation.messages.find(m => m.id && m.id.toString().startsWith('streaming-'))
+      setStreamingMessage(streaming || null)
+    }
+  }, [currentConversation?.messages])
+
   const handleSendMessage = useCallback(async (content) => {
     if (!content || loading.isSendingMessage) return
 
@@ -107,6 +116,33 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       console.error('Failed to send message:', error)
     }
   }, [loading.isSendingMessage, conversationId, currentMode, dispatch])
+
+  const handleStopStreaming = useCallback(async () => {
+    if (!streamingMessage) return
+
+    try {
+      const savedMessage = await dispatch(stopChatbotStreaming(conversationId, streamingMessage.content, streamingMessage.modeType || currentMode))
+
+      // Add the saved message to Redux with real ID from backend
+      if (savedMessage) {
+        dispatch(actions.addMessage({
+          id: savedMessage.id,
+          senderType: savedMessage.senderType,
+          modeType: savedMessage.modeType,
+          content: savedMessage.content,
+          sources: savedMessage.sources || [],
+          createdAt: savedMessage.createdAt
+        }))
+
+        // Remove the streaming message
+        dispatch(actions.removeMessage(streamingMessage.id))
+      }
+
+      setStreamingMessage(null)
+    } catch (error) {
+      console.error('Failed to stop streaming:', error)
+    }
+  }, [streamingMessage, conversationId, currentMode, dispatch])
 
   const handleModeChange = useCallback((mode) => {
     dispatch(switchMode(mode))
@@ -220,8 +256,10 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
       <MessageInput
         onSend={handleSendMessage}
+        onStop={handleStopStreaming}
         disabled={loading.isSendingMessage}
         currentMode={currentMode}
+        isStreaming={!!streamingMessage}
       />
     </Container>
   )

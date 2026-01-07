@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { useAppDispatch } from '@store/store'
-import { sendMessage, loadOlderMessages } from '@store/skripsi/action'
+import { sendMessage, loadOlderMessages, stopStreaming } from '@store/skripsi/action'
 import { actions } from '@store/skripsi/reducer'
-import { FaPaperPlane } from 'react-icons/fa'
+import { FaPaperPlane, FaStop } from 'react-icons/fa'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import {
@@ -41,7 +41,9 @@ const ChatMessage = memo(({ message, formatTime }) => (
 // Memoized input section - manages its own state, isolated from parent
 const ChatInputSection = memo(({
   onSendMessage,
-  isSendingMessage
+  onStopStreaming,
+  isSendingMessage,
+  isStreaming
 }) => {
   const [chatInput, setChatInput] = useState('')
 
@@ -69,18 +71,29 @@ const ChatInputSection = memo(({
           placeholder="Ketik pesan... (Enter untuk kirim, Shift+Enter untuk baris baru)"
           disabled={isSendingMessage}
         />
-        <SendButton
-          onClick={handleSendMessage}
-          disabled={!chatInput.trim() || isSendingMessage}
-        >
-          <FaPaperPlane />
-        </SendButton>
+        {isStreaming ? (
+          <SendButton
+            onClick={onStopStreaming}
+            style={{ background: '#ef4444' }}
+            title="Stop streaming"
+          >
+            <FaStop />
+          </SendButton>
+        ) : (
+          <SendButton
+            onClick={handleSendMessage}
+            disabled={!chatInput.trim() || isSendingMessage}
+          >
+            <FaPaperPlane />
+          </SendButton>
+        )}
       </ChatInputWrapper>
     </ChatInputArea>
   )
 }, (prevProps, nextProps) => {
-  // Only rerender if sending state changes
-  return prevProps.isSendingMessage === nextProps.isSendingMessage
+  // Only rerender if sending state or streaming state changes
+  return prevProps.isSendingMessage === nextProps.isSendingMessage &&
+         prevProps.isStreaming === nextProps.isStreaming
 })
 
 const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
@@ -215,6 +228,34 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
     }
   }, [currentTab, dispatch])
 
+  const handleStopStreaming = useCallback(async () => {
+    if (!currentTab || !streamingMessage) return
+
+    try {
+      // Stop the stream and save partial content
+      const savedMessage = await dispatch(stopStreaming(currentTab.id, streamingMessage.content))
+
+      // Add the saved message to Redux with real ID from backend
+      if (savedMessage) {
+        dispatch(actions.addMessage({
+          tabId: currentTab.id,
+          message: {
+            id: savedMessage.id,
+            sender_type: savedMessage.sender_type,
+            content: savedMessage.content,
+            created_at: savedMessage.created_at
+          }
+        }))
+      }
+
+      // Clear streaming state
+      setStreamingMessage(null)
+      setIsWaitingForResponse(false)
+    } catch (error) {
+      console.error('Failed to stop streaming:', error)
+    }
+  }, [currentTab, streamingMessage, dispatch])
+
   return (
     <StyledChatPanel>
       <ChatMessages ref={chatMessagesRef} onScroll={handleScroll}>
@@ -261,7 +302,9 @@ const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
       <ChatInputSection
         key={currentTab?.id} // Reset input when tab changes
         onSendMessage={handleSendMessage}
+        onStopStreaming={handleStopStreaming}
         isSendingMessage={isSendingMessage}
+        isStreaming={!!streamingMessage}
       />
     </StyledChatPanel>
   )

@@ -162,10 +162,13 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
   }
 }
 
+// Store active abort controller for stream cancellation
+let activeChatbotAbortController = null
+
 export const sendMessage = (conversationId, content, mode) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isSendingMessage', value: true }))
-    
+
 
     // Add user message immediately (optimistic UI)
     const optimisticUserMessage = {
@@ -176,17 +179,60 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch) =
     }
     dispatch(addMessage(optimisticUserMessage))
 
+    // Create new AbortController for this stream
+    activeChatbotAbortController = new AbortController()
+
     // ALL modes now use streaming (normal, validated, research)
-    return await sendMessageStreaming(conversationId, content, mode, dispatch, optimisticUserMessage.id)
+    return await sendMessageStreaming(conversationId, content, mode, dispatch, optimisticUserMessage.id, activeChatbotAbortController)
   } catch (err) {
+    if (err.name === 'AbortError') {
+      console.log('Chatbot stream was stopped by user')
+      return null
+    }
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+    activeChatbotAbortController = null
+  }
+}
+
+export const stopChatbotStreaming = (conversationId, partialContent, mode) => async (dispatch) => {
+  try {
+    // Abort the active stream
+    if (activeChatbotAbortController) {
+      activeChatbotAbortController.abort()
+    }
+
+    // Save partial content to database
+    if (partialContent && partialContent.trim()) {
+      const token = getToken()
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+      const url = `${API_BASE_URL}/api/v1/conversations/${conversationId}/save-partial-message`
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.accessToken}`
+        },
+        body: JSON.stringify({ content: partialContent, modeType: mode })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Partial chatbot message saved to database')
+        return result.data // Return the saved message with real ID
+      }
+    }
+    return null
+  } catch (error) {
+    console.error('Error stopping chatbot stream:', error)
+    return null
   }
 }
 
 // Streaming message handler - character-by-character typing (preserves markdown)
-const sendMessageStreaming = async (conversationId, content, mode, dispatch, optimisticUserId) => {
+const sendMessageStreaming = async (conversationId, content, mode, dispatch, optimisticUserId, abortController = null) => {
   const token = getToken()
   const url = `${Endpoints.chatbot.send(conversationId)}`
 
@@ -281,7 +327,8 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token.accessToken}`
       },
-      body: JSON.stringify({ message: content, mode })
+      body: JSON.stringify({ message: content, mode }),
+      signal: abortController?.signal
     })
 
     if (!response.ok) {

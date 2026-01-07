@@ -27,6 +27,7 @@ router.delete('/conversations/:id', asyncHandler(ConversationController.delete))
 // Message management
 router.get('/conversations/:conversationId/messages', asyncHandler(MessageController.index))
 router.post('/conversations/:conversationId/send', asyncHandler(MessageController.create))
+router.post('/conversations/:conversationId/save-partial-message', asyncHandler(MessageController.savePartialMessage))
 
 // Message feedback
 router.post('/messages/:messageId/feedback', asyncHandler(MessageController.feedback))
