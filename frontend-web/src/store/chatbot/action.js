@@ -26,7 +26,8 @@ const {
 
 export const fetchChatbotConfig = () => async (dispatch) => {
   try {
-    const response = await getWithToken(Endpoints.chatbot.config)
+    const route = Endpoints.api.chatbot + '/config'
+    const response = await getWithToken(route)
     const config = response.data.data
 
     dispatch(setAvailableModes(config.availableModes))
@@ -167,6 +168,7 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
 
 // Store active abort controller and user message for stream cancellation
 let activeChatbotAbortController = null
+let activeUserMessageContent = null
 
 // Helper function to ensure token is valid and refreshed if needed
 const ensureValidToken = async () => {
@@ -269,11 +271,13 @@ export const stopChatbotStreaming = () => async (dispatch) => {
   }
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+
 // Streaming message handler - typing animation with backend pacing
 const sendMessageStreaming = async (conversationId, content, mode, dispatch, optimisticUserId, abortController = null) => {
   // Ensure token is valid and refreshed if needed
   const accessToken = await ensureValidToken()
-  const route = Endpoints.api.chatbot + `/conversations/${conversationId}/send`
+  const route = API_BASE_URL + Endpoints.api.chatbot + `/conversations/${conversationId}/send`
 
   const streamingMessageId = `streaming-${Date.now()}`
   const messageCreatedAt = new Date().toISOString()

@@ -48,6 +48,7 @@ export const useCreateTopic = (onClose) => {
             question: q.question,
             answer: q.answer,
             explanation: q.explanation,
+            imageBlobId: q.imageBlobId || null,
             order: index
           }))
         }
@@ -96,6 +97,8 @@ export const useCreateTopic = (onClose) => {
       question: '',
       answer: '',
       explanation: '',
+      image: null,
+      imageBlobId: null,
       order: form.values.questions.length
     }
     form.setFieldValue('questions', [...form.values.questions, newQuestion])
@@ -210,6 +213,52 @@ export const useCreateTopic = (onClose) => {
 
   const isGenerating = loading.isGeneratingQuestions || commonLoading.isUploading
 
+  // Handle question image upload
+  const handleQuestionImageUpload = async (questionId, file) => {
+    try {
+      const uploadResult = await dispatch(upload(file, 'exercise'))
+
+      if (uploadResult?.blobId) {
+        // Find the question and update its image data
+        const updatedQuestions = form.values.questions.map(q => {
+          if (q.id === questionId) {
+            return {
+              ...q,
+              imageBlobId: uploadResult.blobId,
+              image: {
+                blobId: uploadResult.blobId,
+                url: uploadResult.url,
+                filename: uploadResult.fileName
+              }
+            }
+          }
+          return q
+        })
+        form.setFieldValue('questions', updatedQuestions)
+      } else {
+        throw new Error('Upload failed - no blobId returned')
+      }
+    } catch (error) {
+      console.error('Failed to upload question image:', error)
+      alert('Gagal upload gambar. Silakan coba lagi.')
+    }
+  }
+
+  // Handle question image remove
+  const handleQuestionImageRemove = (questionId) => {
+    const updatedQuestions = form.values.questions.map(q => {
+      if (q.id === questionId) {
+        return {
+          ...q,
+          imageBlobId: null,
+          image: null
+        }
+      }
+      return q
+    })
+    form.setFieldValue('questions', updatedQuestions)
+  }
+
   return {
     form,
     sensors,
@@ -219,6 +268,8 @@ export const useCreateTopic = (onClose) => {
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating
+    isGenerating,
+    handleQuestionImageUpload,
+    handleQuestionImageRemove
   }
 }

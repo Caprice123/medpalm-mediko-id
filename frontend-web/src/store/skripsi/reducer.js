@@ -9,6 +9,7 @@ const initialState = {
     isSetsLoading: false,
     isSetLoading: false,
     isAdminSetLoading: false,
+    isTabMessagesLoading: false,
     isSendingMessage: false,
     isSavingContent: false,
   },
@@ -81,6 +82,19 @@ const skripsiSlice = createSlice({
       if (state.currentTab && state.currentTab.id === tabId) {
         if (!state.currentTab.messages) state.currentTab.messages = []
         state.currentTab.messages.push(message)
+      }
+    },
+    setTabMessages: (state, action) => {
+      const { tabId, messages } = action.payload
+      if (state.currentSet) {
+        const tab = state.currentSet.tabs.find(t => t.id === tabId)
+        if (tab) {
+          tab.messages = messages
+        }
+      }
+      // Also update currentTab if it matches
+      if (state.currentTab && state.currentTab.id === tabId) {
+        state.currentTab.messages = messages
       }
     },
     prependMessages: (state, action) => {

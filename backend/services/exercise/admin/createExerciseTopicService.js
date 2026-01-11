@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 import attachmentService from '#services/attachment/attachmentService'
+import idriveService from '#services/idrive.service'
 
 export class CreateExerciseTopicService extends BaseService {
     static async call({ title, description, contentType, content, blobId, tags, questions, status, createdBy }) {
@@ -54,7 +55,45 @@ export class CreateExerciseTopicService extends BaseService {
             })
         }
 
-        return topic
+        // Attach images to questions if provided
+        const attachmentMap = {}
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i]
+            if (question.imageBlobId) {
+                await attachmentService.attach({
+                    name: 'image',
+                    recordType: 'exercise_question',
+                    recordId: topic.exercise_questions[i].id,
+                    blobId: question.imageBlobId
+                })
+
+                // Fetch the blob to include in response
+                const blob = await prisma.blobs.findUnique({
+                    where: { id: question.imageBlobId }
+                })
+
+                if (blob) {
+                    const imageUrl = await idriveService.getSignedUrl(blob.key, 7 * 24 * 60 * 60)
+                    attachmentMap[topic.exercise_questions[i].id] = {
+                        blobId: question.imageBlobId,
+                        url: imageUrl,
+                        key: blob.key,
+                        filename: blob.filename
+                    }
+                }
+            }
+        }
+
+        // Transform questions to include image info
+        const questionsWithImages = topic.exercise_questions.map(q => ({
+            ...q,
+            image: attachmentMap[q.id] || null
+        }))
+
+        return {
+            ...topic,
+            exercise_questions: questionsWithImages
+        }
     }
 
     static async validate({ title, contentType, content, blobId, tags, questions }) {

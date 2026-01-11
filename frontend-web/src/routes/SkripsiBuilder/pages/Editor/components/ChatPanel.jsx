@@ -100,7 +100,7 @@ const ChatInputSection = memo(({
 // Track streaming state changes for debugging
 let lastStreamingState = false
 
-const ChatPanel = memo(({ currentTab, isSendingMessage }) => {
+const ChatPanel = memo(({ currentTab }) => {
   const dispatch = useAppDispatch()
   const chatMessagesRef = useRef(null)
   const [isLoadingOlder, setIsLoadingOlder] = useState(false)

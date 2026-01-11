@@ -43,14 +43,15 @@ class SkripsiSetsController {
     })
   }
 
-  // Get a specific skripsi set with tabs and messages
+  // Get a specific skripsi set with tabs (WITHOUT messages - fetch messages separately per tab)
   async getSet(req, res) {
     const userId = req.user.id
     const setId = parseInt(req.params.id)
 
     const set = await GetSkripsiSetService.call({
       setId,
-      userId
+      userId,
+      includeMessages: false // Don't include messages - fetch them separately per tab
     })
 
     return res.status(200).json({

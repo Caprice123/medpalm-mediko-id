@@ -15,6 +15,7 @@ const {
   updateSet,
   removeSet,
   updateSetContent,
+  setTabMessages,
   addMessage,
   updateMessage,
   removeMessage,
@@ -28,7 +29,7 @@ export const fetchAdminSets = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isSetsLoading', value: true }))
 
-    const { filters, pagination } = getState().chatbot
+    const { filters, pagination } = getState().skripsi
     const queryParams = {
       page: pagination.page,
       perPage: pagination.perPage
@@ -121,14 +122,19 @@ export const createSet = (title, description) => async (dispatch) => {
 export const fetchSet = (setId) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isSetLoading', value: true }))
-    
+
     const route = Endpoints.api.skripsi + `/sets/${setId}`
     const response = await getWithToken(route)
     const set = response.data.data
 
     dispatch(setCurrentSet(set))
+
+    // Set first tab as current and fetch its messages
     if (set.tabs && set.tabs.length > 0) {
-      dispatch(setCurrentTab(set.tabs[0]))
+      const firstTab = set.tabs[0]
+      dispatch(setCurrentTab(firstTab))
+      // Fetch messages for the first tab
+      await dispatch(fetchTabMessages(firstTab.id))
     }
 
     return set
@@ -168,15 +174,40 @@ export const deleteSet = (setId) => async (dispatch) => {
 
 // ============= Tabs Management =============
 
-export const switchTab = (tab) => (dispatch) => {
+export const fetchTabMessages = (tabId, limit = 50) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isTabMessagesLoading', value: true }))
+
+    const route = Endpoints.api.skripsi + `/tabs/${tabId}/messages`
+    const response = await getWithToken(route, { limit })
+
+    const messages = response.data.data || []
+    dispatch(setTabMessages({ tabId, messages }))
+
+    return {
+      messages,
+      hasMore: response.data.hasMore || false
+    }
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: 'isTabMessagesLoading', value: false }))
+  }
+}
+
+export const switchTab = (tab) => async (dispatch) => {
   dispatch(setCurrentTab(tab))
+  // Fetch messages for the switched tab if not already loaded
+  if (tab && (!tab.messages || tab.messages.length === 0)) {
+    await dispatch(fetchTabMessages(tab.id))
+  }
 }
 
 export const saveSetContent = (setId, editorContent) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isSavingContent', value: true }))
 
-    const route = Endpoints.api.skripsi + `/tabs/${setId}/content`
+    const route = Endpoints.api.skripsi + `/sets/${setId}/content`
     const response = await putWithToken(route, { editorContent })
 
     dispatch(updateSetContent({ setId, editorContent }))

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import {
   Container,
   Header,
@@ -237,6 +239,26 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
                     {index + 1}. {renderQuestionForReview(question?.question || '', answer.correctAnswer)}
                   </ReviewQuestion>
 
+                  {question?.image && (
+                    <PhotoProvider>
+                      <PhotoView src={question.image.url}>
+                        <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                          <img
+                            src={question.image.url}
+                            alt="Question"
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '300px',
+                              cursor: 'pointer',
+                              borderRadius: '8px',
+                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                            }}
+                          />
+                        </div>
+                      </PhotoView>
+                    </PhotoProvider>
+                  )}
+
                   <ReviewAnswer>
                     <strong>{answer.isCorrect ? '💚 Jawaban:' : '❌ Jawaban Anda:'}</strong>
                     <span>
@@ -350,6 +372,26 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
       <QuestionCard>
 
         {renderQuestionWithInput()}
+
+        {currentQuestion.image && (
+          <PhotoProvider>
+            <PhotoView src={currentQuestion.image.url}>
+              <div style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                <img
+                  src={currentQuestion.image.url}
+                  alt="Question"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '400px',
+                    cursor: 'pointer',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+              </div>
+            </PhotoView>
+          </PhotoProvider>
+        )}
 
         <HintBox>
           <span>💡</span>

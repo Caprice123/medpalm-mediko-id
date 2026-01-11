@@ -6,6 +6,8 @@ import FileUpload from '@components/common/FileUpload'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import { useCreateTopic } from '../../hooks/subhooks/useCreateTopic'
 import {
   FormSection,
@@ -43,7 +45,7 @@ import {
   EmptyState
 } from './CreateTopicModal.styles'
 
-const SortableQuestion = memo(function SortableQuestion({ question, index, onEdit, onRemove, isEditing, editData, onEditChange, onSaveEdit, onCancelEdit }) {
+const SortableQuestion = memo(function SortableQuestion({ question, index, onEdit, onRemove, isEditing, editData, onEditChange, onSaveEdit, onCancelEdit, onImageUpload, onImageRemove, isUploadingImage }) {
   const {
     attributes,
     listeners,
@@ -122,6 +124,40 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
             />
           </FormSection>
 
+          <FormSection>
+            <Label>Gambar Pertanyaan (Opsional)</Label>
+            <PhotoProvider>
+              <FileUpload
+                file={editData.image ? {
+                  name: editData.image.filename || 'image',
+                  type: 'image/*',
+                  size: 0
+                } : null}
+                onFileSelect={(file) => onImageUpload(question.id, file)}
+                onRemove={() => onImageRemove(question.id)}
+                isUploading={isUploadingImage}
+                acceptedTypes={['image/jpeg', 'image/jpg', 'image/png']}
+                acceptedTypesLabel="JPEG atau PNG"
+                maxSizeMB={5}
+                uploadText="Klik untuk upload gambar"
+                actions={
+                  <>
+                    {editData.image?.url && (
+                      <PhotoView src={editData.image.url}>
+                        <Button
+                          type="button"
+                          style={{ backgroundColor: '#3b82f6', color: 'white', fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                        >
+                          Lihat Gambar
+                        </Button>
+                      </PhotoView>
+                    )}
+                  </>
+                }
+              />
+            </PhotoProvider>
+          </FormSection>
+
           <EditButtonGroup>
             <Button onClick={onCancelEdit}>
               Batal
@@ -148,6 +184,27 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
               <ExplanationText>{question.explanation}</ExplanationText>
             </ExplanationSection>
           )}
+
+          {question.image && (
+            <ExplanationSection>
+              <ExplanationLabel>Gambar</ExplanationLabel>
+              <PhotoProvider>
+                <PhotoView src={question.image.url}>
+                  <img
+                    src={question.image.url}
+                    alt="Question"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '300px',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      marginTop: '0.5rem'
+                    }}
+                  />
+                </PhotoView>
+              </PhotoProvider>
+            </ExplanationSection>
+          )}
         </>
       )}
     </QuestionCard>
@@ -167,8 +224,12 @@ const CreateTopicModal = ({ onClose }) => {
     handleFileSelect,
     handleGenerate,
     canGenerate,
-    isGenerating
+    isGenerating,
+    handleQuestionImageUpload,
+    handleQuestionImageRemove
   } = useCreateTopic(onClose)
+
+  const { loading: commonLoading } = useSelector(state => state.common)
 
   // Edit state
   const [editingQuestionId, setEditingQuestionId] = useState(null)
@@ -415,6 +476,9 @@ const CreateTopicModal = ({ onClose }) => {
                   onEditChange={handleEditChange}
                   onSaveEdit={handleSaveEdit}
                   onCancelEdit={handleCancelEdit}
+                  onImageUpload={handleQuestionImageUpload}
+                  onImageRemove={handleQuestionImageRemove}
+                  isUploadingImage={commonLoading.isUploading}
                 />
               ))}
             </SortableContext>

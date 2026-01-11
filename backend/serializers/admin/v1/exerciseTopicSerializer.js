@@ -25,7 +25,8 @@ export class ExerciseTopicSerializer {
                 question: q.question,
                 answer: q.answer,
                 explanation: q.explanation || '',
-                order: q.order !== undefined ? q.order : index
+                order: q.order !== undefined ? q.order : index,
+                image: q.image || null
             }))
         }
     }

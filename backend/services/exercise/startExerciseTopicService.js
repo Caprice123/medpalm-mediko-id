@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import idriveService from '#services/idrive.service'
 
 export class StartExerciseTopicService extends BaseService {
   static async call({ exerciseTopicId, userId }) {
@@ -96,6 +97,33 @@ export class StartExerciseTopicService extends BaseService {
         remainingQuestions.splice(selectedIndex, 1)
       }
 
+      // Fetch image attachments for all questions
+      const ids = shuffledQuestions.map(q => q.id)
+      const questionAttachments = await tx.attachments.findMany({
+        where: {
+          record_type: 'exercise_question',
+          record_id: { in: ids },
+          name: 'image'
+        },
+        include: {
+          blob: true
+        }
+      })
+
+      // Create a map of question_id -> attachment for quick lookup
+      const attachmentMap = {}
+      for (const att of questionAttachments) {
+        if (att.blob) {
+          const imageUrl = await idriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
+          attachmentMap[att.record_id] = {
+            blobId: att.blob_id,
+            url: imageUrl,
+            key: att.blob.key,
+            filename: att.blob.filename
+          }
+        }
+      }
+
       // Create topic snapshot using shuffled questions
       // NOTE: Do NOT include answer or explanation here - they should only be sent after submission
       const topicSnapshot = {
@@ -106,6 +134,7 @@ export class StartExerciseTopicService extends BaseService {
         questions: shuffledQuestions.map((q, index) => ({
           id: q.id,
           question: q.question || '',
+          image: attachmentMap[q.id] || null,
           order: index // Use new shuffled order
         }))
       }

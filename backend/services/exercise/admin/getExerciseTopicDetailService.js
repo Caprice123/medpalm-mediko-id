@@ -47,9 +47,43 @@ export class GetExerciseTopicDetailService extends BaseService {
             pdfUrl = await idriveService.getSignedUrl(attachment.blob.key, 7 * 24 * 60 * 60)
         }
 
+        // Fetch image attachments for all questions
+        const questionIds = topic.exercise_questions.map(q => q.id)
+        const questionAttachments = await prisma.attachments.findMany({
+            where: {
+                record_type: 'exercise_question',
+                record_id: { in: questionIds },
+                name: 'image'
+            },
+            include: {
+                blob: true
+            }
+        })
+
+        // Create a map of question_id -> attachment for quick lookup
+        const attachmentMap = {}
+        for (const att of questionAttachments) {
+            if (att.blob) {
+                const imageUrl = await idriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
+                attachmentMap[att.record_id] = {
+                    blobId: att.blob_id,
+                    url: imageUrl,
+                    key: att.blob.key,
+                    filename: att.blob.filename
+                }
+            }
+        }
+
+        // Transform questions to include image info
+        const questionsWithImages = topic.exercise_questions.map(q => ({
+            ...q,
+            image: attachmentMap[q.id] || null
+        }))
+
         // Transform tags to include tag_group info
         const transformedTopic = {
             ...topic,
+            exercise_questions: questionsWithImages,
             blob: attachment ? {
                 id: attachment.blob_id,
                 url: pdfUrl,

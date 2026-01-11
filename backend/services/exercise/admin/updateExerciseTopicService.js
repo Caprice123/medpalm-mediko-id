@@ -119,24 +119,64 @@ export class UpdateExerciseTopicService extends BaseService {
                                 order: q.order !== undefined ? q.order : 0
                             }
                         })
+
+                        // Update question image attachment if imageBlobId is provided
+                        if (q.imageBlobId !== undefined) {
+                            // Delete existing image attachment
+                            await tx.attachments.deleteMany({
+                                where: {
+                                    record_type: 'exercise_question',
+                                    record_id: q.id,
+                                    name: 'image'
+                                }
+                            })
+
+                            // Create new image attachment if imageBlobId is not null
+                            if (q.imageBlobId) {
+                                await tx.attachments.create({
+                                    data: {
+                                        name: 'image',
+                                        record_type: 'exercise_question',
+                                        record_id: q.id,
+                                        blob_id: q.imageBlobId
+                                    }
+                                })
+                            }
+                        }
                     }
                 }
 
                 // 2. Create new questions (those without ID or with non-existent ID)
                 const newQuestions = questions.filter(q => !q.id || !existingIds.has(q.id))
                 if (newQuestions.length > 0) {
-                    await tx.exercise_questions.createMany({
-                        data: newQuestions.map((q, index) => ({
-                            topic_id: parseInt(topicId),
-                            question: q.question,
-                            answer: q.answer,
-                            explanation: q.explanation || '',
-                            order: q.order !== undefined ? q.order : index
-                        }))
-                    })
+                    // Create questions one by one to handle attachments
+                    for (const q of newQuestions) {
+                        const createdQuestion = await tx.exercise_questions.create({
+                            data: {
+                                topic_id: parseInt(topicId),
+                                question: q.question,
+                                answer: q.answer,
+                                explanation: q.explanation || '',
+                                order: q.order !== undefined ? q.order : 0
+                            }
+                        })
+
+                        // Attach image if provided
+                        if (q.imageBlobId) {
+                            await tx.attachments.create({
+                                data: {
+                                    name: 'image',
+                                    record_type: 'exercise_question',
+                                    record_id: createdQuestion.id,
+                                    blob_id: q.imageBlobId
+                                }
+                            })
+                        }
+                    }
                 }
 
                 // 3. Delete removed questions (exist in DB but not in submitted list)
+                // Note: Attachments will be cascade deleted automatically
                 const questionsToDelete = existingQuestions
                     .filter(eq => !submittedIds.has(eq.id))
                     .map(eq => eq.id)
@@ -196,9 +236,43 @@ export class UpdateExerciseTopicService extends BaseService {
             return updatedTopicData
         })
 
+        // Fetch image attachments for all questions
+        const questionIds = updatedTopic.exercise_questions.map(q => q.id)
+        const questionAttachments = await prisma.attachments.findMany({
+            where: {
+                record_type: 'exercise_question',
+                record_id: { in: questionIds },
+                name: 'image'
+            },
+            include: {
+                blob: true
+            }
+        })
+
+        // Create a map of question_id -> attachment for quick lookup
+        const attachmentMap = {}
+        for (const att of questionAttachments) {
+            if (att.blob) {
+                const imageUrl = await idriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
+                attachmentMap[att.record_id] = {
+                    blobId: att.blob_id,
+                    url: imageUrl,
+                    key: att.blob.key,
+                    filename: att.blob.filename
+                }
+            }
+        }
+
+        // Transform questions to include image info
+        const questionsWithImages = updatedTopic.exercise_questions.map(q => ({
+            ...q,
+            image: attachmentMap[q.id] || null
+        }))
+
         // Transform tags to match expected format
         const transformedTopic = {
             ...updatedTopic,
+            exercise_questions: questionsWithImages,
             tags: updatedTopic.exercise_topic_tags.map(t => ({
                 id: t.tags.id,
                 name: t.tags.name,
