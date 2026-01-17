@@ -110,6 +110,8 @@ function Calculator({ onBack }) {
                     {calculator.description || 'Tidak ada deskripsi'}
                   </TopicDescription>
 
+                  <div style={{flex: "1"}}></div>
+
                   {/* Category Tags */}
                   {kategoriTags.length > 0 && (
                     <TagList>
@@ -120,8 +122,6 @@ function Calculator({ onBack }) {
                       ))}
                     </TagList>
                   )}
-
-                  <div style={{ flex: '1' }}></div>
 
                   <TopicStats>
                     <StatItem>

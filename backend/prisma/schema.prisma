@@ -194,6 +194,7 @@ model tags {
   calculator_topic_tags calculator_topic_tags[]
   anatomy_quiz_tags     anatomy_quiz_tags[]
   mcq_topic_tags        mcq_topic_tags[]
+  osce_topic_tags       osce_topic_tags[]
 
   @@unique([name, tag_group_id])
   @@index([is_active])
@@ -379,6 +380,7 @@ model users {
   user_purchases        user_purchases[]
   chatbot_conversations chatbot_conversations[]
   skripsi_sets          skripsi_sets[]
+  osce_sessions         osce_sessions[]
 }
 
 model user_subscriptions {
@@ -1085,4 +1087,187 @@ model skripsi_constants {
   updated_at  DateTime @default(now())
 
   @@index([key])
+}
+
+// ============= OSCE Practice Feature =============
+
+model osce_topics {
+  id               Int      @id @default(autoincrement())
+  title            String
+  description      String?
+  scenario         String   @db.Text // The OSCE case/scenario
+  guide            String?  @db.Text // Guide or instructions for students
+  context          String?  @db.Text // Additional context or background
+  answer_key       String?  @db.Text // Expected answers or key points
+  knowledge_base   Json?    // Key-value pairs of knowledge items
+  ai_model         String // AI model for this topic (e.g., 'gemini-1.5-pro', 'gpt-4o')
+  system_prompt    String   @db.Text // Custom AI behavior for this topic
+  duration_minutes Int // Recommended practice duration
+  status           String   @default("draft") // draft, published
+  is_active        Boolean  @default(true)
+  created_by       Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now())
+
+  osce_topic_tags         osce_topic_tags[]
+  osce_sessions           osce_sessions[]
+  osce_topic_observations osce_topic_observations[]
+
+  @@index([created_by])
+  @@index([status])
+  @@index([is_active])
+}
+
+model osce_topic_tags {
+  id         Int      @id @default(autoincrement())
+  topic_id   Int
+  tag_id     Int
+  created_at DateTime @default(now())
+
+  osce_topic osce_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tags       tags        @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@unique([topic_id, tag_id])
+  @@index([topic_id])
+  @@index([tag_id])
+}
+
+model osce_observation_groups {
+  id         Int      @id @default(autoincrement())
+  name       String // e.g., "LABORATORIUM", "RADIOLOGI", etc.
+  order      Int      @default(0)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  osce_observations osce_observations[]
+
+  @@index([is_active])
+  @@index([order])
+}
+
+model osce_observations {
+  id       Int      @id @default(autoincrement())
+  group_id Int // Reference to observation group
+  name     String // e.g., "ASTO", "Analisis LCS", "Apusan Darah Tepi"
+  order    Int      @default(0)
+  is_active Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  osce_observation_group    osce_observation_groups   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  osce_session_observations osce_session_observations[]
+  osce_topic_observations   osce_topic_observations[]
+
+  @@index([group_id])
+  @@index([is_active])
+  @@index([order])
+}
+
+// Junction table linking topics to observations with additional context
+model osce_topic_observations {
+  id                      Int      @id @default(autoincrement())
+  topic_id                Int
+  observation_id          Int
+  observation_text        String?  @db.Text // Context/description for this observation in this topic
+  requires_interpretation Boolean  @default(false) // Whether user needs to interpret the observation
+  order                   Int      @default(0)
+  created_at              DateTime @default(now())
+  updated_at              DateTime @default(now())
+
+  osce_topic       osce_topics       @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  osce_observation osce_observations @relation(fields: [observation_id], references: [id], onDelete: Cascade)
+
+  @@unique([topic_id, observation_id])
+  @@index([topic_id])
+  @@index([observation_id])
+  @@index([order])
+}
+
+
+model osce_sessions {
+  id                       Int      @id @default(autoincrement())
+  unique_id                String   @unique @default(uuid())
+  user_id                  Int
+  osce_topic_id            Int
+  ai_model_used            String // Snapshot of model at practice time
+  duration_minutes         Int // Actual time spent
+  total_score              Int?
+  max_score                Int?
+  ai_feedback              String?  @db.Text // Overall feedback from AI
+  credits_used             Int      @default(0)
+  observations_locked      Boolean  @default(false) // Whether user has saved observations (cannot change after)
+  created_at               DateTime @default(now())
+  updated_at               DateTime @default(now())
+
+  user                      users                       @relation(fields: [user_id], references: [id])
+  osce_topic                osce_topics                 @relation(fields: [osce_topic_id], references: [id])
+  osce_session_observations osce_session_observations[]
+  osce_session_messages     osce_session_messages[]
+  osce_session_diagnoses    osce_session_diagnoses[]
+  osce_session_therapies    osce_session_therapies[]
+
+  @@index([unique_id])
+  @@index([user_id])
+  @@index([osce_topic_id])
+}
+
+model osce_session_observations {
+  id              Int      @id @default(autoincrement())
+  osce_session_id Int
+  observation_id  Int
+  is_checked      Boolean  @default(false) // Whether this observation was checked/performed
+  notes           String?  @db.Text // Optional notes about this observation
+  created_at      DateTime @default(now())
+
+  osce_session     osce_sessions     @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_observation osce_observations @relation(fields: [observation_id], references: [id])
+
+  @@unique([osce_session_id, observation_id])
+  @@index([osce_session_id])
+  @@index([observation_id])
+}
+
+model osce_session_messages {
+  id              Int      @id @default(autoincrement())
+  osce_session_id Int
+  sender_type     String // 'user' or 'ai'
+  content         String   @db.Text
+  credits_used    Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+
+  @@index([osce_session_id])
+  @@index([sender_type])
+  @@index([created_at])
+}
+
+model osce_session_diagnoses {
+  id              Int      @id @default(autoincrement())
+  osce_session_id Int
+  type            String // 'utama' or 'pembanding'
+  diagnosis       String   @db.Text
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+
+  @@index([osce_session_id])
+  @@index([type])
+}
+
+model osce_session_therapies {
+  id              Int      @id @default(autoincrement())
+  osce_session_id Int
+  therapy         String   @db.Text
+  order           Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+
+  @@index([osce_session_id])
+  @@index([order])
 }

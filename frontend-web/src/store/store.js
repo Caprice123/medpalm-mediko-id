@@ -19,6 +19,7 @@ import mcq from "./mcq";
 import constant from "./constant";
 import chatbot from "./chatbot/reducer";
 import skripsi from "./skripsi/reducer";
+import oscePractice from "./oscePractice";
 
 export const rootReducer = combineReducers({
     auth,
@@ -40,6 +41,7 @@ export const rootReducer = combineReducers({
     mcq,
     chatbot,
     skripsi,
+    oscePractice,
 })
 
 export const store = configureStore({

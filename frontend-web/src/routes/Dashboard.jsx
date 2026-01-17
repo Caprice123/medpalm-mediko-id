@@ -211,6 +211,11 @@ function Dashboard() {
         return
       }
 
+      if (sessionType == "osce_practice") {
+        navigate("/osce-practice")
+        return
+      }
+
       // For calculator, navigate to dedicated calculator page
       if (!sessionType) {
         navigate('/calculators')

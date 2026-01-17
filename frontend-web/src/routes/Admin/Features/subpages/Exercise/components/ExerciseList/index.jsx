@@ -76,6 +76,8 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
                 {topic.description || 'Tidak ada deskripsi'}
               </TopicDescription>
 
+            <div style={{flex: "1"}}></div>
+
               {/* University Tags */}
               {universityTags.length > 0 && (
                 <TagList>
@@ -97,8 +99,6 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
                   ))}
                 </TagList>
               )}
-
-              <div style={{flex: "1"}}></div>
 
               <TopicStats>
                 <StatItem>

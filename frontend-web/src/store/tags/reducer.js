@@ -26,6 +26,7 @@ const tagsSlice = createSlice({
     },
     updateFilter: (state, action) => {
       const { key, value } = action.payload
+      console.log(key, value)
       state.filter[key] = value
     },
   },

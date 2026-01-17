@@ -62,6 +62,10 @@ export class GetActiveFeaturesService extends BaseService {
         "skripsi_feature_description",
         "skripsi_access_type",
         "skripsi_is_active",
+        "osce_practice_feature_title",
+        "osce_practice_feature_description",
+        "osce_practice_access_type",
+        "osce_practice_is_active",
     ])
 
     const features = []
@@ -191,6 +195,22 @@ export class GetActiveFeaturesService extends BaseService {
         icon: '📚',
         sessionType: "skripsi_builder",
         isActive: featureConstants.skripsi_is_active
+      })
+    }
+
+    // OSCE Practice feature
+    if (featureConstants.osce_practice_feature_title && featureConstants.osce_practice_is_active === 'true') {
+      const cost = 0 // Cost is per-session
+      const accessType = featureConstants.osce_practice_access_type || 'subscription'
+      features.push({
+        name: featureConstants.osce_practice_feature_title,
+        description: featureConstants.osce_practice_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🩺',
+        sessionType: "osce_practice",
+        isActive: featureConstants.osce_practice_is_active
       })
     }
 

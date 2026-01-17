@@ -57,6 +57,8 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
             {note.description || 'Tidak ada deskripsi'}
           </NoteDescription>
 
+            <div style={{flex: "1"}}></div>
+
           {/* University Tags */}
           {note.universityTags && note.universityTags.length > 0 && (
             <TagList>
@@ -78,8 +80,6 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
               ))}
             </TagList>
           )}
-
-          <div style={{ flex: "1" }}></div>
 
           <NoteStats>
             <StatItem>

@@ -18,64 +18,7 @@ import {
   ErrorMessage
 } from './Features.styles'
 import { useDispatch, useSelector } from 'react-redux'
-
-// Mock data for the 7 features
-const FEATURES_DATA = [
-  {
-    id: 2,
-    name: 'Latihan Soal',
-    description: 'Latihan soal dengan sistem fill-in-the-blank yang dihasilkan AI',
-    icon: '✏️',
-    cost: 5,
-    isActive: true,
-    color: '#8b5cf6'
-  },
-  {
-    id: 8,
-    name: 'Flashcard Belajar',
-    description: 'Belajar dengan sistem flashcard interaktif yang dihasilkan AI',
-    icon: '🎴',
-    cost: 10,
-    isActive: true,
-    color: '#06b6d4'
-  },
-  {
-    id: 10,
-    name: 'Ringkasan Materi',
-    description: 'Ringkasan materi kedokteran yang disusun dengan format mudah dipahami',
-    icon: '📝',
-    cost: 5,
-    isActive: true,
-    color: '#10b981'
-  },
-  {
-    id: 11,
-    name: 'Kalkulator',
-    description: 'Kalkulator medis yang dapat dikonfigurasi dengan formula custom',
-    icon: '🧮',
-    cost: 0,
-    isActive: true,
-    color: '#f59e0b'
-  },
-  {
-    id: 12,
-    name: 'Quiz Anatomi',
-    description: 'Quiz anatomi dengan gambar dan input manual untuk latihan identifikasi struktur',
-    icon: '🧠',
-    cost: 0,
-    isActive: true,
-    color: '#6BB9E8'
-  },
-  {
-    id: 13,
-    name: 'Multiple Choice Quiz',
-    description: 'Quiz pilihan ganda dengan mode pembelajaran dan ujian',
-    icon: '✅',
-    cost: 0,
-    isActive: true,
-    color: '#ec4899'
-  }
-]
+import OscePracticeAdminPage from './subpages/OscePractice'
 
 function Features() {
   const { features, loading } = useSelector(state => state.feature)
@@ -116,6 +59,8 @@ function Features() {
             return <Chatbot onBack={handleBackToList} />
         case "skripsi_builder":
             return <SkripsiBuilder onBack={handleBackToList} />
+        case "osce_practice":
+            return <OscePracticeAdminPage onBack={handleBackToList} />
         default:
             return null
     }

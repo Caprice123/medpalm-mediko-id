@@ -31,6 +31,7 @@ export const upload = (file, type) => async (dispatch) => {
     }
   } catch (err) {
     handleApiError(err, dispatch)
+    throw err
   } finally {
     dispatch(setLoading({ key: 'isUploading', value: false }))
   }

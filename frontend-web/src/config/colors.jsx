@@ -37,11 +37,25 @@ export const colors = {
     cardBg: '#ffffff',    // White for cards
   },
 
+  // OSCE Practice - Cyan theme
+  osce: {
+    primary: '#06b6d4',       // Cyan-500
+    primaryHover: '#0891b2',  // Cyan-600
+    primaryLight: '#e0f2fe',  // Cyan-50
+    primaryLighter: '#f0fdfa', // Cyan-lighter (active tab)
+    primaryDark: '#0e7490',   // Cyan-700
+    // Status badges
+    draftBg: '#e0e7ff',       // Indigo-100
+    draftText: '#4f46e5',     // Indigo-600
+  },
+
   // Success/Health - Green (using brand green)
   success: {
     main: '#8DC63F',      // Brand lime green
     light: '#A8D86A',     // Light green
+    lighter: '#dcfce7',   // Green-100 (for badges)
     dark: '#6BA32E',      // Darker green
+    darker: '#16a34a',    // Green-600 (for text)
   },
 
   // Warning - Amber
@@ -55,6 +69,7 @@ export const colors = {
   error: {
     main: '#EF4444',      // Red-500
     light: '#F87171',     // Red-400
+    lighter: '#fef2f2',   // Red-50 (for backgrounds)
     dark: '#DC2626',      // Red-600
   },
 

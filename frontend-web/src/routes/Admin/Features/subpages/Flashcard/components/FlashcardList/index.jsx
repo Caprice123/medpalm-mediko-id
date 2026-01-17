@@ -75,6 +75,8 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
               {quiz.description || 'Tidak ada deskripsi'}
             </QuizDescription>
 
+            <div style={{flex: "1"}}></div>
+
             {/* University Tags */}
             {universityTags.length > 0 && (
               <TagList>
@@ -96,8 +98,6 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
                 ))}
               </TagList>
             )}
-
-          <div style={{flex: "1"}}></div>
 
           <QuizStats>
             <StatItem>

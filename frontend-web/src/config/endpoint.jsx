@@ -21,6 +21,7 @@ export default {
         chatbot: "/admin/v1/chatbot",
         pricing: "/admin/v1/pricing",
         skripsi: "/admin/v1/skripsi",
+        oscePractice: "/admin/v1/oscePractice",
     },
     api: {
         calculators: "/api/v1/calculators",
@@ -34,6 +35,13 @@ export default {
         chatbot: "/api/v1/chatbot",
         pricing: "/api/v1/pricing",
         skripsi: "/api/v1/skripsi",
+        osceTopics: "/api/v1/osce/topics",
+        osceSessions: "/api/v1/osce/sessions",
+        osceMessages: (sessionId) => `/api/v1/osce/sessions/${sessionId}/messages`,
+        osceDiagnoses: (sessionId) => `/api/v1/osce/sessions/${sessionId}/diagnoses`,
+        osceTherapies: (sessionId) => `/api/v1/osce/sessions/${sessionId}/therapies`,
+        osceObservations: (sessionId) => `/api/v1/osce/sessions/${sessionId}/observations`,
+        osceEndSession: (sessionId) => `/api/v1/osce/sessions/${sessionId}/end`,
     },
     pricing: {
         plans: `${API_BASE_URL}/api/v1/pricing/plans`,

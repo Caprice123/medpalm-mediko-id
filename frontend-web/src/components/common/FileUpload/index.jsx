@@ -24,6 +24,7 @@ import {
  * @param {number} props.maxSizeMB - Maximum file size in MB
  * @param {boolean} props.isUploading - Upload loading state
  * @param {string} props.uploadText - Custom upload area text
+ * @param {boolean} props.multiple - Allow multiple file selection
  */
 const FileUpload = ({
   file,
@@ -34,13 +35,18 @@ const FileUpload = ({
   acceptedTypesLabel = 'All files',
   maxSizeMB = 50,
   isUploading = false,
-  uploadText = 'Click to upload file'
+  uploadText = 'Click to upload file',
+  multiple = false
 }) => {
     const ref = useRef(null)
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0]
+  const handleFileChange = async (e) => {
+    let selectedFile = e.target.files[0]
+    if (multiple) {
+      selectedFile = e.target.files
+    }
+
     if (selectedFile && onFileSelect) {
-      onFileSelect(selectedFile)
+      await onFileSelect(selectedFile)
     }
     // Reset input to allow re-selecting the same file
     e.target.value = ''
@@ -49,9 +55,9 @@ const FileUpload = ({
   const acceptString = acceptedTypes.length > 0 ? acceptedTypes.join(',') : '*'
 
   return (
-    <UploadSection>
+    <UploadSection className="file-upload-section">
       {!file ? (
-        <UploadArea onClick={() => ref.current.click()}>
+        <UploadArea className="file-input" onClick={() => ref.current.click()}>
           <input
             ref={ref}
             id="file-upload-input"
@@ -59,6 +65,7 @@ const FileUpload = ({
             accept={acceptString}
             onChange={handleFileChange}
             style={{ display: 'none' }}
+            multiple={multiple}
           />
           <UploadIcon>📤</UploadIcon>
           <UploadText>
