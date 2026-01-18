@@ -1,88 +1,104 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
-import { v4 as uuidv4 } from 'uuid'
-import attachmentService from '#services/attachment/attachmentService'
 
 export class StartOsceSessionService extends BaseService {
-  static async call(userId, topicId) {
+  static async call(userId, sessionId) {
     if (!userId) {
       throw new Error('User ID is required')
     }
 
-    if (!topicId) {
-      throw new Error('Topic ID is required')
+    if (!sessionId) {
+      throw new Error('Session ID is required')
     }
 
-    try {
-      // Verify topic exists and is published
-      const topic = await prisma.osce_topics.findFirst({
+      // Find the session
+      const session = await prisma.osce_sessions.findFirst({
         where: {
-          id: topicId,
-          status: 'published',
-          is_active: true,
+          unique_id: sessionId,
+          user_id: userId,
+        },
+        include: {
+          osce_session_topic_snapshot: true,
         },
       })
 
-      if (!topic) {
-        throw new Error('Topic not found or not available')
+      if (!session) {
+        throw new Error('Session not found or access denied')
       }
 
-      // Fetch attachments with presigned URLs
-      const attachments = await attachmentService.getAttachments('osce_topic', topicId)
-      const attachmentsWithUrls = await Promise.all(
-        attachments.map(async (attachment) => {
-          const url = await attachmentService.getAttachmentWithUrl('osce_topic', topicId, attachment.name)
-          return {
-            blobId: attachment.blob_id,
-            filename: attachment.blob?.filename || attachment.name,
-            url: url?.url || null,
-            contentType: attachment.blob?.content_type || 'application/octet-stream'
-          }
-        })
-      )
+      // If session is already started, just return success
+      if (session.status === 'started') {
+        return 
+      }
 
-      // Create new session with UUID
-      const session = await prisma.osce_sessions.create({
-        data: {
-          unique_id: uuidv4(),
-          user_id: userId,
-          osce_topic_id: topicId,
-          ai_model_used: topic.ai_model,
-          duration_minutes: 0, // Will be updated when session completes
-          credits_used: 0, // Will be updated based on usage
-        },
-        include: {
-          osce_topic: {
-            select: {
-              id: true,
-              title: true,
-              description: true,
-              scenario: true,
-              guide: true,
-              context: true,
-              answer_key: true,
-              knowledge_base: true,
-              system_prompt: true,
-              ai_model: true,
-              duration_minutes: true,
-            },
+      if (session.status === 'completed') {
+        throw new Error('Session has already been completed')
+      }
+
+      // Check OSCE feature is active and get session start cost
+      const constants = await prisma.constants.findMany({
+        where: {
+          key: {
+            in: ['osce_practice_is_active', 'osce_session_start_cost'],
           },
         },
       })
 
-      return {
-        ...session,
-        osce_topic: {
-          ...session.osce_topic,
-          attachments: attachmentsWithUrls
-        }
+      const constantsMap = {}
+      constants.forEach(c => {
+        constantsMap[c.key] = c.value
+      })
+
+      const featureActive = constantsMap.osce_practice_is_active === 'true'
+      if (!featureActive) {
+        throw new Error('OSCE Practice feature is currently inactive')
       }
-    } catch (error) {
-      console.error('[StartOsceSessionService] Error:', error)
-      if (error.message.includes('not found')) {
-        throw error
+
+      const sessionStartCost = parseInt(constantsMap.osce_session_start_cost) || 10
+
+      // Check user credits
+      const userCredit = await prisma.user_credits.findUnique({
+        where: { user_id: userId },
+      })
+
+      if (!userCredit || userCredit.balance < sessionStartCost) {
+        throw new Error(`Insufficient credits. You need ${sessionStartCost} credits to start a session`)
       }
-      throw new Error('Failed to start OSCE session')
-    }
+
+      // Deduct credits and update session status
+      await prisma.$transaction(async (tx) => {
+        // Deduct credits
+        await tx.user_credits.update({
+          where: { user_id: userId },
+          data: {
+            balance: { decrement: sessionStartCost },
+          },
+        })
+
+        // Record credit transaction
+        await tx.credit_transactions.create({
+          data: {
+            user_id: userId,
+            user_credit_id: userCredit.id,
+            type: 'deduction',
+            amount: sessionStartCost,
+            balance_before: userCredit.balance,
+            balance_after: userCredit.balance - sessionStartCost,
+            description: `OSCE Practice - Start session ${session.unique_id}`,
+            session_id: session.id,
+          },
+        })
+
+        // Update session status and credits used
+        await tx.osce_sessions.update({
+          where: { id: session.id },
+          data: {
+            status: 'started',
+            started_at: new Date(),
+            scheduled_end_at: new Date(Date.now() + session.osce_session_topic_snapshot.duration_minutes * 60 * 1000),
+            credits_used: sessionStartCost,
+          },
+        })
+      })
   }
 }

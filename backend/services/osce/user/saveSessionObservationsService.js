@@ -1,8 +1,10 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
+import idriveService from '#services/idrive.service'
 
 export class SaveSessionObservationsService extends BaseService {
-  static async call(userId, sessionId, observations) {
+  static async call(userId, sessionId, data) {
     if (!userId) {
       throw new Error('User ID is required')
     }
@@ -11,15 +13,7 @@ export class SaveSessionObservationsService extends BaseService {
       throw new Error('Session ID is required')
     }
 
-    if (!observations || !Array.isArray(observations)) {
-      throw new Error('Observations must be an array')
-    }
-
-    if (observations.length > 5) {
-      throw new Error('Maximum 5 observations allowed')
-    }
-
-    // Verify session belongs to user and not locked
+    // Verify session belongs to user
     const session = await prisma.osce_sessions.findFirst({
       where: {
         unique_id: sessionId,
@@ -31,53 +25,70 @@ export class SaveSessionObservationsService extends BaseService {
       throw new Error('Session not found or access denied')
     }
 
-    if (session.observations_locked) {
-      throw new Error('Observations have already been saved and cannot be modified')
-    }
+    const isLocked = session.observations_locked
 
-    // Delete existing observations
-    await prisma.osce_session_observations.deleteMany({
-      where: {
-        osce_session_id: session.id,
-      },
-    })
+    // Handle selection (first save)
+    if (data.snapshotIds && Array.isArray(data.snapshotIds)) {
+      if (isLocked) {
+        throw new Error('Observations selection is locked and cannot be changed')
+      }
+      // Mark selected observations as checked
+      await Promise.all(
+        data.snapshotIds.map(async (snapshotId) => {
+            await prisma.osce_session_observations.create({
+                data: { 
+                    observation_snapshot_id: snapshotId,
+                    osce_session_id: session.id,
+                    interpretation: null,
+                 },
+            })
+        })
+      )
 
-    // Save new observations
-    const observationsToCreate = observations.map(obs => ({
-      osce_session_id: session.id,
-      observation_id: obs.observationId,
-      is_checked: true, // Marked as selected
-      notes: obs.interpretation || null,
-    }))
-
-    if (observationsToCreate.length > 0) {
-      await prisma.osce_session_observations.createMany({
-        data: observationsToCreate,
+      // Lock observations
+      await prisma.osce_sessions.update({
+        where: { id: session.id },
+        data: { observations_locked: true },
       })
     }
 
-    // Lock observations (prevent further changes)
-    await prisma.osce_sessions.update({
-      where: { id: session.id },
-      data: {
-        observations_locked: true,
-      },
-    })
-
-    // Fetch and return saved observations
+    // Fetch and return saved observations with full details
     const savedObservations = await prisma.osce_session_observations.findMany({
       where: {
         osce_session_id: session.id,
       },
       include: {
-        osce_observation: {
-          include: {
-            group: true,
-          },
-        },
+        observation_snapshot: true,
       },
     })
 
-    return savedObservations
+    // Add attachments for each observation
+    const observationsWithAttachments = await Promise.all(
+      savedObservations.map(async (obs) => {
+        const attachments = await attachmentService.getAttachments(
+          'osce_session_observation_snapshot',
+          obs.observation_snapshot_id
+        )
+
+        return {
+          id: obs.id,
+          snapshotId: obs.observation_snapshot_id,
+          observationId: obs.observation_snapshot.observation_id,
+          name: obs.observation_snapshot.observation_name,
+          observationText: obs.observation_snapshot.observation_text,
+          requiresInterpretation: obs.observation_snapshot.requires_interpretation,
+          interpretation: obs.interpretation,
+          attachments: attachments.length > 0 ? {
+            id: attachments[0].id,
+            name: attachments[0].name,
+            url: attachments[0].blob?.key ? await idriveService.getSignedUrl(attachments[0].blob.key) : null,
+            contentType: attachments[0].blob?.content_type || null,
+          } : null,
+        }
+      })
+    )
+    console.log(observationsWithAttachments[0])
+
+    return observationsWithAttachments
   }
 }

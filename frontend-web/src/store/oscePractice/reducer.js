@@ -6,11 +6,12 @@ const initialState = {
   topics: [],
   observations: [],
   topicDetail: null,
-
+  
   // User-facing state
   userTopics: [], // Available topics for user to select
   userSessions: [], // User's session history
-
+  streamingMessage: null,
+  
   // Session result details
   sessionDetail: null,
   sessionMessages: [],
@@ -28,9 +29,15 @@ const initialState = {
     isLoadingUserSessions: false,
     isLoadingSessionDetail: false,
     isLoadingSessionMessages: false,
+    isLoadingMoreMessages: false,
     isLoadingSessionObservations: false,
     isLoadingSessionDiagnoses: false,
     isLoadingSessionTherapies: false,
+    isSendingMessage: false,
+  },
+  messagesPagination: {
+    hasMore: false,
+    nextCursor: null,
   },
   filters: {
     topic: '',
@@ -42,6 +49,11 @@ const initialState = {
     perPage: 20,
     isLastPage: false
   },
+  messagePagination: {
+    page: 1,
+    perPage: 20,
+    isLastPage: false
+  }
 }
 
 const { reducer, actions } = createSlice({
@@ -76,6 +88,9 @@ const { reducer, actions } = createSlice({
     setPage: (state, { payload }) => {
       state.pagination.page = payload
     },
+    setMessagePagination: (state, { payload }) => {
+        state.messagePagination = payload
+    },
     updatePagination: (state, { payload }) => {
       state.pagination = { ...state.pagination, ...payload }
     },
@@ -91,6 +106,25 @@ const { reducer, actions } = createSlice({
     setSessionMessages: (state, { payload }) => {
       state.sessionMessages = payload
     },
+    addMessage: (state, { payload: { sessionId, message } }) => {
+      // Add message to the end of the messages array
+      state.sessionMessages.push(message)
+    },
+    updateMessage: (state, { payload: { sessionId, messageId, content } }) => {
+      // Find and update message content
+      const messageIndex = state.sessionMessages.findIndex(m => m.id === messageId)
+      if (messageIndex !== -1) {
+        state.sessionMessages[messageIndex].content = content
+      }
+    },
+    removeMessage: (state, { payload: { sessionId, messageId } }) => {
+      // Remove message by id
+      state.sessionMessages = state.sessionMessages.filter(m => m.id !== messageId)
+    },
+    prependMessages: (state, { payload: { sessionId, messages } }) => {
+      // Add messages to the beginning of the array (for loading older messages)
+      state.sessionMessages = [...messages, ...state.sessionMessages]
+    },
     setSessionObservations: (state, { payload }) => {
       state.sessionObservations = payload
     },
@@ -99,6 +133,9 @@ const { reducer, actions } = createSlice({
     },
     setSessionTherapies: (state, { payload }) => {
       state.sessionTherapies = payload
+    },
+    setMessagesPagination: (state, { payload }) => {
+      state.messagesPagination = payload
     }
   },
 

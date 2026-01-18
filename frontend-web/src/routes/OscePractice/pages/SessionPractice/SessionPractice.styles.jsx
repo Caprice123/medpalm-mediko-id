@@ -1,9 +1,11 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
   display: flex;
-  height: 100vh;
+  margin: 0 auto;
+  max-width: 1200px;
+  height: calc(100vh - 93px);
   background: ${colors.neutral.gray50};
   overflow: hidden;
 `
@@ -12,7 +14,7 @@ export const Container = styled.div`
 export const Sidebar = styled.div`
   width: 400px;
   background: ${colors.neutral.white};
-  border-right: 1px solid ${colors.neutral.gray200};
+  border-right: 2px solid ${colors.neutral.gray200};
   display: flex;
   flex-direction: column;
 
@@ -22,12 +24,12 @@ export const Sidebar = styled.div`
 `
 
 export const TimerCard = styled.div`
-  background: linear-gradient(135deg, ${colors.osce.primary} 0%, ${colors.osce.primaryDark} 100%);
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
   color: ${colors.neutral.white};
   padding: 1.5rem;
   margin: 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
 `
 
 export const TimerLabel = styled.div`
@@ -57,20 +59,19 @@ export const TaskSection = styled.div`
 export const TaskHeader = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: ${colors.osce.primary};
+  color: ${colors.primary.main};
   margin: 0 0 1rem 0;
-  padding: 1rem 0.5rem 0.5rem 0.5rem;
-  border-bottom: 2px solid ${colors.osce.primaryLight};
 `
 
 export const TaskContent = styled.div`
-  background: ${colors.neutral.gray50};
+  background: ${colors.neutral.gray100};
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
   font-size: 0.875rem;
   line-height: 1.6;
   color: ${colors.neutral.gray700};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   max-height: 400px;
   overflow-y: auto;
 
@@ -95,7 +96,6 @@ export const AutoSubmitToggle = styled.div`
   padding: 0.75rem 1rem;
   background: ${colors.neutral.gray100};
   border-radius: 8px;
-  margin: 0 0.5rem 1rem 0.5rem;
   font-size: 0.875rem;
   color: ${colors.neutral.gray700};
 `
@@ -112,7 +112,7 @@ export const ToggleSwitch = styled.label`
     height: 0;
 
     &:checked + span {
-      background-color: ${colors.osce.primary};
+      background-color: ${colors.primary.main};
     }
 
     &:checked + span:before {
@@ -179,15 +179,15 @@ export const TabBar = styled.div`
   background: ${colors.neutral.white};
   border-bottom: 2px solid ${colors.neutral.gray200};
   display: flex;
-  padding: 0 2rem;
+  padding: 0 1rem;
   gap: 0.5rem;
 `
 
 export const Tab = styled.button`
   background: transparent;
   border: none;
-  border-bottom: 3px solid ${props => props.active ? colors.osce.primary : 'transparent'};
-  color: ${props => props.active ? colors.osce.primary : colors.neutral.gray600};
+  border-bottom: 3px solid ${props => props.active ? colors.primary.main : 'transparent'};
+  color: ${props => props.active ? colors.primary.main : colors.neutral.gray600};
   padding: 1rem 1.5rem;
   font-weight: ${props => props.active ? 600 : 500};
   font-size: 0.875rem;
@@ -195,33 +195,45 @@ export const Tab = styled.button`
   transition: all 0.2s;
   position: relative;
   bottom: -2px;
-
-  &:hover {
-    color: ${colors.osce.primary};
-    background: ${colors.osce.primaryLight};
-  }
 `
 
 export const TabContent = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 1rem;
+  padding-bottom: 0;
   background: ${colors.neutral.white};
 `
 
 export const GuideSection = styled.div`
-  background: ${colors.osce.primaryLight};
-  border-left: 4px solid ${colors.osce.primary};
+  background: ${colors.neutral.gray100};
   padding: 1.25rem;
+ max-height: 150px;
   border-radius: 8px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 `
 
 export const GuideTitle = styled.h3`
   font-size: 1.125rem;
   font-weight: 600;
-  color: ${colors.osce.primary};
-  margin: 0 0 0.75rem 0;
+  color: ${colors.primary.main};
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+
+  &:hover {
+    color: ${colors.primary.hover};
+  }
+
+  span {
+    font-size: 0.875rem;
+    transition: transform 0.2s;
+  }
 `
 
 export const GuideText = styled.p`
@@ -229,30 +241,34 @@ export const GuideText = styled.p`
   line-height: 1.6;
   color: ${colors.neutral.gray700};
   margin: 0;
+  padding-top: 0.5rem;
+  white-space: pre-line;
 `
 
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   max-width: 1200px;
+  height: 100%;
 `
 
 export const MessageList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-bottom: 1rem;
+  flex: 1;
+  padding-bottom: 1rem;
   min-height: 200px;
+  overflow-y: auto;
 `
 
 export const Message = styled.div`
-  background: ${props => props.isUser ? colors.osce.primaryLight : colors.neutral.gray100};
+  background: ${props => props.isUser ? colors.primary.light : colors.neutral.gray100};
   padding: 1rem 1.25rem;
   border-radius: 12px;
   max-width: 80%;
   align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  border: 1px solid ${props => props.isUser ? colors.osce.primary : colors.neutral.gray200};
+  border: 1px solid ${props => props.isUser ? colors.primary.main : colors.neutral.gray200};
 `
 
 export const MessageAuthor = styled.div`
@@ -271,54 +287,71 @@ export const MessageText = styled.div`
 export const InputArea = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: ${colors.neutral.white};
+  border-top: 1px solid ${colors.neutral.gray200};
+`
+
+export const InputRow = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
 `
 
 export const TextInput = styled.textarea`
-  width: 100%;
-  min-height: 120px;
-  padding: 1rem;
-  border: 2px solid ${colors.osce.primary};
-  border-radius: 8px;
-  font-size: 0.875rem;
+  flex: 1;
+  min-height: 40px;
+  max-height: 90px;
+  padding: 0.625rem 1rem;
+  border: 1px solid ${colors.neutral.gray300};
+  border-radius: 20px;
+  font-size: 0.9375rem;
   font-family: inherit;
-  resize: vertical;
+  background: ${colors.neutral.gray50};
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.4;
 
   &:focus {
     outline: none;
-    border-color: ${colors.osce.primaryHover};
-    box-shadow: 0 0 0 3px ${colors.osce.primaryLight};
+    border-color: ${colors.primary.main};
+    background: ${colors.neutral.white};
   }
 
   &::placeholder {
     color: ${colors.neutral.gray400};
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `
 
 export const InputActions = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
 `
 
 export const RecordButton = styled.button`
-  flex: 1;
-  background: ${colors.osce.primary};
-  color: ${colors.neutral.white};
+  width: 40px;
+  height: 40px;
+  background: transparent;
   border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: ${colors.neutral.gray600};
+  transition: all 0.2s;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: ${colors.osce.primaryHover};
+    background: ${colors.neutral.gray100};
   }
 
   &:disabled {
@@ -327,7 +360,7 @@ export const RecordButton = styled.button`
   }
 
   ${props => props.recording && `
-    background: ${colors.error.main};
+    color: ${colors.error.main};
     animation: pulse 1.5s infinite;
 
     @keyframes pulse {
@@ -338,30 +371,38 @@ export const RecordButton = styled.button`
 `
 
 export const SendButton = styled.button`
-  background: ${colors.neutral.gray200};
-  color: ${colors.neutral.gray600};
+  width: 40px;
+  height: 40px;
+  background: ${colors.primary.main};
   border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  font-size: 1.125rem;
+  color: ${colors.neutral.white};
   transition: all 0.2s;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: ${colors.neutral.gray300};
+    background: ${colors.primary.hover};
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background: ${colors.neutral.gray300};
+    color: ${colors.neutral.gray500};
   }
 `
 
 export const HelpText = styled.div`
   font-size: 0.75rem;
   color: ${colors.neutral.gray500};
-  text-align: center;
-  padding: 0.5rem;
+  text-align: left;
+  padding: 0 0.25rem;
+  line-height: 1.4;
 `
 
 export const EmptyState = styled.div`
@@ -371,11 +412,55 @@ export const EmptyState = styled.div`
   font-size: 0.875rem;
 `
 
+// Typing animation keyframes
+const typingAnimation = keyframes`
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+`
+
+// Blinking cursor animation
+const blinkAnimation = keyframes`
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+`
+
+export const TypingIndicator = styled.div`
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.5rem 0;
+`
+
+export const TypingDot = styled.div`
+  width: 8px;
+  height: 8px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: ${typingAnimation} 1.4s infinite;
+  animation-delay: ${props => props.delay};
+`
+
+export const StreamingCursor = styled.span`
+  margin-left: 4px;
+  animation: ${blinkAnimation} 1s infinite;
+`
+
 // Diagnosis & Therapy Tabs
 export const FormContainer = styled.div`
-  padding: 1.5rem;
+  padding-bottom: 1rem;
   overflow-y: auto;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 `
 
 export const FormSection = styled.div`
@@ -402,8 +487,8 @@ export const FormInput = styled.input`
   transition: all 0.2s;
 
   &:focus {
-    border-color: ${colors.osce.primary};
-    box-shadow: 0 0 0 3px ${colors.osce.primaryLight};
+    border-color: ${colors.primary.main};
+    box-shadow: 0 0 0 3px ${colors.primary.light};
   }
 
   &::placeholder {
@@ -503,7 +588,7 @@ export const EmptyListText = styled.p`
 
 // Supporting Data (Observations) Tab
 export const ObservationHeader = styled.div`
-  background: ${colors.osce.primaryLight};
+  border: 2px solid ${colors.neutral.gray200};
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -513,7 +598,7 @@ export const ObservationHeader = styled.div`
 export const ObservationTitle = styled.h2`
   font-size: 1.25rem;
   font-weight: 600;
-  color: ${colors.osce.primary};
+  color: ${colors.primary.main};
   margin: 0 0 0.5rem 0;
 `
 
@@ -534,8 +619,8 @@ export const SearchInput = styled.input`
   transition: all 0.2s;
 
   &:focus {
-    border-color: ${colors.osce.primary};
-    box-shadow: 0 0 0 3px ${colors.osce.primaryLight};
+    border-color: ${colors.primary.main};
+    box-shadow: 0 0 0 3px ${colors.primary.light};
   }
 
   &::placeholder {
@@ -561,8 +646,8 @@ export const ObservationGroup = styled.div`
 export const GroupHeader = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: ${colors.osce.primary};
-  border-bottom: 2px solid ${colors.osce.primary};
+  color: ${colors.primary.main};
+  border-bottom: 2px solid ${colors.primary.main};
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 `
@@ -578,15 +663,15 @@ export const ObservationCheckbox = styled.label`
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: ${props => props.checked ? colors.osce.primaryLight : colors.neutral.white};
-  border: 2px solid ${props => props.checked ? colors.osce.primary : colors.neutral.gray200};
+  background: ${colors.neutral.white};
+  border: 2px solid ${props => props.checked ? colors.primary.main : colors.neutral.gray200};
   border-radius: 8px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.2s;
   opacity: ${props => props.disabled ? 0.6 : 1};
 
   &:hover:not([disabled]) {
-    border-color: ${colors.osce.primary};
+    border-color: ${colors.primary.main};
     box-shadow: 0 2px 4px rgba(6, 182, 212, 0.1);
   }
 
@@ -609,7 +694,7 @@ export const SaveObservationsButton = styled.button`
   margin: 2rem auto 0 auto;
   display: block;
   padding: 1rem 2rem;
-  background: ${colors.osce.primary};
+  background: ${colors.primary.main};
   color: ${colors.neutral.white};
   border: none;
   border-radius: 8px;
@@ -619,8 +704,8 @@ export const SaveObservationsButton = styled.button`
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    background: ${colors.osce.primaryHover};
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    background: ${colors.primary.hover};
+    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
   }
 
   &:disabled {
@@ -631,7 +716,7 @@ export const SaveObservationsButton = styled.button`
 
 export const ObservationResultCard = styled.div`
   background: ${colors.neutral.white};
-  border: 1px solid ${colors.neutral.gray200};
+  border: 2px solid ${colors.neutral.gray200};
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -640,8 +725,8 @@ export const ObservationResultCard = styled.div`
 export const ResultTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: ${colors.osce.primary};
-  border-bottom: 2px solid ${colors.osce.primary};
+  color: ${colors.primary.main};
+  border-bottom: 2px solid ${colors.primary.main};
   padding-bottom: 0.5rem;
   margin: 0 0 1rem 0;
 `
@@ -668,8 +753,8 @@ export const InterpretationTextarea = styled.textarea`
   transition: all 0.2s;
 
   &:focus {
-    border-color: ${colors.osce.primary};
-    box-shadow: 0 0 0 3px ${colors.osce.primaryLight};
+    border-color: ${colors.primary.main};
+    box-shadow: 0 0 0 3px ${colors.primary.light};
   }
 
   &::placeholder {

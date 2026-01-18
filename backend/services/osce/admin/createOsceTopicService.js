@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class CreateOsceTopicService extends BaseService {
-    static async call({ title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, tags, status, attachments, created_by }) {
+    static async call({ title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, tags, status, attachments, observations, created_by }) {
         // Validate inputs
         await this.validate({ title, scenario, aiModel, systemPrompt, durationMinutes, tags, status })
 
@@ -53,6 +53,33 @@ export class CreateOsceTopicService extends BaseService {
                         blob_id: att.blobId
                     }))
                 })
+            }
+
+            // Create observations if provided
+            if (observations && observations.length > 0) {
+                for (const obs of observations) {
+                    const topicObs = await tx.osce_topic_observations.create({
+                        data: {
+                            topic_id: createdTopic.id,
+                            observation_id: obs.observationId,
+                            observation_text: obs.observationText || '',
+                            requires_interpretation: obs.requiresInterpretation || false,
+                            order: obs.order || 0
+                        }
+                    })
+
+                    // Create attachment for observation image if provided
+                    if (obs.observationImageBlobId) {
+                        await tx.attachments.create({
+                            data: {
+                                name: 'observation_image',
+                                record_type: 'osce_topic_observation',
+                                record_id: topicObs.id,
+                                blob_id: obs.observationImageBlobId
+                            }
+                        })
+                    }
+                }
             }
 
             return createdTopic

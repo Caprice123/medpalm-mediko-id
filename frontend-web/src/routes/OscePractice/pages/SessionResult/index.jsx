@@ -57,6 +57,19 @@ function SessionResult() {
     }
   }, [sessionId, dispatch])
 
+  // Redirect based on session status
+  useEffect(() => {
+    if (sessionDetail && sessionDetail.uniqueId === sessionId) {
+      if (sessionDetail.status === 'created') {
+        // Redirect to preparation page if session not started yet
+        navigate(`/osce-practice/session/${sessionId}/preparation`, { replace: true })
+      } else if (sessionDetail.status === 'started') {
+        // Redirect to practice page if session is still ongoing
+        navigate(`/osce-practice/session/${sessionId}/practice`, { replace: true })
+      }
+    }
+  }, [sessionDetail, sessionId, navigate])
+
   const formatDate = (dateString) => {
     if (!dateString) return '-'
     const date = new Date(dateString)

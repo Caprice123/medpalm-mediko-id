@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class UpdateOsceTopicService extends BaseService {
-    static async call(topicId, { title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, status, tags, attachments }) {
+    static async call(topicId, { title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, status, tags, attachments, observations }) {
         this.validate(topicId, { title, scenario, aiModel, systemPrompt, durationMinutes, status })
 
         // Check if topic exists
@@ -76,6 +76,57 @@ export class UpdateOsceTopicService extends BaseService {
                             blob_id: att.blobId
                         }))
                     })
+                }
+            }
+
+            // Update observations if provided
+            if (observations !== undefined && Array.isArray(observations)) {
+                // Get existing observations to delete their attachments
+                const existingObservations = await tx.osce_topic_observations.findMany({
+                    where: { topic_id: parseInt(topicId) }
+                })
+
+                // Delete attachments for existing observations
+                for (const existingObs of existingObservations) {
+                    await tx.attachments.deleteMany({
+                        where: {
+                            record_type: 'osce_topic_observation',
+                            record_id: existingObs.id
+                        }
+                    })
+                }
+
+                // Delete existing observations
+                await tx.osce_topic_observations.deleteMany({
+                    where: {
+                        topic_id: parseInt(topicId)
+                    }
+                })
+
+                // Create new observations
+                if (observations.length > 0) {
+                    for (const obs of observations) {
+                        const topicObs = await tx.osce_topic_observations.create({
+                            data: {
+                                topic_id: parseInt(topicId),
+                                observation_id: obs.observationId,
+                                observation_text: obs.observationText || '',
+                                requires_interpretation: obs.requiresInterpretation || false,
+                            }
+                        })
+
+                        // Create attachment for observation image if provided
+                        if (obs.observationImageBlobId) {
+                            await tx.attachments.create({
+                                data: {
+                                    name: 'observation_image',
+                                    record_type: 'osce_topic_observation',
+                                    record_id: topicObs.id,
+                                    blob_id: obs.observationImageBlobId
+                                }
+                            })
+                        }
+                    }
                 }
             }
 

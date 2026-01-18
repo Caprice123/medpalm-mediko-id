@@ -2,12 +2,62 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetPublishedOsceTopicsService extends BaseService {
-  static async call() {
+  static async call(filters = {}) {
+    // Pagination
+    const page = parseInt(filters.page) || 1
+    const perPage = parseInt(filters.perPage) || 20
+    const skip = (page - 1) * perPage
+
+    const where = {
+      status: 'published',
+      is_active: true,
+    }
+
+    // Search filter
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+        { scenario: { contains: filters.search, mode: 'insensitive' } },
+      ]
+    }
+
+    // Tag filters
+    const tagFilters = []
+
+    if (filters.topicTag) {
+      tagFilters.push({
+        osce_topic_tags: {
+          some: {
+            tag_id: parseInt(filters.topicTag)
+          }
+        }
+      })
+    }
+
+    if (filters.batchTag) {
+      tagFilters.push({
+        osce_topic_tags: {
+          some: {
+            tag_id: parseInt(filters.batchTag)
+          }
+        }
+      })
+    }
+
+    // Apply tag filters with AND logic
+    if (tagFilters.length > 0) {
+      if (where.AND) {
+        where.AND = [...where.AND, ...tagFilters]
+      } else {
+        where.AND = tagFilters
+      }
+    }
+
     const topics = await prisma.osce_topics.findMany({
-      where: {
-        status: 'published',
-        is_active: true,
-      },
+      skip,
+      take: perPage,
+      where,
       select: {
         id: true,
         title: true,
@@ -19,12 +69,12 @@ export class GetPublishedOsceTopicsService extends BaseService {
         updated_at: true,
         osce_topic_tags: {
           where: {
-            tag: {
+            tags: {
               is_active: true,
             },
           },
           select: {
-            tag: {
+            tags: {
               select: {
                 id: true,
                 name: true,
@@ -44,6 +94,13 @@ export class GetPublishedOsceTopicsService extends BaseService {
       },
     })
 
-    return topics
+    return {
+      topics,
+      pagination: {
+        page,
+        perPage,
+        isLastPage: topics.length < perPage
+      }
+    }
   }
 }

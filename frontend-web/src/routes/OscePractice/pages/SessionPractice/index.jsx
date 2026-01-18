@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import Endpoints from '@config/endpoint'
-import { postWithToken } from '@utils/requestUtils'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  fetchSessionDetail,
+  endOsceSession,
+} from '@store/oscePractice/userAction'
 import SessionSidebar from './components/SessionSidebar'
 import ConversationTab from './components/ConversationTab'
 import DiagnosisTab from './components/DiagnosisTab'
@@ -26,8 +28,9 @@ const TABS = [
 
 function SessionPractice() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { sessionId } = useParams()
-  const { userSessions } = useSelector(state => state.oscePractice)
+  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
 
   const [activeTab, setActiveTab] = useState('conversation')
 
@@ -38,48 +41,78 @@ function SessionPractice() {
   // Terapi state
   const [therapies, setTherapies] = useState([])
 
-  const [isEndingSession, setIsEndingSession] = useState(false)
+  // Fetch session detail on mount
+  useEffect(() => {
+    if (sessionId) {
+      dispatch(fetchSessionDetail(sessionId))
+    }
+  }, [sessionId, dispatch])
 
-  // Find session data
-  const session = userSessions.find(s => s.uniqueId === sessionId)
+  // Populate diagnoses and therapies from sessionDetail when it loads
+  useEffect(() => {
+    if (sessionDetail && sessionDetail.uniqueId === sessionId) {
+      // Populate diagnoses
+      if (sessionDetail.diagnoses && sessionDetail.diagnoses.length > 0) {
+        const utama = sessionDetail.diagnoses.find(d => d.type === 'utama')
+        const pembanding = sessionDetail.diagnoses.filter(d => d.type === 'pembanding')
+
+        if (utama) setDiagnosisUtama(utama.diagnosis)
+        if (pembanding.length > 0) {
+          setDiagnosisPembanding(pembanding.map(d => d.diagnosis))
+        }
+      }
+
+      // Populate therapies
+      if (sessionDetail.therapies && sessionDetail.therapies.length > 0) {
+        setTherapies(sessionDetail.therapies.map(t => t.therapy))
+      }
+    }
+  }, [sessionDetail, sessionId])
+
+  // Redirect based on session status
+  useEffect(() => {
+    if (sessionDetail && sessionDetail.uniqueId === sessionId) {
+      if (sessionDetail.status === 'created') {
+        // Redirect to preparation page if session not started yet
+        navigate(`/osce-practice/session/${sessionId}/preparation`, { replace: true })
+      } else if (sessionDetail.status === 'completed') {
+        // Redirect to result page if session already completed
+        navigate(`/osce-practice/session/${sessionId}/result`, { replace: true })
+      }
+    }
+  }, [sessionDetail, sessionId, navigate])
 
   const handleEndSession = async () => {
     if (!window.confirm('Apakah Anda yakin ingin mengakhiri sesi? Sesi akan dievaluasi dan Anda tidak bisa melanjutkan setelah ini.')) {
       return
     }
 
-    try {
-      setIsEndingSession(true)
-
-      const route = Endpoints.api.osceEndSession(sessionId)
-      const response = await postWithToken(route, {
+    await dispatch(endOsceSession(
+      sessionId,
+      {
         diagnoses: {
           utama: diagnosisUtama,
           pembanding: diagnosisPembanding,
         },
         therapies: therapies,
-      })
-
-      if (response.data.success) {
-        // Navigate to results page
-        navigate(`/osce-practice/session/${sessionId}/result`)
+      },
+      (response) => {
+        // Navigate to results page on success
+        if (response.success) {
+          navigate(`/osce-practice/session/${sessionId}/result`)
+        }
       }
-    } catch (error) {
-      console.error('Error ending session:', error)
-      // Error is handled by the error handling in requestUtils
-      setIsEndingSession(false)
-    }
+    ))
   }
 
-  if (!session) {
+  // Show loading state or if session detail not loaded yet
+  if (loading.isLoadingSessionDetail) {
     return (
       <Container>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <h2>Sesi Tidak Ditemukan</h2>
-            <button onClick={() => navigate('/osce-practice')}>
-              Kembali ke Beranda
-            </button>
+            <h2>Memuat Sesi...</h2>
+            <p>Mohon tunggu sebentar</p>
           </div>
         </div>
       </Container>
@@ -90,9 +123,9 @@ function SessionPractice() {
     <Container>
       {/* Left Sidebar */}
       <SessionSidebar
-        session={session}
+        session={sessionDetail}
         onEndSession={handleEndSession}
-        isEndingSession={isEndingSession}
+        isEndingSession={loading.isEndingSession}
       />
 
       {/* Main Content */}

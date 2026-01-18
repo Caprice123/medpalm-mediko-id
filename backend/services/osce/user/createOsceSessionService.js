@@ -1,0 +1,217 @@
+import prisma from '#prisma/client'
+import { BaseService } from '#services/baseService'
+import { v4 as uuidv4 } from 'uuid'
+import attachmentService from '#services/attachment/attachmentService'
+
+export class CreateOsceSessionService extends BaseService {
+  static async call(userId, topicId) {
+    if (!userId) {
+      throw new Error('User ID is required')
+    }
+
+    if (!topicId) {
+      throw new Error('Topic ID is required')
+    }
+
+    try {
+      // Verify topic exists and is published
+      const topic = await prisma.osce_topics.findFirst({
+        where: {
+          id: topicId,
+          status: 'published',
+          is_active: true,
+        },
+      })
+
+      if (!topic) {
+        throw new Error('Topic not found or not available')
+      }
+
+      // Fetch ALL observation groups (entire table)
+      const allObservationGroups = await prisma.osce_observation_groups.findMany({
+        orderBy: {
+          id: 'asc',
+        },
+      })
+
+      // Fetch ALL observations (entire table) with their groups
+      const allObservations = await prisma.osce_observations.findMany({
+        include: {
+          osce_observation_group: true,
+        },
+        orderBy: {
+          id: 'asc',
+        },
+      })
+
+      // Fetch topic-specific observations (the ones configured for this topic)
+      const topicObservations = await prisma.osce_topic_observations.findMany({
+        where: {
+          topic_id: topicId,
+        },
+      })
+
+      // Create a map of topic observations for quick lookup
+      const topicObsMap = {}
+      topicObservations.forEach((topicObs) => {
+        topicObsMap[topicObs.observation_id] = topicObs
+      })
+
+      // Group all observations by their observation group
+      const observationsByGroup = {}
+      allObservations.forEach((obs) => {
+        const groupId = obs.group_id
+
+        if (!observationsByGroup[groupId]) {
+          observationsByGroup[groupId] = {
+            group: obs.osce_observation_group,
+            observations: [],
+          }
+        }
+
+        observationsByGroup[groupId].observations.push(obs)
+      })
+
+      // Create session with complete snapshots in a transaction
+      const session = await prisma.$transaction(async (tx) => {
+        // Create the session
+        const newSession = await tx.osce_sessions.create({
+          data: {
+            unique_id: uuidv4(),
+            user_id: userId,
+            osce_topic_id: topicId,
+            status: 'created',
+            actual_duration_minutes: 0,
+            credits_used: 0,
+          },
+        })
+
+        // Clone topic-level attachments
+        const topicAttachments = await attachmentService.getAttachments('osce_topic', topicId)
+        for (const attachment of topicAttachments) {
+          await tx.attachments.create({
+            data: {
+              name: attachment.name,
+              record_type: 'osce_session',
+              record_id: newSession.id,
+              blob_id: attachment.blob_id,
+            },
+          })
+        }
+
+        // Create topic snapshot
+        await tx.osce_session_topic_snapshots.create({
+          data: {
+            osce_session_id: newSession.id,
+            title: topic.title,
+            description: topic.description,
+            scenario: topic.scenario,
+            guide: topic.guide,
+            context: topic.context,
+            answer_key: topic.answer_key,
+            knowledge_base: topic.knowledge_base,
+            ai_model: topic.ai_model,
+            system_prompt: topic.system_prompt,
+            duration_minutes: topic.duration_minutes,
+          },
+        })
+
+        // Snapshot ALL observation groups and observations
+        for (const { group, observations } of Object.values(observationsByGroup)) {
+          // Snapshot the ENTIRE observation group record
+          const groupSnapshot = await tx.osce_session_observation_group_snapshots.create({
+            data: {
+              osce_session_id: newSession.id,
+              group_id: group.id,
+              group_name: group.name,
+            },
+          })
+
+          // Snapshot each observation in this group
+          for (const observation of observations) {
+            // Check if this observation exists in the topic
+            const topicObs = topicObsMap[observation.id]
+
+            // Snapshot the ENTIRE observation record
+            const obsSnapshot = await tx.osce_session_observation_snapshots.create({
+              data: {
+                group_snapshot_id: groupSnapshot.id,
+                observation_id: observation.id,
+                observation_group_id: observation.group_id,
+                observation_name: observation.name,
+                // If this observation is in the topic, add the topic-specific data
+                observation_text: topicObs?.observation_text || null,
+                requires_interpretation: topicObs?.requires_interpretation || false,
+              },
+            })
+
+            // If this observation is in the topic, clone its attachments (images)
+            if (topicObs) {
+              const observationAttachments = await attachmentService.getAttachments(
+                'osce_topic_observation',
+                topicObs.id
+              )
+
+              for (const attachment of observationAttachments) {
+                await tx.attachments.create({
+                  data: {
+                    name: attachment.name,
+                    record_type: 'osce_session_observation_snapshot',
+                    record_id: obsSnapshot.id,
+                    blob_id: attachment.blob_id,
+                  },
+                })
+              }
+
+              // Create user interaction record ONLY for observations in the topic
+              await tx.osce_session_observations.create({
+                data: {
+                  osce_session_id: newSession.id,
+                  observation_snapshot_id: obsSnapshot.id,
+                  is_checked: false,
+                  notes: null,
+                },
+              })
+            }
+          }
+        }
+
+        // Return complete session with all relations
+        return await tx.osce_sessions.findUnique({
+          where: { id: newSession.id },
+          include: {
+            osce_topic: {
+              select: {
+                id: true,
+              },
+            },
+            osce_session_topic_snapshot: true,
+            osce_session_observation_group_snapshots: {
+              include: {
+                osce_session_observation_snapshots: {
+                  include: {
+                    session_observations: true,
+                  },
+                  orderBy: {
+                    id: 'asc',
+                  },
+                },
+              },
+              orderBy: {
+                id: 'asc',
+              },
+            },
+          },
+        })
+      })
+
+      return session
+    } catch (error) {
+      console.error('[CreateOsceSessionService] Error:', error)
+      if (error.message.includes('not found')) {
+        throw error
+      }
+      throw new Error('Failed to create OSCE session')
+    }
+  }
+}

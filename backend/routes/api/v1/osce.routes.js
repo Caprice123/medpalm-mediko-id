@@ -14,8 +14,11 @@ router.get('/topics', asyncHandler(osceController.listTopics.bind(osceController
 // GET /api/v1/osce/sessions - Get user's session history
 router.get('/sessions', asyncHandler(osceController.listSessions.bind(osceController)));
 
-// POST /api/v1/osce/sessions - Start a new OSCE session
-router.post('/sessions', asyncHandler(osceController.startSession.bind(osceController)));
+// POST /api/v1/osce/sessions - Create a new OSCE session (no credit deduction)
+router.post('/sessions', asyncHandler(osceController.createSession.bind(osceController)));
+
+// POST /api/v1/osce/sessions/:sessionId/start - Start OSCE session (deducts credits)
+router.post('/sessions/:sessionId/start', asyncHandler(osceController.startSession.bind(osceController)));
 
 // GET /api/v1/osce/sessions/:uniqueId - Get specific session details
 router.get('/sessions/:uniqueId', asyncHandler(osceController.getSession.bind(osceController)));

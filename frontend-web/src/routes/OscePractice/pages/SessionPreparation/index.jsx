@@ -1,44 +1,50 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Container,
   Card,
   Header,
-  Icon,
+  IconCircle,
   Title,
   Subtitle,
-  TopicInfo,
-  TopicTitle,
-  TopicMeta,
-  PermissionSection,
-  SectionTitle,
-  PermissionItem,
-  PermissionIcon,
-  PermissionText,
-  PermissionLabel,
-  PermissionStatus,
+  PermissionCard,
+  PermissionIconCircle,
+  PermissionContent,
+  PermissionTitle,
+  PermissionDescription,
+  PermissionButton,
   StatusBadge,
+  InfoGrid,
+  InfoBox,
+  InfoBoxTitle,
+  InfoBoxIcon,
+  InfoBoxText,
   Actions,
   Button,
   ErrorMessage,
   HelpText,
 } from './SessionPreparation.styles'
+import { actions as commonActions } from '@store/common/reducer'
+import { startOsceSession, fetchSessionDetail } from '@store/oscePractice/userAction'
 
 function SessionPreparation() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { sessionId } = useParams()
-  const { userSessions } = useSelector(state => state.oscePractice)
+  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
 
-  const [permissions, setPermissions] = useState({
-    camera: false,
-    microphone: false,
-  })
-  const [error, setError] = useState(null)
+  const [microphoneGranted, setMicrophoneGranted] = useState(false)
   const [isRequesting, setIsRequesting] = useState(false)
+  const [isStarting, setIsStarting] = useState(false)
+  const [permissionError, setPermissionError] = useState(null)
 
-  // Find session data
-  const session = userSessions.find(s => s.uniqueId === sessionId)
+  // Fetch session detail on mount
+  useEffect(() => {
+    if (sessionId) {
+      dispatch(fetchSessionDetail(sessionId))
+    }
+  }, [sessionId, dispatch])
 
   // Check initial permission status
   useEffect(() => {
@@ -47,78 +53,83 @@ function SessionPreparation() {
 
   const checkPermissions = async () => {
     try {
-      // Check camera permission
-      const cameraPermission = await navigator.permissions.query({ name: 'camera' })
       // Check microphone permission
       const micPermission = await navigator.permissions.query({ name: 'microphone' })
-
-      setPermissions({
-        camera: cameraPermission.state === 'granted',
-        microphone: micPermission.state === 'granted',
-      })
-
-      // If both are already granted, auto-navigate after 2 seconds
-      if (cameraPermission.state === 'granted' && micPermission.state === 'granted') {
-        setTimeout(() => {
-          handleStart()
-        }, 2000)
-      }
+      setMicrophoneGranted(micPermission.state === 'granted')
     } catch (err) {
       console.error('Error checking permissions:', err)
     }
   }
 
-  const requestPermissions = async () => {
+  const requestMicrophonePermission = async () => {
     setIsRequesting(true)
-    setError(null)
+    setPermissionError(null)
 
     try {
-      // Request both camera and microphone access
+      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
         audio: true,
       })
 
       // Stop the stream immediately - we just needed to request permission
       stream.getTracks().forEach(track => track.stop())
 
-      setPermissions({
-        camera: true,
-        microphone: true,
-      })
-
-      // Auto-navigate to practice session after 1 second
-      setTimeout(() => {
-        handleStart()
-      }, 1000)
+      setMicrophoneGranted(true)
     } catch (err) {
       console.error('Permission denied:', err)
-      setError(
-        'Gagal mendapatkan akses kamera dan mikrofon. Pastikan Anda memberikan izin saat diminta oleh browser.'
-      )
+      setPermissionError('Akses mikrofon ditolak. Silakan aktifkan izin mikrofon di pengaturan browser Anda.')
     } finally {
       setIsRequesting(false)
     }
   }
 
-  const handleStart = () => {
-    if (permissions.camera && permissions.microphone) {
-      navigate(`/osce-practice/session/${sessionId}/practice`)
-    } else {
-      setError('Harap berikan izin akses kamera dan mikrofon terlebih dahulu.')
+  const handleStart = async () => {
+    if (!microphoneGranted) {
+      setPermissionError('Harap berikan izin akses mikrofon terlebih dahulu.')
+      return
+    }
+
+    setIsStarting(true)
+    try {
+      // Start the session (this will deduct credits)
+      await dispatch(startOsceSession(sessionId, () => {
+        // Navigate to practice page after successfully starting session
+        navigate(`/osce-practice/session/${sessionId}/practice`)
+      }))
+    } catch (err) {
+      console.error('Failed to start session:', err)
+      // Error handling is done in the action creator
+    } finally {
+      setIsStarting(false)
     }
   }
 
   const handleCancel = () => {
-    navigate('/osce-practice')
+    navigate(-1)
   }
 
-  if (!session) {
+  // Show loading state
+  if (loading.isLoadingSessionDetail) {
     return (
       <Container>
         <Card>
           <Header>
-            <Icon>⚠️</Icon>
+            <IconCircle>⏳</IconCircle>
+            <Title>Memuat Sesi...</Title>
+            <Subtitle>Mohon tunggu sebentar</Subtitle>
+          </Header>
+        </Card>
+      </Container>
+    )
+  }
+
+  // Show error if session not found
+  if (!sessionDetail) {
+    return (
+      <Container>
+        <Card>
+          <Header>
+            <IconCircle>⚠️</IconCircle>
             <Title>Sesi Tidak Ditemukan</Title>
             <Subtitle>Sesi yang Anda cari tidak tersedia.</Subtitle>
           </Header>
@@ -136,79 +147,79 @@ function SessionPreparation() {
     <Container>
       <Card>
         <Header>
-          <Icon>🎥</Icon>
+          <IconCircle>🎤</IconCircle>
           <Title>Persiapan Sesi OSCE</Title>
-          <Subtitle>Izinkan akses kamera dan mikrofon untuk memulai latihan</Subtitle>
+          <Subtitle>
+            Sebelum memulai, pastikan mikrofon Anda berfungsi dengan baik untuk komunikasi optimal dengan AI
+          </Subtitle>
         </Header>
 
-        <TopicInfo>
-          <TopicTitle>{session.topicTitle}</TopicTitle>
-          <TopicMeta>
-            <span>⏱️ {session.topicDurationMinutes || 15} menit</span>
-            <span>🤖 {session.aiModelUsed}</span>
-          </TopicMeta>
-        </TopicInfo>
+        {permissionError && (
+          <ErrorMessage>{permissionError}</ErrorMessage>
+        )}
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-
-        <PermissionSection>
-          <SectionTitle>Izin yang Diperlukan</SectionTitle>
-
-          <PermissionItem granted={permissions.camera}>
-            <PermissionIcon>📹</PermissionIcon>
-            <PermissionText>
-              <PermissionLabel>Kamera</PermissionLabel>
-              <PermissionStatus granted={permissions.camera}>
-                {permissions.camera
-                  ? 'Kamera dapat diakses'
-                  : 'Diperlukan untuk rekaman video'}
-              </PermissionStatus>
-            </PermissionText>
-            <StatusBadge granted={permissions.camera}>
-              {permissions.camera ? '✓ Aktif' : 'Belum Aktif'}
+        <PermissionCard granted={microphoneGranted}>
+          <PermissionIconCircle>🎤</PermissionIconCircle>
+          <PermissionContent>
+            <StatusBadge granted={microphoneGranted}>
+              {microphoneGranted ? '✓ Diizinkan' : 'Diperlukan'}
             </StatusBadge>
-          </PermissionItem>
+            <PermissionTitle>Akses Mikrofon</PermissionTitle>
+            <PermissionDescription>
+              {microphoneGranted
+                ? 'Mikrofon Anda sudah dapat diakses dan siap digunakan untuk sesi OSCE'
+                : 'Kami memerlukan akses ke mikrofon Anda untuk merekam respons audio selama sesi latihan OSCE'}
+            </PermissionDescription>
+          </PermissionContent>
+          {!microphoneGranted && (
+            <PermissionButton
+              onClick={requestMicrophonePermission}
+              disabled={isRequesting}
+            >
+              {isRequesting ? 'Meminta...' : 'Berikan Izin'}
+            </PermissionButton>
+          )}
+        </PermissionCard>
 
-          <PermissionItem granted={permissions.microphone}>
-            <PermissionIcon>🎤</PermissionIcon>
-            <PermissionText>
-              <PermissionLabel>Mikrofon</PermissionLabel>
-              <PermissionStatus granted={permissions.microphone}>
-                {permissions.microphone
-                  ? 'Mikrofon dapat diakses'
-                  : 'Diperlukan untuk rekaman audio'}
-              </PermissionStatus>
-            </PermissionText>
-            <StatusBadge granted={permissions.microphone}>
-              {permissions.microphone ? '✓ Aktif' : 'Belum Aktif'}
-            </StatusBadge>
-          </PermissionItem>
-        </PermissionSection>
+        <InfoGrid>
+          <InfoBox>
+            <InfoBoxTitle>
+              <InfoBoxIcon>🔒</InfoBoxIcon>
+              Privasi & Keamanan
+            </InfoBoxTitle>
+            <InfoBoxText>
+              Audio Anda hanya digunakan untuk evaluasi OSCE dan tidak akan dibagikan kepada pihak ketiga
+            </InfoBoxText>
+          </InfoBox>
+
+          <InfoBox>
+            <InfoBoxTitle>
+              <InfoBoxIcon>🎧</InfoBoxIcon>
+              Kualitas Audio
+            </InfoBoxTitle>
+            <InfoBoxText>
+              Pastikan Anda berada di lingkungan yang tenang untuk hasil rekaman yang optimal
+            </InfoBoxText>
+          </InfoBox>
+        </InfoGrid>
 
         <Actions>
           <Button variant="secondary" onClick={handleCancel}>
             Batal
           </Button>
-
-          {permissions.camera && permissions.microphone ? (
-            <Button variant="primary" onClick={handleStart}>
-              Mulai Latihan
-            </Button>
-          ) : (
-            <Button
-              variant="primary"
-              onClick={requestPermissions}
-              disabled={isRequesting}
-            >
-              {isRequesting ? 'Meminta Izin...' : 'Berikan Izin'}
-            </Button>
-          )}
+          <Button
+            variant="primary"
+            onClick={handleStart}
+            disabled={!microphoneGranted || isStarting}
+          >
+            {isStarting ? 'Memulai Sesi...' : 'Mulai Latihan'}
+          </Button>
         </Actions>
 
         <HelpText>
-          Browser akan meminta izin akses kamera dan mikrofon.
+          Sesi ini akan menggunakan {sessionDetail.creditsUsed || 10} kredit.
           <br />
-          Pastikan untuk mengklik "Izinkan" atau "Allow" saat diminta.
+          Durasi: {sessionDetail.topicDurationMinutes || 15} menit • Model: {sessionDetail.aiModelUsed}
         </HelpText>
       </Card>
     </Container>

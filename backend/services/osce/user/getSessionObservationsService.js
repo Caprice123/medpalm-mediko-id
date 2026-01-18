@@ -1,5 +1,6 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class GetSessionObservationsService extends BaseService {
   static async call(userId, sessionId) {
@@ -11,41 +12,26 @@ export class GetSessionObservationsService extends BaseService {
       throw new Error('Session ID is required')
     }
 
-    // Verify session belongs to user
+    // Verify session belongs to user and get observation snapshots
     const session = await prisma.osce_sessions.findFirst({
       where: {
         unique_id: sessionId,
         user_id: userId,
       },
       include: {
-        osce_topic: {
+        osce_session_observation_group_snapshots: {
           include: {
-            osce_topic_observations: {
-              where: {
-                osce_observation: {
-                  is_active: true,
-                },
-              },
+            osce_session_observation_snapshots: {
               include: {
-                osce_observation: {
-                  include: {
-                    group: true,
-                  },
-                },
+                session_observations: true,
               },
-              orderBy: [
-                { order: 'asc' },
-              ],
+              orderBy: {
+                id: 'asc',
+              },
             },
           },
-        },
-        osce_session_observations: {
-          include: {
-            osce_observation: {
-              include: {
-                group: true,
-              },
-            },
+          orderBy: {
+            id: 'asc',
           },
         },
       },
@@ -55,30 +41,48 @@ export class GetSessionObservationsService extends BaseService {
       throw new Error('Session not found or access denied')
     }
 
-    // Get available observations from topic
-    const availableObservations = session.osce_topic.osce_topic_observations.map(topicObs => ({
-      id: topicObs.osce_observation.id,
-      name: topicObs.osce_observation.name,
-      groupId: topicObs.osce_observation.group_id,
-      groupName: topicObs.osce_observation.group?.name || '',
-      observationText: topicObs.observation_text,
-      requiresInterpretation: topicObs.requires_interpretation,
-      order: topicObs.order,
-    }))
+    // Transform snapshot data into structured groups with attachments
+    const observationGroups = await Promise.all(
+      session.osce_session_observation_group_snapshots.map(async (groupSnapshot) => {
+        const observations = await Promise.all(
+          groupSnapshot.osce_session_observation_snapshots.map(async (obsSnapshot) => {
+            const userInteraction = obsSnapshot.session_observations[0] || {}
 
-    // Get user's selected observations
-    const selectedObservations = session.osce_session_observations.map(sessionObs => ({
-      id: sessionObs.id,
-      observationId: sessionObs.observation_id,
-      name: sessionObs.osce_observation.name,
-      groupName: sessionObs.osce_observation.group?.name || '',
-      isChecked: sessionObs.is_checked,
-      notes: sessionObs.notes,
-    }))
+            // Get attachments for this observation snapshot
+            const attachments = await attachmentService.getAttachments(
+              'osce_session_observation_snapshot',
+              obsSnapshot.id
+            )
+
+            return {
+              snapshotId: obsSnapshot.id,
+              observationId: obsSnapshot.observation_id,
+              name: obsSnapshot.observation_name,
+              observationText: obsSnapshot.observation_text,
+              requiresInterpretation: obsSnapshot.requires_interpretation,
+              isChecked: userInteraction.is_checked || false,
+              notes: userInteraction.notes || null,
+              interactionId: userInteraction.id || null,
+              attachments: attachments.map(att => ({
+                id: att.id,
+                name: att.name,
+                url: att.blob?.url || null,
+                contentType: att.blob?.content_type || null,
+              })),
+            }
+          })
+        )
+
+        return {
+          groupId: groupSnapshot.group_id,
+          groupName: groupSnapshot.group_name,
+          observations,
+        }
+      })
+    )
 
     return {
-      availableObservations,
-      selectedObservations,
+      observationGroups,
       observationsLocked: session.observations_locked,
     }
   }

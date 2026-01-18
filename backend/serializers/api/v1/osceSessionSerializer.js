@@ -1,51 +1,147 @@
+import attachmentService from '#services/attachment/attachmentService'
+import idriveService from '#services/idrive.service';
+import { DateTime } from "luxon";
+
 // Serializer for user-facing OSCE session
 class OsceSessionSerializer {
-  static serialize(session) {
+  static async serialize(session) {
+    // Use snapshot data if available, otherwise fall back to original topic
+    const topicData = session.osce_session_topic_snapshot || session.osce_topic || {}
+
+    // Fetch session attachments with presigned URLs
+    let attachmentsWithUrls = []
+    try {
+      const sessionAttachments = await attachmentService.getAttachments('osce_session', session.id)
+      attachmentsWithUrls = await Promise.all(
+        sessionAttachments.map(async (attachment) => {
+          const url = await attachmentService.getAttachmentWithUrl('osce_session', session.id, attachment.name)
+          return {
+            blobId: attachment.blob_id,
+            filename: attachment.blob?.filename || attachment.name,
+            url: url?.url || null,
+            contentType: attachment.blob?.content_type || 'application/octet-stream'
+          }
+        })
+      )
+    } catch (error) {
+      console.error('[OsceSessionSerializer] Error fetching attachments:', error)
+    }
+
+    // Serialize observation groups
+    const observationGroups = session.osce_session_observation_group_snapshots?.map(groupSnapshot => ({
+      groupName: groupSnapshot.group_name,
+      observations: groupSnapshot.osce_session_observation_snapshots?.map(obsSnapshot => {
+        return {
+          snapshotId: obsSnapshot.id,
+          name: obsSnapshot.observation_name,
+        }
+      }) || [],
+    })) || []
+
+    const savedObservations = session.osce_session_observations
+    console.log(session)
+
+    // Add attachments for each observation
+    const observationsWithAttachments = await Promise.all(
+      savedObservations.map(async (obs) => {
+        const attachments = await attachmentService.getAttachments(
+          'osce_session_observation_snapshot',
+          obs.observation_snapshot_id
+        )
+
+        return {
+          id: obs.id,
+          snapshotId: obs.observation_snapshot_id,
+          observationId: obs.observation_snapshot.observation_id,
+          name: obs.observation_snapshot.observation_name,
+          observationText: obs.observation_snapshot.observation_text,
+          requiresInterpretation: obs.observation_snapshot.requires_interpretation,
+          interpretation: obs.interpretation,
+          attachments: attachments.length > 0 ? {
+            id: attachments[0].id,
+            name: attachments[0].name,
+            url: attachments[0].blob?.key ? await idriveService.getSignedUrl(attachments[0].blob.key) : null,
+            contentType: attachments[0].blob?.content_type || null,
+          } : null,
+        }
+      })
+    )
+
+    // Serialize diagnoses
+    const diagnoses = session.osce_session_diagnoses?.map(d => ({
+      id: d.id,
+      type: d.type,
+      diagnosis: d.diagnosis,
+      createdAt: d.created_at,
+    })) || []
+
+    // Serialize therapies
+    const therapies = session.osce_session_therapies?.map(t => ({
+      id: t.id,
+      therapy: t.therapy,
+      order: t.order,
+      createdAt: t.created_at,
+    })) || []
+
+    const now = DateTime.now().setZone('Asia/Jakarta');
+    const scheduledEnd = DateTime.fromJSDate(session.scheduled_end_at, { zone: 'utc' }).setZone('Asia/Jakarta');
+    const remainingSeconds = Math.max(0, Math.floor(scheduledEnd.diff(now, 'seconds').seconds));
+
     return {
       id: session.id,
       uniqueId: session.unique_id,
       userId: session.user_id,
-      topicId: session.osce_topic_id,
-      topicTitle: session.osce_topic?.title,
-      topicDescription: session.osce_topic?.description,
-      topicScenario: session.osce_topic?.scenario,
-      topicGuide: session.osce_topic?.guide,
-      topicContext: session.osce_topic?.context,
-      topicAnswerKey: session.osce_topic?.answer_key,
-      topicKnowledgeBase: session.osce_topic?.knowledge_base || [],
-      topicAttachments: session.osce_topic?.attachments || [],
-      topicDurationMinutes: session.osce_topic?.duration_minutes,
-      systemPrompt: session.osce_topic?.system_prompt, // Include for starting session
-      aiModelUsed: session.ai_model_used,
-      durationMinutes: session.duration_minutes,
-      totalScore: session.total_score,
-      maxScore: session.max_score,
-      aiFeedback: session.ai_feedback,
-      creditsUsed: session.credits_used,
-      observationsCount: session.osce_session_observations?.length || 0,
-      createdAt: session.created_at,
-      updatedAt: session.updated_at,
+      status: session.status,
+      observationsLocked: session.observations_locked,
+      topic: {
+        id: session.osce_topic_id,
+        title: topicData.title,
+        description: topicData.description,
+        scenario: topicData.scenario,
+        guide: topicData.guide,
+        attachments: attachmentsWithUrls || [],
+        remainingTime: remainingSeconds,
+      },
+      result: {
+          totalScore: session.total_score,
+          maxScore: session.max_score,
+          aiFeedback: session.ai_feedback,
+          actualDurationMinutes: session.actual_duration_minutes,
+      },
+      availableObservation: observationGroups,
+      userAnswer: {
+          observations: observationsWithAttachments,
+          diagnoses: diagnoses,
+          therapies: therapies,
+      }
     };
   }
 
-  static serializeList(sessions) {
-    return sessions.map(session => this.serialize(session));
+  static async serializeList(sessions) {
+    return await Promise.all(sessions.map(session => this.serialize(session)));
   }
 
   // Lighter serialization for session list (without system prompt)
   static serializeListItem(session) {
+    // Use snapshot data if available, otherwise fall back to original topic
+    const topicData = session.osce_session_topic_snapshot || session.osce_topic || {}
+
     return {
       id: session.id,
       uniqueId: session.unique_id,
+      status: session.status,
       topicId: session.osce_topic_id,
-      topicTitle: session.osce_topic?.title,
-      topicDescription: session.osce_topic?.description,
-      aiModelUsed: session.ai_model_used,
-      durationMinutes: session.duration_minutes,
+      topicTitle: topicData.title,
+      topicDescription: topicData.description,
+      topicDurationMinutes: topicData.duration_minutes,
+      aiModelUsed: topicData.ai_model,
+      actualDurationMinutes: session.actual_duration_minutes,
       totalScore: session.total_score,
       maxScore: session.max_score,
       aiFeedback: session.ai_feedback,
       creditsUsed: session.credits_used,
+      observationsLocked: session.observations_locked,
+      startedAt: session.started_at,
       createdAt: session.created_at,
       updatedAt: session.updated_at,
     };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from 'react'
+import { useState, memo } from 'react'
 import {
   Sidebar,
   TimerCard,
@@ -12,66 +12,23 @@ import {
   ToggleSlider,
   EndSessionButton,
 } from '../../SessionPractice.styles'
+import Button from '@components/common/Button'
+import { AttachmentSection } from './components/AttachmentSection'
+import TimerSection from './components/TimerSection'
+import { useSelector } from 'react-redux'
 
-function SessionSidebar({ session, onEndSession, isEndingSession }) {
-  const [timeRemaining, setTimeRemaining] = useState(0)
-  const [autoSubmit, setAutoSubmit] = useState(false)
-  const timerRef = useRef(null)
-
-  useEffect(() => {
-    if (!session) return
-
-    // Initialize timer
-    const durationInSeconds = (session.topicDurationMinutes || 15) * 60
-    setTimeRemaining(durationInSeconds)
-
-    // Start countdown timer
-    timerRef.current = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          handleTimeUp()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-      }
-    }
-  }, [session])
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600)
-    const mins = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-  }
-
-  const handleTimeUp = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-    }
-    alert('Waktu habis! Sesi akan berakhir.')
-    onEndSession()
-  }
+function SessionSidebar({ onEndSession, isEndingSession }) {
+    const [autoSubmit, setAutoSubmit] = useState(false)
+    const { sessionDetail } = useSelector(state => state.oscePractice)
 
   return (
     <Sidebar>
-      <TimerCard>
-        <TimerLabel>
-          <span>⏱️</span>
-          WAKTU TERSISA
-        </TimerLabel>
-        <TimerDisplay>{formatTime(timeRemaining)}</TimerDisplay>
-      </TimerCard>
+      <TimerSection onEndSession={onEndSession} />
 
       <TaskSection>
-        <TaskHeader>Tugas</TaskHeader>
         <TaskContent>
-          <div dangerouslySetInnerHTML={{ __html: session?.topicScenario || 'Tidak ada skenario tersedia.' }} />
+        <TaskHeader>Tugas</TaskHeader>
+          <div dangerouslySetInnerHTML={{ __html: sessionDetail?.topic.scenario || 'Tidak ada skenario tersedia.' }} />
         </TaskContent>
 
         <AutoSubmitToggle>
@@ -85,12 +42,14 @@ function SessionSidebar({ session, onEndSession, isEndingSession }) {
             <ToggleSlider />
           </ToggleSwitch>
         </AutoSubmitToggle>
+
+        {/* Attachments Section */}
+        <AttachmentSection />
       </TaskSection>
 
-      <EndSessionButton onClick={onEndSession} disabled={isEndingSession}>
-        <span>{isEndingSession ? '⏳' : '🛑'}</span>
+      <Button variant="danger" onClick={onEndSession} disabled={isEndingSession} style={{ margin: '1rem' }}>
         {isEndingSession ? 'Mengevaluasi...' : 'Akhiri Sesi'}
-      </EndSessionButton>
+      </Button>
     </Sidebar>
   )
 }

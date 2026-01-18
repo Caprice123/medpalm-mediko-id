@@ -13,23 +13,7 @@ export class GetUserOsceSessionsService extends BaseService {
           user_id: userId,
         },
         include: {
-          osce_topic: {
-            select: {
-              id: true,
-              title: true,
-              description: true,
-              scenario: true,
-              duration_minutes: true,
-            },
-          },
-          osce_session_observations: {
-            select: {
-              id: true,
-              observation_id: true,
-              is_checked: true,
-              ai_comment: true,
-            },
-          },
+          osce_session_topic_snapshot: true,
         },
         orderBy: {
           created_at: 'desc',

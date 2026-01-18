@@ -1,7 +1,13 @@
 import { useState, useEffect, useMemo, memo } from 'react'
 import { useParams } from 'react-router-dom'
-import Endpoints from '@config/endpoint'
-import { getWithToken, postWithToken } from '@utils/requestUtils'
+import { useDispatch, useSelector } from 'react-redux'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
+import {
+  saveSessionObservations,
+} from '@store/oscePractice/userAction'
+import TextInput from '@components/common/TextInput'
+import Button from "@components/common/Button"
 import {
   FormContainer,
   ObservationHeader,
@@ -19,18 +25,21 @@ import {
   ResultContent,
   InterpretationTextarea,
   EmptyState,
+  FormSection,
 } from '../../SessionPractice.styles'
+import { fetchSessionDetail } from '../../../../../../store/oscePractice/userAction'
 
 const MAX_SELECTIONS = 5
 
 function SupportingDataTab() {
   const { sessionId } = useParams()
+  const dispatch = useDispatch()
+  const { sessionDetail } = useSelector(state => state.oscePractice)
+  const isSavingSessionObservations = useSelector(state => state.oscePractice.loading.isSavingSessionObservations)
 
   const [availableObservations, setAvailableObservations] = useState([])
   const [selectedObservations, setSelectedObservations] = useState([])
-  const [observationsLocked, setObservationsLocked] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const [observationsLocked, setObservationsLocked] = useState(sessionDetail?.observationsLocked || false)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIds, setSelectedIds] = useState([])
@@ -38,41 +47,39 @@ function SupportingDataTab() {
 
   // Fetch observations on mount
   useEffect(() => {
-    const fetchObservations = async () => {
-      try {
-        setIsLoading(true)
-        const route = Endpoints.api.osceObservations(sessionId)
-        const response = await getWithToken(route)
+    if (!sessionDetail) return
 
-        if (response.data.success) {
-          setAvailableObservations(response.data.data.availableObservations)
-          setSelectedObservations(response.data.data.selectedObservations)
-          setObservationsLocked(response.data.data.observationsLocked)
+    // Flatten grouped observations from API
+    const groupedData = sessionDetail.availableObservation || []
+    const flatObservations = []
 
-          // If already saved, populate selected IDs and interpretations
-          if (response.data.data.observationsLocked) {
-            const ids = response.data.data.selectedObservations.map(obs => obs.observationId)
-            setSelectedIds(ids)
+    groupedData.forEach(group => {
+      group.observations.forEach(obs => {
+        flatObservations.push({
+          ...obs,
+          groupName: group.groupName,
+          id: obs.snapshotId, // Use snapshotId as id
+        })
+      })
+    })
 
-            const interp = {}
-            response.data.data.selectedObservations.forEach(obs => {
-              if (obs.notes) {
-                interp[obs.observationId] = obs.notes
-              }
-            })
-            setInterpretations(interp)
-          }
+    setAvailableObservations(flatObservations)
+    setObservationsLocked(sessionDetail.observationsLocked || false)
+
+    // Load saved observations if locked
+    if (sessionDetail.observationsLocked && sessionDetail.userAnswer?.observations) {
+      setSelectedObservations(sessionDetail.userAnswer.observations || [])
+
+      // Populate interpretations
+      const interp = {}
+      sessionDetail.userAnswer.observations.forEach(obs => {
+        if (obs.notes) {
+          interp[obs.snapshotId] = obs.notes
         }
-      } catch (error) {
-        console.error('Error fetching observations:', error)
-        alert('Gagal memuat data pemeriksaan penunjang')
-      } finally {
-        setIsLoading(false)
-      }
+      })
+      setInterpretations(interp)
     }
-
-    fetchObservations()
-  }, [sessionId])
+  }, [sessionDetail])
 
   // Group observations by group name
   const groupedObservations = useMemo(() => {
@@ -110,12 +117,6 @@ function SupportingDataTab() {
     if (selectedIds.includes(observationId)) {
       // Deselect
       setSelectedIds(prev => prev.filter(id => id !== observationId))
-      // Remove interpretation
-      setInterpretations(prev => {
-        const newInterp = { ...prev }
-        delete newInterp[observationId]
-        return newInterp
-      })
     } else {
       // Select (if not at max)
       if (selectedIds.length < MAX_SELECTIONS) {
@@ -124,65 +125,35 @@ function SupportingDataTab() {
     }
   }
 
-  const handleInterpretationChange = (observationId, value) => {
+  const handleInterpretationChange = (snapshotId, value) => {
     setInterpretations(prev => ({
       ...prev,
-      [observationId]: value,
+      [snapshotId]: value,
     }))
   }
 
-  const handleSaveObservations = async () => {
+  const handleSaveSelection = async () => {
     if (selectedIds.length === 0) {
       alert('Pilih minimal 1 pemeriksaan penunjang')
       return
     }
 
-    // Check if interpretations are provided for observations that require them
-    const selectedObs = availableObservations.filter(obs => selectedIds.includes(obs.id))
-    const missingInterpretations = selectedObs.filter(
-      obs => obs.requiresInterpretation && !interpretations[obs.id]?.trim()
-    )
-
-    if (missingInterpretations.length > 0) {
-      alert(`Harap isi interpretasi untuk: ${missingInterpretations.map(o => o.name).join(', ')}`)
+    if (!window.confirm(`Anda yakin ingin menyimpan ${selectedIds.length} pemeriksaan penunjang? Setelah disimpan, Anda tidak bisa mengubah pilihan lagi.`)) {
       return
     }
 
-    if (!window.confirm(`Anda yakin ingin menyimpan ${selectedIds.length} pemeriksaan penunjang? Setelah disimpan, Anda tidak bisa mengubahnya lagi.`)) {
-      return
-    }
-
-    try {
-      setIsSaving(true)
-      const route = Endpoints.api.osceObservations(sessionId)
-
-      const observations = selectedIds.map(obsId => ({
-        observationId: obsId,
-        interpretation: interpretations[obsId] || null,
-      }))
-
-      const response = await postWithToken(route, { observations })
-
-      if (response.data.success) {
-        setObservationsLocked(true)
-        setSelectedObservations(response.data.data)
-        alert('Pemeriksaan penunjang berhasil disimpan!')
-      }
-    } catch (error) {
-      console.error('Error saving observations:', error)
-      alert(error.response?.data?.message || 'Gagal menyimpan pemeriksaan penunjang')
-    } finally {
-      setIsSaving(false)
-    }
+    // Just send array of snapshotIds for selection
+    await dispatch(saveSessionObservations(
+        sessionId,
+        { snapshotIds: selectedIds },
+        () => {
+            dispatch(fetchSessionDetail(sessionId))
+            alert('Pemeriksaan penunjang berhasil dipilih! Silakan isi interpretasi jika diperlukan.')
+        }
+    ))
   }
 
-  if (isLoading) {
-    return (
-      <FormContainer>
-        <EmptyState>Memuat data pemeriksaan penunjang...</EmptyState>
-      </FormContainer>
-    )
-  }
+  console.log(selectedObservations)
 
   // Show results view if observations are locked
   if (observationsLocked) {
@@ -191,47 +162,71 @@ function SupportingDataTab() {
         <ObservationHeader>
           <ObservationTitle>📋 Pemeriksaan Penunjang yang Dipilih</ObservationTitle>
           <ObservationSubtitle>
-            Hasil pemeriksaan yang telah Anda pilih
+            Isi interpretasi untuk setiap pemeriksaan yang diperlukan
           </ObservationSubtitle>
         </ObservationHeader>
 
         {selectedObservations.length === 0 ? (
           <EmptyState>Tidak ada pemeriksaan penunjang yang dipilih</EmptyState>
         ) : (
-          selectedObservations.map(obs => {
-            const availObs = availableObservations.find(a => a.id === obs.observationId)
-            return (
-              <ObservationResultCard key={obs.id}>
+          <>
+            {selectedObservations.map(obs => (
+              <ObservationResultCard key={obs.snapshotId}>
                 <ResultTitle>{obs.name}</ResultTitle>
 
-                {availObs?.observationText ? (
+                {/* Show observation images */}
+                {obs.attachments && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <PhotoProvider>
+                        <PhotoView key={obs.attachments.id} src={obs.attachments.url}>
+                            <div style={{ cursor: 'pointer' }}>
+                              <img
+                                src={obs.attachments.url}
+                                alt={obs.attachments.name}
+                                style={{
+                                  width: "100%",
+                                  height: '400px',
+                                  objectFit: 'contain',
+                                  borderRadius: '6px',
+                                }}
+                              />
+                            </div>
+                          </PhotoView>
+                    </PhotoProvider>
+                  </div>
+                )}
+
+                {/* Show observation text */}
+                {obs.observationText ? (
                   <ResultContent>
-                    <div dangerouslySetInnerHTML={{ __html: availObs.observationText }} />
+                    <div dangerouslySetInnerHTML={{ __html: obs.observationText }} />
                   </ResultContent>
                 ) : (
                   <ResultContent>Tidak ada data</ResultContent>
                 )}
 
-                {obs.notes && (
-                  <div>
-                    <strong style={{ fontSize: '0.875rem', color: '#1a1a1a' }}>
-                      Interpretasi Anda:
-                    </strong>
-                    <div style={{
-                      marginTop: '0.5rem',
-                      padding: '0.75rem',
-                      background: '#f0f9ff',
-                      borderRadius: '6px',
+                {/* Show interpretation field if required */}
+                {obs.requiresInterpretation && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <label style={{
+                      display: 'block',
                       fontSize: '0.875rem',
+                      fontWeight: '500',
+                      marginBottom: '0.5rem',
                       color: '#1a1a1a',
                     }}>
-                      {obs.notes}
-                    </div>
+                      Interpretasi Anda *
+                    </label>
+                    <InterpretationTextarea
+                      placeholder="Tuliskan interpretasi Anda berdasarkan hasil pemeriksaan..."
+                      value={interpretations[obs.snapshotId] || ''}
+                      onChange={(e) => handleInterpretationChange(obs.snapshotId, e.target.value)}
+                    />
                   </div>
                 )}
               </ObservationResultCard>
-            )
-          })
+            ))}
+          </>
         )}
       </FormContainer>
     )
@@ -240,17 +235,13 @@ function SupportingDataTab() {
   // Show selection view
   return (
     <FormContainer>
-      <ObservationHeader>
-        <ObservationTitle>Pilih Pemeriksaan Penunjang</ObservationTitle>
-        <ObservationSubtitle>Pilih maksimal {MAX_SELECTIONS} pemeriksaan yang diperlukan</ObservationSubtitle>
-      </ObservationHeader>
-
-      <SearchInput
-        type="text"
-        placeholder="Cari pemeriksaan penunjang..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+        <FormSection>
+            <TextInput
+                placeholder="Cari pemeriksaan penunjang..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+        </FormSection>
 
       <SelectionCounter>
         {selectedIds.length} / {MAX_SELECTIONS} terpilih
@@ -279,54 +270,15 @@ function SupportingDataTab() {
         </ObservationGroup>
       ))}
 
-      {/* Interpretation inputs for selected observations that require it */}
-      {selectedIds.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
-          <GroupHeader>Interpretasi Hasil Pemeriksaan</GroupHeader>
-          {selectedIds.map(obsId => {
-            const obs = availableObservations.find(o => o.id === obsId)
-            if (!obs || !obs.requiresInterpretation) return null
-
-            return (
-              <div key={obsId} style={{ marginBottom: '1.5rem' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  marginBottom: '0.5rem',
-                  color: '#1a1a1a',
-                }}>
-                  {obs.name} *
-                </label>
-                {obs.observationText && (
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: '#666',
-                    marginBottom: '0.5rem',
-                    padding: '0.75rem',
-                    background: '#f9f9f9',
-                    borderRadius: '6px',
-                  }}>
-                    <div dangerouslySetInnerHTML={{ __html: obs.observationText }} />
-                  </div>
-                )}
-                <InterpretationTextarea
-                  placeholder="Tuliskan interpretasi Anda berdasarkan hasil pemeriksaan..."
-                  value={interpretations[obsId] || ''}
-                  onChange={(e) => handleInterpretationChange(obsId, e.target.value)}
-                />
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      <SaveObservationsButton
-        onClick={handleSaveObservations}
-        disabled={isSaving || selectedIds.length === 0}
-      >
-        {isSaving ? '⏳ Menyimpan...' : '💾 Simpan Pemeriksaan Penunjang'}
-      </SaveObservationsButton>
+      <div style={{ flex: 1 }}></div>
+      <div style={{ margin: "0 auto"}}>
+        <Button variant="primary"
+            onClick={handleSaveSelection}
+            disabled={isSavingSessionObservations || selectedIds.length === 0}
+        >
+            {isSavingSessionObservations ? 'Menyimpan...' : 'Simpan Pilihan Pemeriksaan'}
+        </Button>
+      </div>
     </FormContainer>
   )
 }

@@ -13,6 +13,8 @@ import {
   RemoveButton,
   EmptyListText,
 } from '../../SessionPractice.styles'
+import Button from "@components/common/Button"
+import TextInput from '@components/common/TextInput'
 
 function DiagnosisTab({
   diagnosisUtama,
@@ -38,10 +40,9 @@ function DiagnosisTab({
       {/* Diagnosa Utama */}
       <FormSection>
         <SectionTitle>
-          📋 DIAGNOSA UTAMA
+          DIAGNOSA UTAMA
         </SectionTitle>
-        <FormInput
-          type="text"
+        <TextInput
           placeholder="Masukkan diagnosa utama..."
           value={diagnosisUtama}
           onChange={(e) => setDiagnosisUtama(e.target.value)}
@@ -54,28 +55,21 @@ function DiagnosisTab({
       {/* Diagnosa Pembanding */}
       <FormSection>
         <SectionTitle>
-          📑 DIAGNOSA PEMBANDING (Differential Diagnosis)
+          DIAGNOSA PEMBANDING
         </SectionTitle>
 
         <AddItemContainer>
-          <FormInput
-            type="text"
+          <TextInput
             placeholder="Tambahkan diagnosa pembanding..."
             value={newDiagnosisPembanding}
             onChange={(e) => setNewDiagnosisPembanding(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleAddDiagnosisPembanding()
-              }
-            }}
           />
-          <AddButton
+          <Button variant="primary"
             onClick={handleAddDiagnosisPembanding}
             disabled={!newDiagnosisPembanding.trim()}
           >
-            + Tambah
-          </AddButton>
+            Tambah
+          </Button>
         </AddItemContainer>
 
         {diagnosisPembanding.length > 0 ? (

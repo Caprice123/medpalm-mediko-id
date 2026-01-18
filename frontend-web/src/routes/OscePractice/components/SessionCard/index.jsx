@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import {
   Card,
   CardHeader,
@@ -9,12 +10,13 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  ModelBadge,
   CardActions,
   ActionButton,
 } from './SessionCard.styles'
 
-function SessionCard({ session, onView, onRetry }) {
+function SessionCard({ session }) {
+    const navigate = useNavigate()
+
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return '-'
@@ -32,6 +34,10 @@ function SessionCard({ session, onView, onRetry }) {
   const formatDuration = (minutes) => {
     if (!minutes) return '-'
     return `${minutes} menit`
+  }
+
+  const onViewSession = () => {
+    navigate(`/osce-practice/session/${session.uniqueId}/result`)
   }
 
   return (
@@ -60,30 +66,11 @@ function SessionCard({ session, onView, onRetry }) {
             </StatValue>
           </StatItem>
         )}
-        <StatItem>
-          <StatLabel>AI Model</StatLabel>
-          <StatValue>
-            <ModelBadge>{session.aiModelUsed || 'N/A'}</ModelBadge>
-          </StatValue>
-        </StatItem>
-        <StatItem>
-          <StatLabel>Credit Used</StatLabel>
-          <StatValue>{session.creditsUsed || 0}</StatValue>
-        </StatItem>
       </StatsRow>
 
-      {session.aiFeedback && (
-        <TopicDescription>
-          <strong>Feedback:</strong> {session.aiFeedback}
-        </TopicDescription>
-      )}
-
       <CardActions>
-        <ActionButton onClick={() => onView && onView(session)}>
+        <ActionButton onClick={() => onViewSession(session)}>
           Lihat Detail
-        </ActionButton>
-        <ActionButton primary onClick={() => onRetry && onRetry(session)}>
-          Ulangi Latihan
         </ActionButton>
       </CardActions>
     </Card>

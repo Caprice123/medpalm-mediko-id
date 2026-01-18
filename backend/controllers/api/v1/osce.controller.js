@@ -1,5 +1,6 @@
 import { GetPublishedOsceTopicsService } from '#services/osce/user/getPublishedOsceTopicsService'
 import { GetUserOsceSessionsService } from '#services/osce/user/getUserOsceSessionsService'
+import { CreateOsceSessionService } from '#services/osce/user/createOsceSessionService'
 import { StartOsceSessionService } from '#services/osce/user/startOsceSessionService'
 import { GetSessionMessagesService } from '#services/osce/user/getSessionMessagesService'
 import { SendOsceMessageService } from '#services/osce/user/sendOsceMessageService'
@@ -60,8 +61,8 @@ class OsceController {
     }
   }
 
-  // POST /api/v1/osce/sessions - Start new OSCE session
-  async startSession(req, res) {
+  // POST /api/v1/osce/sessions - Create new OSCE session (no credit deduction)
+  async createSession(req, res) {
     try {
       const userId = req.user?.id
       const { topicId } = req.body
@@ -80,18 +81,70 @@ class OsceController {
         })
       }
 
-      const session = await StartOsceSessionService.call(userId, topicId)
+      const session = await CreateOsceSessionService.call(userId, topicId)
 
       return res.status(201).json({
         success: true,
         data: OsceSessionSerializer.serialize(session),
-        message: 'OSCE session started successfully',
+        message: 'OSCE session created successfully',
+      })
+    } catch (error) {
+      console.error('[OsceController.createSession] Error:', error)
+
+      if (error.message.includes('not found')) {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        })
+      }
+
+      return res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to create OSCE session',
+      })
+    }
+  }
+
+  // POST /api/v1/osce/sessions/:sessionId/start - Start OSCE session (deducts credits)
+  async startSession(req, res) {
+    try {
+      const userId = req.user?.id
+      const { sessionId } = req.params
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required',
+        })
+      }
+
+      if (!sessionId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Session ID is required',
+        })
+      }
+
+      const result = await StartOsceSessionService.call(userId, sessionId)
+
+      return res.status(200).json({
+        success: result.success,
+        message: result.message,
+        alreadyStarted: result.alreadyStarted,
+        data: OsceSessionSerializer.serialize(result.session),
       })
     } catch (error) {
       console.error('[OsceController.startSession] Error:', error)
 
-      if (error.message.includes('not found')) {
+      if (error.message.includes('not found') || error.message.includes('access denied')) {
         return res.status(404).json({
+          success: false,
+          message: error.message,
+        })
+      }
+
+      if (error.message.includes('Insufficient credits')) {
+        return res.status(400).json({
           success: false,
           message: error.message,
         })
@@ -126,23 +179,32 @@ class OsceController {
           osce_topic: {
             select: {
               id: true,
-              title: true,
-              description: true,
-              scenario: true,
-              system_prompt: true,
-              ai_model: true,
-              duration_minutes: true,
             },
           },
-          osce_session_observations: {
+          osce_session_topic_snapshot: true,
+          osce_session_observation_group_snapshots: {
             include: {
-              observation: {
-                select: {
-                  id: true,
-                  name: true,
-                  group_id: true,
+              osce_session_observation_snapshots: {
+                include: {
+                  session_observations: true,
+                },
+                orderBy: {
+                  observation_order: 'asc',
                 },
               },
+            },
+            orderBy: {
+              group_order: 'asc',
+            },
+          },
+          osce_session_diagnoses: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
+          osce_session_therapies: {
+            orderBy: {
+              order: 'asc',
             },
           },
         },

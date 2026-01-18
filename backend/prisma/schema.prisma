@@ -1135,33 +1135,23 @@ model osce_topic_tags {
 model osce_observation_groups {
   id         Int      @id @default(autoincrement())
   name       String // e.g., "LABORATORIUM", "RADIOLOGI", etc.
-  order      Int      @default(0)
-  is_active  Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
   osce_observations osce_observations[]
-
-  @@index([is_active])
-  @@index([order])
 }
 
 model osce_observations {
   id       Int      @id @default(autoincrement())
   group_id Int // Reference to observation group
   name     String // e.g., "ASTO", "Analisis LCS", "Apusan Darah Tepi"
-  order    Int      @default(0)
-  is_active Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  osce_observation_group    osce_observation_groups   @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  osce_session_observations osce_session_observations[]
-  osce_topic_observations   osce_topic_observations[]
+  osce_observation_group  osce_observation_groups   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  osce_topic_observations osce_topic_observations[]
 
   @@index([group_id])
-  @@index([is_active])
-  @@index([order])
 }
 
 // Junction table linking topics to observations with additional context
@@ -1171,7 +1161,6 @@ model osce_topic_observations {
   observation_id          Int
   observation_text        String?  @db.Text // Context/description for this observation in this topic
   requires_interpretation Boolean  @default(false) // Whether user needs to interpret the observation
-  order                   Int      @default(0)
   created_at              DateTime @default(now())
   updated_at              DateTime @default(now())
 
@@ -1181,51 +1170,113 @@ model osce_topic_observations {
   @@unique([topic_id, observation_id])
   @@index([topic_id])
   @@index([observation_id])
-  @@index([order])
 }
-
 
 model osce_sessions {
   id                       Int      @id @default(autoincrement())
   unique_id                String   @unique @default(uuid())
   user_id                  Int
-  osce_topic_id            Int
-  ai_model_used            String // Snapshot of model at practice time
-  duration_minutes         Int // Actual time spent
+  osce_topic_id            Int // Reference to original topic (for admin purposes)
+  status                   String   @default("created") // created, started, completed
+  actual_duration_minutes  Int      @default(0) // Actual time spent by user
   total_score              Int?
   max_score                Int?
   ai_feedback              String?  @db.Text // Overall feedback from AI
   credits_used             Int      @default(0)
   observations_locked      Boolean  @default(false) // Whether user has saved observations (cannot change after)
+  scheduled_end_at         DateTime? // When the session is expected to end (based on duration)
+  started_at               DateTime? // When the session actually started (after preparation)
   created_at               DateTime @default(now())
   updated_at               DateTime @default(now())
 
-  user                      users                       @relation(fields: [user_id], references: [id])
-  osce_topic                osce_topics                 @relation(fields: [osce_topic_id], references: [id])
-  osce_session_observations osce_session_observations[]
-  osce_session_messages     osce_session_messages[]
-  osce_session_diagnoses    osce_session_diagnoses[]
-  osce_session_therapies    osce_session_therapies[]
+  user                                        users                                         @relation(fields: [user_id], references: [id])
+  osce_topic                                  osce_topics                                   @relation(fields: [osce_topic_id], references: [id])
+  osce_session_topic_snapshot                 osce_session_topic_snapshots?
+  osce_session_observation_group_snapshots    osce_session_observation_group_snapshots[]
+  osce_session_observations                   osce_session_observations[]
+  osce_session_messages                       osce_session_messages[]
+  osce_session_diagnoses                      osce_session_diagnoses[]
+  osce_session_therapies                      osce_session_therapies[]
 
   @@index([unique_id])
   @@index([user_id])
   @@index([osce_topic_id])
+  @@index([status])
 }
 
-model osce_session_observations {
-  id              Int      @id @default(autoincrement())
-  osce_session_id Int
-  observation_id  Int
-  is_checked      Boolean  @default(false) // Whether this observation was checked/performed
-  notes           String?  @db.Text // Optional notes about this observation
-  created_at      DateTime @default(now())
+// Snapshot of topic data at session creation time
+model osce_session_topic_snapshots {
+  id               Int      @id @default(autoincrement())
+  osce_session_id  Int      @unique
+  title            String
+  description      String?
+  scenario         String   @db.Text
+  guide            String?  @db.Text
+  context          String?  @db.Text
+  answer_key       String?  @db.Text
+  knowledge_base   Json?
+  ai_model         String
+  system_prompt    String   @db.Text
+  duration_minutes Int
+  created_at       DateTime @default(now())
 
-  osce_session     osce_sessions     @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
-  osce_observation osce_observations @relation(fields: [observation_id], references: [id])
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 
-  @@unique([osce_session_id, observation_id])
   @@index([osce_session_id])
+}
+
+// Snapshot of observation groups at session creation time
+model osce_session_observation_group_snapshots {
+  id                   Int      @id @default(autoincrement())
+  osce_session_id      Int
+  group_id             Int // Original group ID for reference
+  group_name           String // Snapshot of group name
+  group_created_at     DateTime? // Snapshot of original created_at
+  group_updated_at     DateTime? // Snapshot of original updated_at
+  created_at           DateTime @default(now())
+
+  osce_session                       osce_sessions                        @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session_observation_snapshots osce_session_observation_snapshots[]
+
+  @@index([osce_session_id, group_name])
+  @@index([group_id])
+}
+
+// Snapshot of observations at session creation time
+model osce_session_observation_snapshots {
+  id                           Int      @id @default(autoincrement())
+  group_snapshot_id            Int // Reference to group snapshot
+  observation_id               Int?     @default(0) // Original observation ID
+  observation_group_id         Int? // Snapshot of original group_id from observation
+  observation_name             String?  @default("") // Snapshot of observation name
+  observation_created_at       DateTime? // Snapshot of original observation created_at
+  observation_updated_at       DateTime? // Snapshot of original observation updated_at
+  observation_text             String?  @db.Text // Snapshot of observation context/description from topic
+  requires_interpretation      Boolean  @default(false) // Snapshot of interpretation requirement from topic
+  topic_observation_order      Int      @default(0) // Snapshot of order from topic
+  created_at                   DateTime @default(now())
+
+  group_snapshot    osce_session_observation_group_snapshots    @relation(fields: [group_snapshot_id], references: [id], onDelete: Cascade)
+  session_observations osce_session_observations[]
+
   @@index([observation_id])
+  @@index([group_snapshot_id, observation_name])
+}
+
+// User's interaction with observations during the session
+model osce_session_observations {
+  id                    Int      @id @default(autoincrement())
+  osce_session_id       Int
+  observation_snapshot_id Int // Reference to observation snapshot
+  interpretation        String?  @db.Text // Optional notes about this observation
+  created_at            DateTime @default(now())
+
+  osce_session          osce_sessions                        @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  observation_snapshot  osce_session_observation_snapshots   @relation(fields: [observation_snapshot_id], references: [id], onDelete: Cascade)
+
+  @@unique([osce_session_id, observation_snapshot_id])
+  @@index([osce_session_id])
+  @@index([observation_snapshot_id])
 }
 
 model osce_session_messages {

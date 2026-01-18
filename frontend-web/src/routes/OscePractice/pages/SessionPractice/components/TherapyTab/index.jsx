@@ -13,6 +13,8 @@ import {
   RemoveButton,
   EmptyListText,
 } from '../../SessionPractice.styles'
+import Button from "@components/common/Button"
+import TextInput from '@components/common/TextInput'
 
 function TherapyTab({ therapies, setTherapies }) {
   const [newTherapy, setNewTherapy] = useState('')
@@ -32,28 +34,21 @@ function TherapyTab({ therapies, setTherapies }) {
     <FormContainer>
       <FormSection>
         <SectionTitle>
-          💊 TERAPI
+          TERAPI
         </SectionTitle>
 
         <AddItemContainer>
-          <FormInput
-            type="text"
+          <TextInput
             placeholder="Tambahkan terapi/pengobatan..."
             value={newTherapy}
             onChange={(e) => setNewTherapy(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleAddTherapy()
-              }
-            }}
           />
-          <AddButton
+          <Button variant="primary"
             onClick={handleAddTherapy}
             disabled={!newTherapy.trim()}
           >
-            + Tambah
-          </AddButton>
+            Tambah
+          </Button>
         </AddItemContainer>
 
         <HintText>

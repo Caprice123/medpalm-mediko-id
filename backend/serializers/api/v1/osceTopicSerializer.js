@@ -2,11 +2,11 @@
 class OsceTopicSerializer {
   static serialize(topic) {
     const tags = topic.osce_topic_tags?.map(tt => ({
-      id: tt.tag.id,
-      name: tt.tag.name,
-      tagGroup: tt.tag.tag_group ? {
-        id: tt.tag.tag_group.id,
-        name: tt.tag.tag_group.name
+      id: tt.tags.id,
+      name: tt.tags.name,
+      tagGroup: tt.tags.tag_group ? {
+        id: tt.tags.tag_group.id,
+        name: tt.tags.tag_group.name
       } : null
     })) || [];
 

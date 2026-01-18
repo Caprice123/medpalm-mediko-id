@@ -3,25 +3,53 @@ import { colors } from '@config/colors'
 
 export const ModalContent = styled.div`
   max-height: 70vh;
+  height: 100%;
   overflow-y: auto;
 `
 
+export const SearchWrapper = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+`
+
 export const SearchBox = styled.input`
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1rem;
   border: 1px solid ${colors.neutral.gray300};
   border-radius: 8px;
   font-size: 0.875rem;
-  margin-bottom: 1.5rem;
 
   &:focus {
     outline: none;
-    border-color: ${colors.osce.primary};
-    box-shadow: 0 0 0 3px ${colors.osce.primaryLight};
+    border-color: ${colors.primary.main};
+    box-shadow: 0 0 0 3px ${colors.primary.main};
   }
 
   &::placeholder {
     color: ${colors.neutral.gray400};
+  }
+`
+
+export const SearchButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  background: ${colors.primary.main};
+  color: ${colors.neutral.white};
+  border: 1px solid ${colors.primary.main};
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: ${colors.primary.main};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `
 
@@ -35,96 +63,133 @@ export const TopicsGrid = styled.div`
   }
 `
 
-export const TopicCard = styled.button`
+export const TopicCard = styled.div`
   background: ${colors.neutral.white};
-  border: 2px solid ${props => props.selected ? colors.osce.primary : colors.neutral.gray200};
+  border: 2px solid ${colors.neutral.gray200};
   border-radius: 12px;
   padding: 1.25rem;
-  text-align: left;
-  cursor: pointer;
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
 
   &:hover {
-    border-color: ${colors.osce.primary};
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+    border-color: ${colors.neutral.gray300};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
-
-  ${props => props.selected && `
-    background: ${colors.osce.primaryLight};
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
-  `}
 `
 
-export const TopicHeader = styled.div`
+export const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 0.75rem;
   gap: 0.75rem;
 `
 
-export const TopicTitle = styled.h3`
-  font-size: 1rem;
+export const CardTitle = styled.h3`
+  font-size: 1.125rem;
   font-weight: 600;
-  color: ${colors.neutral.gray900};
+  color: ${colors.neutral.gray800};
   margin: 0;
   flex: 1;
+  line-height: 1.4;
 `
 
-export const SelectionIndicator = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid ${props => props.selected ? colors.osce.primary : colors.neutral.gray300};
-  background: ${props => props.selected ? colors.osce.primary : colors.neutral.white};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &::after {
-    content: ${props => props.selected ? '"✓"' : '""'};
-    color: ${colors.neutral.white};
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
+export const StatusBadge = styled.span`
+  background: ${props => props.selected ? colors.primary.main : colors.neutral.gray100};
+  color: ${props => props.selected ? colors.primary.main : colors.neutral.gray600};
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
 `
 
-export const TopicDescription = styled.p`
+export const CardDescription = styled.p`
+  color: ${colors.neutral.gray500};
   font-size: 0.875rem;
-  color: ${colors.neutral.gray600};
-  margin: 0;
+  line-height: 1.5;
+  margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 `
 
-export const TopicMeta = styled.div`
+export const TagList = styled.div`
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
-  align-items: center;
-`
-
-export const MetaItem = styled.span`
-  font-size: 0.75rem;
-  color: ${colors.neutral.gray500};
-  display: flex;
-  align-items: center;
   gap: 0.375rem;
+  margin-bottom: 0.5rem;
 `
 
-export const ModelBadge = styled.span`
-  background: ${colors.osce.primaryLight};
-  color: ${colors.osce.primary};
-  padding: 0.25rem 0.5rem;
+export const Tag = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: ${props => props.university ? '#ede9fe' : '#fef3c7'};
+  color: ${props => props.university ? '#5b21b6' : '#92400e'};
   border-radius: 4px;
   font-size: 0.75rem;
+  font-weight: 500;
+`
+
+export const CardStats = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid ${colors.neutral.gray200};
+  font-size: 0.875rem;
+  color: ${colors.neutral.gray500};
+  margin-bottom: 0.75rem;
+`
+
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`
+
+export const StatLabel = styled.span`
+  font-size: 0.75rem;
+  color: ${colors.neutral.gray400};
+  text-transform: uppercase;
   font-weight: 600;
+`
+
+export const StatValue = styled.span`
+  font-size: 0.875rem;
+  color: ${colors.neutral.gray500};
+  font-weight: 600;
+`
+
+export const CardActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`
+
+export const CardActionButton = styled.button`
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid ${props => props.variant === 'primary' ? colors.primary.main : colors.neutral.gray300};
+  background: ${props => props.variant === 'primary' ? colors.primary.main : 'white'};
+  color: ${props => props.variant === 'primary' ? 'white' : colors.neutral.gray700};
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: ${props => props.variant === 'primary' ? colors.primary.main : colors.neutral.gray50};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `
 
 export const ModalActions = styled.div`
@@ -145,12 +210,12 @@ export const Button = styled.button`
   flex: 1;
 
   ${props => props.variant === 'primary' && `
-    background: ${colors.osce.primary};
+    background: ${colors.primary.main};
     color: ${colors.neutral.white};
-    border: 1px solid ${colors.osce.primary};
+    border: 1px solid ${colors.primary.main};
 
     &:hover:not(:disabled) {
-      background: ${colors.osce.primaryHover};
+      background: ${colors.primary.main};
     }
 
     &:disabled {

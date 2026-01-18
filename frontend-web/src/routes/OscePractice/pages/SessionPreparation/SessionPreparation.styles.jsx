@@ -1,183 +1,253 @@
 import styled from 'styled-components'
-import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 93px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, ${colors.osce.primaryLight} 0%, ${colors.neutral.white} 100%);
-  padding: 2rem;
+  background: linear-gradient(135deg, #E8F5FF 0%, #F0F9FF 100%);
+  padding: 1.5rem;
 `
 
 export const Card = styled.div`
-  background: ${colors.neutral.white};
-  border-radius: 16px;
-  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
   max-width: 600px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 `
 
 export const Header = styled.div`
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 `
 
-export const Icon = styled.div`
-  font-size: 4rem;
-  margin-bottom: 1rem;
+export const IconCircle = styled.div`
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.3);
 `
 
 export const Title = styled.h1`
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: ${colors.neutral.gray900};
+  color: #6BB9E8;
   margin: 0 0 0.5rem 0;
 `
 
 export const Subtitle = styled.p`
-  font-size: 1rem;
-  color: ${colors.neutral.gray600};
-  margin: 0;
-`
-
-export const TopicInfo = styled.div`
-  background: ${colors.osce.primaryLight};
-  border-left: 4px solid ${colors.osce.primary};
-  padding: 1.25rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-`
-
-export const TopicTitle = styled.h2`
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: ${colors.neutral.gray900};
-  margin: 0 0 0.5rem 0;
-`
-
-export const TopicMeta = styled.div`
-  display: flex;
-  gap: 1.5rem;
   font-size: 0.875rem;
-  color: ${colors.neutral.gray600};
-  margin-top: 0.75rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
 `
 
-export const PermissionSection = styled.div`
-  margin-bottom: 2rem;
-`
-
-export const SectionTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 600;
-  color: ${colors.neutral.gray800};
-  margin: 0 0 1rem 0;
-`
-
-export const PermissionItem = styled.div`
+export const PermissionCard = styled.div`
+  background: #F8FAFC;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  background: ${props => props.granted ? colors.success.lighter : colors.neutral.gray50};
-  border: 2px solid ${props => props.granted ? colors.success.main : colors.neutral.gray200};
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-  transition: all 0.2s;
+  border: 2px solid ${props => props.granted ? '#10B981' : '#E2E8F0'};
+  transition: all 0.3s;
 `
 
-export const PermissionIcon = styled.div`
-  font-size: 1.5rem;
+export const PermissionIconCircle = styled.div`
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: white;
   flex-shrink: 0;
 `
 
-export const PermissionText = styled.div`
+export const PermissionContent = styled.div`
   flex: 1;
 `
 
-export const PermissionLabel = styled.div`
-  font-size: 0.875rem;
+export const PermissionTitle = styled.h3`
+  font-size: 1rem;
   font-weight: 600;
-  color: ${colors.neutral.gray900};
-  margin-bottom: 0.25rem;
+  color: #1E293B;
+  margin: 0 0 0.375rem 0;
 `
 
-export const PermissionStatus = styled.div`
-  font-size: 0.75rem;
-  color: ${props => props.granted ? colors.success.darker : colors.neutral.gray500};
-  font-weight: 500;
+export const PermissionDescription = styled.p`
+  font-size: 0.8125rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.4;
 `
 
 export const StatusBadge = styled.div`
-  padding: 0.375rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 5px;
+  font-size: 0.6875rem;
   font-weight: 600;
-  background: ${props => props.granted ? colors.success.lighter : colors.neutral.gray200};
-  color: ${props => props.granted ? colors.success.darker : colors.neutral.gray600};
+  background: ${props => props.granted ? '#D1FAE5' : '#64748B'};
+  color: ${props => props.granted ? '#065F46' : 'white'};
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+`
+
+export const PermissionButton = styled.button`
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 12px rgba(107, 185, 232, 0.3);
   flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 18px rgba(107, 185, 232, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`
+
+export const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+export const InfoBox = styled.div`
+  background: linear-gradient(135deg, #E0F2FE 0%, #DBEAFE 100%);
+  border: 1px solid #6BB9E8;
+  border-radius: 8px;
+  padding: 1rem;
+`
+
+export const InfoBoxTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6BB9E8;
+  margin-bottom: 0.375rem;
+`
+
+export const InfoBoxIcon = styled.div`
+  font-size: 1rem;
+`
+
+export const InfoBoxText = styled.p`
+  font-size: 0.75rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.4;
 `
 
 export const Actions = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
 `
 
 export const Button = styled.button`
   flex: 1;
-  padding: 0.875rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 7px;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 
   ${props => props.variant === 'primary' && `
-    background: ${colors.osce.primary};
-    color: ${colors.neutral.white};
+    background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+    color: white;
     border: none;
+    box-shadow: 0 3px 12px rgba(107, 185, 232, 0.3);
 
     &:hover:not(:disabled) {
-      background: ${colors.osce.primaryHover};
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+      box-shadow: 0 5px 18px rgba(107, 185, 232, 0.4);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(107, 185, 232, 0.2);
     }
 
     &:disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
     }
   `}
 
   ${props => props.variant === 'secondary' && `
-    background: ${colors.neutral.white};
-    color: ${colors.neutral.gray700};
-    border: 2px solid ${colors.neutral.gray300};
+    background: white;
+    color: #374151;
+    border: 1px solid #D1D5DB;
 
     &:hover {
-      background: ${colors.neutral.gray50};
-      border-color: ${colors.neutral.gray400};
+      background: #F9FAFB;
+    }
+
+    &:active {
+      background: #F3F4F6;
     }
   `}
 `
 
 export const ErrorMessage = styled.div`
-  background: ${colors.error.lighter};
-  border-left: 4px solid ${colors.error.main};
-  padding: 1rem;
-  border-radius: 8px;
+  background: #FEF2F2;
+  border-left: 3px solid #EF4444;
+  padding: 0.75rem;
+  border-radius: 6px;
   margin-bottom: 1rem;
-  color: ${colors.error.dark};
-  font-size: 0.875rem;
+  color: #991B1B;
+  font-size: 0.8125rem;
 `
 
 export const HelpText = styled.p`
-  font-size: 0.875rem;
-  color: ${colors.neutral.gray500};
+  font-size: 0.8125rem;
+  color: #64748B;
   text-align: center;
-  margin: 1.5rem 0 0 0;
-  line-height: 1.5;
+  margin: 1rem 0 0 0;
+  line-height: 1.4;
 `
