@@ -1,46 +1,67 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchSessionObservations } from '@store/oscePractice/userAction'
+import { useSelector } from 'react-redux'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import { LoadingContainer, LoadingSpinner, EmptyState } from '../../../styles/shared'
 import {
+  ObservationGrid,
+  ObservationGroup,
+  GroupHeader,
+} from '../../../../SessionPractice/SessionPractice.styles'
+import {
   Container,
-  GroupSection,
-  GroupTitle,
-  ObservationsList,
-  ObservationItem,
-  Checkbox,
-  ObservationContent,
-  ObservationName,
-  ObservationNotes,
   SummaryCard,
   SummaryText,
   SummaryCount,
+  SectionHeader,
+  SelectedObservationCard,
+  SelectedObservationTitle,
+  SelectedObservationImage,
+  SelectedObservationText,
+  InterpretationSection,
+  InterpretationLabel,
+  InterpretationText,
+  Divider,
+  ObservationCheckboxItem,
 } from './styles'
 
-function ObservationTab({ sessionId }) {
-  const dispatch = useDispatch()
-  const { sessionObservations, loading } = useSelector(state => state.oscePractice)
+function ObservationTab() {
+  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
 
-  useEffect(() => {
-    if (sessionId) {
-      dispatch(fetchSessionObservations(sessionId))
-    }
-  }, [sessionId, dispatch])
+  // Flatten and group all available observations
+  const flattenedObservations = []
+  if (sessionDetail?.availableObservation) {
+    sessionDetail.availableObservation.forEach(group => {
+      group.observations.forEach(obs => {
+        flattenedObservations.push({
+          ...obs,
+          groupName: group.groupName,
+          id: obs.snapshotId,
+        })
+      })
+    })
+  }
 
-  // Group observations by group name
-  const groupedObservations = sessionObservations.reduce((acc, obs) => {
+  // Get selected observations from userAnswer
+  const selectedObservations = sessionDetail?.userAnswer?.observations || []
+  const selectedIds = selectedObservations.map(obs => obs.snapshotId)
+
+  // Group available observations by group name and mark which ones are selected
+  const groupedObservations = flattenedObservations.reduce((acc, obs) => {
     const groupName = obs.groupName || 'Lainnya'
     if (!acc[groupName]) {
       acc[groupName] = []
     }
-    acc[groupName].push(obs)
+    acc[groupName].push({
+      ...obs,
+      isChecked: selectedIds.includes(obs.id),
+    })
     return acc
   }, {})
 
-  const checkedCount = sessionObservations.filter(obs => obs.isChecked).length
-  const totalCount = sessionObservations.length
+  const checkedCount = selectedObservations.length
+  const totalCount = flattenedObservations.length
 
-  if (loading.isLoadingSessionObservations) {
+  if (loading.isLoadingSessionDetail) {
     return (
       <LoadingContainer>
         <LoadingSpinner />
@@ -48,45 +69,93 @@ function ObservationTab({ sessionId }) {
     )
   }
 
-  if (sessionObservations.length === 0) {
+  if (flattenedObservations.length === 0) {
     return (
       <EmptyState>
-        📋 Belum ada observasi yang dicatat dalam sesi ini.
+        📋 Belum ada observasi yang tersedia dalam sesi ini.
       </EmptyState>
     )
   }
 
   return (
     <Container>
+      {/* Summary */}
       <SummaryCard>
         <SummaryText>
-          Observasi yang dilakukan:
+          Observasi yang dipilih:
         </SummaryText>
         <SummaryCount>
           {checkedCount} / {totalCount}
         </SummaryCount>
       </SummaryCard>
 
+      {/* Section 1: All Available Observations */}
+      <SectionHeader>Daftar Observasi Tersedia</SectionHeader>
       {Object.entries(groupedObservations).map(([groupName, groupObs]) => (
-        <GroupSection key={groupName}>
-          <GroupTitle>{groupName}</GroupTitle>
-          <ObservationsList>
+        <ObservationGroup key={groupName}>
+          <GroupHeader>{groupName}</GroupHeader>
+          <ObservationGrid>
             {groupObs.map((obs) => (
-              <ObservationItem key={obs.id} checked={obs.isChecked}>
-                <Checkbox checked={obs.isChecked} />
-                <ObservationContent>
-                  <ObservationName>{obs.name}</ObservationName>
-                  {obs.notes && (
-                    <ObservationNotes>
-                      Catatan: {obs.notes}
-                    </ObservationNotes>
-                  )}
-                </ObservationContent>
-              </ObservationItem>
+              <ObservationCheckboxItem key={obs.id} checked={obs.isChecked}>
+                <input
+                  type="checkbox"
+                  checked={obs.isChecked}
+                  readOnly
+                  disabled
+                />
+                <span>
+                  {obs.name}
+                  {obs.isChecked && <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: '600' }}>✓</span>}
+                </span>
+              </ObservationCheckboxItem>
             ))}
-          </ObservationsList>
-        </GroupSection>
+          </ObservationGrid>
+        </ObservationGroup>
       ))}
+
+      {/* Section 2: Selected Observations with Details */}
+      {selectedObservations.length > 0 && (
+        <>
+          <Divider />
+          <SectionHeader>Detail Observasi yang Dipilih</SectionHeader>
+
+          {selectedObservations.map((obs) => (
+            <SelectedObservationCard key={obs.snapshotId}>
+              <SelectedObservationTitle>{obs.name}</SelectedObservationTitle>
+
+              {/* Observation Image */}
+              {obs.attachments && (
+                <PhotoProvider>
+                  <PhotoView src={obs.attachments.url}>
+                    <SelectedObservationImage
+                      src={obs.attachments.url}
+                      alt={obs.name}
+                    />
+                  </PhotoView>
+                </PhotoProvider>
+              )}
+
+              {/* Observation Text/Result */}
+              {obs.observationText && (
+                <SelectedObservationText>
+                  <strong>Hasil Observasi:</strong>
+                  <div dangerouslySetInnerHTML={{ __html: obs.observationText }} />
+                </SelectedObservationText>
+              )}
+
+              {/* Interpretation */}
+              {obs.requiresInterpretation && (
+                <InterpretationSection>
+                  <InterpretationLabel>Interpretasi:</InterpretationLabel>
+                  <InterpretationText hasInterpretation={!!obs.notes}>
+                    {obs.notes || 'Belum ada interpretasi'}
+                  </InterpretationText>
+                </InterpretationSection>
+              )}
+            </SelectedObservationCard>
+          ))}
+        </>
+      )}
     </Container>
   )
 }

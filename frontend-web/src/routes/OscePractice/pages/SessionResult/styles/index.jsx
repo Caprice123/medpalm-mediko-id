@@ -2,13 +2,14 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
+background: #f0fdfa;
 `
 
 export const Wrapper = styled.div`
     min-height: 100vh;
-    background: ${colors.neutral.gray50};
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 2rem;
-  background: #f0fdfa;
 `
 
 

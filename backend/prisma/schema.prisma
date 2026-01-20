@@ -1207,7 +1207,7 @@ model osce_sessions {
 
   user                                        users                                         @relation(fields: [user_id], references: [id])
   osce_topic                                  osce_topics                                   @relation(fields: [osce_topic_id], references: [id])
-  osce_session_rubric_snapshot                osce_session_rubric_snapshots?
+  osce_session_rubric_snapshots                osce_session_rubric_snapshots[]
   osce_session_tag_snapshots                  osce_session_tag_snapshots[]
   osce_session_topic_snapshot                 osce_session_topic_snapshots?
   osce_session_observation_group_snapshots    osce_session_observation_group_snapshots[]

@@ -194,15 +194,6 @@ export class CreateOsceSessionService extends BaseService {
                   },
                 })
               }
-
-              // Create user interaction record ONLY for observations in the topic
-              await tx.osce_session_observations.create({
-                data: {
-                  osce_session_id: newSession.id,
-                  observation_snapshot_id: obsSnapshot.id,
-                  interpretation: null,
-                },
-              })
             }
           }
         }

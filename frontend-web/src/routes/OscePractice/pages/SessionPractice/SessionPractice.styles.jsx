@@ -214,6 +214,7 @@ export const GuideSection = styled.div`
  max-height: 150px;
   border-radius: 8px;
   margin-bottom: 1rem;
+  overflow-y: auto;
   transition: all 0.3s ease;
 `
 

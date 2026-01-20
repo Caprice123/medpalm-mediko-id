@@ -2,6 +2,7 @@ import { useState } from 'react'
 import OscePracticeSettingsModal from './components/OscePracticeSettingsModal'
 import TopicsTab from './subtabs/Topic'
 import ObservationsTab from './subtabs/Observation'
+import RubricsTab from './subtabs/Rubric'
 import {
   Container,
   Header,
@@ -43,6 +44,12 @@ function OscePracticeAdminPage({ onBack }) {
           Topics
         </Tab>
         <Tab
+          active={activeTab === 'rubrics'}
+          onClick={() => setActiveTab('rubrics')}
+        >
+          Rubrik
+        </Tab>
+        <Tab
           active={activeTab === 'observations'}
           onClick={() => setActiveTab('observations')}
         >
@@ -51,6 +58,7 @@ function OscePracticeAdminPage({ onBack }) {
       </TabsContainer>
 
       {activeTab === 'topics' && <TopicsTab />}
+      {activeTab === 'rubrics' && <RubricsTab />}
       {activeTab === 'observations' && <ObservationsTab />}
 
       {isFeatureSettingOpen && (

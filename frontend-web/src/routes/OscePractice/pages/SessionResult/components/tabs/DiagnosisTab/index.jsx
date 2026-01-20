@@ -1,33 +1,18 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchSessionDiagnoses } from '@store/oscePractice/userAction'
+import { useSelector } from 'react-redux'
 import { LoadingContainer, LoadingSpinner, EmptyState } from '../../../styles/shared'
 import {
   Container,
-  Section,
-  SectionTitle,
-  Badge,
-  DiagnosisCard,
-  DiagnosisList,
-  DiagnosisItem,
-  DiagnosisNumber,
-  DiagnosisText,
 } from './styles'
+import TextInput from '@components/common/TextInput'
+import { EmptyListText, FormSection, ItemCard, ItemsList, ItemText, SectionTitle, } from '../../../../SessionPractice/SessionPractice.styles'
 
-function DiagnosisTab({ sessionId }) {
-  const dispatch = useDispatch()
-  const { sessionDiagnoses, loading } = useSelector(state => state.oscePractice)
+function DiagnosisTab() {
+  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
 
-  useEffect(() => {
-    if (sessionId) {
-      dispatch(fetchSessionDiagnoses(sessionId))
-    }
-  }, [sessionId, dispatch])
+  const mainDiagnosis = sessionDetail.userAnswer.diagnoses.find(d => d.type === 'utama')
+  const differentialDiagnoses = sessionDetail.userAnswer.diagnoses.filter(d => d.type === 'pembanding')
 
-  const mainDiagnosis = sessionDiagnoses.find(d => d.type === 'utama')
-  const differentialDiagnoses = sessionDiagnoses.filter(d => d.type === 'pembanding')
-
-  if (loading.isLoadingSessionDiagnoses) {
+  if (loading.isLoadingSessionDetail) {
     return (
       <LoadingContainer>
         <LoadingSpinner />
@@ -37,7 +22,7 @@ function DiagnosisTab({ sessionId }) {
 
   return (
     <Container>
-      <Section>
+      {/* <Section>
         <SectionTitle>
           Diagnosis Utama
           <Badge primary>Utama</Badge>
@@ -66,7 +51,42 @@ function DiagnosisTab({ sessionId }) {
         ) : (
           <EmptyState>Belum ada diagnosis pembanding yang dicatat.</EmptyState>
         )}
-      </Section>
+      </Section> */}
+
+      {/* Diagnosa Utama */}
+      <FormSection>
+        <SectionTitle>
+          DIAGNOSA UTAMA
+        </SectionTitle>
+        <TextInput
+          placeholder="Masukkan diagnosa utama..."
+          value={mainDiagnosis.diagnosis}
+          disabled
+        />
+      </FormSection>
+
+      {/* Diagnosa Pembanding */}
+      <FormSection>
+        <SectionTitle>
+          DIAGNOSA PEMBANDING
+        </SectionTitle>
+
+        {differentialDiagnoses.length > 0 ? (
+          <ItemsList>
+            {differentialDiagnoses.map((diagnosis, index) => (
+              <ItemCard key={index}>
+                <ItemText>
+                  {index + 1}. {diagnosis.diagnosis}
+                </ItemText>
+              </ItemCard>
+            ))}
+          </ItemsList>
+        ) : (
+          <EmptyListText>
+            Belum ada diagnosa pembanding
+          </EmptyListText>
+        )}
+      </FormSection>
     </Container>
   )
 }

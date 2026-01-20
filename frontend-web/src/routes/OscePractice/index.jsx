@@ -15,6 +15,7 @@ import {
   LoadingContainer,
   LoadingSpinner,
   EmptyState,
+  Container,
 } from './OscePractice.styles'
 
 function OscePracticePage() {
@@ -33,64 +34,69 @@ function OscePracticePage() {
   // Loading state
   if (loading.isLoadingUserTopics && loading.isLoadingUserSessions) {
     return (
+
+    <Container>
       <PageContainer>
         <LoadingContainer>
           <LoadingSpinner />
           <div style={{ marginTop: '1rem' }}>Memuat data...</div>
         </LoadingContainer>
       </PageContainer>
+    </Container>
     )
   }
 
   return (
-    <PageContainer>
-      <Header>
-        <div>
-          <Title>OSCE Practice</Title>
-          <Subtitle>
-            Latihan Objective Structured Clinical Examination dengan AI
-          </Subtitle>
-        </div>
-        <Button variant="primary" onClick={handleStartPractice}>
-          Mulai Latihan Baru
-        </Button>
-      </Header>
+    <Container>
+        <PageContainer>
+        <Header>
+            <div>
+            <Title>OSCE Practice</Title>
+            <Subtitle>
+                Latihan Objective Structured Clinical Examination dengan AI
+            </Subtitle>
+            </div>
+            <Button variant="primary" onClick={handleStartPractice}>
+            Mulai Latihan Baru
+            </Button>
+        </Header>
 
-      {/* Session History */}
-      <Section>
-        <SectionHeader>
-          <SectionTitle>Riwayat Latihan</SectionTitle>
-        </SectionHeader>
+        {/* Session History */}
+        <Section>
+            <SectionHeader>
+            <SectionTitle>Riwayat Latihan</SectionTitle>
+            </SectionHeader>
 
-        {loading.isLoadingUserSessions ? (
-          <LoadingContainer>
-            <LoadingSpinner />
-            <div style={{ marginTop: '1rem' }}>Memuat riwayat...</div>
-          </LoadingContainer>
-        ) : userSessions.length === 0 ? (
-          <EmptyState>
-            <div>📋</div>
-            <p>Belum ada riwayat latihan. Mulai latihan pertama Anda!</p>
-          </EmptyState>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
-            {userSessions.map((session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-              />
-            ))}
-          </div>
+            {loading.isLoadingUserSessions ? (
+            <LoadingContainer>
+                <LoadingSpinner />
+                <div style={{ marginTop: '1rem' }}>Memuat riwayat...</div>
+            </LoadingContainer>
+            ) : userSessions.length === 0 ? (
+            <EmptyState>
+                <div>📋</div>
+                <p>Belum ada riwayat latihan. Mulai latihan pertama Anda!</p>
+            </EmptyState>
+            ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
+                {userSessions.map((session) => (
+                <SessionCard
+                    key={session.id}
+                    session={session}
+                />
+                ))}
+            </div>
+            )}
+        </Section>
+
+        {/* Topic Selection Modal */}
+        {showTopicModal && (
+            <TopicSelectionModal
+            onClose={() => setShowTopicModal(false)}
+            />
         )}
-      </Section>
-
-      {/* Topic Selection Modal */}
-      {showTopicModal && (
-        <TopicSelectionModal
-          onClose={() => setShowTopicModal(false)}
-        />
-      )}
-    </PageContainer>
+        </PageContainer>
+    </Container>
   )
 }
 

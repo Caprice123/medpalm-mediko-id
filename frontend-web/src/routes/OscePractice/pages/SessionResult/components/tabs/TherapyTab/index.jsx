@@ -1,6 +1,4 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchSessionTherapies } from '@store/oscePractice/userAction'
+import { useSelector } from 'react-redux'
 import { LoadingContainer, LoadingSpinner, EmptyState } from '../../../styles/shared'
 import {
   Container,
@@ -12,24 +10,20 @@ import {
   SummaryText,
   SummaryCount,
 } from './styles'
+import { EmptyListText, FormSection, ItemCard, ItemsList, ItemText, SectionTitle } from '../../../../SessionPractice/SessionPractice.styles'
 
-function TherapyTab({ sessionId }) {
-  const dispatch = useDispatch()
-  const { sessionTherapies, loading } = useSelector(state => state.oscePractice)
+function TherapyTab() {
+  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
 
-  useEffect(() => {
-    if (sessionId) {
-      dispatch(fetchSessionTherapies(sessionId))
-    }
-  }, [sessionId, dispatch])
-
-  if (loading.isLoadingSessionTherapies) {
+  if (loading.isLoadingSessionDetail) {
     return (
       <LoadingContainer>
         <LoadingSpinner />
       </LoadingContainer>
     )
   }
+
+  const sessionTherapies = sessionDetail.userAnswer.therapies
 
   if (sessionTherapies.length === 0) {
     return (
@@ -41,23 +35,27 @@ function TherapyTab({ sessionId }) {
 
   return (
     <Container>
-      <SummaryCard>
-        <SummaryText>
-          Total terapi yang diberikan:
-        </SummaryText>
-        <SummaryCount>
-          {sessionTherapies.length}
-        </SummaryCount>
-      </SummaryCard>
+      <FormSection>
+        <SectionTitle>
+          TERAPI
+        </SectionTitle>
 
-      <TherapyList>
-        {sessionTherapies.map((therapy, index) => (
-          <TherapyItem key={therapy.id}>
-            <TherapyNumber>{index + 1}</TherapyNumber>
-            <TherapyText>{therapy.therapy}</TherapyText>
-          </TherapyItem>
-        ))}
-      </TherapyList>
+        {sessionTherapies.length > 0 ? (
+          <ItemsList>
+            {sessionTherapies.map((therapy, index) => (
+              <ItemCard key={index}>
+                <ItemText>
+                  {index + 1}. {therapy.therapy}
+                </ItemText>
+              </ItemCard>
+            ))}
+          </ItemsList>
+        ) : (
+          <EmptyListText>
+            Belum ada terapi yang ditambahkan
+          </EmptyListText>
+        )}
+      </FormSection>
     </Container>
   )
 }

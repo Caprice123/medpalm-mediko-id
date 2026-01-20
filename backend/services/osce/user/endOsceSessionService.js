@@ -21,6 +21,7 @@ export class EndOsceSessionService extends BaseService {
         },
         include: {
           osce_session_topic_snapshot: true,
+          osce_session_rubric_snapshots: true,
           osce_session_messages: {
             orderBy: {
               created_at: 'asc',
@@ -139,11 +140,19 @@ export class EndOsceSessionService extends BaseService {
         orderBy: { order: 'asc' },
       })
 
+      const savedObservations = await prisma.osce_session_observations.findMany({
+        where: { osce_session_id: session.id },
+        include: {
+            observation_snapshot: true,
+        },
+        orderBy: { order: 'asc' },
+      })
+
       // Generate AI evaluation with smart batching
       const evaluation = await this._generateAIEvaluation({
         session,
         messages: session.osce_session_messages,
-        observations: session.osce_session_observations,
+        observations: savedObservations,
         diagnoses: savedDiagnoses,
         therapies: savedTherapies,
       })
@@ -204,8 +213,10 @@ export class EndOsceSessionService extends BaseService {
         throw new Error('Chunk or final analyzer prompt not found in constants, using fallback')
       }
 
+      const rubric = session.osce_session_rubric_snapshots[0]
+
       // Extract rubric categories from system prompt (if available)
-      const rubricCategories = this._extractRubricCategories(topicSnapshot.system_prompt || '')
+      const rubricCategories = this._extractRubricCategories(rubric.content || '')
 
       // Smart batching - process every 30 messages
       const pageSize = 30 // Process 30 messages per chunk
@@ -354,6 +365,8 @@ export class EndOsceSessionService extends BaseService {
         })
         .join('\n')
 
+    console.log(observations)
+
       // Build diagnosis info
       const mainDiagnosis = diagnoses.find(d => d.type === 'utama')
       const differentialDiagnoses = diagnoses.filter(d => d.type === 'pembanding')
@@ -392,14 +405,12 @@ export class EndOsceSessionService extends BaseService {
         .replace(/\{\{userAnswerDifferentialAnalysis\}\}/g, userAnswerDifferentialAnalysis)
         .replace(/\{\{userAnswerPrescriptions\}\}/g, userAnswerPrescriptions)
 
-    console.log(compiledFinalPrompt)
-
       // Run final analysis
-    //   const finalResponse = await ModelService.generateFromText(
-    //     model,
-    //     compiledFinalPrompt,
-    //     [],
-    //   )
+      const finalResponse = await ModelService.generateFromText(
+        model,
+        compiledFinalPrompt,
+        [],
+      )
 
       // Parse final evaluation
       let evaluationData = {}

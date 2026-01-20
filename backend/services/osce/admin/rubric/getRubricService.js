@@ -8,7 +8,7 @@ export class GetRubricService extends BaseService {
     }
 
     const rubric = await prisma.osce_rubrics.findUnique({
-      where: { id: rubricId },
+      where: { id: Number(rubricId) },
     })
 
     if (!rubric) {
