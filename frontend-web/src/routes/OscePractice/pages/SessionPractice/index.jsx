@@ -17,6 +17,7 @@ import {
   Tab,
   TabContent,
   EmptyState,
+  Content,
 } from './SessionPractice.styles'
 
 const TABS = [
@@ -147,56 +148,59 @@ function SessionPractice() {
 
   return (
     <Container>
-      {/* Left Sidebar */}
-      <SessionSidebar
-        session={sessionDetail}
-        onEndSession={handleEndSession}
-        isEndingSession={loading.isEndingSession}
-      />
+        <Content>
 
-      {/* Main Content */}
-      <MainContent>
-        <TabBar>
-          {TABS.map(tab => (
-            <Tab
-              key={tab.id}
-              active={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </Tab>
-          ))}
-        </TabBar>
+        {/* Left Sidebar */}
+        <SessionSidebar
+            session={sessionDetail}
+            onEndSession={handleEndSession}
+            isEndingSession={loading.isEndingSession}
+        />
 
-        <TabContent>
-          {activeTab === 'conversation' && <ConversationTab />}
+        {/* Main Content */}
+        <MainContent>
+            <TabBar>
+            {TABS.map(tab => (
+                <Tab
+                key={tab.id}
+                active={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                >
+                {tab.label}
+                </Tab>
+            ))}
+            </TabBar>
 
-          {activeTab === 'supporting' && (
-            <SupportingDataTab
-              observations={observations}
-              setObservations={setObservations}
-              interpretations={interpretations}
-              setInterpretations={setInterpretations}
-            />
-          )}
+            <TabContent>
+            {activeTab === 'conversation' && <ConversationTab />}
 
-          {activeTab === 'diagnosis' && (
-            <DiagnosisTab
-              diagnosisUtama={diagnosisUtama}
-              setDiagnosisUtama={setDiagnosisUtama}
-              diagnosisPembanding={diagnosisPembanding}
-              setDiagnosisPembanding={setDiagnosisPembanding}
-            />
-          )}
+            {activeTab === 'supporting' && (
+                <SupportingDataTab
+                observations={observations}
+                setObservations={setObservations}
+                interpretations={interpretations}
+                setInterpretations={setInterpretations}
+                />
+            )}
 
-          {activeTab === 'therapy' && (
-            <TherapyTab
-              therapies={therapies}
-              setTherapies={setTherapies}
-            />
-          )}
-        </TabContent>
-      </MainContent>
+            {activeTab === 'diagnosis' && (
+                <DiagnosisTab
+                diagnosisUtama={diagnosisUtama}
+                setDiagnosisUtama={setDiagnosisUtama}
+                diagnosisPembanding={diagnosisPembanding}
+                setDiagnosisPembanding={setDiagnosisPembanding}
+                />
+            )}
+
+            {activeTab === 'therapy' && (
+                <TherapyTab
+                therapies={therapies}
+                setTherapies={setTherapies}
+                />
+            )}
+            </TabContent>
+        </MainContent>
+        </Content>
     </Container>
   )
 }

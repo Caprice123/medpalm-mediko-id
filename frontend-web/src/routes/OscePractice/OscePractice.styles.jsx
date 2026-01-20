@@ -5,6 +5,7 @@ export const PageContainer = styled.div`
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  background: #f0fdfa;
 
   @media (max-width: 768px) {
     padding: 1rem;

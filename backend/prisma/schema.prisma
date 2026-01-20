@@ -1307,6 +1307,8 @@ model osce_session_rubric_snapshots {
     osce_topics osce_topics[]
 
     @@unique([name])
+    @@index([rubric_id])
+    @@index([osce_session_id])
 
     osce_rubric osce_rubrics?  @relation(fields: [rubric_id], references: [id], onDelete: Cascade)
     osce_session osce_sessions?  @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)

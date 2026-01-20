@@ -14,6 +14,15 @@ export class GetUserOsceSessionsService extends BaseService {
         },
         include: {
           osce_session_topic_snapshot: true,
+          osce_session_tag_snapshots: {
+            include: {
+                tags: {
+                    include: {
+                        tag_group: true,
+                    }
+                }
+            }
+          }
         },
         orderBy: {
           created_at: 'desc',

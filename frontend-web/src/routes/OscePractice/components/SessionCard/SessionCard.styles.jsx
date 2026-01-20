@@ -9,7 +9,6 @@ export const Card = styled.div`
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
   &:hover {
     border-color: ${colors.osce.primary};
@@ -117,3 +116,22 @@ export const ActionButton = styled.button`
     background: ${props => props.primary ? colors.osce.primaryHover : colors.osce.primaryLight};
   }
 `
+
+
+export const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+`
+
+export const Tag = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: ${props => props.university ? '#ede9fe' : '#fef3c7'};
+  color: ${props => props.university ? '#5b21b6' : '#92400e'};
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+`
+

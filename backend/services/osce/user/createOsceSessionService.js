@@ -27,12 +27,6 @@ export class CreateOsceSessionService extends BaseService {
         throw new Error('Topic not found or not available')
       }
 
-      // Fetch ALL observation groups (entire table)
-      const allObservationGroups = await prisma.osce_observation_groups.findMany({
-        orderBy: {
-          id: 'asc',
-        },
-      })
 
       // Fetch ALL observations (entire table) with their groups
       const allObservations = await prisma.osce_observations.findMany({
@@ -84,6 +78,44 @@ export class CreateOsceSessionService extends BaseService {
             time_taken: 0,
             credits_used: 0,
           },
+        })
+        
+        // Fetch ALL observation groups (entire table)
+        const rubric = await tx.osce_rubrics.findFirst({
+            where: {
+                id: topic.osce_rubric_id
+            }
+        })
+
+        console.log({
+                osce_session_id: newSession.id,
+                rubric_id: rubric.id,
+                name: rubric.name,
+                content: rubric.content
+            })
+
+        await tx.osce_session_rubric_snapshots.create({
+            data: {
+                osce_session_id: newSession.id,
+                rubric_id: rubric.id,
+                name: rubric.name,
+                content: rubric.content
+            }
+        })
+        
+        const topicTags = await tx.osce_topic_tags.findMany({
+            where: {
+                topic_id: topic.id,
+            },
+            select: {
+                tag_id: true,
+            }
+        })
+        await tx.osce_session_tag_snapshots.createMany({
+            data: topicTags.map((tag) => ({
+                osce_session_id: newSession.id,
+                tag_id: tag.tag_id, 
+            }))
         })
 
         // Clone topic-level attachments

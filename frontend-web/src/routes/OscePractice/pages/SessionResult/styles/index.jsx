@@ -2,10 +2,16 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  min-height: 100vh;
-  background: ${colors.neutral.gray50};
-  padding: 2rem;
 `
+
+export const Wrapper = styled.div`
+    min-height: 100vh;
+    background: ${colors.neutral.gray50};
+    padding: 2rem;
+  background: #f0fdfa;
+`
+
+
 
 export const Header = styled.div`
   background: white;

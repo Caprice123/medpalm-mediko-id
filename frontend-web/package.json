@@ -44,6 +44,7 @@
     "file-saver": "^2.0.5",
     "formik": "^2.4.9",
     "jwt-decode": "^4.0.0",
+    "luxon": "^3.7.2",
     "moment-timezone": "^0.6.0",
     "react": "^19.2.3",
     "react-countup": "^6.5.3",

@@ -12,6 +12,8 @@ import {
   StatValue,
   CardActions,
   ActionButton,
+  TagList,
+  Tag,
 } from './SessionCard.styles'
 
 function SessionCard({ session }) {
@@ -36,9 +38,28 @@ function SessionCard({ session }) {
     return `${minutes} menit`
   }
 
-  const onViewSession = () => {
-    navigate(`/osce-practice/session/${session.uniqueId}/result`)
+  const onViewSession = (session) => {
+    if (session.status == "created") {
+        navigate(`/osce-practice/session/${session.uniqueId}/preparation`)
+    } else if (session.status == "completed") {
+        navigate(`/osce-practice/session/${session.uniqueId}/result`)
+    } else {
+        navigate(`/osce-practice/session/${session.uniqueId}/practice`)
+    }
   }
+
+  const getTextLabel = (session) => {
+    const label = {
+        created: "Mulai kerjakan",
+        expired: "Selesai dan lihat hasil",
+        started: "Lanjutkan",
+        completed: "Lihat hasil"
+    }
+    return label[session.status]
+  }
+  
+  const topicTags = session.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+  const batchTags = session.tags?.filter(tag => tag.tagGroup?.name === 'batch') || []
 
   return (
     <Card>
@@ -51,6 +72,30 @@ function SessionCard({ session }) {
         </TopicInfo>
         <DateBadge>{formatDate(session.createdAt)}</DateBadge>
       </CardHeader>
+
+      <div style={{flex: 1}}></div>
+
+      {/* University Tags */}
+      {topicTags.length > 0 && (
+        <TagList>
+          {topicTags.map((tag) => (
+            <Tag key={tag.id} university>
+              🏛️ {tag.name}
+            </Tag>
+          ))}
+        </TagList>
+      )}
+
+      {/* Semester Tags */}
+      {batchTags.length > 0 && (
+        <TagList>
+          {batchTags.map((tag) => (
+            <Tag key={tag.id} semester>
+              📚 {tag.name}
+            </Tag>
+          ))}
+        </TagList>
+      )}
 
       <StatsRow>
         <StatItem>
@@ -70,7 +115,7 @@ function SessionCard({ session }) {
 
       <CardActions>
         <ActionButton onClick={() => onViewSession(session)}>
-          Lihat Detail
+          {getTextLabel(session)}
         </ActionButton>
       </CardActions>
     </Card>

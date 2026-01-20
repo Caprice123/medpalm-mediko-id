@@ -129,7 +129,7 @@ class OsceSessionSerializer {
     return {
       id: session.id,
       uniqueId: session.unique_id,
-      status: session.status,
+      status: this.formatStatus(session),
       topicTitle: topicData.title,
       topicDescription: topicData.description,
       timeTaken: topicData.time_taken,
@@ -137,8 +137,32 @@ class OsceSessionSerializer {
       maxScore: session.max_score,
       aiFeedback: JSON.parse(session.ai_feedback),
       createdAt: session.created_at,
+      scheduledEnd: session.scheduled_end_at,
+      tags: session.osce_session_tag_snapshots?.map((snapshot) => ({
+        id: snapshot.tag_id,
+        name: snapshot.tags.name,
+        tagGroup: {
+            name: snapshot.tags.tag_group.name
+        }
+      }))
     };
   }
+
+  
+    static formatStatus = (session) => {
+        if (session.status != "started") {
+            return session.status
+        }
+
+        const scheduledEndAt = DateTime.fromJSDate(session.scheduled_end_at, { zone: "utc" });
+        const nowUtc = DateTime.utc();
+        const isPassed = nowUtc > scheduledEndAt;
+
+        if (isPassed) {
+            return "expired"
+        }
+        return session.status
+    }
 
   static serializeListItems(sessions) {
     return sessions.map(session => this.serializeListItem(session));

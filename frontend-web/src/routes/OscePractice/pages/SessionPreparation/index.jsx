@@ -215,12 +215,6 @@ function SessionPreparation() {
             {isStarting ? 'Memulai Sesi...' : 'Mulai Latihan'}
           </Button>
         </Actions>
-
-        <HelpText>
-          Sesi ini akan menggunakan {sessionDetail.creditsUsed || 10} kredit.
-          <br />
-          Durasi: {sessionDetail.topicDurationMinutes || 15} menit • Model: {sessionDetail.aiModelUsed}
-        </HelpText>
       </Card>
     </Container>
   )

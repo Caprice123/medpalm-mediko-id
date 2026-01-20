@@ -14,18 +14,14 @@ export class GetRubricsService extends BaseService {
     }
 
     // Fetch rubrics with pagination
-    const [rubrics, totalCount] = await Promise.all([
+    const rubrics = await Promise.all([
       prisma.osce_rubrics.findMany({
         where,
         orderBy: {
           created_at: 'desc',
         },
       }),
-      prisma.osce_rubrics.count({ where }),
     ])
-
-    const totalPages = Math.ceil(totalCount / perPage)
-    const hasMore = page < totalPages
 
     return {
       rubrics,

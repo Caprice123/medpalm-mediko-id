@@ -30,6 +30,7 @@ import {
   LoadingContainer,
   LoadingSpinner,
   ErrorMessage,
+  Wrapper,
 } from './styles'
 
 const TABS = [
@@ -111,88 +112,92 @@ function SessionResult() {
   if (error || !sessionDetail) {
     return (
       <Container>
-        <Header>
-          <BackButton onClick={() => navigate('/osce-practice')}>
-            ← Kembali
-          </BackButton>
-          <ErrorMessage>
-            <span>⚠️</span>
-            <span>{error || 'Sesi tidak ditemukan'}</span>
-          </ErrorMessage>
-        </Header>
+        <Wrapper>
+            <Header>
+            <BackButton onClick={() => navigate('/osce-practice')}>
+                ← Kembali
+            </BackButton>
+            <ErrorMessage>
+                <span>⚠️</span>
+                <span>{error || 'Sesi tidak ditemukan'}</span>
+            </ErrorMessage>
+            </Header>
+        </Wrapper>
       </Container>
     )
   }
 
   return (
     <Container>
-      <Header>
-        <BackButton onClick={() => navigate('/osce-practice')}>
-          ← Kembali
-        </BackButton>
+        <Wrapper>
+            <Header>
+                <BackButton onClick={() => navigate('/osce-practice')}>
+                ← Kembali
+                </BackButton>
 
-        <TitleRow>
-          <TitleSection>
-            <Title>{sessionDetail.topicTitle || 'OSCE Session'}</Title>
-            <Subtitle>{sessionDetail.topicDescription || 'Hasil Latihan OSCE'}</Subtitle>
-          </TitleSection>
+                <TitleRow>
+                <TitleSection>
+                    <Title>{sessionDetail.topicTitle || 'OSCE Session'}</Title>
+                    <Subtitle>{sessionDetail.topicDescription || 'Hasil Latihan OSCE'}</Subtitle>
+                </TitleSection>
 
-          {sessionDetail.totalScore !== null && sessionDetail.totalScore !== undefined && (
-            <ScoreCard passing={isPassing()}>
-              <ScoreLabel passing={isPassing()}>
-                {isPassing() ? 'Lulus' : 'Tidak Lulus'}
-              </ScoreLabel>
-              <Score passing={isPassing()}>
-                {calculatePercentage()}%
-              </Score>
-              <ScoreMax passing={isPassing()}>
-                {sessionDetail.totalScore} / {sessionDetail.maxScore}
-              </ScoreMax>
-            </ScoreCard>
-          )}
-        </TitleRow>
+                {sessionDetail.totalScore !== null && sessionDetail.totalScore !== undefined && (
+                    <ScoreCard passing={isPassing()}>
+                    <ScoreLabel passing={isPassing()}>
+                        {isPassing() ? 'Lulus' : 'Tidak Lulus'}
+                    </ScoreLabel>
+                    <Score passing={isPassing()}>
+                        {calculatePercentage()}%
+                    </Score>
+                    <ScoreMax passing={isPassing()}>
+                        {sessionDetail.totalScore} / {sessionDetail.maxScore}
+                    </ScoreMax>
+                    </ScoreCard>
+                )}
+                </TitleRow>
 
-        <MetaInfo>
-          <MetaItem>
-            <MetaLabel>Tanggal</MetaLabel>
-            <MetaValue>{formatDate(sessionDetail.createdAt)}</MetaValue>
-          </MetaItem>
-          <MetaItem>
-            <MetaLabel>Durasi</MetaLabel>
-            <MetaValue>{formatDuration(sessionDetail.durationMinutes)}</MetaValue>
-          </MetaItem>
-          <MetaItem>
-            <MetaLabel>AI Model</MetaLabel>
-            <MetaValue>{sessionDetail.aiModelUsed || 'N/A'}</MetaValue>
-          </MetaItem>
-          <MetaItem>
-            <MetaLabel>Credit Digunakan</MetaLabel>
-            <MetaValue>{sessionDetail.creditsUsed || 0}</MetaValue>
-          </MetaItem>
-        </MetaInfo>
-      </Header>
+                <MetaInfo>
+                <MetaItem>
+                    <MetaLabel>Tanggal</MetaLabel>
+                    <MetaValue>{formatDate(sessionDetail.createdAt)}</MetaValue>
+                </MetaItem>
+                <MetaItem>
+                    <MetaLabel>Durasi</MetaLabel>
+                    <MetaValue>{formatDuration(sessionDetail.durationMinutes)}</MetaValue>
+                </MetaItem>
+                <MetaItem>
+                    <MetaLabel>AI Model</MetaLabel>
+                    <MetaValue>{sessionDetail.aiModelUsed || 'N/A'}</MetaValue>
+                </MetaItem>
+                <MetaItem>
+                    <MetaLabel>Credit Digunakan</MetaLabel>
+                    <MetaValue>{sessionDetail.creditsUsed || 0}</MetaValue>
+                </MetaItem>
+                </MetaInfo>
+            </Header>
 
-      <Content>
-        <TabBar>
-          {TABS.map(tab => (
-            <Tab
-              key={tab.id}
-              active={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </Tab>
-          ))}
-        </TabBar>
+            <Content>
+                <TabBar>
+                {TABS.map(tab => (
+                    <Tab
+                    key={tab.id}
+                    active={activeTab === tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    >
+                    {tab.label}
+                    </Tab>
+                ))}
+                </TabBar>
 
-        <TabContent>
-          {activeTab === 'hasil' && <HasilTab session={sessionDetail} />}
-          {activeTab === 'chats' && <ChatsTab sessionId={sessionDetail.uniqueId} />}
-          {activeTab === 'observation' && <ObservationTab sessionId={sessionDetail.uniqueId} />}
-          {activeTab === 'diagnosis' && <DiagnosisTab sessionId={sessionDetail.uniqueId} />}
-          {activeTab === 'therapy' && <TherapyTab sessionId={sessionDetail.uniqueId} />}
-        </TabContent>
-      </Content>
+                <TabContent>
+                {activeTab === 'hasil' && <HasilTab session={sessionDetail} />}
+                {activeTab === 'chats' && <ChatsTab sessionId={sessionDetail.uniqueId} />}
+                {activeTab === 'observation' && <ObservationTab sessionId={sessionDetail.uniqueId} />}
+                {activeTab === 'diagnosis' && <DiagnosisTab sessionId={sessionDetail.uniqueId} />}
+                {activeTab === 'therapy' && <TherapyTab sessionId={sessionDetail.uniqueId} />}
+                </TabContent>
+            </Content>
+        </Wrapper>
     </Container>
   )
 }

@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { Card, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import { fetchFeatures } from '@store/feature/action'
-import { getUserData } from '@utils/authToken'
 
 const DashboardContainer = styled.div`
   min-height: calc(100vh - 63px);

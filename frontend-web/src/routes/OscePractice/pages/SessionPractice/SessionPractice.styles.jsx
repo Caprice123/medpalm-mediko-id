@@ -2,12 +2,15 @@ import styled, { keyframes } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  display: flex;
-  margin: 0 auto;
-  max-width: 1200px;
-  height: calc(100vh - 93px);
-  background: ${colors.neutral.gray50};
-  overflow: hidden;
+`
+
+export const Content = styled.div`
+    display: flex;
+    margin: 0 auto;
+    max-width: 1200px;
+    height: calc(100vh - 93px);
+    background: #f0fdfa;
+    overflow: hidden;
 `
 
 // Left Sidebar
