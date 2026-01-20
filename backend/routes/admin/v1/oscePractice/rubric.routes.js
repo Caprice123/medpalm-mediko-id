@@ -1,5 +1,5 @@
 import express from 'express'
-import rubricsController from '#controllers/api/v1/oscePractice/rubrics.controller'
+import rubricsController from '#controllers/admin/v1/oscePractice/rubrics.controller'
 import { asyncHandler } from '#utils/asyncHandler'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 
@@ -9,18 +9,16 @@ const router = express.Router()
 router.use(authenticateToken, requireAdmin)
 
 // GET /api/v1/admin/osce-practice/rubrics - List all rubrics with filters
-router.get('/', asyncHandler(rubricsController.listRubrics.bind(rubricsController)))
+router.get('/', asyncHandler(rubricsController.index.bind(rubricsController)))
 
 // GET /api/v1/admin/osce-practice/rubrics/:rubricId - Get single rubric
-router.get('/:rubricId', asyncHandler(rubricsController.getRubric.bind(rubricsController)))
+router.get('/:rubricId', asyncHandler(rubricsController.show.bind(rubricsController)))
 
 // POST /api/v1/admin/osce-practice/rubrics - Create new rubric
-router.post('/', asyncHandler(rubricsController.createRubric.bind(rubricsController)))
+router.post('/', asyncHandler(rubricsController.create.bind(rubricsController)))
 
 // PUT /api/v1/admin/osce-practice/rubrics/:rubricId - Update rubric
-router.put('/:rubricId', asyncHandler(rubricsController.updateRubric.bind(rubricsController)))
+router.put('/:rubricId', asyncHandler(rubricsController.update.bind(rubricsController)))
 
-// DELETE /api/v1/admin/osce-practice/rubrics/:rubricId - Delete rubric
-router.delete('/:rubricId', asyncHandler(rubricsController.deleteRubric.bind(rubricsController)))
 
 export default router
