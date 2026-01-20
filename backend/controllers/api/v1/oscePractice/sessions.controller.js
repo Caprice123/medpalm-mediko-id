@@ -13,10 +13,11 @@ class SessionsController {
   // GET /api/v1/osce/sessions - Get user's session history
   async index(req, res) {
     const userId = req.user?.id
-    const sessions = await GetUserOsceSessionsService.call(userId)
+    const result = await GetUserOsceSessionsService.call(userId)
 
     return res.status(200).json({
-        data: await OsceSessionSerializer.serializeListItems(sessions),
+        data: await OsceSessionSerializer.serializeListItems(result.sessions),
+        pagination: result.pagination,
     })
   }
 

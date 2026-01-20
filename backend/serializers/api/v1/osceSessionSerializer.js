@@ -83,9 +83,17 @@ class OsceSessionSerializer {
       createdAt: t.created_at,
     })) || []
 
-    const now = DateTime.now().setZone('Asia/Jakarta');
-    const scheduledEnd = DateTime.fromJSDate(session.scheduled_end_at, { zone: 'utc' }).setZone('Asia/Jakarta');
-    const remainingSeconds = Math.max(0, Math.floor(scheduledEnd.diff(now, 'seconds').seconds));
+    // Calculate remaining time
+    let remainingSeconds = 0
+    if (session.status === 'started' && session.scheduled_end_at) {
+      // Session has started - calculate from scheduled_end_at
+      const now = DateTime.now().setZone('Asia/Jakarta');
+      const scheduledEnd = DateTime.fromJSDate(session.scheduled_end_at, { zone: 'utc' }).setZone('Asia/Jakarta');
+      remainingSeconds = Math.max(0, Math.floor(scheduledEnd.diff(now, 'seconds').seconds));
+    } else if (session.status === 'created') {
+      // Session not started yet - use full duration from topic
+      remainingSeconds = (topicData.duration_minutes || 0) * 60;
+    }
 
     console.log(session)
     return {

@@ -1235,7 +1235,6 @@ model osce_session_topic_snapshots {
   answer_key       String?  @db.Text
   knowledge_base   Json?
   ai_model         String
-  system_prompt    String   @db.Text
   duration_minutes Int
   created_at       DateTime @default(now())
 

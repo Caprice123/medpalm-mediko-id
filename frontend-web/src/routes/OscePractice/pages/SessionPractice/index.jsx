@@ -10,6 +10,7 @@ import ConversationTab from './components/ConversationTab'
 import DiagnosisTab from './components/DiagnosisTab'
 import TherapyTab from './components/TherapyTab'
 import SupportingDataTab from './components/SupportingDataTab'
+import EndSessionModal from './components/EndSessionModal'
 import {
   Container,
   MainContent,
@@ -46,10 +47,20 @@ function SessionPractice() {
   const [observations, setObservations] = useState([])
   const [interpretations, setInterpretations] = useState({})
 
+  // End session modal state
+  const [showEndSessionModal, setShowEndSessionModal] = useState(false)
+  const [isAutoEnd, setIsAutoEnd] = useState(false) // true if triggered by timer
+
+  // Track if we've completed fetching for this sessionId
+  const [hasFetchedForSession, setHasFetchedForSession] = useState(false)
+
   // Fetch session detail on mount
   useEffect(() => {
     if (sessionId) {
-      dispatch(fetchSessionDetail(sessionId))
+      setHasFetchedForSession(false) // Reset when sessionId changes
+      dispatch(fetchSessionDetail(sessionId)).then(() => {
+        setHasFetchedForSession(true) // Mark complete after fetch
+      })
     }
   }, [sessionId, dispatch])
 
@@ -88,8 +99,16 @@ function SessionPractice() {
     }
   }, [sessionDetail, sessionId])
 
-  // Redirect based on session status
+  // Redirect based on session status - ONLY after fetch completes
   useEffect(() => {
+    // Don't redirect if:
+    // 1. Still loading
+    // 2. Haven't completed fetching for this sessionId (prevents checking stale data)
+    if (loading.isLoadingSessionDetail || !hasFetchedForSession) {
+      return
+    }
+
+    // Only redirect if we have data and it's for the correct session
     if (sessionDetail && sessionDetail.uniqueId === sessionId) {
       if (sessionDetail.status === 'created') {
         // Redirect to preparation page if session not started yet
@@ -99,13 +118,14 @@ function SessionPractice() {
         navigate(`/osce-practice/session/${sessionId}/result`, { replace: true })
       }
     }
-  }, [sessionDetail, sessionId, navigate])
+  }, [sessionDetail, sessionId, navigate, loading.isLoadingSessionDetail, hasFetchedForSession])
 
-  const handleEndSession = async () => {
-    if (!window.confirm('Apakah Anda yakin ingin mengakhiri sesi? Sesi akan dievaluasi dan Anda tidak bisa melanjutkan setelah ini.')) {
-      return
-    }
+  const handleEndSession = (autoEnd = false) => {
+    setIsAutoEnd(autoEnd)
+    setShowEndSessionModal(true)
+  }
 
+  const handleConfirmEndSession = async () => {
     // Build observations array with interpretations
     const observationsWithInterpretations = observations.map(obs => ({
       snapshotId: obs.snapshotId,
@@ -125,7 +145,7 @@ function SessionPractice() {
       },
       (response) => {
         // Navigate to results page on success
-          navigate(`/osce-practice/session/${sessionId}/result`)
+        navigate(`/osce-practice/session/${sessionId}/result`)
       }
     ))
   }
@@ -199,6 +219,15 @@ function SessionPractice() {
             </TabContent>
         </MainContent>
         </Content>
+
+        {/* End Session Modal */}
+        <EndSessionModal
+          isOpen={showEndSessionModal}
+          onClose={() => setShowEndSessionModal(false)}
+          onConfirm={handleConfirmEndSession}
+          isProcessing={loading.isEndingSession}
+          autoEnd={isAutoEnd}
+        />
     </Container>
   )
 }

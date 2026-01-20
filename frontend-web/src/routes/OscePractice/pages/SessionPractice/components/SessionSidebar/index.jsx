@@ -1,4 +1,6 @@
 import { useState, memo } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Sidebar,
   TimerCard,
@@ -16,6 +18,7 @@ import Button from '@components/common/Button'
 import { AttachmentSection } from './components/AttachmentSection'
 import TimerSection from './components/TimerSection'
 import { useSelector } from 'react-redux'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 
 function SessionSidebar({ onEndSession, isEndingSession }) {
     const [autoSubmit, setAutoSubmit] = useState(false)
@@ -28,7 +31,7 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
       <TaskSection>
         <TaskContent>
         <TaskHeader>Tugas</TaskHeader>
-          <div dangerouslySetInnerHTML={{ __html: sessionDetail?.topic.scenario || 'Tidak ada skenario tersedia.' }} />
+        <CustomMarkdownRenderer item={sessionDetail?.topic.scenario || 'Tidak ada skenario tersedia.'} />
         </TaskContent>
 
         <AutoSubmitToggle>
@@ -47,7 +50,7 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
         <AttachmentSection />
       </TaskSection>
 
-      <Button variant="danger" onClick={onEndSession} disabled={isEndingSession} style={{ margin: '1rem' }}>
+      <Button variant="danger" onClick={() => onEndSession(false)} disabled={isEndingSession} style={{ margin: '1rem' }}>
         {isEndingSession ? 'Mengevaluasi...' : 'Akhiri Sesi'}
       </Button>
     </Sidebar>

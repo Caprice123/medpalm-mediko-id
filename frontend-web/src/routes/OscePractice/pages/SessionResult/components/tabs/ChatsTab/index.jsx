@@ -125,7 +125,14 @@ function ChatsTab({ sessionId }) {
           <TaskSection>
             <TaskContent>
               <TaskHeader>Tugas</TaskHeader>
-              <div dangerouslySetInnerHTML={{ __html: sessionDetail.topic.scenario }} />
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  p: ({node, ...props}) => <p style={{marginBottom: '0.5rem'}} {...props} />
+                }}
+              >
+                {sessionDetail.topic.scenario.replace(/\\n/g, '\n\n')}
+              </ReactMarkdown>
             </TaskContent>
           </TaskSection>
         )}

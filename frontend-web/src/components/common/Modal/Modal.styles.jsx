@@ -36,7 +36,6 @@ export const ModalContainer = styled.div`
                        props.size === 'large' ? '900px' :
                        '600px'};
   width: 100%;
-  min-height: 90vh;
   max-height: 90vh;
   display: flex;
   flex-direction: column;

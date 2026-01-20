@@ -22,6 +22,7 @@ const {
   updateMessage,
   removeMessage,
   prependMessages,
+  updateSessionsPagination,
 } = actions
 
 // Fetch available topics for user
@@ -53,15 +54,26 @@ export const fetchUserOsceTopics = (params = {}) => async (dispatch) => {
 }
 
 // Fetch user's session history
-export const fetchUserOsceSessions = () => async (dispatch) => {
+export const fetchUserOsceSessions = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isLoadingUserSessions', value: true }))
 
+    const { sessionsPagination } = getState().oscePractice
+    const params = {
+      page: sessionsPagination.page,
+      perPage: sessionsPagination.perPage
+    }
+
     const route = Endpoints.api.oscePractice + "/sessions"
-    const response = await getWithToken(route)
+    const response = await getWithToken(route, params)
 
     const sessions = response.data.data || []
+    const pagination = response.data.pagination || {}
+
     dispatch(setUserSessions(sessions))
+    dispatch(updateSessionsPagination(pagination))
+
+    return { sessions, pagination }
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

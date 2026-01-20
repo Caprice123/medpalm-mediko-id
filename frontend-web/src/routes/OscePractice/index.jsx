@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserOsceSessions } from '@store/oscePractice/userAction'
+import { actions } from '@store/oscePractice/reducer'
 import SessionCard from './components/SessionCard'
 import TopicSelectionModal from './components/TopicSelectionModal'
 import Button from '@components/common/Button'
+import Pagination from '@components/Pagination'
 import {
   PageContainer,
   Header,
@@ -20,15 +22,19 @@ import {
 
 function OscePracticePage() {
   const dispatch = useDispatch()
-  const { userSessions, loading } = useSelector(state => state.oscePractice)
+  const { userSessions, loading, sessionsPagination } = useSelector(state => state.oscePractice)
   const [showTopicModal, setShowTopicModal] = useState(false)
 
   useEffect(() => {
     dispatch(fetchUserOsceSessions())
-  }, [dispatch])
+  }, [dispatch, sessionsPagination.page])
 
   const handleStartPractice = () => {
     setShowTopicModal(true)
+  }
+
+  const handlePageChange = (page) => {
+    dispatch(actions.setSessionsPage(page))
   }
 
   // Loading state
@@ -78,14 +84,25 @@ function OscePracticePage() {
                 <p>Belum ada riwayat latihan. Mulai latihan pertama Anda!</p>
             </EmptyState>
             ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
-                {userSessions.map((session) => (
-                <SessionCard
-                    key={session.id}
-                    session={session}
-                />
-                ))}
-            </div>
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
+                  {userSessions.map((session) => (
+                  <SessionCard
+                      key={session.id}
+                      session={session}
+                  />
+                  ))}
+              </div>
+
+              <Pagination
+                currentPage={sessionsPagination.page}
+                isLastPage={sessionsPagination.isLastPage}
+                onPageChange={handlePageChange}
+                isLoading={loading.isLoadingUserSessions}
+                variant="user"
+                language="id"
+              />
+            </>
             )}
         </Section>
 

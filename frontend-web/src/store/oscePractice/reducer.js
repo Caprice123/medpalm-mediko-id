@@ -73,6 +73,11 @@ const initialState = {
     page: 1,
     perPage: 20,
     isLastPage: false
+  },
+  sessionsPagination: {
+    page: 1,
+    perPage: 20,
+    isLastPage: false
   }
 }
 
@@ -180,14 +185,26 @@ const { reducer, actions } = createSlice({
     },
     setMessagesPagination: (state, { payload }) => {
       state.messagesPagination = payload
+    },
+    setSessionsPage: (state, { payload }) => {
+      state.sessionsPagination.page = payload
+    },
+    updateSessionsPagination: (state, { payload }) => {
+      state.sessionsPagination = { ...state.sessionsPagination, ...payload }
     }
   },
 
   extraReducers: (builder) => {
-    builder.addCase(resetAllState, (state) => ({
-      ...initialState,
-      loading: state.loading, // preserve current loading state
-    }));
+    builder.addCase(resetAllState, (state) => {
+        console.log({
+        ...initialState,
+        loading: state.loading, // preserve current loading state
+        })
+        return ({
+        ...initialState,
+        loading: state.loading, // preserve current loading state
+        })
+    })
   },
 })
 

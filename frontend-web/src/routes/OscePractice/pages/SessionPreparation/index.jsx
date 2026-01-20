@@ -26,6 +26,7 @@ import {
   HelpText,
 } from './SessionPreparation.styles'
 import { actions as commonActions } from '@store/common/reducer'
+import { actions } from '@store/oscePractice/reducer'
 import { startOsceSession, fetchSessionDetail } from '@store/oscePractice/userAction'
 
 function SessionPreparation() {
@@ -92,10 +93,13 @@ function SessionPreparation() {
     setIsStarting(true)
     try {
       // Start the session (this will deduct credits)
-      await dispatch(startOsceSession(sessionId, () => {
-        // Navigate to practice page after successfully starting session
-        navigate(`/osce-practice/session/${sessionId}/practice`)
-      }))
+      await dispatch(startOsceSession(sessionId))
+
+      // Clear old session detail from Redux so practice page starts fresh
+    //   dispatch(actions.setSessionDetail(null))
+
+      // Navigate to practice page after successfully starting session
+      navigate(`/osce-practice/session/${sessionId}/practice`)
     } catch (err) {
       console.error('Failed to start session:', err)
       // Error handling is done in the action creator
@@ -103,6 +107,9 @@ function SessionPreparation() {
       setIsStarting(false)
     }
   }
+
+  console.log("SESSION PREPARATION")
+  console.log(sessionDetail)
 
   const handleCancel = () => {
     navigate(-1)
