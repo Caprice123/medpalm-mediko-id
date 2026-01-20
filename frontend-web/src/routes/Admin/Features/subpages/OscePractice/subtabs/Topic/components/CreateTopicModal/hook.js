@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux"
 import { createOscePracticeSchema } from "./createOscePracticeSchema"
 import { useFormik } from "formik"
 import { fetchAdminOsceObservations } from "@store/oscePractice/adminAction"
-import { createOsceTopic } from "@store/oscePractice/adminAction"
+import { createOsceTopic, fetchAdminOsceRubrics } from "@store/oscePractice/adminAction"
 import { upload } from "@store/common/action"
 import { arrayMove } from "@dnd-kit/sortable"
 import { actions } from "@store/tags/reducer"
@@ -24,7 +24,7 @@ export const useCreateTopicModal = (onClose) => {
         observations: [],
         aiModel: 'gemini-2.5-flash',
         attachments: [],
-        systemPrompt: "",
+        rubricId: null,
         durationMinutes: 15,
         topicTags: [],
         batchTags: [],
@@ -43,7 +43,7 @@ export const useCreateTopicModal = (onClose) => {
           answerKey: values.answerKey,
           knowledgeBase: values.knowledgeBase,
           aiModel: values.aiModel,
-          systemPrompt: values.systemPrompt,
+          rubricId: values.rubricId,
           durationMinutes: parseInt(values.durationMinutes),
           tags: allTags,
           status: values.status,
@@ -69,6 +69,7 @@ export const useCreateTopicModal = (onClose) => {
     useEffect(() => {
       dispatch(actions.updateFilter({ key: "tagGroupNames", value: ['topic', 'batch'] }))
       dispatch(fetchAdminOsceObservations())
+      dispatch(fetchAdminOsceRubrics())
     }, [dispatch])
 
     const handleMultipleFilesSelect = async (files) => {

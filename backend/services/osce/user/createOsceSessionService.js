@@ -81,7 +81,7 @@ export class CreateOsceSessionService extends BaseService {
             user_id: userId,
             osce_topic_id: topicId,
             status: 'created',
-            actual_duration_minutes: 0,
+            time_taken: 0,
             credits_used: 0,
           },
         })
@@ -168,8 +168,7 @@ export class CreateOsceSessionService extends BaseService {
                 data: {
                   osce_session_id: newSession.id,
                   observation_snapshot_id: obsSnapshot.id,
-                  is_checked: false,
-                  notes: null,
+                  interpretation: null,
                 },
               })
             }
@@ -185,22 +184,15 @@ export class CreateOsceSessionService extends BaseService {
                 id: true,
               },
             },
-            osce_session_topic_snapshot: true,
-            osce_session_observation_group_snapshots: {
-              include: {
-                osce_session_observation_snapshots: {
-                  include: {
-                    session_observations: true,
-                  },
-                  orderBy: {
-                    id: 'asc',
-                  },
-                },
-              },
-              orderBy: {
-                id: 'asc',
-              },
-            },
+            osce_session_observations: {
+                include: {
+                    observation_snapshot: {
+                        include: {
+                            group_snapshot: true
+                            }
+                        }
+                    },
+            }
           },
         })
       })

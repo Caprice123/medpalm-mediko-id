@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import ModelDropdown from '@components/common/ModelDropdown'
+import Dropdown from '@components/common/Dropdown'
 import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
@@ -15,26 +16,10 @@ import { useCreateTopicModal } from './hook'
 import AttachmentSection from '../../shared/AttachmentSection'
 import ObservationSection from '../../shared/ObservationSection'
 
-const DEFAULT_SYSTEM_PROMPT = `You are an experienced OSCE (Objective Structured Clinical Examination) examiner. Your role is to:
-
-1. Play the role described in the scenario (patient, family member, colleague, etc.)
-2. Respond naturally and realistically based on the scenario
-3. Evaluate the student's performance across key competencies
-4. Provide constructive feedback at the end
-
-Guidelines:
-- Stay in character throughout the interaction
-- Respond to the student's questions and actions appropriately
-- Note their communication skills, professionalism, and clinical reasoning
-- Be patient but realistic - respond as a real person would
-- At the end, provide comprehensive feedback on their performance
-
-Remember: This is a learning experience. Be supportive while being honest about areas for improvement.`
-
 
 function CreateTopicModal({ onClose }) {
   const { loading: commonLoading } = useSelector(state => state.common)
-  const { loading } = useSelector(state => state.oscePractice)
+  const { rubrics, loading } = useSelector(state => state.oscePractice)
   const { tags } = useSelector(state => state.tags)
 
   const { form, handleMultipleFilesSelect, handleRemoveAttachment, handleDragEnd } = useCreateTopicModal(onClose)
@@ -48,7 +33,10 @@ function CreateTopicModal({ onClose }) {
     [tags]
   )
 
-  
+  const availableRubrics = rubrics.map((r) => ({
+    label: r.name,
+    value: r.id,
+  }))
 
   return (
     <Modal
@@ -192,17 +180,13 @@ function CreateTopicModal({ onClose }) {
         </FormSection>
 
         <FormSection>
-          <Textarea
-            label="System Prompt"
+          <Dropdown
+            label="Rubric penilaian"
+            options={availableRubrics}
+            value={availableRubrics.find(rubric => rubric.value == form.values.rubricId)}
+            onChange={(option) => form.setFieldValue('rubricId', option?.value || null)}
+            error={form.touched.rubricId && form.errors.rubricId}
             required
-            name="systemPrompt"
-            value={form.values.systemPrompt}
-            onChange={form.handleChange}
-            onBlur={form.handleBlur}
-            rows={8}
-            error={form.touched.systemPrompt && form.errors.systemPrompt}
-            hint="Instructions for the AI on how to behave during the OSCE practice."
-            style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}
           />
         </FormSection>
 

@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { loadMoreMessages } from '../../../../../../../store/oscePractice/userAction'
+import { loadMoreMessages } from '@store/oscePractice/userAction'
 
 const MessageListComponent = () => {
   const { sessionId } = useParams()

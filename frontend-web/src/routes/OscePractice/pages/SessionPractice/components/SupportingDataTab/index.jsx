@@ -31,19 +31,17 @@ import { fetchSessionDetail } from '../../../../../../store/oscePractice/userAct
 
 const MAX_SELECTIONS = 5
 
-function SupportingDataTab() {
+function SupportingDataTab({ observations, setObservations, interpretations, setInterpretations }) {
   const { sessionId } = useParams()
   const dispatch = useDispatch()
   const { sessionDetail } = useSelector(state => state.oscePractice)
   const isSavingSessionObservations = useSelector(state => state.oscePractice.loading.isSavingSessionObservations)
 
   const [availableObservations, setAvailableObservations] = useState([])
-  const [selectedObservations, setSelectedObservations] = useState([])
   const [observationsLocked, setObservationsLocked] = useState(sessionDetail?.observationsLocked || false)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIds, setSelectedIds] = useState([])
-  const [interpretations, setInterpretations] = useState({})
 
   // Fetch observations on mount
   useEffect(() => {
@@ -66,11 +64,11 @@ function SupportingDataTab() {
     setAvailableObservations(flatObservations)
     setObservationsLocked(sessionDetail.observationsLocked || false)
 
-    // Load saved observations if locked
+    // Load saved observations if locked (handled by parent now)
     if (sessionDetail.observationsLocked && sessionDetail.userAnswer?.observations) {
-      setSelectedObservations(sessionDetail.userAnswer.observations || [])
+      setObservations(sessionDetail.userAnswer.observations || [])
 
-      // Populate interpretations
+      // Populate interpretations (handled by parent now)
       const interp = {}
       sessionDetail.userAnswer.observations.forEach(obs => {
         if (obs.notes) {
@@ -79,7 +77,7 @@ function SupportingDataTab() {
       })
       setInterpretations(interp)
     }
-  }, [sessionDetail])
+  }, [sessionDetail, setObservations, setInterpretations])
 
   // Group observations by group name
   const groupedObservations = useMemo(() => {
@@ -153,8 +151,6 @@ function SupportingDataTab() {
     ))
   }
 
-  console.log(selectedObservations)
-
   // Show results view if observations are locked
   if (observationsLocked) {
     return (
@@ -166,11 +162,11 @@ function SupportingDataTab() {
           </ObservationSubtitle>
         </ObservationHeader>
 
-        {selectedObservations.length === 0 ? (
+        {observations.length === 0 ? (
           <EmptyState>Tidak ada pemeriksaan penunjang yang dipilih</EmptyState>
         ) : (
           <>
-            {selectedObservations.map(obs => (
+            {observations.map(obs => (
               <ObservationResultCard key={obs.snapshotId}>
                 <ResultTitle>{obs.name}</ResultTitle>
 

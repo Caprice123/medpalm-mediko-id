@@ -135,7 +135,7 @@ export class GetActiveFeaturesService extends BaseService {
     }
 
     // Anatomy Quiz feature
-    if (featureConstants.anatomy_feature_title && featureConstants.anatomy_is_active === 'true') {
+    if (featureConstants.anatomy_feature_title) {
       const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
       const accessType = featureConstants.anatomy_access_type || 'subscription'
       features.push({
@@ -167,7 +167,7 @@ export class GetActiveFeaturesService extends BaseService {
     }
 
     // Chatbot feature
-    if (featureConstants.chatbot_feature_title && featureConstants.chatbot_is_active === 'true') {
+    if (featureConstants.chatbot_feature_title) {
       const cost = 0 // Cost is per-mode, not per-feature
       const accessType = featureConstants.chatbot_access_type || 'subscription'
       features.push({
@@ -183,7 +183,7 @@ export class GetActiveFeaturesService extends BaseService {
     }
 
     // Skripsi Builder feature
-    if (featureConstants.skripsi_feature_title && featureConstants.skripsi_is_active === 'true') {
+    if (featureConstants.skripsi_feature_title) {
       const cost = 0 // Cost is per-mode, not per-feature
       const accessType = featureConstants.skripsi_access_type || 'subscription'
       features.push({
@@ -199,7 +199,7 @@ export class GetActiveFeaturesService extends BaseService {
     }
 
     // OSCE Practice feature
-    if (featureConstants.osce_practice_feature_title && featureConstants.osce_practice_is_active === 'true') {
+    if (featureConstants.osce_practice_feature_title) {
       const cost = 0 // Cost is per-session
       const accessType = featureConstants.osce_practice_access_type || 'subscription'
       features.push({

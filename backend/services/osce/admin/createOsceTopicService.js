@@ -3,9 +3,9 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class CreateOsceTopicService extends BaseService {
-    static async call({ title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, tags, status, attachments, observations, created_by }) {
+    static async call({ title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, rubricId, durationMinutes, tags, status, attachments, observations, created_by }) {
         // Validate inputs
-        await this.validate({ title, scenario, aiModel, systemPrompt, durationMinutes, tags, status })
+        await this.validate({ title, scenario, aiModel, rubricId, durationMinutes, tags, status })
 
         // Create topic with tags and attachments in a transaction
         const topic = await prisma.$transaction(async (tx) => {
@@ -20,7 +20,7 @@ export class CreateOsceTopicService extends BaseService {
                     answer_key: answerKey || '',
                     knowledge_base: knowledgeBase || [],
                     ai_model: aiModel,
-                    system_prompt: systemPrompt,
+                    osce_rubric_id: rubricId,
                     duration_minutes: parseInt(durationMinutes),
                     status: status || 'draft',
                     created_by: created_by,
@@ -64,7 +64,6 @@ export class CreateOsceTopicService extends BaseService {
                             observation_id: obs.observationId,
                             observation_text: obs.observationText || '',
                             requires_interpretation: obs.requiresInterpretation || false,
-                            order: obs.order || 0
                         }
                     })
 
@@ -88,7 +87,7 @@ export class CreateOsceTopicService extends BaseService {
         return topic
     }
 
-    static async validate({ title, scenario, aiModel, systemPrompt, durationMinutes, tags, status }) {
+    static async validate({ title, scenario, aiModel, rubricId, durationMinutes, tags, status }) {
         // Validate required fields
         if (!title || title.trim().length < 3) {
             throw new ValidationError('Title is required and must be at least 3 characters')
@@ -101,12 +100,6 @@ export class CreateOsceTopicService extends BaseService {
         if (!aiModel) {
             throw new ValidationError('AI Model is required')
         }
-
-        // Validate AI model is one of the supported models
-        if (!systemPrompt || systemPrompt.trim().length < 10) {
-            throw new ValidationError('System Prompt is required and must be at least 10 characters')
-        }
-
         if (!durationMinutes || parseInt(durationMinutes) <= 0) {
             throw new ValidationError('Duration must be a positive number')
         }

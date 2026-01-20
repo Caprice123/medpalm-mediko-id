@@ -195,6 +195,7 @@ model tags {
   anatomy_quiz_tags     anatomy_quiz_tags[]
   mcq_topic_tags        mcq_topic_tags[]
   osce_topic_tags       osce_topic_tags[]
+  osce_session_topic_snapshots osce_session_tag_snapshots[]
 
   @@unique([name, tag_group_id])
   @@index([is_active])
@@ -1101,7 +1102,7 @@ model osce_topics {
   answer_key       String?  @db.Text // Expected answers or key points
   knowledge_base   Json?    // Key-value pairs of knowledge items
   ai_model         String // AI model for this topic (e.g., 'gemini-1.5-pro', 'gpt-4o')
-  system_prompt    String   @db.Text // Custom AI behavior for this topic
+  osce_rubric_id   Int 
   duration_minutes Int // Recommended practice duration
   status           String   @default("draft") // draft, published
   is_active        Boolean  @default(true)
@@ -1112,8 +1113,10 @@ model osce_topics {
   osce_topic_tags         osce_topic_tags[]
   osce_sessions           osce_sessions[]
   osce_topic_observations osce_topic_observations[]
+  osce_rubric             osce_rubrics?
 
   @@index([created_by])
+  @@index([osce_rubric_id])
   @@index([status])
   @@index([is_active])
 }
@@ -1130,6 +1133,19 @@ model osce_topic_tags {
   @@unique([topic_id, tag_id])
   @@index([topic_id])
   @@index([tag_id])
+}
+
+model osce_rubrics {
+    id         Int      @id @default(autoincrement())
+    name       String // e.g., "LABORATORIUM", "RADIOLOGI", etc.
+    content       String @db.Text// e.g., "LABORATORIUM", "RADIOLOGI", etc.
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
+
+    osce_topics osce_topics[]
+    osce_session_rubric_snapshots osce_session_rubric_snapshots[]
+
+    @@unique([name])
 }
 
 model osce_observation_groups {
@@ -1178,7 +1194,7 @@ model osce_sessions {
   user_id                  Int
   osce_topic_id            Int // Reference to original topic (for admin purposes)
   status                   String   @default("created") // created, started, completed
-  actual_duration_minutes  Int      @default(0) // Actual time spent by user
+  time_taken               Int      @default(0) // Actual time spent by user
   total_score              Int?
   max_score                Int?
   ai_feedback              String?  @db.Text // Overall feedback from AI
@@ -1191,6 +1207,8 @@ model osce_sessions {
 
   user                                        users                                         @relation(fields: [user_id], references: [id])
   osce_topic                                  osce_topics                                   @relation(fields: [osce_topic_id], references: [id])
+  osce_session_rubric_snapshot                osce_session_rubric_snapshots?
+  osce_session_tag_snapshots                  osce_session_tag_snapshots[]
   osce_session_topic_snapshot                 osce_session_topic_snapshots?
   osce_session_observation_group_snapshots    osce_session_observation_group_snapshots[]
   osce_session_observations                   osce_session_observations[]
@@ -1223,6 +1241,20 @@ model osce_session_topic_snapshots {
   osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 
   @@index([osce_session_id])
+}
+
+model osce_session_tag_snapshots {
+    id                   Int      @id @default(autoincrement())
+    osce_session_id      Int
+    tag_id              Int
+
+    osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+    tags        tags @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+    @@index([osce_session_id, tag_id])
+    @@index([tag_id])
+
+
 }
 
 // Snapshot of observation groups at session creation time
@@ -1261,6 +1293,23 @@ model osce_session_observation_snapshots {
 
   @@index([observation_id])
   @@index([group_snapshot_id, observation_name])
+}
+
+model osce_session_rubric_snapshots {
+    id         Int      @id @default(autoincrement())
+    osce_session_id Int
+    rubric_id Int
+    name       String 
+    content       String @db.Text
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
+
+    osce_topics osce_topics[]
+
+    @@unique([name])
+
+    osce_rubric osce_rubrics?  @relation(fields: [rubric_id], references: [id], onDelete: Cascade)
+    osce_session osce_sessions?  @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 }
 
 // User's interaction with observations during the session

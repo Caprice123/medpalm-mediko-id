@@ -3,8 +3,8 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class UpdateOsceTopicService extends BaseService {
-    static async call(topicId, { title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, systemPrompt, durationMinutes, status, tags, attachments, observations }) {
-        this.validate(topicId, { title, scenario, aiModel, systemPrompt, durationMinutes, status })
+    static async call(topicId, { title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, rubricId, durationMinutes, status, tags, attachments, observations }) {
+        this.validate(topicId, { title, scenario, aiModel, rubricId, durationMinutes, status })
 
         // Check if topic exists
         const topic = await prisma.osce_topics.findUnique({
@@ -28,7 +28,7 @@ export class UpdateOsceTopicService extends BaseService {
             if (answerKey !== undefined) updateData.answer_key = answerKey
             if (knowledgeBase !== undefined) updateData.knowledge_base = knowledgeBase
             if (aiModel !== undefined) updateData.ai_model = aiModel
-            if (systemPrompt !== undefined) updateData.system_prompt = systemPrompt
+            if (rubricId !== undefined) updateData.osce_rubric_id = rubricId
             if (durationMinutes !== undefined) updateData.duration_minutes = parseInt(durationMinutes)
             if (status !== undefined) updateData.status = status
 
@@ -150,7 +150,7 @@ export class UpdateOsceTopicService extends BaseService {
         return updatedTopic
     }
 
-    static validate(topicId, { title, scenario, aiModel, systemPrompt, durationMinutes, status }) {
+    static validate(topicId, { title, scenario, aiModel, rubricId, durationMinutes, status }) {
         if (!topicId) {
             throw new ValidationError('Topic ID is required')
         }
@@ -181,10 +181,6 @@ export class UpdateOsceTopicService extends BaseService {
             if (!supportedModels.includes(aiModel)) {
                 throw new ValidationError(`AI Model must be one of: ${supportedModels.join(', ')}`)
             }
-        }
-
-        if (systemPrompt !== undefined && (!systemPrompt || systemPrompt.trim().length < 10)) {
-            throw new ValidationError('System Prompt must be at least 10 characters')
         }
 
         if (durationMinutes !== undefined && (!durationMinutes || parseInt(durationMinutes) <= 0)) {

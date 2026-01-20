@@ -11,9 +11,9 @@ export const updateOsceTopicSchema = Yup.object().shape({
     .min(10, 'Scenario must be at least 10 characters'),
   aiModel: Yup.string()
     .required('AI Model is required'),
-  systemPrompt: Yup.string()
-    .required('System Prompt is required')
-    .min(10, 'System Prompt must be at least 10 characters'),
+  rubricId: Yup.number()
+    .required('Rubric is required')
+    .nullable(),
   durationMinutes: Yup.number()
     .required('Duration is required')
     .positive('Duration must be positive')

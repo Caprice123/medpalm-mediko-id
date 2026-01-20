@@ -12,7 +12,7 @@ export class OsceTopicSerializer {
             answerKey: topic.answer_key,
             knowledgeBase: topic.knowledge_base || [],
             aiModel: topic.ai_model,
-            systemPrompt: topic.system_prompt,
+            rubricId: topic.osce_rubric_id,
             durationMinutes: topic.duration_minutes,
             status: topic.status,
             isActive: topic.is_active,

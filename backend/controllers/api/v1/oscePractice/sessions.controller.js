@@ -130,11 +130,12 @@ class SessionsController {
   async endSession(req, res) {
       const userId = req.user?.id
       const { sessionId } = req.params
-      const { diagnoses, therapies } = req.body
+      const { diagnoses, therapies, observations } = req.body
 
       const result = await EndOsceSessionService.call(userId, sessionId, {
         diagnoses,
         therapies,
+        observations,
       })
 
       return res.status(200).json({

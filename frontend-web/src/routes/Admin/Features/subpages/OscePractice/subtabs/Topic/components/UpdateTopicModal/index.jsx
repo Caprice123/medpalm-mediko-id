@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import ModelDropdown from '@components/common/ModelDropdown'
+import Dropdown from '@components/common/Dropdown'
 import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
@@ -18,7 +19,7 @@ import { useUpdateTopicModal } from './hook'
 
 function UpdateTopicModal({ onClose }) {
   const { loading: commonLoading } = useSelector(state => state.common)
-  const { loading, topicDetail } = useSelector(state => state.oscePractice)
+  const { rubrics, loading, topicDetail } = useSelector(state => state.oscePractice)
   const { tags } = useSelector(state => state.tags)
   const { form, handleMultipleFilesSelect, handleRemoveAttachment, handleDragEnd } = useUpdateTopicModal(onClose)
 
@@ -30,6 +31,11 @@ function UpdateTopicModal({ onClose }) {
     tags.find(t => t.name === 'batch')?.tags || [],
     [tags]
   )
+  
+  const availableRubrics = rubrics.map((r) => ({
+    label: r.name,
+    value: r.id,
+  }))
 
   if (!topicDetail) {
     return null
@@ -177,18 +183,14 @@ function UpdateTopicModal({ onClose }) {
         </FormSection>
 
         <FormSection>
-          <Textarea
-            label="System Prompt"
+          <Dropdown
+            label="Rubric penilaian"
+            options={availableRubrics}
+            value={availableRubrics.find(rubric => rubric.value == form.values.rubricId)}
+            onChange={(option) => form.setFieldValue('rubricId', option?.value || null)}
+            error={form.touched.rubricId && form.errors.rubricId}
             required
-            name="systemPrompt"
-            value={form.values.systemPrompt}
-            onChange={form.handleChange}
-            onBlur={form.handleBlur}
-            rows={8}
-            error={form.touched.systemPrompt && form.errors.systemPrompt}
-            hint="Instructions for the AI on how to behave during the OSCE practice."
-            style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}
-          />
+            />
         </FormSection>
 
         <FormSection>

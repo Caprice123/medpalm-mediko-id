@@ -41,6 +41,10 @@ function SessionPractice() {
   // Terapi state
   const [therapies, setTherapies] = useState([])
 
+  // Observations state (for interpretations)
+  const [observations, setObservations] = useState([])
+  const [interpretations, setInterpretations] = useState({})
+
   // Fetch session detail on mount
   useEffect(() => {
     if (sessionId) {
@@ -48,7 +52,7 @@ function SessionPractice() {
     }
   }, [sessionId, dispatch])
 
-  // Populate diagnoses and therapies from sessionDetail when it loads
+  // Populate diagnoses, therapies, and observations from sessionDetail when it loads
   useEffect(() => {
     if (sessionDetail && sessionDetail.uniqueId === sessionId) {
       // Populate diagnoses
@@ -65,6 +69,20 @@ function SessionPractice() {
       // Populate therapies
       if (sessionDetail.therapies && sessionDetail.therapies.length > 0) {
         setTherapies(sessionDetail.therapies.map(t => t.therapy))
+      }
+
+      // Populate observations with interpretations
+      if (sessionDetail.observationsLocked && sessionDetail.userAnswer?.observations) {
+        setObservations(sessionDetail.userAnswer.observations || [])
+
+        // Populate interpretations
+        const interp = {}
+        sessionDetail.userAnswer.observations.forEach(obs => {
+          if (obs.notes) {
+            interp[obs.snapshotId] = obs.notes
+          }
+        })
+        setInterpretations(interp)
       }
     }
   }, [sessionDetail, sessionId])
@@ -87,6 +105,13 @@ function SessionPractice() {
       return
     }
 
+    // Build observations array with interpretations
+    const observationsWithInterpretations = observations.map(obs => ({
+      snapshotId: obs.snapshotId,
+      name: obs.name,
+      interpretation: interpretations[obs.snapshotId] || '',
+    }))
+
     await dispatch(endOsceSession(
       sessionId,
       {
@@ -95,6 +120,7 @@ function SessionPractice() {
           pembanding: diagnosisPembanding,
         },
         therapies: therapies,
+        observations: observationsWithInterpretations,
       },
       (response) => {
         // Navigate to results page on success
@@ -145,7 +171,14 @@ function SessionPractice() {
         <TabContent>
           {activeTab === 'conversation' && <ConversationTab />}
 
-          {activeTab === 'supporting' && <SupportingDataTab />}
+          {activeTab === 'supporting' && (
+            <SupportingDataTab
+              observations={observations}
+              setObservations={setObservations}
+              interpretations={interpretations}
+              setInterpretations={setInterpretations}
+            />
+          )}
 
           {activeTab === 'diagnosis' && (
             <DiagnosisTab

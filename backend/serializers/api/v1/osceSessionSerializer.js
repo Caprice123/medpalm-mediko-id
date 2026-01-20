@@ -39,7 +39,7 @@ class OsceSessionSerializer {
     })) || []
 
     const savedObservations = session.osce_session_observations
-    console.log(session)
+    console.log(savedObservations)
 
     // Add attachments for each observation
     const observationsWithAttachments = await Promise.all(
@@ -130,20 +130,13 @@ class OsceSessionSerializer {
       id: session.id,
       uniqueId: session.unique_id,
       status: session.status,
-      topicId: session.osce_topic_id,
       topicTitle: topicData.title,
       topicDescription: topicData.description,
-      topicDurationMinutes: topicData.duration_minutes,
-      aiModelUsed: topicData.ai_model,
-      actualDurationMinutes: session.actual_duration_minutes,
+      timeTaken: topicData.time_taken,
       totalScore: session.total_score,
       maxScore: session.max_score,
-      aiFeedback: session.ai_feedback,
-      creditsUsed: session.credits_used,
-      observationsLocked: session.observations_locked,
-      startedAt: session.started_at,
+      aiFeedback: JSON.parse(session.ai_feedback),
       createdAt: session.created_at,
-      updatedAt: session.updated_at,
     };
   }
 

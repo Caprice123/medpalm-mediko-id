@@ -12,11 +12,6 @@ import { FormGroup, HintText, Label, ToggleSlider, ToggleSwitch } from './OscePr
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@/store/constant/reducer"
 
-const validationSchema = Yup.object().shape({
-  osce_practice_feature_title: Yup.string().required('Title is required'),
-  osce_practice_credit_cost: Yup.number().min(0, 'Credit cost must be non-negative'),
-})
-
 function OscePracticeSettingsModal({ onClose }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.oscePractice)
@@ -29,9 +24,10 @@ function OscePracticeSettingsModal({ onClose }) {
       osce_practice_access_type: 'credits',
       osce_practice_credit_cost: '5',
       osce_practice_default_model: 'gemini-1.5-pro',
-      osce_practice_default_system_prompt: ''
+      osce_practice_chat_completion_prompt: '',
+      osce_practice_chunk_analysis_prompt: '',
+      osce_practice_evaluation_prompt: ''
     },
-    validationSchema,
     onSubmit: async (values) => {
       const constantsToSave = {
           ...values,
@@ -51,7 +47,9 @@ function OscePracticeSettingsModal({ onClose }) {
         "osce_practice_credit_cost",
         "osce_practice_is_active",
         "osce_practice_default_model",
-        "osce_practice_default_system_prompt"
+        "osce_practice_chat_completion_prompt",
+        "osce_practice_chunk_analysis_prompt",
+        "osce_practice_evaluation_prompt"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants())
@@ -59,7 +57,7 @@ function OscePracticeSettingsModal({ onClose }) {
       // Convert string boolean to actual boolean for toggle switch
       const formattedConstants = {
         ...constants,
-        mcq_is_active: constants.mcq_is_active === 'true'
+        osce_practice_is_active: constants.osce_practice_is_active === 'true'
       }
 
       form.setValues(formattedConstants)
@@ -91,7 +89,7 @@ function OscePracticeSettingsModal({ onClose }) {
         <ToggleSwitch>
           <input
             type="checkbox"
-            checked={form.values.osce_practice_is_active === 'true'}
+            checked={String(form.values.osce_practice_is_active) === 'true'}
             onChange={(e) => form.setFieldValue('osce_practice_is_active', e.target.checked ? 'true' : 'false')}
           />
           <ToggleSlider />
@@ -151,6 +149,38 @@ function OscePracticeSettingsModal({ onClose }) {
           <HintText>Jumlah kredit yang dibutuhkan per sesi praktek OSCE</HintText>
         </FormGroup>
       )}
+      
+      <FormGroup>
+        <Textarea
+          label="Prompt untuk Chat Completion"
+          placeholder="Masukkan Prompt untuk Chat Completion"
+          value={form.values.osce_practice_chat_completion_prompt}
+          onChange={(e) => form.setFieldValue('osce_practice_chat_completion_prompt', e.target.value)}
+          style={{ minHeight: '200px' }}
+        />
+      </FormGroup>
+
+      
+      <FormGroup>
+        <Textarea
+          label="Prompt untuk Chunk Analyser"
+          placeholder="Masukkan Prompt untuk Chunk Analyser"
+          value={form.values.osce_practice_chunk_analysis_prompt}
+          onChange={(e) => form.setFieldValue('osce_practice_chunk_analysis_prompt', e.target.value)}
+          style={{ minHeight: '200px' }}
+        />
+      </FormGroup>
+
+      
+      <FormGroup>
+        <Textarea
+          label="Prompt untuk Final Analyser"
+          placeholder="Masukkan Prompt untuk Final Analyser"
+          value={form.values.osce_practice_evaluation_prompt}
+          onChange={(e) => form.setFieldValue('osce_practice_evaluation_prompt', e.target.value)}
+          style={{ minHeight: '200px' }}
+        />
+      </FormGroup>
     </Modal>
   )
 }

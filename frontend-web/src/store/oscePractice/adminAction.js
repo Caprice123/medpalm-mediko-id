@@ -1,7 +1,7 @@
 import { actions } from '@store/oscePractice/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -9,6 +9,10 @@ const {
   setTopicDetail,
   setObservations,
   updatePagination,
+  setRubrics,
+  setRubricDetail,
+  updateRubricPagination,
+  setAllRubrics,
 } = actions
 
 export const fetchAdminOsceTopics = () => async (dispatch, getState) => {
@@ -169,5 +173,123 @@ export const updateObservation = (observationId, data, onSuccess) => async (disp
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
+  }
+}
+
+
+// Rubrics
+export const fetchAdminOsceRubrics = () => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading({ key: "isGetListRubricsLoading", value: true }))
+
+    const { rubricFilters, rubricPagination } = getState().oscePractice
+    const queryParams = {
+      page: rubricPagination.page,
+      perPage: rubricPagination.perPage
+    }
+    if (rubricFilters.name) queryParams.name = rubricFilters.name
+
+    const route = Endpoints.admin.oscePractice + "/rubrics"
+    const response = await getWithToken(route, queryParams)
+
+    const rubrics = response.data.data || []
+    const paginationData = response.data.pagination
+
+    dispatch(setRubrics(rubrics))
+    if (paginationData) {
+      dispatch(updateRubricPagination(paginationData))
+    }
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: "isGetListRubricsLoading", value: false }))
+  }
+}
+
+export const fetchOsceRubric = (rubricId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: "isGetRubricDetailLoading", value: true }))
+
+    const route = Endpoints.admin.oscePractice + "/rubrics" + `/${rubricId}`
+    const response = await getWithToken(route)
+
+    const rubric = response.data.data
+    dispatch(setRubricDetail(rubric))
+    if (onSuccess) onSuccess()
+    return rubric
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: "isGetRubricDetailLoading", value: false }))
+  }
+}
+
+export const createOsceRubric = (data, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: "isCreatingRubric", value: true }))
+
+    const route = Endpoints.admin.oscePractice + "/rubrics"
+    const response = await postWithToken(route, data)
+
+    if (onSuccess) onSuccess()
+    dispatch(fetchAdminOsceRubrics())
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: "isCreatingRubric", value: false }))
+  }
+}
+
+export const updateOsceRubric = (rubricId, data, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: "isUpdatingRubric", value: true }))
+
+    const route = Endpoints.admin.oscePractice + "/rubrics" + `/${rubricId}`
+    const response = await putWithToken(route, data)
+
+    if (onSuccess) onSuccess()
+    dispatch(fetchAdminOsceRubrics())
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: "isUpdatingRubric", value: false }))
+  }
+}
+
+export const deleteOsceRubric = (rubricId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: "isDeletingRubric", value: true }))
+
+    const route = Endpoints.admin.oscePractice + "/rubrics" + `/${rubricId}`
+    const response = await deleteWithToken(route)
+
+    if (onSuccess) onSuccess()
+    dispatch(fetchAdminOsceRubrics())
+    return response.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: "isDeletingRubric", value: false }))
+  }
+}
+
+
+// Fetch all rubrics for dropdowns (no pagination)
+export const fetchAllRubrics = () => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isFetchingAllRubrics', value: true }))
+
+    const route = Endpoints.admin.oscePractice + "/rubrics?perPage=1000"
+    const response = await getWithToken(route)
+
+    const rubrics = response.data.data || []
+    dispatch(setAllRubrics(rubrics))
+    return rubrics
+  } catch (err) {
+    handleApiError(err, dispatch)
+  } finally {
+    dispatch(setLoading({ key: 'isFetchingAllRubrics', value: false }))
   }
 }

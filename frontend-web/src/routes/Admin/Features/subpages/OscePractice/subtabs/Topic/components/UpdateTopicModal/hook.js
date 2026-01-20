@@ -4,7 +4,7 @@ import { useFormik } from "formik"
 import { upload } from "@store/common/action"
 import { arrayMove } from "@dnd-kit/sortable"
 import { actions } from "@store/tags/reducer"
-import { updateOsceTopic, fetchAdminOsceObservations } from '@store/oscePractice/adminAction'
+import { updateOsceTopic, fetchAdminOsceObservations, fetchAdminOsceRubrics } from '@store/oscePractice/adminAction'
 import { updateOsceTopicSchema } from "./updateOsceTopicSchema"
 
 export const useUpdateTopicModal = (onClose) => {
@@ -24,7 +24,7 @@ export const useUpdateTopicModal = (onClose) => {
         observations: [],
         aiModel: 'gemini-2.5-flash',
         attachments: [],
-        systemPrompt: "",
+        rubricId: null,
         durationMinutes: 15,
         topicTags: [],
         batchTags: [],
@@ -43,7 +43,7 @@ export const useUpdateTopicModal = (onClose) => {
           answerKey: values.answerKey,
           knowledgeBase: values.knowledgeBase,
           aiModel: values.aiModel,
-          systemPrompt: values.systemPrompt,
+          rubricId: values.rubricId,
           durationMinutes: parseInt(values.durationMinutes),
           tags: allTags,
           status: values.status,
@@ -69,6 +69,7 @@ export const useUpdateTopicModal = (onClose) => {
     useEffect(() => {
       dispatch(actions.updateFilter({ key: "tagGroupNames", value: ['topic', 'batch'] }))
       dispatch(fetchAdminOsceObservations())
+      dispatch(fetchAdminOsceRubrics())
     }, [dispatch])
 
     // Populate form when topicDetail loads
@@ -109,7 +110,7 @@ export const useUpdateTopicModal = (onClose) => {
             contentType: att.contentType,
             existing: true
           })) : [],
-          systemPrompt: topicDetail.systemPrompt || '',
+          rubricId: topicDetail.rubricId || '',
           durationMinutes: topicDetail.durationMinutes || 15,
           topicTags: topicTagsFromTopic,
           batchTags: batchTagsFromTopic,

@@ -44,7 +44,7 @@ export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabl
   const initializeDeepgram = async () => {
     try {
       // Get API key from environment variable
-      const apiKey = import.meta.env.VITE_DEEPGRAM_API_KEY
+      const apiKey = "d7606aebf172034cc6dd376fb1d2bdef41071dc2"
 
       if (!apiKey) {
         throw new Error('Deepgram API key tidak ditemukan')

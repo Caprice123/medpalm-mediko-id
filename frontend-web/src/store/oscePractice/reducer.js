@@ -6,12 +6,15 @@ const initialState = {
   topics: [],
   observations: [],
   topicDetail: null,
-  
+  rubrics: [],
+  rubricDetail: null,
+  allRubrics: [], // For dropdowns
+
   // User-facing state
   userTopics: [], // Available topics for user to select
   userSessions: [], // User's session history
   streamingMessage: null,
-  
+
   // Session result details
   sessionDetail: null,
   sessionMessages: [],
@@ -25,6 +28,12 @@ const initialState = {
     isUpdatingTopic: false,
     isDeletingTopic: false,
     isGetTopicDetailLoading: false,
+    isGetListRubricsLoading: false,
+    isCreatingRubric: false,
+    isUpdatingRubric: false,
+    isDeletingRubric: false,
+    isGetRubricDetailLoading: false,
+    isFetchingAllRubrics: false,
     isLoadingUserTopics: false,
     isLoadingUserSessions: false,
     isLoadingSessionDetail: false,
@@ -44,10 +53,21 @@ const initialState = {
     batch: '',
     status: ''
   },
+  rubricFilters: {
+    name: '',
+  },
   pagination: {
     page: 1,
     perPage: 20,
     isLastPage: false
+  },
+  rubricPagination: {
+    page: 1,
+    perPage: 10,
+    totalPages: 1,
+    totalCount: 0,
+    hasMore: false,
+    isLastPage: true,
   },
   messagePagination: {
     page: 1,
@@ -133,6 +153,30 @@ const { reducer, actions } = createSlice({
     },
     setSessionTherapies: (state, { payload }) => {
       state.sessionTherapies = payload
+    },
+    setRubrics: (state, { payload }) => {
+      state.rubrics = payload
+    },
+    setRubricDetail: (state, { payload }) => {
+      state.rubricDetail = payload
+    },
+    setAllRubrics: (state, { payload }) => {
+      state.allRubrics = payload
+    },
+    updateRubricPagination: (state, { payload }) => {
+      state.rubricPagination = {
+        ...state.rubricPagination,
+        ...payload,
+      }
+    },
+    setRubricFilters: (state, { payload }) => {
+      state.rubricFilters = {
+        ...state.rubricFilters,
+        ...payload,
+      }
+    },
+    setRubricPage: (state, { payload }) => {
+      state.rubricPagination.page = payload
     },
     setMessagesPagination: (state, { payload }) => {
       state.messagesPagination = payload

@@ -33,7 +33,6 @@ export class SendOsceMessageService extends BaseService {
               scenario: true,
               context: true,
               knowledge_base: true,
-              system_prompt: true,
               ai_model: true,
             },
           },
@@ -69,7 +68,8 @@ export class SendOsceMessageService extends BaseService {
         throw new Error('OSCE Practice feature is currently inactive')
       }
 
-      const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
+    //   const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
+      const messageCost = 0
 
       // Check user credits
       const userCredit = await prisma.user_credits.findUnique({
