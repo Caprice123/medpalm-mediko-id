@@ -125,9 +125,7 @@ function SessionPractice() {
       },
       (response) => {
         // Navigate to results page on success
-        if (response.success) {
           navigate(`/osce-practice/session/${sessionId}/result`)
-        }
       }
     ))
   }

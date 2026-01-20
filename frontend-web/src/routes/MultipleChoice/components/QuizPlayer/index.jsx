@@ -45,7 +45,7 @@ const QuizPlayer = ({ topic, onSubmit, onBack }) => {
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
-        if (prev <= 1) {
+        if (prev <= 0) {
           // Time's up - auto submit
           handleSubmit()
           return 0

@@ -145,7 +145,6 @@ export class EndOsceSessionService extends BaseService {
         include: {
             observation_snapshot: true,
         },
-        orderBy: { order: 'asc' },
       })
 
       // Generate AI evaluation with smart batching
@@ -163,7 +162,7 @@ export class EndOsceSessionService extends BaseService {
         data: {
           total_score: evaluation.totalScore,
           max_score: evaluation.maxScore,
-          ai_feedback: evaluation.feedback,
+          ai_feedback: JSON.stringify(evaluation.feedback),
           updated_at: new Date(),
           status: "completed",
         },

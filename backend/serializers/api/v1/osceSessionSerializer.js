@@ -87,12 +87,21 @@ class OsceSessionSerializer {
     const scheduledEnd = DateTime.fromJSDate(session.scheduled_end_at, { zone: 'utc' }).setZone('Asia/Jakarta');
     const remainingSeconds = Math.max(0, Math.floor(scheduledEnd.diff(now, 'seconds').seconds));
 
+    console.log(session)
     return {
       id: session.id,
       uniqueId: session.unique_id,
       userId: session.user_id,
       status: session.status,
       observationsLocked: session.observations_locked,
+      startedAt: session.started_at,
+      tags: session.osce_session_tag_snapshots?.map((snapshot) => ({
+        id: snapshot.tag_id,
+        name: snapshot.tags.name,
+        tagGroup: {
+            name: snapshot.tags.tag_group.name
+        }
+      })),
       topic: {
           id: session.osce_topic_id,
           title: topicData.title,

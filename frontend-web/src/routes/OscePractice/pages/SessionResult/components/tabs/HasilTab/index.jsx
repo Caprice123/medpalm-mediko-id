@@ -48,7 +48,7 @@ function HasilTab({ session }) {
     )
   }
 
-  const { result, topic, topicTitle, topicBatch, createdAt, durationMinutes } = session
+  const { result, topic, topicTitle, topicBatch, startedAt, durationMinutes } = session
 
   // Parse aiFeedback if it's a JSON string
   let scoreBreakdown = []
@@ -58,7 +58,7 @@ function HasilTab({ session }) {
         ? JSON.parse(result.aiFeedback)
         : result.aiFeedback
 
-      scoreBreakdown = feedbackData.criteria || []
+      scoreBreakdown = feedbackData.criteria || feedbackData || []
     } catch (error) {
       console.error('Error parsing aiFeedback:', error)
     }
@@ -98,6 +98,11 @@ function HasilTab({ session }) {
   const totalPossibleScore = categories.reduce((sum, cat) => sum + ((cat.maxScore || 0) * (cat.weight || 1)), 0)
   const totalEarnedScore = categories.reduce((sum, cat) => sum + ((cat.score || 0) * (cat.weight || 1)), 0)
 
+  
+  const topicTags = session.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+  const batchTags = session.tags?.filter(tag => tag.tagGroup?.name === 'batch') || []
+  console.log(topicTags)
+
   return (
     <Container>
       {/* Ringkasan Section */}
@@ -120,7 +125,7 @@ function HasilTab({ session }) {
             <InfoIcon>📅</InfoIcon>
             <div>
               <InfoLabel>MULAI PADA</InfoLabel>
-              <InfoValue>{formatDate(createdAt)}</InfoValue>
+              <InfoValue>{formatDate(startedAt)}</InfoValue>
             </div>
           </InfoCard>
 
@@ -128,7 +133,7 @@ function HasilTab({ session }) {
             <InfoIcon>📚</InfoIcon>
             <div>
               <InfoLabel>TOPIK</InfoLabel>
-              <InfoValue>{topic?.title || topicTitle || 'N/A'}</InfoValue>
+              <InfoValue>{topicTags.map((tag) => tag.name).join(",") || 'N/A'}</InfoValue>
             </div>
           </InfoCard>
 
@@ -136,7 +141,7 @@ function HasilTab({ session }) {
             <InfoIcon>🎓</InfoIcon>
             <div>
               <InfoLabel>BATCH</InfoLabel>
-              <InfoValue>{topic?.batch || topicBatch || 'N/A'}</InfoValue>
+              <InfoValue>{batchTags.map((tag) => tag.name).join(",") || topicBatch || 'N/A'}</InfoValue>
             </div>
           </InfoCard>
         </InfoGrid>

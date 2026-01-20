@@ -62,6 +62,15 @@ class SessionsController {
                     observation_snapshot: true
                 }
             },
+            osce_session_tag_snapshots: {
+            include: {
+                tags: {
+                    include: {
+                        tag_group: true
+                    }
+                }
+            }
+          },
             osce_session_topic_snapshot: true,
             osce_session_observation_group_snapshots: {
               include: {
