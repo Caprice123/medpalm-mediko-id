@@ -60,7 +60,13 @@ app.use(sentryRequestHandler());
 app.use(sentryTracingHandler());
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://medpalm.mediko.id",   // React
+        "https://medpal.id",
+    ],
+}));
 app.use(express.json({ limit: '100mb' })); // Increase limit for large file uploads
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
