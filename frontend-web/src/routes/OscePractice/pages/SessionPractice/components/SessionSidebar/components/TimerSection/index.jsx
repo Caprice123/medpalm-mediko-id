@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { TimerCard, TimerDisplay, TimerLabel } from '../../../../SessionPractice.styles'
 
-const TimerSection = ({ onEndSession }) => {
+const TimerSection = ({ onEndSession, isEndingSession }) => {
     const { sessionDetail } = useSelector(state => state.oscePractice)
     const [timeRemaining, setTimeRemaining] = useState(0)
     const timerRef = useRef(null)
@@ -43,6 +43,14 @@ const TimerSection = ({ onEndSession }) => {
             }
         }
     }, [sessionDetail])
+
+    // Stop timer when ending session
+    useEffect(() => {
+        if (isEndingSession && timerRef.current) {
+            clearInterval(timerRef.current)
+            timerRef.current = null
+        }
+    }, [isEndingSession])
 
     const formatTime = (seconds) => {
         const hrs = Math.floor(seconds / 3600)

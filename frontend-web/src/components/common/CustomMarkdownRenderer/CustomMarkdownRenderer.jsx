@@ -1,7 +1,17 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import styles from './CustomMarkdownRenderer.module.css';
+import {
+  Heading1,
+  Heading2,
+  Heading3,
+  Paragraph,
+  UnorderedList,
+  OrderedList,
+  ListItem,
+  Blockquote,
+  Link
+} from './CustomMarkdownRenderer.styles';
 
 const CustomMarkdownRenderer = ({ item }) => {
   // Pre-process the text to convert single newlines to line breaks in Markdown
@@ -14,32 +24,28 @@ const CustomMarkdownRenderer = ({ item }) => {
       remarkPlugins={[remarkGfm]}
       components={{
         h1: ({ node, ...props }) => (
-          <h1 className={styles.heading1} {...props} />
+          <Heading1 {...props} />
         ),
         h2: ({ node, ...props }) => (
-          <h2 className={styles.heading2} {...props} />
+          <Heading2 {...props} />
         ),
         h3: ({ node, ...props }) => (
-          <h3 className={styles.heading3} {...props} />
+          <Heading3 {...props} />
         ),
-        p: ({ node, ...props }) => <p className={styles.paragraph} {...props} />,
+        p: ({ node, ...props }) => <Paragraph {...props} />,
         ul: ({ node, ...props }) => (
-          <ul className={styles.unorderedList} {...props} />
+          <UnorderedList {...props} />
         ),
         ol: ({ node, ...props }) => (
-          <ol className={styles.orderedList} {...props} />
+          <OrderedList {...props} />
         ),
-        li: ({ node, ...props }) => <li className={styles.listItem} {...props} />,
+        li: ({ node, ...props }) => <ListItem {...props} />,
         blockquote: ({ node, ...props }) => (
-          <blockquote
-            className={styles.blockquote}
-            {...props}
-          />
+          <Blockquote {...props} />
         ),
         a: ({ node, href, ...props }) => (
-          <a 
+          <Link
             href={href}
-            className={styles.link}
             target="_blank"
             rel="noopener noreferrer"
             {...props}

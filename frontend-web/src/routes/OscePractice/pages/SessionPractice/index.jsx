@@ -19,7 +19,9 @@ import {
   TabContent,
   EmptyState,
   Content,
+  MobileButtonWrapper,
 } from './SessionPractice.styles'
+import Button from '@components/common/Button'
 
 const TABS = [
   { id: 'conversation', label: 'Percakapan' },
@@ -143,7 +145,7 @@ function SessionPractice() {
         therapies: therapies,
         observations: observationsWithInterpretations,
       },
-      (response) => {
+      () => {
         // Navigate to results page on success
         navigate(`/osce-practice/session/${sessionId}/result`)
       }
@@ -218,6 +220,18 @@ function SessionPractice() {
             )}
             </TabContent>
         </MainContent>
+
+        {/* Mobile End Session Button */}
+        <MobileButtonWrapper>
+          <Button
+            variant="danger"
+            onClick={() => handleEndSession(false)}
+            disabled={loading.isEndingSession}
+            fullWidth
+          >
+            {loading.isEndingSession ? 'Mengevaluasi...' : 'Akhiri Sesi'}
+          </Button>
+        </MobileButtonWrapper>
         </Content>
 
         {/* End Session Modal */}

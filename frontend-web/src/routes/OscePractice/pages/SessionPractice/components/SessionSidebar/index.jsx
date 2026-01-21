@@ -1,6 +1,4 @@
 import { useState, memo } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import {
   Sidebar,
   TimerCard,
@@ -13,6 +11,7 @@ import {
   ToggleSwitch,
   ToggleSlider,
   EndSessionButton,
+  DesktopButtonWrapper,
 } from '../../SessionPractice.styles'
 import Button from '@components/common/Button'
 import { AttachmentSection } from './components/AttachmentSection'
@@ -26,7 +25,7 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
 
   return (
     <Sidebar>
-      <TimerSection onEndSession={onEndSession} />
+      <TimerSection onEndSession={onEndSession} isEndingSession={isEndingSession} />
 
       <TaskSection>
         <TaskContent>
@@ -50,9 +49,18 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
         <AttachmentSection />
       </TaskSection>
 
-      <Button variant="danger" onClick={() => onEndSession(false)} disabled={isEndingSession} style={{ margin: '1rem' }}>
-        {isEndingSession ? 'Mengevaluasi...' : 'Akhiri Sesi'}
-      </Button>
+      <DesktopButtonWrapper>
+        <div style={{ margin: '1rem' }}>
+            <Button
+            variant="danger"
+            onClick={() => onEndSession(false)}
+            disabled={isEndingSession}
+            fullWidth
+            >
+            {isEndingSession ? 'Mengevaluasi...' : 'Akhiri Sesi'}
+            </Button>
+        </div>
+      </DesktopButtonWrapper>
     </Sidebar>
   )
 }

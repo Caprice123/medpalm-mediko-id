@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchSessionMessages, loadMoreMessages } from '@store/oscePractice/userAction'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   Sidebar,
   MainContent,
@@ -125,14 +124,7 @@ function ChatsTab({ sessionId }) {
           <TaskSection>
             <TaskContent>
               <TaskHeader>Tugas</TaskHeader>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  p: ({node, ...props}) => <p style={{marginBottom: '0.5rem'}} {...props} />
-                }}
-              >
-                {sessionDetail.topic.scenario.replace(/\\n/g, '\n\n')}
-              </ReactMarkdown>
+              <CustomMarkdownRenderer item={sessionDetail.topic.scenario.replace(/\\n/g, '\n\n')} />
             </TaskContent>
           </TaskSection>
         )}
@@ -222,9 +214,7 @@ const MessageComponent = memo(function MessageComponent({ message }) {
         {isUser ? 'Anda' : 'AI Pasien'}
       </MessageAuthor>
       <MessageText>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {message.content || message.text || ''}
-        </ReactMarkdown>
+        <CustomMarkdownRenderer item={message.content || message.text || ''} />
       </MessageText>
     </Message>
   )

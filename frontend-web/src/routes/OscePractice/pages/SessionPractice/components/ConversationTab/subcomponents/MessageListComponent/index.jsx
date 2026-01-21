@@ -11,8 +11,7 @@ import {
 } from '../../../../SessionPractice.styles'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import { loadMoreMessages } from '@store/oscePractice/userAction'
 
 const MessageListComponent = () => {
@@ -188,9 +187,7 @@ const MessageComponent = memo(function MessageComponent({ message }) {
         {message.isUser ? 'Anda' : 'AI Pasien'}
       </MessageAuthor>
       <MessageText>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {message.content || message.text || ''}
-        </ReactMarkdown>
+        <CustomMarkdownRenderer item={message.content || message.text || ''} />
         {message.id && message.id.toString().startsWith('streaming-') && (
           <StreamingCursor>▊</StreamingCursor>
         )}

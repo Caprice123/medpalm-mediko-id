@@ -15,6 +15,10 @@ export const Card = styled.div`
     box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
     transform: translateY(-2px);
   }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
 `
 
 export const CardHeader = styled.div`
@@ -22,6 +26,11 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 `
 
 export const TopicInfo = styled.div`
@@ -53,6 +62,10 @@ export const DateBadge = styled.div`
   font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    align-self: flex-start;
+  }
 `
 
 export const StatsRow = styled.div`
@@ -62,6 +75,12 @@ export const StatsRow = styled.div`
   padding: 1rem;
   background: ${colors.neutral.gray50};
   border-radius: 8px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0.875rem;
+    gap: 0.875rem;
+  }
 `
 
 export const StatItem = styled.div`

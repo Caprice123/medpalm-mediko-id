@@ -1,5 +1,4 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import { EmptyState } from '../../../styles/shared'
 import {
   Container,
@@ -241,9 +240,7 @@ function HasilTab({ session }) {
 
           <AnswerKeySection>
             <AnswerKeyContent>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {answerKey}
-              </ReactMarkdown>
+              <CustomMarkdownRenderer item={answerKey} />
             </AnswerKeyContent>
           </AnswerKeySection>
         </SectionCard>

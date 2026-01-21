@@ -10,6 +10,10 @@ export const Wrapper = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+    }
 `
 
 
@@ -20,6 +24,10 @@ export const Header = styled.div`
   padding: 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `
 
 export const BackButton = styled.button`
@@ -49,6 +57,11 @@ export const TitleRow = styled.div`
   justify-content: space-between;
   gap: 2rem;
   margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 `
 
 export const TitleSection = styled.div`
@@ -60,6 +73,10 @@ export const Title = styled.h1`
   font-weight: 700;
   color: ${colors.text.primary};
   margin: 0 0 0.5rem 0;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `
 
 export const Subtitle = styled.p`
@@ -75,6 +92,11 @@ export const ScoreCard = styled.div`
   padding: 1.5rem;
   text-align: center;
   min-width: 200px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: unset;
+  }
 `
 
 export const ScoreLabel = styled.div`
@@ -105,6 +127,11 @@ export const MetaInfo = styled.div`
   gap: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid ${colors.neutral.gray200};
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 `
 
 export const MetaItem = styled.div`
@@ -138,6 +165,11 @@ export const TabBar = styled.div`
   display: flex;
   border-bottom: 1px solid ${colors.neutral.gray200};
   background: ${colors.neutral.gray50};
+  overflow-x: auto;
+
+  @media (max-width: 768px) {
+    -webkit-overflow-scrolling: touch;
+  }
 `
 
 export const Tab = styled.button`
@@ -152,16 +184,27 @@ export const Tab = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
 
   &:hover {
     background: ${props => props.active ? 'white' : colors.neutral.gray100};
     color: ${colors.primary.main};
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 auto;
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
   }
 `
 
 export const TabContent = styled.div`
   padding: 2rem;
   min-height: 400px;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `
 
 export const LoadingContainer = styled.div`

@@ -22,6 +22,11 @@ export const Header = styled.div`
   margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `
 
 export const Title = styled.h1`
@@ -29,6 +34,10 @@ export const Title = styled.h1`
   font-weight: 700;
   color: ${colors.neutral.gray900};
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `
 
 export const Subtitle = styled.p`

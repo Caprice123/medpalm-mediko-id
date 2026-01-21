@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 
 const OscePracticePage = lazy(() => import('./index'))
+const TopicSelection = lazy(() => import('./pages/TopicSelection'))
 const SessionPreparation = lazy(() => import('./pages/SessionPreparation'))
 const SessionPractice = lazy(() => import('./pages/SessionPractice'))
 const SessionResult = lazy(() => import('./pages/SessionResult'))
@@ -9,6 +10,10 @@ export const oscePracticeRoutes = [
   {
     path: '/osce-practice',
     element: <OscePracticePage />
+  },
+  {
+    path: '/osce-practice/select-topic',
+    element: <TopicSelection />
   },
   {
     path: '/osce-practice/session/:sessionId/preparation',

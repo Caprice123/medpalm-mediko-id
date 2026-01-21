@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { fetchUserOsceSessions } from '@store/oscePractice/userAction'
 import { actions } from '@store/oscePractice/reducer'
 import SessionCard from './components/SessionCard'
-import TopicSelectionModal from './components/TopicSelectionModal'
 import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
 import {
@@ -22,15 +22,15 @@ import {
 
 function OscePracticePage() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { userSessions, loading, sessionsPagination } = useSelector(state => state.oscePractice)
-  const [showTopicModal, setShowTopicModal] = useState(false)
 
   useEffect(() => {
     dispatch(fetchUserOsceSessions())
   }, [dispatch, sessionsPagination.page])
 
   const handleStartPractice = () => {
-    setShowTopicModal(true)
+    navigate('/osce-practice/select-topic')
   }
 
   const handlePageChange = (page) => {
@@ -105,13 +105,6 @@ function OscePracticePage() {
             </>
             )}
         </Section>
-
-        {/* Topic Selection Modal */}
-        {showTopicModal && (
-            <TopicSelectionModal
-            onClose={() => setShowTopicModal(false)}
-            />
-        )}
         </PageContainer>
     </Container>
   )

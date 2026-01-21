@@ -1,7 +1,6 @@
-import { memo, useCallback, useMemo, useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   Container,
   MessageBubble,
@@ -19,19 +18,14 @@ import {
 } from './MessageList.styles'
 
 // Memoized individual message component - only re-renders when its own data changes
-const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWithCitations, markdownComponents }) => {
+const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWithCitations }) => {
     if (!message.content) return null
     return (
     <MessageBubble key={message.id} isUser={message.senderType === 'user'}>
       {message.senderType === 'user' ? (
         <UserMessage>
           <MessageContent>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
-              {message.content}
-            </ReactMarkdown>
+            <CustomMarkdownRenderer item={message.content} />
           </MessageContent>
           <MessageFooter>
             <Timestamp>{formatTime(message.createdAt)}</Timestamp>
@@ -40,12 +34,7 @@ const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWith
       ) : (
         <AIMessage>
           <MessageContent>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
-              {processContentWithCitations(message.content, message.sources)}
-            </ReactMarkdown>
+            <CustomMarkdownRenderer item={processContentWithCitations(message.content, message.sources)} />
           </MessageContent>
 
           {message.sources && message.sources.length > 0 && (
@@ -150,101 +139,6 @@ function MessageList({ isLoading, isSending }) {
     return processed
   }, [])
 
-  // Custom markdown components for better rendering - memoized to prevent re-creation
-  const markdownComponents = useMemo(() => ({
-    // Code blocks
-    code({ node, inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '')
-      const isMobile = window.innerWidth <= 768
-      return !inline ? (
-        <pre style={{
-          background: '#1e1e1e',
-          padding: isMobile ? '0.75rem' : '1rem',
-          borderRadius: '8px',
-          overflow: 'auto',
-          margin: '0.5rem 0',
-          fontSize: isMobile ? '0.8125rem' : '0.9375rem'
-        }}>
-          <code style={{
-            color: '#d4d4d4',
-            fontFamily: 'Monaco, Courier New, monospace',
-            fontSize: 'inherit'
-          }} {...props}>
-            {children}
-          </code>
-        </pre>
-      ) : (
-        <code style={{
-          background: '#f3f4f6',
-          padding: '2px 6px',
-          borderRadius: '4px',
-          fontFamily: 'Monaco, Courier New, monospace',
-          fontSize: isMobile ? '0.8125em' : '0.9em',
-          color: '#e83e8c'
-        }} {...props}>
-          {children}
-        </code>
-      )
-    },
-    // Links
-    a({ children, href, ...props }) {
-      return (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            color: '#3b82f6',
-            textDecoration: 'underline'
-          }}
-          {...props}
-        >
-          {children}
-        </a>
-      )
-    },
-    // Lists
-    ul({ children, ...props }) {
-      const isMobile = window.innerWidth <= 768
-      return (
-        <ul style={{
-          marginLeft: isMobile ? '1rem' : '1.5rem',
-          marginTop: '0.5rem',
-          marginBottom: '0.5rem'
-        }} {...props}>
-          {children}
-        </ul>
-      )
-    },
-    ol({ children, ...props }) {
-      const isMobile = window.innerWidth <= 768
-      return (
-        <ol style={{
-          marginLeft: isMobile ? '1rem' : '1.5rem',
-          marginTop: '0.5rem',
-          marginBottom: '0.5rem'
-        }} {...props}>
-          {children}
-        </ol>
-      )
-    },
-    // Blockquotes
-    blockquote({ children, ...props }) {
-      const isMobile = window.innerWidth <= 768
-      return (
-        <blockquote style={{
-          borderLeft: isMobile ? '3px solid #d1d5db' : '4px solid #d1d5db',
-          paddingLeft: isMobile ? '0.75rem' : '1rem',
-          marginLeft: '0',
-          color: '#6b7280',
-          fontStyle: 'italic'
-        }} {...props}>
-          {children}
-        </blockquote>
-      )
-    }
-  }), [])
-
   if (isLoading) {
     return (
       <EmptyState>
@@ -272,7 +166,6 @@ function MessageList({ isLoading, isSending }) {
           formatTime={formatTime}
           getModeInfo={getModeInfo}
           processContentWithCitations={processContentWithCitations}
-          markdownComponents={markdownComponents}
         />
       ))}
 

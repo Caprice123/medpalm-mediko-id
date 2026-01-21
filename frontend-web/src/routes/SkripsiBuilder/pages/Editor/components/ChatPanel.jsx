@@ -3,8 +3,7 @@ import { useAppDispatch } from '@store/store'
 import { sendMessage, loadOlderMessages, stopStreaming } from '@store/skripsi/action'
 import { actions } from '@store/skripsi/reducer'
 import { FaPaperPlane, FaStop } from 'react-icons/fa'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   ChatPanel as StyledChatPanel,
   ChatHeader,
@@ -27,9 +26,7 @@ import { useSelector } from 'react-redux'
 const ChatMessage = memo(({ message, formatTime }) => (
   <Message $sender={message.senderType}>
     <MessageBubble $sender={message.senderType}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {message.content}
-      </ReactMarkdown>
+      <CustomMarkdownRenderer item={message.content} />
     </MessageBubble>
     <MessageTime>{formatTime(message.createdAt)}</MessageTime>
   </Message>

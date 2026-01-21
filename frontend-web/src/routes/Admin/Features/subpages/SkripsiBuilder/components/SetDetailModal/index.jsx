@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminSet } from '@store/skripsi/action'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   ModalOverlay,
   ModalContainer,
@@ -132,9 +131,7 @@ function SetDetailModal({ set, isOpen, onClose }) {
                     currentTab?.messages?.map((msg, idx) => (
                       <Message key={idx} $sender={msg.senderType}>
                         <MessageBubble $sender={msg.senderType}>
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {msg.content}
-                          </ReactMarkdown>
+                          <CustomMarkdownRenderer item={msg.content} />
                         </MessageBubble>
                         <MessageTime>{formatTime(msg.createdAt)}</MessageTime>
                       </Message>

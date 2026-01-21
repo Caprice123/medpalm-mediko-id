@@ -11,6 +11,12 @@ export const Content = styled.div`
     height: calc(100vh - 93px);
     background: #f0fdfa;
     overflow: hidden;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      height: auto;
+      min-height: calc(100vh - 93px);
+    }
 `
 
 // Left Sidebar
@@ -23,6 +29,14 @@ export const Sidebar = styled.div`
 
   @media (max-width: 1024px) {
     width: 320px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid ${colors.neutral.gray200};
+    max-height: 100vh;
+    overflow-y: auto;
   }
 `
 
@@ -51,6 +65,10 @@ export const TimerDisplay = styled.div`
   font-weight: 700;
   font-family: 'Courier New', monospace;
   letter-spacing: 2px;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `
 
 export const TaskSection = styled.div`
@@ -168,6 +186,31 @@ export const EndSessionButton = styled.button`
     background: ${colors.error.dark};
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
+
+  @media (max-width: 768px) {
+    margin: 0;
+    width: 100%;
+  }
+`
+
+export const MobileButtonWrapper = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    background: ${colors.neutral.white};
+    border-top: 2px solid ${colors.neutral.gray200};
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+`
+
+export const DesktopButtonWrapper = styled.div`
+  display: block;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 // Main Content Area
@@ -176,14 +219,24 @@ export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    overflow-y: auto;
+  }
 `
 
 export const TabBar = styled.div`
   background: ${colors.neutral.white};
   border-bottom: 2px solid ${colors.neutral.gray200};
   display: flex;
-  padding: 0 1rem;
+  padding: 2px 1rem;
   gap: 0.5rem;
+  overflow-x: auto;
+
+  @media (max-width: 768px) {
+    padding: 2px 0.5rem;
+    gap: 0.25rem;
+  }
 `
 
 export const Tab = styled.button`
@@ -198,6 +251,12 @@ export const Tab = styled.button`
   transition: all 0.2s;
   position: relative;
   bottom: -2px;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+  }
 `
 
 export const TabContent = styled.div`
@@ -206,6 +265,11 @@ export const TabContent = styled.div`
   padding: 1rem;
   padding-bottom: 0;
   background: ${colors.neutral.white};
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+    max-height: 100vh;
+  }
 `
 
 export const GuideSection = styled.div`
@@ -273,6 +337,11 @@ export const Message = styled.div`
   max-width: 80%;
   align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
   border: 1px solid ${props => props.isUser ? colors.primary.main : colors.neutral.gray200};
+
+  @media (max-width: 768px) {
+    max-width: 90%;
+    padding: 0.875rem 1rem;
+  }
 `
 
 export const MessageAuthor = styled.div`
@@ -660,6 +729,10 @@ export const ObservationGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 export const ObservationCheckbox = styled.label`
