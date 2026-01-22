@@ -11,7 +11,7 @@ export class GetEmbeddingsService {
    */
   static async call({ page = 1, perPage = 20 } = {}) {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
 
       // Get total count
       const totalCount = await embeddingService.countSummaryNoteEmbeddings()
@@ -80,7 +80,7 @@ export class GetEmbeddingsService {
    */
   static async getById(documentId) {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
       const document = await vectorDB.getDocument('summary_notes', documentId)
 
       if (!document) {

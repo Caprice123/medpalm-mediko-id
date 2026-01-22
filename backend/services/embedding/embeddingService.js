@@ -1,23 +1,39 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getVectorDB } from '#services/vectorDB/vectorDBFactory'
 import MarkdownChunker from '#services/embedding/markdownChunker'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+import { blockNoteToMarkdown } from '#utils/blockNoteConverter'
+import { GetConstantsService } from '#services/constant/getConstantsService'
+import { RouterUtils } from '#utils/aiUtils/routerUtils'
 
 class EmbeddingService {
   /**
-   * Generate embedding for a text using Gemini text-embedding model
+   * Get embedding model from constants or environment
+   * @returns {Promise<string>} - Embedding model name
+   */
+  async getEmbeddingModel() {
+    try {
+      const constants = await GetConstantsService.call(['embedding_model'])
+      return constants.embedding_model || process.env.EMBEDDING_MODEL || 'text-embedding-004'
+    } catch (error) {
+      console.warn('Failed to get embedding model from constants, using default')
+      return process.env.EMBEDDING_MODEL || 'text-embedding-004'
+    }
+  }
+
+  /**
+   * Generate embedding for a text using configured embedding provider
    * @param {string} text - The text to embed
-   * @returns {Promise<Array<number>>} 768-dimensional embedding vector
+   * @returns {Promise<Array<number>>} Embedding vector (dimension depends on model)
    */
   async generateEmbedding(text) {
     try {
-      const model = genAI.getGenerativeModel({ model: 'text-embedding-004' })
+      const modelName = await this.getEmbeddingModel()
+      const ProviderService = RouterUtils.getEmbeddingProvider(modelName)
 
-      const result = await model.embedContent(text)
-      const embedding = result.embedding
+      if (!ProviderService) {
+        throw new Error(`No embedding provider found for model: ${modelName}`)
+      }
 
-      return embedding.values
+      return await ProviderService.generateEmbedding(modelName, text)
     } catch (error) {
       console.error('Error generating embedding:', error)
       throw new Error('Failed to generate embedding: ' + error.message)
@@ -31,13 +47,14 @@ class EmbeddingService {
    */
   async generateEmbeddings(texts) {
     try {
-      const model = genAI.getGenerativeModel({ model: 'text-embedding-004' })
+      const modelName = await this.getEmbeddingModel()
+      const ProviderService = RouterUtils.getEmbeddingProvider(modelName)
 
-      const results = await Promise.all(
-        texts.map(text => model.embedContent(text))
-      )
+      if (!ProviderService) {
+        throw new Error(`No embedding provider found for model: ${modelName}`)
+      }
 
-      return results.map(result => result.embedding.values)
+      return await ProviderService.generateEmbeddings(modelName, texts)
     } catch (error) {
       console.error('Error generating embeddings:', error)
       throw new Error('Failed to generate embeddings: ' + error.message)
@@ -51,15 +68,22 @@ class EmbeddingService {
    */
   async embedSummaryNote(summaryNote) {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
 
       // First, delete any existing chunks for this note (to handle updates)
       await this.deleteSummaryNoteEmbedding(summaryNote.id)
 
+      // Convert BlockNote content to markdown
+      const markdownContent = blockNoteToMarkdown(summaryNote.content)
+
+      if (!markdownContent || markdownContent.trim() === '') {
+        throw new Error(`Failed to convert content to markdown for note ${summaryNote.id}`)
+      }
+
       // Chunk the markdown content by headings
       const chunks = MarkdownChunker.chunkByHeadings(
         summaryNote.title,
-        summaryNote.markdown_content || summaryNote.content
+        markdownContent
       )
 
       console.log(`📄 Chunking summary note ${summaryNote.id}: "${summaryNote.title}" into ${chunks.length} chunks`)
@@ -107,11 +131,14 @@ class EmbeddingService {
    */
   async embedSummaryNotes(summaryNotes) {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
+
+      // Convert BlockNote content to markdown for each note
+      const markdownContents = summaryNotes.map(note => blockNoteToMarkdown(note.content))
 
       // Prepare texts for embedding
-      const texts = summaryNotes.map(note =>
-        `${note.title}\n\n${note.markdown_content || note.content}`
+      const texts = summaryNotes.map((note, index) =>
+        `${note.title}\n\n${markdownContents[index]}`
       )
 
       // Generate embeddings
@@ -122,7 +149,7 @@ class EmbeddingService {
       const documents = summaryNotes.map((note, index) => ({
         id: note.id,
         embedding: embeddings[index],
-        content: note.markdown_content || note.content,
+        content: markdownContents[index],
         metadata: {
           title: note.title,
           description: note.description || '',
@@ -148,7 +175,7 @@ class EmbeddingService {
    */
   async deleteSummaryNoteEmbedding(summaryNoteId) {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
 
       // Delete all chunks for this note using metadata filter
       await vectorDB.deleteDocumentsByMetadata('summary_notes', {
@@ -168,7 +195,7 @@ class EmbeddingService {
    */
   async countSummaryNoteEmbeddings() {
     try {
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
       const count = await vectorDB.countDocuments('summary_notes')
       return count
     } catch (error) {

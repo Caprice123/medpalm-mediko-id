@@ -37,19 +37,21 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async createCollection(collectionName, config = {}) {
     try {
+      const prefixedName = this.getCollectionName(collectionName)
       const collection = await this.client.createCollection({
-        name: collectionName,
+        name: prefixedName,
         metadata: {
           dimension: config.dimension || 768,
           distance: config.distance || 'cosine'
         }
       })
-      console.log(`✓ ChromaDB collection created: ${collectionName}`)
+      console.log(`✓ ChromaDB collection created: ${prefixedName}`)
       return collection
     } catch (error) {
       // Collection might already exist
       if (error.message?.includes('already exists')) {
-        return await this.client.getCollection({ name: collectionName })
+        const prefixedName = this.getCollectionName(collectionName)
+        return await this.client.getCollection({ name: prefixedName })
       }
       throw error
     }
@@ -57,7 +59,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async collectionExists(collectionName) {
     try {
-      await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      await this.client.getCollection({ name: prefixedName })
       return true
     } catch (error) {
       return false
@@ -66,7 +69,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async addDocuments(collectionName, documents) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       const ids = documents.map(doc => String(doc.id))
       const embeddings = documents.map(doc => doc.embedding)
@@ -80,7 +84,7 @@ export class ChromaVectorDB extends BaseVectorDB {
         documents: contents
       })
 
-      console.log(`✓ Added ${documents.length} documents to ${collectionName}`)
+      console.log(`✓ Added ${documents.length} documents to ${prefixedName}`)
     } catch (error) {
       console.error('Failed to add documents to ChromaDB:', error)
       throw error
@@ -89,7 +93,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async updateDocument(collectionName, documentId, embedding, metadata, content) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       await collection.update({
         ids: [String(documentId)],
@@ -98,7 +103,7 @@ export class ChromaVectorDB extends BaseVectorDB {
         documents: [content]
       })
 
-      console.log(`✓ Updated document ${documentId} in ${collectionName}`)
+      console.log(`✓ Updated document ${documentId} in ${prefixedName}`)
     } catch (error) {
       console.error('Failed to update document in ChromaDB:', error)
       throw error
@@ -107,7 +112,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async deleteDocument(collectionName, documentId) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       await collection.delete({
         ids: [String(documentId)]
@@ -127,13 +133,14 @@ export class ChromaVectorDB extends BaseVectorDB {
    */
   async deleteDocumentsByMetadata(collectionName, whereFilter) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       await collection.delete({
         where: whereFilter
       })
 
-      console.log(`✓ Deleted documents from ${collectionName} matching filter:`, whereFilter)
+      console.log(`✓ Deleted documents from ${prefixedName} matching filter:`, whereFilter)
     } catch (error) {
       console.error('Failed to delete documents from ChromaDB:', error)
       throw error
@@ -147,7 +154,8 @@ export class ChromaVectorDB extends BaseVectorDB {
    */
   async getAllDocuments(collectionName) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       const result = await collection.get()
 
@@ -173,9 +181,47 @@ export class ChromaVectorDB extends BaseVectorDB {
     }
   }
 
+  /**
+   * Get documents by metadata filter
+   * @param {string} collectionName - Collection name
+   * @param {Object} whereFilter - ChromaDB where filter (e.g., { note_id: 123 })
+   * @returns {Array} Documents matching the filter
+   */
+  async getDocumentsByMetadata(collectionName, whereFilter) {
+    try {
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
+
+      const result = await collection.get({
+        where: whereFilter
+      })
+
+      if (!result.ids || result.ids.length === 0) {
+        return []
+      }
+
+      // Format documents
+      const documents = []
+      for (let i = 0; i < result.ids.length; i++) {
+        documents.push({
+          id: result.ids[i],
+          metadata: result.metadatas[i],
+          content: result.documents[i],
+          embedding: result.embeddings?.[i] || null
+        })
+      }
+
+      return documents
+    } catch (error) {
+      console.error('Failed to get documents by metadata from ChromaDB:', error)
+      return []
+    }
+  }
+
   async search(collectionName, queryEmbedding, options = {}) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       const limit = options.limit || 5
       const filter = options.filter || null
@@ -215,7 +261,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async getDocument(collectionName, documentId) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
 
       const result = await collection.get({
         ids: [String(documentId)]
@@ -238,7 +285,8 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async countDocuments(collectionName) {
     try {
-      const collection = await this.client.getCollection({ name: collectionName })
+      const prefixedName = this.getCollectionName(collectionName)
+      const collection = await this.client.getCollection({ name: prefixedName })
       const count = await collection.count()
       return count
     } catch (error) {
@@ -249,8 +297,9 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async deleteCollection(collectionName) {
     try {
-      await this.client.deleteCollection({ name: collectionName })
-      console.log(`✓ Deleted collection: ${collectionName}`)
+      const prefixedName = this.getCollectionName(collectionName)
+      await this.client.deleteCollection({ name: prefixedName })
+      console.log(`✓ Deleted collection: ${prefixedName}`)
     } catch (error) {
       console.error('Failed to delete collection from ChromaDB:', error)
       throw error

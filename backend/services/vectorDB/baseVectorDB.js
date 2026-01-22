@@ -7,6 +7,22 @@
 
 export class BaseVectorDB {
   /**
+   * Get collection name with environment and model prefix
+   * @param {string} collectionName - Base collection name
+   * @param {string} embeddingModel - Embedding model name (optional)
+   * @returns {string} - Prefixed collection name
+   */
+  getCollectionName(collectionName, embeddingModel = null) {
+    const env = process.env.NODE_ENV || 'development'
+    const model = embeddingModel || process.env.EMBEDDING_MODEL || 'text-embedding-004'
+
+    if (env === 'development') {
+      return `dev/${model}/${collectionName}`
+    }
+    return `${model}/${collectionName}`
+  }
+
+  /**
    * Initialize the vector database connection
    */
   async initialize() {

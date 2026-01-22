@@ -85,6 +85,10 @@ Gaya Komunikasi:
       value: '10'
     },
     {
+      key: 'chatbot_validated_last_message_count',
+      value: '10'
+    },
+    {
       key: 'chatbot_validated_prompt',
       value: `Kamu adalah asisten AI medis yang HANYA menggunakan informasi dari ringkasan materi (summary notes) yang diberikan sebagai konteks.
 

@@ -15,6 +15,7 @@ import { QdrantVectorDB } from '#services/vectorDB/qdrantVectorDB'
  */
 
 let vectorDBInstance = null
+let isInitialized = false
 
 export function createVectorDB() {
   if (vectorDBInstance) {
@@ -47,23 +48,32 @@ export function createVectorDB() {
 }
 
 /**
- * Get the current vector DB instance
- * @returns {BaseVectorDB}
+ * Get the current vector DB instance (with lazy initialization)
+ * Automatically connects on first use
+ * @returns {Promise<BaseVectorDB>}
  */
-export function getVectorDB() {
+export async function getVectorDB() {
   if (!vectorDBInstance) {
-    return createVectorDB()
+    createVectorDB()
   }
+
+  // Lazy initialization: connect on first use
+  if (!isInitialized) {
+    await vectorDBInstance.initialize()
+    isInitialized = true
+  }
+
   return vectorDBInstance
 }
 
 /**
- * Initialize vector database on app startup
+ * Initialize vector database and create collections (one-time setup)
+ * Use this for setup scripts, not for workers
  */
 export async function initializeVectorDB() {
   try {
-    const vectorDB = getVectorDB()
-    await vectorDB.initialize()
+    // Get instance (will auto-initialize connection via singleton)
+    const vectorDB = await getVectorDB()
 
     // Create summary_notes collection if it doesn't exist
     const collectionName = 'summary_notes'

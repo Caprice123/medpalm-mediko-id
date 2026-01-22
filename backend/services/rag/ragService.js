@@ -18,7 +18,7 @@ class RAGService {
       const queryEmbedding = await EmbeddingService.generateEmbedding(query)
 
       // Search in ChromaDB
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
       const results = await vectorDB.search('summary_notes', queryEmbedding, {
         limit,
         threshold
@@ -115,7 +115,7 @@ class RAGService {
       }
 
       // Search in ChromaDB with filters
-      const vectorDB = getVectorDB()
+      const vectorDB = await getVectorDB()
       const results = await vectorDB.search('summary_notes', queryEmbedding, {
         limit,
         threshold,

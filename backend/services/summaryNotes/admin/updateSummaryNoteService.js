@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import embeddingService from '#services/embedding/embeddingService'
+import { queueEmbedSummaryNote, queueDeleteSummaryNoteEmbedding } from '#jobs/queues/summaryNotesQueue'
 
 export class UpdateSummaryNoteService extends BaseService {
   static async call({ id, title, description, content, markdownContent, blobId, status, isActive, tagIds }) {
@@ -105,23 +105,26 @@ export class UpdateSummaryNoteService extends BaseService {
       return completeSummaryNote
     })
 
-    // Handle embedding updates
+    // Handle embedding updates (queue jobs instead of processing immediately)
     try {
       const wasPublished = existing.status === 'published'
       const isPublished = result.status === 'published'
 
       if (!wasPublished && isPublished) {
-        // Status changed from draft to published → create embedding
-        await embeddingService.embedSummaryNote(result)
+        // Status changed from draft to published → queue embedding job
+        await queueEmbedSummaryNote(result.id)
+        console.log(`✓ Queued embedding job for summary note ${result.id}`)
       } else if (wasPublished && !isPublished) {
-        // Status changed from published to draft → delete embedding
-        await embeddingService.deleteSummaryNoteEmbedding(result.id)
+        // Status changed from published to draft → queue deletion job
+        await queueDeleteSummaryNoteEmbedding(result.id)
+        console.log(`✓ Queued embedding deletion job for summary note ${result.id}`)
       } else if (isPublished) {
-        // Still published → update embedding (in case content changed)
-        await embeddingService.embedSummaryNote(result)
+        // Still published → queue update embedding job (in case content changed)
+        await queueEmbedSummaryNote(result.id)
+        console.log(`✓ Queued embedding update job for summary note ${result.id}`)
       }
     } catch (error) {
-      console.error('Failed to update embedding for summary note:', error)
+      console.error('Failed to queue embedding job:', error)
       // Don't throw - note was updated successfully, embedding is supplementary
     }
 

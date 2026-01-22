@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import embeddingService from '#services/embedding/embeddingService'
+import { queueEmbedSummaryNote } from '#jobs/queues/summaryNotesQueue'
 
 export class CreateSummaryNoteService extends BaseService {
   static async call({ title, description, content, markdownContent, blobId, status, tagIds, createdBy }) {
@@ -78,12 +78,13 @@ export class CreateSummaryNoteService extends BaseService {
       return completeSummaryNote
     })
 
-    // Auto-embed if status is 'published'
+    // Queue embedding job if status is 'published'
     if (result.status === 'published') {
       try {
-        await embeddingService.embedSummaryNote(result)
+        await queueEmbedSummaryNote(result.id)
+        console.log(`✓ Queued embedding job for summary note ${result.id}`)
       } catch (error) {
-        console.error('Failed to embed summary note:', error)
+        console.error('Failed to queue embedding job:', error)
         // Don't throw - note was created successfully, embedding is supplementary
       }
     }

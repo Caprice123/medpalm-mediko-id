@@ -1,5 +1,6 @@
 import { GeminiService } from "#services/ai/gemini.service";
 import { PerplexityService } from "#services/ai/perplexity.service";
+import { GeminiEmbeddingService } from "#services/ai/embedding/gemini.embedding.service";
 import { BaseService } from "#services/baseService";
 
 const providerModelMapping = {
@@ -16,9 +17,19 @@ const providerModelMapping = {
     "sonar-deep-research": PerplexityService,
 }
 
+const embeddingProviderMapping = {
+    "text-embedding-004": GeminiEmbeddingService,
+    "text-embedding-005": GeminiEmbeddingService,
+    "text-multilingual-embedding-002": GeminiEmbeddingService,
+}
+
 export class RouterUtils extends BaseService {
     static call(model) {
         return providerModelMapping[model]
+    }
+
+    static getEmbeddingProvider(model) {
+        return embeddingProviderMapping[model]
     }
 }
 
