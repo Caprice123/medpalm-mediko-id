@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from '#config/sentry';
 import { startCronJobs } from '#jobs/cron';
 import { errorHandler } from '#middleware/errorHandler.middleware';
+import { setupBullBoard } from '#config/bullBoard';
 import authRoutes from '#routes/api/v1/auth.routes';
 import creditPlanRoutes from '#routes/api/v1/creditPlan.routes';
 import exerciseRoutes from '#routes/api/v1/exercise.routes';
@@ -122,6 +123,10 @@ app.use('/admin/v1/anatomy', adminAnatomyRoutes);
 app.use('/admin/v1/mcq', adminMcqRoutes);
 app.use('/admin/v1/chatbot', adminChatbotRoutes);
 app.use('/admin/v1', adminSkripsiRoutes);
+
+// Bull Board - Job Queue Monitoring UI
+const bullBoardAdapter = setupBullBoard();
+app.use('/admin/queues', bullBoardAdapter.getRouter());
 
 // Sentry error handler (must be before other error handlers)
 app.use(sentryErrorHandler());
