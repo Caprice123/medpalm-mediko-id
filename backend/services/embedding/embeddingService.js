@@ -24,9 +24,8 @@ class EmbeddingService {
    * @param {string} text - The text to embed
    * @returns {Promise<Array<number>>} Embedding vector (dimension depends on model)
    */
-  async generateEmbedding(text) {
+  async generateEmbedding(text, modelName) {
     try {
-      const modelName = await this.getEmbeddingModel()
       const ProviderService = RouterUtils.getEmbeddingProvider(modelName)
 
       if (!ProviderService) {
@@ -70,8 +69,13 @@ class EmbeddingService {
     try {
       const vectorDB = await getVectorDB()
 
+      // Get embedding model for environment-aware collection name
+      const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+      const model = constants.chatbot_validated_embedding_model
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+
       // First, delete any existing chunks for this note (to handle updates)
-      await this.deleteSummaryNoteEmbedding(summaryNote.id)
+      await this.deleteSummaryNoteEmbedding(summaryNote.id, model)
 
       // Convert BlockNote content to markdown
       const markdownContent = blockNoteToMarkdown(summaryNote.content)
@@ -115,9 +119,9 @@ class EmbeddingService {
         }
       }))
 
-      // Store all chunks in ChromaDB
-      await vectorDB.addDocuments('summary_notes', documents)
-      console.log(`✓ Created ${chunks.length} embeddings for summary note: ${summaryNote.id}`)
+      // Store all chunks in ChromaDB using environment-aware collection name
+      await vectorDB.addDocuments(collectionName, documents)
+      console.log(`✓ Created ${chunks.length} embeddings for summary note: ${summaryNote.id} in collection: ${collectionName}`)
     } catch (error) {
       console.error('Error embedding summary note:', error)
       throw new Error('Failed to embed summary note: ' + error.message)
@@ -132,6 +136,11 @@ class EmbeddingService {
   async embedSummaryNotes(summaryNotes) {
     try {
       const vectorDB = await getVectorDB()
+
+      // Get embedding model for environment-aware collection name
+      const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+      const model = constants.chatbot_validated_embedding_model
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
 
       // Convert BlockNote content to markdown for each note
       const markdownContents = summaryNotes.map(note => blockNoteToMarkdown(note.content))
@@ -159,9 +168,9 @@ class EmbeddingService {
         }
       }))
 
-      // Store in ChromaDB
-      await vectorDB.addDocuments('summary_notes', documents)
-      console.log(`✓ Created embeddings for ${summaryNotes.length} summary notes`)
+      // Store in ChromaDB using environment-aware collection name
+      await vectorDB.addDocuments(collectionName, documents)
+      console.log(`✓ Created embeddings for ${summaryNotes.length} summary notes in collection: ${collectionName}`)
     } catch (error) {
       console.error('Error embedding summary notes:', error)
       throw new Error('Failed to embed summary notes: ' + error.message)
@@ -171,18 +180,27 @@ class EmbeddingService {
   /**
    * Delete all chunks for a summary note from ChromaDB
    * @param {number} summaryNoteId - ID of the summary note to delete
+   * @param {string} model - Embedding model name (optional)
    * @returns {Promise<void>}
    */
-  async deleteSummaryNoteEmbedding(summaryNoteId) {
+  async deleteSummaryNoteEmbedding(summaryNoteId, model = null) {
     try {
       const vectorDB = await getVectorDB()
 
+      // Get embedding model if not provided
+      if (!model) {
+        const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+        model = constants.chatbot_validated_embedding_model
+      }
+
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+
       // Delete all chunks for this note using metadata filter
-      await vectorDB.deleteDocumentsByMetadata('summary_notes', {
+      await vectorDB.deleteDocumentsByMetadata(collectionName, {
         note_id: parseInt(summaryNoteId)
       })
 
-      console.log(`✓ Deleted all embeddings for summary note: ${summaryNoteId}`)
+      console.log(`✓ Deleted all embeddings for summary note: ${summaryNoteId} from collection: ${collectionName}`)
     } catch (error) {
       console.error('Error deleting summary note embedding:', error)
       // Don't throw - allow silent failure for deletion
@@ -191,12 +209,21 @@ class EmbeddingService {
 
   /**
    * Count total embeddings in summary_notes collection
+   * @param {string} model - Embedding model name (optional)
    * @returns {Promise<number>} Total count of embeddings
    */
-  async countSummaryNoteEmbeddings() {
+  async countSummaryNoteEmbeddings(model = null) {
     try {
       const vectorDB = await getVectorDB()
-      const count = await vectorDB.countDocuments('summary_notes')
+
+      // Get embedding model if not provided
+      if (!model) {
+        const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+        model = constants.chatbot_validated_embedding_model
+      }
+
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+      const count = await vectorDB.countDocuments(collectionName)
       return count
     } catch (error) {
       console.error('Error counting summary note embeddings:', error)

@@ -6,21 +6,10 @@ const initialState = {
   notes: [],
   detail: null,
 
-  // ChromaDB Embeddings
-  embeddings: [],
-  selectedEmbedding: null,
-
   // Pagination
   pagination: {
     page: 1,
     perPage: 30,
-    isLastPage: false
-  },
-  embeddingsPagination: {
-    page: 1,
-    perPage: 20,
-    totalCount: 0,
-    totalPages: 0,
     isLastPage: false
   },
 
@@ -34,9 +23,7 @@ const initialState = {
     isUpdating: false,
     isDeleting: false,
     isStartingSession: false,
-    isSessionLoading: false,
-    isEmbeddingsLoading: false,
-    isEmbeddingDetailLoading: false
+    isSessionLoading: false
   },
 
   // Filters
@@ -65,20 +52,6 @@ const { reducer, actions } = createSlice({
     },
     setDetail: (state, { payload }) => {
       state.detail = payload
-    },
-
-    // Embeddings actions
-    setEmbeddings: (state, { payload }) => {
-      state.embeddings = payload
-    },
-    setSelectedEmbedding: (state, { payload }) => {
-      state.selectedEmbedding = payload
-    },
-    clearSelectedEmbedding: (state) => {
-      state.selectedEmbedding = null
-    },
-    setEmbeddingsPagination: (state, { payload }) => {
-      state.embeddingsPagination = { ...state.embeddingsPagination, ...payload }
     },
 
     // Pagination

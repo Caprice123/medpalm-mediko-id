@@ -32,7 +32,7 @@ export async function prepareEmbeddingsHandler(job) {
 
   // Convert BlockNote content to markdown
   console.log(`⚙️  Converting BlockNote content to markdown...`)
-  const markdownContent = blockNoteToMarkdown(summaryNote.content)
+  const markdownContent = summaryNote.markdown_content
 
   if (!markdownContent || markdownContent.trim() === '') {
     throw new Error(`Failed to convert content to markdown for note ${summaryNoteId}`)
@@ -48,7 +48,7 @@ export async function prepareEmbeddingsHandler(job) {
 
   console.log(`📦 Split into ${chunks.length} chunks, queuing parallel jobs...`)
 
-  // Queue one job per chunk (these will process in parallel!)
+//   Queue one job per chunk (these will process in parallel!)
   const chunkJobs = chunks.map((chunk, index) => {
     return queueEmbedChunk({
       summaryNoteId: summaryNote.id,

@@ -6,7 +6,6 @@ import { fetchTags } from '@store/tags/action'
 import CreateNoteModal from './components/CreateNoteModal'
 import UpdateNoteModal from './components/UpdateNoteModal'
 import SummaryNotesSettingsModal from './components/SummaryNotesSettingsModal'
-import ChromaDBViewerModal from './components/ChromaDBViewerModal'
 import NotesList from './components/NotesList'
 import Pagination from '@components/Pagination'
 import {
@@ -29,8 +28,7 @@ function SummaryNotes({ onBack }) {
   const [uiState, setUiState] = useState({
     isModalOpen: false,
     mode: null, // 'create' or 'update'
-    isSettingsModalOpen: false,
-    isChromaDBViewerOpen: false
+    isSettingsModalOpen: false
   })
 
   useEffect(() => {
@@ -84,9 +82,6 @@ function SummaryNotes({ onBack }) {
             <Title>Kelola Ringkasan Materi</Title>
           </TitleSection>
           <Actions>
-            <ActionButton secondary onClick={() => setUiState({ ...uiState, isChromaDBViewerOpen: true })}>
-              📊 ChromaDB Viewer
-            </ActionButton>
             <ActionButton secondary onClick={() => setUiState({ ...uiState, isSettingsModalOpen: true })}>
               Pengaturan
             </ActionButton>
@@ -126,13 +121,6 @@ function SummaryNotes({ onBack }) {
         <SummaryNotesSettingsModal
           isOpen={uiState.isSettingsModalOpen}
           onClose={() => setUiState(prev => ({ ...prev, isSettingsModalOpen: false }))}
-        />
-      )}
-
-      {uiState.isChromaDBViewerOpen && (
-        <ChromaDBViewerModal
-          isOpen={uiState.isChromaDBViewerOpen}
-          onClose={() => setUiState(prev => ({ ...prev, isChromaDBViewerOpen: false }))}
         />
       )}
     </Container>

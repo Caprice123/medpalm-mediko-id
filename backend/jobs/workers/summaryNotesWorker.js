@@ -53,7 +53,7 @@ async function processSummaryNoteJob(job) {
 export function createSummaryNotesWorker() {
   const worker = new Worker(SUMMARY_NOTES_QUEUE_NAME, processSummaryNoteJob, {
     connection: redisOptions,
-    concurrency: 5, // Process 5 chunks concurrently (parallel embedding!)
+    concurrency: 5, // Reduced from 5 to 3 to avoid race conditions
     limiter: {
       max: 10, // Max 10 jobs
       duration: 1000 // per 1 second (rate limiting for API calls)

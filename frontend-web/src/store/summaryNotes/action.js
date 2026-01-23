@@ -8,9 +8,6 @@ const {
   setNotes,
   setDetail,
   setPagination,
-  setEmbeddings,
-  setSelectedEmbedding,
-  setEmbeddingsPagination,
 } = actions
 
 // ============= User Endpoints =============
@@ -189,45 +186,6 @@ export const generateSummaryFromDocument = (blobId) => async (dispatch) => {
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGenerating', value: false }))
-  }
-}
-
-// ============= ChromaDB Embeddings Endpoints =============
-
-export const fetchEmbeddings = (page, perPage) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isEmbeddingsLoading', value: true }))
-    
-
-    const queryParams = {
-      page: page || 1,
-      perPage: perPage || 20
-    }
-
-    const route = Endpoints.admin.summaryNotes + '/embeddings'
-    const response = await getWithToken(route, queryParams)
-    dispatch(setEmbeddings(response.data.data || []))
-    dispatch(setEmbeddingsPagination(response.data.pagination || { page: 1, perPage: 20, totalCount: 0, totalPages: 0, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
-  } finally {
-    dispatch(setLoading({ key: 'isEmbeddingsLoading', value: false }))
-  }
-}
-
-export const fetchEmbeddingDetail = (embeddingId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isEmbeddingDetailLoading', value: true }))
-    
-    const route = Endpoints.admin.summaryNotes + `/embeddings/${embeddingId}`
-    const response = await getWithToken(route)
-    const embedding = response.data.data
-    dispatch(setSelectedEmbedding(embedding))
-    return embedding
-  } catch (err) {
-    handleApiError(err, dispatch)
-  } finally {
-    dispatch(setLoading({ key: 'isEmbeddingDetailLoading', value: false }))
   }
 }
 

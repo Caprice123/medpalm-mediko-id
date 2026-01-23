@@ -10,7 +10,6 @@ import {
   CardActions,
   CardActionButton
 } from './RubricCard.styles'
-import Button from "@components/common/Button"
 
 function RubricCard({ rubric, onEdit }) {
   const formatDate = (dateString) => {
@@ -50,9 +49,9 @@ function RubricCard({ rubric, onEdit }) {
       </CardStats>
 
       <CardActions>
-        <Button variant="primary" onClick={() => onEdit(rubric)} fullWidth>
+        <CardActionButton onClick={() => onEdit(rubric)}>
           Edit
-        </Button>
+        </CardActionButton>
       </CardActions>
     </Card>
   )

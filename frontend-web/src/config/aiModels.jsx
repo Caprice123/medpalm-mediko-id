@@ -36,3 +36,25 @@ export const aiModelsGrouped = [
 export const getModelLabel = (value) => {
     return aiModels.gemini[value] || aiModels.perplexity[value] || value
 }
+
+export const embeddingModels = {
+    gemini: {
+        "gemini-embedding-001": "Gemini Embedding 001",
+    },
+}
+
+// Grouped AI Models by Provider (for react-select optgroup)
+export const embeddingModelsGrouped = [
+    {
+        label: 'GEMINI',
+        options: Object.entries(embeddingModels.gemini).map(([value, label]) => ({
+            value,
+            label
+        }))
+    },
+]
+
+// Helper to get model label from value
+export const getEmbeddingModelLabel = (value) => {
+    return embeddingModels.gemini[value] || value
+}

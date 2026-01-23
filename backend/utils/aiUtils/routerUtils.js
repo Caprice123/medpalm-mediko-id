@@ -19,8 +19,7 @@ const providerModelMapping = {
 
 const embeddingProviderMapping = {
     "text-embedding-004": GeminiEmbeddingService,
-    "text-embedding-005": GeminiEmbeddingService,
-    "text-multilingual-embedding-002": GeminiEmbeddingService,
+    "gemini-embedding-001": GeminiEmbeddingService,
 }
 
 export class RouterUtils extends BaseService {

@@ -30,8 +30,6 @@ export const redisOptions = {
   password: process.env.REDIS_PASSWORD || "",
   maxRetriesPerRequest: null, // Required for BullMQ
   enableReadyCheck: false, // Required for BullMQ
-  // Add environment-based key prefix for development
-  keyPrefix: process.env.NODE_ENV === 'development' ? 'dev:' : '',
   retryStrategy: (times) => {
     // Exponential backoff
     const delay = Math.min(times * 50, 2000)

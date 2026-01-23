@@ -49,6 +49,7 @@ const initialState = {
     nextCursor: null,
   },
   filters: {
+    search: '',
     topic: '',
     batch: '',
     status: ''

@@ -525,7 +525,7 @@ export const fetchAdminConversations = () => async (dispatch, getState) => {
     if (filters?.mode) queryParams.mode = filters.mode
     if (filters?.userId) queryParams.userId = filters.userId
 
-    const route = Endpoints.chatbot.admin + "/conversations"
+    const route = Endpoints.admin.chatbot + "/conversations"
     const response = await getWithToken(route, queryParams)
     dispatch(setConversations(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
@@ -541,7 +541,7 @@ export const fetchAdminConversation = (conversationId) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isCurrentConversationLoading', value: true }))
     
-    const route = Endpoints.chatbot.admin + `/conversations/${conversationId}`
+    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}`
     const response = await getWithToken(route)
     dispatch(setCurrentConversation(response.data.data))
     return response.data.data
@@ -556,7 +556,7 @@ export const deleteAdminConversation = (conversationId) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isConversationsLoading', value: true }))
     
-    const route = Endpoints.chatbot.admin + `/conversations/${conversationId}`
+    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}`
     await deleteWithToken(route)
     dispatch(removeConversation(conversationId))
   } catch (err) {
@@ -570,7 +570,7 @@ export const fetchAdminConversationMessages = ({ conversationId, page = 1, perPa
   try {
     dispatch(setLoading({ key: 'isMessagesLoading', value: true }))
     
-    const route = Endpoints.chatbot.admin + `/conversations/${conversationId}/messages`
+    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}/messages`
     const queryParams = { page, perPage }
     const response = await getWithToken(route, queryParams)
 

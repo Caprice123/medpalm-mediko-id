@@ -20,38 +20,37 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async initialize() {
     try {
-      // Connect to ChromaDB server via HTTP
+      // Connect to ChromaDB server via HTTP (using newer API)
       this.client = new ChromaClient({
-        path: `http://${this.host}:${this.port}`
+        host: this.host,
+        port: this.port
       })
 
       // Test connection
       await this.client.heartbeat()
-      console.log(`✓ ChromaDB connected at http://${this.host}:${this.port}`)
+      console.log(`✓ ChromaDB connected at ${this.host}:${this.port}`)
     } catch (error) {
       console.error('Failed to connect to ChromaDB server:', error)
-      console.error('Start the server with: npm run chromadb:start')
+      console.error(`Attempted connection to: ${this.host}:${this.port}`)
       throw error
     }
   }
 
   async createCollection(collectionName, config = {}) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
       const collection = await this.client.createCollection({
-        name: prefixedName,
+        name: collectionName,
         metadata: {
           dimension: config.dimension || 768,
           distance: config.distance || 'cosine'
         }
       })
-      console.log(`✓ ChromaDB collection created: ${prefixedName}`)
+      console.log(`✓ ChromaDB collection created: ${collectionName}`)
       return collection
     } catch (error) {
       // Collection might already exist
       if (error.message?.includes('already exists')) {
-        const prefixedName = this.getCollectionName(collectionName)
-        return await this.client.getCollection({ name: prefixedName })
+        return await this.client.getCollection({ name: collectionName })
       }
       throw error
     }
@@ -68,23 +67,40 @@ export class ChromaVectorDB extends BaseVectorDB {
   }
 
   async addDocuments(collectionName, documents) {
+      console.log("COLLECTION: ", collectionName)
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      // Try to get the collection, create if it doesn't exist
+      let collection
+      try {
+        collection = await this.client.getCollection({ name: collectionName })
+      } catch (error) {
+        // Collection doesn't exist, create it
+        if (error.message?.includes('does not exist') || error.name === 'ChromaNotFoundError') {
+          console.log(`⚠️  Collection ${collectionName} not found, creating...`)
+          collection = await this.createCollection(collectionName, {
+            dimension: 768,
+            distance: 'cosine'
+          })
+        } else {
+          throw error
+        }
+      }
+      console.log(collection)
 
       const ids = documents.map(doc => String(doc.id))
       const embeddings = documents.map(doc => doc.embedding)
       const metadatas = documents.map(doc => doc.metadata || {})
       const contents = documents.map(doc => doc.content || '')
 
-      await collection.add({
+      // Use upsert to add new or update existing documents
+      await collection.upsert({
         ids,
         embeddings,
         metadatas,
         documents: contents
       })
 
-      console.log(`✓ Added ${documents.length} documents to ${prefixedName}`)
+      console.log(`✓ Upserted ${documents.length} documents to ${collectionName}`)
     } catch (error) {
       console.error('Failed to add documents to ChromaDB:', error)
       throw error
@@ -93,8 +109,22 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async updateDocument(collectionName, documentId, embedding, metadata, content) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      // Try to get the collection, create if it doesn't exist
+      let collection
+      try {
+        collection = await this.client.getCollection({ name: collectionName })
+      } catch (error) {
+        // Collection doesn't exist, create it
+        if (error.message?.includes('does not exist') || error.name === 'ChromaNotFoundError') {
+          console.log(`⚠️  Collection ${collectionName} not found, creating...`)
+          collection = await this.createCollection(collectionName, {
+            dimension: 768,
+            distance: 'cosine'
+          })
+        } else {
+          throw error
+        }
+      }
 
       await collection.update({
         ids: [String(documentId)],
@@ -103,7 +133,7 @@ export class ChromaVectorDB extends BaseVectorDB {
         documents: [content]
       })
 
-      console.log(`✓ Updated document ${documentId} in ${prefixedName}`)
+      console.log(`✓ Updated document ${documentId} in ${collectionName}`)
     } catch (error) {
       console.error('Failed to update document in ChromaDB:', error)
       throw error
@@ -112,8 +142,7 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async deleteDocument(collectionName, documentId) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      const collection = await this.client.getCollection({ name: collectionName })
 
       await collection.delete({
         ids: [String(documentId)]
@@ -133,14 +162,13 @@ export class ChromaVectorDB extends BaseVectorDB {
    */
   async deleteDocumentsByMetadata(collectionName, whereFilter) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      const collection = await this.client.getCollection({ name: collectionName })
 
       await collection.delete({
         where: whereFilter
       })
 
-      console.log(`✓ Deleted documents from ${prefixedName} matching filter:`, whereFilter)
+      console.log(`✓ Deleted documents from ${collectionName} matching filter:`, whereFilter)
     } catch (error) {
       console.error('Failed to delete documents from ChromaDB:', error)
       throw error
@@ -154,8 +182,7 @@ export class ChromaVectorDB extends BaseVectorDB {
    */
   async getAllDocuments(collectionName) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      const collection = await this.client.getCollection({ name: collectionName })
 
       const result = await collection.get()
 
@@ -189,8 +216,7 @@ export class ChromaVectorDB extends BaseVectorDB {
    */
   async getDocumentsByMetadata(collectionName, whereFilter) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      const collection = await this.client.getCollection({ name: collectionName })
 
       const result = await collection.get({
         where: whereFilter
@@ -220,8 +246,18 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async search(collectionName, queryEmbedding, options = {}) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      // Try to get the collection
+      let collection
+      try {
+        collection = await this.client.getCollection({ name: collectionName })
+      } catch (error) {
+        // Collection doesn't exist, return empty results
+        if (error.message?.includes('does not exist') || error.name === 'ChromaNotFoundError') {
+          console.log(`⚠️  Collection ${collectionName} not found, returning empty results`)
+          return []
+        }
+        throw error
+      }
 
       const limit = options.limit || 5
       const filter = options.filter || null
@@ -236,16 +272,17 @@ export class ChromaVectorDB extends BaseVectorDB {
       const formattedResults = []
       if (results.ids && results.ids[0]) {
         for (let i = 0; i < results.ids[0].length; i++) {
-          const score = results.distances[0][i]
+          const distance = results.distances[0][i]
+          const similarityScore = 1 - distance // Convert distance to similarity (0-1, higher = more similar)
 
-          // Apply threshold filter if specified
-          if (options.threshold && score < options.threshold) {
+          // Apply threshold filter if specified (filter out low similarity scores)
+          if (options.threshold && similarityScore < options.threshold) {
             continue
           }
 
           formattedResults.push({
             id: results.ids[0][i],
-            score: 1 - score, // Convert distance to similarity (0-1)
+            score: similarityScore,
             metadata: results.metadatas[0][i],
             content: results.documents[0][i]
           })
@@ -261,8 +298,18 @@ export class ChromaVectorDB extends BaseVectorDB {
 
   async getDocument(collectionName, documentId) {
     try {
-      const prefixedName = this.getCollectionName(collectionName)
-      const collection = await this.client.getCollection({ name: prefixedName })
+      // Try to get the collection
+      let collection
+      try {
+        console.log("PREFIX", collectionName)
+        collection = await this.client.getCollection({ name: collectionName })
+      } catch (error) {
+        // Collection doesn't exist, return null
+        if (error.message?.includes('does not exist') || error.name === 'ChromaNotFoundError') {
+          return null
+        }
+        throw error
+      }
 
       const result = await collection.get({
         ids: [String(documentId)]

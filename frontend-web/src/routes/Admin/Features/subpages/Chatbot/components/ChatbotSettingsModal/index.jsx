@@ -23,6 +23,7 @@ import {
   AddDomainWrapper
 } from './ChatbotSettingsModal.styles'
 import { ToggleSlider, ToggleSwitch } from '../../../SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
+import EmbeddingModelDropdown from '../../../../../../../components/common/EmbeddingModelDropdown'
 
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
@@ -183,8 +184,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <Label>System Prompt</Label>
           <Textarea
             placeholder="Masukkan system prompt untuk Normal Mode..."
-            value={form.values.chatbot_normal_system_prompt}
-            onChange={(e) => form.setFieldValue('chatbot_normal_system_prompt', e.target.value)}
+            value={form.values.chatbot_normal_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_normal_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>
@@ -213,6 +214,15 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             <ToggleSlider />
           </ToggleSwitch>
           <HintText>Mode dengan konteks dari Summary Notes</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Embedding Model AI</Label>
+          <EmbeddingModelDropdown
+            value={form.values.chatbot_validated_embedding_model || 'gemini-2.5-flash'}
+            onChange={(option) => form.setFieldValue('chatbot_validated_embedding_model', option.value)}
+          />
+          <HintText>Model yang akan dipakai untuk melakukan embedding</HintText>
         </FormGroup>
 
         <FormGroup>
@@ -251,8 +261,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <Label>System Prompt</Label>
           <Textarea
             placeholder="Masukkan system prompt untuk Validated Search Mode..."
-            value={form.values.chatbot_validated_system_prompt}
-            onChange={(e) => form.setFieldValue('chatbot_validated_system_prompt', e.target.value)}
+            value={form.values.chatbot_validated_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_validated_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>
@@ -265,8 +275,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             label="Jumlah Summary Notes untuk RAG"
             type="number"
             placeholder="5"
-            value={form.values.chatbot_validated_search_count}
-            onChange={(e) => form.setFieldValue('chatbot_validated_search_count', e.target.value)}
+            value={form.values.chatbot_validated_max_context}
+            onChange={(e) => form.setFieldValue('chatbot_validated_max_context', e.target.value)}
             hint="Jumlah summary notes yang diambil dari vector database"
           />
         </FormGroup>
@@ -344,8 +354,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <Label>System Prompt</Label>
           <Textarea
             placeholder="Masukkan system prompt untuk Research Mode..."
-            value={form.values.chatbot_research_system_prompt}
-            onChange={(e) => form.setFieldValue('chatbot_research_system_prompt', e.target.value)}
+            value={form.values.chatbot_research_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_research_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>
@@ -358,8 +368,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             label="Jumlah Sitasi"
             type="number"
             placeholder="5"
-            value={form.values.chatbot_research_citations_count}
-            onChange={(e) => form.setFieldValue('chatbot_research_citations_count', e.target.value)}
+            value={form.values.chatbot_research_max_sources}
+            onChange={(e) => form.setFieldValue('chatbot_research_max_sources', e.target.value)}
             hint="Jumlah sitasi/referensi yang diminta dari Perplexity"
           />
         </FormGroup>

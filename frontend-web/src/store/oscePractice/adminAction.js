@@ -24,8 +24,9 @@ export const fetchAdminOsceTopics = () => async (dispatch, getState) => {
       page: pagination.page,
       perPage: pagination.perPage
     }
-    if (filters.university) queryParams.university = filters.university
-    if (filters.semester) queryParams.semester = filters.semester
+    if (filters.search) queryParams.search = filters.search
+    if (filters.topic) queryParams.topic = filters.topic
+    if (filters.batch) queryParams.batch = filters.batch
     if (filters.status) queryParams.status = filters.status
 
     const route = Endpoints.admin.oscePractice + "/topics"

@@ -7,6 +7,7 @@ import {
 } from '@store/oscePractice/adminAction'
 import Pagination from '@components/Pagination'
 import Button from '@components/common/Button'
+import Filter from './components/Filter'
 import RubricsList from './components/RubricsList'
 import CreateRubricModal from './components/CreateRubricModal'
 import UpdateRubricModal from './components/UpdateRubricModal'
@@ -48,6 +49,8 @@ function RubricsTab() {
           </Button>
         </div>
       </div>
+
+      <Filter />
 
       <RubricsList
         onEdit={handleEditRubric}

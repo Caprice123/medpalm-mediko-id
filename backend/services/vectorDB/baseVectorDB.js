@@ -16,10 +16,15 @@ export class BaseVectorDB {
     const env = process.env.NODE_ENV || 'development'
     const model = embeddingModel || process.env.EMBEDDING_MODEL || 'text-embedding-004'
 
+    // Replace invalid characters with underscores for ChromaDB compatibility
+    // ChromaDB only allows [a-zA-Z0-9._-]
+    const sanitizedModel = model.replace(/[^a-zA-Z0-9._-]/g, '_')
+    const sanitizedCollection = collectionName.replace(/[^a-zA-Z0-9._-]/g, '_')
+
     if (env === 'development') {
-      return `dev/${model}/${collectionName}`
+      return `dev_${sanitizedModel}_${sanitizedCollection}`
     }
-    return `${model}/${collectionName}`
+    return `${sanitizedModel}_${sanitizedCollection}`
   }
 
   /**

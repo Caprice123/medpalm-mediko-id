@@ -1,4 +1,5 @@
 import FilterComponent from '@components/common/Filter'
+import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
@@ -56,12 +57,27 @@ function Filter() {
       }}>
         <FilterComponent>
           <FilterComponent.Group>
+            <FilterComponent.Label>Nama</FilterComponent.Label>
+            <TextInput
+              placeholder="Cari topic berdasarkan nama..."
+              value={filters.search || ''}
+              onChange={(e) => dispatch(actions.updateFilter({ key: "search", value: e.target.value }))}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  onSearch()
+                }
+              }}
+            />
+          </FilterComponent.Group>
+
+          <FilterComponent.Group>
             <FilterComponent.Label>Topik</FilterComponent.Label>
             <Dropdown
               options={topicTags}
               value={filters.topic ? topicTags.find(t => t.value === filters.topic) : null}
               onChange={(option) => onChangeFilter("topic", option?.value || "")}
-              placeholder="Filter berdasarkan universitas..."
+              placeholder="Filter berdasarkan topik..."
             />
           </FilterComponent.Group>
 

@@ -2,6 +2,7 @@ import { getVectorDB } from '#services/vectorDB/vectorDBFactory'
 import embeddingService from '#services/embedding/embeddingService'
 import MarkdownChunker from '#services/embedding/markdownChunker'
 import { generateChecksum } from '#utils/checksum'
+import { GetConstantsService } from '#services/constant/getConstantsService'
 
 /**
  * Embed Chunk Job Handler
@@ -12,35 +13,42 @@ import { generateChecksum } from '#utils/checksum'
 export async function embedChunkHandler(job) {
   const { summaryNoteId, chunkIndex, chunk, metadata } = job.data
 
-  console.log(`🧠 Processing chunk ${chunkIndex + 1}/${totalChunks} for note ${summaryNoteId}`)
+  console.log(`🧠 Processing chunk ${chunkIndex + 1} for note ${summaryNoteId}`)
 
   // Generate checksum for the chunk content
   const contentChecksum = generateChecksum(chunk.content)
   const documentId = `${summaryNoteId}-${chunkIndex}`
 
+  // Get embedding model and build environment-aware collection name
+  const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+  const model = constants.chatbot_validated_embedding_model
+
   // Connect to vector DB (singleton with lazy initialization)
   const vectorDB = await getVectorDB()
 
+  // Get environment-aware collection name (e.g., dev_text-embedding-004_summary_notes in development)
+  const collectionName = vectorDB.getCollectionName('summary_notes', model)
+
   // Check if this chunk already exists
-  const existingDoc = await vectorDB.getDocument('summary_notes', documentId)
+  const existingDoc = await vectorDB.getDocument(collectionName, documentId)
 
   if (existingDoc && existingDoc.metadata?.checksum === contentChecksum) {
-    console.log(`⏭️  Chunk ${chunkIndex + 1}/${totalChunks} unchanged, skipping (checksum: ${contentChecksum.substring(0, 8)})`)
+    console.log(`⏭️  Chunk ${chunkIndex + 1} unchanged, skipping (checksum: ${contentChecksum.substring(0, 8)})`)
     return
   }
 
   // Content changed or doesn't exist, proceed with embedding
   if (existingDoc) {
-    console.log(`🔄 Chunk ${chunkIndex + 1}/${totalChunks} changed, re-embedding (old: ${existingDoc.metadata?.checksum?.substring(0, 8)}, new: ${contentChecksum.substring(0, 8)})`)
+    console.log(`🔄 Chunk ${chunkIndex + 1} changed, re-embedding (old: ${existingDoc.metadata?.checksum?.substring(0, 8)}, new: ${contentChecksum.substring(0, 8)})`)
   } else {
-    console.log(`✨ New chunk ${chunkIndex + 1}/${totalChunks}, embedding...`)
+    console.log(`✨ New chunk ${chunkIndex + 1}, embedding...`)
   }
 
   // Create embedding text with context
   const embeddingText = MarkdownChunker.createEmbeddingText(chunk)
 
   // Generate embedding
-  const embedding = await embeddingService.generateEmbedding(embeddingText)
+  const embedding = await embeddingService.generateEmbedding(embeddingText, model)
 
   // Prepare document with checksum in metadata
   const document = {
@@ -60,9 +68,10 @@ export async function embedChunkHandler(job) {
       type: 'summary_note_chunk'
     }
   }
+  console.log(document)
 
-  // Store or update in ChromaDB
-  await vectorDB.addDocuments('summary_notes', [document])
+  // Store or update in ChromaDB using environment-aware collection name
+  await vectorDB.addDocuments(collectionName, [document])
 
-  console.log(`✓ Chunk ${chunkIndex + 1}/${totalChunks} embedded for note ${summaryNoteId}`)
+  console.log(`✓ Chunk ${chunkIndex + 1} embedded for note ${summaryNoteId} in collection: ${collectionName}`)
 }
