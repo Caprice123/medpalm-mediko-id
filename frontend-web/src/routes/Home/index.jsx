@@ -58,7 +58,6 @@ function Home() {
           scrollToSection={scrollToSection}
           toggleMobileMenu={toggleMobileMenu}
           mobileMenuOpen={mobileMenuOpen}
-          navigate={navigate}
         />
 
         <HeroSection scrollToSection={scrollToSection} />

@@ -1,7 +1,7 @@
 import { actions } from '@store/feature/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getPublic } from '@utils/requestUtils'
+import axios from 'axios'
 
 const {
   setFeatures,
@@ -16,7 +16,8 @@ export const fetchFeatures = () => async (dispatch) => {
     dispatch(setLoading({ key: 'isLoadingFeatures', value: true }))
     
     const route = Endpoints.api.features
-    const response = await getPublic(route)
+    console.log(import.meta.env.VITE_API_BASE_URL + route)
+    const response = await axios.get(import.meta.env.VITE_API_BASE_URL + route)
 
     const data = response.data.data
 

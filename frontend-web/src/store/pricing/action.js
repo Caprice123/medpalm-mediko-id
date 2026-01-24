@@ -2,6 +2,7 @@ import { actions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
 import { getPublic, getWithToken, postWithToken } from '../../utils/requestUtils'
+import axios from 'axios'
 
 const {
   setLoading,
@@ -22,16 +23,13 @@ const {
 export const fetchPricingPlans = (bundleType = null) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isPlansLoading', value: true }))
-    
 
     const url = bundleType
       ? `${Endpoints.pricing.plans}?bundle_type=${bundleType}`
       : Endpoints.pricing.plans
-
-    const response = await getPublic(url)
+    const response = await axios.get(import.meta.env.VITE_API_BASE_URL + url)
 
     dispatch(setPlans(response.data.data))
-
   } catch (err) {
     handleApiError(err, dispatch)
   } finally {

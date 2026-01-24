@@ -10,8 +10,10 @@ import {
   MobileMenu,
   MobileNavLink,
 } from '../Home.styles'
+import { useNavigate } from 'react-router-dom'
 
-export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSection, navigate }) {
+export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSection }) {
+    const navigate = useNavigate()
   return (
     <>
       <StyledNavbar>
