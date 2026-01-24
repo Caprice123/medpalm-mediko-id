@@ -12,7 +12,7 @@ export const initSentry = (app) => {
     return;
   }
 
-  if (process.env.SENTRY_ENABLED == "true") {
+  if (process.env.SENTRY_ENABLED != "true") {
     console.log("Sentry is not enabled")
     return
   }
