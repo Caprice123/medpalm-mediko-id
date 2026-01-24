@@ -12,6 +12,11 @@ export const initSentry = (app) => {
     return;
   }
 
+  if (process.env.SENTRY_ENABLED == "true") {
+    console.log("Sentry is not enabled")
+    return
+  }
+
   // Only initialize if DSN is provided
   if (!process.env.SENTRY_DSN) {
     console.warn('⚠️ Sentry DSN not configured. Error tracking is disabled.');
