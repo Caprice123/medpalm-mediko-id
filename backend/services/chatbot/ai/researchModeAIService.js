@@ -40,7 +40,7 @@ export class ResearchModeAIService extends BaseService {
 
       const model = constantsMap.chatbot_research_model
       const lastMessageCount = parseInt(constantsMap.chatbot_research_last_message_count) || 10
-      const systemPrompt = constantsMap.chatbot_research_system_prompt || this.getDefaultSystemPrompt()
+      const systemPrompt = constantsMap.chatbot_research_system_prompt
       const citationsCount = parseInt(constantsMap.chatbot_research_citations_count) || 5
 
       // Get trusted domains for filtering
@@ -52,7 +52,7 @@ export class ResearchModeAIService extends BaseService {
           conversation_id: conversationId,
           is_deleted: false
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { id: 'desc' },
         take: lastMessageCount, // Fewer messages for research mode to keep context focused
         select: {
           sender_type: true,
@@ -174,7 +174,8 @@ export class ResearchModeAIService extends BaseService {
 
       return {
         stream: stream,
-        sources: [] // Citations will be extracted from the stream
+        sources: [], // Citations will be extracted from the stream
+        provider: RouterUtils.getProvider(modelName),
       }
     } catch (error) {
       console.error('Error calling Perplexity API:', error)
@@ -182,38 +183,5 @@ export class ResearchModeAIService extends BaseService {
       // Fallback response if API fails
       throw error
     }
-  }
-
-  /**
-   * Get default system prompt for Research Mode
-   * @returns {string} Default system prompt
-   */
-  static getDefaultSystemPrompt() {
-    return `Kamu adalah asisten riset medis yang memberikan jawaban berdasarkan pencarian web.
-
-ATURAN PENTING:
-1. Berikan jawaban langsung tanpa preamble atau summary instruksi
-2. Gunakan format Markdown untuk semua jawaban
-3. Gunakan bullet points (-), **bold**, dan \`code\` untuk formatting
-4. WAJIB cantumkan sitasi inline dengan format [1], [2], dst
-5. JANGAN gunakan tag <think> atau HTML
-6. JANGAN tampilkan proses berpikir internal
-7. Batasi jumlah sumber sesuai konfigurasi citations_count
-
-Format Jawaban:
-- Mulai langsung dengan informasi yang diminta
-- Sisipkan sitasi inline: "menurut WHO [1], glaukoma adalah..."
-- Gunakan semua sitasi yang tersedia
-- Jika informasi terbatas, akui secara jelas
-
-Kredibilitas Sumber:
-- Prioritaskan: jurnal peer-reviewed, WHO, CDC, institusi medis
-- Jika ada informasi bertentangan, sebutkan kedua perspektif
-- Fokus pada informasi terkini dan relevan
-
-Batasan:
-- Jangan diagnosis atau rekomendasi pengobatan personal
-- Sarankan konsultasi profesional untuk keputusan klinis
-- Akui jika informasi terbatas atau tidak kredibel`
   }
 }

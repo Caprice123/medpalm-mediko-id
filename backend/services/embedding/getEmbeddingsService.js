@@ -1,5 +1,6 @@
 import { getVectorDB } from '#services/vectorDB/vectorDBFactory'
 import embeddingService from '#services/embedding/embeddingService'
+import { GetConstantsService } from '#services/constant/getConstantsService'
 
 export class GetEmbeddingsService {
   /**
@@ -13,11 +14,16 @@ export class GetEmbeddingsService {
     try {
       const vectorDB = await getVectorDB()
 
-      // Get total count
-      const totalCount = await embeddingService.countSummaryNoteEmbeddings()
+      // Get embedding model for environment-aware collection name
+      const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+      const model = constants.chatbot_validated_embedding_model
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
 
-      // Get documents from ChromaDB
-      const documents = await vectorDB.getAllDocuments('summary_notes')
+      // Get total count
+      const totalCount = await embeddingService.countSummaryNoteEmbeddings(model)
+
+      // Get documents from ChromaDB using environment-aware collection name
+      const documents = await vectorDB.getAllDocuments(collectionName)
 
       if (!documents || documents.length === 0) {
         return {
@@ -46,7 +52,6 @@ export class GetEmbeddingsService {
         parentHeading: doc.metadata?.parent_heading || null,
         headingLevel: doc.metadata?.heading_level || 0,
         chunkIndex: doc.metadata?.chunk_index,
-        totalChunks: doc.metadata?.total_chunks,
         description: doc.metadata?.description || '',
         content: doc.content?.substring(0, 200) || '',
         contentLength: doc.content?.length || 0,
@@ -81,7 +86,13 @@ export class GetEmbeddingsService {
   static async getById(documentId) {
     try {
       const vectorDB = await getVectorDB()
-      const document = await vectorDB.getDocument('summary_notes', documentId)
+
+      // Get embedding model for environment-aware collection name
+      const constants = await GetConstantsService.call(['chatbot_validated_embedding_model'])
+      const model = constants.chatbot_validated_embedding_model
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+
+      const document = await vectorDB.getDocument(collectionName, documentId)
 
       if (!document) {
         throw new Error('Document not found')

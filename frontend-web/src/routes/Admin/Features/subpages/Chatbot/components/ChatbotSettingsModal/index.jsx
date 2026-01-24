@@ -261,8 +261,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <Label>System Prompt</Label>
           <Textarea
             placeholder="Masukkan system prompt untuk Validated Search Mode..."
-            value={form.values.chatbot_validated_prompt}
-            onChange={(e) => form.setFieldValue('chatbot_validated_prompt', e.target.value)}
+            value={form.values.chatbot_validated_system_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_validated_system_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>
@@ -354,8 +354,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <Label>System Prompt</Label>
           <Textarea
             placeholder="Masukkan system prompt untuk Research Mode..."
-            value={form.values.chatbot_research_prompt}
-            onChange={(e) => form.setFieldValue('chatbot_research_prompt', e.target.value)}
+            value={form.values.chatbot_research_system_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_research_system_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>

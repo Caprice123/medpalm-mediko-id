@@ -151,12 +151,6 @@ export class SendOsceMessageService extends BaseService {
       systemPrompt,
       conversationHistory,
       userMessage,
-      {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 2048,
-      }
     )
 
     // Handle streaming with chunking and pacing (like Skripsi builder)

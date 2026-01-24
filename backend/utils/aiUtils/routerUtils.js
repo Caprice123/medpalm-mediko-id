@@ -17,6 +17,20 @@ const providerModelMapping = {
     "sonar-deep-research": PerplexityService,
 }
 
+const providerMapping = {
+    "gemini-3-pro": "gemini",
+    "gemini-3-flash": "gemini",
+    "gemini-2.0-flash": "gemini",
+    "gemini-2.5-flash": "gemini",
+    "gemini-2.5-flash-list": "gemini",
+    "gemini-2.5-pro": "gemini",
+
+    "sonar": "perplexity",
+    "sonar-pro": "perplexity",
+    "sonar-reasoning-pro": "perplexity",
+    "sonar-deep-research": "perplexity",
+}
+
 const embeddingProviderMapping = {
     "text-embedding-004": GeminiEmbeddingService,
     "gemini-embedding-001": GeminiEmbeddingService,
@@ -29,6 +43,11 @@ export class RouterUtils extends BaseService {
 
     static getEmbeddingProvider(model) {
         return embeddingProviderMapping[model]
+    }
+
+
+    static getProvider(model) {
+        return providerMapping[model]
     }
 }
 

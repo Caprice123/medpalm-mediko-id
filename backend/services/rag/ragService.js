@@ -12,14 +12,15 @@ class RAGService {
    */
   async searchSummaryNotes(query, options = {}) {
     try {
-      const { limit = 5, threshold = 0.5 } = options
+      const { limit = 5, threshold = 0.5, model = null } = options
 
       // Generate embedding for the query
-      const queryEmbedding = await EmbeddingService.generateEmbedding(query)
+      const queryEmbedding = await embeddingService.generateEmbedding(query, model)
 
-      // Search in ChromaDB
+      // Search in ChromaDB using environment-aware collection name
       const vectorDB = await getVectorDB()
-      const results = await vectorDB.search('summary_notes', queryEmbedding, {
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+      const results = await vectorDB.search(collectionName, queryEmbedding, {
         limit,
         threshold
       })
@@ -98,11 +99,11 @@ class RAGService {
    */
   async hybridSearch(query, filters = {}, options = {}) {
     try {
-      const { limit = 5, threshold = 0.5 } = options
+      const { limit = 5, threshold = 0.5, model = null } = options
       const { tagIds, searchTerm } = filters
 
       // Generate embedding for the query
-      const queryEmbedding = await EmbeddingService.generateEmbedding(query)
+      const queryEmbedding = await embeddingService.generateEmbedding(query, model)
 
       // Build ChromaDB filter
       let where = null
@@ -114,9 +115,10 @@ class RAGService {
         }
       }
 
-      // Search in ChromaDB with filters
+      // Search in ChromaDB with filters using environment-aware collection name
       const vectorDB = await getVectorDB()
-      const results = await vectorDB.search('summary_notes', queryEmbedding, {
+      const collectionName = vectorDB.getCollectionName('summary_notes', model)
+      const results = await vectorDB.search(collectionName, queryEmbedding, {
         limit,
         threshold,
         filter: where

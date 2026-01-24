@@ -92,78 +92,52 @@ export class SendMessageService extends BaseService {
     const creditsUsed = messageCost
 
     try {
+        let result
       if (mode === 'normal') {
-        const result = await NormalModeAIService.call({ userId, conversationId, message })
-
-        // Handle streaming for Normal mode (Gemini)
-        if (onStream && result.stream) {
-          return await this.handleGeminiStreamingResponse({
-            userId,
-            conversationId,
-            userMessageContent: message,
-            stream: result.stream,
-            creditsUsed: creditsUsed,
-            sources: [],
-            mode,
-            requiresCredits,
-            onStream,
-            onComplete,
-            onError,
-            checkClientConnected,
-            streamAbortSignal
-          })
-        }
-
-        aiResponse = result.response
+        result = await NormalModeAIService.call({ userId, conversationId, message })
       } else if (mode === 'validated') {
-        const result = await ValidatedSearchModeAIService.call({ userId, conversationId, message })
-
-        // Handle streaming for Validated mode (Gemini + RAG)
-        if (onStream && result.stream) {
-          return await this.handleGeminiStreamingResponse({
-            userId,
-            conversationId,
-            userMessageContent: message,
-            stream: result.stream,
-            creditsUsed: creditsUsed,
-            sources: result.sources,
-            mode,
-            requiresCredits,
-            onStream,
-            onComplete,
-            onError,
-            checkClientConnected,
-            streamAbortSignal
-          })
-        }
-
-        aiResponse = result.response
-        sources = result.sources
+        result = await ValidatedSearchModeAIService.call({ userId, conversationId, message })
       } else if (mode === 'research') {
-        const result = await ResearchModeAIService.call({ userId, conversationId, message })
-
-        // Handle streaming for Research mode (Perplexity)
-        if (onStream && result.stream) {
-          return await this.handlePerplexityStreamingResponse({
-            userId,
-            conversationId,
-            userMessageContent: message,
-            stream: result.stream,
-            creditsUsed: creditsUsed,
-            mode,
-            requiresCredits,
-            onStream,
-            onComplete,
-            onError,
-            checkClientConnected,
-            streamAbortSignal
-          })
-        }
-
-        // Non-streaming fallback
-        aiResponse = result.response
-        sources = result.sources
+        result = await ResearchModeAIService.call({ userId, conversationId, message })
       }
+
+      if (onStream && result.stream) {
+        if (result.provider == "gemini") {
+            return await this.handleGeminiStreamingResponse({
+                userId,
+                conversationId,
+                userMessageContent: message,
+                stream: result.stream,
+                creditsUsed: creditsUsed,
+                sources: result.sources,
+                mode,
+                requiresCredits,
+                onStream,
+                onComplete,
+                onError,
+                checkClientConnected,
+                streamAbortSignal
+            })
+        } else if (result.provider == "perplexity") {
+            return await this.handlePerplexityStreamingResponse({
+                userId,
+                conversationId,
+                userMessageContent: message,
+                stream: result.stream,
+                creditsUsed: creditsUsed,
+                mode,
+                requiresCredits,
+                onStream,
+                onComplete,
+                onError,
+                checkClientConnected,
+                streamAbortSignal
+            })
+        }
+      }
+
+      aiResponse = result.response
+      sources = result.sources
     } catch (error) {
       // If AI service fails, handle error
       if (onError) {
@@ -371,8 +345,9 @@ export class SendMessageService extends BaseService {
             data: {
               content: accumulatedChunk
             }
+          }, () => {
+              sentContentToClient += accumulatedChunk
           })
-          sentContentToClient += accumulatedChunk
         } catch (e) {
           console.log('Client disconnected during final chunk send')
           streamAborted = true
@@ -417,17 +392,25 @@ export class SendMessageService extends BaseService {
       })
 
       // Save sources if any (for Validated mode)
+      // Filter to only include sources that are actually cited in the response
       if (sources && sources.length > 0) {
-        await prisma.chatbot_message_sources.createMany({
-          data: sources.map(src => ({
-            message_id: aiMessage.id,
-            source_type: src.sourceType,
-            title: src.title,
-            content: src.content,
-            url: src.url,
-            score: src.score
-          }))
-        })
+        const filteredSources = this.filterUsedSources(contentToSave, sources)
+
+        if (filteredSources.length > 0) {
+          await prisma.chatbot_message_sources.createMany({
+            data: filteredSources.map(src => ({
+              message_id: aiMessage.id,
+              source_type: src.sourceType,
+              title: src.title,
+              content: src.content,
+              url: src.url,
+              score: src.score
+            }))
+          })
+        }
+
+        // Update sources for response data
+        sources = filteredSources
       }
 
       // Deduct credits from user and create transaction
@@ -514,9 +497,52 @@ export class SendMessageService extends BaseService {
     let accumulatedChunk = '' // Buffer to accumulate 20 characters
     const citations = []
     const sentCitations = new Set()
+    let isInThinkTag = false // Track if we're inside <think> tags
+    let buffer = '' // Buffer to detect tags across chunks
 
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 10
+
+    // Helper function to filter out <think>...</think> tags
+    const filterThinkTags = (text) => {
+      buffer += text
+      let filteredText = ''
+
+      while (buffer.length > 0) {
+        if (isInThinkTag) {
+          // We're inside a <think> tag, look for </think>
+          const closeTagIndex = buffer.indexOf('</think>')
+          if (closeTagIndex !== -1) {
+            // Found closing tag, skip everything up to and including it
+            buffer = buffer.substring(closeTagIndex + 8) // 8 = '</think>'.length
+            isInThinkTag = false
+          } else {
+            // Haven't found closing tag yet, discard entire buffer
+            buffer = ''
+            break
+          }
+        } else {
+          // We're outside a <think> tag, look for <think>
+          const openTagIndex = buffer.indexOf('<think>')
+          if (openTagIndex !== -1) {
+            // Found opening tag, keep everything before it
+            filteredText += buffer.substring(0, openTagIndex)
+            buffer = buffer.substring(openTagIndex + 7) // 7 = '<think>'.length
+            isInThinkTag = true
+          } else {
+            // No opening tag found
+            // Keep all but last 6 chars (in case '<think' is split across chunks)
+            if (buffer.length > 6) {
+              filteredText += buffer.substring(0, buffer.length - 6)
+              buffer = buffer.substring(buffer.length - 6)
+            }
+            break
+          }
+        }
+      }
+
+      return filteredText
+    }
 
     try {
       // Process stream chunks with pacing
@@ -541,7 +567,10 @@ export class SendMessageService extends BaseService {
 
         if (content) {
           fullResponseFromAI += content
-          accumulatedChunk += content
+
+          // Filter out <think> tags before accumulating
+          const filteredContent = filterThinkTags(content)
+          accumulatedChunk += filteredContent
 
           // Send chunk when we have 20+ characters
           while (accumulatedChunk.length >= CHARS_PER_CHUNK) {
@@ -585,26 +614,81 @@ export class SendMessageService extends BaseService {
         if (streamAborted) break
 
         // Extract and send citations if available
-        if (chunk.citations && chunk.citations.length > 0) {
-          chunk.citations.forEach(citation => {
-            if (!sentCitations.has(citation)) {
-              sentCitations.add(citation)
-              citations.push(citation)
+        // Try both 'citations' (old format - array of URLs) and 'search_results' (new format - array of objects)
+        console.log('=== CHUNK DEBUG ===')
+        console.log('Chunk keys:', Object.keys(chunk))
+        console.log('Chunk.choices[0]:', chunk.choices?.[0])
+        console.log('Citations (top level):', chunk.citations)
+        console.log('Search results (top level):', chunk.search_results)
+        console.log('Message citations:', chunk.choices?.[0]?.message?.citations)
+        console.log('Delta citations:', chunk.choices?.[0]?.delta?.citations)
+        console.log('Finish reason:', chunk.choices?.[0]?.finish_reason)
+        console.log('==================')
+
+        // Check for citations in multiple possible locations
+        let foundCitations = null
+
+        // Location 1: Top-level search_results (new format)
+        if (chunk.search_results && chunk.search_results.length > 0) {
+          foundCitations = chunk.search_results
+          console.log('✅ Found search_results at top level:', foundCitations.length)
+        }
+        // Location 2: Top-level citations (old format)
+        else if (chunk.citations && chunk.citations.length > 0) {
+          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations at top level:', foundCitations.length)
+        }
+        // Location 3: Message-level citations
+        else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
+          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations in message:', foundCitations.length)
+        }
+        // Location 4: Delta-level citations
+        else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
+          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations in delta:', foundCitations.length)
+        }
+
+        // Process found citations
+        if (foundCitations && Array.isArray(foundCitations)) {
+          foundCitations.forEach(citation => {
+            // Handle both object format {url, title, date} and string format (URL)
+            const citationUrl = typeof citation === 'string' ? citation : citation.url
+            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
+            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
+
+            if (!sentCitations.has(citationUrl)) {
+              sentCitations.add(citationUrl)
+              citations.push({
+                url: citationUrl,
+                title: citationTitle,
+                date: citationDate
+              })
 
               // Send citation to client immediately
               try {
                 onStream({
                   type: 'citation',
                   data: {
-                    url: citation,
-                    title: citation.substring(0, 200)
+                    url: citationUrl,
+                    title: citationTitle,
+                    date: citationDate
                   }
                 })
+                console.log('📤 Sent citation to client:', citationUrl)
               } catch (e) {
-                // Ignore if client disconnected
+                console.log('❌ Failed to send citation:', e)
               }
             }
           })
+        }
+      }
+
+      // Flush any remaining buffer content (excluding incomplete tags)
+      if (buffer.length > 6 && !isInThinkTag) {
+        const remainingFiltered = buffer.substring(0, buffer.length - 6)
+        if (remainingFiltered) {
+          accumulatedChunk += remainingFiltered
         }
       }
 
@@ -616,8 +700,9 @@ export class SendMessageService extends BaseService {
             data: {
               content: accumulatedChunk
             }
+          }, () => {
+              sentContentToClient += accumulatedChunk
           })
-          sentContentToClient += accumulatedChunk
         } catch (e) {
           console.log('Client disconnected during final chunk send')
           streamAborted = true
@@ -625,8 +710,8 @@ export class SendMessageService extends BaseService {
       }
 
       // Stream ended (either completed or aborted)
-      // Save what we have sent to the client
-      const contentToSave = streamAborted ? sentContentToClient : fullResponseFromAI
+      // Save what we have sent to the client (which has <think> tags filtered out)
+      const contentToSave = streamAborted ? sentContentToClient : fullResponseFromAI.replace(/<think>[\s\S]*?<\/think>/g, '')
 
       console.log(`Stream ${streamAborted ? 'aborted' : 'completed'}.`)
       console.log(`  - Full AI response: ${fullResponseFromAI.length} chars`)
@@ -661,15 +746,18 @@ export class SendMessageService extends BaseService {
       // Save sources/citations if any
       const sources = []
       if (citations.length > 0) {
-        const uniqueCitations = [...new Set(citations)]
+        // Remove duplicates based on URL
+        const uniqueCitations = Array.from(
+          new Map(citations.map(c => [c.url, c])).values()
+        )
 
         await prisma.chatbot_message_sources.createMany({
           data: uniqueCitations.slice(0, 10).map((citation, index) => ({
             message_id: aiMessage.id,
             source_type: 'web_search',
-            title: citation.substring(0, 200),
-            content: citation.substring(0, 500),
-            url: citation,
+            title: citation.title || citation.url.substring(0, 200),
+            content: citation.date || citation.url.substring(0, 500),
+            url: citation.url,
             score: 1.0 - (index * 0.1)
           }))
         })
@@ -677,9 +765,9 @@ export class SendMessageService extends BaseService {
         // Format sources for response
         sources.push(...uniqueCitations.slice(0, 10).map((citation, index) => ({
           sourceType: 'web_search',
-          title: citation.substring(0, 200),
-          content: citation.substring(0, 500),
-          url: citation,
+          title: citation.title || citation.url.substring(0, 200),
+          content: citation.date || citation.url.substring(0, 500),
+          url: citation.url,
           score: 1.0 - (index * 0.1)
         })))
       }
@@ -755,6 +843,45 @@ export class SendMessageService extends BaseService {
         }
       }
     }
+  }
+
+  /**
+   * Filter sources to only include those actually cited in the response
+   * @param {string} content - The AI response content
+   * @param {Array} sources - All available sources from RAG
+   * @returns {Array} Filtered sources that were actually used
+   */
+  static filterUsedSources(content, sources) {
+    if (!content || !sources || sources.length === 0) {
+      return []
+    }
+
+    // Extract all citation numbers from content (e.g., [1], [2], [3])
+    const citationMatches = content.match(/\[(\d+)\]/g)
+    if (!citationMatches) {
+      return []
+    }
+
+    // Get unique citation numbers (convert "[1]" to 1)
+    const usedCitationNumbers = [...new Set(
+      citationMatches.map(match => parseInt(match.match(/\d+/)[0]))
+    )]
+
+    console.log('Used citations:', usedCitationNumbers)
+    console.log('Total sources available:', sources.length)
+
+    // Filter sources based on used citation numbers
+    // Citation [1] maps to sources[0], [2] to sources[1], etc.
+    const filteredSources = usedCitationNumbers
+      .map(citationNum => {
+        const sourceIndex = citationNum - 1 // [1] = index 0
+        return sources[sourceIndex]
+      })
+      .filter(source => source !== undefined)
+
+    console.log('Filtered sources count:', filteredSources.length)
+
+    return filteredSources
   }
 
   static validate({ userId, conversationId, message, mode }) {
