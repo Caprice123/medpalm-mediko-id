@@ -75,7 +75,7 @@ export const initSentry = (app) => {
  */
 export const sentryRequestHandler = () => {
   // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return (req, res, next) => next();
   }
   return Sentry.Handlers.requestHandler();
@@ -87,7 +87,7 @@ export const sentryRequestHandler = () => {
  */
 export const sentryTracingHandler = () => {
   // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return (req, res, next) => next();
   }
   return Sentry.Handlers.tracingHandler();
@@ -99,7 +99,7 @@ export const sentryTracingHandler = () => {
  */
 export const sentryErrorHandler = () => {
   // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return (err, req, res, next) => next(err);
   }
   return Sentry.Handlers.errorHandler({
@@ -116,7 +116,7 @@ export const sentryErrorHandler = () => {
  * @param {Object} context - Additional context
  */
 export const captureException = (error, context = {}) => {
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return; // No-op in development
   }
   Sentry.captureException(error, {
@@ -130,7 +130,7 @@ export const captureException = (error, context = {}) => {
  * @param {string} level - Severity level (fatal, error, warning, info, debug)
  */
 export const captureMessage = (message, level = 'info') => {
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return; // No-op in development
   }
   Sentry.captureMessage(message, level);
@@ -141,7 +141,7 @@ export const captureMessage = (message, level = 'info') => {
  * @param {Object} user - User information
  */
 export const setUser = (user) => {
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return; // No-op in development
   }
   Sentry.setUser(user);
@@ -151,7 +151,7 @@ export const setUser = (user) => {
  * Clear user context
  */
 export const clearUser = () => {
-  if (process.env.NODE_ENV !== 'production' && process.env.SENTRY_ENABLED != "true") {
+  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
     return; // No-op in development
   }
   Sentry.setUser(null);

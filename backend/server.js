@@ -52,7 +52,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initialize Sentry (must be first)
-initSentry(app);
+if (process.env.SENTRY_ENABLED != "true") {
+    initSentry(app);
+}
 
 // Sentry request handler (must be the first middleware)
 app.use(sentryRequestHandler());
