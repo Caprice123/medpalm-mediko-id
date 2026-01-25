@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'
+import Button from '@components/common/Button'
 import {
   LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
-  ActionButton,
   TopicsGrid,
   TopicCard,
   TopicCardHeader,
@@ -16,7 +16,6 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  CardActionButton,
   TagList,
   Tag
 } from './TopicList.styles'
@@ -36,9 +35,9 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
         <EmptyStateIcon>📝</EmptyStateIcon>
         <EmptyStateText>No MCQ topics found</EmptyStateText>
         {onCreateFirst && (
-          <ActionButton onClick={onCreateFirst}>
+          <Button variant="primary" onClick={onCreateFirst}>
             Create Your First Topic
-          </ActionButton>
+          </Button>
         )}
       </EmptyState>
     )
@@ -102,16 +101,17 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
           </TopicStats>
 
           <CardActions>
-            <CardActionButton onClick={() => onEdit(topic)}>
+            <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
               Edit
-            </CardActionButton>
-            <CardActionButton
-              danger
+            </Button>
+            <Button
+              variant="danger"
+              fullWidth
               onClick={() => onDelete(topic)}
               disabled={loading?.isDeletingTopic}
             >
               Delete
-            </CardActionButton>
+            </Button>
           </CardActions>
         </TopicCard>
       ))}

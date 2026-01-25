@@ -36,23 +36,6 @@ const Logo = styled.div`
   background-clip: text;
 `
 
-const BackButton = styled.button`
-  background: transparent;
-  color: #6BB9E8;
-  border: 2px solid #6BB9E8;
-  padding: 0.5rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: linear-gradient(135deg, #6BB9E8, #8DC63F);
-    color: white;
-    border-color: transparent;
-    transform: translateY(-2px);
-  }
-`
 
 const MainContent = styled.main`
   max-width: 1280px;

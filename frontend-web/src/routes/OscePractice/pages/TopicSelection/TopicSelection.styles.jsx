@@ -2,14 +2,20 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const PageContainer = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh;
+    background: #f0fdfa;
+`
 
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
+export const Container = styled.div`
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    background: "red";
+    
+    @media (max-width: 768px) {
+      padding: 1rem;
+    }
+
 `
 
 export const Header = styled.div`

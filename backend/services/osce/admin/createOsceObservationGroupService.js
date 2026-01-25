@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class CreateOsceObservationGroupService extends BaseService {
-    static async call({ name, order = 0 }) {
+    static async call({ name }) {
         // Validate inputs
         this.validate({ name })
 
@@ -11,7 +11,6 @@ export class CreateOsceObservationGroupService extends BaseService {
         const group = await prisma.osce_observation_groups.create({
             data: {
                 name,
-                order: parseInt(order),
                 is_active: true
             }
         })

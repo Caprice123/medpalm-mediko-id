@@ -4,7 +4,6 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
-  ActionButton,
   QuizzesGrid,
   QuizCard,
   QuizCardHeader,
@@ -18,7 +17,6 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  CardActionButton,
   TagList,
   Tag
 } from './QuizList.styles'
@@ -38,9 +36,9 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
         <EmptyStateIcon>📋</EmptyStateIcon>
         <EmptyStateText>No quizzes found</EmptyStateText>
         {onCreateFirst && (
-          <ActionButton onClick={onCreateFirst}>
+          <Button variant="primary" onClick={onCreateFirst}>
             Create Your First Quiz
-          </ActionButton>
+          </Button>
         )}
       </EmptyState>
     )
@@ -108,16 +106,17 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
           </QuizStats>
 
           <CardActions>
-            <CardActionButton onClick={() => onEdit(quiz)}>
+            <Button variant="secondary" fullWidth onClick={() => onEdit(quiz)}>
               Edit
-            </CardActionButton>
-            <CardActionButton
-              danger
+            </Button>
+            <Button
+              variant="danger"
+              fullWidth
               onClick={() => onDelete(quiz.id)}
               disabled={loading?.isDeleteAnatomyQuizLoading}
             >
               Delete
-            </CardActionButton>
+            </Button>
           </CardActions>
         </QuizCard>
       ))}

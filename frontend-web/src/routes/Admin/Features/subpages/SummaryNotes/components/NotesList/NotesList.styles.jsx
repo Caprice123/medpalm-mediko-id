@@ -25,20 +25,6 @@ export const EmptyStateText = styled.p`
   margin-bottom: 1.5rem;
 `
 
-export const ActionButton = styled.button`
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-
-  &:hover {
-    background: #2563eb;
-  }
-`
 
 export const NotesGrid = styled.div`
   display: grid;
@@ -155,36 +141,3 @@ export const CardActions = styled.div`
   margin-top: auto;
 `
 
-export const EditButton = styled.button`
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #3b82f6;
-  background: white;
-  color: #3b82f6;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #eff6ff;
-  }
-`
-
-export const DeleteButton = styled.button`
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ef4444;
-  background: white;
-  color: #ef4444;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #fef2f2;
-  }
-`

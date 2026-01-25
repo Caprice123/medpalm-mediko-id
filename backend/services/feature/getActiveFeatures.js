@@ -70,38 +70,7 @@ export class GetActiveFeaturesService extends BaseService {
 
     const features = []
 
-    // Exercise feature
-    if (featureConstants.exercise_feature_title) {
-      const cost = parseFloat(featureConstants.exercise_credit_cost) || 0
-      const accessType = featureConstants.exercise_access_type || 'subscription'
-      features.push({
-        name: featureConstants.exercise_feature_title,
-        description: featureConstants.exercise_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🎓',
-        sessionType: featureConstants.exercise_session_type,
-        isActive: featureConstants.exercise_is_active
-      })
-    }
-
-    // Flashcard feature
-    if (featureConstants.flashcard_feature_title) {
-      const cost = parseFloat(featureConstants.flashcard_credit_cost) || 0
-      const accessType = featureConstants.flashcard_access_type || 'subscription'
-      features.push({
-        name: featureConstants.flashcard_feature_title,
-        description: featureConstants.flashcard_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🎴',
-        sessionType: featureConstants.flashcard_session_type,
-        isActive: featureConstants.flashcard_is_active
-      })
-    }
-
+    
     // Summary Notes feature
     if (featureConstants.summary_notes_feature_title) {
       const cost = parseFloat(featureConstants.summary_notes_credit_cost) || 0
@@ -118,54 +87,24 @@ export class GetActiveFeaturesService extends BaseService {
       })
     }
 
-    // Calculator feature
-    if (featureConstants.calculator_feature_title) {
-      const cost = parseFloat(featureConstants.calculator_credit_cost) || 0
-      const accessType = featureConstants.calculator_access_type || 'subscription'
+    
+    // OSCE Practice feature
+    if (featureConstants.osce_practice_feature_title) {
+      const cost = 0 // Cost is per-session
+      const accessType = featureConstants.osce_practice_access_type || 'subscription'
       features.push({
-        name: featureConstants.calculator_feature_title,
-        description: featureConstants.calculator_feature_description,
+        name: featureConstants.osce_practice_feature_title,
+        description: featureConstants.osce_practice_feature_description,
         accessDescription: getAccessDescription(accessType, cost),
         cost,
         accessType,
-        icon: '🧮',
-        sessionType: "calculator",
-        isActive: featureConstants.calculator_is_active
+        icon: '🩺',
+        sessionType: "osce_practice",
+        isActive: featureConstants.osce_practice_is_active
       })
     }
 
-    // Anatomy Quiz feature
-    if (featureConstants.anatomy_feature_title) {
-      const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
-      const accessType = featureConstants.anatomy_access_type || 'subscription'
-      features.push({
-        name: featureConstants.anatomy_feature_title,
-        description: featureConstants.anatomy_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🫀',
-        sessionType: "anatomy",
-        isActive: featureConstants.anatomy_is_active
-      })
-    }
-
-    // Multiple Choice Quiz feature
-    if (featureConstants.mcq_feature_title) {
-      const cost = parseFloat(featureConstants.mcq_credit_cost) || 0
-      const accessType = featureConstants.mcq_access_type || 'subscription'
-      features.push({
-        name: featureConstants.mcq_feature_title,
-        description: featureConstants.mcq_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '📝',
-        sessionType: featureConstants.mcq_session_type,
-        isActive: featureConstants.mcq_is_active
-      })
-    }
-
+    
     // Chatbot feature
     if (featureConstants.chatbot_feature_title) {
       const cost = 0 // Cost is per-mode, not per-feature
@@ -197,20 +136,83 @@ export class GetActiveFeaturesService extends BaseService {
         isActive: featureConstants.skripsi_is_active
       })
     }
-
-    // OSCE Practice feature
-    if (featureConstants.osce_practice_feature_title) {
-      const cost = 0 // Cost is per-session
-      const accessType = featureConstants.osce_practice_access_type || 'subscription'
+    
+    // Multiple Choice Quiz feature
+    if (featureConstants.mcq_feature_title) {
+      const cost = parseFloat(featureConstants.mcq_credit_cost) || 0
+      const accessType = featureConstants.mcq_access_type || 'subscription'
       features.push({
-        name: featureConstants.osce_practice_feature_title,
-        description: featureConstants.osce_practice_feature_description,
+        name: featureConstants.mcq_feature_title,
+        description: featureConstants.mcq_feature_description,
         accessDescription: getAccessDescription(accessType, cost),
         cost,
         accessType,
-        icon: '🩺',
-        sessionType: "osce_practice",
-        isActive: featureConstants.osce_practice_is_active
+        icon: '📝',
+        sessionType: featureConstants.mcq_session_type,
+        isActive: featureConstants.mcq_is_active
+      })
+    }
+
+    // Flashcard feature
+    if (featureConstants.flashcard_feature_title) {
+      const cost = parseFloat(featureConstants.flashcard_credit_cost) || 0
+      const accessType = featureConstants.flashcard_access_type || 'subscription'
+      features.push({
+        name: featureConstants.flashcard_feature_title,
+        description: featureConstants.flashcard_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🎴',
+        sessionType: featureConstants.flashcard_session_type,
+        isActive: featureConstants.flashcard_is_active
+      })
+    }
+    // Anatomy Quiz feature
+    if (featureConstants.anatomy_feature_title) {
+      const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
+      const accessType = featureConstants.anatomy_access_type || 'subscription'
+      features.push({
+        name: featureConstants.anatomy_feature_title,
+        description: featureConstants.anatomy_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🫀',
+        sessionType: "anatomy",
+        isActive: featureConstants.anatomy_is_active
+      })
+    }
+
+    // Exercise feature
+    if (featureConstants.exercise_feature_title) {
+      const cost = parseFloat(featureConstants.exercise_credit_cost) || 0
+      const accessType = featureConstants.exercise_access_type || 'subscription'
+      features.push({
+        name: featureConstants.exercise_feature_title,
+        description: featureConstants.exercise_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🎓',
+        sessionType: featureConstants.exercise_session_type,
+        isActive: featureConstants.exercise_is_active
+      })
+    }
+
+    // Calculator feature
+    if (featureConstants.calculator_feature_title) {
+      const cost = parseFloat(featureConstants.calculator_credit_cost) || 0
+      const accessType = featureConstants.calculator_access_type || 'subscription'
+      features.push({
+        name: featureConstants.calculator_feature_title,
+        description: featureConstants.calculator_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🧮',
+        sessionType: "calculator",
+        isActive: featureConstants.calculator_is_active
       })
     }
 

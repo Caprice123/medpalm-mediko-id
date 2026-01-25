@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class UpdateOsceObservationGroupService extends BaseService {
-    static async call(groupId, { name, order }) {
+    static async call(groupId, { name }) {
         this.validate(groupId, { name })
 
         const group = await prisma.osce_observation_groups.findUnique({
@@ -16,7 +16,6 @@ export class UpdateOsceObservationGroupService extends BaseService {
 
         const updateData = {}
         if (name !== undefined) updateData.name = name
-        if (order !== undefined) updateData.order = parseInt(order)
 
         const updatedGroup = await prisma.osce_observation_groups.update({
             where: { id: parseInt(groupId) },

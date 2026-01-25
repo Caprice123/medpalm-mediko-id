@@ -5,6 +5,7 @@ import {
   fetchDetailAnatomyQuiz,
   submitAnatomyQuizAnswers,
 } from '@store/anatomy/action'
+import Button from '@components/common/Button'
 import QuizResult from './QuizResult'
 import {
   Container,
@@ -24,15 +25,12 @@ import {
   AnswerInput,
   ErrorText,
   SubmitSection,
-  SubmitButton,
-  BackButton,
   LoadingOverlay,
   ErrorMessage,
   SubscriptionGate,
   GateIcon,
   GateTitle,
   GateText,
-  GateButton
 } from './QuizDetail.styles'
 
 function QuizDetail() {
@@ -45,7 +43,6 @@ function QuizDetail() {
   const [answers, setAnswers] = useState({})
   const [errors, setErrors] = useState({})
   const [imageZoomed, setImageZoomed] = useState(false)
-  const [showSubscriptionGate, setShowSubscriptionGate] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
   const [quizResult, setQuizResult] = useState(null)
 
@@ -103,29 +100,6 @@ function QuizDetail() {
     navigate('/anatomy')
   }
 
-  const handleSubscribe = () => {
-    navigate('/dashboard')
-  }
-
-  // Show subscription gate
-  if (showSubscriptionGate) {
-    return (
-      <Container>
-        <SubscriptionGate>
-          <GateIcon>🔒</GateIcon>
-          <GateTitle>Subscription Required</GateTitle>
-          <GateText>
-            Anatomy Quizzes are available exclusively for subscribers.
-            Subscribe now to unlock access to all quizzes!
-          </GateText>
-          <GateButton onClick={handleSubscribe}>
-            View Subscription Plans
-          </GateButton>
-        </SubscriptionGate>
-      </Container>
-    )
-  }
-
   // Show error message
   if (errorMessage) {
     return (
@@ -133,20 +107,13 @@ function QuizDetail() {
         <ErrorMessage>
           <h3 style={{ marginBottom: '1rem' }}>Error</h3>
           <p>{errorMessage}</p>
-          <button
+          <Button
+            variant="secondary"
             onClick={handleBack}
-            style={{
-              marginTop: '1.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#991b1b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
+            style={{ marginTop: '1.5rem' }}
           >
-            Back to Quizzes
-          </button>
+            Kembali
+          </Button>
         </ErrorMessage>
       </Container>
     )
@@ -272,15 +239,16 @@ function QuizDetail() {
           </QuestionsList>
 
           <SubmitSection>
-            <BackButton onClick={handleBack}>
-              ← Back to Quizzes
-            </BackButton>
-            <SubmitButton
+            <Button variant="secondary" onClick={handleBack}>
+              ← Kembali
+            </Button>
+            <Button
+              variant="primary"
               onClick={handleSubmit}
               disabled={loading.isSubmitAnatomyQuizLoading}
             >
               {loading.isSubmitAnatomyQuizLoading ? 'Submitting...' : 'Submit Answers'}
-            </SubmitButton>
+            </Button>
           </SubmitSection>
         </QuestionsSection>
       </QuizContainer>

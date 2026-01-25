@@ -153,44 +153,6 @@ export const SubmitSection = styled.div`
   align-items: center;
 `
 
-export const SubmitButton = styled.button`
-  padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(107, 185, 232, 0.4);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-`
-
-export const BackButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: #f1f5f9;
-  color: #475569;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #e2e8f0;
-  }
-`
 
 export const LoadingOverlay = styled.div`
   display: flex;

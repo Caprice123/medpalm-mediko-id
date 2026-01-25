@@ -72,7 +72,7 @@ export const createInvoice = async ({ amount, externalId, payerEmail, descriptio
  */
 export const getInvoice = async (invoiceId) => {
   try {
-    const invoice = await Invoice.getInvoice({
+    const invoice = await Invoice.getInvoiceById({
       invoiceId
     })
     return invoice

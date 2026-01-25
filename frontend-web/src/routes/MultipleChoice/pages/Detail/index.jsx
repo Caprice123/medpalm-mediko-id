@@ -100,9 +100,9 @@ const Detail = () => {
         <Content>
           <Header>
             <HeaderTop>
-              <BackButton onClick={handleBack}>
+              <Button variant="secondary" onClick={handleBack}>
                 ← Kembali
-              </BackButton>
+              </Button>
             </HeaderTop>
 
             <TopicInfo>
@@ -210,9 +210,9 @@ const Detail = () => {
               ))}
             </AnswerReview>
 
-            <ReturnButton onClick={handleBack}>
+            <Button variant="secondary" onClick={handleBack}>
               🏠 Kembali ke Daftar Topik
-            </ReturnButton>
+            </Button>
           </QuizContainer>
         </Content>
       </Container>
@@ -229,9 +229,9 @@ const Detail = () => {
       <Content>
         <Header>
           <HeaderTop>
-            <BackButton onClick={handleBack}>
+            <Button variant="secondary" onClick={handleBack}>
               ← Kembali
-            </BackButton>
+            </Button>
           </HeaderTop>
 
           <TopicInfo>

@@ -1,8 +1,8 @@
 import { useState } from 'react'
+import Button from '@components/common/Button'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   IconLarge,
   TitleSection,
@@ -18,7 +18,6 @@ import {
   Switch,
   SwitchLabel,
   ButtonGroup,
-  Button,
   InfoBox,
   InfoText
 } from './FeatureConfig.styles'
@@ -58,9 +57,9 @@ function FeatureConfig({ feature, onBack, onUpdate }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={handleCancel}>
+        <Button variant="secondary" onClick={handleCancel}>
           ←
-        </BackButton>
+        </Button>
         <HeaderContent>
           <IconLarge color={feature.color}>
             {formData.icon}
@@ -172,12 +171,11 @@ function FeatureConfig({ feature, onBack, onUpdate }) {
       </ContentSection>
 
       <ButtonGroup>
-        <Button onClick={handleCancel}>
+        <Button variant="secondary" onClick={handleCancel}>
           Batal
         </Button>
         <Button
           variant="primary"
-          color={feature.color}
           onClick={handleSave}
           disabled={!hasChanges}
         >

@@ -5,9 +5,9 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
-  ActionButton,
   TopicsGrid
 } from './TopicsList.styles'
+import Button from '@components/common/Button'
 
 function TopicsList({ onEdit, onDelete, onCreateFirst }) {
   const { topics, loading } = useSelector((state) => state.oscePractice)
@@ -24,9 +24,9 @@ function TopicsList({ onEdit, onDelete, onCreateFirst }) {
         <EmptyStateIcon>🏥</EmptyStateIcon>
         <EmptyStateText>Belum ada topic OSCE</EmptyStateText>
         {onCreateFirst && (
-          <ActionButton onClick={onCreateFirst}>
+          <Button variant="primary" onClick={onCreateFirst}>
             Buat Topic Pertama
-          </ActionButton>
+          </Button>
         )}
       </EmptyState>
     )

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
@@ -8,11 +9,9 @@ import {
   Label,
   Input,
   Textarea,
-  GenerateButton,
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   EditorContainer,
   EditorHint
 } from './UpdateNoteModal.styles'
@@ -67,7 +66,7 @@ const UpdateNoteModal = ({ onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Batal</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Batal</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -113,7 +112,9 @@ const UpdateNoteModal = ({ onClose }) => {
             actions={
               <>
                 {form.values.sourceFileInfo.url && (
-                  <GenerateButton
+                  <Button
+                    variant="primary"
+                    size="small"
                     as="a"
                     href={form.values.sourceFileInfo.url}
                     target="_blank"
@@ -121,7 +122,7 @@ const UpdateNoteModal = ({ onClose }) => {
                     onClick={(e) => e.stopPropagation()}
                   >
                     Lihat
-                  </GenerateButton>
+                  </Button>
                 )}
               </>
             }
@@ -148,21 +149,25 @@ const UpdateNoteModal = ({ onClose }) => {
             actions={
               <>
                 {form.values.uploadedFile?.url && (
-                  <GenerateButton
+                  <Button
+                    variant="primary"
+                    size="small"
                     as="a"
                     href={form.values.uploadedFile.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     Lihat
-                  </GenerateButton>
+                  </Button>
                 )}
-                <GenerateButton
+                <Button
+                  variant="primary"
+                  size="small"
                   onClick={handleGenerate}
                   disabled={loading.isGenerating}
                 >
                   {loading.isGenerating ? 'Generating...' : '✨ Generate'}
-                </GenerateButton>
+                </Button>
               </>
             }
           />

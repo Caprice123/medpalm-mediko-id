@@ -14,6 +14,7 @@ import {
   SaveButton,
   ExportButton
 } from '../Editor.styles'
+import Button from '@components/common/Button'
 
 const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, onExportWord }) => {
   const navigate = useNavigate()
@@ -61,9 +62,9 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
 
   return (
     <StyledTopBar>
-      <BackButton onClick={handleBackClick}>
+      <Button onClick={handleBackClick}>
         <FaArrowLeft /> Kembali
-      </BackButton>
+      </Button>
       {isEditingTitle ? (
         <SetTitleWrapper>
           <SetTitleInput
@@ -73,28 +74,28 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
             autoFocus
             placeholder="Masukkan judul set..."
           />
-          <EditButton onClick={handleSaveTitle} $variant="success">
+          <Button onClick={handleSaveTitle} variant="secondary">
             <FaCheck />
-          </EditButton>
-          <EditButton onClick={handleCancelEditTitle} $variant="danger">
+          </Button>
+          <Button onClick={handleCancelEditTitle} variant="danger">
             <FaTimes />
-          </EditButton>
+          </Button>
         </SetTitleWrapper>
       ) : (
         <SetTitleWrapper>
           <SetTitle>{currentSet.title}</SetTitle>
-          <EditButton onClick={handleStartEditTitle}>
+          <Button variant="secondary" onClick={handleStartEditTitle}>
             <FaEdit />
-          </EditButton>
+          </Button>
         </SetTitleWrapper>
       )}
       <TopActions>
-        <SaveButton onClick={onSave} disabled={!hasUnsavedChanges || isSavingContent}>
+        <Button variant="secondary" onClick={onSave} disabled={!hasUnsavedChanges || isSavingContent}>
           <FaSave /> {isSavingContent ? 'Menyimpan...' : 'Simpan'}
-        </SaveButton>
-        <ExportButton onClick={onExportWord}>
+        </Button>
+        <Button variant="primary" onClick={onExportWord}>
           <FaFileWord /> Export Word
-        </ExportButton>
+        </Button>
       </TopActions>
     </StyledTopBar>
   )

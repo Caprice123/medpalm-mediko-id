@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
 import { DndContext, closestCenter } from '@dnd-kit/core'
@@ -14,20 +15,16 @@ import {
   Textarea,
   ContentTypeButtons,
   ContentTypeButton,
-  RemoveFileButton,
   CardsSection,
   CardsSectionHeader,
   CardsSectionTitle,
-  AddCardButton,
   FlashcardCard,
   CardHeader,
   CardNumber,
   DragHandle,
-  RemoveCardButton,
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   HelpText
 } from './CreateFlashcardModal.styles'
 
@@ -53,9 +50,9 @@ const SortableCard = ({ card, index, form, handleRemoveCard, handleImageUpload }
           <DragHandle {...attributes} {...listeners}>⋮⋮</DragHandle>
           Card {index + 1}
         </CardNumber>
-        <RemoveCardButton type="button" onClick={() => handleRemoveCard(index)}>
+        <Button variant="danger" size="small" onClick={() => handleRemoveCard(index)}>
           Remove
-        </RemoveCardButton>
+        </Button>
       </CardHeader>
 
       <FormSection>
@@ -163,7 +160,7 @@ const CreateFlashcardModal = ({ onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -258,7 +255,9 @@ const CreateFlashcardModal = ({ onClose }) => {
             actions={
               <>
                 {form.values.pdfFile && (
-                    <RemoveFileButton
+                    <Button
+                    variant="primary"
+                    size="small"
                     onClick={() => {
                         // Check if it's a File object or just an object with URL
                         const url = form.values.pdfFile instanceof File
@@ -266,10 +265,9 @@ const CreateFlashcardModal = ({ onClose }) => {
                         : form.values.pdfFile.url
                         window.open(url, '_blank')
                     }}
-                    style={{ backgroundColor: '#3b82f6', color: 'white' }}
                     >
                     Lihat
-                    </RemoveFileButton>
+                    </Button>
                 )}
               </>
             }
@@ -311,9 +309,9 @@ const CreateFlashcardModal = ({ onClose }) => {
       <CardsSection>
         <CardsSectionHeader>
           <CardsSectionTitle>Cards</CardsSectionTitle>
-          <AddCardButton type="button" onClick={handleAddCard}>
+          <Button variant="primary" size="small" onClick={handleAddCard}>
             + Add Card
-          </AddCardButton>
+          </Button>
         </CardsSectionHeader>
 
         <DndContext

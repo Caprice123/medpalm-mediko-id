@@ -63,7 +63,7 @@ export class GetOsceTopicsService extends BaseService {
                 }
             },
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             }
         })
 

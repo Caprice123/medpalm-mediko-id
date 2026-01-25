@@ -21,7 +21,6 @@ import {
 } from '../../../../SessionPractice/SessionPractice.styles'
 import {
   Container,
-  ViewAttachmentsButton,
   AttachmentContainer,
 } from './styles'
 
@@ -139,9 +138,9 @@ function ChatsTab({ sessionId }) {
           >
             <div style={{ padding: '0 1rem 1rem 1rem' }}>
               <AttachmentContainer>
-                <ViewAttachmentsButton onClick={() => setIsShowAttachment(true)}>
+                <Button variant="primary" onClick={() => setIsShowAttachment(true)}>
                   👁️ Gambar Kasus ({attachments.length})
-                </ViewAttachmentsButton>
+                </Button>
                 {attachments.map((img, i) => (
                   <PhotoView key={i} src={img.url}>
                     <img src={img.url} alt="" style={{ display: 'none' }} />

@@ -61,7 +61,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
       size="large"
       footer={
         <>
-          <Button onClick={onClose} disabled={loading.isUpdatingConstants}>
+          <Button variant="secondary" onClick={onClose} disabled={loading.isUpdatingConstants}>
             Batal
           </Button>
           <Button variant="primary" onClick={form.handleSubmit} disabled={loading.isUpdatingConstants}>
@@ -420,6 +420,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
               style={{ fontFamily: 'monospace', fontSize: '13px' }}
             />
             <Button
+              variant="primary"
               type="button"
               onClick={addDomain}
               disabled={!newDomain.trim() || getDomains().length >= 20}

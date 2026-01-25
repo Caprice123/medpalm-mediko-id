@@ -99,9 +99,9 @@ function DeckList() {
               </DeckStats>
 
               <Button
-                variant="outline"
+                variant="primary"
+                fullWidth
                 onClick={() => navigate(generatePath(FlashcardRoute.detailRoute, { id: deck.id }))}
-                style={{ width: '100%' }}
               >
                 Mulai Belajar
               </Button>

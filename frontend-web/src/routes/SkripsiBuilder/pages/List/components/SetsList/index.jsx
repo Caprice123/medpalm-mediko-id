@@ -15,7 +15,6 @@ import {
   SetsGrid,
   SetDescription,
   CardActions,
-  DeleteButton,
   UpdatedText
 } from './SetsList.styles'
 
@@ -78,15 +77,18 @@ function SetsList() {
 
               <CardActions>
                 <Button
-                  variant="outline"
+                  variant="primary"
+                  fullWidth
                   onClick={() => navigate(`/skripsi/sets/${set.id}`)}
-                  style={{ flex: 1 }}
                 >
                   Buka Set
                 </Button>
-                <DeleteButton onClick={() => setDeleteId(set.id)}>
+                <Button
+                  variant="danger"
+                  onClick={() => setDeleteId(set.id)}
+                >
                   <FaTrash />
-                </DeleteButton>
+                </Button>
               </CardActions>
             </CardBody>
           </Card>
@@ -99,38 +101,20 @@ function SetsList() {
         onClose={() => setDeleteId(null)}
         title="Hapus Set"
         footer={
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-            <button
+          <>
+            <Button
+              variant="secondary"
               onClick={() => setDeleteId(null)}
-              style={{
-                padding: '10px 20px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                background: 'white',
-                color: '#6b7280',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger"
               onClick={() => handleDeleteSet(deleteId)}
-              style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '6px',
-                background: '#ef4444',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}
             >
               Hapus
-            </button>
-          </div>
+            </Button>
+          </>
         }
       >
         <p style={{ margin: 0, color: '#6b7280' }}>

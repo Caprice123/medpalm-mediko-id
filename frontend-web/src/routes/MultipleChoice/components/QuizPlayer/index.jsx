@@ -18,10 +18,6 @@ import {
   OptionText,
   NavigationContainer,
   NavigationButtons,
-  BackButton,
-  PreviousButton,
-  NextButton,
-  SubmitButton,
   WarningText
 } from './QuizPlayer.styles'
 
@@ -33,7 +29,7 @@ const QuizPlayer = ({ topic, onSubmit, onBack }) => {
   )
   const [showSubmitWarning, setShowSubmitWarning] = useState(false)
 
-  const questions = topic.mcq_questions || []
+  const questions = topic.mcq_questions
   const currentQuestion = questions[currentQuestionIndex]
   const totalQuestions = questions.length
   const answeredCount = Object.keys(answers).length
@@ -156,26 +152,27 @@ const QuizPlayer = ({ topic, onSubmit, onBack }) => {
       )}
 
       <NavigationContainer>
-        <BackButton onClick={onBack}>
+        <Button variant="secondary" onClick={onBack}>
           ← Kembali
-        </BackButton>
+        </Button>
 
         <NavigationButtons>
-          <PreviousButton
+          <Button
+            variant="secondary"
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
           >
             ← Sebelumnya
-          </PreviousButton>
+          </Button>
 
           {currentQuestionIndex < totalQuestions - 1 ? (
-            <NextButton onClick={handleNext}>
+            <Button variant="primary" onClick={handleNext}>
               Selanjutnya →
-            </NextButton>
+            </Button>
           ) : (
-            <SubmitButton onClick={handleSubmit}>
+            <Button variant="primary" onClick={handleSubmit}>
               Submit Jawaban
-            </SubmitButton>
+            </Button>
           )}
         </NavigationButtons>
       </NavigationContainer>

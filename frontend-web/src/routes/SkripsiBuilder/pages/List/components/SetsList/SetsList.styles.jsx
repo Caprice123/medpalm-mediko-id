@@ -107,23 +107,6 @@ export const CardActionButton = styled.button`
   }
 `
 
-export const DeleteButton = styled.button`
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ef4444;
-  background: white;
-  color: #ef4444;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background: #fef2f2;
-  }
-`
 
 export const UpdatedText = styled.div`
   font-size: 0.75rem;

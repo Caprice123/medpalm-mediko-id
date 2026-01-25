@@ -4,19 +4,8 @@ import 'react-photo-view/dist/react-photo-view.css'
 import { useAttachmentSection } from '../hooks/useAttachmentSection'
 import {
   AttachmentContainer,
-  ViewAttachmentsButton,
-  SliderContainer,
-  MainImageContainer,
-  MainImageWrapper,
-  MainImage,
-  MainImageOverlay,
-  SliderControls,
-  SliderButton,
-  SliderInfo,
-  SliderCounter,
-  SliderDots,
-  Dot,
 } from './AttachmentSection.styles'
+import Button from '@components/common/Button'
 import { useSelector } from 'react-redux'
 
 export const AttachmentSection = memo(function AttachmentSection() {
@@ -46,9 +35,9 @@ export const AttachmentSection = memo(function AttachmentSection() {
       <AttachmentContainer>
         {/* Toggle Button */}
         {!isSlideshowMode && (
-          <ViewAttachmentsButton onClick={() => setIsShowAttachment(true)}>
+          <Button variant="primary" onClick={() => setIsShowAttachment(true)}>
             👁️ Gambar Kasus
-          </ViewAttachmentsButton>
+          </Button>
         )}
 
         {attachments.map((img, i) => (

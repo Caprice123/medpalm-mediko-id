@@ -61,6 +61,7 @@ export class GetUserPurchaseDetailService extends BaseService {
         purchase.payment_reference) {
       try {
         const invoice = await getInvoice(purchase.payment_reference)
+        console.log(invoice)
         purchaseData.invoiceUrl = invoice.invoice_url || invoice.invoiceUrl
       } catch (error) {
         console.error(`Failed to get invoice for purchase ${purchase.id}:`, error.message)

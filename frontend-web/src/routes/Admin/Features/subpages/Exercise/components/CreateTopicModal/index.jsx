@@ -16,17 +16,13 @@ import {
   Textarea,
   ContentTypeButtons,
   ContentTypeButton,
-  RemoveFileButton,
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
-  AddQuestionButton,
   QuestionCard,
   QuestionHeader,
   QuestionNumber,
   DragHandle,
-  RemoveQuestionButton,
-  EditQuestionButton,
   QuestionText,
   AnswerSection,
   AnswerLabel,
@@ -40,10 +36,10 @@ import {
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   HelpText,
   EmptyState
 } from './CreateTopicModal.styles'
+import Button from "@components/common/Button"
 
 const SortableQuestion = memo(function SortableQuestion({ question, index, onEdit, onRemove, isEditing, editData, onEditChange, onSaveEdit, onCancelEdit, onImageUpload, onImageRemove, isUploadingImage }) {
   const {
@@ -85,12 +81,12 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
         </QuestionNumber>
         {!isEditing && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <EditQuestionButton type="button" onClick={() => onEdit(question)}>
+            <Button variant="secondary" type="button" onClick={() => onEdit(question)}>
               Edit
-            </EditQuestionButton>
-            <RemoveQuestionButton type="button" onClick={() => onRemove(index)}>
+            </Button>
+            <Button variant="danger" type="button" onClick={() => onRemove(index)}>
               Remove
-            </RemoveQuestionButton>
+            </Button>
           </div>
         )}
       </QuestionHeader>
@@ -144,10 +140,7 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
                   <>
                     {editData.image?.url && (
                       <PhotoView src={editData.image.url}>
-                        <Button
-                          type="button"
-                          style={{ backgroundColor: '#3b82f6', color: 'white', fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                        >
+                        <Button variant="primary" size="small">
                           Lihat Gambar
                         </Button>
                       </PhotoView>
@@ -159,7 +152,7 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
           </FormSection>
 
           <EditButtonGroup>
-            <Button onClick={onCancelEdit}>
+            <Button variant="secondary" onClick={onCancelEdit}>
               Batal
             </Button>
             <Button variant="primary" onClick={onSaveEdit}>
@@ -298,7 +291,7 @@ const CreateTopicModal = ({ onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -395,7 +388,8 @@ const CreateTopicModal = ({ onClose }) => {
             actions={
               <>
                 {form.values.pdfFile && (
-                  <RemoveFileButton
+                  <Button
+                    variant="primary"
                     onClick={() => {
                       // Check if it's a File object or just an object with URL
                       const url = form.values.pdfFile instanceof File
@@ -406,7 +400,7 @@ const CreateTopicModal = ({ onClose }) => {
                     style={{ backgroundColor: '#3b82f6', color: 'white' }}
                   >
                     Lihat
-                  </RemoveFileButton>
+                  </Button>
                 )}
               </>
             }
@@ -448,9 +442,9 @@ const CreateTopicModal = ({ onClose }) => {
       <QuestionsSection>
         <QuestionsSectionHeader>
           <QuestionsSectionTitle>Soal ({form.values.questions.length})</QuestionsSectionTitle>
-          <AddQuestionButton type="button" onClick={handleAddQuestion}>
+          <Button variant="primary" type="button" onClick={handleAddQuestion}>
             + Tambah Soal Manual
-          </AddQuestionButton>
+          </Button>
         </QuestionsSectionHeader>
         {typeof form.errors.questions === 'string' && <ErrorText>{form.errors.questions}</ErrorText>}
 

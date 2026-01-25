@@ -5,7 +5,7 @@ import FileUpload from '@components/common/FileUpload'
 import { upload } from '@store/common/action'
 import styled from 'styled-components'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
-import { PreviewButton } from '../../../../AnatomyQuiz/components/UpdateQuizModal/UpdateQuizModal.styles'
+import Button from '@components/common/Button'
 
 const SearchInput = styled.input`
   width: 100%;
@@ -308,9 +308,9 @@ const ObservationSection = ({ form }) => {
                     <>
                         {observationData.url && (
                             <PhotoView src={observationData.url}>
-                                <PreviewButton type="button">
+                                <Button variant="primary" type="button">
                                 👁️ Preview
-                                </PreviewButton>
+                                </Button>
                             </PhotoView>
                         )}
                     </>}

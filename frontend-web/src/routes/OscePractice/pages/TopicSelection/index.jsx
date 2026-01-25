@@ -31,6 +31,7 @@ import {
   EmptyState,
   LoadingContainer,
   LoadingSpinner,
+  Container,
 } from './TopicSelection.styles'
 
 function TopicSelection() {
@@ -87,172 +88,170 @@ function TopicSelection() {
 
   return (
     <PageContainer>
-      <Header>
-        <div>
-          <BackButton onClick={handleBack}>
-            ← Kembali
-          </BackButton>
-          <Title>Pilih Topik Latihan OSCE</Title>
-          <Subtitle>
-            Pilih topik yang ingin Anda latih untuk memulai sesi practice
-          </Subtitle>
-        </div>
-      </Header>
+        <Container>
+            <Header>
+                <div>
+                <Button variant="secondary" onClick={handleBack}>
+                    ← Kembali
+                </Button>
+                </div>
+            </Header>
 
-      <SearchSection>
-        <form onSubmit={handleSearch}>
-          <FilterComponent>
-            <FilterComponent.Group>
-              <TextInput
-                label="Pencarian"
-                placeholder="Cari topik berdasarkan judul, deskripsi, atau skenario..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </FilterComponent.Group>
+            <SearchSection>
+                <form onSubmit={handleSearch}>
+                <FilterComponent>
+                    <FilterComponent.Group>
+                    <TextInput
+                        label="Pencarian"
+                        placeholder="Cari topik berdasarkan judul, deskripsi, atau skenario..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    </FilterComponent.Group>
 
-            <FilterComponent.Group>
-              <FilterComponent.Label>Topik</FilterComponent.Label>
-              <Dropdown
-                options={topicTags}
-                value={topicTag ? topicTags.find(t => t.value === topicTag) : null}
-                onChange={(option) => setTopicTag(option?.value || "")}
-                placeholder="Filter berdasarkan topik..."
-              />
-            </FilterComponent.Group>
+                    <FilterComponent.Group>
+                    <FilterComponent.Label>Topik</FilterComponent.Label>
+                    <Dropdown
+                        options={topicTags}
+                        value={topicTag ? topicTags.find(t => t.value === topicTag) : null}
+                        onChange={(option) => setTopicTag(option?.value || "")}
+                        placeholder="Filter berdasarkan topik..."
+                    />
+                    </FilterComponent.Group>
 
-            <FilterComponent.Group>
-              <FilterComponent.Label>Batch</FilterComponent.Label>
-              <Dropdown
-                options={batchTags}
-                value={batchTag ? batchTags.find(t => t.value === batchTag) : null}
-                onChange={(option) => setBatchTag(option?.value || "")}
-                placeholder="Filter berdasarkan batch..."
-              />
-            </FilterComponent.Group>
-          </FilterComponent>
+                    <FilterComponent.Group>
+                    <FilterComponent.Label>Batch</FilterComponent.Label>
+                    <Dropdown
+                        options={batchTags}
+                        value={batchTag ? batchTags.find(t => t.value === batchTag) : null}
+                        onChange={(option) => setBatchTag(option?.value || "")}
+                        placeholder="Filter berdasarkan batch..."
+                    />
+                    </FilterComponent.Group>
+                </FilterComponent>
 
-          <div style={{
-            display: 'flex',
-            gap: '0.75rem',
-            justifyContent: 'flex-end',
-            marginTop: '1rem'
-          }}>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={loading.isLoadingUserTopics}
-            >
-              🔍 Cari
-            </Button>
-          </div>
-        </form>
-      </SearchSection>
-
-      {loading.isLoadingUserTopics ? (
-        <LoadingContainer>
-          <LoadingSpinner />
-          <div style={{ marginTop: '1rem' }}>Memuat topik...</div>
-        </LoadingContainer>
-      ) : userTopics.length === 0 ? (
-        <EmptyState>
-          <div style={{ fontSize: '3rem' }}>🔍</div>
-          <p>
-            {searchQuery ? 'Tidak ada topik yang sesuai dengan pencarian' : 'Belum ada topik tersedia'}
-          </p>
-        </EmptyState>
-      ) : (
-        <>
-          <TopicsGrid>
-            {userTopics.map((topic) => {
-              // Filter tags by tag_group
-              const topicTagsList = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
-              const batchTagsList = topic.tags?.filter(tag => tag.tagGroup?.name === 'batch') || []
-
-              return (
-                <TopicCard key={topic.id}>
-                  <CardHeader>
-                    <CardTitle>{topic.title}</CardTitle>
-                  </CardHeader>
-
-                  <CardDescription>
-                    {topic.description || 'Tidak ada deskripsi'}
-                  </CardDescription>
-
-                  <div style={{ flex: "1" }}></div>
-
-                  {/* Topic Tags */}
-                  {topicTagsList.length > 0 && (
-                    <TagList>
-                      {topicTagsList.map((tag) => (
-                        <Tag key={tag.id} university>
-                          🏛️ {tag.name}
-                        </Tag>
-                      ))}
-                    </TagList>
-                  )}
-
-                  {/* Batch Tags */}
-                  {batchTagsList.length > 0 && (
-                    <TagList>
-                      {batchTagsList.map((tag) => (
-                        <Tag key={tag.id} semester>
-                          📚 {tag.name}
-                        </Tag>
-                      ))}
-                    </TagList>
-                  )}
-
-                  <CardStats>
-                    <StatItem>
-                      <StatLabel>Created</StatLabel>
-                      <StatValue>
-                        {new Date(topic.createdAt).toLocaleDateString("id-ID")}
-                      </StatValue>
-                    </StatItem>
-                    <StatItem>
-                      <StatLabel>Durasi</StatLabel>
-                      <StatValue>
-                        {topic.durationMinutes || 15} menit
-                      </StatValue>
-                    </StatItem>
-                    <StatItem>
-                      <StatLabel>Updated</StatLabel>
-                      <StatValue>
-                        {new Date(topic.updatedAt).toLocaleDateString("id-ID")}
-                      </StatValue>
-                    </StatItem>
-                  </CardStats>
-
-                  <CardActions>
+                <div style={{
+                    display: 'flex',
+                    gap: '0.75rem',
+                    justifyContent: 'flex-end',
+                    marginTop: '1rem'
+                }}>
                     <Button
-                      variant="primary"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleSelectTopic(topic.id)
-                      }}
-                      fullWidth
-                      disabled={loading.isCreatingSession}
+                    variant="primary"
+                    type="submit"
+                    disabled={loading.isLoadingUserTopics}
                     >
-                      {loading.isCreatingSession ? 'Membuat...' : 'Mulai Sesi'}
+                    🔍 Cari
                     </Button>
-                  </CardActions>
-                </TopicCard>
-              )
-            })}
-          </TopicsGrid>
+                </div>
+                </form>
+            </SearchSection>
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-            <Pagination
-              currentPage={pagination.page}
-              isLastPage={pagination.isLastPage}
-              onPageChange={handlePageChange}
-              isLoading={loading.isLoadingUserTopics}
-              language="id"
-            />
-          </div>
-        </>
-      )}
+            {loading.isLoadingUserTopics ? (
+                <LoadingContainer>
+                <LoadingSpinner />
+                <div style={{ marginTop: '1rem' }}>Memuat topik...</div>
+                </LoadingContainer>
+            ) : userTopics.length === 0 ? (
+                <EmptyState>
+                <div style={{ fontSize: '3rem' }}>🔍</div>
+                <p>
+                    {searchQuery ? 'Tidak ada topik yang sesuai dengan pencarian' : 'Belum ada topik tersedia'}
+                </p>
+                </EmptyState>
+            ) : (
+                <>
+                <TopicsGrid>
+                    {userTopics.map((topic) => {
+                    // Filter tags by tag_group
+                    const topicTagsList = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+                    const batchTagsList = topic.tags?.filter(tag => tag.tagGroup?.name === 'batch') || []
+
+                    return (
+                        <TopicCard key={topic.id}>
+                        <CardHeader>
+                            <CardTitle>{topic.title}</CardTitle>
+                        </CardHeader>
+
+                        <CardDescription>
+                            {topic.description || 'Tidak ada deskripsi'}
+                        </CardDescription>
+
+                        <div style={{ flex: "1" }}></div>
+
+                        {/* Topic Tags */}
+                        {topicTagsList.length > 0 && (
+                            <TagList>
+                            {topicTagsList.map((tag) => (
+                                <Tag key={tag.id} university>
+                                🏛️ {tag.name}
+                                </Tag>
+                            ))}
+                            </TagList>
+                        )}
+
+                        {/* Batch Tags */}
+                        {batchTagsList.length > 0 && (
+                            <TagList>
+                            {batchTagsList.map((tag) => (
+                                <Tag key={tag.id} semester>
+                                📚 {tag.name}
+                                </Tag>
+                            ))}
+                            </TagList>
+                        )}
+
+                        <CardStats>
+                            <StatItem>
+                            <StatLabel>Created</StatLabel>
+                            <StatValue>
+                                {new Date(topic.createdAt).toLocaleDateString("id-ID")}
+                            </StatValue>
+                            </StatItem>
+                            <StatItem>
+                            <StatLabel>Durasi</StatLabel>
+                            <StatValue>
+                                {topic.durationMinutes || 15} menit
+                            </StatValue>
+                            </StatItem>
+                            <StatItem>
+                            <StatLabel>Updated</StatLabel>
+                            <StatValue>
+                                {new Date(topic.updatedAt).toLocaleDateString("id-ID")}
+                            </StatValue>
+                            </StatItem>
+                        </CardStats>
+
+                        <CardActions>
+                            <Button
+                            variant="primary"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleSelectTopic(topic.id)
+                            }}
+                            fullWidth
+                            disabled={loading.isCreatingSession}
+                            >
+                            {loading.isCreatingSession ? 'Membuat...' : 'Mulai Sesi'}
+                            </Button>
+                        </CardActions>
+                        </TopicCard>
+                    )
+                    })}
+                </TopicsGrid>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                    <Pagination
+                    currentPage={pagination.page}
+                    isLastPage={pagination.isLastPage}
+                    onPageChange={handlePageChange}
+                    isLoading={loading.isLoadingUserTopics}
+                    language="id"
+                    />
+                </div>
+                </>
+            )}
+        </Container>
     </PageContainer>
   )
 }

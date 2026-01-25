@@ -154,3 +154,45 @@ export const Tag = styled.span`
   font-weight: 500;
 `
 
+export const StatusBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  ${props => {
+    switch (props.status) {
+      case 'created':
+        return `
+          background: #dbeafe;
+          color: #1e40af;
+        `
+      case 'started':
+        return `
+          background: #fef3c7;
+          color: #92400e;
+        `
+      case 'completed':
+        return `
+          background: #d1fae5;
+          color: #065f46;
+        `
+      case 'expired':
+        return `
+          background: #fee2e2;
+          color: #991b1b;
+        `
+      default:
+        return `
+          background: ${colors.neutral.gray100};
+          color: ${colors.neutral.gray700};
+        `
+    }
+  }}
+`
+

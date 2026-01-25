@@ -55,15 +55,15 @@ function PlanCard({ plan, onEdit, onToggle, formatPrice }) {
       {plan.description && <PlanDescription>{plan.description}</PlanDescription>}
 
       <ActionButtons>
-        <ActionButton onClick={() => onEdit(plan)}>
+        <Button onClick={() => onEdit(plan)}>
           Edit
-        </ActionButton>
-        <ActionButton
-          variant="warning"
+        </Button>
+        <Button
+          variant="primary"
           onClick={() => onToggle(plan)}
         >
           {(plan.is_active !== undefined ? plan.is_active : plan.isActive) ? 'Disable' : 'Enable'}
-        </ActionButton>
+        </Button>
       </ActionButtons>
     </Card>
   )

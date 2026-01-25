@@ -8,8 +8,8 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  CardActionButton
 } from './RubricCard.styles'
+import Button from '@components/common/Button'
 
 function RubricCard({ rubric, onEdit }) {
   const formatDate = (dateString) => {
@@ -49,9 +49,9 @@ function RubricCard({ rubric, onEdit }) {
       </CardStats>
 
       <CardActions>
-        <CardActionButton onClick={() => onEdit(rubric)}>
+        <Button onClick={() => onEdit(rubric)}>
           Edit
-        </CardActionButton>
+        </Button>
       </CardActions>
     </Card>
   )

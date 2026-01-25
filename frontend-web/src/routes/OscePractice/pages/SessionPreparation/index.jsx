@@ -25,8 +25,6 @@ import {
   ErrorMessage,
   HelpText,
 } from './SessionPreparation.styles'
-import { actions as commonActions } from '@store/common/reducer'
-import { actions } from '@store/oscePractice/reducer'
 import { startOsceSession, fetchSessionDetail } from '@store/oscePractice/userAction'
 
 function SessionPreparation() {

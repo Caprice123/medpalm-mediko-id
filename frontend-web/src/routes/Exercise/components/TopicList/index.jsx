@@ -13,7 +13,6 @@ import {
   Tag,
   TopicFooter,
   QuestionCount,
-  StartButton,
   FilterSection,
   FilterGroup,
   FilterLabel,
@@ -21,6 +20,7 @@ import {
   EmptyState,
   TopicDescription
 } from './TopicList.styles'
+import Button from '@components/common/Button'
 import { useSelector } from 'react-redux'
 
 const TopicList = ({ topics, onSelectTopic }) => {
@@ -122,11 +122,12 @@ const TopicList = ({ topics, onSelectTopic }) => {
                   <QuestionCount>
                     {topic.questionCount || topic.questions?.length || 0} Soal
                   </QuestionCount>
-                  <StartButton
+                  <Button variant="primary"
+                    fullWidth
                     onClick={() => onSelectTopic(topic)}
                   >
                     Mulai Latihan
-                  </StartButton>
+                  </Button>
                 </TopicFooter>
               </TopicCard>
             ))}

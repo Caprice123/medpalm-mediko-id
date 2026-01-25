@@ -5,6 +5,7 @@ import {
   fetchAnatomyQuizzes,
 } from '@store/anatomy/action'
 import { fetchTags } from '@store/tags/action'
+import Button from '@components/common/Button'
 import {
   Container,
   Header,
@@ -104,21 +105,12 @@ function AnatomyQuiz() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-          <button
+          <Button
+            variant="secondary"
             onClick={handleClearFilters}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              background: 'white',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              transition: 'all 0.2s'
-            }}
           >
             Clear Filters
-          </button>
+          </Button>
         </div>
       </FilterSection>
 

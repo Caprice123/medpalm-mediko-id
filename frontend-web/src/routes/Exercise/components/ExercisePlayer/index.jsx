@@ -8,7 +8,6 @@ import {
   HeaderTop,
   ProgressBadge,
   TopicInfo,
-  BackButton,
   TagList,
   Tag,
   ProgressBarContainer,
@@ -17,17 +16,12 @@ import {
   ProgressFill,
   ProgressPercentage,
   QuestionCard,
-  QuestionHeader,
-  QuestionNumber,
-  CategoryBadge,
   QuestionText,
   InlineInput,
   HintBox,
   NavigationButtons,
-  NavButton,
   SubmitSection,
   SubmitStatus,
-  SubmitButton,
   ResultContainer,
   CelebrationHeader,
   ResultScore,
@@ -47,8 +41,8 @@ import {
   ExplanationBox,
   ExplanationLabel,
   ExplanationText,
-  ReturnButton
 } from './ExercisePlayer.styles'
+import Button from '@components/common/Button'
 
 const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -158,9 +152,9 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
     return (
       <Container>
         <Header>
-          <BackButton onClick={onBack}>
+          <Button variant="secondary" onClick={onBack}>
             ← Kembali
-          </BackButton>
+          </Button>
           <TopicInfo>
             <h2>🧠 {topic.title}</h2>
             <p>{topic.description}</p>
@@ -287,9 +281,9 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
             })}
           </AnswerReview>
 
-          <ReturnButton onClick={onBack}>
+          <Button variant="secondary" onClick={onBack}>
             🏠 Kembali ke Daftar Topik
-          </ReturnButton>
+          </Button>
         </QuestionCard>
       </Container>
     )
@@ -324,9 +318,9 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
     <Container>
       <Header>
         <HeaderTop>
-          <BackButton onClick={onBack}>
+          <Button variant="secondary" onClick={onBack}>
             ← Kembali
-          </BackButton>
+          </Button>
           <ProgressBadge>
             Progress: {currentIndex + 1}/{totalQuestions}
           </ProgressBadge>
@@ -399,20 +393,20 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
         </HintBox>
 
         <NavigationButtons>
-          <NavButton
-            variant="ghost"
+          <Button
+            variant="secondary"
             onClick={handlePrevious}
             disabled={currentIndex === 0}
           >
             ← Sebelumnya
-          </NavButton>
-          <NavButton
+          </Button>
+          <Button
             variant="primary"
             onClick={handleNext}
             disabled={isLastQuestion}
           >
             Selanjutnya →
-          </NavButton>
+          </Button>
         </NavigationButtons>
       </QuestionCard>
 
@@ -421,12 +415,12 @@ const ExercisePlayer = ({ topic, result, onSubmit, onBack }) => {
           <SubmitStatus incomplete={!allAnswered}>
             {allAnswered ? '✨' : '⚡'} Kamu sudah menjawab {answeredCount} dari {totalQuestions} soal
           </SubmitStatus>
-          <SubmitButton
+          <Button
             onClick={handleSubmit}
             disabled={!allAnswered}
           >
             🎯 Selesai & Lihat Hasil
-          </SubmitButton>
+          </Button>
         </SubmitSection>
       )}
     </Container>

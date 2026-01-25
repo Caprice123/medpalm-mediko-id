@@ -4,14 +4,7 @@ import { fetchTags, deleteTag } from '@store/tags/action'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
-  TitleSection,
-  IconLarge,
-  Title,
-  Subtitle,
-  ActionsRow,
-  ActionButton,
   Content,
   GroupsContainer,
   GroupCard,
@@ -33,6 +26,7 @@ import {
 } from './Tags.styles'
 import TagGroupModal from './components/TagGroupModal'
 import TagModal from './components/TagModal'
+import Button from '@components/common/Button'
 
 function Tags({ onBack }) {
   const dispatch = useDispatch()
@@ -108,12 +102,12 @@ function Tags({ onBack }) {
   return (
     <Container>
       <Header>
-        {onBack && <BackButton onClick={onBack}>←</BackButton>}
+        {onBack && <Button variant="secondary" onClick={onBack}>←</Button>}
         <HeaderContent>
-            <ActionButton onClick={handleCreateGroup}>
+            <Button variant="primary" onClick={handleCreateGroup}>
               <span>+</span>
               Buat Grup Tag
-            </ActionButton>
+            </Button>
         </HeaderContent>
       </Header>
 

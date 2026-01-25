@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import Button from '@components/common/Button'
 import {
   Card,
   CardHeader,
@@ -11,9 +12,9 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  ActionButton,
   TagList,
   Tag,
+  StatusBadge,
 } from './SessionCard.styles'
 
 function SessionCard({ session }) {
@@ -57,6 +58,36 @@ function SessionCard({ session }) {
     }
     return label[session.status]
   }
+
+  const getStatusText = (status) => {
+    const statusText = {
+      created: "Belum Dimulai",
+      started: "Sedang Berlangsung",
+      completed: "Selesai",
+      expired: "Kadaluarsa"
+    }
+    return statusText[status] || status
+  }
+
+  const getStatusIcon = (status) => {
+    const icons = {
+      created: "⏳",
+      started: "▶️",
+      completed: "✓",
+      expired: "⏰"
+    }
+    return icons[status] || "•"
+  }
+
+  const getButtonVariant = (status) => {
+    const variants = {
+      created: "primary",
+      started: "success",
+      completed: "secondary",
+      expired: "primary"
+    }
+    return variants[status] || "secondary"
+  }
   
   const topicTags = session.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
   const batchTags = session.tags?.filter(tag => tag.tagGroup?.name === 'batch') || []
@@ -99,6 +130,12 @@ function SessionCard({ session }) {
 
       <StatsRow>
         <StatItem>
+          <StatLabel>Status</StatLabel>
+          <StatusBadge status={session.status}>
+            {getStatusIcon(session.status)} {getStatusText(session.status)}
+          </StatusBadge>
+        </StatItem>
+        <StatItem>
           <StatLabel>Durasi</StatLabel>
           <StatValue>{formatDuration(session.durationMinutes)}</StatValue>
         </StatItem>
@@ -114,9 +151,9 @@ function SessionCard({ session }) {
       </StatsRow>
 
       <CardActions>
-        <ActionButton onClick={() => onViewSession(session)}>
+        <Button variant={getButtonVariant(session.status)} fullWidth onClick={() => onViewSession(session)}>
           {getTextLabel(session)}
-        </ActionButton>
+        </Button>
       </CardActions>
     </Card>
   )

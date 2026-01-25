@@ -76,7 +76,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
 
   const handlePayNow = async () => {
     if (transaction?.invoiceUrl) {
-      window.open(transaction.invoiceUrl, '_blank')
+      window.location.href = transaction.invoiceUrl
     }
   }
 
@@ -267,12 +267,13 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                       uploadText="Klik untuk upload bukti pembayaran"
                       actions={
                         uploadedBlob && (
-                          <UploadButton
+                          <Button
+                            variant="primary"
                             onClick={handleAttachEvidence}
                             disabled={loading.isAttachingEvidence || isUploading}
                           >
                             {loading.isAttachingEvidence ? 'Mengirim...' : 'Kirim'}
-                          </UploadButton>
+                          </Button>
                         )
                       }
                     />
@@ -283,9 +284,9 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
               {/* Action Buttons */}
               {transaction.paymentStatus === 'pending' && transaction.paymentMethod === 'xendit' && (
                 <ActionButtons>
-                  <PayNowButton onClick={handlePayNow}>
+                  <Button variant="primary" onClick={handlePayNow}>
                     💳 Bayar Sekarang
-                  </PayNowButton>
+                  </Button>
                 </ActionButtons>
               )}
             </>

@@ -18,6 +18,7 @@ import {
   EmptyTitle,
   EmptyDescription
 } from './Chatbot.styles'
+import Button from '@components/common/Button'
 
 const Chatbot = () => {
   const dispatch = useDispatch()
@@ -66,9 +67,9 @@ const Chatbot = () => {
         <LeftPanel $hidden={!!selectedConversationId}>
         <Header>
           <HeaderTitle>Percakapan</HeaderTitle>
-          <NewChatButton onClick={handleNewConversation}>
+          <Button variant="primary" onClick={handleNewConversation}>
             + Percakapan Baru
-          </NewChatButton>
+          </Button>
         </Header>
 
         <SearchContainer>

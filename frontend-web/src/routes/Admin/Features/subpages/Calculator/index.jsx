@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminCalculatorTopics } from '@store/calculator/action'
 import { actions } from '@store/calculator/reducer'
@@ -11,11 +11,9 @@ import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
-  AddTopicButton,
   TopicsGrid,
   TopicCard,
   TopicHeader,
@@ -27,7 +25,6 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  ActionButton,
   EmptyState,
   TagList,
   Tag
@@ -59,21 +56,22 @@ function Calculator({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>Back</BackButton>
+        <Button variant="secondary" onClick={onBack}>Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Kalkulator</Title>
           </TitleSection>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <AddTopicButton
+            <Button
+              variant="secondary"
               secondary
               onClick={() => setIsSettingsModalOpen(true)}
             >
               Pengaturan
-            </AddTopicButton>
-            <AddTopicButton onClick={handleOpenCreateModal}>
+            </Button>
+            <Button variant="primary" onClick={handleOpenCreateModal}>
               Tambah Kalkulator
-            </AddTopicButton>
+            </Button>
           </div>
         </HeaderContent>
       </Header>
@@ -143,15 +141,16 @@ function Calculator({ onBack }) {
                   </TopicStats>
 
                   <CardActions>
-                    <ActionButton onClick={() => handleCalculatorClick(calculator)}>
+                    <Button variant="secondary" fullWidth onClick={() => handleCalculatorClick(calculator)}>
                       Edit
-                    </ActionButton>
-                    <ActionButton
-                      danger
+                    </Button>
+                    <Button
+                      variant="danger"
+                      fullWidth
                       onClick={(e) => handleDelete(e, calculator.id)}
                     >
                       Delete
-                    </ActionButton>
+                    </Button>
                   </CardActions>
                 </TopicCard>
               )

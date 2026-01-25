@@ -15,10 +15,10 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  SelectButton
 } from './CalculatorList.styles'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { CalculatorRoute } from '../../../../routes'
+import Button from '@components/common/Button'
 
 function CalculatorList() {
   const { topics, loading } = useSelector(state => state.calculator)
@@ -91,9 +91,9 @@ function CalculatorList() {
               </StatItem>
             </CalculatorStats>
 
-            <SelectButton onClick={() => navigate(generatePath(CalculatorRoute.detailRoute, { id: calculator.id }))}>
+            <Button variant="primary" onClick={() => navigate(generatePath(CalculatorRoute.detailRoute, { id: calculator.id }))}>
               Gunakan Kalkulator
-            </SelectButton>
+            </Button>
           </CalculatorCard>
         )
       })}

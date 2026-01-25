@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { usePricingPlans } from './hooks/usePricingPlans'
 import { usePlanModal } from './hooks/usePlanModal'
@@ -22,6 +22,7 @@ import {
   SearchButton,
   ResultsCount
 } from './PricingPlans.styles'
+import Button from '@components/common/Button'
 
 function PricingPlans() {
   const {
@@ -140,10 +141,10 @@ function PricingPlans() {
 
       <HeaderSection>
         <SectionTitle>Pricing Plans</SectionTitle>
-        <AddButton onClick={() => openModal()}>
+        <Button variant="primary" onClick={() => openModal()}>
           <span>+</span>
           Add New Plan
-        </AddButton>
+        </Button>
       </HeaderSection>
 
       <FiltersSection>
@@ -174,9 +175,9 @@ function PricingPlans() {
               </ClearButton>
             )}
           </SearchInputWrapper>
-          <SearchButton type="submit">
+          <Button variant="primary" type="submit">
             🔍 Search
-          </SearchButton>
+          </Button>
         </SearchForm>
 
         <FilterButtonsGroup>

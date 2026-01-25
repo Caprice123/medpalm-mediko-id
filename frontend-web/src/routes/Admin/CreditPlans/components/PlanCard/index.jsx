@@ -13,8 +13,8 @@ import {
   PricePerCredit,
   DiscountBadge,
   ActionButtons,
-  ActionButton
 } from './PlanCard.styles'
+import Button from '@components/common/Button'
 
 const planIcons = {
   'basic': '📋',
@@ -68,15 +68,15 @@ function PlanCard({ plan, onEdit, onToggle, formatPrice }) {
       )}
 
       <ActionButtons>
-        <ActionButton onClick={() => onEdit(plan)}>
+        <Button variant="secondary" onClick={() => onEdit(plan)}>
           Edit
-        </ActionButton>
-        <ActionButton
-          variant="warning"
+        </Button>
+        <Button
+          variant="primary"
           onClick={() => onToggle(plan)}
         >
           {plan.isActive ? 'Disable' : 'Enable'}
-        </ActionButton>
+        </Button>
       </ActionButtons>
     </Card>
   )

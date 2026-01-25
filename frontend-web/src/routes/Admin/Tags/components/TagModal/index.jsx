@@ -15,10 +15,10 @@ import {
   HintText,
   ErrorText,
   ModalFooter,
-  Button,
   LoadingSpinner,
   EmptyState
 } from './TagModal.styles'
+import Button from '@components/common/Button'
 
 function TagModal({ isOpen, mode, isLoading, formik, onClose, onSubmit }) {
   const { tagGroups, loading } = useSelector(state => state.tagGroups)

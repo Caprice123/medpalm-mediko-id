@@ -10,7 +10,6 @@ import TherapyTab from './components/tabs/TherapyTab'
 import {
   Container,
   Header,
-  BackButton,
   TitleRow,
   TitleSection,
   Title,
@@ -114,9 +113,9 @@ function SessionResult() {
       <Container>
         <Wrapper>
             <Header>
-            <BackButton onClick={() => navigate('/osce-practice')}>
+            <Button variant="secondary" onClick={() => navigate(-1)}>
                 ← Kembali
-            </BackButton>
+            </Button>
             <ErrorMessage>
                 <span>⚠️</span>
                 <span>{error || 'Sesi tidak ditemukan'}</span>
@@ -131,9 +130,9 @@ function SessionResult() {
     <Container>
         <Wrapper>
             <Header>
-                <BackButton onClick={() => navigate('/osce-practice')}>
+                <Button variant="secondary" onClick={() => navigate(-1)}>
                 ← Kembali
-                </BackButton>
+                </Button>
 
                 <TitleRow>
                 <TitleSection>

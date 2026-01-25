@@ -22,23 +22,14 @@ import {
   FilterTabs,
   FilterTab,
   PlanDescription,
-  PaymentMethodSelector,
-  PaymentMethodTitle,
-  PaymentMethodOptions,
-  PaymentMethodOption,
-  PaymentMethodName,
-  PaymentMethodDescription,
-  PaymentMethodActions,
-  CancelButton,
-  ConfirmButton
 } from './CreditPurchase.styles'
+import Button from '@components/common/Button'
 
 function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionDetail }) {
   const dispatch = useDispatch()
   const plans = useSelector(state => state.pricing.plans)
   const loading = useSelector(state => state.pricing.loading.isPlansLoading)
   const error = useSelector(state => state.pricing.error)
-  const purchasing = useSelector(state => state.pricing.loading.isPurchaseLoading)
 
   const [activeFilter, setActiveFilter] = useState('all')
   const [purchasingPlanId, setPurchasingPlanId] = useState(null)
@@ -95,26 +86,6 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
     } finally {
       setPurchasingPlanId(null)
     }
-  }
-
-  const getBundleTypeLabel = (type) => {
-    const labels = {
-      credits: 'Paket Kredit',
-      subscription: 'Langganan',
-      hybrid: 'Paket Hybrid'
-    }
-    return labels[type] || type
-  }
-
-  const getPlanBenefitText = (plan) => {
-    if (plan.bundleType === 'credits') {
-      return `You will receive ${plan.creditsIncluded} credits after payment confirmation.`
-    } else if (plan.bundleType === 'subscription') {
-      return `Your subscription will be activated for ${plan.durationMonths} month(s) after payment confirmation.`
-    } else if (plan.bundleType === 'hybrid') {
-      return `You will receive ${plan.creditsIncluded} credits and ${plan.durationMonths} month(s) subscription after payment confirmation.`
-    }
-    return 'Your purchase will be processed after payment confirmation.'
   }
 
   const filteredPlans = plans.filter(plan => {
@@ -198,12 +169,14 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
                     {plan.description || 'Akses semua fitur pembelajaran premium'}
                   </PlanDescription>
 
-                  <PurchaseButton
+                  <Button
+                    variant="primary"
                     onClick={() => handlePlanSelect(plan)}
+                    fullWidth
                     disabled={purchasingPlanId === plan.id}
                   >
                     {purchasingPlanId === plan.id ? 'Memproses...' : 'Pilih Paket'}
-                  </PurchaseButton>
+                  </Button>
                 </PlanCard>
               ))}
             </PlansGrid>

@@ -77,9 +77,9 @@ function NotesList() {
             </UpdatedText>
 
             <Button
-              variant="outline"
+              variant="primary"
+              fullWidth
               onClick={() => navigate(generatePath(SummaryNotesRoute.detailRoute, { id: note.id }))}
-              style={{ width: '100%' }}
             >
               Lihat Ringkasan
             </Button>

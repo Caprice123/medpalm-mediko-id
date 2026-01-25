@@ -49,6 +49,8 @@ function QuizList() {
               {quiz.description || 'Tidak ada deskripsi'}
             </QuizDescription>
 
+            <div style={{ flex: 1}}></div>
+
             {/* University Tags */}
             {quiz.universityTags && quiz.universityTags.length > 0 && (
               <TagList>
@@ -85,9 +87,9 @@ function QuizList() {
             </QuizStats>
 
             <Button
-              variant="outline"
+              variant="primary"
+              fullWidth
               onClick={() => navigate(generatePath(AnatomyQuizRoute.detailRoute, { id: quiz.id }))}
-              style={{ width: '100%' }}
             >
               Select
             </Button>

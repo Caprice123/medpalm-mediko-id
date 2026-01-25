@@ -9,12 +9,10 @@ import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
   Actions,
-  ActionButton
 } from './AnatomyQuiz.styles'
 import { Filter } from './components/Filter'
 import UpdateQuizModal from './components/UpdateQuizModal'
@@ -47,18 +45,18 @@ function AnatomyQuiz({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button variant="secondary" onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Quiz Anatomi</Title>
           </TitleSection>
           <Actions>
-            <ActionButton secondary onClick={() => setUiState({ ...uiState, setIsFeatureSettingModalOpen: true })}>
+            <Button variant="secondary" secondary onClick={() => setUiState({ ...uiState, setIsFeatureSettingModalOpen: true })}>
               Pengaturan
-            </ActionButton>
-            <ActionButton onClick={() => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "create" })}>
+            </Button>
+            <Button variant="primary" onClick={() => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "create" })}>
               + Tambah Quiz Baru
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

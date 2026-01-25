@@ -6,7 +6,6 @@ import {
   CardTitle,
   Description,
   CardActions,
-  CardActionButton,
   CardIcon,
 } from './FeaturesList.styles'
 

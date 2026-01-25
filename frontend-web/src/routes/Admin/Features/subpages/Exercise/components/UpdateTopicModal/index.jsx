@@ -1,6 +1,7 @@
 import { memo, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
 import { DndContext, closestCenter } from '@dnd-kit/core'
@@ -19,17 +20,13 @@ import {
   ExistingFileInfo,
   FileIcon,
   FileName,
-  RemoveFileButton,
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
-  AddQuestionButton,
   QuestionCard,
   QuestionHeader,
   QuestionNumber,
   DragHandle,
-  RemoveQuestionButton,
-  EditQuestionButton,
   QuestionText,
   AnswerSection,
   AnswerLabel,
@@ -43,7 +40,6 @@ import {
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   HelpText,
   EmptyState
 } from './UpdateTopicModal.styles'
@@ -88,12 +84,12 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
         </QuestionNumber>
         {!isEditing && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <EditQuestionButton type="button" onClick={() => onEdit(question)}>
+            <Button variant="secondary" size="small" onClick={() => onEdit(question)}>
               Edit
-            </EditQuestionButton>
-            <RemoveQuestionButton type="button" onClick={() => onRemove(index)}>
+            </Button>
+            <Button variant="danger" size="small" onClick={() => onRemove(index)}>
               Remove
-            </RemoveQuestionButton>
+            </Button>
           </div>
         )}
       </QuestionHeader>
@@ -147,10 +143,7 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
                   <>
                     {editData.image?.url && (
                       <PhotoView src={editData.image.url}>
-                        <Button
-                          type="button"
-                          style={{ backgroundColor: '#3b82f6', color: 'white', fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                        >
+                        <Button variant="primary" size="small">
                           Lihat Gambar
                         </Button>
                       </PhotoView>
@@ -162,7 +155,7 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
           </FormSection>
 
           <EditButtonGroup>
-            <Button onClick={onCancelEdit}>
+            <Button variant="secondary" onClick={onCancelEdit}>
               Batal
             </Button>
             <Button variant="primary" onClick={onSaveEdit}>
@@ -301,7 +294,7 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -396,7 +389,9 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
             actions={
                 <>
                 {form.values.pdfFile && (
-                    <RemoveFileButton
+                    <Button
+                    variant="primary"
+                    size="small"
                     onClick={() => {
                         // Check if it's a File object or just an object with URL
                         const url = form.values.pdfFile instanceof File
@@ -404,10 +399,9 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
                             : form.values.pdfFile.url
                         window.open(url, '_blank')
                     }}
-                    style={{ backgroundColor: '#3b82f6', color: 'white' }}
                     >
                     Lihat
-                    </RemoveFileButton>
+                    </Button>
                 )}
                 </>
             }
@@ -436,11 +430,10 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
 
       <FormSection>
         <Button
-          type="button"
           variant="primary"
           onClick={handleGenerate}
           disabled={isGenerating || !canGenerate}
-          style={{ width: '100%', padding: '0.875rem 1.5rem', fontSize: '0.9375rem' }}
+          fullWidth
         >
           {isGenerating ? 'Generating...' : '✨ Generate Soal'}
         </Button>
@@ -449,9 +442,9 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
       <QuestionsSection>
         <QuestionsSectionHeader>
           <QuestionsSectionTitle>Soal ({form.values.questions.length})</QuestionsSectionTitle>
-          <AddQuestionButton type="button" onClick={handleAddQuestion}>
+          <Button variant="primary" size="small" onClick={handleAddQuestion}>
             + Tambah Soal Manual
-          </AddQuestionButton>
+          </Button>
         </QuestionsSectionHeader>
         {typeof form.errors.questions === 'string' && <ErrorText>{form.errors.questions}</ErrorText>}
 

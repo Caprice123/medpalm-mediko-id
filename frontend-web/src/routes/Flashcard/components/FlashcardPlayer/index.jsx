@@ -7,7 +7,6 @@ import {
   Header,
   HeaderTop,
   ProgressBadge,
-  BackButton,
   TopicInfo,
   TagList,
   Tag,
@@ -20,7 +19,6 @@ import {
   Flashcard,
   CardFront,
   CardBack,
-  CardLabel,
   CardContent,
   CardContentInner,
   CardImage,
@@ -28,9 +26,7 @@ import {
   AnswerLabel,
   AnswerInput,
   ShowAnswerSection,
-  ShowAnswerButton,
   NavigationButtons,
-  NavButton,
   FeedbackSection,
   FeedbackBadge,
   FeedbackText,
@@ -39,6 +35,7 @@ import {
   ComparisonLabel,
   ComparisonValue
 } from './FlashcardPlayer.styles'
+import Button from '@components/common/Button'
 
 const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -70,6 +67,15 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
     return topicSnapshot?.tags?.filter(tag => tag.tagGroupId === semesterGroupId) || []
   }, [topicSnapshot?.tags, semesterGroupId])
 
+  useEffect(() => {
+    // Reset when moving to next card
+    setIsFlipped(false)
+    setShowFeedback(false)
+    setCurrentFeedback(null)
+    setCurrentAnswer('')
+    setStartTime(Date.now())
+  }, [currentCardIndex])
+
   // Cards are already sorted by spaced repetition from backend
   const cards = topicSnapshot?.cards || []
 
@@ -87,14 +93,6 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const currentCard = cards[currentCardIndex]
   const isLastCard = currentCardIndex === cards.length - 1
 
-  useEffect(() => {
-    // Reset when moving to next card
-    setIsFlipped(false)
-    setShowFeedback(false)
-    setCurrentFeedback(null)
-    setCurrentAnswer('')
-    setStartTime(Date.now())
-  }, [currentCardIndex])
 
   // Calculate similarity (same logic as backend for instant feedback)
   const calculateSimilarity = (str1, str2) => {
@@ -190,9 +188,9 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
         {/* Header with Progress */}
         <Header>
         <HeaderTop>
-          <BackButton onClick={onBack}>
+          <Button variant="secondary" onClick={onBack}>
             ← Kembali
-          </BackButton>
+          </Button>
           <ProgressBadge>
             Card {currentCardIndex + 1}/{cards.length}
           </ProgressBadge>
@@ -332,38 +330,38 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
       {/* Submit Answer Button */}
       {!showFeedback && (
         <ShowAnswerSection>
-          <ShowAnswerButton onClick={handleSubmitAnswer} disabled={!currentAnswer.trim()}>
+          <Button variant="primary" onClick={handleSubmitAnswer} disabled={!currentAnswer.trim()}>
             Submit Jawaban
-          </ShowAnswerButton>
+          </Button>
         </ShowAnswerSection>
       )}
 
       {/* Navigation Buttons */}
       <NavigationButtons>
-        <NavButton
-          variant="ghost"
+        <Button
+          variant="secondary"
           onClick={handlePrevious}
           disabled={currentCardIndex === 0}
         >
           ← Sebelumnya
-        </NavButton>
+        </Button>
 
         {isLastCard ? (
-          <NavButton
+          <Button
             variant="primary"
             onClick={() => handleNext()}
             disabled={!showFeedback}
           >
             Selesai
-          </NavButton>
+          </Button>
         ) : (
-          <NavButton
+          <Button
             variant="primary"
             onClick={handleNext}
             disabled={!showFeedback}
           >
             Selanjutnya →
-          </NavButton>
+          </Button>
         )}
       </NavigationButtons>
       </PlayerContainer>

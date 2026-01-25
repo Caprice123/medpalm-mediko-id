@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
-import { formatFileSize } from '@utils/fileUtils'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import {
@@ -10,29 +9,22 @@ import {
   Label,
   Input,
   Textarea,
-  PreviewButton,
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
-  AddQuestionButton,
   QuestionCard,
   QuestionCardHeader,
   QuestionNumber,
-  RemoveQuestionButton,
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   AnswerTypeToggle,
-  AnswerTypeButton,
   OptionContainer,
   OptionRadio,
   OptionLabel,
-  OptionInput,
-  AddOptionButton,
-  RemoveOptionButton,
   HelpText
 } from './CreateQuizModal.styles'
+import Button from "@components/common/Button"
 import { useSelector } from 'react-redux'
 import { useCreateQuiz } from '../../hooks/subhooks/useCreateQuiz'
 
@@ -74,7 +66,7 @@ const CreateQuizModal = ({ onClose }) => {
         size="large"
         footer={
           <>
-            <Button onClick={handleModalClose}>Cancel</Button>
+            <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
             <Button
               variant="primary"
               onClick={form.handleSubmit}
@@ -134,9 +126,9 @@ const CreateQuizModal = ({ onClose }) => {
                 <>
                   {form.values.blob.url && (
                     <PhotoView src={form.values.blob.url}>
-                      <PreviewButton type="button">
+                      <Button variant="primary" type="button">
                         👁️ Preview
-                      </PreviewButton>
+                      </Button>
                     </PhotoView>
                   )}
                 </>
@@ -173,9 +165,9 @@ const CreateQuizModal = ({ onClose }) => {
         <QuestionsSection>
           <QuestionsSectionHeader>
             <QuestionsSectionTitle>Input Fields for Students</QuestionsSectionTitle>
-            <AddQuestionButton type="button" onClick={handleAddQuestion}>
+            <Button variant="primary" type="button" onClick={handleAddQuestion}>
               + Add Input Field
-            </AddQuestionButton>
+            </Button>
           </QuestionsSectionHeader>
           {form.errors.questions && <ErrorText>{form.errors.questions}</ErrorText>}
 
@@ -183,9 +175,9 @@ const CreateQuizModal = ({ onClose }) => {
             <QuestionCard key={question.tempId || index}>
               <QuestionCardHeader>
                 <QuestionNumber>Input Field {index + 1}</QuestionNumber>
-                <RemoveQuestionButton type="button" onClick={() => handleRemoveQuestion(index)}>
+                <Button variant="danger" type="button" onClick={() => handleRemoveQuestion(index)}>
                   Remove
-                </RemoveQuestionButton>
+                </Button>
               </QuestionCardHeader>
 
               <FormSection>
@@ -204,20 +196,21 @@ const CreateQuizModal = ({ onClose }) => {
               <FormSection>
                 <Label>Answer Type *</Label>
                 <AnswerTypeToggle>
-                  <AnswerTypeButton
+                  <Button
+                    variant="secondary"
                     type="button"
                     isActive={question.answerType === 'text'}
                     onClick={() => form.setFieldValue(`questions.${index}.answerType`, 'text')}
                   >
                     📝 Text Input
-                  </AnswerTypeButton>
-                  <AnswerTypeButton
+                  </Button>
+                  <Button
                     type="button"
                     isActive={question.answerType === 'multiple_choice'}
                     onClick={() => form.setFieldValue(`questions.${index}.answerType`, 'multiple_choice')}
                   >
                     ☑️ Multiple Choice
-                  </AnswerTypeButton>
+                  </Button>
                 </AnswerTypeToggle>
               </FormSection>
 
@@ -261,7 +254,8 @@ const CreateQuizModal = ({ onClose }) => {
                           placeholder={`Option ${String.fromCharCode(65 + choiceIndex)}`}
                         />
                         {question.choices.length > 2 && (
-                          <RemoveOptionButton
+                          <Button
+                            variant="danger"
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
@@ -269,16 +263,17 @@ const CreateQuizModal = ({ onClose }) => {
                             }}
                           >
                             Remove
-                          </RemoveOptionButton>
+                          </Button>
                         )}
                       </OptionContainer>
                     ))}
-                    <AddOptionButton
+                    <Button
+                      variant="primary"
                       type="button"
                       onClick={() => handleAddOption(index)}
                     >
                       + Add Option
-                    </AddOptionButton>
+                    </Button>
                   </div>
                   <HelpText>Click on an option to mark it as the correct answer</HelpText>
                   {form.errors[`questions.${index}.answer`] && (

@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
@@ -14,10 +13,7 @@ import {
   NoteContainer,
   NoteHeader,
   HeaderTop,
-  BackButton,
   TopicInfo,
-  NoteTitle,
-  NoteDescription,
   TagList,
   Tag,
   ContentSection,
@@ -30,8 +26,6 @@ const SummaryNotesDetail = () => {
   const dispatch = useDispatch()
   const { detail: note, loading } = useSelector(state => state.summaryNotes)
   const [parsedContent, setParsedContent] = useState(null)
-  const contentRef = useRef(null)
-  const [imageList, setImageList] = useState([])
 
   useEffect(() => {
     if (id) {
@@ -52,7 +46,7 @@ const SummaryNotesDetail = () => {
         if (Array.isArray(parsed)) {
           setParsedContent(parsed)
         }
-      } catch (e) {
+      } catch {
         // If not JSON, convert markdown to blocks
         const blocks = markdownToBlocks(note.content)
         setParsedContent(blocks)
@@ -82,9 +76,9 @@ const SummaryNotesDetail = () => {
       <Content>
         <NoteHeader>
           <HeaderTop>
-            <BackButton onClick={handleBack}>
+            <Button variant="secondary" onClick={handleBack}>
               ← Kembali
-            </BackButton>
+            </Button>
           </HeaderTop>
 
           <TopicInfo>

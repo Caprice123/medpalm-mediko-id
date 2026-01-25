@@ -16,9 +16,8 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  ViewButton,
-  DeleteButton
 } from './ConversationsList.styles'
+import Button from "@components/common/Button"
 
 function ConversationsList({ onView, onDelete }) {
   const { conversations, loading } = useSelector((state) => state.chatbot)
@@ -75,18 +74,18 @@ function ConversationsList({ onView, onDelete }) {
           </ConversationStats>
 
           <CardActions>
-            <ViewButton onClick={(e) => {
+            <Button variant="primary" fullWidth onClick={(e) => {
               e.stopPropagation()
               onView(conversation)
             }}>
               Lihat Pesan
-            </ViewButton>
-            <DeleteButton onClick={(e) => {
+            </Button>
+            <Button variant="danger" fullWidth onClick={(e) => {
               e.stopPropagation()
               onDelete(conversation)
             }}>
               Hapus
-            </DeleteButton>
+            </Button>
           </CardActions>
         </ConversationCard>
       ))}

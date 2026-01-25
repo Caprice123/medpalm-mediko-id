@@ -18,6 +18,7 @@ import {
   ActionButton
 } from './MultipleChoice.styles'
 import { Filter } from './components/Filter'
+import Button from '@components/common/Button'
 
 function MultipleChoice({ onBack }) {
   const dispatch = useDispatch()
@@ -59,18 +60,18 @@ function MultipleChoice({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Multiple Choice Quiz</Title>
           </TitleSection>
           <Actions>
-            <ActionButton secondary onClick={() => setUiState({ ...uiState, isFeatureSettingModalOpen: true })}>
+            <Button onClick={() => setUiState({ ...uiState, isFeatureSettingModalOpen: true })}>
               Pengaturan
-            </ActionButton>
-            <ActionButton onClick={() => setUiState({ ...uiState, isTopicModalOpen: true, mode: "create" })}>
+            </Button>
+            <Button variant="primary" onClick={() => setUiState({ ...uiState, isTopicModalOpen: true, mode: "create" })}>
               + Tambah Topik Baru
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

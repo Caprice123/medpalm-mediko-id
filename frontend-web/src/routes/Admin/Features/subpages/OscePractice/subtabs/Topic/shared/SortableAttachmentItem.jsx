@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { AttachmentItem, DragHandle } from "../components/CreateTopicModal/CreateTopicModal.styles"
 import { PhotoProvider, PhotoView } from "react-photo-view"
 import FileUpload from "../../../../../../../../components/common/FileUpload"
-import { PreviewButton } from "../../../../AnatomyQuiz/components/UpdateQuizModal/UpdateQuizModal.styles"
+import Button from '@components/common/Button'
 import { CSS } from "@dnd-kit/utilities"
 import { useMemo } from "react"
 
@@ -39,9 +39,9 @@ function SortableAttachmentItem({ attachment, index, onRemove }) {
             <>
                 {attachment.url && (
                 <PhotoView src={attachment.url}>
-                    <PreviewButton type="button">
+                    <Button variant="primary" type="button">
                     👁️ Preview
-                    </PreviewButton>
+                    </Button>
                 </PhotoView>
                 )}
             </>

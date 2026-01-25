@@ -1,5 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchUserOsceTopics, createOsceSession } from '@store/oscePractice/userAction'
+import { useNavigate } from 'react-router-dom'
+import Pagination from '@components/Pagination'
+import FilterComponent from '@components/common/Filter'
+import Dropdown from '@components/common/Dropdown'
+import { fetchTags } from '@store/tags/action'
+import { actions as tagActions } from '@store/tags/reducer'
+import TextInput from '../../../../components/common/TextInput'
 import {
   ModalContent,
   TopicsGrid,
@@ -15,20 +25,8 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  CardActionButton,
   EmptyState,
 } from './TopicSelectionModal.styles'
-import Button from '@components/common/Button'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserOsceTopics, createOsceSession } from '@store/oscePractice/userAction'
-import { useNavigate } from 'react-router-dom'
-import Pagination from '@components/Pagination'
-import FilterComponent from '@components/common/Filter'
-import Dropdown from '@components/common/Dropdown'
-import CommonButton from '@components/common/Button'
-import { fetchTags } from '@store/tags/action'
-import { actions as tagActions } from '@store/tags/reducer'
-import TextInput from '../../../../components/common/TextInput'
 
 function TopicSelectionModal({ onClose }) {
   const { userTopics, loading } = useSelector(state => state.oscePractice)
@@ -129,13 +127,13 @@ function TopicSelectionModal({ onClose }) {
               justifyContent: 'flex-end',
               marginTop: '1rem'
             }}>
-              <CommonButton
+              <Button
                 variant="primary"
                 type="submit"
                 disabled={loading.isLoadingUserTopics}
               >
                 🔍 Cari
-              </CommonButton>
+              </Button>
             </div>
           </form>
         </div>

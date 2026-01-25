@@ -64,7 +64,7 @@ function SettingsModal({ isOpen, onClose }) {
       size="large"
       footer={
         <>
-          <Button onClick={onClose} disabled={loading.isUpdateConstantLoading}>
+          <Button variant="secondary" onClick={onClose} disabled={loading.isUpdateConstantLoading}>
             Batal
           </Button>
           <Button variant="primary" onClick={form.handleSubmit} disabled={loading.isUpdateConstantLoading}>
@@ -253,6 +253,7 @@ function SettingsModal({ isOpen, onClose }) {
                   style={{ fontFamily: 'monospace', fontSize: '13px' }}
                 />
                 <Button
+                  variant="primary"
                   type="button"
                   onClick={addDomain}
                   disabled={!newDomain.trim() || getDomains().length >= 20}

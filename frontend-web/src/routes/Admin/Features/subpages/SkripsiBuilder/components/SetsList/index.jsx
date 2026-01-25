@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import Button from '@components/common/Button'
 import {
   LoadingOverlay,
   EmptyState,
@@ -16,9 +17,7 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  CardActions,
-  ViewButton,
-  DeleteButton
+  CardActions
 } from './SetsList.styles'
 
 function SetsList({ onView, onDelete }) {
@@ -80,12 +79,12 @@ function SetsList({ onView, onDelete }) {
           </SetStats>
 
           <CardActions>
-            <ViewButton onClick={() => onView(set)}>
+            <Button variant="primary" fullWidth onClick={() => onView(set)}>
               Lihat Detail
-            </ViewButton>
-            <DeleteButton onClick={() => onDelete(set)}>
+            </Button>
+            <Button variant="danger" fullWidth onClick={() => onDelete(set)}>
               Hapus
-            </DeleteButton>
+            </Button>
           </CardActions>
         </SetCard>
       ))}

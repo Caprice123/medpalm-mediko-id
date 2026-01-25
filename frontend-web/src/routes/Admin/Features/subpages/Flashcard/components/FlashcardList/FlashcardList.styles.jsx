@@ -25,20 +25,6 @@ export const EmptyStateText = styled.p`
   margin-bottom: 1.5rem;
 `
 
-export const ActionButton = styled.button`
-  background: #3b82f6;
-  color: white;
-  border: 1px solid #3b82f6;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-
-  &:hover {
-    background: #2563eb;
-  }
-`
 
 export const QuizzesGrid = styled.div`
   display: grid;
@@ -156,26 +142,6 @@ export const CardActions = styled.div`
   gap: 0.5rem;
 `
 
-export const CardActionButton = styled.button`
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid ${props => props.danger ? '#ef4444' : '#3b82f6'};
-  background: white;
-  color: ${props => props.danger ? '#ef4444' : '#3b82f6'};
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-
-  &:hover {
-    background: ${props => props.danger ? '#fef2f2' : '#eff6ff'};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`
 
 export const TagList = styled.div`
   display: flex;

@@ -6,15 +6,14 @@ import RubricsTab from './subtabs/Rubric'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
   Actions,
-  ActionButton,
   TabsContainer,
   Tab
 } from './OscePractice.styles'
+import Button from '@components/common/Button'
 
 function OscePracticeAdminPage({ onBack }) {
   const [activeTab, setActiveTab] = useState('topics') // 'topics' or 'observations'
@@ -23,15 +22,15 @@ function OscePracticeAdminPage({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola OSCE Practice</Title>
           </TitleSection>
           <Actions>
-            <ActionButton secondary onClick={() => setIsFeatureSettingOpen(true)}>
+            <Button secondary onClick={() => setIsFeatureSettingOpen(true)}>
               Pengaturan
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

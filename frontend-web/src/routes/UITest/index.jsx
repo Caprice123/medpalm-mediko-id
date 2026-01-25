@@ -873,7 +873,7 @@ function UITest() {
                     <p style={{ margin: 0 }}>Footer actions with space between.</p>
                   </CardBody>
                   <CardFooter align="between">
-                    <Button variant="ghost">Back</Button>
+                    <Button variant="ghost">Kembali</Button>
                     <Button variant="primary">Next</Button>
                   </CardFooter>
                 </Card>

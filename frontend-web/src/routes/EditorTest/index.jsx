@@ -12,10 +12,10 @@ import {
   OutputSection,
   OutputTitle,
   OutputContent,
-  ExportButton,
   ButtonGroup
 } from './EditorTest.styles'
 import { useState } from 'react'
+import Button from '@components/common/Button'
 
 export default function EditorTest() {
   const [content, setContent] = useState('')
@@ -374,9 +374,9 @@ export default function EditorTest() {
             </p>
           </div>
           <ButtonGroup>
-            <ExportButton onClick={handleExportToWord} disabled={isExporting}>
+            <Button onClick={handleExportToWord} disabled={isExporting}>
               {isExporting ? '⏳ Exporting...' : '📥 Export to Word'}
-            </ExportButton>
+            </Button>
           </ButtonGroup>
         </div>
 

@@ -6,10 +6,10 @@ import {
   FormSection,
   Label,
   Input,
-  Button,
   HelpText,
   ErrorText,
 } from './CreateObservationGroupModal.styles'
+import Button from '@components/common/Button'
 import { validationSchema } from './validationSchema'
 
 

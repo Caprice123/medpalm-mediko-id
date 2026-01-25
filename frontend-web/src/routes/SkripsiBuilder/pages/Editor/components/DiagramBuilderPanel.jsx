@@ -271,7 +271,6 @@ import {
   TipsBox,
   TipsIcon,
   TipsContent,
-  GenerateButton,
   HistoryContainer,
   HistoryHeader,
   HistoryTitle,
@@ -288,13 +287,13 @@ import {
   HistoryCardFooter,
   HistoryCardDate,
   HistoryCardActions,
-  HistoryCardButton,
   EmptyHistory,
   PreviewContainer,
   PreviewToolbar,
   ToolbarBtn,
   ExcalidrawWrapper,
 } from './DiagramBuilderPanel.styles';
+import Button from '@components/common/Button'
 
 const DiagramBuilderPanel = ({ currentTab, style }) => {
   const dispatch = useAppDispatch();
@@ -735,12 +734,13 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
               </ConfigBody>
             </ConfigSection>
 
-            <GenerateButton
+            <Button
+              variant="primary"
               onClick={handleGenerate}
               disabled={isGenerating || !description.trim()}
             >
               {isGenerating ? '⏳ Generating...' : '🎨 Buat Diagram dengan AI'}
-            </GenerateButton>
+            </Button>
           </FormContent>
         </FormContainer>
       )}
@@ -806,12 +806,12 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
                       })}
                     </HistoryCardDate>
                     <HistoryCardActions>
-                      <HistoryCardButton $primary onClick={(e) => {
+                      <Button variant="primary" onClick={(e) => {
                         e.stopPropagation();
                         handleLoadDiagram(diagram);
                       }}>
                         Lihat
-                      </HistoryCardButton>
+                      </Button>
                     </HistoryCardActions>
                   </HistoryCardFooter>
                 </HistoryCard>

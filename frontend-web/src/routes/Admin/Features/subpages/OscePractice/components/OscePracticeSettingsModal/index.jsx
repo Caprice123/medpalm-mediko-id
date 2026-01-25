@@ -73,7 +73,7 @@ function OscePracticeSettingsModal({ onClose }) {
       size="large"
       footer={
         <>
-          <Button onClick={onClose}>Batal</Button>
+          <Button variant="secondary" onClick={onClose}>Batal</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}

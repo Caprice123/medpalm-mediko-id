@@ -19,6 +19,7 @@ import {
   CardActions,
   CardActionButton
 } from './TopicCard.styles'
+import Button from '@components/common/Button'
 
 function TopicCard({ topic, onEdit, onDelete }) {
   const { loading } = useSelector((state) => state.oscePractice)
@@ -88,16 +89,17 @@ function TopicCard({ topic, onEdit, onDelete }) {
       </CardStats>
 
       <CardActions>
-        <CardActionButton onClick={() => onEdit(topic)}>
+        <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
           Edit
-        </CardActionButton>
-        <CardActionButton
-          danger
+        </Button>
+        <Button
+          variant="danger"
+          fullWidth
           onClick={() => onDelete(topic.id)}
           disabled={loading?.isDeletingTopic}
         >
           Delete
-        </CardActionButton>
+        </Button>
       </CardActions>
     </Card>
   )

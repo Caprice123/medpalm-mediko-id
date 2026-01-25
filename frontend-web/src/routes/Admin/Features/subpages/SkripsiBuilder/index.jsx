@@ -8,13 +8,12 @@ import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
   Actions,
-  ActionButton
 } from './SkripsiBuilder.styles'
+import Button from '@components/common/Button'
 import { Filter } from './components/Filter'
 
 const SkripsiBuilderAdmin = ({ onBack }) => {
@@ -67,15 +66,15 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button variant="secondary" onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Skripsi Builder</Title>
           </TitleSection>
           <Actions>
-            <ActionButton onClick={() => setUiState({ ...uiState, isSettingsModalOpen: true })}>
+            <Button variant="secondary" onClick={() => setUiState({ ...uiState, isSettingsModalOpen: true })}>
               Pengaturan Fitur
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

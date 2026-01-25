@@ -58,6 +58,8 @@ function TopicList() {
               <TopicDescription>
                 {topic.description || 'Tidak ada deskripsi'}
               </TopicDescription>
+              
+              <div style={{ flex: 1 }}></div>
 
               {/* University Tags */}
               {universityTags.length > 0 && (
@@ -81,7 +83,6 @@ function TopicList() {
                 </TagList>
               )}
 
-              <div style={{ flex: 1 }}></div>
 
               <TopicStats>
                 <StatItem>
@@ -101,7 +102,7 @@ function TopicList() {
               </TopicStats>
 
               <ModeButtonContainer>
-                <Button variant="outline" onClick={() => handleSelectMode(topic.id, 'learning')} style={{ flex: 1 }}>
+                <Button variant="secondary" onClick={() => handleSelectMode(topic.id, 'learning')} style={{ flex: 1 }}>
                   📖 Learning
                 </Button>
                 <Button variant="primary" onClick={() => handleSelectMode(topic.id, 'quiz')} style={{ flex: 1 }}>

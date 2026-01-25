@@ -7,7 +7,6 @@ import {
   QuizForm,
   FormHeader,
   HeaderTop,
-  BackButton,
   TopicInfo,
   TagList,
   Tag,
@@ -86,9 +85,9 @@ const AnatomyQuizDetail = () => {
             <Content>
                 <FormHeader>
                     <HeaderTop>
-                        <BackButton onClick={handleBack}>
+                        <Button onClick={handleBack}>
                             ← Kembali
-                        </BackButton>
+                        </Button>
                     </HeaderTop>
 
                     <TopicInfo>

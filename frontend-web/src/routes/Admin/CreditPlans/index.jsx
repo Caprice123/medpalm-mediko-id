@@ -4,6 +4,7 @@ import { usePlanModal } from './hooks/usePlanModal'
 import PlansList from './components/PlansList/index'
 import PlanModal from './components/PlanModal/index'
 import { Container, HeaderSection, SectionTitle, AddButton, LoadingState, ErrorMessage } from './CreditPlans.styles'
+import Button from '@components/common/Button'
 
 function CreditPlans() {
   const {
@@ -57,10 +58,10 @@ function CreditPlans() {
 
       <HeaderSection>
         <SectionTitle>Credit Plans</SectionTitle>
-        <AddButton onClick={() => openModal()}>
+        <Button variant="primary" onClick={() => openModal()}>
           <span>+</span>
           Add New Plan
-        </AddButton>
+        </Button>
       </HeaderSection>
 
       <PlansList

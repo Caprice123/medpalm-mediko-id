@@ -129,7 +129,7 @@ const UpdateCalculatorModal = ({ calculator, onClose }) => {
         size="xlarge"
         footer={
           <>
-            <Button onClick={handleClose}>Batal</Button>
+            <Button variant="secondary" onClick={handleClose}>Batal</Button>
             <Button
               variant="primary"
               onClick={form.handleSubmit}
@@ -614,7 +614,7 @@ const UpdateCalculatorModal = ({ calculator, onClose }) => {
             You have unsaved changes. Are you sure you want to close?
           </ConfirmMessage>
           <ConfirmActions>
-            <Button onClick={handleCancelClose}>Cancel</Button>
+            <Button variant="secondary" onClick={handleCancelClose}>Cancel</Button>
             <Button variant="primary" onClick={handleConfirmClose}>
               Close Without Saving
             </Button>

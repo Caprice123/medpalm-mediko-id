@@ -2,46 +2,20 @@ import React, { useEffect, useState, useMemo } from 'react'
 import {
   Container,
   Content,
-  Header,
-  Title,
-  Subtitle,
-  CalculatorsList,
-  CalculatorCard,
-  CalculatorTitle,
-  CalculatorDescription,
-  FieldCount,
   CalculatorForm,
   FormHeader,
   HeaderTop,
-  BackButton,
   TopicInfo,
   TagList,
   Tag,
-  FormTitle,
-  FormDescription,
   InputsSection,
-  SectionTitle,
-  InputsGrid,
   FormGroup,
-  FormLabel,
-  LabelWithDescription,
-  FieldDescription,
-  FormInput,
-  CalculateButton,
   ResultSection,
   ResultHeader,
   ResultLabel,
   ResultValue,
   ResultUnit,
-  ResultDetails,
-  ResultDetailItem,
-  DetailLabel,
-  DetailValue,
   ErrorMessage,
-  LoadingSpinner,
-  EmptyState,
-  EmptyIcon,
-  EmptyText,
   ClassificationsSection,
   ClassificationTitle,
   ClassificationItem,
@@ -50,6 +24,8 @@ import {
   ClassificationEmpty,
   ClinicalReferencesSection,
   ClinicalReferenceBox,
+  FormLabel,
+  LabelWithDescription,
   ClinicalReferenceItem
 } from './Detail.styles'
 import Button from '@components/common/Button'
@@ -139,9 +115,9 @@ const CalculatorDetail = () => {
             <Content>
                 <FormHeader>
                     <HeaderTop>
-                        <BackButton onClick={() => navigate(-1)}>
+                        <Button variant="secondary" onClick={() => navigate(-1)}>
                             ← Kembali
-                        </BackButton>
+                        </Button>
                     </HeaderTop>
 
                     <TopicInfo>

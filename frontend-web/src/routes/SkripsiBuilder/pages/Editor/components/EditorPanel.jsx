@@ -8,6 +8,7 @@ import {
   ExportButton,
   EditorContent as StyledEditorContent
 } from '../Editor.styles'
+import Button from '@components/common/Button'
 
 const EditorPanel = memo(({
   editorContent,
@@ -23,12 +24,12 @@ const EditorPanel = memo(({
     return (
       <StyledEditorPanel>
         <EditorActions>
-          <SaveButton disabled>
+          <Button variant="secondary" disabled>
             <FaSave /> Simpan
-          </SaveButton>
-          <ExportButton disabled>
+          </Button>
+          <Button disabled>
             <FaFileWord /> Export Word
-          </ExportButton>
+          </Button>
         </EditorActions>
         <StyledEditorContent>
           <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
@@ -42,12 +43,12 @@ const EditorPanel = memo(({
   return (
     <StyledEditorPanel>
       <EditorActions>
-        <SaveButton onClick={onSave} disabled={!hasUnsavedChanges || isSavingContent}>
+        <Button onClick={onSave} disabled={!hasUnsavedChanges || isSavingContent}>
           <FaSave /> {isSavingContent ? 'Menyimpan...' : 'Simpan'}
-        </SaveButton>
-        <ExportButton onClick={onExportWord}>
+        </Button>
+        <Button variant="primary" onClick={onExportWord}>
           <FaFileWord /> Export Word
-        </ExportButton>
+        </Button>
       </EditorActions>
 
       <StyledEditorContent>

@@ -7,7 +7,6 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
-  ActionButton,
   TopicsGrid,
   TopicCard,
   TopicCardHeader,
@@ -19,10 +18,10 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  CardActionButton,
   TagList,
   Tag
 } from './ExerciseList.styles'
+import Button from "@components/common/Button"
 
 function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
   const dispatch = useDispatch()
@@ -46,9 +45,9 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
         <EmptyStateIcon>📚</EmptyStateIcon>
         <EmptyStateText>Belum Ada Topik</EmptyStateText>
         {onCreateFirst && (
-          <ActionButton onClick={onCreateFirst}>
+          <Button variant="primary" onClick={onCreateFirst}>
             Buat Topik Pertama
-          </ActionButton>
+          </Button>
         )}
       </EmptyState>
     )
@@ -114,16 +113,17 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
               </TopicStats>
 
               <CardActions>
-                <CardActionButton onClick={() => onEdit(topic)}>
+                <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
                   Edit
-                </CardActionButton>
-                <CardActionButton
-                  danger
+                </Button>
+                <Button
+                  variant="danger"
+                  fullWidth
                   onClick={() => onDelete(topic.id)}
                   disabled={loading?.isDeletingTopic}
                 >
                   Delete
-                </CardActionButton>
+                </Button>
               </CardActions>
             </TopicCard>
           )

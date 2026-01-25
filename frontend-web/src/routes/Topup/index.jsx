@@ -10,7 +10,6 @@ import {
   getStatusLabel,
   getTypeLabel,
   formatCurrency,
-  formatDate
 } from '@utils/transactionUtils'
 import {
   Container,
@@ -18,7 +17,6 @@ import {
   TitleRow,
   PageTitle,
   PageSubtitle,
-  TopupButton,
   CreditBalanceCard,
   BalanceGrid,
   BalanceSection,
@@ -73,12 +71,6 @@ function Topup() {
   const handleShowDetail = (purchaseId) => {
     setSelectedPurchaseId(purchaseId)
     setShowDetailModal(true)
-  }
-
-  // Handle upload evidence for pending manual transactions
-  const handleUploadEvidence = (purchaseId) => {
-    // TODO: Implement evidence upload modal
-    alert('Upload evidence feature will be implemented')
   }
 
   // Table columns configuration
@@ -177,9 +169,9 @@ function Topup() {
               Kelola kredit dan langganan Anda
             </PageSubtitle>
           </div>
-          <TopupButton onClick={handleTopupClick}>
+          <Button variant="primary" onClick={handleTopupClick}>
             Top Up Sekarang
-          </TopupButton>
+          </Button>
         </TitleRow>
       </HeaderSection>
 

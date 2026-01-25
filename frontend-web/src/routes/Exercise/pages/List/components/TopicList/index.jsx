@@ -110,9 +110,9 @@ function TopicList() {
               </TopicStats>
 
               <Button
-                variant="outline"
+                variant="primary"
+                fullWidth
                 onClick={() => navigate(generatePath(ExerciseRoute.detailRoute, { id: topic.id }))}
-                style={{ width: '100%' }}
               >
                 Mulai Latihan
               </Button>

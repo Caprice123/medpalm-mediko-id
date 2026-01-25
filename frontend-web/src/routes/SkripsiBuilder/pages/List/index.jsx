@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '@store/store'
 import { fetchSets, createSet } from '@store/skripsi/action'
 import { FaPlus } from 'react-icons/fa'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import { Filter } from './components/Filter'
 import SetsList from './components/SetsList'
 import Pagination from '@components/Pagination'
@@ -14,7 +15,6 @@ import {
   HeaderLeft,
   Title,
   Subtitle,
-  CreateButton
 } from './List.styles'
 
 const SkripsiList = () => {
@@ -58,17 +58,14 @@ const SkripsiList = () => {
   return (
     <Container>
       <ContentWrapper>
-        <Header>
-          <HeaderLeft>
-            <Title>Skripsi Builder</Title>
-            <Subtitle>Kelola dan buat konten skripsi Anda dengan bantuan AI</Subtitle>
-          </HeaderLeft>
-          <CreateButton onClick={() => setShowCreateModal(true)}>
-            <FaPlus /> Buat Set Baru
-          </CreateButton>
-        </Header>
 
         <Filter />
+        <Header>
+          <div></div>
+          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+            <FaPlus /> Buat Set Baru
+          </Button>
+        </Header>
 
         <SetsList />
 
@@ -91,41 +88,23 @@ const SkripsiList = () => {
         }}
         title="Buat Set Baru"
         footer={
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-            <button
+          <>
+            <Button
+              variant="secondary"
               onClick={() => {
                 setShowCreateModal(false)
                 setFormData({ title: '', description: '' })
               }}
-              style={{
-                padding: '10px 20px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                background: 'white',
-                color: '#6b7280',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               onClick={handleCreateSet}
-              style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '6px',
-                background: '#06b6d4',
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}
             >
               Buat Set
-            </button>
-          </div>
+            </Button>
+          </>
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

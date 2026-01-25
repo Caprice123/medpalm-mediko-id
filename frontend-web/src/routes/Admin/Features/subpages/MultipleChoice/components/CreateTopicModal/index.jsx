@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
 import {
@@ -11,21 +12,16 @@ import {
   QuestionsSection,
   QuestionsSectionHeader,
   QuestionsSectionTitle,
-  AddQuestionButton,
   QuestionCard,
   QuestionCardHeader,
   QuestionNumber,
-  RemoveQuestionButton,
   OptionContainer,
   OptionLabel,
   OptionRadio,
   OptionInput,
-  AddOptionButton,
-  RemoveOptionButton,
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   HelpText,
   ContentTypeButtons,
   ContentTypeButton
@@ -83,7 +79,7 @@ const CreateTopicModal = ({ onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -248,9 +244,9 @@ const CreateTopicModal = ({ onClose }) => {
       <QuestionsSection>
         <QuestionsSectionHeader>
           <QuestionsSectionTitle>Questions</QuestionsSectionTitle>
-          <AddQuestionButton type="button" onClick={handleAddQuestion}>
+          <Button variant="primary" size="small" onClick={handleAddQuestion}>
             + Add Question
-          </AddQuestionButton>
+          </Button>
         </QuestionsSectionHeader>
         {form.errors.questions && <ErrorText>{form.errors.questions}</ErrorText>}
 
@@ -258,9 +254,9 @@ const CreateTopicModal = ({ onClose }) => {
           <QuestionCard key={question.tempId || index}>
             <QuestionCardHeader>
               <QuestionNumber>Question {index + 1}</QuestionNumber>
-              <RemoveQuestionButton type="button" onClick={() => handleRemoveQuestion(index)}>
+              <Button variant="danger" size="small" onClick={() => handleRemoveQuestion(index)}>
                 Remove
-              </RemoveQuestionButton>
+              </Button>
             </QuestionCardHeader>
 
             <FormSection>
@@ -325,24 +321,26 @@ const CreateTopicModal = ({ onClose }) => {
                       placeholder={`Option ${String.fromCharCode(65 + optIndex)}`}
                     />
                     {question.options.length > 2 && (
-                      <RemoveOptionButton
-                        type="button"
+                      <Button
+                        variant="danger"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleRemoveOption(index, optIndex)
                         }}
                       >
                         Remove
-                      </RemoveOptionButton>
+                      </Button>
                     )}
                   </OptionContainer>
                 ))}
-                <AddOptionButton
-                  type="button"
+                <Button
+                  variant="primary"
+                  size="small"
                   onClick={() => handleAddOption(index)}
                 >
                   + Add Option
-                </AddOptionButton>
+                </Button>
               </div>
               <HelpText>Click on an option to mark it as the correct answer. You can add or remove options as needed.</HelpText>
             </FormSection>

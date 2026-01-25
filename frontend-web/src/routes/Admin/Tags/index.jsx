@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   Content,
   GroupsContainer,
@@ -19,12 +18,12 @@ import {
   TagName,
   TagActions,
   EmptyGroupState,
-  EmptyIcon,
   EmptyText,
   LoadingState
 } from './Tags.styles'
 import TagModal from './components/TagModal'
 import { useTagSection } from './hooks/useTagSection'
+import Button from '@components/common/Button'
 
 function Tags({ onBack }) {
   const { tags, loading } = useSelector(state => state.tags)
@@ -41,7 +40,7 @@ function Tags({ onBack }) {
   return (
     <Container>
       <Header>
-        {onBack && <BackButton onClick={onBack}>←</BackButton>}
+        {onBack && <Button variant="secondary" onClick={onBack}>←</Button>}
         <HeaderContent>
           {/* No create tag group button since we don't allow creation from frontend */}
         </HeaderContent>

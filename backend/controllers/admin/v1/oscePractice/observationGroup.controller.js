@@ -4,11 +4,10 @@ import { OsceObservationGroupSerializer } from '#serializers/admin/v1/osceObserv
 
 class ObservationGroupController {
   async create(req, res) {
-    const { name, order } = req.body
+    const { name } = req.body
 
     const group = await CreateOsceObservationGroupService.call({
       name,
-      order
     })
 
     return res.status(201).json({
@@ -18,11 +17,10 @@ class ObservationGroupController {
 
   async update(req, res) {
     const { id } = req.params
-    const { name, order } = req.body
+    const { name } = req.body
 
     const updatedGroup = await UpdateOsceObservationGroupService.call(id, {
       name,
-      order
     })
 
     return res.status(200).json({

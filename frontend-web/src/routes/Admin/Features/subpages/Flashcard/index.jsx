@@ -10,14 +10,13 @@ import Pagination from '@components/Pagination'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
   Actions,
-  ActionButton
 } from './Flashcard.styles'
 import { Filter } from './components/Filter'
+import Button from '@components/common/Button'
 
 function FlashcardAdminPage({ onBack }) {
   const dispatch = useDispatch()
@@ -46,18 +45,18 @@ function FlashcardAdminPage({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button variant="secondary" onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Flashcard</Title>
           </TitleSection>
           <Actions>
-            <ActionButton secondary onClick={() => setUiState({ ...uiState, isFeatureSettingOpen: true })}>
+            <Button variant="secondary" onClick={() => setUiState({ ...uiState, isFeatureSettingOpen: true })}>
               Pengaturan
-            </ActionButton>
-            <ActionButton onClick={() => setUiState({ ...uiState, isDeckModalOpen: true, mode: "create" })}>
+            </Button>
+            <Button variant="primary" onClick={() => setUiState({ ...uiState, isDeckModalOpen: true, mode: "create" })}>
               + Tambah Deck Baru
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

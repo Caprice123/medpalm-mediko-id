@@ -14,8 +14,8 @@ import {
   Checkbox,
   CheckboxLabel,
   ButtonGroup,
-  Button
 } from './PlanModal.styles'
+import Button from '@components/common/Button'
 
 function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose }) {
   if (!isOpen) return null
@@ -131,10 +131,10 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
           </ModalBody>
         <ModalFooter>
         <ButtonGroup>
-            <Button type="button" onClick={onClose}>
+            <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
             </Button>
-            <Button type="submit" variant="primary">
+            <Button variant="primary" type="submit">
             {editingPlan ? 'Update Plan' : 'Create Plan'}
             </Button>
         </ButtonGroup>

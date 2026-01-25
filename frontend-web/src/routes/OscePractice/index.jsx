@@ -27,7 +27,7 @@ function OscePracticePage() {
 
   useEffect(() => {
     dispatch(fetchUserOsceSessions())
-  }, [dispatch, sessionsPagination.page])
+  }, [dispatch])
 
   const handleStartPractice = () => {
     navigate('/osce-practice/select-topic')
@@ -35,6 +35,7 @@ function OscePracticePage() {
 
   const handlePageChange = (page) => {
     dispatch(actions.setSessionsPage(page))
+    dispatch(fetchUserOsceSessions())
   }
 
   // Loading state
@@ -54,23 +55,14 @@ function OscePracticePage() {
 
   return (
     <Container>
-        <PageContainer>
-        <Header>
-            <div>
-            <Title>OSCE Practice</Title>
-            <Subtitle>
-                Latihan Objective Structured Clinical Examination dengan AI
-            </Subtitle>
-            </div>
-            <Button variant="primary" onClick={handleStartPractice}>
-            Mulai Latihan Baru
-            </Button>
-        </Header>
-
         {/* Session History */}
+        <PageContainer>
         <Section>
             <SectionHeader>
-            <SectionTitle>Riwayat Latihan</SectionTitle>
+                <SectionTitle>Riwayat Latihan</SectionTitle>
+                <Button variant="primary" onClick={handleStartPractice}>
+                    Mulai Latihan Baru
+                </Button>
             </SectionHeader>
 
             {loading.isLoadingUserSessions ? (

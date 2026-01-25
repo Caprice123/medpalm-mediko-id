@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
@@ -11,10 +12,8 @@ import {
   ErrorText,
   StatusToggle,
   StatusOption,
-  Button,
   EditorContainer,
-  EditorHint,
-  GenerateButton
+  EditorHint
 } from './CreateNoteModal.styles'
 import { useSelector } from 'react-redux'
 import { useCreateNote } from '../../hooks/subhooks/useCreateNote'
@@ -67,7 +66,7 @@ const CreateNoteModal = ({ onClose }) => {
       size="large"
       footer={
         <>
-          <Button onClick={handleModalClose}>Batal</Button>
+          <Button variant="secondary" onClick={handleModalClose}>Batal</Button>
           <Button
             variant="primary"
             onClick={form.handleSubmit}
@@ -114,7 +113,9 @@ const CreateNoteModal = ({ onClose }) => {
           actions={
             <>
               {form.values.uploadedFile?.url && (
-                <GenerateButton
+                <Button
+                  variant="primary"
+                  size="small"
                   as="a"
                   href={form.values.uploadedFile.url}
                   target="_blank"
@@ -122,14 +123,16 @@ const CreateNoteModal = ({ onClose }) => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   Lihat
-                </GenerateButton>
+                </Button>
               )}
-              <GenerateButton
+              <Button
+                variant="primary"
+                size="small"
                 onClick={handleGenerate}
                 disabled={loading.isGenerating}
               >
                 {loading.isGenerating ? 'Generating...' : '✨ Generate'}
-              </GenerateButton>
+              </Button>
             </>
           }
         />

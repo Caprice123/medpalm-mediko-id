@@ -621,21 +621,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
               {/* Clinical References Section */}
               <FormGroup>
                 <FormLabel>Referensi Klinis</FormLabel>
-                {/* {formData.clinical_references && formData.clinical_references.length > 0 && (
-                  <ReferencesList>
-                    {formData.clinical_references.map((ref, index) => (
-                      <ReferenceItem key={index}>
-                        <ReferenceText>{ref}</ReferenceText>
-                        <RemoveReferenceButton
-                          type="button"
-                          onClick={() => removeClinicalReference(index)}
-                        >
-                          ×
-                        </RemoveReferenceButton>
-                      </ReferenceItem>
-                    ))}
-                  </ReferencesList>
-                )} */}
                 {formData.clinical_references.map((ref, index) => (
                   <AddReferenceWrapper key={index} style={{ marginBottom: '0.5rem' }}>
                     <TextInput

@@ -9,13 +9,13 @@ import {
   Container,
   Header,
   HeaderContent,
-  BackButton,
   TopicTitle,
   TopicInput,
   ChatArea,
   LoadingState,
   ErrorState
 } from './Conversation.styles'
+import Button from '@components/common/Button'
 
 function ChatbotConversationPanel({ conversationId, onBack }) {
   const dispatch = useDispatch()
@@ -217,9 +217,9 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       <Header>
         <HeaderContent>
           {onBack && (
-            <BackButton onClick={onBack}>
+            <Button variant="secondary" onClick={onBack}>
               ← Kembali
-            </BackButton>
+            </Button>
           )}
           {isEditingTitle ? (
             <TopicInput

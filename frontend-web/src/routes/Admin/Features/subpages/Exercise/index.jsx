@@ -9,13 +9,12 @@ import { Filter } from './components/Filter'
 import {
   Container,
   Header,
-  BackButton,
   HeaderContent,
   TitleSection,
   Title,
   Actions,
-  ActionButton
 } from './Exercise.styles'
+import Button from "@components/common/Button"
 
 function LatihanSoal({ onBack }) {
   const dispatch = useDispatch()
@@ -53,19 +52,20 @@ function LatihanSoal({ onBack }) {
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>← Back</BackButton>
+        <Button variant="secondary" onClick={onBack}>← Kembali</Button>
         <HeaderContent>
           <TitleSection>
             <Title>Kelola Latihan Soal</Title>
           </TitleSection>
           <Actions>
-            <ActionButton
-              secondary
+            <Button
+              variant="secondary"
               onClick={() => setUiState({ ...uiState, isFeatureSettingOpen: true })}
             >
               Pengaturan
-            </ActionButton>
-            <ActionButton
+            </Button>
+            <Button
+              variant="primary"
               onClick={() => setUiState({
                 ...uiState,
                 isTopicModalOpen: true,
@@ -74,7 +74,7 @@ function LatihanSoal({ onBack }) {
               })}
             >
               + Tambah Topik Baru
-            </ActionButton>
+            </Button>
           </Actions>
         </HeaderContent>
       </Header>

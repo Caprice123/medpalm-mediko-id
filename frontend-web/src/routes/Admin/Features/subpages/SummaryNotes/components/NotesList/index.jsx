@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'
+import Button from '@components/common/Button'
 import {
   LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
-  ActionButton,
   NotesGrid,
   NoteCard,
   NoteCardHeader,
@@ -16,9 +16,7 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  CardActions,
-  EditButton,
-  DeleteButton
+  CardActions
 } from './NotesList.styles'
 
 function NotesList({ onEdit, onDelete, onCreateFirst }) {
@@ -36,9 +34,9 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
         <EmptyStateIcon>📝</EmptyStateIcon>
         <EmptyStateText>No summary notes found</EmptyStateText>
         {onCreateFirst && (
-          <ActionButton onClick={onCreateFirst}>
+          <Button variant="primary" onClick={onCreateFirst}>
             Create Your First Summary Note
-          </ActionButton>
+          </Button>
         )}
       </EmptyState>
     )
@@ -95,15 +93,15 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
           </NoteStats>
 
           <CardActions>
-            <EditButton onClick={() => onEdit(note)}>
+            <Button variant="secondary" fullWidth onClick={() => onEdit(note)}>
               Edit
-            </EditButton>
-            <DeleteButton onClick={(e) => {
+            </Button>
+            <Button variant="danger" fullWidth onClick={(e) => {
               e.stopPropagation()
               onDelete(note)
             }}>
               Delete
-            </DeleteButton>
+            </Button>
           </CardActions>
         </NoteCard>
       ))}

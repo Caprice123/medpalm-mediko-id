@@ -52,7 +52,7 @@ export function Login() {
     <LoginContainer>
       {/* Back Button - Always visible across all screen sizes */}
       <BackButton to="/">
-        ← Kembali ke Beranda
+        ← Kembali
       </BackButton>
 
       {/* Left Panel - Branding & Features */}

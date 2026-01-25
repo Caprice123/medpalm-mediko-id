@@ -27,8 +27,6 @@ import {
   ExplanationTitle,
   ExplanationText,
   ActionsContainer,
-  RetryButton,
-  BackButton
 } from './QuizResults.styles'
 
 const QuizResults = ({ topic, answers, onRetry, onBack }) => {
@@ -139,12 +137,12 @@ const QuizResults = ({ topic, answers, onRetry, onBack }) => {
       </QuestionReview>
 
       <ActionsContainer>
-        <BackButton onClick={onBack}>
+        <Button variant="secondary" onClick={onBack}>
           ← Kembali ke Daftar
-        </BackButton>
-        <RetryButton onClick={onRetry}>
+        </Button>
+        <Button onClick={onRetry}>
           🔄 Coba Lagi
-        </RetryButton>
+        </Button>
       </ActionsContainer>
     </Container>
   )

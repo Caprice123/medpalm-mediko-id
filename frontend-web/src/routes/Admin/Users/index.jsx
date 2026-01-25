@@ -4,27 +4,19 @@ import Pagination from '@components/common/Pagination'
 import { useUserSection } from "./hooks/useUserSection"
 import {
   Container,
-  Header,
-  BackButton,
-  HeaderContent,
-  TitleSection,
-  Title,
-  Subtitle,
-  Actions,
-  ActionButton,
   TableContainer,
   EmptyState,
   StatusBadge,
   ActionButtons,
-  TableActionButton
 } from './Users.styles'
 import { Filter } from "./components/Filter"
 import UserDetailModal from "./components/UserDetailModal"
 import { actions } from "@store/user/reducer"
 import { formatDate } from "../../../utils/dateUtils"
+import Button from '@components/common/Button'
 
 function Users() {
-  const { filter, users, loading, pagination } = useSelector(state => state.user)
+  const { users, loading, pagination } = useSelector(state => state.user)
   const {
     uiState,
     useUserDetail,
@@ -106,9 +98,9 @@ function Users() {
       align: 'center',
       render: (user) => (
         <ActionButtons>
-          <TableActionButton onClick={() => useUserDetail.onOpen(user)}>
+          <Button variant="primary" onClick={() => useUserDetail.onOpen(user)}>
             Show Detail
-          </TableActionButton>
+          </Button>
         </ActionButtons>
       )
     }

@@ -214,7 +214,7 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
           </ModalBody>
         <ModalFooter>
         <ButtonGroup>
-            <Button type="button" onClick={onClose}>
+            <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
             </Button>
             <Button type="submit" variant="primary" onClick={onSubmit}>
