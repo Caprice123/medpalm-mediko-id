@@ -1,13 +1,9 @@
-import { CreateOsceTopicService } from '#services/osce/admin/createOsceTopicService'
-import { GetOsceTopicsService } from '#services/osce/admin/getOsceTopicsService'
-import { GetOsceTopicDetailService } from '#services/osce/admin/getOsceTopicDetailService'
-import { UpdateOsceTopicService } from '#services/osce/admin/updateOsceTopicService'
-import { OsceTopicSerializer } from '#serializers/admin/v1/osceTopicSerializer'
-import { OsceTopicListSerializer } from '#serializers/admin/v1/osceTopicListSerializer'
 import { GetRubricsService } from '#services/osce/admin/rubric/getRubricsService'
 import { CreateRubricService } from '#services/osce/admin/rubric/createRubricService'
 import { GetRubricService } from '#services/osce/admin/rubric/getRubricService'
 import { UpdateRubricService } from '#services/osce/admin/rubric/updateRubricService'
+import { RubricSerializer } from '#serializers/admin/v1/rubricSerializer'
+import { RubricListSerializer } from '#serializers/admin/v1/rubricListSerializer'
 
 class RubricsController {
   async index(req, res) {
@@ -17,8 +13,10 @@ class RubricsController {
         name
     })
 
+    const serializedRubrics = RubricListSerializer.serialize(result.rubrics)
+
     return res.status(200).json({
-      data: result.rubrics,
+      data: serializedRubrics,
     })
   }
 
@@ -33,8 +31,10 @@ class RubricsController {
         content
     })
 
+    const serializedRubric = RubricSerializer.serialize(rubric)
+
     return res.status(201).json({
-      data: rubric,
+      data: serializedRubric,
     })
   }
 
@@ -43,8 +43,10 @@ class RubricsController {
 
     const rubric = await GetRubricService.call(rubricId)
 
+    const serializedRubric = RubricSerializer.serialize(rubric)
+
     return res.status(200).json({
-      data: rubric
+      data: serializedRubric
     })
   }
 
@@ -55,13 +57,15 @@ class RubricsController {
       content
     } = req.body
 
-    const updatedTopic = await UpdateRubricService.call(rubricId, {
+    const updatedRubric = await UpdateRubricService.call(rubricId, {
       name,
       content
     })
 
+    const serializedRubric = RubricSerializer.serialize(updatedRubric)
+
     return res.status(200).json({
-      data: updatedTopic,
+      data: serializedRubric,
     })
   }
 }
