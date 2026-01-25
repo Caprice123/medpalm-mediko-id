@@ -2,6 +2,7 @@ import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
 import { fetchConstants, updateConstants } from "@store/constant/action"
+import { actions } from "@store/constant/reducer"
 
 export const useFeatureSetting = (onClose) => {
   const dispatch = useDispatch()
@@ -42,6 +43,7 @@ export const useFeatureSetting = (onClose) => {
         'summary_notes_generation_model',
         'summary_notes_generation_prompt'
       ]
+      dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants(keys))
 
       // Convert string boolean to actual boolean for toggle switch

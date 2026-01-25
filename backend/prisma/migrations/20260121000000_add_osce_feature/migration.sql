@@ -108,7 +108,6 @@ CREATE TABLE "osce_session_topic_snapshots" (
     "answer_key" TEXT,
     "knowledge_base" JSONB,
     "ai_model" TEXT NOT NULL,
-    "system_prompt" TEXT NOT NULL,
     "duration_minutes" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -261,7 +260,6 @@ CREATE INDEX "osce_session_observation_snapshots_observation_id_idx" ON "osce_se
 CREATE INDEX "osce_session_observation_snapshots_group_snapshot_id_observation_name_idx" ON "osce_session_observation_snapshots"("group_snapshot_id", "observation_name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "osce_session_rubric_snapshots_name_key" ON "osce_session_rubric_snapshots"("name");
 CREATE INDEX "osce_session_rubric_snapshots_rubric_id_idx" ON "osce_session_rubric_snapshots"("rubric_id");
 CREATE INDEX "osce_session_rubric_snapshots_osce_session_id_idx" ON "osce_session_rubric_snapshots"("osce_session_id");
 

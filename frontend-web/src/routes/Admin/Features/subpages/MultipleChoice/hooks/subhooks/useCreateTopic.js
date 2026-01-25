@@ -260,7 +260,7 @@ export const useCreateTopic = (closeCallback) => {
     ? form.values.uploadedBlobId !== null && !commonLoading.isUploading
     : !!form.values.textContent?.trim()
 
-  const isGenerating = loading.isGenerating || commonLoading.isUploading
+  const isGenerating = loading.isGenerating
 
   return {
     form,

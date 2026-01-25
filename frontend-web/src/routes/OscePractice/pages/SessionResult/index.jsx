@@ -7,6 +7,7 @@ import ChatsTab from './components/tabs/ChatsTab'
 import ObservationTab from './components/tabs/ObservationTab'
 import DiagnosisTab from './components/tabs/DiagnosisTab'
 import TherapyTab from './components/tabs/TherapyTab'
+import Button from '@components/common/Button'
 import {
   Container,
   Header,
@@ -31,6 +32,7 @@ import {
   ErrorMessage,
   Wrapper,
 } from './styles'
+import { oscePracticeRoutes } from '../../routes'
 
 const TABS = [
   { id: 'hasil', label: 'Hasil' },
@@ -130,50 +132,11 @@ function SessionResult() {
     <Container>
         <Wrapper>
             <Header>
-                <Button variant="secondary" onClick={() => navigate(-1)}>
-                ← Kembali
-                </Button>
-
-                <TitleRow>
-                <TitleSection>
-                    <Title>{sessionDetail.topicTitle || 'OSCE Session'}</Title>
-                    <Subtitle>{sessionDetail.topicDescription || 'Hasil Latihan OSCE'}</Subtitle>
-                </TitleSection>
-
-                {sessionDetail.totalScore !== null && sessionDetail.totalScore !== undefined && (
-                    <ScoreCard passing={isPassing()}>
-                    <ScoreLabel passing={isPassing()}>
-                        {isPassing() ? 'Lulus' : 'Tidak Lulus'}
-                    </ScoreLabel>
-                    <Score passing={isPassing()}>
-                        {calculatePercentage()}%
-                    </Score>
-                    <ScoreMax passing={isPassing()}>
-                        {sessionDetail.totalScore} / {sessionDetail.maxScore}
-                    </ScoreMax>
-                    </ScoreCard>
-                )}
-                </TitleRow>
-
-                <MetaInfo>
-                <MetaItem>
-                    <MetaLabel>Tanggal</MetaLabel>
-                    <MetaValue>{formatDate(sessionDetail.createdAt)}</MetaValue>
-                </MetaItem>
-                <MetaItem>
-                    <MetaLabel>Durasi</MetaLabel>
-                    <MetaValue>{formatDuration(sessionDetail.durationMinutes)}</MetaValue>
-                </MetaItem>
-                <MetaItem>
-                    <MetaLabel>AI Model</MetaLabel>
-                    <MetaValue>{sessionDetail.aiModelUsed || 'N/A'}</MetaValue>
-                </MetaItem>
-                <MetaItem>
-                    <MetaLabel>Credit Digunakan</MetaLabel>
-                    <MetaValue>{sessionDetail.creditsUsed || 0}</MetaValue>
-                </MetaItem>
-                </MetaInfo>
+            <Button variant="secondary" onClick={() => navigate("/osce-practice")}>
+            ← Kembali
+            </Button>
             </Header>
+            
 
             <Content>
                 <TabBar>

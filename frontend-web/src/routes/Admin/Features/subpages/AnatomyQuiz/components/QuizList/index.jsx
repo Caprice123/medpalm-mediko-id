@@ -20,6 +20,7 @@ import {
   TagList,
   Tag
 } from './QuizList.styles'
+import Button from '@components/common/Button'
 
 function QuizList({ onEdit, onDelete, onCreateFirst }) { 
   const { quizzes, loading } = useSelector((state) => state.anatomy)

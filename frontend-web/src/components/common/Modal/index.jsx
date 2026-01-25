@@ -32,7 +32,7 @@ function Modal({
   footer,
   size = 'medium',
   showCloseButton = true,
-  closeOnOverlayClick = true,
+  closeOnOverlayClick = false,
   className = ''
 }) {
   // Handle escape key

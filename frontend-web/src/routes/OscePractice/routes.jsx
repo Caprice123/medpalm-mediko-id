@@ -12,7 +12,7 @@ export const oscePracticeRoutes = [
     element: <OscePracticePage />
   },
   {
-    path: '/osce-practice/select-topic',
+    path: '/osce-practice/topics',
     element: <TopicSelection />
   },
   {

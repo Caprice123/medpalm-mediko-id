@@ -23,11 +23,18 @@ export const LogoContainer = styled.div`
   align-items: center;
 `;
 
-export const LogoImage = styled.img`
-  width: ${props => props.size || '80px'};
-  height: ${props => props.size || '80px'};
-  object-fit: contain;
+export const LogoImage = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
   animation: bounce 1.2s ease-in-out infinite;
+
+  img {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 6px;
+  }
 
   @keyframes bounce {
     0%, 100% {

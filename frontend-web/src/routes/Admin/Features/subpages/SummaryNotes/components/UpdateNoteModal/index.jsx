@@ -20,6 +20,7 @@ import { useUpdateNote } from '../../hooks/subhooks/useUpdateNote'
 
 const UpdateNoteModal = ({ onClose }) => {
   const { loading } = useSelector(state => state.summaryNotes)
+  const { loading: commonLoading } = useSelector(state => state.common)
   const { tags } = useSelector(state => state.tags)
 
   const {
@@ -64,6 +65,7 @@ const UpdateNoteModal = ({ onClose }) => {
       onClose={handleModalClose}
       title="Edit Ringkasan"
       size="large"
+      
       footer={
         <>
           <Button variant="secondary" onClick={handleModalClose}>Batal</Button>
@@ -141,7 +143,7 @@ const UpdateNoteModal = ({ onClose }) => {
             file={form.values.uploadedFile}
             onFileSelect={handleFileSelect}
             onRemove={handleRemoveFile}
-            isUploading={loading.isUploading}
+            isUploading={commonLoading.isUploading}
             acceptedTypes={['.pdf', '.pptx', '.docx']}
             acceptedTypesLabel="PDF, PPTX, atau DOCX"
             maxSizeMB={50}

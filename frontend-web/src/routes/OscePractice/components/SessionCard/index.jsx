@@ -15,28 +15,25 @@ import {
   TagList,
   Tag,
   StatusBadge,
+  InfoRow,
+  InfoLabel,
+  InfoValue,
+  ScoreTimeRow,
+  ScoreItem,
 } from './SessionCard.styles'
 
 function SessionCard({ session }) {
     const navigate = useNavigate()
 
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
-  }
+  // Format duration in HH:MM:SS
+  const formatTimeTaken = (minutes) => {
+    if (!minutes && minutes !== 0) return '-'
 
-  // Format duration
-  const formatDuration = (minutes) => {
-    if (!minutes) return '-'
-    return `${minutes} menit`
+    const hours = Math.floor(minutes / 60)
+    const mins = Math.floor(minutes % 60)
+    const secs = Math.floor((minutes * 60) % 60)
+
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }
 
   const onViewSession = (session) => {
@@ -69,16 +66,6 @@ function SessionCard({ session }) {
     return statusText[status] || status
   }
 
-  const getStatusIcon = (status) => {
-    const icons = {
-      created: "⏳",
-      started: "▶️",
-      completed: "✓",
-      expired: "⏰"
-    }
-    return icons[status] || "•"
-  }
-
   const getButtonVariant = (status) => {
     const variants = {
       created: "primary",
@@ -94,62 +81,46 @@ function SessionCard({ session }) {
 
   return (
     <Card>
-      <CardHeader>
-        <TopicInfo>
-          <TopicTitle>{session.topicTitle || 'Untitled Topic'}</TopicTitle>
-          {session.topicDescription && (
-            <TopicDescription>{session.topicDescription}</TopicDescription>
-          )}
-        </TopicInfo>
-        <DateBadge>{formatDate(session.createdAt)}</DateBadge>
-      </CardHeader>
+      {/* Title */}
+      <TopicTitle>{session.topicTitle || 'Untitled Topic'}</TopicTitle>
 
+      {/* Status Badge */}
+      <StatusBadge status={session.status}>
+        {getStatusText(session.status)}
+      </StatusBadge>
+
+      {topicTags.length > 0 && (
+        <InfoRow>
+          <InfoLabel>Topik :</InfoLabel>
+          <InfoValue>{topicTags.map(tag => tag.name).join(', ')}</InfoValue>
+        </InfoRow>
+      )}
+
+      {batchTags.length > 0 && (
+        <InfoRow>
+          <InfoLabel>Batch :</InfoLabel>
+          <InfoValue>{batchTags.map(tag => tag.name).join(', ')}</InfoValue>
+        </InfoRow>
+      )}
+
+      {/* Score and Time Row */}
+      {session.timeTaken > 0 && session.totalScore !== null && session.totalScore !== undefined && (
+      <ScoreTimeRow>
+        {session.totalScore !== null && session.totalScore !== undefined && (
+          <ScoreItem>
+            ⭐ {session.totalScore}{session.maxScore && ` / ${session.maxScore}`}
+          </ScoreItem>
+        )}
+        {session.timeTaken > 0 && (
+          <ScoreItem>
+            🕐 {formatTimeTaken(session.timeTaken)}
+          </ScoreItem>
+        )}
+      </ScoreTimeRow>
+      )}
       <div style={{flex: 1}}></div>
 
-      {/* University Tags */}
-      {topicTags.length > 0 && (
-        <TagList>
-          {topicTags.map((tag) => (
-            <Tag key={tag.id} university>
-              🏛️ {tag.name}
-            </Tag>
-          ))}
-        </TagList>
-      )}
-
-      {/* Semester Tags */}
-      {batchTags.length > 0 && (
-        <TagList>
-          {batchTags.map((tag) => (
-            <Tag key={tag.id} semester>
-              📚 {tag.name}
-            </Tag>
-          ))}
-        </TagList>
-      )}
-
-      <StatsRow>
-        <StatItem>
-          <StatLabel>Status</StatLabel>
-          <StatusBadge status={session.status}>
-            {getStatusIcon(session.status)} {getStatusText(session.status)}
-          </StatusBadge>
-        </StatItem>
-        <StatItem>
-          <StatLabel>Durasi</StatLabel>
-          <StatValue>{formatDuration(session.durationMinutes)}</StatValue>
-        </StatItem>
-        {session.totalScore !== null && session.totalScore !== undefined && (
-          <StatItem>
-            <StatLabel>Skor</StatLabel>
-            <StatValue>
-              {session.totalScore}
-              {session.maxScore && ` / ${session.maxScore}`}
-            </StatValue>
-          </StatItem>
-        )}
-      </StatsRow>
-
+      {/* Action Button */}
       <CardActions>
         <Button variant={getButtonVariant(session.status)} fullWidth onClick={() => onViewSession(session)}>
           {getTextLabel(session)}

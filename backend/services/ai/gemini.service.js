@@ -55,8 +55,8 @@ export class GeminiService extends BaseAiService {
 
         console.log(`Processing file buffer (${mimeType}) - Size: ${fileSizeMB.toFixed(2)} MB`);
 
-        if (fileSizeMB > 20) {
-            throw new Error(`File too large: ${fileSizeMB.toFixed(2)} MB (max 20 MB for inline data)`);
+        if (fileSizeMB > 50) {
+            throw new Error(`File too large: ${fileSizeMB.toFixed(2)} MB (max 50 MB for inline data)`);
         }
 
         // Convert to base64

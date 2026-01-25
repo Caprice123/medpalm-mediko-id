@@ -60,7 +60,7 @@ function DiagnosisTab() {
         </SectionTitle>
         <TextInput
           placeholder="Masukkan diagnosa utama..."
-          value={mainDiagnosis.diagnosis}
+          value={mainDiagnosis?.diagnosis}
           disabled
         />
       </FormSection>

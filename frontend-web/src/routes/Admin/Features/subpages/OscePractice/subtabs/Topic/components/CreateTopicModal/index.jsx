@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback, memo } from 'react'
 import { useSelector } from 'react-redux'
 import ModelDropdown from '@components/common/ModelDropdown'
 import Dropdown from '@components/common/Dropdown'
@@ -127,49 +127,10 @@ function CreateTopicModal({ onClose }) {
         </FormSection>
 
         <FormSection>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', color: '#374151' }}>
-            Knowledge Base
-          </label>
-          {form.values.knowledgeBase.map((item, index) => (
-            <div key={index} style={{ marginBottom: '0.75rem' }}>
-              <TextInput
-                placeholder="Judul basis pengetahuan"
-                value={item.key}
-                onChange={(e) => {
-                  const newKnowledgeBase = [...form.values.knowledgeBase]
-                  newKnowledgeBase[index].key = e.target.value
-                  form.setFieldValue('knowledgeBase', newKnowledgeBase)
-                }}
-              />
-              <div style={{ marginTop: '0.5rem' }}>
-                <Textarea
-                placeholder="Konten pengetahuan"
-                value={item.value}
-                onChange={(e) => {
-                  const newKnowledgeBase = [...form.values.knowledgeBase]
-                  newKnowledgeBase[index].value = e.target.value
-                  form.setFieldValue('knowledgeBase', newKnowledgeBase)
-                }}
-                rows={3}
-              />
-              </div>
-            </div>
-            ))}
-
-            <div style={{ marginTop: '0.5rem' }}>
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  form.setFieldValue('knowledgeBase', [...form.values.knowledgeBase, {
-                    key: '',
-                    value: ''
-                  }])
-                }}
-              >
-                Add Knowledge Item
-              </Button>
-            </div>
+          <KnowledgeBaseSection
+            knowledgeBase={form.values.knowledgeBase}
+            setFieldValue={form.setFieldValue}
+          />
         </FormSection>
 
         <FormSection>
@@ -207,7 +168,7 @@ function CreateTopicModal({ onClose }) {
 
         <FormSection>
           <AttachmentSection
-            form={form}
+            attachments={form.values.attachments}
             handleMultipleFilesSelect={handleMultipleFilesSelect}
             handleRemoveAttachment={handleRemoveAttachment}
             handleDragEnd={handleDragEnd}
@@ -215,7 +176,10 @@ function CreateTopicModal({ onClose }) {
         </FormSection>
 
         <FormSection>
-          <ObservationSection form={form} />
+          <ObservationSection
+            observations={form.values.observations}
+            setFieldValue={form.setFieldValue}
+          />
         </FormSection>
 
         <FormSection>
@@ -280,5 +244,72 @@ function CreateTopicModal({ onClose }) {
     </Modal>
   )
 }
+
+// Memoized Knowledge Base Section
+const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
+  const handleKeyChange = useCallback((index, value) => {
+    const newKnowledgeBase = [...knowledgeBase]
+    newKnowledgeBase[index].key = value
+    setFieldValue('knowledgeBase', newKnowledgeBase)
+  }, [knowledgeBase, setFieldValue])
+
+  const handleValueChange = useCallback((index, value) => {
+    const newKnowledgeBase = [...knowledgeBase]
+    newKnowledgeBase[index].value = value
+    setFieldValue('knowledgeBase', newKnowledgeBase)
+  }, [knowledgeBase, setFieldValue])
+
+  const handleAddItem = useCallback(() => {
+    setFieldValue('knowledgeBase', [...knowledgeBase, { key: '', value: '' }])
+  }, [knowledgeBase, setFieldValue])
+
+  return (
+    <>
+      <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', color: '#374151' }}>
+        Knowledge Base
+      </label>
+      {knowledgeBase.map((item, index) => (
+        <KnowledgeBaseItem
+          key={index}
+          index={index}
+          item={item}
+          onKeyChange={handleKeyChange}
+          onValueChange={handleValueChange}
+        />
+      ))}
+      <div style={{ marginTop: '0.5rem' }}>
+        <Button type="button" variant="primary" onClick={handleAddItem}>
+          Add Knowledge Item
+        </Button>
+      </div>
+    </>
+  )
+}, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.knowledgeBase) === JSON.stringify(nextProps.knowledgeBase)
+})
+
+// Memoized Knowledge Base Item
+const KnowledgeBaseItem = memo(({ index, item, onKeyChange, onValueChange }) => {
+  return (
+    <div style={{ marginBottom: '0.75rem' }}>
+      <TextInput
+        placeholder="Judul basis pengetahuan"
+        value={item.key}
+        onChange={(e) => onKeyChange(index, e.target.value)}
+      />
+      <div style={{ marginTop: '0.5rem' }}>
+        <Textarea
+          placeholder="Konten pengetahuan"
+          value={item.value}
+          onChange={(e) => onValueChange(index, e.target.value)}
+          rows={3}
+        />
+      </div>
+    </div>
+  )
+}, (prevProps, nextProps) => {
+  return prevProps.item.key === nextProps.item.key &&
+         prevProps.item.value === nextProps.item.value
+})
 
 export default CreateTopicModal

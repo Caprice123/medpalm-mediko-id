@@ -79,18 +79,7 @@ function ObservationTab() {
 
   return (
     <Container>
-      {/* Summary */}
-      <SummaryCard>
-        <SummaryText>
-          Observasi yang dipilih:
-        </SummaryText>
-        <SummaryCount>
-          {checkedCount} / {totalCount}
-        </SummaryCount>
-      </SummaryCard>
-
       {/* Section 1: All Available Observations */}
-      <SectionHeader>Daftar Observasi Tersedia</SectionHeader>
       {Object.entries(groupedObservations).map(([groupName, groupObs]) => (
         <ObservationGroup key={groupName}>
           <GroupHeader>{groupName}</GroupHeader>

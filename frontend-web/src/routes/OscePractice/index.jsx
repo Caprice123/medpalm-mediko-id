@@ -30,7 +30,7 @@ function OscePracticePage() {
   }, [dispatch])
 
   const handleStartPractice = () => {
-    navigate('/osce-practice/select-topic')
+    navigate('/osce-practice/topics')
   }
 
   const handlePageChange = (page) => {

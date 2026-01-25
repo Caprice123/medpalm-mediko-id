@@ -6,7 +6,7 @@ import FileUpload from '../../../../../../../../components/common/FileUpload'
 import SortableAttachmentItem from './SortableAttachmentItem'
 import { memo } from 'react'
 
-const AttachmentSection = ({ form, handleMultipleFilesSelect, handleRemoveAttachment, handleDragEnd }) => {
+const AttachmentSection = ({ attachments, handleMultipleFilesSelect, handleRemoveAttachment, handleDragEnd }) => {
   const { loading } = useSelector(state => state.common)
 
     const sensors = useSensors(
@@ -35,18 +35,18 @@ const AttachmentSection = ({ form, handleMultipleFilesSelect, handleRemoveAttach
             multiple
         />
 
-        {form.values.attachments.length > 0 && (
+        {attachments.length > 0 && (
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
             <SortableContext
-                items={form.values.attachments.map((att, idx) => att.blobId || idx)}
+                items={attachments.map((att, idx) => att.blobId || idx)}
                 strategy={verticalListSortingStrategy}
             >
                 <AttachmentsList>
-                {form.values.attachments.map((attachment, index) => (
+                {attachments.map((attachment, index) => (
                     <SortableAttachmentItem
                     key={attachment.blobId || index}
                     attachment={attachment}
@@ -63,5 +63,16 @@ const AttachmentSection = ({ form, handleMultipleFilesSelect, handleRemoveAttach
 }
 
 export default memo(AttachmentSection, (prevProps, nextProps) => {
-    return JSON.stringify(prevProps.form.values.attachments) === JSON.stringify(nextProps.form.values.attachments)
+    // Deep comparison of attachments array
+    const prevAttachments = prevProps.attachments
+    const nextAttachments = nextProps.attachments
+
+    if (prevAttachments.length !== nextAttachments.length) return false
+
+    return prevAttachments.every((prev, index) => {
+        const next = nextAttachments[index]
+        return prev.blobId === next.blobId &&
+               prev.filename === next.filename &&
+               prev.order === next.order
+    })
 })

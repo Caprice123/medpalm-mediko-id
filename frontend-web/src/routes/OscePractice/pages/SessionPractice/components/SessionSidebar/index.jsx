@@ -1,4 +1,4 @@
-import { useState, memo } from 'react'
+import { useState, memo, useEffect } from 'react'
 import {
   Sidebar,
   TimerCard,
@@ -19,9 +19,36 @@ import TimerSection from './components/TimerSection'
 import { useSelector } from 'react-redux'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 
+// LocalStorage key for auto-send preference
+const AUTO_SEND_STORAGE_KEY = 'osce_auto_send_enabled'
+
+// Helper functions for localStorage
+const getAutoSendPreference = () => {
+  try {
+    const stored = localStorage.getItem(AUTO_SEND_STORAGE_KEY)
+    return stored !== null ? JSON.parse(stored) : false // Default to false
+  } catch (error) {
+    console.error('Error reading auto-send preference:', error)
+    return false
+  }
+}
+
+const setAutoSendPreference = (value) => {
+  try {
+    localStorage.setItem(AUTO_SEND_STORAGE_KEY, JSON.stringify(value))
+  } catch (error) {
+    console.error('Error saving auto-send preference:', error)
+  }
+}
+
 function SessionSidebar({ onEndSession, isEndingSession }) {
-    const [autoSubmit, setAutoSubmit] = useState(false)
+    const [autoSubmit, setAutoSubmit] = useState(() => getAutoSendPreference())
     const { sessionDetail } = useSelector(state => state.oscePractice)
+
+    // Update localStorage when autoSubmit changes
+    useEffect(() => {
+      setAutoSendPreference(autoSubmit)
+    }, [autoSubmit])
 
   return (
     <Sidebar>
@@ -29,8 +56,8 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
 
       <TaskSection>
         <TaskContent>
-        <TaskHeader>Tugas</TaskHeader>
-        <CustomMarkdownRenderer item={sessionDetail?.topic.scenario || 'Tidak ada skenario tersedia.'} />
+            <TaskHeader>Tugas</TaskHeader>
+            <CustomMarkdownRenderer item={sessionDetail?.topic.scenario || 'Tidak ada skenario tersedia.'} />
         </TaskContent>
 
         <AutoSubmitToggle>

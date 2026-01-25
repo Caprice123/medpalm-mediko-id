@@ -270,6 +270,7 @@ function Dashboard() {
                         {feature.name} {!canUse && !isFree && ' 🔒'}
                       </FeatureTitle>
                       <FeatureDescription>{feature.description}</FeatureDescription>
+                      <div style={{flex: 1}}></div>
 
                       {/* Requirements Badge */}
                       {!isFree && (

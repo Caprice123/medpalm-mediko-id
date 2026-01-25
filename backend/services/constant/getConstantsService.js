@@ -20,6 +20,7 @@ export class GetConstantsService extends BaseService {
     constants.forEach(constant => {
       result[constant.key] = constant.value
     })
+    console.log(result)
 
     return result
   }

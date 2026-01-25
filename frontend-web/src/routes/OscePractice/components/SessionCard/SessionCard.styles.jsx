@@ -42,6 +42,9 @@ export const TopicTitle = styled.h3`
   font-weight: 600;
   color: ${colors.neutral.gray900};
   margin: 0 0 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const TopicDescription = styled.p`
@@ -158,12 +161,14 @@ export const StatusBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  margin-bottom: 1rem;
+  width: fit-content;
 
   ${props => {
     switch (props.status) {
@@ -194,5 +199,40 @@ export const StatusBadge = styled.div`
         `
     }
   }}
+`
+
+export const InfoRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+`
+
+export const InfoLabel = styled.div`
+  color: ${colors.neutral.gray600};
+  min-width: 80px;
+  flex-shrink: 0;
+`
+
+export const InfoValue = styled.div`
+  color: ${colors.neutral.gray900};
+  font-weight: 500;
+  flex: 1;
+`
+
+export const ScoreTimeRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.75rem 0;
+`
+
+export const ScoreItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: ${colors.neutral.gray900};
 `
 

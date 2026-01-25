@@ -47,7 +47,7 @@ function HasilTab({ session }) {
     )
   }
 
-  const { result, topic, topicTitle, topicBatch, startedAt, durationMinutes } = session
+  const { result, topic, topicTitle, topicBatch, startedAt, durationMinutes, timeTaken } = session
 
   // Parse aiFeedback if it's a JSON string
   let scoreBreakdown = []
@@ -85,7 +85,7 @@ function HasilTab({ session }) {
   }
 
   const formatDuration = (minutes) => {
-    if (!minutes) return '00:00:00'
+    if (!minutes && minutes !== 0) return '-'
     const hours = Math.floor(minutes / 60)
     const mins = Math.floor(minutes % 60)
     const secs = Math.floor((minutes * 60) % 60)
@@ -147,8 +147,8 @@ function HasilTab({ session }) {
 
         <MetricsGrid>
           <MetricCard>
-            <MetricLabel>DURASI</MetricLabel>
-            <MetricValue>{formatDuration(durationMinutes)}</MetricValue>
+            <MetricLabel>WAKTU DIGUNAKAN</MetricLabel>
+            <MetricValue>{formatDuration(timeTaken || result?.timeTaken)}</MetricValue>
           </MetricCard>
 
           <MetricCard>

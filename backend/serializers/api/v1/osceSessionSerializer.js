@@ -124,7 +124,7 @@ class OsceSessionSerializer {
           totalScore: session.total_score,
           maxScore: session.max_score,
           aiFeedback: session.ai_feedback,
-          actualDurationMinutes: session.actual_duration_minutes,
+          timeTaken: session.time_taken, // Time taken in minutes
       },
       availableObservation: observationGroups,
       userAnswer: {
@@ -150,10 +150,11 @@ class OsceSessionSerializer {
       status: this.formatStatus(session),
       topicTitle: topicData.title,
       topicDescription: topicData.description,
-      timeTaken: topicData.time_taken,
+      durationMinutes: topicData.duration_minutes, // Allocated time
+      timeTaken: session.time_taken, // Actual time spent (in minutes)
       totalScore: session.total_score,
       maxScore: session.max_score,
-      aiFeedback: JSON.parse(session.ai_feedback),
+      aiFeedback: session.ai_feedback ? JSON.parse(session.ai_feedback) : null,
       createdAt: session.created_at,
       scheduledEnd: session.scheduled_end_at,
       tags: session.osce_session_tag_snapshots?.map((snapshot) => ({

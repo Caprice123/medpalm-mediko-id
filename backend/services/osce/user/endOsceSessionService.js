@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
+import { DateTime } from 'luxon'
 
 export class EndOsceSessionService extends BaseService {
   static async call(userId, sessionId, sessionData) {
@@ -156,6 +157,15 @@ export class EndOsceSessionService extends BaseService {
         therapies: savedTherapies,
       })
 
+      // Calculate time taken (in minutes) using Luxon
+      let timeTaken = 0
+      if (session.started_at) {
+        const startTime = DateTime.fromJSDate(session.started_at, { zone: 'Asia/Jakarta' })
+        const endTime = DateTime.now().setZone('Asia/Jakarta')
+        const diffInMinutes = endTime.diff(startTime, 'minutes').minutes
+        timeTaken = Math.round(diffInMinutes)
+      }
+
       // Update session with final data
       await prisma.osce_sessions.update({
         where: { id: session.id },
@@ -163,6 +173,7 @@ export class EndOsceSessionService extends BaseService {
           total_score: evaluation.totalScore,
           max_score: evaluation.maxScore,
           ai_feedback: JSON.stringify(evaluation.feedback),
+          time_taken: timeTaken,
           updated_at: new Date(),
           status: "completed",
         },

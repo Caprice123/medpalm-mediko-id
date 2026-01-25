@@ -21,6 +21,7 @@ import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 
 const CreateNoteModal = ({ onClose }) => {
   const { loading } = useSelector(state => state.summaryNotes)
+  const { loading: commonLoading } = useSelector(state => state.common)
   const { tags } = useSelector(state => state.tags)
 
   const {
@@ -105,7 +106,7 @@ const CreateNoteModal = ({ onClose }) => {
           file={form.values.uploadedFile}
           onFileSelect={handleFileSelect}
           onRemove={handleRemoveFile}
-          isUploading={loading.isUploading}
+          isUploading={commonLoading.isUploading}
           acceptedTypes={['.pdf', '.pptx', '.docx']}
           acceptedTypesLabel="PDF, PPTX, atau DOCX"
           maxSizeMB={50}

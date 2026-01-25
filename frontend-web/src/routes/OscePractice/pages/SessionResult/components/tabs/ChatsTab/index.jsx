@@ -4,6 +4,7 @@ import { fetchSessionMessages, loadMoreMessages } from '@store/oscePractice/user
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
+import Button from '@components/common/Button'
 import {
   Sidebar,
   MainContent,
@@ -22,6 +23,7 @@ import {
 import {
   Container,
   AttachmentContainer,
+  MessagesWrapper,
 } from './styles'
 
 function ChatsTab({ sessionId }) {
@@ -36,9 +38,15 @@ function ChatsTab({ sessionId }) {
 
   useEffect(() => {
     if (sessionId) {
+      console.log('[ChatsTab] Fetching messages for sessionId:', sessionId)
       dispatch(fetchSessionMessages(sessionId))
     }
   }, [sessionId, dispatch])
+
+  // Debug: log when sessionMessages updates
+  useEffect(() => {
+    console.log('[ChatsTab] sessionMessages:', sessionMessages.length, sessionMessages)
+  }, [sessionMessages])
 
   // Auto-scroll to bottom when messages load
   useEffect(() => {
@@ -154,7 +162,7 @@ function ChatsTab({ sessionId }) {
 
       {/* Right Main Content - Messages */}
       <MainContent>
-        <div style={{ padding: '1rem', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: "white" }}>
+        <MessagesWrapper>
           {/* Guide Section */}
           {sessionDetail?.topic?.guide && (
             <GuideSection>
@@ -170,7 +178,11 @@ function ChatsTab({ sessionId }) {
             </GuideSection>
           )}
 
-          <MessageList ref={messageListRef}>
+          <MessageList ref={messageListRef} style={{
+            flex: 1,
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch'
+          }}>
             {sessionMessages.length === 0 ? (
               <EmptyState>
                 💬 Belum ada percakapan dalam sesi ini.
@@ -198,7 +210,7 @@ function ChatsTab({ sessionId }) {
               </>
             )}
           </MessageList>
-        </div>
+        </MessagesWrapper>
       </MainContent>
     </Container>
   )

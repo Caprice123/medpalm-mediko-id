@@ -243,7 +243,6 @@ export const useUpdateTopic = (closeCallback) => {
 
   // Handle question generation
   const handleGenerate = async () => {
-    try {
       const { contentType, uploadedBlobId, textContent, questionCount } = form.values
 
       if (contentType === 'document' && uploadedBlobId) {
@@ -294,18 +293,13 @@ export const useUpdateTopic = (closeCallback) => {
           alert('Silakan masukkan teks terlebih dahulu.')
         }
       }
-    } catch (error) {
-      console.error('Failed to generate MCQ questions:', error)
-      const errorMessage = error.response?.data?.message || error.message || 'Terjadi kesalahan saat generate questions'
-      alert(`Gagal generate questions: ${errorMessage}`)
-    }
   }
 
   const canGenerate = form.values.contentType === 'document'
     ? form.values.uploadedBlobId !== null && !commonLoading.isUploading
     : !!form.values.textContent?.trim()
 
-  const isGenerating = loading.isGenerating || commonLoading.isUploading
+  const isGenerating = loading.isGenerating
 
   return {
     form,

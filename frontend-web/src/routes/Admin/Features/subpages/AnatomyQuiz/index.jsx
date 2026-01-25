@@ -5,6 +5,7 @@ import { fetchAdminAnatomyQuizzes, fetchAdminAnatomyQuiz } from '@store/anatomy/
 import CreateQuizModal from './components/CreateQuizModal'
 import AnatomySettingsModal from './components/AnatomySettingsModal'
 import QuizList from './components/QuizList'
+import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
 import {
   Container,

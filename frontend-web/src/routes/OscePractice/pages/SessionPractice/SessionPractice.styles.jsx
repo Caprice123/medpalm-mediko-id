@@ -2,6 +2,7 @@ import styled, { keyframes } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
+  background: #f0fdfa;
 `
 
 export const Content = styled.div`
@@ -93,11 +94,12 @@ export const TaskContent = styled.div`
   line-height: 1.6;
   color: ${colors.neutral.gray700};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-height: 400px;
-  overflow-y: auto;
 
+  
   p {
-    margin: 0 0 0.75rem 0;
+      margin: 0 0 0.75rem 0;
+      overflow-y: auto;
+      max-height: 300px;
   }
 
   ul, ol {
@@ -221,7 +223,8 @@ export const MainContent = styled.div`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    overflow-y: auto;
+    min-height: calc(100vh - 93px);
+    height: calc(100vh - 93px);
   }
 `
 
@@ -265,20 +268,21 @@ export const TabContent = styled.div`
   padding: 1rem;
   padding-bottom: 0;
   background: ${colors.neutral.white};
+  display: flex;
+  flex-direction: column;
 
   @media (max-width: 768px) {
-    min-height: 100vh;
-    max-height: 100vh;
+    min-height: calc(100vh - 200px);
+    height: 100%;
+    overflow: hidden;
   }
 `
 
 export const GuideSection = styled.div`
   background: ${colors.neutral.gray100};
   padding: 1.25rem;
- max-height: 150px;
   border-radius: 8px;
   margin-bottom: 1rem;
-  overflow-y: auto;
   transition: all 0.3s ease;
 `
 
@@ -311,6 +315,8 @@ export const GuideText = styled.p`
   margin: 0;
   padding-top: 0.5rem;
   white-space: pre-line;
+  max-height: 100px;
+  overflow: auto;
 `
 
 export const ChatContainer = styled.div`
@@ -318,6 +324,12 @@ export const ChatContainer = styled.div`
   flex-direction: column;
   max-width: 1200px;
   height: 100%;
+  flex: 1;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    min-height: calc(100vh - 200px);
+  }
 `
 
 export const MessageList = styled.div`
@@ -328,6 +340,12 @@ export const MessageList = styled.div`
   padding-bottom: 1rem;
   min-height: 200px;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 `
 
 export const Message = styled.div`

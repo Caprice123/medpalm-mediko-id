@@ -41,7 +41,7 @@ import {
 } from './CreateTopicModal.styles'
 import Button from "@components/common/Button"
 
-const SortableQuestion = memo(function SortableQuestion({ question, index, onEdit, onRemove, isEditing, editData, onEditChange, onSaveEdit, onCancelEdit, onImageUpload, onImageRemove, isUploadingImage }) {
+const SortableQuestion = memo(function SortableQuestion({ question, index, onRemove, onQuestionChange, onImageUpload, onImageRemove, isUploadingImage }) {
   const {
     attributes,
     listeners,
@@ -56,22 +56,6 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
     transition,
   }
 
-  const renderQuestionText = (text, answer) => {
-    const parts = text.split('____')
-    return (
-      <>
-        {parts.map((part, idx) => (
-          <span key={idx}>
-            {part}
-            {idx < parts.length - 1 && (
-              <span className="blank">{answer}</span>
-            )}
-          </span>
-        ))}
-      </>
-    )
-  }
-
   return (
     <QuestionCard ref={setNodeRef} style={style} isDragging={isDragging}>
       <QuestionHeader>
@@ -79,25 +63,21 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
           <DragHandle {...attributes} {...listeners}>⋮⋮</DragHandle>
           Question {index + 1}
         </QuestionNumber>
-        {!isEditing && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="secondary" type="button" onClick={() => onEdit(question)}>
-              Edit
-            </Button>
-            <Button variant="danger" type="button" onClick={() => onRemove(index)}>
-              Remove
-            </Button>
-          </div>
-        )}
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Button variant="danger" type="button" onClick={() => onRemove(index)}>
+            Remove
+          </Button>
+        </div>
       </QuestionHeader>
 
-      {isEditing ? (
+      {/* Always in edit mode */}
+      {(
         <>
           <FormSection>
             <Label>Pertanyaan (gunakan ____ untuk blank) *</Label>
             <EditTextarea
-              value={editData.question}
-              onChange={(e) => onEditChange('question', e.target.value)}
+              value={question.question}
+              onChange={(e) => onQuestionChange(question.id, 'question', e.target.value)}
               placeholder="Contoh: Jantung memiliki ____ ruang utama"
             />
           </FormSection>
@@ -105,8 +85,8 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
           <FormSection>
             <Label>Jawaban *</Label>
             <EditInput
-              value={editData.answer}
-              onChange={(e) => onEditChange('answer', e.target.value)}
+              value={question.answer}
+              onChange={(e) => onQuestionChange(question.id, 'answer', e.target.value)}
               placeholder="Contoh: empat"
             />
           </FormSection>
@@ -114,8 +94,8 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
           <FormSection>
             <Label>Penjelasan</Label>
             <EditTextarea
-              value={editData.explanation}
-              onChange={(e) => onEditChange('explanation', e.target.value)}
+              value={question.explanation}
+              onChange={(e) => onQuestionChange(question.id, 'explanation', e.target.value)}
               placeholder="Jelaskan mengapa ini jawaban yang benar..."
             />
           </FormSection>
@@ -124,8 +104,8 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
             <Label>Gambar Pertanyaan (Opsional)</Label>
             <PhotoProvider>
               <FileUpload
-                file={editData.image ? {
-                  name: editData.image.filename || 'image',
+                file={question.image ? {
+                  name: question.image.filename || 'image',
                   type: 'image/*',
                   size: 0
                 } : null}
@@ -138,8 +118,8 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
                 uploadText="Klik untuk upload gambar"
                 actions={
                   <>
-                    {editData.image?.url && (
-                      <PhotoView src={editData.image.url}>
+                    {question.image?.url && (
+                      <PhotoView src={question.image.url}>
                         <Button variant="primary" size="small">
                           Lihat Gambar
                         </Button>
@@ -150,54 +130,6 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onEdi
               />
             </PhotoProvider>
           </FormSection>
-
-          <EditButtonGroup>
-            <Button variant="secondary" onClick={onCancelEdit}>
-              Batal
-            </Button>
-            <Button variant="primary" onClick={onSaveEdit}>
-              Simpan
-            </Button>
-          </EditButtonGroup>
-        </>
-      ) : (
-        <>
-          <QuestionText>
-            {renderQuestionText(question.question, question.answer)}
-          </QuestionText>
-
-          <AnswerSection>
-            <AnswerLabel>Jawaban</AnswerLabel>
-            <AnswerText>{question.answer}</AnswerText>
-          </AnswerSection>
-
-          {question.explanation && (
-            <ExplanationSection>
-              <ExplanationLabel>Penjelasan</ExplanationLabel>
-              <ExplanationText>{question.explanation}</ExplanationText>
-            </ExplanationSection>
-          )}
-
-          {question.image && (
-            <ExplanationSection>
-              <ExplanationLabel>Gambar</ExplanationLabel>
-              <PhotoProvider>
-                <PhotoView src={question.image.url}>
-                  <img
-                    src={question.image.url}
-                    alt="Question"
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '300px',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                      marginTop: '0.5rem'
-                    }}
-                  />
-                </PhotoView>
-              </PhotoProvider>
-            </ExplanationSection>
-          )}
         </>
       )}
     </QuestionCard>
@@ -224,10 +156,6 @@ const CreateTopicModal = ({ onClose }) => {
 
   const { loading: commonLoading } = useSelector(state => state.common)
 
-  // Edit state
-  const [editingQuestionId, setEditingQuestionId] = useState(null)
-  const [editingQuestionData, setEditingQuestionData] = useState(null)
-
   // Get tags from both university and semester groups - memoized
   const universityTags = useMemo(() =>
     tags.find(t => t.name === 'university')?.tags || [],
@@ -247,36 +175,11 @@ const CreateTopicModal = ({ onClose }) => {
     form.setFieldValue('semesterTags', newTags)
   }
 
-  const handleEditQuestion = (question) => {
-    setEditingQuestionId(question.id)
-    setEditingQuestionData({ ...question })
-  }
-
-  const handleEditChange = (field, value) => {
-    setEditingQuestionData(prev => ({
-      ...prev,
-      [field]: value
-    }))
-  }
-
-  const handleSaveEdit = () => {
-    if (!editingQuestionData.question || !editingQuestionData.answer) {
-      alert('Pertanyaan dan jawaban harus diisi')
-      return
-    }
-
+  const handleQuestionChange = (questionId, field, value) => {
     const updatedQuestions = form.values.questions.map(q =>
-      q.id === editingQuestionId ? { ...editingQuestionData, id: q.id } : q
+      q.id === questionId ? { ...q, [field]: value } : q
     )
-
     form.setFieldValue('questions', updatedQuestions)
-    setEditingQuestionId(null)
-    setEditingQuestionData(null)
-  }
-
-  const handleCancelEdit = () => {
-    setEditingQuestionId(null)
-    setEditingQuestionData(null)
   }
 
   const handleModalClose = () => {
@@ -463,13 +366,8 @@ const CreateTopicModal = ({ onClose }) => {
                   key={question.id}
                   question={question}
                   index={index}
-                  onEdit={handleEditQuestion}
                   onRemove={handleRemoveQuestion}
-                  isEditing={editingQuestionId === question.id}
-                  editData={editingQuestionData}
-                  onEditChange={handleEditChange}
-                  onSaveEdit={handleSaveEdit}
-                  onCancelEdit={handleCancelEdit}
+                  onQuestionChange={handleQuestionChange}
                   onImageUpload={handleQuestionImageUpload}
                   onImageRemove={handleQuestionImageRemove}
                   isUploadingImage={commonLoading.isUploading}

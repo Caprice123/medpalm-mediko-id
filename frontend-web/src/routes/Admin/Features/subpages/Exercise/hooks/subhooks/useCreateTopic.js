@@ -211,7 +211,7 @@ export const useCreateTopic = (onClose) => {
     ? form.values.uploadedBlobId !== null && !commonLoading.isUploading
     : form.values.textContent.trim().length > 0
 
-  const isGenerating = loading.isGeneratingQuestions || commonLoading.isUploading
+  const isGenerating = loading.isGeneratingQuestions
 
   // Handle question image upload
   const handleQuestionImageUpload = async (questionId, file) => {
