@@ -66,6 +66,10 @@ Gaya Komunikasi:
       key: 'chatbot_normal_message_count',
       value: '0'
     },
+    {
+      key: 'chatbot_normal_user_information',
+      value: 'Respon cepat dengan AI tanpa pencarian basis data. Cocok untuk pertanyaan umum dan percakapan ringan.'
+    },
 
     // Validated Search Mode Settings
     {
@@ -246,6 +250,10 @@ Sekarang, tulis ulang pertanyaan pengguna:`
       key: 'chatbot_validated_message_count',
       value: '0'
     },
+    {
+      key: 'chatbot_validated_user_information',
+      value: 'Menggunakan basis pengetahuan yang telah divalidasi. Jawaban lebih akurat dan terverifikasi dari sumber terpercaya.'
+    },
 
     // Research Mode Settings
     {
@@ -335,6 +343,10 @@ Aturan:
     {
       key: 'chatbot_research_updated_before',
       value: ''
+    },
+    {
+      key: 'chatbot_research_user_information',
+      value: 'Pencarian mendalam dengan multiple sumber dan analisis komprehensif. Cocok untuk topik kompleks yang membutuhkan riset detail.'
     },
 
     // Conversation Settings

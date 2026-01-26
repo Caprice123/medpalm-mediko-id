@@ -25,7 +25,6 @@ const MessageListComponent = () => {
   const messagesEndRef = useRef(null)
   const messageListRef = useRef(null)
   const prevMessagesLengthRef = useRef(0)
-  const prevLastMessageContentRef = useRef('')
   const wasLoadingRef = useRef(false)
   const isLoadingMoreRef = useRef(false)
 
@@ -43,27 +42,19 @@ const MessageListComponent = () => {
     if (wasLoadingRef.current && !isLoadingMessage && sessionMessages.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
       prevMessagesLengthRef.current = sessionMessages.length
-      prevLastMessageContentRef.current = sessionMessages[sessionMessages.length - 1]?.content || ''
     }
 
     // Track loading state
     wasLoadingRef.current = isLoadingMessage
   }, [isLoadingMessage, sessionMessages])
 
-  // Smooth scroll when new messages arrive or streaming updates
+  // Smooth scroll only when new messages are added (not during streaming/typing)
   useEffect(() => {
     // Don't scroll if currently loading
     if (isLoadingMessage) return
 
-    const lastMessage = sessionMessages[sessionMessages.length - 1]
-    const currentLastMessageContent = lastMessage?.content || ''
-
-    // Smooth scroll if:
-    // 1. New message was added (length increased)
-    // 2. Last message content changed (streaming update)
-    const shouldScroll =
-      sessionMessages.length > prevMessagesLengthRef.current ||
-      currentLastMessageContent !== prevLastMessageContentRef.current
+    // Only scroll when message count increases (new message added)
+    const shouldScroll = sessionMessages.length > prevMessagesLengthRef.current
 
     if (shouldScroll) {
       setTimeout(() => {
@@ -71,10 +62,9 @@ const MessageListComponent = () => {
       }, 100)
     }
 
-    // Update refs
+    // Update ref
     prevMessagesLengthRef.current = sessionMessages.length
-    prevLastMessageContentRef.current = currentLastMessageContent
-  }, [sessionMessages, isLoadingMessage])
+  }, [sessionMessages.length, isLoadingMessage])
 
   // Infinite scroll: load more messages when scrolling near top
   const handleScroll = useCallback(async () => {
@@ -181,14 +171,20 @@ const MessageListComponent = () => {
 }
 
 const MessageComponent = memo(function MessageComponent({ message }) {
+  // Check if this message is currently streaming
+  const isStreaming = message.id && message.id.toString().startsWith('streaming-')
+
   return (
     <Message isUser={message.isUser}>
       <MessageAuthor>
         {message.isUser ? 'Anda' : 'AI Pasien'}
       </MessageAuthor>
       <MessageText>
-        <CustomMarkdownRenderer item={message.content || message.text || ''} />
-        {message.id && message.id.toString().startsWith('streaming-') && (
+        <CustomMarkdownRenderer
+          item={message.content || message.text || ''}
+          isStreaming={isStreaming}
+        />
+        {isStreaming && (
           <StreamingCursor>▊</StreamingCursor>
         )}
       </MessageText>

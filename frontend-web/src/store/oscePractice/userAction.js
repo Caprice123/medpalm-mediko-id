@@ -416,7 +416,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
   let backendSavedMessage = false
   let finalData = null
 
-  const TYPING_SPEED_MS = 10 // 10ms per character
+  const TYPING_SPEED_MS = 1 // 1ms per character (~1000 chars/sec) - fast but still smooth
 
   // Add initial streaming message
   dispatch(addMessage({

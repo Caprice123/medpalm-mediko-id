@@ -251,7 +251,7 @@ export const togglePricingPlanStatus = (planId) => async (dispatch) => {
 
     const { patchWithToken } = await import('../../utils/requestUtils')
 
-    const response = await patchWithToken(Endpoints.pricing.admin.toggle(planId))
+    const response = await patchWithToken(Endpoints.pricing.admin.toggle(planId), {})
 
     // Refresh plans list
     dispatch(fetchAllPricingPlans())

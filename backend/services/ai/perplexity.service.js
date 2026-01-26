@@ -49,7 +49,7 @@ export class PerplexityService extends BaseAiService {
      * @param {Buffer} pdfBuffer - PDF file buffer
      * @returns {Promise<any>} Parsed JSON response
      */
-    static async generateFromPDF(model, systemPrompt, pdfBuffer) {
+    static async generateFromFile(model, systemPrompt, pdfBuffer) {
         // Check file size (max 50MB for Perplexity)
         const fileSizeMB = pdfBuffer.length / (1024 * 1024);
 

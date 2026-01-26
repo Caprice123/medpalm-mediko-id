@@ -349,7 +349,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   let backendSavedMessage = false
   let finalData = null
 
-  const TYPING_SPEED_MS = 10 // 10ms per character (backend delays based on chunk length × 10ms)
+  const TYPING_SPEED_MS = 1 // 1ms per character (~1000 chars/sec) - fast but still smooth
 
   // Add initial streaming message
   dispatch(addMessage({

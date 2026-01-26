@@ -10,6 +10,7 @@ import {
   ActionButtons,
   ActionButton
 } from './PlanCard.styles'
+import Button from '@components/common/Button'
 
 function PlanCard({ plan, onEdit, onToggle, formatPrice }) {
   const getBundleText = () => {
@@ -52,14 +53,17 @@ function PlanCard({ plan, onEdit, onToggle, formatPrice }) {
         </PlanPrice>
       </PriceContainer>
 
+        <div style={{ flex: 1 }}></div>
       {plan.description && <PlanDescription>{plan.description}</PlanDescription>}
 
+        <div style={{ flex: 1 }}></div>
       <ActionButtons>
-        <Button onClick={() => onEdit(plan)}>
+        <Button fullWidth onClick={() => onEdit(plan)}>
           Edit
         </Button>
         <Button
           variant="primary"
+          fullWidth
           onClick={() => onToggle(plan)}
         >
           {(plan.is_active !== undefined ? plan.is_active : plan.isActive) ? 'Disable' : 'Enable'}

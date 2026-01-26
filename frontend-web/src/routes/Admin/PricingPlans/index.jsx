@@ -5,24 +5,18 @@ import { usePlanModal } from './hooks/usePlanModal'
 import PlansList from './components/PlansList/index'
 import PlanModal from './components/PlanModal/index'
 import Pagination from '@components/Pagination'
+import Button from '@components/common/Button'
+import TextInput from '@components/common/TextInput'
 import {
   Container,
   HeaderSection,
   SectionTitle,
-  AddButton,
   LoadingState,
   ErrorMessage,
   FiltersSection,
-  FilterButtonsGroup,
-  FilterButton,
   SearchForm,
-  SearchInputWrapper,
-  SearchInput,
-  ClearButton,
-  SearchButton,
-  ResultsCount
+  FilterButtonsGroup
 } from './PricingPlans.styles'
-import Button from '@components/common/Button'
 
 function PricingPlans() {
   const {
@@ -131,6 +125,13 @@ function PricingPlans() {
     setCurrentPage(newPage)
   }
 
+  const bundleTypeOptions = [
+    { value: 'all', label: 'All Plans' },
+    { value: 'credits', label: 'Credits' },
+    { value: 'subscription', label: 'Subscription' },
+    { value: 'hybrid', label: 'Hybrid' }
+  ]
+
   if (loading) {
     return <LoadingState>Loading pricing plans...</LoadingState>
   }
@@ -149,62 +150,31 @@ function PricingPlans() {
 
       <FiltersSection>
         <SearchForm onSubmit={handleSearch}>
-          <SearchInputWrapper>
-            <SearchInput
-              type="text"
-              placeholder="Search by name..."
-              value={searchNameInput}
-              onChange={(e) => setSearchNameInput(e.target.value)}
-            />
-            {searchNameInput && (
-              <ClearButton type="button" onClick={handleClearName}>
-                ×
-              </ClearButton>
-            )}
-          </SearchInputWrapper>
-          <SearchInputWrapper>
-            <SearchInput
-              type="text"
-              placeholder="Search by code..."
-              value={searchCodeInput}
-              onChange={(e) => setSearchCodeInput(e.target.value)}
-            />
-            {searchCodeInput && (
-              <ClearButton type="button" onClick={handleClearCode}>
-                ×
-              </ClearButton>
-            )}
-          </SearchInputWrapper>
+          <TextInput
+            placeholder="Search by name..."
+            value={searchNameInput}
+            onChange={(e) => setSearchNameInput(e.target.value)}
+          />
+          <TextInput
+            placeholder="Search by code..."
+            value={searchCodeInput}
+            onChange={(e) => setSearchCodeInput(e.target.value)}
+          />
           <Button variant="primary" type="submit">
             🔍 Search
           </Button>
         </SearchForm>
 
         <FilterButtonsGroup>
-          <FilterButton
-            $active={bundleTypeFilter === 'all'}
-            onClick={() => handleFilterClick('all')}
-          >
-            All Plans
-          </FilterButton>
-          <FilterButton
-            $active={bundleTypeFilter === 'credits'}
-            onClick={() => handleFilterClick('credits')}
-          >
-            Credits
-          </FilterButton>
-          <FilterButton
-            $active={bundleTypeFilter === 'subscription'}
-            onClick={() => handleFilterClick('subscription')}
-          >
-            Subscription
-          </FilterButton>
-          <FilterButton
-            $active={bundleTypeFilter === 'hybrid'}
-            onClick={() => handleFilterClick('hybrid')}
-          >
-            Hybrid
-          </FilterButton>
+          {bundleTypeOptions.map((option) => (
+            <Button
+              key={option.value}
+              variant={bundleTypeFilter === option.value ? 'primary' : 'secondary'}
+              onClick={() => handleFilterClick(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
         </FilterButtonsGroup>
       </FiltersSection>
 

@@ -252,7 +252,7 @@ export class SendMessageService extends BaseService {
             }
 
             // Delay for 20 chars: 20 * 10ms = 300ms
-            const delay = CHARS_PER_CHUNK * TYPING_SPEED_MS
+            const delay = CHARS_PER_CHUNK * TYPING_SPEED_MS * 2
             await new Promise(resolve => setTimeout(resolve, delay))
           }
         }

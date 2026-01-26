@@ -1,5 +1,6 @@
 import { GeminiService } from "#services/ai/gemini.service";
 import { PerplexityService } from "#services/ai/perplexity.service";
+import { OpenAIService } from "#services/ai/openai.service";
 import { GeminiEmbeddingService } from "#services/ai/embedding/gemini.embedding.service";
 import { BaseService } from "#services/baseService";
 
@@ -15,6 +16,11 @@ const providerModelMapping = {
     "sonar-pro": PerplexityService,
     "sonar-reasoning-pro": PerplexityService,
     "sonar-deep-research": PerplexityService,
+
+    "gpt-4o": OpenAIService,
+    "gpt-4o-mini": OpenAIService,
+    "gpt-4-turbo": OpenAIService,
+    "gpt-3.5-turbo": OpenAIService,
 }
 
 const providerMapping = {
@@ -29,6 +35,11 @@ const providerMapping = {
     "sonar-pro": "perplexity",
     "sonar-reasoning-pro": "perplexity",
     "sonar-deep-research": "perplexity",
+
+    "gpt-4o": "openai",
+    "gpt-4o-mini": "openai",
+    "gpt-4-turbo": "openai",
+    "gpt-3.5-turbo": "openai",
 }
 
 const embeddingProviderMapping = {

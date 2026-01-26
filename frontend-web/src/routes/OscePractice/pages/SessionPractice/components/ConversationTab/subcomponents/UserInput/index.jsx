@@ -29,7 +29,7 @@ const getAutoSendPreference = () => {
   }
 }
 
-function UserInput({ onSendMessage, onStopStreaming, isSendingMessage, isStreaming }) {
+function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
   const dispatch = useDispatch()
   const [inputText, setInputText] = useState('')
   const [interimText, setInterimText] = useState('') // Store interim/partial transcription

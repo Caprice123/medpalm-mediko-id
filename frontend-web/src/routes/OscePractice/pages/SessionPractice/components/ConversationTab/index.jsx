@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   ChatContainer,
 } from '../../SessionPractice.styles'
-import { fetchSessionMessages, sendMessage, stopStreaming } from '../../../../../../store/oscePractice/userAction'
+import { fetchSessionMessages, sendMessage } from '../../../../../../store/oscePractice/userAction'
 import MessageListComponent from './subcomponents/MessageListComponent'
 import UserInput from './subcomponents/UserInput'
 import Guideline from './subcomponents/Guideline'
@@ -33,24 +33,11 @@ function ConversationTab() {
     }
   }, [sessionId, dispatch])
 
-  const handleStopStreaming = useCallback(async () => {
-    if (!sessionId) return
-
-    try {
-      console.log('⏹️ User clicked stop button')
-      await dispatch(stopStreaming())
-    } catch (error) {
-      console.error('Failed to stop streaming:', error)
-    }
-  }, [sessionId, dispatch])
-
   // Check if there's a streaming message AND we're actually sending
-  // This prevents the stop button from lingering after streaming is done
   const hasStreamingMessage = sessionMessages?.some(msg =>
     msg.id && msg.id.toString().startsWith('streaming-')
   ) || false
 
-  
   const isStreaming = hasStreamingMessage || loading.isSendingMessage
 
   return (
@@ -62,7 +49,6 @@ function ConversationTab() {
       <UserInput
         key={sessionId} // Reset input when session changes
         onSendMessage={handleSendMessage}
-        onStopStreaming={handleStopStreaming}
         isSendingMessage={loading.isSendingMessage}
         isStreaming={isStreaming}
       />

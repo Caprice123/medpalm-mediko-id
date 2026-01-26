@@ -23,14 +23,19 @@ import {
 import { useSelector } from 'react-redux'
 
 // Memoized message component - only rerenders when its own content changes
-const ChatMessage = memo(({ message, formatTime }) => (
-  <Message $sender={message.senderType}>
-    <MessageBubble $sender={message.senderType}>
-      <CustomMarkdownRenderer item={message.content} />
-    </MessageBubble>
-    <MessageTime>{formatTime(message.createdAt)}</MessageTime>
-  </Message>
-), (prevProps, nextProps) => {
+const ChatMessage = memo(({ message, formatTime }) => {
+  // Check if this message is currently streaming (temp ID starting with 'streaming-')
+  const isStreaming = message.id && message.id.toString().startsWith('streaming-')
+
+  return (
+    <Message $sender={message.senderType}>
+      <MessageBubble $sender={message.senderType}>
+        <CustomMarkdownRenderer item={message.content} isStreaming={isStreaming} />
+      </MessageBubble>
+      <MessageTime>{formatTime(message.createdAt)}</MessageTime>
+    </Message>
+  )
+}, (prevProps, nextProps) => {
   // Only rerender if content or id changes
   return prevProps.message.content === nextProps.message.content &&
          prevProps.message.id === nextProps.message.id
@@ -103,13 +108,27 @@ const ChatPanel = memo(({ currentTab, style }) => {
   const [isLoadingOlder, setIsLoadingOlder] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const previousScrollHeight = useRef(0)
+  const previousMessageCountRef = useRef(0)
+  const previousTabIdRef = useRef(null)
   const { loading } = useSelector((state) => state.skripsi)
 
-  // Scroll to bottom when new messages arrive or tab changes
+  // Only scroll to bottom when a NEW message is added or tab changes
   useEffect(() => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
+    const currentMessageCount = currentTab?.messages?.length || 0
+    const currentTabId = currentTab?.id
+
+    // Scroll when:
+    // 1. Tab changes (switching to a different tab)
+    // 2. Message count increases (new message sent/received)
+    if (currentTabId !== previousTabIdRef.current ||
+        currentMessageCount > previousMessageCountRef.current) {
+      if (chatMessagesRef.current) {
+        chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
+      }
     }
+
+    previousMessageCountRef.current = currentMessageCount
+    previousTabIdRef.current = currentTabId
   }, [currentTab?.messages?.length, currentTab?.id])
 
   // Reset hasMore when tab changes

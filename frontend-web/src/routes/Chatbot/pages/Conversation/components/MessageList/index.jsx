@@ -20,12 +20,16 @@ import {
 // Memoized individual message component - only re-renders when its own data changes
 const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWithCitations }) => {
     if (!message.content) return null
+
+    // Check if this message is currently streaming (temp ID starting with 'streaming-')
+    const isStreaming = message.id && message.id.toString().startsWith('streaming-')
+
     return (
     <MessageBubble key={message.id} isUser={message.senderType === 'user'}>
       {message.senderType === 'user' ? (
         <UserMessage>
           <MessageContent>
-            <CustomMarkdownRenderer item={message.content} />
+            <CustomMarkdownRenderer item={message.content} isStreaming={false} />
           </MessageContent>
           <MessageFooter>
             <Timestamp>{formatTime(message.createdAt)}</Timestamp>
@@ -34,7 +38,10 @@ const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWith
       ) : (
         <AIMessage>
           <MessageContent>
-            <CustomMarkdownRenderer item={processContentWithCitations(message.content, message.sources)} />
+            <CustomMarkdownRenderer
+              item={processContentWithCitations(message.content, message.sources)}
+              isStreaming={isStreaming}
+            />
           </MessageContent>
 
           {message.sources && message.sources.length > 0 && (
@@ -91,15 +98,19 @@ function MessageList({ isLoading, isSending }) {
   // Subscribe to messages directly in MessageList to prevent parent re-renders
   const messages = useSelector(state => state.chatbot.messages)
   const messagesEndRef = useRef(null)
+  const previousMessageCountRef = useRef(0)
 
-  // Auto scroll to bottom when messages change or when sending
+  // Only scroll to bottom when a NEW message is added (not during typing/streaming)
   useEffect(() => {
-    if (messages.length > 0 || isSending) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
+    const currentMessageCount = messages.length
+
+    // Scroll only when message count increases (new message sent/received)
+    if (currentMessageCount > previousMessageCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [messages, isSending])
+
+    previousMessageCountRef.current = currentMessageCount
+  }, [messages.length])
 
   // Memoize helper functions to prevent unnecessary re-renders
   const formatTime = useCallback((dateString) => {

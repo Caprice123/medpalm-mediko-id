@@ -1,29 +1,22 @@
+import Modal from '@components/common/Modal'
+import TextInput from '@components/common/TextInput'
+import NumberInput from '@components/common/NumberInput'
+import Textarea from '@components/common/Textarea'
+import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  CloseButton,
-  ModalBody,
-  ModalFooter,
-  FormGroup,
-  Label,
-  Input,
-  Select,
-  TextArea,
-  CheckboxGroup,
-  Checkbox,
-  CheckboxLabel,
-  ButtonGroup,
-  Button
-} from './PlanModal.styles'
+import Checkbox from '@components/common/Checkbox'
+import { FormGroup, FormRow, ButtonGroup } from './PlanModal.styles'
 
 function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose }) {
-  if (!isOpen) return null
-
   const showCredits = formData.bundle_type === 'credits' || formData.bundle_type === 'hybrid'
   const showDuration = formData.bundle_type === 'subscription' || formData.bundle_type === 'hybrid'
+
+  // Bundle type options for dropdown
+  const bundleTypeOptions = [
+    { value: 'credits', label: 'Credits Only' },
+    { value: 'subscription', label: 'Subscription Only' },
+    { value: 'hybrid', label: 'Hybrid (Credits + Subscription)' }
+  ]
 
   // Payment method options for dropdown
   const paymentMethodOptions = [
@@ -32,10 +25,25 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
     { value: 'xendit,manual', label: 'Both (Xendit & Manual)' }
   ]
 
+  // Get current bundle type value as dropdown option
+  const bundleTypeValue = bundleTypeOptions.find(
+    option => option.value === formData.bundle_type
+  )
+
   // Get current payment method value as dropdown option
   const paymentMethodValue = paymentMethodOptions.find(
     option => option.value === (formData.allowed_payment_method || 'xendit')
   )
+
+  // Handle bundle type dropdown change
+  const handleBundleTypeChange = (selectedOption) => {
+    onChange({
+      target: {
+        name: 'bundle_type',
+        value: selectedOption?.value || 'credits'
+      }
+    })
+  }
 
   // Handle payment method dropdown change
   const handlePaymentMethodChange = (selectedOption) => {
@@ -47,182 +55,161 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
     })
   }
 
+  // Handle checkbox change
+  const handleCheckboxChange = (e) => {
+    onChange({
+      target: {
+        name: e.target.name,
+        type: 'checkbox',
+        checked: e.target.checked
+      }
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(e)
+  }
+
+  const footerContent = (
+    <ButtonGroup>
+      <Button variant="secondary" type="button" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button type="submit" variant="primary" onClick={handleSubmit}>
+        {editingPlan ? 'Update Plan' : 'Create Plan'}
+      </Button>
+    </ButtonGroup>
+  )
+
   return (
-    <Modal onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>{editingPlan ? 'Edit Pricing Plan' : 'Add Pricing Plan'}</ModalTitle>
-          <CloseButton onClick={onClose}>×</CloseButton>
-        </ModalHeader>
-          <ModalBody onSubmit={onSubmit}>
-            <FormGroup>
-              <Label htmlFor="name">Plan Name *</Label>
-              <Input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={onChange}
-                required
-                placeholder="e.g., Premium Monthly"
-              />
-            </FormGroup>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={editingPlan ? 'Edit Pricing Plan' : 'Add Pricing Plan'}
+      footer={footerContent}
+      size="large"
+      closeOnOverlayClick={false}
+    >
+      <form onSubmit={handleSubmit}>
+        <FormRow>
+          <TextInput
+            label="Plan Name"
+            name="name"
+            value={formData.name}
+            onChange={onChange}
+            required
+            placeholder="e.g., Premium Monthly"
+          />
+          <TextInput
+            label="Plan Code"
+            name="code"
+            value={formData.code || ''}
+            onChange={onChange}
+            placeholder="e.g., PREMIUM_MONTHLY"
+          />
+        </FormRow>
 
-            <FormGroup>
-              <Label htmlFor="code">Plan Code</Label>
-              <Input
-                type="text"
-                id="code"
-                name="code"
-                value={formData.code || ''}
-                onChange={onChange}
-                placeholder="e.g., PREMIUM_MONTHLY (unique identifier)"
-              />
-            </FormGroup>
+        <FormGroup>
+          <Textarea
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={onChange}
+            placeholder="Describe this pricing plan..."
+            rows={3}
+          />
+        </FormGroup>
 
-            <FormGroup>
-              <Label htmlFor="description">Description</Label>
-              <TextArea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={onChange}
-                placeholder="Describe this pricing plan..."
-              />
-            </FormGroup>
+        <FormRow>
+          <Dropdown
+            label="Bundle Type"
+            options={bundleTypeOptions}
+            value={bundleTypeValue}
+            onChange={handleBundleTypeChange}
+            placeholder="Select bundle type..."
+            required
+          />
+          <Dropdown
+            label="Payment Method"
+            options={paymentMethodOptions}
+            value={paymentMethodValue}
+            onChange={handlePaymentMethodChange}
+            placeholder="Select payment method..."
+            required
+          />
+        </FormRow>
 
-            <FormGroup>
-              <Label htmlFor="bundle_type">Bundle Type *</Label>
-              <Select
-                id="bundle_type"
-                name="bundle_type"
-                value={formData.bundle_type}
-                onChange={onChange}
-                required
-              >
-                <option value="credits">Credits Only</option>
-                <option value="subscription">Subscription Only</option>
-                <option value="hybrid">Hybrid (Credits + Subscription)</option>
-              </Select>
-            </FormGroup>
-
+        {(showCredits || showDuration) && (
+          <FormRow>
             {showCredits && (
-              <FormGroup>
-                <Label htmlFor="credits_included">Credits Included *</Label>
-                <Input
-                  type="number"
-                  id="credits_included"
-                  name="credits_included"
-                  value={formData.credits_included}
-                  onChange={onChange}
-                  required={showCredits}
-                  min="0"
-                  placeholder="e.g., 100"
-                />
-              </FormGroup>
+              <NumberInput
+                label="Credits Included"
+                name="credits_included"
+                value={formData.credits_included}
+                onChange={onChange}
+                required={showCredits}
+                min={0}
+                allowNegative={false}
+                placeholder="e.g., 100"
+              />
             )}
-
             {showDuration && (
-              <FormGroup>
-                <Label htmlFor="duration_days">Duration (Days) *</Label>
-                <Input
-                  type="number"
-                  id="duration_days"
-                  name="duration_days"
-                  value={formData.duration_days}
-                  onChange={onChange}
-                  required={showDuration}
-                  placeholder="e.g., 30"
-                />
-              </FormGroup>
+              <NumberInput
+                label="Duration (Days)"
+                name="duration_days"
+                value={formData.duration_days}
+                onChange={onChange}
+                required={showDuration}
+                min={1}
+                allowNegative={false}
+                placeholder="e.g., 30"
+              />
             )}
+          </FormRow>
+        )}
 
-            <FormGroup>
-              <Label htmlFor="price">Price (IDR) *</Label>
-              <Input
-                type="number"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={onChange}
-                required
-                min="0"
-                step="0.01"
-                placeholder="e.g., 99000"
-              />
-            </FormGroup>
+        <FormRow>
+          <NumberInput
+            label="Price (IDR)"
+            name="price"
+            value={formData.price}
+            onChange={onChange}
+            required
+            min={0}
+            allowNegative={false}
+            allowDecimal={true}
+            placeholder="e.g., 99000"
+          />
+          <NumberInput
+            label="Discount (%)"
+            name="discount"
+            value={formData.discount}
+            onChange={onChange}
+            min={0}
+            max={100}
+            allowNegative={false}
+            placeholder="e.g., 10"
+          />
+        </FormRow>
 
-            <FormGroup>
-              <Label htmlFor="discount">Discount (%)</Label>
-              <Input
-                type="number"
-                id="discount"
-                name="discount"
-                value={formData.discount}
-                onChange={onChange}
-                min="0"
-                max="100"
-                placeholder="e.g., 10"
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="order">Display Order</Label>
-              <Input
-                type="number"
-                id="order"
-                name="order"
-                value={formData.order}
-                onChange={onChange}
-                min="0"
-                placeholder="e.g., 0"
-              />
-            </FormGroup>
-
-            <CheckboxGroup>
-              <Checkbox
-                type="checkbox"
-                id="is_active"
-                name="is_active"
-                checked={formData.is_active}
-                onChange={onChange}
-              />
-              <CheckboxLabel htmlFor="is_active">Active (visible to users)</CheckboxLabel>
-            </CheckboxGroup>
-
-            <CheckboxGroup>
-              <Checkbox
-                type="checkbox"
-                id="is_popular"
-                name="is_popular"
-                checked={formData.is_popular}
-                onChange={onChange}
-              />
-              <CheckboxLabel htmlFor="is_popular">Mark as Popular</CheckboxLabel>
-            </CheckboxGroup>
-
-            <FormGroup>
-              <Dropdown
-                label="Payment Method"
-                options={paymentMethodOptions}
-                value={paymentMethodValue}
-                onChange={handlePaymentMethodChange}
-                placeholder="Select payment method..."
-                required
-              />
-            </FormGroup>
-          </ModalBody>
-        <ModalFooter>
-        <ButtonGroup>
-            <Button variant="secondary" type="button" onClick={onClose}>
-            Cancel
-            </Button>
-            <Button type="submit" variant="primary" onClick={onSubmit}>
-            {editingPlan ? 'Update Plan' : 'Create Plan'}
-            </Button>
-        </ButtonGroup>
-        </ModalFooter>
-      </ModalContent>
+        <FormRow>
+          <Checkbox
+            id="is_active"
+            name="is_active"
+            checked={formData.is_active}
+            onChange={handleCheckboxChange}
+            label="Active (visible to users)"
+          />
+          <Checkbox
+            id="is_popular"
+            name="is_popular"
+            checked={formData.is_popular}
+            onChange={handleCheckboxChange}
+            label="Mark as Popular"
+          />
+        </FormRow>
+      </form>
     </Modal>
   )
 }

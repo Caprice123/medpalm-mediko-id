@@ -54,7 +54,7 @@ export class GenerateSummaryFromDocumentService extends BaseService {
     const modelService = RouterUtils.call(model)
 
     // Generate summary using PDF and custom prompt
-    const result = await modelService.generateFromPDF(
+    const result = await modelService.generateFromFile(
       model,
       systemPrompt,
       pdfBuffer

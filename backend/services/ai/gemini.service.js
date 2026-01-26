@@ -1,5 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { BaseAiService } from "./base.service.js";
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -29,20 +32,8 @@ export class GeminiService extends BaseAiService {
     }
 
     /**
-     * Generate result from PDF buffer with custom prompt
-     * Uses inline base64 data (fast, simple, reliable)
-     * @param {string} model - Model name (e.g., 'gemini-2.5-flash')
-     * @param {string} systemPrompt - System prompt
-     * @param {Buffer} pdfBuffer - PDF file buffer
-     * @returns {Promise<any>} Parsed JSON response
-     */
-    static async generateFromPDF(model, systemPrompt, pdfBuffer) {
-        return this.generateFromFile(model, systemPrompt, pdfBuffer, 'application/pdf');
-    }
-
-    /**
      * Generate result from file buffer (PDF, Image, etc.) with custom prompt
-     * Uses inline base64 data (fast, simple, reliable)
+     * Uses File API (upload file, use URI reference) - better for large files
      * @param {string} model - Model name (e.g., 'gemini-2.5-flash', 'gemini-2.0-flash')
      * @param {string} systemPrompt - System prompt
      * @param {Buffer} fileBuffer - File buffer
@@ -50,37 +41,71 @@ export class GeminiService extends BaseAiService {
      * @returns {Promise<string>} Raw text response
      */
     static async generateFromFile(model, systemPrompt, fileBuffer, mimeType) {
-        // Check file size (max 20MB for inline files)
         const fileSizeMB = fileBuffer.length / (1024 * 1024);
-
         console.log(`Processing file buffer (${mimeType}) - Size: ${fileSizeMB.toFixed(2)} MB`);
 
         if (fileSizeMB > 50) {
-            throw new Error(`File too large: ${fileSizeMB.toFixed(2)} MB (max 50 MB for inline data)`);
+            throw new Error("File uploaded cannot more than 50 MB")
         }
 
-        // Convert to base64
-        const fileBase64 = fileBuffer.toString('base64');
+        // Create temporary file
+        const tempDir = os.tmpdir();
+        const tempFileName = `gemini-upload-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        const tempFilePath = path.join(tempDir, tempFileName);
 
-        console.log('File converted to base64, generating content...');
+        try {
+            // Write buffer to temp file
+            fs.writeFileSync(tempFilePath, fileBuffer);
+            console.log(`Temporary file created: ${tempFilePath}`);
 
-        // Generate content using inline file data
-        const geminiModel = genAI.getGenerativeModel({ model: model });
+            // Upload file to Gemini File API
+            console.log('Uploading file to Gemini...');
+            const uploadedFile = await genAI.files.upload({
+                file: tempFilePath,
+                mimeType: mimeType,
+                displayName: tempFileName
+            });
 
-        const result = await geminiModel.generateContent([
-            {
-                inlineData: {
-                    mimeType: mimeType,
-                    data: fileBase64,
-                },
-            },
-            { text: systemPrompt },
-        ]);
+            console.log(`Uploaded file ${uploadedFile.displayName} as: ${uploadedFile.name}`);
+            console.log(`File URI: ${uploadedFile.uri}`);
 
-        const response = await result.response;
-        const text = response.text();
+            // Generate content using uploaded file
+            const response = await genAI.models.generateContent({
+                model: model,
+                contents: [
+                    {
+                        fileData: {
+                            mimeType: uploadedFile.mimeType,
+                            fileUri: uploadedFile.uri,
+                        },
+                    },
+                    { text: systemPrompt },
+                ],
+            });
 
-        return text;
+            const text = response.text;
+            console.log('Content generated successfully');
+
+            // Optional: Delete file from Gemini (files auto-expire after 48 hours anyway)
+            try {
+                await genAI.files.delete(uploadedFile.name);
+                console.log('File deleted from Gemini');
+            } catch (deleteError) {
+                console.warn('Failed to delete file from Gemini:', deleteError.message);
+            }
+
+            return text;
+        } finally {
+            // Clean up temporary file
+            try {
+                if (fs.existsSync(tempFilePath)) {
+                    fs.unlinkSync(tempFilePath);
+                    console.log('Temporary file deleted');
+                }
+            } catch (cleanupError) {
+                console.warn('Failed to delete temporary file:', cleanupError.message);
+            }
+        }
     }
 
     /**

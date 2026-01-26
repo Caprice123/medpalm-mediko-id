@@ -3,6 +3,8 @@ import styled from 'styled-components'
 export const Card = styled.div`
   background: white;
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
   border: 2px solid ${props => props.isActive ? '#6BB9E8' : '#e5e7eb'};
   position: relative;

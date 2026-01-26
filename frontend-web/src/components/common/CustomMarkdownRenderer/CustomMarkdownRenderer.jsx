@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -13,49 +13,90 @@ import {
   Link
 } from './CustomMarkdownRenderer.styles';
 
-const CustomMarkdownRenderer = ({ item }) => {
-  // Pre-process the text to convert single newlines to line breaks in Markdown
-  const processedText = typeof item === 'string' 
-    ? item.replace(/\n/g, '  \n') // Add two spaces before each newline for Markdown line breaks
-    : item;
+// Memoized markdown components config
+const markdownComponents = {
+  h1: ({ node, ...props }) => <Heading1 {...props} />,
+  h2: ({ node, ...props }) => <Heading2 {...props} />,
+  h3: ({ node, ...props }) => <Heading3 {...props} />,
+  p: ({ node, ...props }) => <Paragraph {...props} />,
+  ul: ({ node, ...props }) => <UnorderedList {...props} />,
+  ol: ({ node, ...props }) => <OrderedList {...props} />,
+  li: ({ node, ...props }) => <ListItem {...props} />,
+  blockquote: ({ node, ...props }) => <Blockquote {...props} />,
+  a: ({ node, href, ...props }) => (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    />
+  ),
+};
+
+// Memoized block renderer - only re-renders if content changes
+const MarkdownBlock = React.memo(({ content }) => {
+  const processedText = content.replace(/\n/g, '  \n');
 
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      components={{
-        h1: ({ node, ...props }) => (
-          <Heading1 {...props} />
-        ),
-        h2: ({ node, ...props }) => (
-          <Heading2 {...props} />
-        ),
-        h3: ({ node, ...props }) => (
-          <Heading3 {...props} />
-        ),
-        p: ({ node, ...props }) => <Paragraph {...props} />,
-        ul: ({ node, ...props }) => (
-          <UnorderedList {...props} />
-        ),
-        ol: ({ node, ...props }) => (
-          <OrderedList {...props} />
-        ),
-        li: ({ node, ...props }) => <ListItem {...props} />,
-        blockquote: ({ node, ...props }) => (
-          <Blockquote {...props} />
-        ),
-        a: ({ node, href, ...props }) => (
-          <Link
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            {...props}
-          />
-        ),
-      }}
+      components={markdownComponents}
+    >
+      {processedText}
+    </ReactMarkdown>
+  );
+});
+
+const CustomMarkdownRenderer = ({ item, isStreaming = false }) => {
+  const text = typeof item === 'string' ? item : '';
+
+  // Split content into completed blocks and typing block for streaming optimization
+  const { completedBlocks, typingBlock } = useMemo(() => {
+    if (!isStreaming || !text) {
+      return { completedBlocks: [], typingBlock: text };
+    }
+
+    // Split by paragraph boundaries (double newline or heading markers)
+    // This keeps completed paragraphs stable while only the last one updates
+    const blocks = text.split(/(?=\n\n|^#{1,6}\s)/);
+
+    if (blocks.length <= 1) {
+      return { completedBlocks: [], typingBlock: text };
+    }
+
+    // Keep all but the last block as completed (stable)
+    const completed = blocks.slice(0, -1);
+    const typing = blocks[blocks.length - 1];
+
+    return {
+      completedBlocks: completed,
+      typingBlock: typing
+    };
+  }, [text, isStreaming]);
+
+  // For streaming: render completed blocks (won't re-render) + typing block (updates)
+  if (isStreaming && completedBlocks.length > 0) {
+    return (
+      <>
+        {completedBlocks.map((block, index) => (
+          <MarkdownBlock key={`block-${index}`} content={block} />
+        ))}
+        <MarkdownBlock key="typing" content={typingBlock} />
+      </>
+    );
+  }
+
+  // For non-streaming or single block: render normally
+  const processedText = text.replace(/\n/g, '  \n');
+
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={markdownComponents}
     >
       {processedText}
     </ReactMarkdown>
   );
 };
 
-export default CustomMarkdownRenderer;
+export default React.memo(CustomMarkdownRenderer);

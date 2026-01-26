@@ -42,7 +42,7 @@ export class GenerateFlashcardFromPDFService extends BaseService {
         const modelService = RouterUtils.call(model)
 
         // Generate flashcards using PDF and custom prompt
-        const text = await modelService.generateFromPDF(
+        const text = await modelService.generateFromFile(
             model,
             parsedSystemPrompt,
             pdfBuffer
