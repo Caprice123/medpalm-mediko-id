@@ -22,6 +22,7 @@ export const useFeatureSetting = (onClose) => {
       chatbot_normal_last_message_count: '10',
       chatbot_normal_prompt: 'Kamu adalah asisten AI medis yang membantu mahasiswa kedokteran dan profesional kesehatan. Berikan jawaban yang informatif, akurat, dan mudah dipahami.',
       chatbot_normal_message_count: '0',
+      chatbot_normal_user_information: 'Respon cepat dengan AI tanpa pencarian basis data. Cocok untuk pertanyaan umum dan percakapan ringan.',
       
       // Validated Search Mode
       chatbot_validated_enabled: true,
@@ -35,6 +36,7 @@ export const useFeatureSetting = (onClose) => {
       chatbot_validated_message_count: '0',
       chatbot_validated_rewrite_enabled: true,
       chatbot_validated_rewrite_prompt: 'Kamu adalah asisten yang membantu mereformulasi pertanyaan pengguna agar lebih jelas dan spesifik untuk pencarian informasi. Tulis ulang pertanyaan dengan menambahkan konteks dari riwayat percakapan jika pertanyaan tidak jelas atau menggunakan kata ganti.',
+      chatbot_validated_user_information: 'Menggunakan basis pengetahuan yang telah divalidasi. Jawaban lebih akurat dan terverifikasi dari sumber terpercaya.',
 
       // Research Mode
       chatbot_research_enabled: true,
@@ -52,7 +54,8 @@ export const useFeatureSetting = (onClose) => {
       chatbot_research_published_after: '',
       chatbot_research_published_before: '',
       chatbot_research_updated_after: '',
-      chatbot_research_updated_before: ''
+      chatbot_research_updated_before: '',
+      chatbot_research_user_information: 'Pencarian mendalam dengan multiple sumber dan analisis komprehensif. Cocok untuk topik kompleks yang membutuhkan riset detail.'
     },
     onSubmit: async (values) => {
       try {
@@ -87,6 +90,7 @@ export const useFeatureSetting = (onClose) => {
         'chatbot_normal_last_message_count',
         'chatbot_normal_prompt',
         'chatbot_normal_message_count',
+        'chatbot_normal_user_information',
         'chatbot_validated_enabled',
         'chatbot_validated_model',
         'chatbot_validated_embedding_model',
@@ -98,6 +102,7 @@ export const useFeatureSetting = (onClose) => {
         'chatbot_validated_message_count',
         'chatbot_validated_rewrite_enabled',
         'chatbot_validated_rewrite_prompt',
+        'chatbot_validated_user_information',
         'chatbot_research_enabled',
         'chatbot_research_model',
         'chatbot_research_cost',
@@ -113,7 +118,8 @@ export const useFeatureSetting = (onClose) => {
         'chatbot_research_published_after',
         'chatbot_research_published_before',
         'chatbot_research_updated_after',
-        'chatbot_research_updated_before'
+        'chatbot_research_updated_before',
+        'chatbot_research_user_information'
       ]
 
       try {

@@ -16,6 +16,11 @@ const initialState = {
     validated: 8,
     research: 15
   },
+  userInformation: {
+    normal: '',
+    validated: '',
+    research: ''
+  },
   filters: {
     search: '',
     userId: ''
@@ -87,6 +92,9 @@ const chatbotSlice = createSlice({
     },
     setCosts: (state, action) => {
       state.costs = action.payload
+    },
+    setUserInformation: (state, action) => {
+      state.userInformation = action.payload
     },
     setPagination: (state, action) => {
       state.pagination = action.payload

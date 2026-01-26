@@ -10,7 +10,10 @@ export class GetChatbotConfigService extends BaseService {
       'chatbot_research_enabled',
       'chatbot_normal_cost',
       'chatbot_validated_cost',
-      'chatbot_research_cost'
+      'chatbot_research_cost',
+      'chatbot_normal_user_information',
+      'chatbot_validated_user_information',
+      'chatbot_research_user_information'
     ]
 
     const constantsMap = await GetConstantsService.call({ keys: constantKeys })
@@ -28,6 +31,11 @@ export class GetChatbotConfigService extends BaseService {
         normal: parseFloat(constantsMap.chatbot_normal_cost),
         validated: parseFloat(constantsMap.chatbot_validated_cost),
         research: parseFloat(constantsMap.chatbot_research_cost)
+      },
+      userInformation: {
+        normal: constantsMap.chatbot_normal_user_information || '',
+        validated: constantsMap.chatbot_validated_user_information || '',
+        research: constantsMap.chatbot_research_user_information || ''
       }
     }
   }

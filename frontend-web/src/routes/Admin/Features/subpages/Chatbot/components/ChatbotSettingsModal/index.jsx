@@ -192,6 +192,19 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             Instruksi untuk AI tentang cara merespons dalam Normal Mode
           </HintText>
         </FormGroup>
+
+        <FormGroup>
+          <Label>Informasi untuk User</Label>
+          <Textarea
+            placeholder="Deskripsi mode untuk ditampilkan ke pengguna..."
+            value={form.values.chatbot_normal_user_information}
+            onChange={(e) => form.setFieldValue('chatbot_normal_user_information', e.target.value)}
+            style={{ minHeight: '80px' }}
+          />
+          <HintText>
+            Deskripsi singkat tentang Normal Mode yang akan ditampilkan ke pengguna
+          </HintText>
+        </FormGroup>
       </ModeSection>
 
       <Divider />
@@ -322,6 +335,19 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             </HintText>
           </FormGroup>
         )}
+
+        <FormGroup>
+          <Label>Informasi untuk User</Label>
+          <Textarea
+            placeholder="Deskripsi mode untuk ditampilkan ke pengguna..."
+            value={form.values.chatbot_validated_user_information}
+            onChange={(e) => form.setFieldValue('chatbot_validated_user_information', e.target.value)}
+            style={{ minHeight: '80px' }}
+          />
+          <HintText>
+            Deskripsi singkat tentang Validated Mode yang akan ditampilkan ke pengguna
+          </HintText>
+        </FormGroup>
       </ModeSection>
 
       <Divider />
@@ -546,6 +572,19 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             </FormGroup>
           </>
         )}
+
+        <FormGroup>
+          <Label>Informasi untuk User</Label>
+          <Textarea
+            placeholder="Deskripsi mode untuk ditampilkan ke pengguna..."
+            value={form.values.chatbot_research_user_information}
+            onChange={(e) => form.setFieldValue('chatbot_research_user_information', e.target.value)}
+            style={{ minHeight: '80px' }}
+          />
+          <HintText>
+            Deskripsi singkat tentang Research Mode yang akan ditampilkan ke pengguna
+          </HintText>
+        </FormGroup>
       </ModeSection>
     </Modal>
   )

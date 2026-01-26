@@ -16,6 +16,7 @@ const {
   setCurrentMode,
   setAvailableModes,
   setCosts,
+  setUserInformation,
   setPagination,
   addConversation,
   updateConversation,
@@ -32,6 +33,9 @@ export const fetchChatbotConfig = () => async (dispatch) => {
 
     dispatch(setAvailableModes(config.availableModes))
     dispatch(setCosts(config.costs))
+    if (config.userInformation) {
+      dispatch(setUserInformation(config.userInformation))
+    }
 
     return config
   } catch (err) {
