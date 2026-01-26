@@ -167,7 +167,7 @@ export const TimerDisplay = styled.div`
   line-height: 1.2;
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: "Outfit,Outfit Fallback";
+  font-family: "Outfit";
   letter-spacing: 2px;
 
   @media (max-width: 768px) {
