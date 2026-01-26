@@ -63,6 +63,7 @@ export const UserSection = styled.div`
 
 export const UserInfo = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 0.75rem;
 `

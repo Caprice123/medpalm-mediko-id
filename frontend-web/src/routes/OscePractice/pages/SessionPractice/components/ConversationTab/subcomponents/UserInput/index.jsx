@@ -4,14 +4,16 @@ import { useDispatch } from 'react-redux'
 import { actions as commonActions } from '@store/common/reducer'
 import {
   InputArea,
+  InputWrapper,
   InputRow,
   TextInput,
+  InterimOverlay,
   RecordButton,
   SendButton,
   HelpText,
+  InputActions,
 } from '../../../../SessionPractice.styles'
-import { FaStop } from 'react-icons/fa'
-import Button from '@components/common/Button'
+import { FaMicrophone, FaMicrophoneSlash, FaPaperPlane } from 'react-icons/fa'
 
 // LocalStorage key for auto-send preference
 const AUTO_SEND_STORAGE_KEY = 'osce_auto_send_enabled'
@@ -24,14 +26,6 @@ const getAutoSendPreference = () => {
   } catch (error) {
     console.error('Error reading auto-send preference:', error)
     return false
-  }
-}
-
-const setAutoSendPreference = (value) => {
-  try {
-    localStorage.setItem(AUTO_SEND_STORAGE_KEY, JSON.stringify(value))
-  } catch (error) {
-    console.error('Error saving auto-send preference:', error)
   }
 }
 
@@ -118,106 +112,53 @@ function UserInput({ onSendMessage, onStopStreaming, isSendingMessage, isStreami
     recording.toggleRecording()
   }, [recording])
 
-  // Combine input text with interim text for display
-  const displayValue = inputText + (interimText ? interimText : '')
+  const determineRecordingText = () => {
+    const isActive = recording.isRecording
+    return isActive ? "Merekam..." : "Mulai Rekam"
+  }
 
   return (
     <InputArea>
-      <InputRow>
-        <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
-          <TextInput
-            placeholder={
-              isSendingMessage
-                ? "Mengirim pesan..."
-                : recording.isRecording
-                ? "Sedang merekam... (berbicara sekarang)"
-                : recording.isTranscribing
-                ? "Memproses audio..."
-                : "Ketik pesan Anda di sini..."
-            }
-            value={displayValue}
-            onChange={(e) => {
-              // Only allow editing the non-interim part
-              const newValue = e.target.value
-              if (newValue.length <= inputText.length) {
-                setInputText(newValue)
-              } else {
-                // User is trying to type - only update if not recording
-                if (!recording.isRecording && !interimText) {
-                  setInputText(newValue)
-                }
-              }
-            }}
-            onKeyDown={handleKeyDown}
-            disabled={isSendingMessage || recording.isRecording}
-            style={{
-              fontStyle: interimText ? 'italic' : 'normal',
-              flex: 1,
-              width: '100%'
-            }}
-          />
-          {interimText && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              pointerEvents: 'none',
-              padding: '0.625rem 1rem',
-              display: 'flex',
-              alignItems: 'flex-start',
-              fontSize: '0.9375rem',
-              fontFamily: 'inherit',
-              lineHeight: '1.4',
-              fontStyle: 'normal',
-            }}>
-              <span style={{ visibility: 'hidden' }}>{inputText}</span>
-              <span style={{ fontStyle: 'italic', opacity: 0.7 }}>{interimText}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Priority 1: Stop streaming button when AI is responding */}
-        {isStreaming ? (
-          <SendButton
-            onClick={onStopStreaming}
-            style={{ background: '#ef4444' }}
-            title="Stop streaming"
-          >
-            <FaStop />
-          </SendButton>
-        ) : /* Priority 2: Recording button when actively recording or transcribing */
-        recording.isRecording || recording.isTranscribing ? (
-          <RecordButton
-            recording={recording.isRecording}
-            onClick={handleToggleRecording}
-            disabled={recording.isTranscribing}
-            title={recording.isRecording ? 'Hentikan rekaman' : 'Memproses audio...'}
-          >
-            {recording.isTranscribing ? '⏳' : '⏹️'}
-          </RecordButton>
-        ) : /* Priority 3: Send button when there's text to send */
-        inputText.trim() ? (
-          <SendButton
-            onClick={handleSendMessage}
-            disabled={isSendingMessage}
-            title="Kirim pesan"
-          >
-            {isSendingMessage ? '⏳' : '➤'}
-          </SendButton>
-        ) : /* Priority 4: Default record button when idle */
-        (
-          <RecordButton
-            recording={false}
-            onClick={handleToggleRecording}
-            disabled={false}
-            title="Mulai rekam"
-          >
-            🎤
-          </RecordButton>
+      <InputWrapper>
+        <TextInput
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={isSendingMessage || isStreaming || recording.isRecording || recording.isTranscribing}
+        />
+        {interimText && (
+          <InterimOverlay>
+            <span style={{ visibility: 'hidden' }}>{inputText}</span>
+            <span style={{ fontStyle: 'italic', opacity: 0.7, color: '#666' }}>{interimText}</span>
+          </InterimOverlay>
         )}
-      </InputRow>
+      </InputWrapper>
+
+      <InputActions>
+        <RecordButton
+          onClick={handleToggleRecording}
+          recording={recording.isRecording}
+          disabled={recording.isTranscribing || isSendingMessage || isStreaming}
+          title={recording.isRecording ? 'Hentikan rekaman' : 'Mulai rekam'}
+        >
+          {recording.isRecording ? <FaMicrophone size={18} /> : <FaMicrophoneSlash size={18} />}
+          {determineRecordingText()}
+        </RecordButton>
+
+        <SendButton
+          onClick={handleSendMessage}
+          disabled={!inputText.trim() || recording.isRecording || recording.isTranscribing || isSendingMessage || isStreaming}
+          title="Kirim pesan"
+        >
+          <FaPaperPlane />
+        </SendButton>
+      </InputActions>
+
+      {autoSendEnabled && (
+        <HelpText style={{ marginTop: '12px' }}>
+          Mode auto-send aktif - rekaman akan otomatis terkirim setelah selesai
+        </HelpText>
+      )}
 
       <HelpText>
         AI memahami konteks meskipun terdapat typo, pesan aman untuk dikirim

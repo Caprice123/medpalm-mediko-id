@@ -5,7 +5,6 @@ import {
   ChatContainer,
 } from '../../SessionPractice.styles'
 import { fetchSessionMessages, sendMessage, stopStreaming } from '../../../../../../store/oscePractice/userAction'
-import { actions } from '../../../../../../store/oscePractice/reducer'
 import MessageListComponent from './subcomponents/MessageListComponent'
 import UserInput from './subcomponents/UserInput'
 import Guideline from './subcomponents/Guideline'
@@ -21,24 +20,6 @@ function ConversationTab() {
 
     dispatch(fetchSessionMessages(sessionId))
   }, [sessionId, dispatch])
-
-  // Cleanup orphaned streaming messages when not sending
-  useEffect(() => {
-    if (!loading.isSendingMessage && sessionMessages) {
-      // Find any streaming messages that are orphaned
-      const streamingMessages = sessionMessages.filter(msg =>
-        msg.id && msg.id.toString().startsWith('streaming-')
-      )
-
-      // If there are streaming messages but we're not sending, clean them up
-      if (streamingMessages.length > 0) {
-        console.log('🧹 Cleaning up orphaned streaming messages:', streamingMessages.length)
-        streamingMessages.forEach(msg => {
-          dispatch(actions.removeMessage({ sessionId, messageId: msg.id }))
-        })
-      }
-    }
-  }, [loading.isSendingMessage, sessionMessages, sessionId, dispatch])
 
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!sessionId) return
@@ -69,7 +50,8 @@ function ConversationTab() {
     msg.id && msg.id.toString().startsWith('streaming-')
   ) || false
 
-  const isStreaming = hasStreamingMessage && loading.isSendingMessage
+  
+  const isStreaming = hasStreamingMessage || loading.isSendingMessage
 
   return (
     <ChatContainer>

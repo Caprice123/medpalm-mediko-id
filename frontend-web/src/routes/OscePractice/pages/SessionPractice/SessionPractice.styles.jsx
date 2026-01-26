@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
@@ -41,34 +41,137 @@ export const Sidebar = styled.div`
   }
 `
 
+// Timer animations
+const pulseGlow = keyframes`
+  0%, 100% {
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+  }
+  50% {
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4),
+                0 0 20px rgba(16, 185, 129, 0.3);
+  }
+`
+
+const pulseWarning = keyframes`
+  0%, 100% {
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4),
+                0 0 20px rgba(245, 158, 11, 0.3);
+  }
+`
+
+const pulseCritical = keyframes`
+  0%, 100% {
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
+  }
+  50% {
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.5),
+                0 0 25px rgba(239, 68, 68, 0.4);
+  }
+`
+
 export const TimerCard = styled.div`
-  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
-  color: ${colors.neutral.white};
-  padding: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.25rem 1.75rem;
   margin: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
+  border-radius: 16px;
+  color: white;
+  border: 2px solid;
+  transition: all 0.3s ease;
+
+  ${({ $state }) => {
+    switch ($state) {
+      case 'critical':
+        return css`
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          border-color: #dc2626;
+          box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
+          animation: ${pulseCritical} 1s infinite ease-in-out;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(239, 68, 68, 0.35);
+          }
+        `
+      case 'warning':
+        return css`
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          border-color: #d97706;
+          box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
+          animation: ${pulseWarning} 1.5s infinite ease-in-out;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(245, 158, 11, 0.35);
+          }
+        `
+      case 'normal':
+      default:
+        return css`
+          background: linear-gradient(135deg, #10b981, #059669);
+          border-color: #059669;
+          box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+          animation: ${pulseGlow} 2s infinite ease-in-out;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(16, 185, 129, 0.35);
+          }
+        `
+    }
+  }}
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.25rem;
+  }
+`
+
+export const TimerIcon = styled.div`
+    color: white;
+    font-size: 2rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+        font-size: 1.5rem;
+    }
 `
 
 export const TimerLabel = styled.div`
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  margin-bottom: 0.5rem;
+  opacity: 0.95;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `
 
 export const TimerDisplay = styled.div`
-  font-size: 2.5rem;
-  font-weight: 700;
-  font-family: 'Courier New', monospace;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Outfit,Outfit Fallback";
   letter-spacing: 2px;
 
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 `
 
@@ -349,150 +452,304 @@ export const MessageList = styled.div`
 `
 
 export const Message = styled.div`
-  background: ${props => props.isUser ? colors.primary.light : colors.neutral.gray100};
-  padding: 1rem 1.25rem;
+  background: ${props => props.isUser ? '#3b82f6' : 'white'};
+  color: ${props => props.isUser ? 'white' : colors.neutral.gray800};
+  padding: 0.875rem 1.125rem;
   border-radius: 12px;
-  max-width: 80%;
+  border-bottom-right-radius: ${props => props.isUser ? '4px' : '12px'};
+  border-bottom-left-radius: ${props => props.isUser ? '12px' : '4px'};
+  max-width: 70%;
   align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  border: 1px solid ${props => props.isUser ? colors.primary.main : colors.neutral.gray200};
+  border: ${props => props.isUser ? 'none' : '1px solid #e5e7eb'};
+  word-wrap: break-word;
 
   @media (max-width: 768px) {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
     max-width: 90%;
-    padding: 0.875rem 1rem;
+    padding: 0.75rem;
   }
 `
 
 export const MessageAuthor = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
-  color: ${colors.neutral.gray600};
+  color: inherit;
   margin-bottom: 0.375rem;
+  opacity: 0.9;
 `
 
 export const MessageText = styled.div`
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: ${colors.neutral.gray800};
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: inherit;
+`
+
+// Input animations
+const recordingPulse = keyframes`
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5), 0 0 0 4px rgba(239, 68, 68, 0.1);
+  }
+`
+
+const iconBounce = keyframes`
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 `
 
 export const InputArea = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: ${colors.neutral.white};
-  border-top: 1px solid ${colors.neutral.gray200};
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  margin-top: 0;
+  border-top: 1px solid rgba(0, 124, 240, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+`
+
+export const InputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
 `
 
 export const InputRow = styled.div`
   display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `
 
 export const TextInput = styled.textarea`
-  flex: 1;
-  min-height: 40px;
-  max-height: 90px;
-  padding: 0.625rem 1rem;
-  border: 1px solid ${colors.neutral.gray300};
-  border-radius: 20px;
-  font-size: 0.9375rem;
-  font-family: inherit;
-  background: ${colors.neutral.gray50};
+  width: 100%;
+  min-height: 80px;
+  padding: 16px 20px;
+  border: 2px solid rgba(0, 124, 240, 0.15);
+  border-radius: 12px;
   resize: none;
-  overflow-y: auto;
-  line-height: 1.4;
+  font-family: inherit;
+  font-size: 1rem;
+  color: ${colors.neutral.gray800};
+  background: rgba(245, 247, 250, 0.5);
+  transition: all 0.2s ease;
+  line-height: 1.5;
 
   &:focus {
     outline: none;
     border-color: ${colors.primary.main};
-    background: ${colors.neutral.white};
+    box-shadow: 0 0 0 3px rgba(0, 124, 240, 0.1);
+    background: #ffffff;
   }
 
   &::placeholder {
-    color: ${colors.neutral.gray400};
+    color: ${colors.neutral.gray500};
+    opacity: 0.7;
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
+
+  @media (max-width: 768px) {
+    min-height: 70px;
+    padding: 14px 16px;
+  }
+`
+
+export const InterimOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px 20px;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: transparent;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  overflow: hidden;
+  z-index: 1;
 `
 
 export const InputActions = styled.div`
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 12px;
+  width: 100%;
 `
 
 export const RecordButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background: transparent;
+  flex: 1;
+  height: 56px;
+  gap: 12px;
+  background: ${props => props.recording ? 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)' : colors.primary.main};
+  color: white;
+  font-size: 1rem;
+  box-shadow: ${props => props.recording
+    ? '0 4px 16px rgba(239, 68, 68, 0.3)'
+    : '0 4px 16px rgba(0, 124, 240, 0.25)'};
   border: none;
-  border-radius: 50%;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 1.25rem;
-  color: ${colors.neutral.gray600};
-  transition: all 0.2s;
-  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 180px;
+
+  ${props => props.recording && css`
+    animation: ${recordingPulse} 2s infinite;
+
+    svg {
+      animation: ${iconBounce} 1s infinite;
+    }
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    }
+  `}
 
   &:hover:not(:disabled) {
-    background: ${colors.neutral.gray100};
+    transform: translateY(-2px);
+    box-shadow: ${props => props.recording
+      ? '0 8px 24px rgba(239, 68, 68, 0.4)'
+      : '0 8px 24px rgba(0, 124, 240, 0.35)'};
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: ${props => props.recording
+      ? '0 4px 12px rgba(239, 68, 68, 0.3)'
+      : '0 4px 12px rgba(0, 124, 240, 0.3)'};
+  }
+
+  svg {
+    transition: transform 0.2s ease;
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+    background: #94a3b8;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+    }
   }
 
-  ${props => props.recording && `
-    color: ${colors.error.main};
-    animation: pulse 1.5s infinite;
+  @media (max-width: 768px) {
+    height: 52px;
+    font-size: 0.95rem;
+    min-width: 160px;
+    gap: 10px;
+  }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-  `}
+  @media (max-width: 480px) {
+    height: 48px;
+    font-size: 0.9rem;
+    min-width: 140px;
+    gap: 8px;
+  }
 `
 
 export const SendButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background: ${colors.primary.main};
+  height: 56px;
+  width: 56px;
+  background: linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.primary.hover} 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 124, 240, 0.25);
   border: none;
-  border-radius: 50%;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 1.125rem;
-  color: ${colors.neutral.white};
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: ${colors.primary.hover};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 124, 240, 0.35);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 124, 240, 0.3);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: ${colors.neutral.gray300};
-    color: ${colors.neutral.gray500};
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+    background: #94a3b8;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 52px;
+    width: 52px;
+  }
+
+  @media (max-width: 480px) {
+    height: 48px;
+    width: 48px;
   }
 `
 
 export const HelpText = styled.div`
-  font-size: 0.75rem;
-  color: ${colors.neutral.gray500};
-  text-align: left;
-  padding: 0 0.25rem;
+  color: ${colors.neutral.gray600};
+  font-size: 0.9rem;
+  margin-top: 12px;
+  text-align: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(0, 124, 240, 0.06) 0%, rgba(0, 223, 216, 0.06) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 124, 240, 0.15);
+  font-weight: 500;
   line-height: 1.4;
 `
 

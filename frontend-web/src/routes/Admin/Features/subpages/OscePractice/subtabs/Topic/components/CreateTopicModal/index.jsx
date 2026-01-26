@@ -248,16 +248,12 @@ function CreateTopicModal({ onClose }) {
 // Memoized Knowledge Base Section
 const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
   const handleKeyChange = useCallback((index, value) => {
-    const newKnowledgeBase = [...knowledgeBase]
-    newKnowledgeBase[index].key = value
-    setFieldValue('knowledgeBase', newKnowledgeBase)
-  }, [knowledgeBase, setFieldValue])
+    setFieldValue(`knowledgeBase[${index}].key`, value)
+  }, [setFieldValue])
 
   const handleValueChange = useCallback((index, value) => {
-    const newKnowledgeBase = [...knowledgeBase]
-    newKnowledgeBase[index].value = value
-    setFieldValue('knowledgeBase', newKnowledgeBase)
-  }, [knowledgeBase, setFieldValue])
+    setFieldValue(`knowledgeBase[${index}].value`, value)
+  }, [setFieldValue])
 
   const handleAddItem = useCallback(() => {
     setFieldValue('knowledgeBase', [...knowledgeBase, { key: '', value: '' }])
@@ -289,7 +285,7 @@ const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
 })
 
 // Memoized Knowledge Base Item
-const KnowledgeBaseItem = memo(({ index, item, onKeyChange, onValueChange }) => {
+const KnowledgeBaseItem = ({ index, item, onKeyChange, onValueChange }) => {
   return (
     <div style={{ marginBottom: '0.75rem' }}>
       <TextInput
@@ -307,9 +303,6 @@ const KnowledgeBaseItem = memo(({ index, item, onKeyChange, onValueChange }) => 
       </div>
     </div>
   )
-}, (prevProps, nextProps) => {
-  return prevProps.item.key === nextProps.item.key &&
-         prevProps.item.value === nextProps.item.value
-})
+}
 
 export default CreateTopicModal

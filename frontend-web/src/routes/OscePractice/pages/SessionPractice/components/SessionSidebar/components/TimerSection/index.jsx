@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { TimerCard, TimerDisplay, TimerLabel } from '../../../../SessionPractice.styles'
+import { FaClock } from 'react-icons/fa'
+import { TimerCard, TimerDisplay, TimerIcon, TimerLabel } from '../../../../SessionPractice.styles'
 
 const TimerSection = ({ onEndSession, isEndingSession }) => {
     const { sessionDetail } = useSelector(state => state.oscePractice)
@@ -67,13 +68,28 @@ const TimerSection = ({ onEndSession, isEndingSession }) => {
         onEndSession(true)
     }
 
+    // Determine timer state based on remaining time
+    const getTimerState = (timeInSeconds) => {
+        if (timeInSeconds < 60) { // Less than 1 minute
+            return 'critical'
+        } else if (timeInSeconds < 150) { // Less than 2.5 minutes (150 seconds)
+            return 'warning'
+        } else {
+            return 'normal'
+        }
+    }
+
+    const timerState = getTimerState(Math.max(timeRemaining, 0))
+
   return (
-    <TimerCard>
+    <TimerCard $state={timerState}>
+        <TimerIcon>
+            <FaClock />
+        </TimerIcon>
         <TimerLabel>
-            <span>⏱️</span>
             WAKTU TERSISA
+            <TimerDisplay>{formatTime(timeRemaining)}</TimerDisplay>
         </TimerLabel>
-        <TimerDisplay>{formatTime(timeRemaining)}</TimerDisplay>
     </TimerCard>
   )
 }

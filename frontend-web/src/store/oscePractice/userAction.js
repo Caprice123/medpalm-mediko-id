@@ -2,8 +2,8 @@ import { actions } from '@store/oscePractice/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
-import { getToken, setToken } from '@utils/authToken'
-import api from '@config/api'
+import { getToken } from '@utils/authToken'
+import { refreshAccessToken } from '../../config/api'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -16,7 +16,6 @@ const {
   setSessionObservations,
   setSessionDiagnoses,
   setSessionTherapies,
-  setMessagePagination,
   setMessagesPagination,
   addMessage,
   updateMessage,
@@ -332,16 +331,7 @@ const ensureValidToken = async () => {
 
   // If access token is expired, refresh it using axios
   if (isTokenExpired(token.accessTokenExpiresAt)) {
-    try {
-      const refreshResponse = await api.post('/api/v1/refresh', {
-        refreshToken: token.refreshToken,
-      })
-      const newToken = refreshResponse.data.data
-      setToken(newToken)
-      return newToken.accessToken
-    } catch (_e) {
-      throw new Error('Failed to refresh token')
-    }
+    return await refreshAccessToken()
   }
 
   return token.accessToken

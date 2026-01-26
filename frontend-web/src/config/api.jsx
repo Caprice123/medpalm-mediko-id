@@ -19,7 +19,7 @@ const isTokenExpired = (isoString) => {
 let isRefreshing = false; // Tracks if a refresh request is ongoing
 let refreshPromise = null; // Holds the promise of the ongoing refresh
 
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
     const token = getToken();
     const refreshResponse = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/refresh`, {
         refreshToken: token.refreshToken,
