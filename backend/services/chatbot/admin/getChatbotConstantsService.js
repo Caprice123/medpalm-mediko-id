@@ -22,6 +22,8 @@ export class GetChatbotConstantsService extends BaseService {
       'chatbot_validated_mode_model',
       'chatbot_validated_mode_cost',
       'chatbot_validated_mode_system_prompt',
+      'chatbot_validated_rewrite_enabled',
+      'chatbot_validated_rewrite_prompt',
 
       // Research Mode settings
       'chatbot_research_mode_is_active',

@@ -79,6 +79,8 @@ export class ValidatedSearchModeAIService extends BaseService {
               'chatbot_validated_system_prompt',
               'chatbot_validated_search_count',
               'chatbot_validated_threshold',
+              'chatbot_validated_rewrite_enabled',
+              'chatbot_validated_rewrite_prompt',
             ]
           }
         }
@@ -99,12 +101,69 @@ export class ValidatedSearchModeAIService extends BaseService {
       const systemPrompt = constantsMap.chatbot_validated_system_prompt
       const searchCount = parseInt(constantsMap.chatbot_validated_search_count) || 5
       const threshold = parseFloat(constantsMap.chatbot_validated_threshold) || 0.3
+      const rewriteEnabled = constantsMap.chatbot_validated_rewrite_enabled === 'true'
+      const rewritePrompt = constantsMap.chatbot_validated_rewrite_prompt
 
-      // Step 1: Retrieve relevant context using RAG
+      // Step 0: Query reformulation (if enabled)
+      let queryForRetrieval = message
+      if (rewriteEnabled) {
+        console.log('Query rewrite enabled. Checking if reformulation is needed...')
+
+        // Get recent conversation history for context (reuse lastMessageCount)
+        const recentMessages = await prisma.chatbot_messages.findMany({
+          where: {
+            conversation_id: conversationId,
+            is_deleted: false
+          },
+          orderBy: { id: 'desc' },
+          take: lastMessageCount,
+          select: {
+            sender_type: true,
+            content: true
+          }
+        })
+
+        if (recentMessages.length > 0) {
+          // Format conversation history
+          const conversationHistory = recentMessages
+            .reverse()
+            .map(msg => `${msg.sender_type === 'user' ? 'User' : 'AI'}: ${msg.content}`)
+            .join('\n')
+
+          // Prepare rewrite prompt
+          const rewritePromptWithVars = this.replacePlaceholders(rewritePrompt, {
+            conversation_history: conversationHistory,
+            user_query: message
+          })
+
+          console.log('Rewriting query with conversation context...')
+
+          // Use AI to rewrite the query
+          const AIService = RouterUtils.call(modelName)
+          if (AIService) {
+            try {
+              const rewrittenQuery = await AIService.generateFromText(
+                modelName,
+                rewritePromptWithVars,
+                [] // No conversation history for the rewrite itself
+              )
+
+              queryForRetrieval = rewrittenQuery.trim()
+              console.log(`Original query: "${message}"`)
+              console.log(`Rewritten query: "${queryForRetrieval}"`)
+            } catch (error) {
+              console.error('Query rewrite failed, using original query:', error)
+              // Fallback to original query if rewrite fails
+            }
+          }
+        }
+      }
+
+      // Step 1: Retrieve relevant context using RAG (with potentially rewritten query)
       console.log(`Searching for relevant context (limit: ${searchCount})...`)
-      const ragResults = await RAGService.getRelevantContext(message, {
+      const ragResults = await RAGService.getRelevantContext(queryForRetrieval, {
         limit: searchCount,
-        threshold: threshold, // Lower threshold to get more results
+        threshold: threshold,
         model: embeddingModel,
       })
 
@@ -145,7 +204,7 @@ export class ValidatedSearchModeAIService extends BaseService {
 
       console.log(context, uniqueSources)
 
-      // Step 2: Get conversation history
+      // Step 2: Get conversation history for final response generation
       const messages = await prisma.chatbot_messages.findMany({
         where: {
           conversation_id: conversationId,
@@ -164,7 +223,7 @@ export class ValidatedSearchModeAIService extends BaseService {
       // Step 3: Replace placeholders in system prompt with actual RAG context
       console.log('Replacing placeholders in system prompt...')
       const processedSystemPrompt = this.replacePlaceholders(systemPrompt, {
-        context: context
+        context: context || "Tidak ada konteks yang tersedia"
       })
 
       // Step 4: Generate streaming response using RouterUtils with processed prompt

@@ -275,8 +275,8 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             label="Jumlah Summary Notes untuk RAG"
             type="number"
             placeholder="5"
-            value={form.values.chatbot_validated_max_context}
-            onChange={(e) => form.setFieldValue('chatbot_validated_max_context', e.target.value)}
+            value={form.values.chatbot_validated_search_count}
+            onChange={(e) => form.setFieldValue('chatbot_validated_search_count', e.target.value)}
             hint="Jumlah summary notes yang diambil dari vector database"
           />
         </FormGroup>
@@ -294,6 +294,34 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             hint="Skor minimum kemiripan untuk menyertakan summary notes (0-1)"
           />
         </FormGroup>
+
+        <FormGroup>
+          <Label>Query Reformulation (Rewrite)</Label>
+          <ToggleSwitch>
+            <input
+              type="checkbox"
+              checked={form.values.chatbot_validated_rewrite_enabled}
+              onChange={(e) => form.setFieldValue('chatbot_validated_rewrite_enabled', e.target.checked)}
+            />
+            <ToggleSlider />
+          </ToggleSwitch>
+          <HintText>Aktifkan untuk menulis ulang pertanyaan follow-up yang tidak jelas menggunakan konteks percakapan</HintText>
+        </FormGroup>
+
+        {form.values.chatbot_validated_rewrite_enabled && (
+          <FormGroup>
+            <Label>Query Rewrite Prompt</Label>
+            <Textarea
+              placeholder="Masukkan prompt untuk menulis ulang pertanyaan..."
+              value={form.values.chatbot_validated_rewrite_prompt}
+              onChange={(e) => form.setFieldValue('chatbot_validated_rewrite_prompt', e.target.value)}
+              style={{ minHeight: '150px' }}
+            />
+            <HintText>
+              Prompt untuk AI dalam menulis ulang pertanyaan yang tidak jelas. Gunakan placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
+            </HintText>
+          </FormGroup>
+        )}
       </ModeSection>
 
       <Divider />
