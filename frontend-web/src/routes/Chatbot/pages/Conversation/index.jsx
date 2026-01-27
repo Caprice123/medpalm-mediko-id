@@ -64,24 +64,21 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
       // Check if messages are already cached for this conversation
       const cachedMessages = messagesByConversation[conversationId]
-      const hasConversationData = currentConversation && currentConversation.id === conversationId
-
-      // Only fetch conversation metadata if we don't have it
-      if (!hasConversationData) {
-        console.log(`📥 Fetching conversation metadata for ${conversationId}`)
-        dispatch(fetchConversation(conversationId))
-      } else {
-        console.log(`✅ Using cached conversation metadata for ${conversationId}`)
-      }
 
       if (!cachedMessages || cachedMessages.length === 0) {
-        // Messages not in cache - fetch from API
-        console.log(`📥 Fetching messages for conversation ${conversationId}`)
+        // First visit to this conversation - fetch both conversation detail and messages
+        console.log(`📥 Fetching conversation detail and messages for ${conversationId}`)
+        dispatch(fetchConversation(conversationId))
         setIsInitialLoad(true) // Mark as initial load to trigger scroll after fetch
         dispatch(fetchMessages({ conversationId, page: 1, perPage: 50, prepend: false }))
       } else {
-        // Messages already cached - use them directly
-        console.log(`✅ Using cached messages for conversation ${conversationId} (${cachedMessages.length} messages)`)
+        // Messages already cached - we've visited this conversation before
+        // No need to fetch anything, just use cached data
+        console.log(`✅ Using cached data for conversation ${conversationId} (${cachedMessages.length} messages)`)
+
+        // Set active conversation ID so selector returns the cached messages
+        dispatch(actions.setActiveConversationId(conversationId))
+
         // Scroll to bottom after a brief delay to ensure messages are rendered
         setTimeout(() => {
           setScrollTrigger({ should: true, behavior: 'auto' })
@@ -306,6 +303,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
           </div>
         )}
         <MessageList
+          key={conversationId}
           isLoading={loading.isMessagesLoading && currentPage === 1}
           isSending={loading.isSendingMessage}
           scrollTrigger={scrollTrigger}
