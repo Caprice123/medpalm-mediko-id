@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from '#config/sentry';
 import { startCronJobs } from '#jobs/cron';
 import { errorHandler } from '#middleware/errorHandler.middleware';
-import { addResponseHeaders } from '#middleware/responseHeaders.middleware';
 import { setupBullBoard } from '#config/bullBoard';
 import authRoutes from '#routes/api/v1/auth.routes';
 import creditPlanRoutes from '#routes/api/v1/creditPlan.routes';
