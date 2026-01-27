@@ -157,7 +157,7 @@ export class SendOsceMessageService extends BaseService {
     let aiMessageRecord = null
 
     const CHARS_PER_CHUNK = 20
-    const TYPING_SPEED_MS = 10
+    const TYPING_SPEED_MS = 1
 
     try {
       // Determine stream type (Gemini vs Perplexity/OpenAI)

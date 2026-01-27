@@ -180,7 +180,7 @@ export class SendMessageService extends BaseService {
     const sentCitations = new Set()
 
     const CHARS_PER_CHUNK = 20
-    const TYPING_SPEED_MS = 10
+    const TYPING_SPEED_MS = 1
 
     try {
       // Process Perplexity stream chunks with pacing
@@ -252,7 +252,7 @@ export class SendMessageService extends BaseService {
             }
 
             // Delay for 20 chars: 20 * 10ms = 300ms
-            const delay = CHARS_PER_CHUNK * TYPING_SPEED_MS * 2
+            const delay = CHARS_PER_CHUNK * TYPING_SPEED_MS
             await new Promise(resolve => setTimeout(resolve, delay))
           }
         }

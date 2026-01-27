@@ -501,7 +501,7 @@ export class SendMessageService extends BaseService {
     let buffer = '' // Buffer to detect tags across chunks
 
     const CHARS_PER_CHUNK = 20
-    const TYPING_SPEED_MS = 10
+    const TYPING_SPEED_MS = 1
 
     // Helper function to filter out <think>...</think> tags
     const filterThinkTags = (text) => {
