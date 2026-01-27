@@ -16,7 +16,10 @@ import { useSelector } from 'react-redux'
 
 export default function FeaturesSection() {
   const features = useSelector((state) => state.feature.features)
-  
+
+  // Filter only active features
+  const activeFeatures = features.filter(feature => feature.isActive === true || feature.isActive === "true")
+
   return (
     <Parallax speed={3}>
       <StyledFeaturesSection id="features">
@@ -31,8 +34,8 @@ export default function FeaturesSection() {
 
           <Parallax speed={-2}>
             <FeaturesGrid>
-              {features.length > 0 ? (
-                features.map((feature, index) => (
+              {activeFeatures.length > 0 ? (
+                activeFeatures.map((feature, index) => (
                   <Card
                     key={index}
                     hoverable

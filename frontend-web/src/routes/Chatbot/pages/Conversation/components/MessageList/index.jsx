@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import { selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   Container,
@@ -94,23 +95,17 @@ const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWith
   return true
 })
 
-function MessageList({ isLoading, isSending }) {
-  // Subscribe to messages directly in MessageList to prevent parent re-renders
-  const messages = useSelector(state => state.chatbot.messages)
+function MessageList({ isLoading, isSending, scrollTrigger }) {
+  // Subscribe to messages for current conversation only
+  const messages = useSelector(selectMessagesForCurrentConversation)
   const messagesEndRef = useRef(null)
-  const previousMessageCountRef = useRef(0)
 
-  // Only scroll to bottom when a NEW message is added (not during typing/streaming)
+  // Scroll to bottom with specified behavior (instant for conversation switch, smooth for new message)
   useEffect(() => {
-    const currentMessageCount = messages.length
-
-    // Scroll only when message count increases (new message sent/received)
-    if (currentMessageCount > previousMessageCountRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (scrollTrigger.should && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: scrollTrigger.behavior })
     }
-
-    previousMessageCountRef.current = currentMessageCount
-  }, [messages.length])
+  }, [scrollTrigger])
 
   // Memoize helper functions to prevent unnecessary re-renders
   const formatTime = useCallback((dateString) => {

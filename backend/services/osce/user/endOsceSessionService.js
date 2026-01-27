@@ -157,13 +157,15 @@ export class EndOsceSessionService extends BaseService {
         therapies: savedTherapies,
       })
 
-      // Calculate time taken (in minutes) using Luxon
+      // Calculate time taken (in seconds) using Luxon
       let timeTaken = 0
       if (session.started_at) {
         const startTime = DateTime.fromJSDate(session.started_at, { zone: 'Asia/Jakarta' })
         const endTime = DateTime.now().setZone('Asia/Jakarta')
-        const diffInMinutes = endTime.diff(startTime, 'minutes').minutes
-        timeTaken = Math.round(diffInMinutes)
+        const diffInSeconds = endTime.diff(startTime, 'seconds').seconds
+        timeTaken = Math.round(diffInSeconds)
+        const maxDurationSeconds = session.osce_session_topic_snapshot.duration_minutes * 60
+        timeTaken = Math.min(timeTaken, maxDurationSeconds)
       }
 
       // Update session with final data

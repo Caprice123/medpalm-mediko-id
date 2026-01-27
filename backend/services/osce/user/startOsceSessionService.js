@@ -39,7 +39,7 @@ export class StartOsceSessionService extends BaseService {
       const constants = await prisma.constants.findMany({
         where: {
           key: {
-            in: ['osce_practice_is_active', 'osce_session_start_cost'],
+            in: ['osce_session_start_cost'],
           },
         },
       })
@@ -48,11 +48,6 @@ export class StartOsceSessionService extends BaseService {
       constants.forEach(c => {
         constantsMap[c.key] = c.value
       })
-
-      const featureActive = constantsMap.osce_practice_is_active === 'true'
-      if (!featureActive) {
-        throw new Error('OSCE Practice feature is currently inactive')
-      }
 
       const sessionStartCost = parseInt(constantsMap.osce_session_start_cost) || 10
 

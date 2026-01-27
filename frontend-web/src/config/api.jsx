@@ -103,7 +103,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
         },
     );
 
-    // Response interceptor to handle 401 errors and credit quota updates
+    // Response interceptor to handle 401, 403 errors and credit quota updates
     api.interceptors.response.use(
         (response) => {
             // Check for x-remaining-quota header and update balance
@@ -133,6 +133,15 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 setToken(null);
                 navigate(SIGN_IN_ROUTE);
             }
+
+            // If we get a 403 error, feature is disabled - redirect to dashboard with error message
+            if (error.response && error.response.status === 403) {
+                // Dispatch error to common state for display
+                handleApiError(error, dispatch);
+                // Redirect to dashboard
+                navigate('/dashboard');
+            }
+
             return Promise.reject(error);
         }
     );

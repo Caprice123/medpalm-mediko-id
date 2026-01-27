@@ -159,6 +159,9 @@ function Dashboard() {
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
   const { userStatus } = useSelector(state => state.pricing)
 
+  // Filter only active features
+  const activeFeatures = features.filter(feature => feature.isActive === true || feature.isActive === "true")
+
   useEffect(() => {
     // Fetch features
     dispatch(fetchFeatures())
@@ -233,9 +236,9 @@ function Dashboard() {
             <EmptyStateIcon>⏳</EmptyStateIcon>
             <EmptyStateText>Memuat fitur...</EmptyStateText>
           </EmptyState>
-        ) : features.length > 0 ? (
+        ) : activeFeatures.length > 0 ? (
           <CatalogGrid>
-            {features.map((feature) => {
+            {activeFeatures.map((feature) => {
               // Check user access
               const hasActiveSubscription = userStatus?.hasActiveSubscription || false
               const userCredits = userStatus?.creditBalance || 0

@@ -9,10 +9,16 @@ const {
   setLoading,
   setConversations,
   setCurrentConversation,
+  setActiveConversationId,
   setMessages,
   addMessage,
   updateMessage,
   removeMessage,
+  setMessagesForConversation,
+  addMessageToConversation,
+  updateMessageInConversation,
+  removeMessageFromConversation,
+  prependMessagesToConversation,
   setCurrentMode,
   setAvailableModes,
   setCosts,
@@ -145,7 +151,7 @@ export const deleteConversation = (conversationId) => async (dispatch) => {
 export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend = false }) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isMessagesLoading', value: true }))
-    
+
     const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages`
     const queryParams = { page, perPage }
     const response = await getWithToken(route, queryParams)
@@ -156,10 +162,10 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
 
     if (prepend) {
       // Prepend older messages at the beginning (for page 2, 3, etc.)
-      dispatch(actions.prependMessages(messages))
+      dispatch(prependMessagesToConversation({ conversationId, messages }))
     } else {
       // Replace messages (initial load page 1)
-      dispatch(setMessages(messages))
+      dispatch(setMessagesForConversation({ conversationId, messages }))
     }
 
     dispatch(setPagination(pagination))
@@ -170,9 +176,9 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
   }
 }
 
-// Store active abort controller and user message for stream cancellation
-let activeChatbotAbortController = null
-let activeUserMessageContent = null
+// Store abort controllers per conversation for stream cancellation
+const abortControllersByConversation = {}
+const userMessageContentByConversation = {}
 
 // Helper function to ensure token is valid and refreshed if needed
 const ensureValidToken = async () => {
@@ -201,60 +207,68 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch) =
   try {
     dispatch(setLoading({ key: 'isSendingMessage', value: true }))
 
-
-    // Add user message immediately (optimistic UI)
+    // Add user message immediately (optimistic UI) - conversation-specific
     const optimisticUserMessage = {
       id: `temp-user-${Date.now()}`,
       senderType: 'user',
       content: content,
       createdAt: new Date().toISOString()
     }
-    dispatch(addMessage(optimisticUserMessage))
+    dispatch(addMessageToConversation({ conversationId, message: optimisticUserMessage }))
 
-    // Store user message content for potential stop action
-    activeUserMessageContent = content
+    // Store user message content for potential stop action - per conversation
+    userMessageContentByConversation[conversationId] = content
 
-    // Create new AbortController for this stream
-    activeChatbotAbortController = new AbortController()
+    // Create new AbortController for this conversation's stream
+    abortControllersByConversation[conversationId] = new AbortController()
 
     // ALL modes now use streaming (normal, validated, research)
-    return await sendMessageStreaming(conversationId, content, mode, dispatch, optimisticUserMessage.id, activeChatbotAbortController)
+    return await sendMessageStreaming(
+      conversationId,
+      content,
+      mode,
+      dispatch,
+      optimisticUserMessage.id,
+      abortControllersByConversation[conversationId]
+    )
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.log('Chatbot stream was stopped by user')
+      console.log(`Chatbot stream was stopped by user for conversation ${conversationId}`)
       return null
     }
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-    activeChatbotAbortController = null
+    // Clean up abort controller for this conversation
+    delete abortControllersByConversation[conversationId]
+    delete userMessageContentByConversation[conversationId]
   }
 }
 
-// Track if user stopped the stream
-let userStoppedStream = false
+// Track if user stopped the stream per conversation
+const userStoppedStreamByConversation = {}
 
-export const stopChatbotStreaming = () => async (dispatch) => {
+export const stopChatbotStreaming = (conversationId) => async (dispatch) => {
   try {
-    console.log('⏹️ Frontend: User clicked stop button')
+    console.log(`⏹️ Frontend: User clicked stop button for conversation ${conversationId}`)
 
-    // Set flag to stop receiving new chunks (but keep typing what we have)
-    userStoppedStream = true
+    // Set flag to stop receiving new chunks for this conversation
+    userStoppedStreamByConversation[conversationId] = true
 
-    // Abort the fetch - stops receiving new chunks from backend
-    // Backend detects disconnect and saves partial message to database
-    if (activeChatbotAbortController) {
-      console.log('🔴 Frontend: Aborting fetch request')
-      activeChatbotAbortController.abort()
+    // Abort the fetch for this specific conversation
+    const controller = abortControllersByConversation[conversationId]
+    if (controller) {
+      console.log(`🔴 Frontend: Aborting fetch request for conversation ${conversationId}`)
+      controller.abort()
       console.log('✅ Frontend: Fetch aborted')
     } else {
-      console.log('⚠️ Frontend: No active abort controller found')
+      console.log(`⚠️ Frontend: No active abort controller found for conversation ${conversationId}`)
     }
 
     // Typing animation continues to display all already-received content
     // Messages stay visible with temporary IDs (temp-user-xxx, streaming-xxx)
     // When user refreshes page, they'll load the saved messages from database
-    activeUserMessageContent = null
+    delete userMessageContentByConversation[conversationId]
 
     // DON'T set loading to false here - let typing animation finish first
     // Loading will be set to false in typeNextCharacter when typing completes
@@ -277,8 +291,8 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
   const streamingMessageId = `streaming-${Date.now()}`
   const messageCreatedAt = new Date().toISOString()
 
-  // Reset user stopped flag
-  userStoppedStream = false
+  // Reset user stopped flag for this conversation
+  userStoppedStreamByConversation[conversationId] = false
 
   // Typing animation state
   let fullContent = '' // Complete content from backend chunks
@@ -291,40 +305,46 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
   const TYPING_SPEED_MS = 1 // 3ms per character (~333 chars/sec) - fast but still smooth
 
-  // Add initial streaming message (no sources initially)
-  dispatch(addMessage({
-    id: streamingMessageId,
-    senderType: 'ai',
-    modeType: mode,
-    content: '',
-    sources: [],
-    createdAt: messageCreatedAt
+  // Add initial streaming message (no sources initially) - conversation-specific
+  dispatch(addMessageToConversation({
+    conversationId,
+    message: {
+      id: streamingMessageId,
+      senderType: 'ai',
+      modeType: mode,
+      content: '',
+      sources: [],
+      createdAt: messageCreatedAt
+    }
   }))
 
   // Typing animation - type character by character
   const typeNextCharacter = () => {
     // If user stopped stream and we've typed everything received, stop
-    if (userStoppedStream && displayedContent.length >= fullContent.length) {
+    if (userStoppedStreamByConversation[conversationId] && displayedContent.length >= fullContent.length) {
       console.log('✅ Finished typing all received content after stop - keeping messages visible')
       isTyping = false
 
       // Remove the streaming message and re-add with a non-streaming ID
       // This makes the stop button disappear while keeping the message visible
-      dispatch(removeMessage(streamingMessageId))
-      dispatch(addMessage({
-        id: `partial-${Date.now()}`, // Use 'partial-' prefix instead of 'streaming-'
-        senderType: 'ai',
-        modeType: mode,
-        content: displayedContent,
-        sources: showSources ? sources : [], // Only show sources if streaming is done
-        createdAt: messageCreatedAt
+      dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+      dispatch(addMessageToConversation({
+        conversationId,
+        message: {
+          id: `partial-${Date.now()}`, // Use 'partial-' prefix instead of 'streaming-'
+          senderType: 'ai',
+          modeType: mode,
+          content: displayedContent,
+          sources: showSources ? sources : [], // Only show sources if streaming is done
+          createdAt: messageCreatedAt
+        }
       }))
 
       // Backend is saving to database in background
       // When user refreshes, they'll see the saved messages from database
 
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      userStoppedStream = false
+      userStoppedStreamByConversation[conversationId] = false
       return
     }
 
@@ -334,18 +354,20 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
       // If backend is done and all characters displayed, finalize
       if (backendSavedMessage && finalData) {
-        dispatch(removeMessage(optimisticUserId))
-        dispatch(removeMessage(streamingMessageId))
+        // Remove optimistic messages from this conversation
+        dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+        dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
 
+        // Add final messages to this conversation
         if (finalData.userMessage) {
-          dispatch(addMessage(finalData.userMessage))
+          dispatch(addMessageToConversation({ conversationId, message: finalData.userMessage }))
         }
         if (finalData.aiMessage) {
-          dispatch(addMessage(finalData.aiMessage))
+          dispatch(addMessageToConversation({ conversationId, message: finalData.aiMessage }))
         }
 
         dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-        userStoppedStream = false
+        userStoppedStreamByConversation[conversationId] = false
       }
       return
     }
@@ -354,13 +376,17 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
     // Display next character
     displayedContent = fullContent.substring(0, displayedContent.length + 1)
 
-    dispatch(updateMessage({
-      id: streamingMessageId,
-      senderType: 'ai',
-      modeType: mode,
-      content: displayedContent,
-      sources: showSources ? sources : [], // Only show sources after streaming completes
-      createdAt: messageCreatedAt
+    // Update message in this conversation - continues even if user switches away
+    dispatch(updateMessageInConversation({
+      conversationId,
+      messageId: streamingMessageId,
+      updates: {
+        senderType: 'ai',
+        modeType: mode,
+        content: displayedContent,
+        sources: showSources ? sources : [], // Only show sources after streaming completes
+        createdAt: messageCreatedAt
+      }
     }))
 
     // Schedule next character
@@ -370,7 +396,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
   // Add chunk to content and start typing if needed
   const addChunkToContent = (text) => {
     // If user stopped stream, don't add new chunks
-    if (userStoppedStream) return
+    if (userStoppedStreamByConversation[conversationId]) return
 
     // Filter out <think> tags
     let filteredText = text
@@ -444,19 +470,19 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
               console.log('✅ Citations ready to display:', sources.length)
 
               // If typing animation already caught up OR user stopped, finalize immediately
-              if ((!isTyping && displayedContent.length >= fullContent.length) || userStoppedStream) {
-                dispatch(removeMessage(optimisticUserId))
-                dispatch(removeMessage(streamingMessageId))
+              if ((!isTyping && displayedContent.length >= fullContent.length) || userStoppedStreamByConversation[conversationId]) {
+                dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+                dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
 
                 if (data.data.userMessage) {
-                  dispatch(addMessage(data.data.userMessage))
+                  dispatch(addMessageToConversation({ conversationId, message: data.data.userMessage }))
                 }
                 if (data.data.aiMessage) {
-                  dispatch(addMessage(data.data.aiMessage))
+                  dispatch(addMessageToConversation({ conversationId, message: data.data.aiMessage }))
                 }
 
                 dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-                userStoppedStream = false
+                userStoppedStreamByConversation[conversationId] = false
                 return data.data
               }
               // Otherwise, let typing animation finish and it will finalize
@@ -482,7 +508,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
     } else {
       console.error('Streaming error:', error)
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      userStoppedStream = false
+      userStoppedStreamByConversation[conversationId] = false
       throw error
     }
   }

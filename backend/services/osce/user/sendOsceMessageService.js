@@ -53,7 +53,7 @@ export class SendOsceMessageService extends BaseService {
       const constants = await prisma.constants.findMany({
         where: {
           key: {
-            in: ['osce_practice_is_active', 'osce_practice_credit_cost', 'osce_practice_chat_completion_prompt'],
+            in: ['osce_practice_credit_cost', 'osce_practice_chat_completion_prompt'],
           },
         },
       })
@@ -62,11 +62,6 @@ export class SendOsceMessageService extends BaseService {
       constants.forEach(c => {
         constantsMap[c.key] = c.value
       })
-
-      const featureActive = constantsMap.osce_practice_is_active === 'true'
-      if (!featureActive) {
-        throw new Error('OSCE Practice feature is currently inactive')
-      }
 
     //   const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
       const messageCost = 0

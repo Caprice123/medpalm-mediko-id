@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/action'
-import { actions } from '@store/chatbot/reducer'
+import { actions, selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
 import MessageList from './components/MessageList'
 import MessageInput from './components/MessageInput'
 import ModeSelector from './components/ModeSelector'
@@ -22,17 +22,22 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
   const {
     currentConversation,
-    messages,
     currentMode,
     availableModes,
     loading,
-    pagination
+    pagination,
+    messagesByConversation
   } = useSelector(state => state.chatbot)
+
+  // Get messages for the current conversation using selector
+  const messages = useSelector(selectMessagesForCurrentConversation)
 
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [editedTitle, setEditedTitle] = useState('')
   const [streamingMessage, setStreamingMessage] = useState(null)
+  const [scrollTrigger, setScrollTrigger] = useState({ should: false, behavior: 'auto' })
+  const [isInitialLoad, setIsInitialLoad] = useState(false)
   const chatAreaRef = useRef(null)
   const previousScrollHeight = useRef(0)
   const titleInputRef = useRef(null)
@@ -40,15 +45,54 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
   useEffect(() => {
     if (conversationId) {
-      // Reset messages when switching conversations
-      dispatch(actions.resetMessages())
+      // Reset pagination and scroll state
       setCurrentPage(1)
       previousScrollHeight.current = 0
       isInitialScrollRef.current = true
 
-      // Fetch new conversation data
-      dispatch(fetchConversation(conversationId))
-      dispatch(fetchMessages({ conversationId, page: 1, perPage: 50, prepend: false }))
+      // Reset ChatArea scroll position immediately to prevent stuck scroll
+      if (chatAreaRef.current) {
+        chatAreaRef.current.scrollTop = 0
+      }
+
+      // Reset loading state when switching conversations
+      // This ensures input is not disabled in the new conversation
+      dispatch(actions.setLoading({ key: 'isSendingMessage', value: false }))
+
+      // Reset streaming message state
+      setStreamingMessage(null)
+
+      // Check if messages are already cached for this conversation
+      const cachedMessages = messagesByConversation[conversationId]
+      const hasConversationData = currentConversation && currentConversation.id === conversationId
+
+      // Only fetch conversation metadata if we don't have it
+      if (!hasConversationData) {
+        console.log(`📥 Fetching conversation metadata for ${conversationId}`)
+        dispatch(fetchConversation(conversationId))
+      } else {
+        console.log(`✅ Using cached conversation metadata for ${conversationId}`)
+      }
+
+      if (!cachedMessages || cachedMessages.length === 0) {
+        // Messages not in cache - fetch from API
+        console.log(`📥 Fetching messages for conversation ${conversationId}`)
+        setIsInitialLoad(true) // Mark as initial load to trigger scroll after fetch
+        dispatch(fetchMessages({ conversationId, page: 1, perPage: 50, prepend: false }))
+      } else {
+        // Messages already cached - use them directly
+        console.log(`✅ Using cached messages for conversation ${conversationId} (${cachedMessages.length} messages)`)
+        // Scroll to bottom after a brief delay to ensure messages are rendered
+        setTimeout(() => {
+          setScrollTrigger({ should: true, behavior: 'auto' })
+        }, 0)
+      }
+    }
+
+    // Cleanup function when unmounting or switching conversations
+    return () => {
+      // Reset loading state to prevent disabled input on next conversation
+      dispatch(actions.setLoading({ key: 'isSendingMessage', value: false }))
     }
   }, [conversationId, dispatch])
 
@@ -100,6 +144,16 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     }
   }, [loading.isMessagesLoading, pagination.isLastPage, loadMoreMessages])
 
+  // Scroll to bottom after initial message fetch completes (first page only)
+  useEffect(() => {
+    if (isInitialLoad && !loading.isMessagesLoading && currentPage === 1 && messages.length > 0) {
+      console.log('📜 Initial messages loaded, scrolling to bottom')
+      // Scroll to bottom instantly after first fetch
+      setScrollTrigger({ should: true, behavior: 'auto' })
+      setIsInitialLoad(false) // Reset flag
+    }
+  }, [isInitialLoad, loading.isMessagesLoading, currentPage, messages.length])
+
   // Track streaming message - check state.messages instead of currentConversation.messages
   useEffect(() => {
     if (messages && messages.length > 0) {
@@ -121,6 +175,9 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     if (!content || loading.isSendingMessage) return
 
     try {
+      // Trigger scroll to bottom when sending a new message (smooth)
+      setScrollTrigger({ should: true, behavior: 'smooth' })
+
       await dispatch(sendMessage(conversationId, content, currentMode))
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -134,7 +191,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       console.log('⏹️ Stopping stream')
 
       // Stop receiving new chunks from backend, but finish typing what we already received
-      await dispatch(stopChatbotStreaming())
+      await dispatch(stopChatbotStreaming(conversationId))
 
       // Typing animation will continue until all received content is displayed
       // Backend saves partial message to database in background
@@ -251,10 +308,12 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         <MessageList
           isLoading={loading.isMessagesLoading && currentPage === 1}
           isSending={loading.isSendingMessage}
+          scrollTrigger={scrollTrigger}
         />
       </ChatArea>
 
       <MessageInput
+        key={conversationId}
         onSend={handleSendMessage}
         onStop={handleStopStreaming}
         disabled={loading.isSendingMessage}
