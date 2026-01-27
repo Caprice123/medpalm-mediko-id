@@ -43,6 +43,7 @@ const initialState = {
     isLoadingSessionDiagnoses: false,
     isLoadingSessionTherapies: false,
     isSendingMessage: false,
+    isAssistantTyping: false, // Tracks when assistant is streaming/typing response
   },
   messagesPagination: {
     hasMore: false,

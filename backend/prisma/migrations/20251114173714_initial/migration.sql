@@ -136,6 +136,7 @@ CREATE TABLE "exercise_topics" (
     "pdf_key" TEXT,
     "pdf_filename" TEXT,
     "status" TEXT NOT NULL DEFAULT 'draft',
+    "question_count" INTEGER,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_by" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

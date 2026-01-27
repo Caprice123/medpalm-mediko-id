@@ -50,6 +50,9 @@ const { reducer, actions } = createSlice({
     setUserStatus: (state, { payload }) => {
       state.userStatus = payload
     },
+    updateCreditBalance: (state, { payload }) => {
+      state.userStatus.creditBalance = payload
+    },
     setPurchaseHistory: (state, { payload }) => {
       state.purchaseHistory = payload.data || payload
       if (payload.pagination) {

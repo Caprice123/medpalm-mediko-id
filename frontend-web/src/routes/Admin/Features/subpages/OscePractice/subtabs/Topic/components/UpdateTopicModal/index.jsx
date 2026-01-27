@@ -251,19 +251,20 @@ function UpdateTopicModal({ onClose }) {
 // Memoized Knowledge Base Section
 const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
   const handleKeyChange = useCallback((index, value) => {
-    const newKnowledgeBase = [...knowledgeBase]
-    newKnowledgeBase[index].key = value
-    setFieldValue('knowledgeBase', newKnowledgeBase)
-  }, [knowledgeBase, setFieldValue])
+    setFieldValue(`knowledgeBase[${index}].key`, value)
+  }, [setFieldValue])
 
   const handleValueChange = useCallback((index, value) => {
-    const newKnowledgeBase = [...knowledgeBase]
-    newKnowledgeBase[index].value = value
-    setFieldValue('knowledgeBase', newKnowledgeBase)
-  }, [knowledgeBase, setFieldValue])
+    setFieldValue(`knowledgeBase[${index}].value`, value)
+  }, [setFieldValue])
 
   const handleAddItem = useCallback(() => {
     setFieldValue('knowledgeBase', [...knowledgeBase, { key: '', value: '' }])
+  }, [knowledgeBase, setFieldValue])
+
+  const handleRemoveItem = useCallback((index) => {
+    const newKnowledgeBase = knowledgeBase.filter((_, i) => i !== index)
+    setFieldValue('knowledgeBase', newKnowledgeBase)
   }, [knowledgeBase, setFieldValue])
 
   return (
@@ -278,6 +279,8 @@ const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
           item={item}
           onKeyChange={handleKeyChange}
           onValueChange={handleValueChange}
+          onRemove={handleRemoveItem}
+          showRemove={knowledgeBase.length > 1}
         />
       ))}
       <div style={{ marginTop: '0.5rem' }}>
@@ -292,27 +295,82 @@ const KnowledgeBaseSection = memo(({ knowledgeBase, setFieldValue }) => {
 })
 
 // Memoized Knowledge Base Item
-const KnowledgeBaseItem = memo(({ index, item, onKeyChange, onValueChange }) => {
+const KnowledgeBaseItem = memo(({ index, item, onKeyChange, onValueChange, onRemove, showRemove }) => {
   return (
-    <div style={{ marginBottom: '0.75rem' }}>
-      <TextInput
-        placeholder="Judul basis pengetahuan"
-        value={item.key}
-        onChange={(e) => onKeyChange(index, e.target.value)}
-      />
-      <div style={{ marginTop: '0.5rem' }}>
+    <div style={{
+      marginBottom: '1rem',
+      padding: '1rem',
+      paddingTop: '0.75rem',
+      border: '1px solid #e5e7eb',
+      borderRadius: '0.5rem',
+      backgroundColor: '#f9fafb',
+      position: 'relative'
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '0.75rem'
+      }}>
+        <label style={{
+          fontSize: '0.875rem',
+          fontWeight: '600',
+          color: '#374151'
+        }}>
+          Knowledge Item {index + 1}
+        </label>
+        {showRemove && (
+          <Button
+            type="button"
+            variant="danger"
+            size="small"
+            onClick={() => onRemove(index)}
+          >
+            Remove
+          </Button>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '0.75rem' }}>
+        <label style={{
+          display: 'block',
+          fontSize: '0.75rem',
+          fontWeight: '500',
+          color: '#6b7280',
+          marginBottom: '0.25rem'
+        }}>
+          Title
+        </label>
+        <TextInput
+          placeholder="e.g., Patient Profile, Diagnostic Criteria"
+          value={item.key}
+          onChange={(e) => onKeyChange(index, e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label style={{
+          display: 'block',
+          fontSize: '0.75rem',
+          fontWeight: '500',
+          color: '#6b7280',
+          marginBottom: '0.25rem'
+        }}>
+          Content
+        </label>
         <Textarea
-          placeholder="Konten pengetahuan"
+          placeholder="Enter knowledge base content..."
           value={item.value}
           onChange={(e) => onValueChange(index, e.target.value)}
-          rows={3}
+          rows={4}
         />
       </div>
     </div>
   )
 }, (prevProps, nextProps) => {
   return prevProps.item.key === nextProps.item.key &&
-         prevProps.item.value === nextProps.item.value
+         prevProps.item.value === nextProps.item.value &&
+         prevProps.showRemove === nextProps.showRemove
 })
 
 export default UpdateTopicModal

@@ -23,6 +23,12 @@ export class GeminiService extends BaseAiService {
             }
         ];
 
+        console.log({
+            model: model,
+            systemInstruction: systemPrompt,
+            contents,
+        })
+
         const result = await geminiModel.generateContent({ contents });
 
         const response = await result.response;
@@ -134,6 +140,13 @@ export class GeminiService extends BaseAiService {
             topP: 0.95,
             ...options
         }
+
+        console.log({
+            model: model,
+            systemInstruction: systemPrompt,
+            messages,
+            generationConfig
+        })
 
         // Generate streaming response
         const result = await geminiModel.generateContentStream({

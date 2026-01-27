@@ -399,7 +399,7 @@ export class EndOsceSessionService extends BaseService {
 
       // Build final analyzer prompt
       const compiledFinalPrompt = finalPrompt
-        .replace(/\{\{evaluationPrompt\}\}/g, topicSnapshot.system_prompt || '')
+        .replace(/\{\{evaluationPrompt\}\}/g, rubric.content || '')
         .replace(/\{\{context\}\}/g, topicSnapshot.context || '')
         .replace(/\{\{task\}\}/g, topicSnapshot.guide || '')
         .replace(/\{\{knowledgeBase\}\}/g, topicSnapshot.knowledge_base ? JSON.stringify(topicSnapshot.knowledge_base) : '')

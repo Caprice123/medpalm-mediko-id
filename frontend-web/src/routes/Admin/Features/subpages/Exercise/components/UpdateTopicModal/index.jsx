@@ -94,14 +94,14 @@ const SortableQuestion = memo(function SortableQuestion({ question, index, onRem
             />
           </FormSection>
 
-          <FormSection>
+          {/* <FormSection>
             <Label>Penjelasan</Label>
             <EditTextarea
               value={question.explanation}
               onChange={(e) => onQuestionChange(question.id, 'explanation', e.target.value)}
               placeholder="Jelaskan mengapa ini jawaban yang benar..."
             />
-          </FormSection>
+          </FormSection> */}
 
           <FormSection>
             <Label>Gambar Pertanyaan (Opsional)</Label>

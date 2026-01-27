@@ -51,7 +51,7 @@ export class GetExerciseTopicsService extends BaseService {
                 }
             },
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             },
             skip,
             take

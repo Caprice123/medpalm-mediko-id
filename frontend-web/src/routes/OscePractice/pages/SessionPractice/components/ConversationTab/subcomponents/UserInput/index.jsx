@@ -1,4 +1,4 @@
-import { useState, memo, useCallback, useEffect } from 'react'
+import { useState, memo, useCallback, useEffect, useRef } from 'react'
 import { useRecording } from '@hooks/useRecording'
 import { useDispatch } from 'react-redux'
 import { actions as commonActions } from '@store/common/reducer'
@@ -29,8 +29,9 @@ const getAutoSendPreference = () => {
   }
 }
 
-function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
+function UserInput({ onSendMessage, disabled }) {
   const dispatch = useDispatch()
+  const inputRef = useRef(null)
   const [inputText, setInputText] = useState('')
   const [interimText, setInterimText] = useState('') // Store interim/partial transcription
   const [autoSendEnabled, setAutoSendEnabled] = useState(() => getAutoSendPreference())
@@ -58,6 +59,14 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
   const handleRecordingError = useCallback((error) => {
     dispatch(commonActions.setError(error))
   }, [dispatch])
+
+  // Auto-focus input when assistant finishes typing
+  useEffect(() => {
+    // When disabled changes from true to false, auto-focus the input
+    if (!disabled && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [disabled])
 
   // Listen for changes to localStorage (when SessionSidebar updates it)
   useEffect(() => {
@@ -94,12 +103,12 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
   )
 
   const handleSendMessage = useCallback(() => {
-    if (!inputText.trim() || isSendingMessage) return
+    if (!inputText.trim() || disabled) return
 
     const message = inputText.trim()
     setInputText('')
     onSendMessage(message)
-  }, [inputText, isSendingMessage, onSendMessage])
+  }, [inputText, disabled, onSendMessage])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -121,10 +130,11 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
     <InputArea>
       <InputWrapper>
         <TextInput
+          ref={inputRef}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={isSendingMessage || isStreaming || recording.isRecording || recording.isTranscribing}
+          disabled={disabled || recording.isRecording || recording.isTranscribing}
         />
         {interimText && (
           <InterimOverlay>
@@ -138,7 +148,7 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
         <RecordButton
           onClick={handleToggleRecording}
           recording={recording.isRecording}
-          disabled={recording.isTranscribing || isSendingMessage || isStreaming}
+          disabled={recording.isTranscribing || disabled}
           title={recording.isRecording ? 'Hentikan rekaman' : 'Mulai rekam'}
         >
           {recording.isRecording ? <FaMicrophone size={18} /> : <FaMicrophoneSlash size={18} />}
@@ -147,7 +157,7 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
 
         <SendButton
           onClick={handleSendMessage}
-          disabled={!inputText.trim() || recording.isRecording || recording.isTranscribing || isSendingMessage || isStreaming}
+          disabled={!inputText.trim() || recording.isRecording || recording.isTranscribing || disabled}
           title="Kirim pesan"
         >
           <FaPaperPlane />
@@ -168,7 +178,6 @@ function UserInput({ onSendMessage, isSendingMessage, isStreaming }) {
 }
 
 export default memo(UserInput, (prevProps, nextProps) => {
-  // Only rerender if sending state or streaming state changes
-  return prevProps.isSendingMessage === nextProps.isSendingMessage &&
-         prevProps.isStreaming === nextProps.isStreaming
+  // Only rerender if disabled state changes
+  return prevProps.disabled === nextProps.disabled
 })

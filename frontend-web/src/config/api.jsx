@@ -2,6 +2,8 @@ import { getToken, setToken } from '@utils/authToken';
 import axios from 'axios'
 import endpoints from '@config/endpoint';
 import { handleApiError } from '@utils/errorUtils';
+import { actions as creditActions } from '@store/credit/reducer';
+import { actions as pricingActions } from '@store/pricing/reducer';
 
 // Define sign-in route directly to avoid circular dependency
 const SIGN_IN_ROUTE = '/sign-in';
@@ -101,10 +103,30 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
         },
     );
 
-    // Response interceptor to handle 401 errors
+    // Response interceptor to handle 401 errors and credit quota updates
     api.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            // Check for x-remaining-quota header and update balance
+            // Note: axios normalizes header names to lowercase
+            const remainingQuota = response.headers['x-remaining-quota'];
+            if (remainingQuota !== undefined && dispatch) {
+                const balance = parseFloat(remainingQuota);
+                // Update both credit store and pricing store to keep navbar in sync
+                dispatch(creditActions.setBalance(balance));
+                dispatch(pricingActions.updateCreditBalance(balance));
+            }
+            return response;
+        },
         (error) => {
+            // Also check headers in error responses
+            const remainingQuota = error.response?.headers?.['x-remaining-quota'];
+            if (remainingQuota !== undefined && dispatch) {
+                const balance = parseFloat(remainingQuota);
+                // Update both credit store and pricing store to keep navbar in sync
+                dispatch(creditActions.setBalance(balance));
+                dispatch(pricingActions.updateCreditBalance(balance));
+            }
+
             // If we get a 401 error, the token is invalid or expired
             if (error.response && error.response.status === 401) {
                 // Clear the token and redirect to login

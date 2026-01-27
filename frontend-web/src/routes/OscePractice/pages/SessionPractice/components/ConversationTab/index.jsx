@@ -33,12 +33,10 @@ function ConversationTab() {
     }
   }, [sessionId, dispatch])
 
-  // Check if there's a streaming message AND we're actually sending
-  const hasStreamingMessage = sessionMessages?.some(msg =>
-    msg.id && msg.id.toString().startsWith('streaming-')
-  ) || false
-
-  const isStreaming = hasStreamingMessage || loading.isSendingMessage
+  // Use centralized loading states from reducer
+  const isSendingOrTyping = loading.isSendingMessage || loading.isAssistantTyping
+  console.log(loading.isSendingMessage)
+  console.log(loading.isAssistantTyping)
 
   return (
     <ChatContainer>
@@ -49,8 +47,7 @@ function ConversationTab() {
       <UserInput
         key={sessionId} // Reset input when session changes
         onSendMessage={handleSendMessage}
-        isSendingMessage={loading.isSendingMessage}
-        isStreaming={isStreaming}
+        disabled={isSendingOrTyping}
       />
     </ChatContainer>
   )

@@ -393,6 +393,7 @@ export const stopStreaming = () => async (dispatch) => {
   } catch (error) {
     console.error('Error stopping stream:', error)
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+    dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
     return null
   }
 }
@@ -418,7 +419,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
 
   const TYPING_SPEED_MS = 1 // 1ms per character (~1000 chars/sec) - fast but still smooth
 
-  // Add initial streaming message
+  // Add initial streaming message and set assistant typing state
   dispatch(addMessage({
     sessionId,
     message: {
@@ -428,6 +429,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
       timestamp: messageCreatedAt
     }
   }))
+  dispatch(setLoading({ key: 'isAssistantTyping', value: true }))
 
   // Typing animation - type character by character
   const typeNextCharacter = () => {
@@ -449,6 +451,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
       }))
 
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
       userStoppedStreamFlag = false
       return
     }
@@ -487,6 +490,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
         }
 
         dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+        dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
         userStoppedStreamFlag = false
       }
       return
@@ -597,6 +601,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
       dispatch(removeMessage({ sessionId, messageId: optimisticUserId }))
       dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
       throw error
     }
   }

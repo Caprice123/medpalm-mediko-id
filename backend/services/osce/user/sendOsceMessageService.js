@@ -85,7 +85,7 @@ export class SendOsceMessageService extends BaseService {
       let knowledgeBase = ""
       if (session.osce_topic?.knowledge_base) {
           knowledgeBase = "Basis Pengetahuan Referensi (hanya untuk konteks):\n" +
-            `${session.osce_topic?.knowledge_base.map(kb => `[${kb.title}]\n${kb.content}`).join('\n\n')}\n` +
+            `${session.osce_topic?.knowledge_base.map(kb => `[${kb.key}]\n${kb.value}`).join('\n\n')}\n` +
             "Basis pengetahuan ini disediakan hanya sebagai informasi referensi untuk membantu Anda memahami skenario klinis dan memberikan respons yang relevan.\n"
       }
       const templateData = {
@@ -95,7 +95,7 @@ export class SendOsceMessageService extends BaseService {
       }
 
       Object.entries(templateData).forEach(([key, value]) => {
-          systemPrompt.replaceAll(`{{${key}}}`, value)
+          systemPrompt = systemPrompt.replaceAll(`{{${key}}}`, value)
       });
 
       // Get AI response with streaming

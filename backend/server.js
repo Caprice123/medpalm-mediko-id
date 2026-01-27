@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from '#config/sentry';
 import { startCronJobs } from '#jobs/cron';
 import { errorHandler } from '#middleware/errorHandler.middleware';
+import { addResponseHeaders } from '#middleware/responseHeaders.middleware';
 import { setupBullBoard } from '#config/bullBoard';
 import authRoutes from '#routes/api/v1/auth.routes';
 import creditPlanRoutes from '#routes/api/v1/creditPlan.routes';
@@ -45,6 +46,7 @@ import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
 import webhookRoutes from '#routes/webhook/v1/xendit.routes';
+import { injectRemainingQuota } from '#middleware/injectRemainingQuota.middleware';
 
 dotenv.config();
 
@@ -69,9 +71,12 @@ app.use(cors({
         "https://medpalm.mediko.id",   // React
         "https://medpal.id",
     ],
+    exposedHeaders: ['X-Remaining-Quota'], // Expose custom header to frontend
 }));
 app.use(express.json({ limit: '100mb' })); // Increase limit for large file uploads
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+
+app.use(injectRemainingQuota);
 
 // Routes
 app.get('/', (req, res) => {
