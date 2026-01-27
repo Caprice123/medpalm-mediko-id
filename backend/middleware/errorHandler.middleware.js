@@ -41,7 +41,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err instanceof NotFoundError) {
     return res.status(404).json({
       error: {
-        messge: err.message 
+        message: err.message 
       }
     })
   }
@@ -49,7 +49,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err instanceof AuthorizationError) {
     return res.status(401).json({
       error: {
-        messge: err.message 
+        message: err.message 
       }
     })
   }
@@ -58,7 +58,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).json({
       error: {
-        messge: err.message || 'An error occurred'
+        message: err.message || 'An error occurred'
       }
     })
   }
@@ -67,7 +67,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err.code && err.code.startsWith('P')) {
     return res.status(400).json({
       error: {
-        messge: process.env.NODE_ENV === 'development'
+        message: process.env.NODE_ENV === 'development'
         ? `Database error: ${err.message}`
         : 'Database error occurred'
       }
@@ -78,7 +78,7 @@ export const errorHandler = (err, req, res, next) => {
   // In production, hide error details for security
   return res.status(500).json({
     error: {
-      messge: 'Terjadi kesalahan pada sistem'
+      message: 'Terjadi kesalahan pada sistem'
     }
   })
 }

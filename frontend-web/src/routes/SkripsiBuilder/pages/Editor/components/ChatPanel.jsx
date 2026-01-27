@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { useAppDispatch } from '@store/store'
 import { sendMessage, loadOlderMessages, stopStreaming } from '@store/skripsi/action'
-import { actions } from '@store/skripsi/reducer'
+import { selectMessagesForActiveTab, selectLoadingForActiveTab } from '@store/skripsi/reducer'
 import { FaPaperPlane, FaStop } from 'react-icons/fa'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
@@ -110,11 +110,24 @@ const ChatPanel = memo(({ currentTab, style }) => {
   const previousScrollHeight = useRef(0)
   const previousMessageCountRef = useRef(0)
   const previousTabIdRef = useRef(null)
-  const { loading } = useSelector((state) => state.skripsi)
+
+  // Get messages from cache using selector
+  const messages = useSelector(selectMessagesForActiveTab)
+  // Get per-tab loading state
+  const tabLoading = useSelector(selectLoadingForActiveTab)
+  const isSendingMessage = tabLoading.isSendingMessage || false
+
+  // Check if there's a streaming message (properly tracked)
+  const isStreaming = messages.some(msg => msg.id && msg.id.toString().startsWith('streaming-'))
+
+  // Debug streaming state changes
+  useEffect(() => {
+    console.log(`🔄 Streaming state for tab ${currentTab?.id}:`, isStreaming)
+  }, [isStreaming, currentTab?.id])
 
   // Only scroll to bottom when a NEW message is added or tab changes
   useEffect(() => {
-    const currentMessageCount = currentTab?.messages?.length || 0
+    const currentMessageCount = messages.length
     const currentTabId = currentTab?.id
 
     // Scroll when:
@@ -129,7 +142,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
 
     previousMessageCountRef.current = currentMessageCount
     previousTabIdRef.current = currentTabId
-  }, [currentTab?.messages?.length, currentTab?.id])
+  }, [messages.length, currentTab?.id])
 
   // Reset hasMore when tab changes
   useEffect(() => {
@@ -144,7 +157,6 @@ const ChatPanel = memo(({ currentTab, style }) => {
 
     // If scrolled near the top (within 100px)
     if (scrollTop < 100) {
-      const messages = currentTab.messages || []
       if (messages.length === 0) return
 
       const oldestMessageId = messages[0]?.id
@@ -170,7 +182,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
         setIsLoadingOlder(false)
       }
     }
-  }, [currentTab, hasMore, isLoadingOlder, dispatch])
+  }, [currentTab, messages, hasMore, isLoadingOlder, dispatch])
 
   const formatTime = (dateString) => {
     const date = new Date(dateString)
@@ -195,7 +207,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
 
     try {
       console.log('⏹️ User clicked stop button')
-      await dispatch(stopStreaming())
+      await dispatch(stopStreaming(currentTab.id))
     } catch (error) {
       console.error('Failed to stop streaming:', error)
     }
@@ -209,13 +221,13 @@ const ChatPanel = memo(({ currentTab, style }) => {
             Memuat pesan lama...
           </div>
         )}
-        {currentTab?.messages?.length === 0 ? (
+        {messages.length === 0 ? (
           <EmptyMessages>
             Belum ada percakapan. Mulai chat dengan AI untuk mendapatkan bantuan!
           </EmptyMessages>
         ) : (
           <>
-            {currentTab?.messages?.map((msg, idx) => (
+            {messages.map((msg, idx) => (
               <ChatMessage
                 key={msg.id || idx}
                 message={msg}
@@ -230,10 +242,10 @@ const ChatPanel = memo(({ currentTab, style }) => {
         key={currentTab?.id} // Reset input when tab changes
         onSendMessage={handleSendMessage}
         onStopStreaming={handleStopStreaming}
-        isSendingMessage={loading.isSendingMessage}
+        isSendingMessage={isSendingMessage}
         isStreaming={(() => {
-          // Check if there's a streaming message (ID starts with "streaming-") in Redux
-          const streaming = currentTab?.messages?.some(msg => msg.id && msg.id.toString().startsWith('streaming-')) || false
+          // Check if there's a streaming message (ID starts with "streaming-") in Redux cache
+          const streaming = messages.some(msg => msg.id && msg.id.toString().startsWith('streaming-')) || false
           if (streaming !== lastStreamingState) {
             console.log('🔄 isStreaming changed:', lastStreamingState, '→', streaming)
             lastStreamingState = streaming
@@ -246,5 +258,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
 })
 
 ChatPanel.displayName = 'ChatPanel'
+ChatInputSection.displayName = 'ChatInputSection'
+ChatMessage.displayName = 'ChatMessage'
 
 export default ChatPanel

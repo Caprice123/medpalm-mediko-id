@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@store/store';
 import { generateDiagram, fetchDiagramHistory, updateDiagram } from '@store/skripsi/action';
+import { selectDiagramsForActiveTab } from '@store/skripsi/reducer';
 import { Excalidraw, exportToBlob, exportToSvg } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import Dropdown from '@components/common/Dropdown';
@@ -328,8 +329,8 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
     { value: 'tree', label: 'Tree - Pohon' },
   ];
 
-  // Get diagrams from Redux
-  const diagrams = currentTab?.diagrams || [];
+  // Get diagrams from Redux cache using selector
+  const diagrams = useAppSelector(selectDiagramsForActiveTab);
   const latestDiagram = diagrams.length > 0 ? diagrams[0] : null; // Already sorted by newest first
 
   // Fetch diagrams on mount

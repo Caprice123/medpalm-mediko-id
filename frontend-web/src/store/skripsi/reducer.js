@@ -5,12 +5,15 @@ const initialState = {
   sets: [],
   currentSet: null,
   currentTab: null,
+  messagesByTab: {}, // Store messages per tab ID: { [tabId]: [...messages] }
+  diagramsByTab: {}, // Store diagrams per tab ID: { [tabId]: [...diagrams] }
+  activeTabId: null, // Track which tab is currently active
+  loadingByTab: {}, // Store loading states per tab: { [tabId]: { isSendingMessage: false } }
   loading: {
     isSetsLoading: false,
     isSetLoading: false,
     isAdminSetLoading: false,
     isTabMessagesLoading: false,
-    isSendingMessage: false,
     isSavingContent: false,
   },
   pagination: {
@@ -39,6 +42,13 @@ const skripsiSlice = createSlice({
     },
     setCurrentTab: (state, action) => {
       state.currentTab = action.payload
+      // Also set as active tab
+      if (action.payload) {
+        state.activeTabId = action.payload.id
+      }
+    },
+    setActiveTabId: (state, action) => {
+      state.activeTabId = action.payload
     },
     addSet: (state, action) => {
       state.sets.unshift(action.payload)
@@ -69,95 +79,83 @@ const skripsiSlice = createSlice({
         state.sets[setIndex].editorContent = editorContent
       }
     },
-    addMessage: (state, action) => {
+    // New tab-aware message actions (similar to chatbot's conversation-aware actions)
+    setMessagesForTab: (state, action) => {
+      const { tabId, messages } = action.payload
+
+      // Cache management: Keep max 10 tabs in memory
+      const MAX_CACHED_TABS = 10
+      const cachedTabIds = Object.keys(state.messagesByTab)
+
+      if (cachedTabIds.length >= MAX_CACHED_TABS) {
+        // Remove oldest tab (not the current one)
+        const oldestId = cachedTabIds.find(id => id !== tabId && id !== String(state.activeTabId))
+        if (oldestId) {
+          delete state.messagesByTab[oldestId]
+        }
+      }
+
+      state.messagesByTab[tabId] = messages
+    },
+    addMessageToTab: (state, action) => {
       const { tabId, message } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab) {
-          if (!tab.messages) tab.messages = []
-          tab.messages.push(message)
-        }
+      if (!state.messagesByTab[tabId]) {
+        state.messagesByTab[tabId] = []
       }
-      // Also update currentTab if it matches
-      if (state.currentTab && state.currentTab.id === tabId) {
-        if (!state.currentTab.messages) state.currentTab.messages = []
-        state.currentTab.messages.push(message)
-      }
+      state.messagesByTab[tabId].push(message)
     },
-    setTabMessages: (state, action) => {
-      const { tabId, messages } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab) {
-          tab.messages = messages
-        }
-      }
-      // Also update currentTab if it matches
-      if (state.currentTab && state.currentTab.id === tabId) {
-        state.currentTab.messages = messages
-      }
-    },
-    setDiagrams: (state, action) => {
-      const { tabId, diagrams } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab) {
-          tab.diagrams = diagrams
-        }
-      }
-      // Also update currentTab if it matches
-      if (state.currentTab && state.currentTab.id === tabId) {
-        state.currentTab.diagrams = diagrams
-      }
-    },
-    prependMessages: (state, action) => {
-      const { tabId, messages } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab) {
-          if (!tab.messages) tab.messages = []
-          tab.messages = [...messages, ...tab.messages]
-        }
-      }
-      // Also update currentTab if it matches
-      if (state.currentTab && state.currentTab.id === tabId) {
-        if (!state.currentTab.messages) state.currentTab.messages = []
-        state.currentTab.messages = [...messages, ...state.currentTab.messages]
-      }
-    },
-    removeMessage: (state, action) => {
-      const { tabId, messageId } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab && tab.messages) {
-          tab.messages = tab.messages.filter(m => m.id !== messageId)
-        }
-      }
-      if (state.currentTab && state.currentTab.id === tabId && state.currentTab.messages) {
-        state.currentTab.messages = state.currentTab.messages.filter(m => m.id !== messageId)
-      }
-    },
-    updateMessage: (state, action) => {
-      const { tabId, messageId, content } = action.payload
-      if (state.currentSet) {
-        const tab = state.currentSet.tabs.find(t => t.id === tabId)
-        if (tab && tab.messages) {
-          const message = tab.messages.find(m => m.id === messageId)
-          if (message) {
-            message.content = content
+    updateMessageInTab: (state, action) => {
+      const { tabId, messageId, updates } = action.payload
+      const messages = state.messagesByTab[tabId]
+      if (messages) {
+        const index = messages.findIndex(m => m.id === messageId)
+        if (index !== -1) {
+          state.messagesByTab[tabId][index] = {
+            ...messages[index],
+            ...updates
           }
         }
       }
-      if (state.currentTab && state.currentTab.id === tabId && state.currentTab.messages) {
-        const message = state.currentTab.messages.find(m => m.id === messageId)
-        if (message) {
-          message.content = content
-        }
+    },
+    removeMessageFromTab: (state, action) => {
+      const { tabId, messageId } = action.payload
+      const messages = state.messagesByTab[tabId]
+      if (messages) {
+        state.messagesByTab[tabId] = messages.filter(m => m.id !== messageId)
+      }
+    },
+    prependMessagesToTab: (state, action) => {
+      const { tabId, messages } = action.payload
+      if (!state.messagesByTab[tabId]) {
+        state.messagesByTab[tabId] = messages
+      } else {
+        state.messagesByTab[tabId] = [
+          ...messages,
+          ...state.messagesByTab[tabId]
+        ]
+      }
+    },
+    // Diagram actions for tabs
+    setDiagramsForTab: (state, action) => {
+      const { tabId, diagrams } = action.payload
+      state.diagramsByTab[tabId] = diagrams
+    },
+    resetTabMessages: (state) => {
+      // Reset messages for active tab
+      if (state.activeTabId) {
+        state.messagesByTab[state.activeTabId] = []
       }
     },
     setLoading: (state, action) => {
       const { key, value } = action.payload
       state.loading[key] = value
+    },
+    setTabLoading: (state, action) => {
+      const { tabId, key, value } = action.payload
+      if (!state.loadingByTab[tabId]) {
+        state.loadingByTab[tabId] = {}
+      }
+      state.loadingByTab[tabId][key] = value
     },
     setPagination: (state, action) => {
       state.pagination = action.payload
@@ -184,3 +182,31 @@ const skripsiSlice = createSlice({
 
 export const { actions } = skripsiSlice
 export default skripsiSlice.reducer
+
+// Selectors
+export const selectMessagesForActiveTab = (state) => {
+  const tabId = state.skripsi.activeTabId
+  return tabId ? (state.skripsi.messagesByTab[tabId] || []) : []
+}
+
+export const selectMessagesForTab = (state, tabId) => {
+  return state.skripsi.messagesByTab[tabId] || []
+}
+
+export const selectDiagramsForActiveTab = (state) => {
+  const tabId = state.skripsi.activeTabId
+  return tabId ? (state.skripsi.diagramsByTab[tabId] || []) : []
+}
+
+export const selectDiagramsForTab = (state, tabId) => {
+  return state.skripsi.diagramsByTab[tabId] || []
+}
+
+export const selectLoadingForActiveTab = (state) => {
+  const tabId = state.skripsi.activeTabId
+  return tabId ? (state.skripsi.loadingByTab[tabId] || {}) : {}
+}
+
+export const selectLoadingForTab = (state, tabId) => {
+  return state.skripsi.loadingByTab[tabId] || {}
+}

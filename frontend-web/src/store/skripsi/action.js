@@ -11,16 +11,20 @@ const {
   setSets,
   setCurrentSet,
   setCurrentTab,
+  setActiveTabId,
   addSet,
   updateSet,
   removeSet,
   updateSetContent,
-  setTabMessages,
-  setDiagrams,
-  addMessage,
-  updateMessage,
-  removeMessage,
+  setMessagesForTab,
+  addMessageToTab,
+  updateMessageInTab,
+  removeMessageFromTab,
+  prependMessagesToTab,
+  setDiagramsForTab,
+  resetTabMessages,
   setLoading,
+  setTabLoading,
   setPagination,
 } = actions
 
@@ -134,8 +138,8 @@ export const fetchSet = (setId) => async (dispatch) => {
     if (set.tabs && set.tabs.length > 0) {
       const firstTab = set.tabs[0]
       dispatch(setCurrentTab(firstTab))
-      // Fetch messages for the first tab
-      await dispatch(fetchTabMessages(firstTab.id))
+      // Fetch messages for the first tab using new signature
+      await dispatch(fetchTabMessages({ tabId: firstTab.id, page: 1, perPage: 50, prepend: false }))
     }
 
     return set
@@ -175,19 +179,29 @@ export const deleteSet = (setId) => async (dispatch) => {
 
 // ============= Tabs Management =============
 
-export const fetchTabMessages = (tabId, limit = 50) => async (dispatch) => {
+export const fetchTabMessages = ({ tabId, page = 1, perPage = 50, prepend = false }) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isTabMessagesLoading', value: true }))
 
     const route = Endpoints.api.skripsi + `/tabs/${tabId}/messages`
-    const response = await getWithToken(route, { limit })
+    const response = await getWithToken(route, { page, perPage })
 
     const messages = response.data.data || []
-    dispatch(setTabMessages({ tabId, messages }))
+    const pagination = response.data.pagination || { page: 1, perPage: 50, isLastPage: false }
+
+    if (prepend) {
+      // Prepend older messages at the beginning (for page 2, 3, etc.)
+      dispatch(prependMessagesToTab({ tabId, messages }))
+    } else {
+      // Replace messages (initial load page 1)
+      dispatch(setMessagesForTab({ tabId, messages }))
+    }
+
+    dispatch(setPagination(pagination))
 
     return {
       messages,
-      hasMore: response.data.hasMore || false
+      pagination
     }
   } catch (err) {
     handleApiError(err, dispatch)
@@ -196,11 +210,22 @@ export const fetchTabMessages = (tabId, limit = 50) => async (dispatch) => {
   }
 }
 
-export const switchTab = (tab) => async (dispatch) => {
+export const switchTab = (tab) => async (dispatch, getState) => {
+  if (!tab) return
+
+  // Set current tab
   dispatch(setCurrentTab(tab))
-  // Fetch messages for the switched tab if not already loaded
-  if (tab && (!tab.messages || tab.messages.length === 0)) {
-    await dispatch(fetchTabMessages(tab.id))
+
+  // Check if messages are already cached for this tab
+  const cachedMessages = getState().skripsi.messagesByTab[tab.id]
+
+  if (!cachedMessages || cachedMessages.length === 0) {
+    // Messages not in cache - fetch from API
+    console.log(`📥 Fetching messages for tab ${tab.id}`)
+    await dispatch(fetchTabMessages({ tabId: tab.id, page: 1, perPage: 50, prepend: false }))
+  } else {
+    // Messages already cached - use them directly
+    console.log(`✅ Using cached messages for tab ${tab.id} (${cachedMessages.length} messages)`)
   }
 }
 
@@ -230,7 +255,7 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
     })
 
     if (response.data.data && response.data.data.length > 0) {
-      dispatch(actions.prependMessages({ tabId, messages: response.data.data }))
+      dispatch(prependMessagesToTab({ tabId, messages: response.data.data }))
     }
 
     return {
@@ -241,12 +266,14 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
   }
 }
 
-// Store active abort controller for stream cancellation
-let activeAbortController = null
+// Store abort controllers per tab for stream cancellation
+const abortControllersByTab = {}
+const userStoppedStreamByTab = {}
 
 export const sendMessage = (tabId, message) => async (dispatch) => {
   try {
-    dispatch(setLoading({ key: 'isSendingMessage', value: true }))
+    // Set loading state for THIS specific tab
+    dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: true }))
 
     // Add user message immediately (optimistic UI)
     const tempUserMessage = {
@@ -255,14 +282,14 @@ export const sendMessage = (tabId, message) => async (dispatch) => {
       content: message,
       createdAt: new Date().toISOString()
     }
-    dispatch(addMessage({ tabId, message: tempUserMessage }))
+    dispatch(addMessageToTab({ tabId, message: tempUserMessage }))
 
-    // Create new AbortController for this stream
-    activeAbortController = new AbortController()
-    console.log('🆕 Created new AbortController:', activeAbortController)
+    // Create new AbortController for this tab's stream
+    abortControllersByTab[tabId] = new AbortController()
+    console.log(`🆕 Created new AbortController for tab ${tabId}`)
 
     // Use streaming for all messages (everything handled in Redux)
-    await sendMessageStreaming(tabId, message, dispatch, activeAbortController, tempUserMessage.id)
+    await sendMessageStreaming(tabId, message, dispatch, abortControllersByTab[tabId], tempUserMessage.id)
     console.log('✅ sendMessageStreaming completed')
   } catch (err) {
     if (err.name === 'AbortError') {
@@ -272,37 +299,34 @@ export const sendMessage = (tabId, message) => async (dispatch) => {
     console.error('❌ sendMessage caught error:', err)
     handleApiError(err, dispatch)
   } finally {
-    console.log('🧹 sendMessage finally block - clearing activeAbortController')
-    dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-    activeAbortController = null
+    console.log(`🧹 sendMessage finally block - clearing abort controller for tab ${tabId}`)
+    // Clear loading state for THIS specific tab
+    dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+    delete abortControllersByTab[tabId]
   }
 }
 
-// Track if user stopped the stream (module level variable shared with sendMessage)
-let userStoppedStreamFlag = false
-
-export const stopStreaming = () => async (dispatch) => {
+export const stopStreaming = (tabId) => async (dispatch) => {
   try {
-    console.log('⏹️ User clicked stop button')
-    console.log('📋 Current activeAbortController:', activeAbortController)
+    console.log(`⏹️ User clicked stop button for tab ${tabId}`)
 
-    userStoppedStreamFlag = true // Set flag so typing animation knows stream was stopped
+    // Set flag so typing animation knows stream was stopped
+    userStoppedStreamByTab[tabId] = true
 
-    // Abort the fetch connection to stop backend from generating more content
-    if (activeAbortController) {
-      console.log('🛑 Aborting active stream...')
-      activeAbortController.abort()
+    // Abort the fetch for this specific tab
+    const controller = abortControllersByTab[tabId]
+    if (controller) {
+      console.log(`🛑 Aborting stream for tab ${tabId}...`)
+      controller.abort()
       console.log('✅ Stream aborted - backend will save partial content')
     } else {
-      console.warn('⚠️ No active abort controller found - stream might have already finished')
+      console.warn(`⚠️ No active abort controller found for tab ${tabId}`)
     }
 
-    // Note: typing animation will continue showing received content
-    // The sendMessage action will handle cleanup when typing completes
     return null
   } catch (error) {
     console.error('Error stopping stream:', error)
-    dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+    dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
     return null
   }
 }
@@ -339,8 +363,8 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   const streamingMessageId = `streaming-${Date.now()}`
   const messageCreatedAt = new Date().toISOString()
 
-  // Reset user stopped flag
-  userStoppedStreamFlag = false
+  // Reset user stopped flag for this tab
+  userStoppedStreamByTab[tabId] = false
 
   // Typing animation state
   let fullContent = '' // Complete content from backend chunks
@@ -352,7 +376,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   const TYPING_SPEED_MS = 1 // 1ms per character (~1000 chars/sec) - fast but still smooth
 
   // Add initial streaming message
-  dispatch(addMessage({
+  dispatch(addMessageToTab({
     tabId,
     message: {
       id: streamingMessageId,
@@ -365,14 +389,14 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   // Typing animation - type character by character
   const typeNextCharacter = () => {
     // If user stopped stream and we've typed everything received, stop
-    if (userStoppedStreamFlag && displayedContent.length >= fullContent.length) {
+    if (userStoppedStreamByTab[tabId] && displayedContent.length >= fullContent.length) {
       console.log('✅ Finished typing all received content after stop - keeping messages visible')
       isTyping = false
 
       // Remove the streaming message and re-add with a non-streaming ID
       // This makes the stop button disappear while keeping the message visible
-      dispatch(removeMessage({ tabId, messageId: streamingMessageId }))
-      dispatch(addMessage({
+      dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+      dispatch(addMessageToTab({
         tabId,
         message: {
           id: `partial-${Date.now()}`, // Use 'partial-' prefix instead of 'streaming-'
@@ -385,8 +409,8 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
       // Backend is saving to database in background
       // When user refreshes, they'll see the saved messages from database
 
-      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      userStoppedStreamFlag = false
+      dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+      userStoppedStreamByTab[tabId] = false
       return
     }
 
@@ -396,18 +420,18 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
 
       // If backend is done and all characters displayed, finalize
       if (backendSavedMessage && finalData) {
-        dispatch(removeMessage({ tabId, messageId: optimisticUserId }))
-        dispatch(removeMessage({ tabId, messageId: streamingMessageId }))
+        dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+        dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
 
         if (finalData.userMessage) {
-          dispatch(addMessage({ tabId, message: finalData.userMessage }))
+          dispatch(addMessageToTab({ tabId, message: finalData.userMessage }))
         }
         if (finalData.aiMessage) {
-          dispatch(addMessage({ tabId, message: finalData.aiMessage }))
+          dispatch(addMessageToTab({ tabId, message: finalData.aiMessage }))
         }
 
-        dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-        userStoppedStreamFlag = false
+        dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+        userStoppedStreamByTab[tabId] = false
       }
       return
     }
@@ -416,10 +440,10 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
     // Display next character
     displayedContent = fullContent.substring(0, displayedContent.length + 1)
 
-    dispatch(updateMessage({
+    dispatch(updateMessageInTab({
       tabId,
       messageId: streamingMessageId,
-      content: displayedContent
+      updates: { content: displayedContent }
     }))
 
     // Schedule next character
@@ -429,7 +453,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   // Add chunk to content and start typing if needed
   const addChunkToContent = (text) => {
     // If user stopped stream, don't add new chunks
-    if (userStoppedStreamFlag) return
+    if (userStoppedStreamByTab[tabId]) return
 
     fullContent += text
 
@@ -484,7 +508,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
 
             if (data.type === 'chunk') {
               // Only add chunk if user hasn't stopped the stream
-              if (!userStoppedStreamFlag) {
+              if (!userStoppedStreamByTab[tabId]) {
                 addChunkToContent(data.data.content)
               } else {
                 console.log('⏸️ Ignoring new chunk - user stopped stream')
@@ -516,9 +540,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
     } else {
       console.error('Streaming error:', error)
       // Clean up on non-abort errors
-      dispatch(removeMessage({ tabId, messageId: optimisticUserId }))
-      dispatch(removeMessage({ tabId, messageId: streamingMessageId }))
-      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+      dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+      dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
       throw error
     }
   }
@@ -556,8 +580,8 @@ export const fetchDiagramHistory = (tabId) => async (dispatch) => {
 
     const diagrams = response.data.data || []
 
-    // Store as tab diagrams
-    dispatch(setDiagrams({ tabId, diagrams }))
+    // Store as tab diagrams using new action
+    dispatch(setDiagramsForTab({ tabId, diagrams }))
 
     return diagrams
   } catch (err) {

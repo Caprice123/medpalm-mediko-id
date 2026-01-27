@@ -266,7 +266,7 @@ export class SendMessageService extends BaseService {
     let accumulatedChunk = '' // Buffer to accumulate 20 characters
 
     const CHARS_PER_CHUNK = 20
-    const TYPING_SPEED_MS = 10
+    const TYPING_SPEED_MS = 1
 
     try {
       // Process Gemini stream chunks with pacing

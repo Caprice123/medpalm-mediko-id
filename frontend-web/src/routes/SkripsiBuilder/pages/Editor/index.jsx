@@ -99,7 +99,6 @@ const SkripsiEditor = () => {
   const tabs = useMemo(() => currentSet?.tabs || [], [currentSet?.tabs])
   const currentTabId = useMemo(() => currentTab?.id, [currentTab?.id])
   const isSavingContent = useMemo(() => loading.isSavingContent, [loading.isSavingContent])
-  const isSendingMessage = useMemo(() => loading.isSendingMessage, [loading.isSendingMessage])
 
   const handleTabSwitch = useCallback((tab) => {
     dispatch(switchTab(tab))
@@ -195,7 +194,6 @@ const SkripsiEditor = () => {
 
         <ChatPanel
           currentTab={currentTab}
-          isSendingMessage={isSendingMessage}
           style={{ display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none' }}
         />
 

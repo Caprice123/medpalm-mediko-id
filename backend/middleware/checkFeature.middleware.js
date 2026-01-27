@@ -21,7 +21,9 @@ export const checkFeature = (constantKey, errorMessage = null) => {
       // Check if feature is enabled
       if (!constant || constant.value !== 'true') {
         return res.status(403).json({
-          error: `Feature sedang tidak aktif`
+          error: {
+            message: `Feature sedang tidak aktif`
+          }
         })
       }
 
