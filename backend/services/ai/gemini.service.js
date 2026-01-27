@@ -105,7 +105,7 @@ export class GeminiService extends BaseAiService {
 
             // Optional: Delete file from Gemini (files auto-expire after 48 hours anyway)
             try {
-                await genAI.files.delete(uploadedFile.name);
+                await genAI.files.delete({ name: uploadedFile.name });
                 console.log('File deleted from Gemini');
             } catch (deleteError) {
                 console.warn('Failed to delete file from Gemini:', deleteError.message);
