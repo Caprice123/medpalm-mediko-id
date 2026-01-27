@@ -79,7 +79,7 @@ function SetsList() {
                 <Button
                   variant="primary"
                   fullWidth
-                  onClick={() => navigate(`/skripsi/sets/${set.id}`)}
+                  onClick={() => navigate(`/sets/${set.id}`)}
                 >
                   Buka Set
                 </Button>
