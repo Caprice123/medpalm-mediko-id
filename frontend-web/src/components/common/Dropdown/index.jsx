@@ -59,6 +59,9 @@ const Dropdown = memo(function Dropdown({
       ...provided,
       color: '#9ca3af',
       fontSize: '0.875rem',
+      overflow: 'hidden', // Ensure the text within the placeholder element is hidden if too long
+      whiteSpace: 'nowrap', // Force the text to stay on a single line
+      textOverflow: 'ellipsis', // Add an ellipsis to overflowing text
     }),
     singleValue: (provided) => ({
       ...provided,
