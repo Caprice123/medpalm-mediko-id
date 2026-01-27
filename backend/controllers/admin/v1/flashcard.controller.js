@@ -132,7 +132,8 @@ class FlashcardController {
     const cards = await GenerateFlashcardService.call({
       pdfBuffer: pdfBuffer,
       type: 'pdf',
-      cardCount: parseInt(cardCount) || 10
+      cardCount: parseInt(cardCount) || 10,
+      mimeType: blob.content_type
     })
 
     // Buffer is automatically garbage collected, no cleanup needed

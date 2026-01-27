@@ -48,7 +48,7 @@ const SkripsiList = () => {
       setShowCreateModal(false)
       setFormData({ title: '', description: '' })
       // Navigate to the new set
-      navigate(`/skripsi/sets/${newSet.id}`)
+      navigate(`/sets/${newSet.id}`)
     } catch (error) {
       console.error('Failed to create set:', error)
       alert('Gagal membuat set baru')

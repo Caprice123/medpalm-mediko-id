@@ -57,7 +57,8 @@ export class GenerateSummaryFromDocumentService extends BaseService {
     const result = await modelService.generateFromFile(
       model,
       systemPrompt,
-      pdfBuffer
+      pdfBuffer,
+      blob.content_type
     )
 
     // Return generated summary wrapped properly

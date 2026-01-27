@@ -23,7 +23,7 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
   const [editedTitle, setEditedTitle] = useState('')
 
   const handleBackClick = () => {
-    navigate('/skripsi/sets')
+    navigate('/sets')
   }
 
   const handleStartEditTitle = () => {

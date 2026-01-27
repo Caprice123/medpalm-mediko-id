@@ -3,8 +3,10 @@ import { BlockNoteEditor } from "@blocknote/core"
 /**
  * Convert markdown text to BlockNote blocks structure using built-in parser
  * This is much more reliable than custom parsing
+ * @param {string} markdown - Markdown string to convert
+ * @returns {Promise<Array>} BlockNote blocks array
  */
-export function markdownToBlocks(markdown) {
+export async function markdownToBlocks(markdown) {
   if (!markdown || typeof markdown !== 'string') {
     return [{
       type: "paragraph",
@@ -13,10 +15,9 @@ export function markdownToBlocks(markdown) {
   }
 
   try {
-    // Use BlockNote's built-in markdown parser
+    // Use BlockNote's built-in markdown parser (async method)
     const editor = BlockNoteEditor.create()
-    const blocks = editor.tryParseMarkdownToBlocks(markdown)
-    editor.destroy() // Clean up the editor instance
+    const blocks = await editor.tryParseMarkdownToBlocks(markdown)
 
     return blocks && blocks.length > 0 ? blocks : [{
       type: "paragraph",

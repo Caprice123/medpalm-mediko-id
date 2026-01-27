@@ -26,12 +26,12 @@ function SessionCard({ session }) {
     const navigate = useNavigate()
 
   // Format duration in HH:MM:SS
-  const formatTimeTaken = (minutes) => {
-    if (!minutes && minutes !== 0) return '-'
+  const formatTimeTaken = (seconds) => {
+    if (!seconds && seconds !== 0) return '-'
 
-    const hours = Math.floor(minutes / 60)
-    const mins = Math.floor(minutes % 60)
-    const secs = Math.floor((minutes * 60) % 60)
+    const hours = Math.floor(seconds / 3600)
+    const mins = Math.floor((seconds % 3600) / 60)
+    const secs = (seconds % 3600) % 60
 
     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }

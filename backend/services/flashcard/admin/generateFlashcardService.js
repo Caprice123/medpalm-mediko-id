@@ -4,7 +4,7 @@ import { GenerateFlashcardFromTextService } from './generateFlashcardFromTextSer
 import { GenerateFlashcardFromPDFService } from './generateFlashcardFromPDFService.js'
 
 export class GenerateFlashcardService extends BaseService {
-    static async call({ content, pdfBuffer, type, cardCount = 10 }) {
+    static async call({ content, pdfBuffer, type, cardCount = 10, mimeType }) {
         this.validate({ content, pdfBuffer, type, cardCount })
 
         if (type === 'text') {
@@ -12,7 +12,7 @@ export class GenerateFlashcardService extends BaseService {
             return await GenerateFlashcardFromTextService.call(content, cardCount)
         } else if (type === 'pdf') {
             // Generate from PDF using configurable prompt
-            return await GenerateFlashcardFromPDFService.call(pdfBuffer, cardCount)
+            return await GenerateFlashcardFromPDFService.call(pdfBuffer, cardCount, mimeType)
         }
     }
 

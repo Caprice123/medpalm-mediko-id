@@ -27,7 +27,7 @@ export const Filter = () => {
       }}>
         <FilterComponent>
           <FilterComponent.Group>
-            <FilterComponent.Label>Nama Set Skripsi</FilterComponent.Label>
+            <FilterComponent.Label>Nama Set</FilterComponent.Label>
             <TextInput
               placeholder="Cari set berdasarkan nama..."
               value={filters.search || ''}

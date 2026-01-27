@@ -40,18 +40,21 @@ const SummaryNotesDetail = () => {
 
   // Parse content when note changes
   useEffect(() => {
-    if (note?.content) {
-      try {
-        const parsed = JSON.parse(note.content)
-        if (Array.isArray(parsed)) {
-          setParsedContent(parsed)
+    async function parseContent() {
+      if (note?.content) {
+        try {
+          const parsed = JSON.parse(note.content)
+          if (Array.isArray(parsed)) {
+            setParsedContent(parsed)
+          }
+        } catch {
+          // If not JSON, convert markdown to blocks
+          const blocks = await markdownToBlocks(note.content)
+          setParsedContent(blocks)
         }
-      } catch {
-        // If not JSON, convert markdown to blocks
-        const blocks = markdownToBlocks(note.content)
-        setParsedContent(blocks)
       }
     }
+    parseContent()
   }, [note])
 
   const handleBack = () => {

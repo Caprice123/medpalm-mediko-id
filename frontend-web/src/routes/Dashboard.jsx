@@ -209,7 +209,7 @@ function Dashboard() {
       }
 
       if (sessionType === "skripsi_builder") {
-        navigate("/skripsi/sets")
+        navigate("/sets")
         return
       }
 

@@ -4,7 +4,7 @@ import { RouterUtils } from "#utils/aiUtils/routerUtils"
 import prisma from "#prisma/client"
 
 export class GenerateQuestionService extends BaseService {
-    static async call({ content, pdfBuffer, type, questionCount = 10 }) {
+    static async call({ content, pdfBuffer, type, questionCount = 10, mimeType = 'application/pdf' }) {
         this.validate({ content, pdfBuffer, type, questionCount })
 
         // Fetch constants
@@ -39,7 +39,7 @@ export class GenerateQuestionService extends BaseService {
         if (type === 'text') {
             text = await modelService.generateFromText(model, parsedSystemPrompt)
         } else if (type === 'pdf') {
-            text = await modelService.generateFromFile(model, parsedSystemPrompt, pdfBuffer, 'application/pdf')
+            text = await modelService.generateFromFile(model, parsedSystemPrompt, pdfBuffer, mimeType)
         }
 
         // Parse JSON response

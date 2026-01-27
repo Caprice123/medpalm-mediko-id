@@ -4,7 +4,7 @@ import { GenerateMcqQuestionsFromTextService } from './generateMcqQuestionsFromT
 import { GenerateMcqQuestionsFromPDFService } from './generateMcqQuestionsFromPDFService.js'
 
 export class GenerateMcqQuestionsService extends BaseService {
-  static async call({ content, pdfBuffer, type, questionCount = 10 }) {
+  static async call({ content, pdfBuffer, type, questionCount = 10, mimeType }) {
     this.validate({ content, pdfBuffer, type, questionCount })
 
     if (type === 'text') {
@@ -12,7 +12,7 @@ export class GenerateMcqQuestionsService extends BaseService {
       return await GenerateMcqQuestionsFromTextService.call(content, questionCount)
     } else if (type === 'pdf') {
       // Generate from PDF using configurable prompt
-      return await GenerateMcqQuestionsFromPDFService.call(pdfBuffer, questionCount)
+      return await GenerateMcqQuestionsFromPDFService.call(pdfBuffer, questionCount, mimeType)
     }
   }
 

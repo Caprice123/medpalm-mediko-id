@@ -1,20 +1,13 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { BaseAiService } from "./base.service.js";
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export class GeminiService extends BaseAiService {
     static async generateFromText(model, systemPrompt, messages = [], options = {}) {
-        // Create model with system instruction
-        const geminiModel = genAI.getGenerativeModel({
-            model: model,
-            systemInstruction: systemPrompt,
-            ...options
-        });
-
         // If no messages, use minimal trigger
         const contents = messages.length > 0 ? messages : [
             {
@@ -22,19 +15,26 @@ export class GeminiService extends BaseAiService {
                 parts: [{ text: 'Generate the requested content.' }]
             }
         ];
-
+        
         console.log({
             model: model,
             systemInstruction: systemPrompt,
             contents,
         })
+        
+        const response = await genAI.models.generateContent({ 
+            model: model,
+            contents,
+            config: {
+                systemInstruction: systemPrompt,
+                temperature: 0.7,
+                 topK: 40,
+                 topP: 0.95,
+                 ...options
+            }
+        });
 
-        const result = await geminiModel.generateContent({ contents });
-
-        const response = await result.response;
-        const text = response.text();
-
-        return text
+        return response.text;
     }
 
     /**
@@ -66,10 +66,10 @@ export class GeminiService extends BaseAiService {
 
             // Upload file to Gemini File API
             console.log('Uploading file to Gemini...');
+            console.log(mimeType);
             const uploadedFile = await genAI.files.upload({
                 file: tempFilePath,
-                mimeType: mimeType,
-                displayName: tempFileName
+                config: { mimeType: mimeType, },
             });
 
             console.log(`Uploaded file ${uploadedFile.displayName} as: ${uploadedFile.name}`);
@@ -77,16 +77,27 @@ export class GeminiService extends BaseAiService {
 
             // Generate content using uploaded file
             const response = await genAI.models.generateContent({
-                model: model,
+                model,
                 contents: [
                     {
-                        fileData: {
-                            mimeType: uploadedFile.mimeType,
-                            fileUri: uploadedFile.uri,
-                        },
-                    },
-                    { text: systemPrompt },
+                        role: "user",
+                        parts: [
+                            {
+                                fileData: {
+                                    fileUri: uploadedFile.uri,
+                                    mimeType: uploadedFile.mimeType,
+                                }
+                            },
+                        ]
+                    }
                 ],
+                
+                config: {
+                    systemInstruction: systemPrompt,
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                }
             });
 
             const text = response.text;
@@ -127,34 +138,26 @@ export class GeminiService extends BaseAiService {
         // Build conversation history
         const messages = await this.buildConversationHistory(conversationHistory, userMessage)
 
-        // Initialize Gemini model with system instruction
-        const geminiModel = genAI.getGenerativeModel({
-            model: model,
-            systemInstruction: systemPrompt
-        })
-
-        // Default generation config
-        const generationConfig = {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            ...options
-        }
-
         console.log({
             model: model,
             systemInstruction: systemPrompt,
             messages,
-            generationConfig
         })
 
         // Generate streaming response
-        const result = await geminiModel.generateContentStream({
+        const stream = await genAI.models.generateContentStream({
             contents: messages,
-            generationConfig
+            model: model,
+            config: {
+                systemInstruction: systemPrompt,
+                temperature: 0.7,
+                 topK: 40,
+                 topP: 0.95,
+                 ...options
+            },
         })
 
-        return result.stream
+        return stream
     }
 
     static async buildConversationHistory(conversationHistory, userMessage) {

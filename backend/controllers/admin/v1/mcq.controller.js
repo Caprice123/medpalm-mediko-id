@@ -175,7 +175,8 @@ class McqController {
       questions = await GenerateMcqQuestionsService.call({
         pdfBuffer: pdfBuffer,
         type: 'pdf',
-        questionCount: questionCount ? parseInt(questionCount) : 10
+        questionCount: questionCount ? parseInt(questionCount) : 10,
+        mimeType: blob.content_type
       })
 
       // Buffer is automatically garbage collected, no cleanup needed

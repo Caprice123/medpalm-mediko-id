@@ -16,7 +16,7 @@ export class GetChatbotConfigService extends BaseService {
       'chatbot_research_user_information'
     ]
 
-    const constantsMap = await GetConstantsService.call({ keys: constantKeys })
+    const constantsMap = await GetConstantsService.call(constantKeys)
 
     console.log(constantsMap)
     console.log(parseFloat(constantsMap.chatbot_research_cost))

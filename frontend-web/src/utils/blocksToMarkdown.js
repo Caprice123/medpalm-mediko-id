@@ -113,21 +113,41 @@ function blockToMarkdown(block) {
   }
 }
 
+import { BlockNoteEditor } from "@blocknote/core"
+
 /**
- * Convert BlockNote blocks to Markdown format
+ * Convert BlockNote blocks to Markdown format using built-in converter
  * @param {Array} blocks - BlockNote blocks array
- * @returns {string} - Markdown string
+ * @returns {Promise<string>} - Markdown string
  */
-export function blocksToMarkdown(blocks) {
+export async function blocksToMarkdown(blocks) {
   if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
     return ''
   }
 
   try {
-    const markdown = blocks.map((block) => blockToMarkdown(block)).join('\n')
+    // Use BlockNote's built-in markdown converter (async method)
+    const editor = BlockNoteEditor.create()
+    const markdown = await editor.blocksToMarkdownLossy(blocks)
     return markdown
   } catch (error) {
     console.error('Failed to convert blocks to markdown:', error)
+    // Fallback to custom converter if built-in fails
+    return blocksToMarkdownCustom(blocks)
+  }
+}
+
+/**
+ * Custom fallback converter
+ * @param {Array} blocks - BlockNote blocks array
+ * @returns {string} - Markdown string
+ */
+function blocksToMarkdownCustom(blocks) {
+  try {
+    const markdown = blocks.map((block) => blockToMarkdown(block)).join('\n')
+    return markdown
+  } catch (error) {
+    console.error('Failed to convert blocks to markdown with custom converter:', error)
     return ''
   }
 }

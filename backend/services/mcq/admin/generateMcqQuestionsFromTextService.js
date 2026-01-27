@@ -45,6 +45,7 @@ export class GenerateMcqQuestionsFromTextService extends BaseService {
     // Generate MCQ questions from text
     const text = await modelService.generateFromText(model, parsedSystemPrompt)
 
+    console.log(text)
     // Parse JSON response
     const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     const result = JSON.parse(cleanedText)

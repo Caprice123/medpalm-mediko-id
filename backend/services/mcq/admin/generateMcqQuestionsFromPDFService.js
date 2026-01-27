@@ -7,9 +7,10 @@ export class GenerateMcqQuestionsFromPDFService extends BaseService {
    * Generate MCQ questions from PDF buffer using configurable prompt
    * @param {Buffer} pdfBuffer - PDF file buffer
    * @param {number} questionCount - Number of questions to generate
+   * @param {string} mimeType - MIME type of the file
    * @returns {Promise<Array>} Array of MCQ question objects
    */
-  static async call(pdfBuffer, questionCount) {
+  static async call(pdfBuffer, questionCount, mimeType = 'application/pdf') {
     // Fetch configuration from constants
     const constants = await prisma.constants.findMany({
       where: {
@@ -46,6 +47,7 @@ export class GenerateMcqQuestionsFromPDFService extends BaseService {
       model,
       parsedSystemPrompt,
       pdfBuffer,
+      mimeType
     )
 
     // Parse JSON response

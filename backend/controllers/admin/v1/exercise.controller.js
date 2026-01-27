@@ -49,7 +49,8 @@ class ExerciseController {
     const questions = await GenerateQuestionService.call({
       pdfBuffer: pdfBuffer,
       type: 'pdf',
-      questionCount: parseInt(questionCount) || 10
+      questionCount: parseInt(questionCount) || 10,
+      mimeType: blob.content_type
     })
 
     // Buffer is automatically garbage collected, no cleanup needed

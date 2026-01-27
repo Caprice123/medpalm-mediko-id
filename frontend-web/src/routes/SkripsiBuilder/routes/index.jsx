@@ -11,7 +11,7 @@ const withSuspense = (Component) => (
 );
 
 export class SkripsiRoute {
-    static moduleRoute = "/skripsi/sets"
+    static moduleRoute = "/sets"
     static initialRoute = SkripsiRoute.moduleRoute
     static editorRoute = SkripsiRoute.moduleRoute + "/:setId"
 }

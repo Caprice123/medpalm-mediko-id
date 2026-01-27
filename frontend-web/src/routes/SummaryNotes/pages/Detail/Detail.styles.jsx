@@ -30,7 +30,6 @@ export const Content = styled.div`
 
 export const NoteContainer = styled.div`
   background: ${colors.background.paper};
-  padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 

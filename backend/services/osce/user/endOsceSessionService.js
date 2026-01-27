@@ -400,11 +400,18 @@ export class EndOsceSessionService extends BaseService {
       const answerKey = topicSnapshot.answer_key || 'Tidak ada kunci jawaban'
 
       // Build final analyzer prompt
+      let knowledgeBase = ""
+      if (topicSnapshot?.knowledge_base) {
+          knowledgeBase = "Basis Pengetahuan Referensi (hanya untuk konteks):\n" +
+            `${topicSnapshot?.knowledge_base.map(kb => `[${kb.key}]\n${kb.value}`).join('\n\n')}\n` +
+            "Basis pengetahuan ini disediakan hanya sebagai informasi referensi untuk membantu Anda memahami skenario klinis dan memberikan respons yang relevan.\n"
+      }
+
       const compiledFinalPrompt = finalPrompt
         .replace(/\{\{evaluationPrompt\}\}/g, rubric.content || '')
         .replace(/\{\{context\}\}/g, topicSnapshot.context || '')
         .replace(/\{\{task\}\}/g, topicSnapshot.guide || '')
-        .replace(/\{\{knowledgeBase\}\}/g, topicSnapshot.knowledge_base ? JSON.stringify(topicSnapshot.knowledge_base) : '')
+        .replace(/\{\{knowledgeBase\}\}/g, knowledgeBase)
         .replace(/\{\{answerKey\}\}/g, answerKey)
         .replace(/\{\{chunkInsightsTotal\}\}/g, analyzedChunks.length.toString())
         .replace(/\{\{combinedSummary\}\}/g, combinedSummary || 'Tidak ada ringkasan')

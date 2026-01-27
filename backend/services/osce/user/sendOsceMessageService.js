@@ -179,7 +179,7 @@ export class SendOsceMessageService extends BaseService {
             break
           }
 
-          const text = chunk.text()
+          const text = chunk.text
 
           if (text) {
             fullResponseFromAI += text

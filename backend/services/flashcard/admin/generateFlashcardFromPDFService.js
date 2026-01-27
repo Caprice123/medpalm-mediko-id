@@ -7,9 +7,10 @@ export class GenerateFlashcardFromPDFService extends BaseService {
      * Generate flashcards from PDF buffer using configurable prompt
      * @param {Buffer} pdfBuffer - PDF file buffer
      * @param {number} cardCount - Number of cards to generate
+     * @param {string} mimeType - MIME type of the file
      * @returns {Promise<Array>} Array of flashcard objects
      */
-    static async call(pdfBuffer, cardCount) {
+    static async call(pdfBuffer, cardCount, mimeType = 'application/pdf') {
         // Fetch configuration from constants
         const constants = await prisma.constants.findMany({
             where: {
@@ -45,7 +46,8 @@ export class GenerateFlashcardFromPDFService extends BaseService {
         const text = await modelService.generateFromFile(
             model,
             parsedSystemPrompt,
-            pdfBuffer
+            pdfBuffer,
+            mimeType
         )
 
         // Parse JSON response

@@ -47,7 +47,7 @@ export const useCreateNote = (onClose) => {
         const contentString = JSON.stringify(values.content)
 
         // Convert blocks to markdown
-        const markdownContent = blocksToMarkdown(values.content)
+        const markdownContent = await blocksToMarkdown(values.content)
 
         // Combine university and semester tags
         const allTags = [...values.universityTags, ...values.semesterTags]
@@ -119,7 +119,7 @@ export const useCreateNote = (onClose) => {
     }
 
     const result = await dispatch(generateSummaryFromDocument(form.values.blobId))
-    const blocks = markdownToBlocks(result.summary)
+    const blocks = await markdownToBlocks(result.summary)
     form.setFieldValue('content', blocks)
   }
 
