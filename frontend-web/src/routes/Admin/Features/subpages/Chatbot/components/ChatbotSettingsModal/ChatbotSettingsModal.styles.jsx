@@ -234,7 +234,7 @@ export const SectionTitle = styled.h4`
   font-size: 1rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 1.5rem 0 1rem 0;
+  margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e5e7eb;
 `

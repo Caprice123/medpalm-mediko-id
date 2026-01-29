@@ -160,7 +160,6 @@ function SettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model AI</Label>
           <ModelDropdown
             value={form.values.skripsi_ai_researcher_model}
             onChange={(option) => form.setFieldValue('skripsi_ai_researcher_model', option.value)}
@@ -375,7 +374,6 @@ function SettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model AI</Label>
           <ModelDropdown
             value={form.values.skripsi_paraphraser_model}
             onChange={(option) => form.setFieldValue('skripsi_paraphraser_model', option.value)}
@@ -442,7 +440,6 @@ function SettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model AI</Label>
           <ModelDropdown
             value={form.values.skripsi_diagram_builder_model}
             onChange={(option) => form.setFieldValue('skripsi_diagram_builder_model', option.value)}
@@ -474,15 +471,28 @@ function SettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>System Prompt</Label>
+          <Label>Content Prompt (Stage 1 - Diagram Generation)</Label>
           <Textarea
-            placeholder="Masukkan system prompt untuk Diagram Builder..."
-            value={form.values.skripsi_diagram_builder_prompt}
-            onChange={(e) => form.setFieldValue('skripsi_diagram_builder_prompt', e.target.value)}
+            placeholder="Masukkan content prompt untuk analisis dan ekstraksi nodes/connections..."
+            value={form.values.skripsi_diagram_builder_content_prompt}
+            onChange={(e) => form.setFieldValue('skripsi_diagram_builder_content_prompt', e.target.value)}
+            style={{ minHeight: '150px' }}
+          />
+          <HintText>
+            Prompt untuk menganalisis deskripsi user dan mengekstrak struktur diagram (nodes dan connections). Digunakan saat generate diagram.
+          </HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Format Prompt (Chat Interface)</Label>
+          <Textarea
+            placeholder="Masukkan format prompt untuk chat assistant..."
+            value={form.values.skripsi_diagram_builder_format_prompt}
+            onChange={(e) => form.setFieldValue('skripsi_diagram_builder_format_prompt', e.target.value)}
             style={{ minHeight: '120px' }}
           />
           <HintText>
-            Instruksi untuk AI tentang cara membuat diagram yang informatif
+            Prompt untuk chat assistant yang membantu user merencanakan dan merancang diagram. Digunakan di chat interface.
           </HintText>
         </FormGroup>
       </ModeSection>
