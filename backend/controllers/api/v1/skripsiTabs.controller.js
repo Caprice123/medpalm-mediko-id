@@ -1,6 +1,7 @@
 import { GetTabMessagesService } from '#services/skripsi/getTabMessagesService'
 import { SendMessageService } from '#services/skripsi/sendMessageService'
 import { TruncateMessageService } from '#services/skripsi/truncateMessageService'
+import { FinalizeMessageService } from '#services/skripsi/finalizeMessageService'
 import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
 import prisma from '#prisma/client'
 
@@ -94,7 +95,57 @@ class SkripsiTabsController {
     }
   }
 
-  // Truncate message content when user stops streaming
+  // Finalize message content (called by frontend for both completed and truncated)
+  async finalizeMessage(req, res) {
+    const userId = req.user.id
+    const { tabId, messageId } = req.params
+    const { content, isComplete } = req.body
+
+    if (typeof content !== 'string') {
+      return res.status(400).json({
+        message: 'Content is required and must be a string'
+      })
+    }
+
+    try {
+      const result = await FinalizeMessageService.call({
+        userId,
+        tabId: parseInt(tabId),
+        messageId: parseInt(messageId),
+        content: content,
+        isComplete: isComplete === true
+      })
+
+      if (!result.success) {
+        return res.status(409).json({
+          message: result.note || 'Message already finalized',
+          data: {
+            id: result.message.id,
+            content: result.message.content,
+            status: result.message.status,
+            updatedAt: result.message.updated_at.toISOString()
+          }
+        })
+      }
+
+      return res.status(200).json({
+        message: 'Message finalized successfully',
+        data: {
+          id: result.message.id,
+          content: result.message.content,
+          status: result.message.status,
+          updatedAt: result.message.updated_at.toISOString()
+        }
+      })
+    } catch (error) {
+      console.error('Error finalizing message:', error)
+      return res.status(500).json({
+        message: error.message || 'Failed to finalize message'
+      })
+    }
+  }
+
+  // Truncate message content when user stops streaming (DEPRECATED - use finalize)
   async truncateMessage(req, res) {
     const userId = req.user.id
     const { tabId, messageId } = req.params

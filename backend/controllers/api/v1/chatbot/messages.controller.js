@@ -1,6 +1,8 @@
 import { GetMessagesService } from '#services/chatbot/getMessagesService'
 import { SendMessageService } from '#services/chatbot/sendMessageService'
 import { SubmitFeedbackService } from '#services/chatbot/submitFeedbackService'
+import { TruncateMessageService } from '#services/chatbot/truncateMessageService'
+import { FinalizeMessageService } from '#services/chatbot/finalizeMessageService'
 import { ChatbotMessageSerializer } from '#serializers/api/v1/chatbotMessageSerializer'
 import prisma from '#prisma/client'
 
@@ -192,6 +194,86 @@ class MessageController {
           sources: [],
           createdAt: aiMsgWithTimestamp.created_at.toISOString()
         }
+      }
+    })
+  }
+
+  // Finalize message content (called by frontend for both completed and truncated)
+  async finalize(req, res) {
+    const userId = req.user.id
+    const { conversationId, messageId } = req.params
+    const { content, isComplete } = req.body
+
+    if (typeof content !== 'string') {
+      return res.status(400).json({
+        message: 'Content is required and must be a string'
+      })
+    }
+
+    try {
+      const result = await FinalizeMessageService.call({
+        userId,
+        conversationId: parseInt(conversationId),
+        messageId: parseInt(messageId),
+        content: content,
+        isComplete: isComplete === true
+      })
+
+      if (!result.success) {
+        return res.status(409).json({
+          message: result.note || 'Message already finalized',
+          data: {
+            id: result.message.id,
+            content: result.message.content,
+            status: result.message.status,
+            createdAt: result.message.created_at.toISOString()
+          }
+        })
+      }
+
+      return res.status(200).json({
+        message: 'Message finalized successfully',
+        data: {
+          id: result.message.id,
+          content: result.message.content,
+          status: result.message.status,
+          createdAt: result.message.created_at.toISOString()
+        }
+      })
+    } catch (error) {
+      console.error('Error finalizing message:', error)
+      return res.status(500).json({
+        message: error.message || 'Failed to finalize message'
+      })
+    }
+  }
+
+  // Truncate message content when user stops streaming (DEPRECATED - use finalize)
+  async truncate(req, res) {
+    const userId = req.user.id
+    const { conversationId, messageId } = req.params
+    const { characterCount } = req.body
+
+    if (!characterCount || characterCount < 0) {
+      return res.status(400).json({
+        message: 'Invalid character count'
+      })
+    }
+
+    const result = await TruncateMessageService.call({
+      userId,
+      conversationId: parseInt(conversationId),
+      messageId: parseInt(messageId),
+      characterCount: parseInt(characterCount)
+    })
+    console.log(result.message)
+
+    return res.status(200).json({
+      message: 'Message truncated successfully',
+      data: {
+        id: result.message.id,
+        content: result.message.content,
+        createdAt: result.message.created_at.toISOString()
       }
     })
   }
