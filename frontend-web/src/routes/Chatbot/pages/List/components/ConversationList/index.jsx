@@ -35,18 +35,6 @@ const ConversationList = ({
     return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
   }
 
-  const getPreviewText = (conversation) => {
-    if (conversation.messageCount === 0) {
-      return 'Belum ada pesan'
-    }
-    if (conversation.lastMessage && conversation.lastMessage.content) {
-      // Truncate long messages
-      const content = conversation.lastMessage.content
-      return content.length > 60 ? content.substring(0, 60) + '...' : content
-    }
-    return `${conversation.messageCount} pesan`
-  }
-
   if (isLoading) {
     return (
       <Container>
@@ -83,9 +71,6 @@ const ConversationList = ({
               {formatTime(conversation.updatedAt || conversation.createdAt)}
             </ConversationTime>
           </ConversationHeader>
-          <ConversationPreview>
-            {getPreviewText(conversation)}
-          </ConversationPreview>
         </ConversationItem>
       ))}
     </Container>

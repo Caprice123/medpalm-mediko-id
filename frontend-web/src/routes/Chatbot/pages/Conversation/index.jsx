@@ -167,6 +167,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       setStreamingMessage(prev => prev ? null : prev)
     }
   }, [messages])
+//   console.log(messages)
 
   const handleSendMessage = useCallback(async (content) => {
     if (!content || loading.isSendingMessage) return

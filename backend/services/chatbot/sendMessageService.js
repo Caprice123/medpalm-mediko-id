@@ -5,6 +5,7 @@ import { NormalModeAIService } from '#services/chatbot/ai/normalModeAIService'
 import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSearchModeAIService'
 import { ResearchModeAIService } from '#services/chatbot/ai/researchModeAIService'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import { GetConstantsService } from '#services/constant/getConstantsService'
 
 export class SendMessageService extends BaseService {
   static async call({ userId, conversationId, message, mode, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -27,36 +28,20 @@ export class SendMessageService extends BaseService {
       throw new ValidationError('You do not have access to this conversation')
     }
 
-    // Fetch constants and user credits
-    const constants = await prisma.constants.findMany({
-      where: {
-        key: {
-          in: [
-            'chatbot_is_active',
-            'chatbot_access_type',
-            `chatbot_${mode}_enabled`,
-            `chatbot_${mode}_cost`
-          ]
-        }
-      }
-    })
-    const constantsMap = {}
-    constants.forEach(c => { constantsMap[c.key] = c.value })
-
-    // Check if chatbot feature is active
-    const featureActive = constantsMap.chatbot_is_active === 'true'
-    if (!featureActive) {
-      throw new ValidationError("Fitur sedang tidak aktif. Silakan coba beberapa saat lagi")
-    }
+    const constants = await GetConstantsService.call([
+        'chatbot_access_type',
+        `chatbot_${mode}_enabled`,
+        `chatbot_${mode}_cost`
+    ])
 
     // Check if specific mode is enabled
-    const modeEnabled = constantsMap[`chatbot_${mode}_enabled`] === 'true'
+    const modeEnabled = constants[`chatbot_${mode}_enabled`] === 'true'
     if (!modeEnabled) {
       throw new ValidationError(`Mode ${mode} sedang tidak aktif. Silakan pilih mode lain`)
     }
 
     // Check user access based on access type
-    const accessType = constantsMap.chatbot_access_type || 'subscription'
+    const accessType = constants.chatbot_access_type || 'subscription'
     const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
     const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
 
@@ -72,7 +57,7 @@ export class SendMessageService extends BaseService {
     // Check credits if required
     let messageCost = 0
     if (requiresCredits) {
-      messageCost = parseFloat(constantsMap[`chatbot_${mode}_cost`]) || 5
+      messageCost = parseFloat(constants[`chatbot_${mode}_cost`]) || 5
 
       // Get user's credit balance
       const userCredit = await prisma.user_credits.findUnique({
@@ -268,6 +253,66 @@ export class SendMessageService extends BaseService {
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 1
 
+    let userMessage, aiMessage
+
+    try {
+      // CREATE MESSAGE RECORDS FIRST (before streaming)
+      userMessage = await prisma.chatbot_messages.create({
+        data: {
+          conversation_id: conversationId,
+          sender_type: 'user',
+          mode_type: null,
+          content: userMessageContent,
+          credits_used: 0,
+          created_at: new Date()
+        }
+      })
+
+      aiMessage = await prisma.chatbot_messages.create({
+        data: {
+          conversation_id: conversationId,
+          sender_type: 'ai',
+          mode_type: mode,
+          content: '', // Empty initially, will be updated
+          credits_used: creditsUsed,
+          created_at: new Date()
+        }
+      })
+
+      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      try {
+        onStream({
+          type: 'started',
+          data: {
+            userMessage: {
+                id: userMessage.id,
+                senderType: userMessage.sender_type,
+                content: userMessage.content,
+                createdAt: userMessage.created_at.toISOString()
+            },
+            aiMessage: {
+                id: aiMessage.id,
+                senderType: aiMessage.sender_type,
+                modeType: aiMessage.mode_type,
+                content: aiMessage.content,
+                sources: sources,
+                createdAt: aiMessage.created_at.toISOString()
+            }
+          }
+        })
+        console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+      } catch (e) {
+        console.log('Could not send started event - client disconnected')
+      }
+    } catch (dbError) {
+      console.error('❌ Failed to create message records:', dbError)
+      // Send error to frontend
+      if (onError) {
+        onError(new Error('Failed to create message records'))
+      }
+      throw dbError
+    }
+
     try {
       // Process Gemini stream chunks with pacing
       for await (const chunk of stream) {
@@ -367,27 +412,11 @@ export class SendMessageService extends BaseService {
       console.log(`  - sent to client: ${contentToSave}`)
       console.log(`  - response AI: ${fullResponseFromAI}`)
 
-      // Save user message to database
-      const userMessage = await prisma.chatbot_messages.create({
+      // UPDATE AI message with final content (already created at start)
+      await prisma.chatbot_messages.update({
+        where: { id: aiMessage.id },
         data: {
-          conversation_id: conversationId,
-          sender_type: 'user',
-          mode_type: null,
-          content: userMessageContent,
-          credits_used: 0,
-          created_at: new Date()
-        }
-      })
-
-      // Save AI message to database (full or partial depending on abort status)
-      const aiMessage = await prisma.chatbot_messages.create({
-        data: {
-          conversation_id: conversationId,
-          sender_type: 'ai',
-          mode_type: mode,
           content: contentToSave,
-          credits_used: creditsUsed,
-          created_at: new Date()
         }
       })
 
@@ -448,6 +477,10 @@ export class SendMessageService extends BaseService {
 
       // ALWAYS send completion with saved message data
       // This ensures frontend gets real IDs even when stream was aborted
+      aiMessage = await prisma.chatbot_messages.findFirst({
+        where: { id: aiMessage.id }
+      })
+
       const responseData = {
         userMessage: {
           id: userMessage.id,
@@ -502,6 +535,66 @@ export class SendMessageService extends BaseService {
 
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 1
+
+    let userMessage, aiMessage
+
+    try {
+      // CREATE MESSAGE RECORDS FIRST (before streaming)
+      userMessage = await prisma.chatbot_messages.create({
+        data: {
+          conversation_id: conversationId,
+          sender_type: 'user',
+          mode_type: null,
+          content: userMessageContent,
+          credits_used: 0,
+          created_at: new Date()
+        }
+      })
+
+      aiMessage = await prisma.chatbot_messages.create({
+        data: {
+          conversation_id: conversationId,
+          sender_type: 'ai',
+          mode_type: mode,
+          content: '', // Empty initially, will be updated
+          credits_used: creditsUsed,
+          created_at: new Date()
+        }
+      })
+
+      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      try {
+        onStream({
+          type: 'started',
+          data: {
+            userMessage: {
+                id: userMessage.id,
+                senderType: userMessage.sender_type,
+                content: userMessage.content,
+                createdAt: userMessage.created_at.toISOString()
+            },
+            aiMessage: {
+                id: aiMessage.id,
+                senderType: aiMessage.sender_type,
+                modeType: aiMessage.mode_type,
+                content: aiMessage.content,
+                sources: sources,
+                createdAt: aiMessage.created_at.toISOString()
+            }
+          }
+        })
+        console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+      } catch (e) {
+        console.log('Could not send started event - client disconnected')
+      }
+    } catch (dbError) {
+      console.error('❌ Failed to create message records:', dbError)
+      // Send error to frontend
+      if (onError) {
+        onError(new Error('Failed to create message records'))
+      }
+      throw dbError
+    }
 
     // Helper function to filter out <think>...</think> tags
     const filterThinkTags = (text) => {
@@ -719,27 +812,12 @@ export class SendMessageService extends BaseService {
       console.log(`  - Accumulated buffer: ${accumulatedChunk.length} chars`)
       console.log(`  - Saving: ${contentToSave.length} chars`)
 
-      // Save user message to database
-      const userMessage = await prisma.chatbot_messages.create({
+      // UPDATE AI message with final content (already created at start)
+      await prisma.chatbot_messages.update({
+        where: { id: aiMessage.id },
         data: {
-          conversation_id: conversationId,
-          sender_type: 'user',
-          mode_type: null,
-          content: userMessageContent,
-          credits_used: 0,
-          created_at: new Date()
-        }
-      })
-
-      // Save AI message to database (full or partial depending on abort status)
-      const aiMessage = await prisma.chatbot_messages.create({
-        data: {
-          conversation_id: conversationId,
-          sender_type: 'ai',
-          mode_type: mode,
           content: contentToSave,
-          credits_used: creditsUsed,
-          created_at: new Date()
+          updated_at: new Date()
         }
       })
 

@@ -19,6 +19,26 @@ export class SendOsceMessageService extends BaseService {
       if (!sessionId) throw new Error('Session ID is required')
       if (!message || !message.trim()) throw new Error('Message is required')
 
+      // Get OSCE configuration from constants
+      const constants = await prisma.constants.findMany({
+        where: {
+          key: {
+            in: [
+              'osce_practice_credit_cost',
+              'osce_practice_chat_completion_prompt',
+              'osce_practice_context_message_count'
+            ],
+          },
+        },
+      })
+
+      const constantsMap = {}
+      constants.forEach(c => {
+        constantsMap[c.key] = c.value
+      })
+
+      const contextMessageCount = parseInt(constantsMap.osce_practice_context_message_count) || 50
+
       // Fetch session with topic details
       const session = await prisma.osce_sessions.findFirst({
         where: {
@@ -38,9 +58,9 @@ export class SendOsceMessageService extends BaseService {
           },
           osce_session_messages: {
             orderBy: {
-              created_at: 'asc',
+              id: 'desc',
             },
-            take: 50, // Last 50 messages for context
+            take: contextMessageCount, // Last N messages for context (configurable)
           },
         },
       })
@@ -48,20 +68,6 @@ export class SendOsceMessageService extends BaseService {
       if (!session) {
         throw new Error('Session not found or access denied')
       }
-
-      // Check OSCE feature is active
-      const constants = await prisma.constants.findMany({
-        where: {
-          key: {
-            in: ['osce_practice_credit_cost', 'osce_practice_chat_completion_prompt'],
-          },
-        },
-      })
-
-      const constantsMap = {}
-      constants.forEach(c => {
-        constantsMap[c.key] = c.value
-      })
 
     //   const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
       const messageCost = 0
@@ -144,7 +150,7 @@ export class SendOsceMessageService extends BaseService {
     const stream = await AIService.generateStreamWithHistory(
       model,
       systemPrompt,
-      conversationHistory,
+      conversationHistory.reverse(),
       userMessage,
     )
 

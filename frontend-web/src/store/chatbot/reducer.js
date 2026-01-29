@@ -6,6 +6,7 @@ const initialState = {
   currentConversation: null,
   messagesByConversation: {}, // Store messages per conversation ID: { [conversationId]: [...messages] }
   activeConversationId: null, // Track which conversation is currently active
+  streamingStateByConversation: {}, // { [conversationId]: { realMessageId, displayedLength } }
   currentMode: 'normal',
   availableModes: {
     normal: true,
@@ -118,6 +119,33 @@ const chatbotSlice = createSlice({
           ...state.messagesByConversation[conversationId]
         ]
       }
+    },
+    setStreamingState: (state, action) => {
+      const { conversationId, ...streamingData } = action.payload
+      if (!state.streamingStateByConversation[conversationId]) {
+        state.streamingStateByConversation[conversationId] = {
+          isSending: false,
+          isTyping: false,
+          userStopped: false,
+          userMessage: null,
+          streamingMessageId: null,
+          optimisticUserId: null,
+          realMessageId: null,
+          realUserMessageId: null,
+          displayedContent: '',
+          displayedLength: 0,
+          mode: null
+        }
+      }
+      // Merge new data into existing state
+      state.streamingStateByConversation[conversationId] = {
+        ...state.streamingStateByConversation[conversationId],
+        ...streamingData
+      }
+    },
+    clearStreamingState: (state, action) => {
+      const conversationId = action.payload
+      delete state.streamingStateByConversation[conversationId]
     },
     // Legacy actions - for backward compatibility, operate on active conversation
     setMessages: (state, action) => {

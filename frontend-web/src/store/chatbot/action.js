@@ -1,7 +1,7 @@
 import { actions } from '@store/chatbot/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken, patchWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 
@@ -27,6 +27,8 @@ const {
   addConversation,
   updateConversation,
   removeConversation,
+  setStreamingState,
+  clearStreamingState,
 } = actions
 
 // ============= Configuration =============
@@ -176,9 +178,8 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
   }
 }
 
-// Store abort controllers per conversation for stream cancellation
+// Store abort controllers per conversation (cannot be stored in Redux - not serializable)
 const abortControllersByConversation = {}
-const userMessageContentByConversation = {}
 
 // Helper function to ensure token is valid and refreshed if needed
 const ensureValidToken = async () => {
@@ -203,7 +204,7 @@ const ensureValidToken = async () => {
   return token.accessToken
 }
 
-export const sendMessage = (conversationId, content, mode) => async (dispatch) => {
+export const sendMessage = (conversationId, content, mode) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isSendingMessage', value: true }))
 
@@ -216,8 +217,22 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch) =
     }
     dispatch(addMessageToConversation({ conversationId, message: optimisticUserMessage }))
 
-    // Store user message content for potential stop action - per conversation
-    userMessageContentByConversation[conversationId] = content
+    // Initialize streaming state for this conversation
+    dispatch(setStreamingState({
+      conversationId,
+      isSending: true,
+      isTyping: false,
+      userStopped: false,
+      userMessage: content,
+      userMessageCreatedAt: new Date().toISOString(),
+      streamingMessageId: null, // Will be set in sendMessageStreaming
+      optimisticUserId: optimisticUserMessage.id,
+      realMessageId: null,
+      realUserMessageId: null,
+      displayedContent: '',
+      displayedLength: 0,
+      mode
+    }))
 
     // Create new AbortController for this conversation's stream
     abortControllersByConversation[conversationId] = new AbortController()
@@ -228,32 +243,34 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch) =
       content,
       mode,
       dispatch,
+      getState,
       optimisticUserMessage.id,
       abortControllersByConversation[conversationId]
     )
   } catch (err) {
     if (err.name === 'AbortError') {
       console.log(`Chatbot stream was stopped by user for conversation ${conversationId}`)
+      // stopChatbotStreaming already handled loading state and cleanup
       return null
     }
     handleApiError(err, dispatch)
-  } finally {
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+  } finally {
     // Clean up abort controller for this conversation
     delete abortControllersByConversation[conversationId]
-    delete userMessageContentByConversation[conversationId]
   }
 }
 
-// Track if user stopped the stream per conversation
-const userStoppedStreamByConversation = {}
-
-export const stopChatbotStreaming = (conversationId) => async (dispatch) => {
+export const stopChatbotStreaming = (conversationId) => async (dispatch, getState) => {
   try {
     console.log(`⏹️ Frontend: User clicked stop button for conversation ${conversationId}`)
 
-    // Set flag to stop receiving new chunks for this conversation
-    userStoppedStreamByConversation[conversationId] = true
+    // Set flag to stop receiving new chunks and typing for this conversation
+    dispatch(setStreamingState({
+      conversationId,
+      userStopped: true,
+      isTyping: false
+    }))
 
     // Abort the fetch for this specific conversation
     const controller = abortControllersByConversation[conversationId]
@@ -265,13 +282,73 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch) => {
       console.log(`⚠️ Frontend: No active abort controller found for conversation ${conversationId}`)
     }
 
-    // Typing animation continues to display all already-received content
-    // Messages stay visible with temporary IDs (temp-user-xxx, streaming-xxx)
-    // When user refreshes page, they'll load the saved messages from database
-    delete userMessageContentByConversation[conversationId]
+    // Get the streaming state from redux
+    const state = getState()
+    const streamingState = state.chatbot.streamingStateByConversation[conversationId]
+    console.log(streamingState)
 
-    // DON'T set loading to false here - let typing animation finish first
-    // Loading will be set to false in typeNextCharacter when typing completes
+    if (streamingState && streamingState.realMessageId && streamingState.displayedLength > 0) {
+      console.log(`📝 Calling truncate endpoint: messageId=${streamingState.realMessageId}, length=${streamingState.displayedLength}`)
+
+      // Call truncate endpoint to save the displayed content
+      try {
+        const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${streamingState.realMessageId}/truncate`
+        const response = await patchWithToken(route, {
+          characterCount: streamingState.displayedLength
+        })
+        console.log(streamingState)
+        console.log('✅ Message truncated successfully on backend')
+
+        // Remove temporary messages (streaming and optimistic user message)
+        if (streamingState.streamingMessageId) {
+            console.log("first")
+          dispatch(removeMessageFromConversation({ conversationId, messageId: streamingState.streamingMessageId }))
+        }
+        if (streamingState.optimisticUserId) {
+            console.log("second")
+          dispatch(removeMessageFromConversation({ conversationId, messageId: streamingState.optimisticUserId }))
+        }
+
+        // Add the user message with real ID and content
+        if (streamingState.userMessage && streamingState.realUserMessageId) {
+            console.log("third")
+          dispatch(addMessageToConversation({
+            conversationId,
+            message: {
+              id: streamingState.realUserMessageId,
+              senderType: 'user',
+              content: streamingState.userMessage,
+              createdAt: streamingState.userMessageCreatedAt,
+            }
+          }))
+        }
+
+        // Add the AI message with truncated content from backend response
+        if (response.data && response.data.data) {
+            console.log("fourth")
+          dispatch(addMessageToConversation({
+            conversationId,
+            message: {
+              id: response.data.data.id,
+              senderType: 'ai',
+              modeType: streamingState.mode,
+              content: response.data.data.content,
+              sources: [],
+              createdAt: response.data.data.createdAt
+            }
+          }))
+        }
+
+      } catch (err) {
+        console.error('❌ Error truncating message:', err)
+      }
+    } else {
+      console.log('⚠️ No streaming state found, cannot truncate')
+    }
+
+    // Clean up streaming state
+    // dispatch(clearStreamingState(conversationId))
+    dispatch(setLoading({ key: 'isSendingMessage', value: false }))
 
     return null
   } catch (error) {
@@ -283,16 +360,13 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch) => {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 // Streaming message handler - typing animation with backend pacing
-const sendMessageStreaming = async (conversationId, content, mode, dispatch, optimisticUserId, abortController = null) => {
+const sendMessageStreaming = async (conversationId, content, mode, dispatch, getState, optimisticUserId, abortController = null) => {
   // Ensure token is valid and refreshed if needed
   const accessToken = await ensureValidToken()
   const route = API_BASE_URL + Endpoints.api.chatbot + `/conversations/${conversationId}/send`
 
   const streamingMessageId = `streaming-${Date.now()}`
   const messageCreatedAt = new Date().toISOString()
-
-  // Reset user stopped flag for this conversation
-  userStoppedStreamByConversation[conversationId] = false
 
   // Typing animation state
   let fullContent = '' // Complete content from backend chunks
@@ -304,6 +378,12 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
   let finalData = null
 
   const TYPING_SPEED_MS = 1 // 3ms per character (~333 chars/sec) - fast but still smooth
+
+  // Update streaming state with streamingMessageId
+  dispatch(setStreamingState({
+    conversationId,
+    streamingMessageId
+  }))
 
   // Add initial streaming message (no sources initially) - conversation-specific
   dispatch(addMessageToConversation({
@@ -320,31 +400,14 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
   // Typing animation - type character by character
   const typeNextCharacter = () => {
-    // If user stopped stream and we've typed everything received, stop
-    if (userStoppedStreamByConversation[conversationId] && displayedContent.length >= fullContent.length) {
-      console.log('✅ Finished typing all received content after stop - keeping messages visible')
+    // Check if user stopped stream from Redux state
+    const state = getState()
+    const streamingState = state.chatbot.streamingStateByConversation[conversationId]
+    console.log(streamingState?.userStopped)
+
+    if (streamingState?.userStopped) {
+      console.log('⏹️ User stopped - stopping typing immediately')
       isTyping = false
-
-      // Remove the streaming message and re-add with a non-streaming ID
-      // This makes the stop button disappear while keeping the message visible
-      dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
-      dispatch(addMessageToConversation({
-        conversationId,
-        message: {
-          id: `partial-${Date.now()}`, // Use 'partial-' prefix instead of 'streaming-'
-          senderType: 'ai',
-          modeType: mode,
-          content: displayedContent,
-          sources: showSources ? sources : [], // Only show sources if streaming is done
-          createdAt: messageCreatedAt
-        }
-      }))
-
-      // Backend is saving to database in background
-      // When user refreshes, they'll see the saved messages from database
-
-      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      userStoppedStreamByConversation[conversationId] = false
       return
     }
 
@@ -354,7 +417,6 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
       // If backend is done and all characters displayed, finalize
       if (backendSavedMessage && finalData) {
-        // Remove optimistic messages from this conversation
         dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
         dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
 
@@ -363,11 +425,11 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
           dispatch(addMessageToConversation({ conversationId, message: finalData.userMessage }))
         }
         if (finalData.aiMessage) {
-          dispatch(addMessageToConversation({ conversationId, message: finalData.aiMessage }))
+            dispatch(addMessageToConversation({ conversationId, message: finalData.aiMessage }))
         }
 
+        dispatch(clearStreamingState(conversationId))
         dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-        userStoppedStreamByConversation[conversationId] = false
       }
       return
     }
@@ -389,14 +451,37 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
       }
     }))
 
+    // Update streaming state with current displayed length and content
+    if (finalData && finalData.aiMessage && finalData.aiMessage.id) {
+      dispatch(setStreamingState({
+        conversationId,
+        realMessageId: finalData.aiMessage.id,
+        realUserMessageId: finalData.userMessage ? finalData.userMessage.id : null,
+        displayedLength: displayedContent.length,
+        displayedContent,
+        isTyping: true
+      }))
+    } else {
+      // Just update typing state
+      dispatch(setStreamingState({
+        conversationId,
+        displayedLength: displayedContent.length,
+        displayedContent,
+        isTyping: true
+      }))
+    }
+
     // Schedule next character
     setTimeout(typeNextCharacter, TYPING_SPEED_MS)
   }
 
   // Add chunk to content and start typing if needed
   const addChunkToContent = (text) => {
-    // If user stopped stream, don't add new chunks
-    if (userStoppedStreamByConversation[conversationId]) return
+    // Check if user stopped stream from Redux state
+    const state = getState()
+    const streamingState = state.chatbot.streamingStateByConversation[conversationId]
+
+    if (streamingState?.userStopped) return
 
     // Filter out <think> tags
     let filteredText = text
@@ -445,7 +530,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
       const lines = buffer.split('\n')
       buffer = lines.pop() || ''
-
+      
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           try {
@@ -453,6 +538,14 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
 
             if (data.type === 'chunk') {
               addChunkToContent(data.data.content)
+            } else if (data.type == "started") {
+                const { userMessage, aiMessage } = data.data
+                dispatch(setStreamingState({
+                    conversationId,
+                    realUserMessageId: userMessage.id,
+                    realMessageId: aiMessage.id,
+                    streamingMessageCreatedAt: aiMessage.createdAt,
+                }))
             } else if (data.type === 'citation') {
               // Collect citation but don't show yet (wait until streaming completes)
               const newSource = {
@@ -469,8 +562,19 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
               console.log('✅ Backend saved messages:', data.data)
               console.log('✅ Citations ready to display:', sources.length)
 
-              // If typing animation already caught up OR user stopped, finalize immediately
-              if ((!isTyping && displayedContent.length >= fullContent.length) || userStoppedStreamByConversation[conversationId]) {
+              // Store the real message IDs for potential truncation
+              if (data.data.aiMessage && data.data.aiMessage.id) {
+                dispatch(setStreamingState({
+                  conversationId,
+                  realMessageId: data.data.aiMessage.id,
+                  realUserMessageId: data.data.userMessage ? data.data.userMessage.id : null,
+                  displayedLength: displayedContent.length,
+                  displayedContent
+                }))
+              }
+
+              // If typing animation already caught up, finalize immediately
+              if (displayedContent.length >= fullContent.length) {
                 dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
                 dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
 
@@ -481,8 +585,8 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
                   dispatch(addMessageToConversation({ conversationId, message: data.data.aiMessage }))
                 }
 
+                dispatch(clearStreamingState(conversationId))
                 dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-                userStoppedStreamByConversation[conversationId] = false
                 return data.data
               }
               // Otherwise, let typing animation finish and it will finalize
@@ -499,16 +603,13 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, opt
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
   } catch (error) {
     if (error.name === 'AbortError') {
-      console.log('✅ Stream aborted by user - typing animation will finish showing all received content')
-      // Keep typing animation going to finish displaying all received content
-      // Backend is saving partial message in background
-      // Typing animation will handle setting loading state to false when done
-      // Don't clear messages, don't throw error
+      console.log('✅ Stream aborted by user')
+      // stopChatbotStreaming already handled cleanup
       return null
     } else {
       console.error('Streaming error:', error)
+      dispatch(clearStreamingState(conversationId))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      userStoppedStreamByConversation[conversationId] = false
       throw error
     }
   }

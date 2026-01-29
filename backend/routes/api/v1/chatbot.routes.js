@@ -31,4 +31,7 @@ router.post('/conversations/:conversationId/send', asyncHandler(MessageControlle
 // Message feedback
 router.post('/messages/:messageId/feedback', asyncHandler(MessageController.feedback))
 
+// Truncate message when streaming is stopped
+router.patch('/conversations/:conversationId/messages/:messageId/truncate', asyncHandler(MessageController.truncate))
+
 export default router
