@@ -965,6 +965,7 @@ model chatbot_messages {
   mode_type       String? // 'normal', 'validated', 'research' (null for user messages)
   content         String   @db.Text
   credits_used    Int      @default(0)
+  status          String   @default("streaming") // 'streaming', 'completed', 'truncated'
   is_deleted      Boolean  @default(false)
   created_at      DateTime @default(now())
 
@@ -977,6 +978,7 @@ model chatbot_messages {
   @@index([mode_type])
   @@index([created_at])
   @@index([is_deleted])
+  @@index([status])
   @@index([conversation_id, created_at]) // Composite index for message listing
 }
 

@@ -285,19 +285,19 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
     // Get the streaming state from redux
     const state = getState()
     const streamingState = state.chatbot.streamingStateByConversation[conversationId]
-    console.log(streamingState)
 
-    if (streamingState && streamingState.realMessageId && streamingState.displayedLength > 0) {
-      console.log(`📝 Calling truncate endpoint: messageId=${streamingState.realMessageId}, length=${streamingState.displayedLength}`)
+    if (streamingState && streamingState.realMessageId && streamingState.displayedContent) {
+      console.log(`📝 Finalizing truncated message: messageId=${streamingState.realMessageId}, content length=${streamingState.displayedContent.length}`)
 
-      // Call truncate endpoint to save the displayed content
+      // Call finalize endpoint with the exact displayed content
       try {
-        const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${streamingState.realMessageId}/truncate`
-        const response = await patchWithToken(route, {
-          characterCount: streamingState.displayedLength
+        const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${streamingState.realMessageId}/finalize`
+        const response = await postWithToken(route, {
+          content: streamingState.displayedContent,
+          isComplete: false // User stopped = truncated
         })
         console.log(streamingState)
-        console.log('✅ Message truncated successfully on backend')
+        console.log('✅ Message finalized successfully on backend')
 
         // Remove temporary messages (streaming and optimistic user message)
         if (streamingState.streamingMessageId) {
@@ -347,7 +347,7 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
     }
 
     // Clean up streaming state
-    // dispatch(clearStreamingState(conversationId))
+    dispatch(clearStreamingState(conversationId))
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
 
     return null
@@ -417,19 +417,42 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
 
       // If backend is done and all characters displayed, finalize
       if (backendSavedMessage && finalData) {
-        dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
-        dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+        // Call finalize endpoint with complete content
+        const finalizeMessageAsync = async () => {
+          try {
+            const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${finalData.aiMessage.id}/finalize`
+            await postWithToken(route, {
+              content: fullContent, // Full content
+              isComplete: true // Streaming completed naturally
+            })
+            console.log('✅ Message finalized as completed')
 
-        // Add final messages to this conversation
-        if (finalData.userMessage) {
-          dispatch(addMessageToConversation({ conversationId, message: finalData.userMessage }))
-        }
-        if (finalData.aiMessage) {
-            dispatch(addMessageToConversation({ conversationId, message: finalData.aiMessage }))
+            // Remove temporary messages
+            dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+            dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+
+            // Add final messages
+            if (finalData.userMessage) {
+              dispatch(addMessageToConversation({ conversationId, message: finalData.userMessage }))
+            }
+            if (finalData.aiMessage) {
+              dispatch(addMessageToConversation({
+                conversationId,
+                message: {
+                  ...finalData.aiMessage,
+                  content: fullContent // Use full content
+                }
+              }))
+            }
+
+            dispatch(clearStreamingState(conversationId))
+            dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+          } catch (error) {
+            console.error('❌ Error finalizing completed message:', error)
+          }
         }
 
-        dispatch(clearStreamingState(conversationId))
-        dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+        finalizeMessageAsync()
       }
       return
     }
@@ -575,6 +598,21 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
 
               // If typing animation already caught up, finalize immediately
               if (displayedContent.length >= fullContent.length) {
+                // Call finalize endpoint (async but don't wait)
+                const finalizeImmediately = async () => {
+                  try {
+                    const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${data.data.aiMessage.id}/finalize`
+                    await postWithToken(route, {
+                      content: fullContent, // Full content
+                      isComplete: true
+                    })
+                    console.log('✅ Message finalized immediately (typing caught up)')
+                  } catch (error) {
+                    console.error('❌ Error finalizing:', error)
+                  }
+                }
+                finalizeImmediately()
+
                 dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
                 dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
 
@@ -582,7 +620,13 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
                   dispatch(addMessageToConversation({ conversationId, message: data.data.userMessage }))
                 }
                 if (data.data.aiMessage) {
-                  dispatch(addMessageToConversation({ conversationId, message: data.data.aiMessage }))
+                  dispatch(addMessageToConversation({
+                    conversationId,
+                    message: {
+                      ...data.data.aiMessage,
+                      content: fullContent // Use full content
+                    }
+                  }))
                 }
 
                 dispatch(clearStreamingState(conversationId))

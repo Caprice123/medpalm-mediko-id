@@ -26,11 +26,15 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     availableModes,
     loading,
     pagination,
-    messagesByConversation
+    messagesByConversation,
+    streamingStateByConversation
   } = useSelector(state => state.chatbot)
 
   // Get messages for the current conversation using selector
   const messages = useSelector(selectMessagesForCurrentConversation)
+
+  // Get streaming state for this specific conversation
+  const conversationStreamingState = streamingStateByConversation[conversationId] || null
 
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -41,6 +45,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const chatAreaRef = useRef(null)
   const previousScrollHeight = useRef(0)
   const titleInputRef = useRef(null)
+  console.log(conversationStreamingState)
   const isInitialScrollRef = useRef(false)
 
   useEffect(() => {
@@ -317,7 +322,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         onStop={handleStopStreaming}
         disabled={loading.isSendingMessage}
         currentMode={currentMode}
-        isStreaming={!!streamingMessage}
+        isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
       />
     </Container>
   )

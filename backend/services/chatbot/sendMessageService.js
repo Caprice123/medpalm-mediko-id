@@ -132,112 +132,6 @@ export class SendMessageService extends BaseService {
       aiResponse = 'Sorry, I encountered an error processing your message. Please try again.'
       console.error('AI Service Error:', error)
     }
-
-    // Non-streaming path: Save user message now
-    const userMessage = await prisma.chatbot_messages.create({
-      data: {
-        conversation_id: conversationId,
-        sender_type: 'user',
-        mode_type: null,
-        content: message,
-        credits_used: 0
-      }
-    })
-
-    // Save AI message
-    const aiMessage = await prisma.chatbot_messages.create({
-      data: {
-        conversation_id: conversationId,
-        sender_type: 'ai',
-        mode_type: mode,
-        content: aiResponse,
-        credits_used: creditsUsed
-      }
-    })
-
-    // Save sources if any
-    if (sources.length > 0) {
-      await prisma.chatbot_message_sources.createMany({
-        data: sources.map(src => ({
-          message_id: aiMessage.id,
-          source_type: src.sourceType,
-          title: src.title,
-          content: src.content,
-          url: src.url,
-          score: src.score
-        }))
-      })
-    }
-
-    // Deduct credits from user and create transaction
-    if (requiresCredits && creditsUsed > 0) {
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId }
-      })
-
-      const newBalance = userCredit.balance - creditsUsed
-
-      // Update user credit balance
-      await prisma.user_credits.update({
-        where: { user_id: userId },
-        data: { balance: newBalance }
-      })
-
-      // Create credit transaction record
-      await prisma.credit_transactions.create({
-        data: {
-          user_id: userId,
-          user_credit_id: userCredit.id,
-          type: 'deduction',
-          amount: -creditsUsed,
-          balance_before: userCredit.balance,
-          balance_after: newBalance,
-          description: `Chatbot ${mode} mode - 1 pesan`,
-          payment_status: 'completed'
-        }
-      })
-    }
-
-    // Update conversation updated_at
-    await prisma.chatbot_conversations.update({
-      where: { id: conversationId },
-      data: { updated_at: new Date() }
-    })
-
-    // Fetch the complete AI message with sources
-    const completeAiMessage = await prisma.chatbot_messages.findUnique({
-      where: { id: aiMessage.id },
-      include: {
-        chatbot_message_sources: {
-          orderBy: { score: 'desc' }
-        }
-      }
-    })
-
-    return {
-      userMessage: {
-        id: userMessage.id,
-        senderType: userMessage.sender_type,
-        content: userMessage.content,
-        created_at: userMessage.created_at
-      },
-      aiMessage: {
-        id: completeAiMessage.id,
-        senderType: completeAiMessage.sender_type,
-        modeType: completeAiMessage.mode_type,
-        content: completeAiMessage.content,
-        creditsUsed: completeAiMessage.credits_used,
-        sources: completeAiMessage.chatbot_message_sources.map(src => ({
-          id: src.id,
-          sourceType: src.source_type,
-          title: src.title,
-          content: src.content,
-          url: src.url,
-          score: src.score
-        })),
-        created_at: completeAiMessage.created_at
-      }
-    }
   }
 
   /**
@@ -263,6 +157,7 @@ export class SendMessageService extends BaseService {
           sender_type: 'user',
           mode_type: null,
           content: userMessageContent,
+          status: "completed",
           credits_used: 0,
           created_at: new Date()
         }
@@ -274,6 +169,7 @@ export class SendMessageService extends BaseService {
           sender_type: 'ai',
           mode_type: mode,
           content: '', // Empty initially, will be updated
+          status: "streaming",
           credits_used: creditsUsed,
           created_at: new Date()
         }
@@ -407,18 +303,11 @@ export class SendMessageService extends BaseService {
       console.log(`  - Full AI response: ${fullResponseFromAI.length} chars`)
       console.log(`  - Sent to client: ${sentContentToClient.length} chars`)
       console.log(`  - Accumulated buffer: ${accumulatedChunk.length} chars`)
-      console.log(`  - Saving: ${contentToSave.length} chars`)
-      console.log(`  - chunks sent to client: ${sentContentToClient}`)
-      console.log(`  - sent to client: ${contentToSave}`)
-      console.log(`  - response AI: ${fullResponseFromAI}`)
+      console.log(`  - Content to send to frontend: ${contentToSave.length} chars`)
 
-      // UPDATE AI message with final content (already created at start)
-      await prisma.chatbot_messages.update({
-        where: { id: aiMessage.id },
-        data: {
-          content: contentToSave,
-        }
-      })
+      // DON'T save to database yet - let frontend finalize
+      // Message stays in 'streaming' status until frontend calls /finalize
+      console.log('⏸️  Not saving to DB - waiting for frontend to finalize')
 
       // Save sources if any (for Validated mode)
       // Filter to only include sources that are actually cited in the response
@@ -546,6 +435,7 @@ export class SendMessageService extends BaseService {
           sender_type: 'user',
           mode_type: null,
           content: userMessageContent,
+          status: "completed",
           credits_used: 0,
           created_at: new Date()
         }
@@ -557,6 +447,7 @@ export class SendMessageService extends BaseService {
           sender_type: 'ai',
           mode_type: mode,
           content: '', // Empty initially, will be updated
+          status: "streaming",
           credits_used: creditsUsed,
           created_at: new Date()
         }
@@ -810,16 +701,11 @@ export class SendMessageService extends BaseService {
       console.log(`  - Full AI response: ${fullResponseFromAI.length} chars`)
       console.log(`  - Sent to client: ${sentContentToClient.length} chars`)
       console.log(`  - Accumulated buffer: ${accumulatedChunk.length} chars`)
-      console.log(`  - Saving: ${contentToSave.length} chars`)
+      console.log(`  - Content to send to frontend: ${contentToSave.length} chars`)
 
-      // UPDATE AI message with final content (already created at start)
-      await prisma.chatbot_messages.update({
-        where: { id: aiMessage.id },
-        data: {
-          content: contentToSave,
-          updated_at: new Date()
-        }
-      })
+      // DON'T save to database yet - let frontend finalize
+      // Message stays in 'streaming' status until frontend calls /finalize
+      console.log('⏸️  Not saving to DB - waiting for frontend to finalize')
 
       // Save sources/citations if any
       const sources = []
