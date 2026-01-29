@@ -18,10 +18,23 @@ export class GetDiagramHistoryService extends BaseService {
       throw new NotFoundError('Tab not found')
     }
 
-    // Fetch diagrams for this tab
+    // Fetch diagrams for this tab (exclude diagram_data for performance)
     const diagrams = await prisma.skripsi_diagrams.findMany({
       where: {
         tab_id: tabId
+      },
+      select: {
+        id: true,
+        tab_id: true,
+        diagram_type: true,
+        detail_level: true,
+        orientation: true,
+        layout_style: true,
+        description: true,
+        creation_method: true,
+        credits_used: true,
+        created_at: true
+        // diagram_data excluded for performance
       },
       orderBy: {
         created_at: 'desc' // Newest first
@@ -37,9 +50,10 @@ export class GetDiagramHistoryService extends BaseService {
       orientation: diagram.orientation,
       layoutStyle: diagram.layout_style,
       description: diagram.description,
-      diagramData: JSON.parse(diagram.diagram_data),
+      creationMethod: diagram.creation_method,
       creditsUsed: parseFloat(diagram.credits_used.toString()),
       createdAt: diagram.created_at.toISOString()
+      // diagramData excluded - use detail endpoint to fetch
     }))
 
     return serializedDiagrams

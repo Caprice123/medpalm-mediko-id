@@ -24,6 +24,7 @@ function OscePracticeSettingsModal({ onClose }) {
       osce_practice_access_type: 'credits',
       osce_practice_credit_cost: '5',
       osce_practice_default_model: 'gemini-1.5-pro',
+      osce_practice_context_message_count: '10',
       osce_practice_chat_completion_prompt: '',
       osce_practice_chunk_analysis_prompt: '',
       osce_practice_evaluation_prompt: ''
@@ -47,6 +48,7 @@ function OscePracticeSettingsModal({ onClose }) {
         "osce_practice_credit_cost",
         "osce_practice_is_active",
         "osce_practice_default_model",
+        "osce_practice_context_message_count",
         "osce_practice_chat_completion_prompt",
         "osce_practice_chunk_analysis_prompt",
         "osce_practice_evaluation_prompt"
@@ -149,7 +151,18 @@ function OscePracticeSettingsModal({ onClose }) {
           <HintText>Jumlah kredit yang dibutuhkan per sesi praktek OSCE</HintText>
         </FormGroup>
       )}
-      
+
+      <FormGroup>
+        <TextInput
+          label="Jumlah Pesan Konteks"
+          type="number"
+          placeholder="10"
+          value={form.values.osce_practice_context_message_count}
+          onChange={(e) => form.setFieldValue('osce_practice_context_message_count', e.target.value)}
+        />
+        <HintText>Jumlah pesan sebelumnya yang digunakan sebagai konteks dalam percakapan OSCE (default: 50)</HintText>
+      </FormGroup>
+
       <FormGroup>
         <Textarea
           label="Prompt untuk Chat Completion"

@@ -12,7 +12,6 @@ export class GetConstantsService extends BaseService {
 
     const constants = await prisma.constants.findMany({
       where,
-      orderBy: { key: 'asc' }
     })
 
     // Transform to key-value object

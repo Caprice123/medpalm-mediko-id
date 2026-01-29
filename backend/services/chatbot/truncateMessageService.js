@@ -35,7 +35,6 @@ export class TruncateMessageService {
       where: { id: messageId },
       data: {
         content: truncatedContent,
-        updated_at: new Date()
       }
     })
 

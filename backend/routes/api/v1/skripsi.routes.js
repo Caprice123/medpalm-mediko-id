@@ -24,10 +24,14 @@ router.delete('/skripsi/sets/:id', asyncHandler(SkripsiSetsController.deleteSet)
 // Skripsi Tabs - under /skripsi/tabs
 router.get('/skripsi/tabs/:tabId/messages', asyncHandler(SkripsiTabsController.getMessages))
 router.post('/skripsi/tabs/:id/messages', asyncHandler(SkripsiTabsController.sendMessage))
+router.patch('/skripsi/tabs/:tabId/messages/:messageId/truncate', asyncHandler(SkripsiTabsController.truncateMessage))
+router.put('/skripsi/tabs/:tabId/diagram', asyncHandler(SkripsiTabsController.saveDiagram))
 
 // Diagram Builder - under /skripsi/tabs/:tabId/diagrams and /skripsi/diagrams/:diagramId
 router.post('/skripsi/tabs/:tabId/diagrams', asyncHandler(SkripsiDiagramsController.generateDiagram))
+router.post('/skripsi/tabs/:tabId/diagrams/manual', asyncHandler(SkripsiDiagramsController.createDiagram))
 router.get('/skripsi/tabs/:tabId/diagrams', asyncHandler(SkripsiDiagramsController.getDiagramHistory))
+router.get('/skripsi/diagrams/:diagramId', asyncHandler(SkripsiDiagramsController.getDiagramDetail))
 router.put('/skripsi/diagrams/:diagramId', asyncHandler(SkripsiDiagramsController.updateDiagram))
 
 export default router

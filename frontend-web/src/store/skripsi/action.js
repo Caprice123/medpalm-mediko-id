@@ -548,6 +548,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
   }
 }
 
+
 // ============= Diagram Builder =============
 
 export const generateDiagram = (tabId, diagramConfig) => async (dispatch) => {
@@ -557,12 +558,12 @@ export const generateDiagram = (tabId, diagramConfig) => async (dispatch) => {
     const route = Endpoints.api.skripsi + `/tabs/${tabId}/diagrams`
     const response = await postWithToken(route, diagramConfig)
 
-    const { diagramId, diagram } = response.data.data
+    const { data } = response.data
 
     // Refresh diagram history after generation
     await dispatch(fetchDiagramHistory(tabId))
 
-    return { diagramId, diagram }
+    return data
   } catch (err) {
     handleApiError(err, dispatch)
     throw err
@@ -591,6 +592,22 @@ export const fetchDiagramHistory = (tabId) => async (dispatch) => {
   }
 }
 
+export const fetchDiagramDetail = (diagramId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isDiagramDetailLoading', value: true }))
+
+    const route = Endpoints.api.skripsi + `/diagrams/${diagramId}`
+    const response = await getWithToken(route)
+
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  } finally {
+    dispatch(setLoading({ key: 'isDiagramDetailLoading', value: false }))
+  }
+}
+
 export const updateDiagram = (diagramId, diagramData) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUpdatingDiagram', value: true }))
@@ -604,5 +621,40 @@ export const updateDiagram = (diagramId, diagramData) => async (dispatch) => {
     throw err
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDiagram', value: false }))
+  }
+}
+
+export const saveTabDiagram = (tabId, diagramData) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isSavingTabDiagram', value: true }))
+
+    const route = Endpoints.api.skripsi + `/tabs/${tabId}/diagram`
+    const response = await putWithToken(route, { diagramData })
+
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  } finally {
+    dispatch(setLoading({ key: 'isSavingTabDiagram', value: false }))
+  }
+}
+
+export const createDiagram = (tabId, diagramData, diagramConfig = {}, creationMethod = 'manual') => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isCreatingDiagram', value: true }))
+
+    const route = Endpoints.api.skripsi + `/tabs/${tabId}/diagrams/manual`
+    const response = await postWithToken(route, { diagramData, diagramConfig, creationMethod })
+
+    // Refresh diagram history after creation
+    await dispatch(fetchDiagramHistory(tabId))
+
+    return response.data.data
+  } catch (err) {
+    handleApiError(err, dispatch)
+    throw err
+  } finally {
+    dispatch(setLoading({ key: 'isCreatingDiagram', value: false }))
   }
 }
