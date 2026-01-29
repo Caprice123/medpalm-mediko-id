@@ -252,6 +252,7 @@ export const NavigationButtons = styled.div`
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
+  justify-content: center;
 
   @media (max-width: 768px) {
     flex-direction: column;

@@ -328,13 +328,6 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
       )}
 
       {/* Submit Answer Button */}
-      {!showFeedback && (
-        <ShowAnswerSection>
-          <Button variant="primary" onClick={handleSubmitAnswer} disabled={!currentAnswer.trim()}>
-            Submit Jawaban
-          </Button>
-        </ShowAnswerSection>
-      )}
 
       {/* Navigation Buttons */}
       <NavigationButtons>
@@ -342,10 +335,15 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
           variant="secondary"
           onClick={handlePrevious}
           disabled={currentCardIndex === 0}
-        >
+          >
           ← Sebelumnya
         </Button>
 
+        {!showFeedback && (
+            <Button variant="primary" onClick={handleSubmitAnswer} disabled={!currentAnswer.trim()}>
+                Submit Jawaban
+            </Button>
+        )}
         {isLastCard ? (
           <Button
             variant="primary"

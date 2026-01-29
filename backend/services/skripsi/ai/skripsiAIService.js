@@ -36,9 +36,18 @@ export class SkripsiAIService extends BaseService {
       'skripsi_is_active',
       `skripsi_${mode}_enabled`,
       `skripsi_${mode}_model`,
-      `skripsi_${mode}_prompt`,
       `skripsi_${mode}_context_messages`
     ]
+
+    // For diagram_builder, use separate format and content prompts
+    if (mode === 'diagram_builder') {
+      constantKeys.push(
+        `skripsi_${mode}_format_prompt`,
+        `skripsi_${mode}_content_prompt`
+      )
+    } else {
+      constantKeys.push(`skripsi_${mode}_prompt`)
+    }
 
     const constants = await prisma.constants.findMany({
       where: {
@@ -62,9 +71,22 @@ export class SkripsiAIService extends BaseService {
     }
 
     // Get system prompt and model
-    const systemPrompt = constantsMap[`skripsi_${mode}_prompt`]
-    if (!systemPrompt) {
-      throw new ValidationError(`System prompt not configured for ${mode}`)
+    let systemPrompt
+    if (mode === 'diagram_builder') {
+      const formatPrompt = constantsMap[`skripsi_${mode}_format_prompt`]
+      const contentPrompt = constantsMap[`skripsi_${mode}_content_prompt`]
+
+      if (!formatPrompt || !contentPrompt) {
+        throw new ValidationError(`System prompts not configured for ${mode}`)
+      }
+
+      // Combine both prompts for chat interface
+      systemPrompt = `${contentPrompt}\n\n${formatPrompt}`
+    } else {
+      systemPrompt = constantsMap[`skripsi_${mode}_prompt`]
+      if (!systemPrompt) {
+        throw new ValidationError(`System prompt not configured for ${mode}`)
+      }
     }
 
     const modelName = constantsMap[`skripsi_${mode}_model`] || 'gemini-2.0-flash-exp'
