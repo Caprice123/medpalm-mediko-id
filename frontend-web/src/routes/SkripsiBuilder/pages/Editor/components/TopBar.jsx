@@ -1,5 +1,4 @@
 import React, { useState, memo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '@store/store'
 import { updateSetInfo } from '@store/skripsi/action'
 import { FaArrowLeft, FaEdit, FaCheck, FaTimes, FaSave, FaFileWord } from 'react-icons/fa'
@@ -16,15 +15,10 @@ import {
 } from '../Editor.styles'
 import Button from '@components/common/Button'
 
-const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, onExportWord }) => {
-  const navigate = useNavigate()
+const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, onExportWord, onBackClick }) => {
   const dispatch = useAppDispatch()
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [editedTitle, setEditedTitle] = useState('')
-
-  const handleBackClick = () => {
-    navigate('/sets')
-  }
 
   const handleStartEditTitle = () => {
     setEditedTitle(currentSet.title)
@@ -62,7 +56,7 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
 
   return (
     <StyledTopBar>
-      <Button onClick={handleBackClick}>
+      <Button onClick={onBackClick}>
         <FaArrowLeft /> Kembali
       </Button>
       {isEditingTitle ? (

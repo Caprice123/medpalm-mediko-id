@@ -88,7 +88,6 @@ export const FormContent = styled.div`
 
 export const ConfigSection = styled.div`
   overflow: hidden;
-  margin-bottom: 16px;
 `;
 
 export const ConfigHeader = styled.div`
@@ -258,6 +257,13 @@ export const GenerateButton = styled.button`
     padding: 0.75rem;
     font-size: 0.875rem;
   }
+`;
+
+export const GenerateButtonWrapper = styled.div`
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 // History Subtab Styles

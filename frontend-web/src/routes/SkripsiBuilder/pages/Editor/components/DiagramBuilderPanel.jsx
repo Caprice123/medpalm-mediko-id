@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@store/store';
-import { generateDiagram, fetchDiagramHistory, fetchDiagramDetail, updateDiagram, saveTabDiagram, createDiagram } from '@store/skripsi/action';
+import { generateDiagram, fetchDiagramHistory, fetchDiagramDetail, updateDiagram, createDiagram } from '@store/skripsi/action';
 import { selectDiagramsForActiveTab } from '@store/skripsi/reducer';
 import { convertToExcalidrawElements, Excalidraw, exportToBlob, exportToSvg, MainMenu } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
@@ -45,6 +45,7 @@ import {
   PreviewToolbar,
   ToolbarBtn,
   ExcalidrawWrapper,
+  GenerateButtonWrapper,
 } from './DiagramBuilderPanel.styles';
 import Button from '@components/common/Button'
 
@@ -61,6 +62,8 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
   const [orientation, setOrientation] = useState({ value: 'vertical', label: 'Vertikal ↓' });
   const [layoutStyle, setLayoutStyle] = useState({ value: 'branch', label: 'Branch - Bercabang' });
   const [description, setDescription] = useState('');
+  const hasChanges = useRef(false)
+  const saveButton = useRef(null)
 
   // Dropdown options
   const detailLevelOptions = [
@@ -169,7 +172,6 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
   // Save current diagram state back to history (after user edits)
   const handleSaveDiagram = useCallback(async () => {
     if (!excalidrawAPI) {
-      alert('Tidak ada diagram yang dimuat untuk disimpan');
       return;
     }
 
@@ -180,7 +182,6 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
 
       // Check if there are any elements to save
       if (!elements || elements.length === 0) {
-        alert('Tidak ada diagram untuk disimpan');
         return;
       }
 
@@ -216,6 +217,21 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       alert('Gagal menyimpan diagram. Silakan coba lagi.');
     }
   }, [excalidrawAPI, currentDiagramId, currentTab, dispatch]);
+
+  
+  // Auto-save every 30 seconds (silent - no alert)
+    useEffect(() => {
+      const autoSaveInterval = setInterval(async () => {
+        // Save diagram data if on diagram builder tab and has changes
+        if (hasChanges.current && saveButton.current) {
+            saveButton.current.click()
+        }
+      }, 5_000) // 30 seconds
+  
+      return () => {
+        clearInterval(autoSaveInterval)
+      }
+    }, [dispatch])
 
   // Update zoom percentage display
   useEffect(() => {
@@ -430,13 +446,17 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
                   </TipsContent>
                 </TipsBox>
               </ConfigBody>
+
+              <GenerateButtonWrapper>
                 <Button
-                variant="primary"
-                onClick={handleGenerate}
-                disabled={isGenerating || !description.trim()}
+                  variant="primary"
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !description.trim()}
+                  style={{ width: '100%', maxWidth: '100%' }}
                 >
-                {isGenerating ? '⏳ Generating...' : '🎨 Buat Diagram dengan AI'}
+                  {isGenerating ? '⏳ Generating...' : '🎨 Buat Diagram dengan AI'}
                 </Button>
+              </GenerateButtonWrapper>
             </ConfigSection>
 
           </FormContent>
@@ -470,27 +490,40 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
                   onClick={() => handleLoadDiagram(diagram)}
                 >
                   <HistoryCardHeader>
-                    <HistoryIcon>📊</HistoryIcon>
+                    <HistoryIcon>{diagram.diagramType ? '📊' : '✏️'}</HistoryIcon>
                     <HistoryCardInfo>
                       <HistoryCardTitle>
-                        {diagram.diagramType}
+                        {diagram.diagramType || 'Manual Diagram'}
                       </HistoryCardTitle>
                       <HistoryCardMeta>
+                        {diagram.diagramType && (
+                          <>
+                            {diagram.detailLevel && (
+                              <HistoryCardMetaItem>
+                                {diagram.detailLevel}
+                              </HistoryCardMetaItem>
+                            )}
+                            {diagram.orientation && (
+                              <HistoryCardMetaItem>
+                                {diagram.orientation}
+                              </HistoryCardMetaItem>
+                            )}
+                            {diagram.layoutStyle && (
+                              <HistoryCardMetaItem>
+                                {diagram.layoutStyle}
+                              </HistoryCardMetaItem>
+                            )}
+                          </>
+                        )}
                         <HistoryCardMetaItem>
-                          {diagram.detailLevel}
-                        </HistoryCardMetaItem>
-                        <HistoryCardMetaItem>
-                          {diagram.orientation}
-                        </HistoryCardMetaItem>
-                        <HistoryCardMetaItem>
-                          {diagram.layoutStyle}
+                          {diagram.creationMethod === 'manual' ? '✏️ Manual' : '🤖 AI'}
                         </HistoryCardMetaItem>
                       </HistoryCardMeta>
                     </HistoryCardInfo>
                   </HistoryCardHeader>
 
                   <HistoryCardDescription>
-                    {diagram.description}
+                    {diagram.description || 'No description'}
                   </HistoryCardDescription>
 
                   <HistoryCardFooter>
@@ -531,7 +564,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
           <Button variant="secondary" size="small" onClick={handleZoomIn}>
             🔍+
           </Button>
-          <Button variant="secondary" size="small" onClick={handleSaveDiagram}>
+          <Button ref={saveButton} variant="secondary" size="small" onClick={handleSaveDiagram}>
             💾 Save
           </Button>
           <Button variant="secondary" size="small" onClick={handleExportPng}>
@@ -547,6 +580,9 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
             excalidrawAPI={(api) => {
               console.log('Excalidraw API ready:', !!api)
               setExcalidrawAPI(api)
+            }}
+            onChange={() => {
+                hasChanges.current = true
             }}
           >
             <MainMenu>

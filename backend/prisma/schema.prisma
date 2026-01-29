@@ -1061,22 +1061,24 @@ model skripsi_messages {
 }
 
 model skripsi_diagrams {
-  id           Int      @id @default(autoincrement())
-  tab_id       Int
-  diagram_type String // 'flowchart', 'mindmap', etc.
-  detail_level String // 'simple', 'medium', 'detailed'
-  orientation  String // 'vertical', 'horizontal'
-  layout_style String // 'branch', 'linear', 'tree'
-  description  String   @db.Text // User's input description
-  diagram_data String   @db.Text // Excalidraw JSON
-  credits_used Decimal  @default(0) @db.Decimal(10, 2)
-  created_at   DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  tab_id          Int
+  diagram_type    String?  // 'flowchart', 'mindmap', etc. (nullable for manual diagrams)
+  detail_level    String?  // 'simple', 'medium', 'detailed' (nullable for manual diagrams)
+  orientation     String?  // 'vertical', 'horizontal' (nullable for manual diagrams)
+  layout_style    String?  // 'branch', 'linear', 'tree' (nullable for manual diagrams)
+  description     String?  @db.Text // User's input description (nullable for manual diagrams)
+  diagram_data    String   @db.Text // Excalidraw JSON
+  creation_method String   @default("ai_generated") // 'ai_generated' or 'manual'
+  credits_used    Decimal  @default(0) @db.Decimal(10, 2)
+  created_at      DateTime @default(now())
 
   skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id], onDelete: Cascade)
 
   @@index([tab_id])
   @@index([diagram_type])
   @@index([created_at])
+  @@index([creation_method])
 }
 
 model skripsi_constants {
