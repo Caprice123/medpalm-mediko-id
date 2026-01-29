@@ -204,7 +204,7 @@ function Dashboard() {
       }
 
       if (sessionType == "chatbot") {
-        navigate("/chatbot")
+        navigate("/chat-assistant")
         return
       }
 

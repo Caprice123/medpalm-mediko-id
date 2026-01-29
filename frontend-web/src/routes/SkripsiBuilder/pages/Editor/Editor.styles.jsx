@@ -1,11 +1,14 @@
 import styled from 'styled-components'
 
+export const Wrapper = styled.div`
+    background: #f0fdfa;
+`
+
 export const Container = styled.div`
   height: calc(100vh - 90px);
   max-height: calc(100vh - 90px);
   max-width: 1200px;
   margin: 0 auto;
-  background: #f0fdfa;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -226,7 +229,6 @@ export const TabBar = styled.div`
   border-bottom: 1px solid #e5e7eb;
   padding: 0 24px;
   display: flex;
-  gap: 4px;
   overflow-x: auto;
 
   &::-webkit-scrollbar {

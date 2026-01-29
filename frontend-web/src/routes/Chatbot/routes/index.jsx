@@ -10,7 +10,7 @@ const withSuspense = (Component) => (
 );
 
 export class ChatbotRoute {
-    static moduleRoute = "/chatbot"
+    static moduleRoute = "/chat-assistant"
 }
 
 export const chatbotRoutes = [

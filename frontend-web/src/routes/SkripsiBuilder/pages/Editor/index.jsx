@@ -6,7 +6,7 @@ import { fetchSet, switchTab, saveSetContent } from '@store/skripsi/action'
 import { upload } from '@store/common/action'
 import { convertHtmlToDocxReliable } from '@utils/htmlToDocx'
 import { blocksToHTML, htmlToBlocks } from '@utils/blockNoteConversion'
-import { Container, EditorArea, LoadingState } from './Editor.styles'
+import { Container, EditorArea, LoadingState, Wrapper } from './Editor.styles'
 import TopBar from './components/TopBar'
 import TabBar from './components/TabBar'
 import ChatPanel from './components/ChatPanel'
@@ -203,54 +203,56 @@ const SkripsiEditor = () => {
   }
 
   return (
-    <Container>
-      <TopBar
-        currentSet={currentSet}
-        hasUnsavedChanges={hasUnsavedChanges}
-        isSavingContent={isSavingContent}
-        onSave={handleSave}
-        onExportWord={handleExportWord}
-        onBackClick={handleBackClick}
-      />
-
-      <TabBar
-        tabs={tabs}
-        currentTabId={currentTabId}
-        onTabSwitch={handleTabSwitch}
-      />
-
-      <EditorArea>
-        {/* Keep both panels mounted to preserve state, toggle with CSS */}
-        <DiagramBuilderPanel
-          currentTab={currentTab}
-          style={{ display: currentTab?.tabType === 'diagram_builder' ? 'flex' : 'none' }}
+    <Wrapper>
+        <Container>
+        <TopBar
+            currentSet={currentSet}
+            hasUnsavedChanges={hasUnsavedChanges}
+            isSavingContent={isSavingContent}
+            onSave={handleSave}
+            onExportWord={handleExportWord}
+            onBackClick={handleBackClick}
         />
 
-        <ChatPanel
-          currentTab={currentTab}
-          style={{ display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none' }}
+        <TabBar
+            tabs={tabs}
+            currentTabId={currentTabId}
+            onTabSwitch={handleTabSwitch}
         />
 
-        <EditorPanel
-          editorContent={editorContent}
-          onContentChange={handleContentChange}
-          onImageUpload={handleImageUpload}
-          hasUnsavedChanges={hasUnsavedChanges}
-          isSavingContent={isSavingContent}
-          onSave={handleSave}
-          onExportWord={handleExportWord}
-          isLoadingContent={isLoadingContent}
-        />
-      </EditorArea>
+        <EditorArea>
+            {/* Keep both panels mounted to preserve state, toggle with CSS */}
+            <DiagramBuilderPanel
+            currentTab={currentTab}
+            style={{ display: currentTab?.tabType === 'diagram_builder' ? 'flex' : 'none' }}
+            />
 
-      <UnsavedChangesDialog
-        isOpen={showUnsavedDialog}
-        onSaveAndLeave={handleSaveAndLeave}
-        onLeaveWithoutSaving={handleLeaveWithoutSaving}
-        onCancel={handleCancelNavigation}
-        isSaving={isSavingBeforeLeave}
-      />
-    </Container>
+            <ChatPanel
+            currentTab={currentTab}
+            style={{ display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none' }}
+            />
+
+            <EditorPanel
+            editorContent={editorContent}
+            onContentChange={handleContentChange}
+            onImageUpload={handleImageUpload}
+            hasUnsavedChanges={hasUnsavedChanges}
+            isSavingContent={isSavingContent}
+            onSave={handleSave}
+            onExportWord={handleExportWord}
+            isLoadingContent={isLoadingContent}
+            />
+        </EditorArea>
+
+        <UnsavedChangesDialog
+            isOpen={showUnsavedDialog}
+            onSaveAndLeave={handleSaveAndLeave}
+            onLeaveWithoutSaving={handleLeaveWithoutSaving}
+            onCancel={handleCancelNavigation}
+            isSaving={isSavingBeforeLeave}
+        />
+        </Container>
+    </Wrapper>
   )
 }
 
