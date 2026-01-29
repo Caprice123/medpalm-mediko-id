@@ -33,6 +33,8 @@ export class UpdateConversationService extends BaseService {
     return {
       id: updatedConversation.id,
       topic: updatedConversation.topic,
+      lastMessage: updatedConversation.last_message || null,
+      createdAt: updatedConversation.created_at,
       updatedAt: updatedConversation.updated_at
     }
   }

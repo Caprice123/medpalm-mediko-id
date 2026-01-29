@@ -71,6 +71,9 @@ const ConversationList = ({
               {formatTime(conversation.updatedAt || conversation.createdAt)}
             </ConversationTime>
           </ConversationHeader>
+          {conversation.lastMessage && (
+            <ConversationPreview>{conversation.lastMessage}</ConversationPreview>
+          )}
         </ConversationItem>
       ))}
     </Container>

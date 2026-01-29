@@ -48,6 +48,15 @@ export class FinalizeMessageService {
         }
       })
 
+      // Update conversation's last_message (trimmed to 50 chars)
+      await tx.chatbot_conversations.update({
+        where: { id: conversationId },
+        data: {
+          last_message: content.substring(0, 50),
+          updated_at: new Date()
+        }
+      })
+
       console.log(`✅ Message finalized as '${updatedMessage.status}'`)
       return {
         success: true,

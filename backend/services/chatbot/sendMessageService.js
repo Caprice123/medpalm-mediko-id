@@ -163,6 +163,15 @@ export class SendMessageService extends BaseService {
         }
       })
 
+      // Update conversation's last_message (trimmed to 50 chars)
+      await prisma.chatbot_conversations.update({
+        where: { id: conversationId },
+        data: {
+          last_message: userMessageContent.substring(0, 50),
+          updated_at: new Date()
+        }
+      })
+
       aiMessage = await prisma.chatbot_messages.create({
         data: {
           conversation_id: conversationId,
@@ -438,6 +447,15 @@ export class SendMessageService extends BaseService {
           status: "completed",
           credits_used: 0,
           created_at: new Date()
+        }
+      })
+
+      // Update conversation's last_message (trimmed to 50 chars)
+      await prisma.chatbot_conversations.update({
+        where: { id: conversationId },
+        data: {
+          last_message: userMessageContent.substring(0, 50),
+          updated_at: new Date()
         }
       })
 

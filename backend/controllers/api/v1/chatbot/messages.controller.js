@@ -168,6 +168,15 @@ class MessageController {
       }
     })
 
+    // Update conversation's last_message (trimmed to 50 chars)
+    await prisma.chatbot_conversations.update({
+      where: { id: conversationId },
+      data: {
+        last_message: content.substring(0, 50),
+        updated_at: new Date()
+      }
+    })
+
     // Fetch the messages with proper timestamps
     const userMsgWithTimestamp = savedUserMessage ? await prisma.chatbot_messages.findUnique({
       where: { id: savedUserMessage.id }

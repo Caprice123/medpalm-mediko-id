@@ -21,6 +21,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const dispatch = useDispatch()
 
   const {
+    conversations,
     currentConversation,
     currentMode,
     availableModes,
@@ -29,6 +30,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     messagesByConversation,
     streamingStateByConversation
   } = useSelector(state => state.chatbot)
+  console.log(currentConversation)
 
   // Get messages for the current conversation using selector
   const messages = useSelector(selectMessagesForCurrentConversation)
@@ -80,6 +82,12 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         // Messages already cached - we've visited this conversation before
         // No need to fetch anything, just use cached data
         console.log(`✅ Using cached data for conversation ${conversationId} (${cachedMessages.length} messages)`)
+
+        // Find the conversation in the list and set it as current (to update the title)
+        const conversation = conversations.find(c => c.id === conversationId)
+        if (conversation) {
+          dispatch(actions.setCurrentConversation(conversation))
+        }
 
         // Set active conversation ID so selector returns the cached messages
         dispatch(actions.setActiveConversationId(conversationId))

@@ -49,7 +49,7 @@ export class GetConversationsService extends BaseService {
     const transformedConversations = paginatedConversations.map(conv => ({
       id: conv.id,
       topic: conv.topic,
-      lastMessage: conv.chatbot_messages[0] || null,
+      lastMessage: conv.last_message || null,
       createdAt: conv.created_at,
       updatedAt: conv.updated_at
     }))

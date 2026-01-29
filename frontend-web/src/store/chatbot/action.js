@@ -337,6 +337,17 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
               createdAt: response.data.data.createdAt
             }
           }))
+
+          // Update conversation's lastMessage in the conversations list
+          const conversation = state.chatbot.conversations.find(c => c.id === conversationId)
+          if (conversation) {
+            const lastMessage = response.data.data.content.substring(0, 50)
+            dispatch(updateConversation({
+              ...conversation,
+              lastMessage,
+              updatedAt: new Date().toISOString()
+            }))
+          }
         }
 
       } catch (err) {
@@ -442,6 +453,18 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
                   ...finalData.aiMessage,
                   content: fullContent // Use full content
                 }
+              }))
+            }
+
+            // Update conversation's lastMessage in the conversations list
+            const state = getState()
+            const conversation = state.chatbot.conversations.find(c => c.id === conversationId)
+            if (conversation) {
+              const lastMessage = fullContent.substring(0, 50)
+              dispatch(updateConversation({
+                ...conversation,
+                lastMessage,
+                updatedAt: new Date().toISOString()
               }))
             }
 
