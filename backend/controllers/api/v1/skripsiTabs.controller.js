@@ -1,5 +1,7 @@
 import { GetTabMessagesService } from '#services/skripsi/getTabMessagesService'
 import { SendMessageService } from '#services/skripsi/sendMessageService'
+import { TruncateMessageService } from '#services/skripsi/truncateMessageService'
+import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
 import prisma from '#prisma/client'
 
 class SkripsiTabsController {
@@ -15,7 +17,6 @@ class SkripsiTabsController {
       limit: parseInt(limit) || 50,
       beforeMessageId: beforeMessageId ? parseInt(beforeMessageId) : null
     })
-    console.log(result.messages)
 
     return res.status(200).json({
       data: result.messages,
@@ -90,6 +91,71 @@ class SkripsiTabsController {
         res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
         res.end()
       }
+    }
+  }
+
+  // Truncate message content when user stops streaming
+  async truncateMessage(req, res) {
+    const userId = req.user.id
+    const { tabId, messageId } = req.params
+    const { characterCount } = req.body
+
+    if (!characterCount || characterCount < 0) {
+      return res.status(400).json({
+        message: 'Invalid character count'
+      })
+    }
+
+    try {
+      const result = await TruncateMessageService.call({
+        userId,
+        tabId: parseInt(tabId),
+        messageId: parseInt(messageId),
+        characterCount: parseInt(characterCount)
+      })
+
+      return res.status(200).json({
+        message: 'Message truncated successfully',
+        data: {
+          id: result.message.id,
+          content: result.message.content,
+          updatedAt: result.message.updated_at.toISOString()
+        }
+      })
+    } catch (error) {
+      return res.status(404).json({
+        message: error.message
+      })
+    }
+  }
+
+  // Save/update diagram data to tab content (for auto-save and post-generation)
+  async saveDiagram(req, res) {
+    const userId = req.user.id
+    const { tabId } = req.params
+    const { diagramData } = req.body
+
+    if (!diagramData) {
+      return res.status(400).json({
+        message: 'Diagram data is required'
+      })
+    }
+
+    try {
+      const result = await SaveTabDiagramService.call({
+        tabId: parseInt(tabId),
+        userId,
+        diagramData
+      })
+
+      return res.status(200).json({
+        message: 'Diagram saved successfully',
+        data: result
+      })
+    } catch (error) {
+      return res.status(error.message === 'Tab not found or access denied' ? 404 : 400).json({
+        message: error.message
+      })
     }
   }
 }

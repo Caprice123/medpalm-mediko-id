@@ -1,3 +1,4 @@
+import prisma from '#prisma/client'
 import { GenerateDiagramService } from '#services/skripsi/generateDiagramService'
 import { GetDiagramHistoryService } from '#services/skripsi/getDiagramHistoryService'
 import { UpdateDiagramService } from '#services/skripsi/updateDiagramService'
@@ -31,6 +32,16 @@ class SkripsiDiagramsController {
           diagram: result.diagram
         }
       })
+
+    // const diagram = await prisma.skripsi_diagrams.findFirst({
+    //     where: { id: 10 }
+    // })
+    // res.json({
+    //     data: {
+    //       diagramId: diagram.id,
+    //       diagram: diagram.diagram_data
+    //     }
+    //   }) 
   }
 
   /**
