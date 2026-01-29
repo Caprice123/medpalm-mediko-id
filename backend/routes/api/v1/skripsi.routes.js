@@ -24,6 +24,7 @@ router.delete('/skripsi/sets/:id', asyncHandler(SkripsiSetsController.deleteSet)
 // Skripsi Tabs - under /skripsi/tabs
 router.get('/skripsi/tabs/:tabId/messages', asyncHandler(SkripsiTabsController.getMessages))
 router.post('/skripsi/tabs/:id/messages', asyncHandler(SkripsiTabsController.sendMessage))
+router.post('/skripsi/tabs/:tabId/messages/:messageId/finalize', asyncHandler(SkripsiTabsController.finalizeMessage))
 router.patch('/skripsi/tabs/:tabId/messages/:messageId/truncate', asyncHandler(SkripsiTabsController.truncateMessage))
 router.put('/skripsi/tabs/:tabId/diagram', asyncHandler(SkripsiTabsController.saveDiagram))
 

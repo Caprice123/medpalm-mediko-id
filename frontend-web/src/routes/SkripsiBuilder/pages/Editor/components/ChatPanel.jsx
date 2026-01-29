@@ -99,9 +99,6 @@ const ChatInputSection = memo(({
          prevProps.isStreaming === nextProps.isStreaming
 })
 
-// Track streaming state changes for debugging
-let lastStreamingState = false
-
 const ChatPanel = memo(({ currentTab, style }) => {
   const dispatch = useAppDispatch()
   const chatMessagesRef = useRef(null)
@@ -117,13 +114,17 @@ const ChatPanel = memo(({ currentTab, style }) => {
   const tabLoading = useSelector(selectLoadingForActiveTab)
   const isSendingMessage = tabLoading.isSendingMessage || false
 
-  // Check if there's a streaming message (properly tracked)
-  const isStreaming = messages.some(msg => msg.id && msg.id.toString().startsWith('streaming-'))
+  // Get streaming state from Redux (same pattern as chatbot)
+  const streamingStateByTab = useSelector(state => state.skripsi.streamingStateByTab)
+  const tabStreamingState = currentTab?.id ? (streamingStateByTab[currentTab.id] || null) : null
+
+  // Check if currently streaming using Redux state
+  const isStreaming = !!(tabStreamingState?.isSending || tabStreamingState?.isTyping)
 
   // Debug streaming state changes
   useEffect(() => {
-    console.log(`🔄 Streaming state for tab ${currentTab?.id}:`, isStreaming)
-  }, [isStreaming, currentTab?.id])
+    console.log(`🔄 Streaming state for tab ${currentTab?.id}:`, isStreaming, tabStreamingState)
+  }, [isStreaming, currentTab?.id, tabStreamingState])
 
   // Only scroll to bottom when a NEW message is added or tab changes
   useEffect(() => {
@@ -243,15 +244,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
         onSendMessage={handleSendMessage}
         onStopStreaming={handleStopStreaming}
         isSendingMessage={isSendingMessage}
-        isStreaming={(() => {
-          // Check if there's a streaming message (ID starts with "streaming-") in Redux cache
-          const streaming = messages.some(msg => msg.id && msg.id.toString().startsWith('streaming-')) || false
-          if (streaming !== lastStreamingState) {
-            console.log('🔄 isStreaming changed:', lastStreamingState, '→', streaming)
-            lastStreamingState = streaming
-          }
-          return streaming
-        })()}
+        isStreaming={isStreaming}
       />
     </StyledChatPanel>
   )

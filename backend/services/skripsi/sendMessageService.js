@@ -183,6 +183,51 @@ export class SendMessageService extends BaseService {
     const TYPING_SPEED_MS = 1
 
     try {
+      // CREATE MESSAGE RECORDS FIRST (before streaming)
+      userMessage = await prisma.skripsi_messages.create({
+        data: {
+          tab_id: tabId,
+          sender_type: 'user',
+          content: userMessageContent,
+          status: 'completed',
+          created_at: new Date()
+        }
+      })
+
+      aiMessage = await prisma.skripsi_messages.create({
+        data: {
+          tab_id: tabId,
+          sender_type: 'ai',
+          content: '', // Empty initially
+          status: 'streaming', // Mark as streaming
+          created_at: new Date()
+        }
+      })
+
+      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      try {
+        onStream({
+          type: 'started',
+          data: {
+            userMessage: {
+              id: userMessage.id,
+              senderType: userMessage.sender_type,
+              content: userMessage.content,
+              createdAt: userMessage.created_at.toISOString()
+            },
+            aiMessage: {
+              id: aiMessage.id,
+              senderType: aiMessage.sender_type,
+              content: aiMessage.content,
+              createdAt: aiMessage.created_at.toISOString()
+            }
+          }
+        })
+        console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+      } catch (e) {
+        console.log('Could not send started event - client disconnected')
+      }
+
       // Process Perplexity stream chunks with pacing
       for await (const chunk of stream) {
         // Check if stream was aborted BEFORE processing chunk (client disconnected)
@@ -314,25 +359,14 @@ export class SendMessageService extends BaseService {
       console.log(`  - Full AI response: ${fullResponseFromAI.length} chars`)
       console.log(`  - Sent to client: ${sentContentToClient.length} chars`)
       console.log(`  - Accumulated buffer: ${accumulatedChunk.length} chars`)
-      console.log(`  - Saving: ${contentToSave.length} chars`)
+      console.log(`  - Content to send to frontend: ${contentToSave.length} chars`)
 
-      // Streaming complete - NOW save messages to database and deduct credits
+      // DON'T save to database yet - let frontend finalize
+      // Message stays in 'streaming' status until frontend calls /finalize
+      console.log('⏸️  Not saving to DB - waiting for frontend to finalize')
+
+      // Streaming complete - deduct credits
       try {
-        userMessage = await prisma.skripsi_messages.create({
-          data: {
-            tab_id: tabId,
-            sender_type: 'user',
-            content: userMessageContent
-          }
-        })
-
-        aiMessage = await prisma.skripsi_messages.create({
-          data: {
-            tab_id: tabId,
-            sender_type: 'ai',
-            content: contentToSave
-          }
-        })
 
         // Deduct credits if cost > 0
         if (messageCost > 0) {
@@ -429,6 +463,51 @@ export class SendMessageService extends BaseService {
     const TYPING_SPEED_MS = 1
 
     try {
+      // CREATE MESSAGE RECORDS FIRST (before streaming)
+      userMessage = await prisma.skripsi_messages.create({
+        data: {
+          tab_id: tabId,
+          sender_type: 'user',
+          content: userMessageContent,
+          status: 'completed',
+          created_at: new Date()
+        }
+      })
+
+      aiMessage = await prisma.skripsi_messages.create({
+        data: {
+          tab_id: tabId,
+          sender_type: 'ai',
+          content: '', // Empty initially
+          status: 'streaming', // Mark as streaming
+          created_at: new Date()
+        }
+      })
+
+      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      try {
+        onStream({
+          type: 'started',
+          data: {
+            userMessage: {
+              id: userMessage.id,
+              senderType: userMessage.sender_type,
+              content: userMessage.content,
+              createdAt: userMessage.created_at.toISOString()
+            },
+            aiMessage: {
+              id: aiMessage.id,
+              senderType: aiMessage.sender_type,
+              content: aiMessage.content,
+              createdAt: aiMessage.created_at.toISOString()
+            }
+          }
+        })
+        console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+      } catch (e) {
+        console.log('Could not send started event - client disconnected')
+      }
+
       // Process Gemini stream chunks with pacing
       for await (const chunk of stream) {
         // Check if stream was aborted BEFORE processing chunk (client disconnected)
@@ -523,23 +602,12 @@ export class SendMessageService extends BaseService {
       console.log(`  - sent to client: ${contentToSave}`)
       console.log(`  - response AI: ${fullResponseFromAI}`)
 
-      // Streaming complete - NOW save messages to database and deduct credits
-      try {
-        userMessage = await prisma.skripsi_messages.create({
-          data: {
-            tab_id: tabId,
-            sender_type: 'user',
-            content: userMessageContent
-          }
-        })
+      // DON'T save to database yet - let frontend finalize
+      // Message stays in 'streaming' status until frontend calls /finalize
+      console.log('⏸️  Not saving to DB - waiting for frontend to finalize')
 
-        aiMessage = await prisma.skripsi_messages.create({
-          data: {
-            tab_id: tabId,
-            sender_type: 'ai',
-            content: contentToSave
-          }
-        })
+      // Streaming complete - deduct credits
+      try {
 
         // Deduct credits if cost > 0
         if (messageCost > 0) {

@@ -7,6 +7,7 @@ const initialState = {
   currentTab: null,
   messagesByTab: {}, // Store messages per tab ID: { [tabId]: [...messages] }
   diagramsByTab: {}, // Store diagrams per tab ID: { [tabId]: [...diagrams] }
+  streamingStateByTab: {}, // Store streaming state per tab: { [tabId]: { isSending, isTyping, displayedContent, etc. } }
   activeTabId: null, // Track which tab is currently active
   loadingByTab: {}, // Store loading states per tab: { [tabId]: { isSendingMessage: false } }
   loading: {
@@ -145,6 +146,33 @@ const skripsiSlice = createSlice({
       if (state.activeTabId) {
         state.messagesByTab[state.activeTabId] = []
       }
+    },
+    // Streaming state actions per tab
+    setStreamingState: (state, action) => {
+      const { tabId, ...streamingData } = action.payload
+      if (!state.streamingStateByTab[tabId]) {
+        state.streamingStateByTab[tabId] = {
+          isSending: false,
+          isTyping: false,
+          userStopped: false,
+          userMessage: null,
+          streamingMessageId: null,
+          optimisticUserId: null,
+          realMessageId: null,
+          realUserMessageId: null,
+          displayedContent: '',
+          displayedLength: 0
+        }
+      }
+      // Merge new data into existing state
+      state.streamingStateByTab[tabId] = {
+        ...state.streamingStateByTab[tabId],
+        ...streamingData
+      }
+    },
+    clearStreamingState: (state, action) => {
+      const tabId = action.payload
+      delete state.streamingStateByTab[tabId]
     },
     setLoading: (state, action) => {
       const { key, value } = action.payload

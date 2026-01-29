@@ -1054,12 +1054,15 @@ model skripsi_messages {
   tab_id      Int
   sender_type String // 'user' or 'ai'
   content     String   @db.Text
+  status      String   @default("streaming") // 'streaming', 'completed', 'truncated'
   created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 
   skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id], onDelete: Cascade)
 
   @@index([tab_id])
   @@index([sender_type])
+  @@index([status])
 }
 
 model skripsi_diagrams {
