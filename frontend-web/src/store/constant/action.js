@@ -22,8 +22,6 @@ export const fetchConstants = () => async (dispatch, getState) => {
     const { data } = response.data
     dispatch(setConstants(data))
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListConstantsLoading', value: false }))
   }
@@ -34,8 +32,6 @@ export const updateConstants = (constants) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUpdateConstantLoading', value: true }))
     
     await putWithToken(Endpoints.admin.constants, constants)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdateConstantLoading', value: false }))
   }

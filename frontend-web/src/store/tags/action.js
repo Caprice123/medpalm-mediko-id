@@ -1,6 +1,5 @@
 import { actions } from '@store/tags/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
 
 const {
@@ -14,7 +13,6 @@ export const fetchTags = () => async (dispatch, getState) => {
     dispatch(setLoading({ key: 'isGetListTagsLoading', value: true }))
 
     const { tagGroupNames } = getState().tags.filter
-    console.log(tagGroupNames)
     const queryParams = {}
     if (tagGroupNames) queryParams.tagGroupNames = tagGroupNames.join(",")
 
@@ -22,8 +20,6 @@ export const fetchTags = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
     const { data } = response.data
     dispatch(setTags(data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListTagsLoading', value: false }))
   }
@@ -40,8 +36,6 @@ export const createTag = (form, onSuccess) => async (dispatch) => {
     }
     await postWithToken(route, requestBody)
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreateTagLoading', value: false }))
   }
@@ -59,8 +53,6 @@ export const updateTag = (id, form, onSuccess) => async (dispatch) => {
     }
     await putWithToken(route, requestBody)
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdateTagLoading', value: false }))
   }

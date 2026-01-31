@@ -36,8 +36,6 @@ export const fetchAdminExerciseTopics = () => async (dispatch, getState) => {
     // New paginated response
     dispatch(setTopics(responseData.data))
     dispatch(updatePagination(responseData.pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicsLoading', value: false }))
   }
@@ -57,8 +55,6 @@ export const fetchExerciseTopic = (topicId, onSuccess) => async (dispatch) => {
     dispatch(setDetail(topic))
     if (onSuccess) onSuccess()
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailExerciseTopicLoading', value: false }))
   }
@@ -82,8 +78,6 @@ export const generateQuestions = (content, type, questionCount = 10) => async (d
 
     const questions = response.data.data || response.data.questions || []
     return questions
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGeneratingQuestions', value: false }))
   }
@@ -107,8 +101,6 @@ export const generateQuestionsFromPDF = (blobId, questionCount = 10) => async (d
     const questions = data.questions || []
 
     return { questions, blobId: data.blobId || blobId }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGeneratingQuestions', value: false }))
   }
@@ -128,8 +120,6 @@ export const createExerciseTopic = (topicData) => async (dispatch) => {
 
     const topic = response.data.data || response.data.topic
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingTopic', value: false }))
   }
@@ -151,8 +141,6 @@ export const updateExerciseTopic = (topicId, topicData) => async (dispatch) => {
 
     const topic = response.data.data || response.data.topic
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
@@ -170,8 +158,8 @@ export const addManualQuestion = (topicId, questionData) => async (dispatch) => 
     )
 
     return response.data.question
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -184,8 +172,6 @@ export const deleteExerciseTopic = (topicId) => async (dispatch) => {
 
     const route = Endpoints.admin.exercises + `/topics/${topicId}`
     await deleteWithToken(route)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeletingTopic', value: false }))
   }

@@ -31,8 +31,6 @@ export const fetchAdminAnatomyQuizzes = () => async (dispatch, getState) => {
 
     dispatch(setQuizzes(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListAnatomyQuizLoading', value: false }))
   }
@@ -49,8 +47,6 @@ export const fetchAdminAnatomyQuiz = (quizId, onSuccess) => async (dispatch) => 
     dispatch(setDetail(quiz))
     if (onSuccess) onSuccess(quiz)
     return quiz
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailAnatomyQuizLoading', value: false }))
   }
@@ -65,8 +61,6 @@ export const createAnatomyQuiz = (quizData, onSuccess) => async (dispatch) => {
 
     // Refresh the list and close modal
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreateAnatomyQuizLoading', value: false }))
   }
@@ -81,8 +75,6 @@ export const updateAnatomyQuiz = (quizId, quizData, onSuccess) => async (dispatc
 
     // Refresh the list to show updated quiz
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdateAnatomyQuizLoading', value: false }))
   }
@@ -94,8 +86,6 @@ export const deleteAnatomyQuiz = (quizId) => async (dispatch) => {
 
     const route = Endpoints.admin.anatomy + `/${quizId}`
     await deleteWithToken(route)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeleteAnatomyQuizLoading', value: false }))
   }

@@ -30,7 +30,7 @@ export const fetchPricingPlans = (bundleType = null) => async (dispatch) => {
     const response = await axios.get(import.meta.env.VITE_API_BASE_URL + url)
 
     dispatch(setPlans(response.data.data))
-  } catch (err) {
+  } catch(err) {
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
@@ -50,8 +50,6 @@ export const fetchUserStatus = () => async (dispatch) => {
 
     dispatch(setUserStatus(response.data.data))
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isStatusLoading', value: false }))
   }
@@ -76,8 +74,6 @@ export const fetchPurchaseHistory = (page = 1, perPage = 10) => async (dispatch)
       pagination: response.data.pagination
     }))
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isHistoryLoading', value: false }))
   }
@@ -102,8 +98,6 @@ export const purchasePricingPlan = (pricingPlanId, paymentMethod = 'manual') => 
     dispatch(fetchUserStatus())
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPurchaseLoading', value: false }))
   }
@@ -125,8 +119,8 @@ export const fetchUserTransactionDetail = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isTransactionDetailLoading', value: false }))
@@ -153,8 +147,8 @@ export const attachPaymentEvidence = (purchaseId, blobId) => async (dispatch) =>
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isAttachingEvidence', value: false }))
@@ -186,8 +180,6 @@ export const fetchAllPricingPlans = (params = {}) => async (dispatch) => {
     dispatch(setPlans(response.data.data || response.data || []))
     dispatch(setPagination(response.data.pagination))
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -208,8 +200,6 @@ export const createPricingPlan = (planData) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -233,8 +223,6 @@ export const updatePricingPlan = (planId, planData) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -258,8 +246,6 @@ export const togglePricingPlanStatus = (planId) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -281,8 +267,8 @@ export const fetchTransactionDetail = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isTransactionDetailLoading', value: false }))
@@ -309,8 +295,8 @@ export const approveTransaction = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isApprovingTransaction', value: false }))
@@ -337,8 +323,8 @@ export const rejectTransaction = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isRejectingTransaction', value: false }))

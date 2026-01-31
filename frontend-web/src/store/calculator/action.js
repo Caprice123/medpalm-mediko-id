@@ -32,8 +32,6 @@ export const fetchAdminCalculatorTopics = () => async (dispatch, getState) => {
     // Handle paginated response
     dispatch(setTopics(responseData.topics))
     dispatch(updatePagination(responseData.pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListCalculatorsLoading', value: false }))
   }
@@ -49,8 +47,6 @@ export const fetchAdminCalculatorTopic = (topicId) => async (dispatch) => {
     const topic = response.data.data || response.data
     dispatch(setDetail(topic))
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailCalculatorLoading', value: false }))
   }
@@ -64,8 +60,6 @@ export const createCalculatorTopic = (data, onSuccess) => async (dispatch) => {
     const route = Endpoints.admin.calculators
     await postWithToken(route, data)
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreateCalculatorLoading', value: false }))
   }
@@ -78,8 +72,6 @@ export const updateCalculatorTopic = (topicId, data) => async (dispatch) => {
     
     const route = Endpoints.admin.calculators + `/${topicId}`
     await putWithToken(route, data)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdateCalculatorLoading', value: false }))
   }
@@ -92,8 +84,6 @@ export const deleteCalculatorTopic = (topicId) => async (dispatch) => {
     
     const route = Endpoints.admin.calculators + `/${topicId}`
     await deleteWithToken(route)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeleteCalculatorLoading', value: false }))
   }
@@ -120,8 +110,6 @@ export const getCalculatorTopics = () => async (dispatch, getState) => {
     // Handle paginated response
     dispatch(setTopics(responseData.topics))
     dispatch(updatePagination(responseData.pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListCalculatorsLoading', value: false }))
   }
@@ -134,8 +122,6 @@ export const getCalculatorTopicDetail = (id) => async (dispatch) => {
     const route = Endpoints.api.calculators + `/topics/${id}`
     const response = await getWithToken(route)
     dispatch(setDetail(response.data.data || response.data || []))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailCalculatorLoading', value: false }))
   }
@@ -148,8 +134,8 @@ export const calculateResult = (id, inputs) => async (dispatch) => {
         const route = Endpoints.api.calculators + `/${id}/calculate`
         const response = await postWithToken(route, inputs)
         return response.data.data
-    } catch (err) {
-        handleApiError(err, dispatch)
+    } catch {
+        // no need to handle anything because already handled in api.jsx
     } finally {
         dispatch(setLoading({ key: 'isCalculateResultLoading', value: false }))
     }

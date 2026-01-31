@@ -22,7 +22,7 @@ export const fetchFeatures = () => async (dispatch) => {
     const data = response.data.data
 
     dispatch(setFeatures(data))
-  } catch (err) {
+  } catch(err) {
     handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isLoadingFeatures', value: false }))

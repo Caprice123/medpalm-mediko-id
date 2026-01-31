@@ -30,7 +30,7 @@ export const upload = (file, type) => async (dispatch) => {
       url: result.url // Presigned URL for viewing
     }
   } catch (err) {
-    handleApiError(err, dispatch)
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isUploading', value: false }))

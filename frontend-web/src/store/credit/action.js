@@ -30,8 +30,6 @@ export const fetchCreditBalance = () => async (dispatch) => {
     const response = await getWithToken(`${Endpoints.credits}/balance`)
 
     dispatch(setBalance(response.data.data.balance))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isBalanceLoading', value: false }))
   }
@@ -58,8 +56,6 @@ export const fetchCreditTransactions = (params = {}) => async (dispatch) => {
 
     dispatch(setTransactions(response.data.data.transactions))
     dispatch(setPagination(response.data.data.pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTransactionsLoading', value: false }))
   }
@@ -80,8 +76,6 @@ export const purchaseCredits = (creditPlanId, paymentMethod = 'xendit') => async
     const response = await postWithToken(route, requestBody)
 
     dispatch(addTransaction(response.data.data.transaction))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPurchaseLoading', value: false }))
   }
@@ -104,8 +98,6 @@ export const deductCredits = (amount, description, sessionId) => async (dispatch
 
     dispatch(setBalance(response.data.data.newBalance))
     dispatch(addTransaction(response.data.data.transaction))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeductLoading', value: false }))
   }
@@ -122,8 +114,6 @@ export const fetchAllCreditPlans = () => async (dispatch) => {
     const response = await getWithToken(`${Endpoints.creditPlans}`)
 
     dispatch(setPlans(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -140,8 +130,6 @@ export const fetchActiveCreditPlans = () => async (dispatch) => {
 
     dispatch(setPlans(response.data.data))
 
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }
@@ -159,8 +147,8 @@ export const createCreditPlan = (planData) => async (dispatch) => {
     )
 
     dispatch(addPlan(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)  } finally {
+  } catch {
+    // no need to handle anything because already handled in api.jsx  } finally {
     dispatch(setLoading({ key: 'isCreatePlanLoading', value: false }))
   }
 }
@@ -177,8 +165,6 @@ export const updateCreditPlan = (planId, planData) => async (dispatch) => {
     )
 
     dispatch(updatePlan(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatePlanLoading', value: false }))
   }
@@ -196,8 +182,8 @@ export const toggleCreditPlanStatus = (planId) => async (dispatch) => {
 
     dispatch(updatePlan(response.data.data))
 
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -230,8 +216,6 @@ export const fetchAllTransactions = (params = {}) => async (dispatch) => {
       perPage: response.data.data.pagination.perPage,
       isLastPage: response.data.data.pagination.isLastPage
     }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTransactionsLoading', value: false }))
   }
@@ -247,8 +231,8 @@ export const confirmPayment = (transactionId, status) => async (dispatch) => {
       url,
       { status },
     )
-  } catch (err) {
-    handleApiError(err, dispatch)  
+  } catch {
+    // no need to handle anything because already handled in api.jsx  
   }
 }
 
@@ -262,8 +246,8 @@ export const addBonusCredits = (userId, amount, description) => async (dispatch)
       url,
       { userId, amount, description },
     )
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 

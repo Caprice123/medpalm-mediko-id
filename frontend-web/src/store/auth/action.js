@@ -29,8 +29,8 @@ export const login = (googleCredential, onSuccess) => async (dispatch) => {
         setToken(tokenData)
 
         onSuccess()
-    } catch(err) {
-        handleApiError(err, dispatch)
+    } catch {
+        // no need to handle anything because already handled in api.jsx
     } finally {
         dispatch(setLoading({ key: "isLoginLoading", value: false }))
     }
@@ -43,8 +43,8 @@ export const logout = (onSuccess) => async (dispatch) => {
         await postWithToken(Endpoints.Logout)
         removeUser()
         removeToken()
-    } catch(err) {
-        handleApiError(err, dispatch)
+    } catch {
+        // no need to handle anything because already handled in api.jsx
     } finally {
         dispatch(setLoading({ key: "isLogoutLoading", value: false }))
         onSuccess()

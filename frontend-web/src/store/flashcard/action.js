@@ -37,8 +37,6 @@ export const fetchFlashcardDecks = () => async (dispatch, getState) => {
     if (paginationData) {
       dispatch(updatePagination(paginationData))
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListDecksLoading', value: false }))
   }
@@ -55,8 +53,6 @@ export const fetchFlashcardDeck = (deckId, onSuccess) => async (dispatch) => {
     dispatch(setDetail(deck))
     if (onSuccess) onSuccess()
     return deck
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailFlashcardDeckLoading', value: false }))
   }

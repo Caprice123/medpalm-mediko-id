@@ -42,8 +42,8 @@ export const createSession = (sessionType, onSuccess) => async (dispatch) => {
 
         if (onSuccess) onSuccess(data)
         return data
-    } catch (err) {
-        handleApiError(err, dispatch)
+    } catch {
+        // no need to handle anything because already handled in api.jsx
         throw err
     } finally {
         dispatch(setLoading({ key: 'isCreatingSession', value: false }))
@@ -77,8 +77,8 @@ export const startExerciseWithTopic = (userLearningSessionId, attemptId, topicId
     dispatch(setCurrentQuestionIndex(0))
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingSession', value: false }))
@@ -109,8 +109,8 @@ export const createExerciseSession = (exerciseTopicId) => async (dispatch) => {
     dispatch(setCurrentQuestionIndex(0))
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingSession', value: false }))
@@ -142,8 +142,8 @@ export const completeSession = (attemptId, answers = null) => async (dispatch) =
     const data = response.data.data
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCompletingSession', value: false }))
@@ -182,8 +182,6 @@ export const fetchSessions = (status = null, page = 1, perPage = 30) => async (d
     }))
 
     return pagination
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isLoadingSessions', value: false }))
   }
@@ -229,8 +227,8 @@ export const fetchSessionDetail = (attemptId) => async (dispatch) => {
     }
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingDetail', value: false }))
@@ -258,8 +256,8 @@ export const fetchSessionAttempts = (learningSessionId, page = 1, perPage = 30) 
     }))
 
     return pagination
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingAttempts', value: false }))
@@ -283,8 +281,8 @@ export const fetchSessionAttemptDetail = (attemptId) => async (dispatch) => {
     dispatch(setAttemptDetail(attemptDetail))
 
     return attemptDetail
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingAttemptDetail', value: false }))
@@ -304,8 +302,8 @@ export const createNewAttempt = (learningSessionId) => async (dispatch) => {
     const data = response.data.data
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingAttempt', value: false }))
@@ -339,8 +337,8 @@ export const startFlashcardDeck = (deckId) => async (dispatch) => {
     dispatch(setCurrentQuestionIndex(0))
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isStartingFlashcard', value: false }))
@@ -364,8 +362,8 @@ export const submitFlashcardProgress = (deckId, answers = []) => async (dispatch
     const data = response.data.data
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoadingAnswers', value: false }))

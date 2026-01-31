@@ -1,7 +1,7 @@
 import { actions } from '@store/chatbot/reducer'
+import { actions as commonActions } from '@store/common/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken, patchWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 
@@ -9,11 +9,7 @@ const {
   setLoading,
   setConversations,
   setCurrentConversation,
-  setActiveConversationId,
   setMessages,
-  addMessage,
-  updateMessage,
-  removeMessage,
   setMessagesForConversation,
   addMessageToConversation,
   updateMessageInConversation,
@@ -46,8 +42,8 @@ export const fetchChatbotConfig = () => async (dispatch) => {
     }
 
     return config
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -74,8 +70,6 @@ export const fetchConversations = (filters, page, perPage) => async (dispatch, g
     const response = await getWithToken(route, queryParams)
     dispatch(setConversations(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -89,8 +83,6 @@ export const fetchConversation = (conversationId) => async (dispatch) => {
     const response = await getWithToken(route)
     dispatch(setCurrentConversation(response.data.data))
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCurrentConversationLoading', value: false }))
   }
@@ -109,8 +101,6 @@ export const createConversation = (topic, mode = 'normal') => async (dispatch) =
     const conversation = response.data.data
     dispatch(addConversation(conversation))
     return conversation
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -129,8 +119,6 @@ export const renameConversation = (conversationId, topic) => async (dispatch) =>
     dispatch(updateConversation(conversation))
     dispatch(setCurrentConversation(conversation))
     return conversation
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -143,8 +131,6 @@ export const deleteConversation = (conversationId) => async (dispatch) => {
     const route = Endpoints.api.chatbot + `/conversations/${conversationId}`
     await deleteWithToken(route)
     dispatch(removeConversation(conversationId))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -171,8 +157,6 @@ export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend 
     }
 
     dispatch(setPagination(pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isMessagesLoading', value: false }))
   }
@@ -253,7 +237,8 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch, g
       // stopChatbotStreaming already handled loading state and cleanup
       return null
     }
-    handleApiError(err, dispatch)
+    // Dispatch error to common reducer
+    dispatch(commonActions.setError(err.message || 'Terjadi kesalahan saat mengirim pesan'))
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
   } finally {
     // Clean up abort controller for this conversation
@@ -668,16 +653,59 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
     }
 
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-  } catch (error) {
+  } catch (error){
     if (error.name === 'AbortError') {
       console.log('✅ Stream aborted by user')
       // stopChatbotStreaming already handled cleanup
       return null
     } else {
-      console.error('Streaming error:', error)
+      console.error('❌ Streaming error:', error)
+
+      // If we have partial content and backend created the message, save it
+      if (finalData && finalData.aiMessage && fullContent.length > 0) {
+        try {
+          console.log(`💾 Saving partial message due to error: ${fullContent.length} characters`)
+
+          // Finalize with partial content
+          const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${finalData.aiMessage.id}/finalize`
+          await postWithToken(route, {
+            content: fullContent,
+            isComplete: false // Error during streaming = incomplete
+          })
+
+          // Remove temporary messages
+          dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+          dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+
+          // Add final messages
+          if (finalData.userMessage) {
+            dispatch(addMessageToConversation({
+              conversationId,
+              message: finalData.userMessage
+            }))
+          }
+
+          dispatch(addMessageToConversation({
+            conversationId,
+            message: {
+              ...finalData.aiMessage,
+              content: '', // Empty as saved in backend
+              status: 'error' // Mark as error status
+            }
+          }))
+
+          console.log('✅ Partial message saved successfully')
+        } catch (saveError) {
+          console.error('❌ Failed to save partial message:', saveError)
+        }
+      }
+
+      // Dispatch error to common reducer
+      dispatch(commonActions.setError(error.message || 'Terjadi kesalahan saat streaming pesan'))
+
       dispatch(clearStreamingState(conversationId))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-      throw error
+      return null
     }
   }
 }
@@ -686,14 +714,14 @@ export const switchMode = (mode) => async (dispatch) => {
   dispatch(setCurrentMode(mode))
 }
 
-export const submitFeedback = (messageId, feedbackType) => async (dispatch) => {
+export const submitFeedback = (messageId, feedbackType) => async () => {
   try {
     const route = Endpoints.api.chatbot + `/conversations/${messageId}/feedback`
     await postWithToken(route, {
       feedbackType
     })
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -719,8 +747,6 @@ export const fetchAdminConversations = () => async (dispatch, getState) => {
     dispatch(setConversations(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
     console.log(response.data.pagination)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -734,8 +760,6 @@ export const fetchAdminConversation = (conversationId) => async (dispatch) => {
     const response = await getWithToken(route)
     dispatch(setCurrentConversation(response.data.data))
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCurrentConversationLoading', value: false }))
   }
@@ -748,8 +772,6 @@ export const deleteAdminConversation = (conversationId) => async (dispatch) => {
     const route = Endpoints.admin.chatbot + `/conversations/${conversationId}`
     await deleteWithToken(route)
     dispatch(removeConversation(conversationId))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
   }
@@ -777,8 +799,6 @@ export const fetchAdminConversationMessages = ({ conversationId, page = 1, perPa
 
     dispatch(setPagination(pagination))
     return messages
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isMessagesLoading', value: false }))
   }

@@ -1,7 +1,7 @@
 import { actions } from '@store/skripsi/reducer'
+import { actions as commonActions } from '@store/common/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken, patchWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 
@@ -11,7 +11,6 @@ const {
   setSets,
   setCurrentSet,
   setCurrentTab,
-  setActiveTabId,
   addSet,
   updateSet,
   removeSet,
@@ -22,7 +21,6 @@ const {
   removeMessageFromTab,
   prependMessagesToTab,
   setDiagramsForTab,
-  resetTabMessages,
   setStreamingState,
   clearStreamingState,
   setLoading,
@@ -53,8 +51,6 @@ export const fetchAdminSets = () => async (dispatch, getState) => {
     dispatch(setPagination(response.data.pagination || {}))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetsLoading', value: false }))
   }
@@ -69,8 +65,6 @@ export const fetchAdminSet = (setId) => async (dispatch) => {
     const set = response.data.data
 
     return set
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAdminSetLoading', value: false }))
   }
@@ -83,8 +77,8 @@ export const deleteAdminSet = (setId) => async (dispatch) => {
     await deleteWithToken(route)
 
     dispatch(removeSet(setId))
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -101,8 +95,6 @@ export const fetchSets = (page = 1, perPage = 20) => async (dispatch) => {
     dispatch(setPagination(response.data.pagination || {}))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetsLoading', value: false }))
   }
@@ -119,8 +111,6 @@ export const createSet = (title, description) => async (dispatch) => {
     dispatch(addSet(newSet))
 
     return newSet
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetLoading', value: false }))
   }
@@ -145,8 +135,6 @@ export const fetchSet = (setId) => async (dispatch) => {
     }
 
     return set
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetLoading', value: false }))
   }
@@ -162,8 +150,8 @@ export const updateSetInfo = (setId, title, description) => async (dispatch) => 
     dispatch(updateSet(updatedSet))
 
     return updatedSet
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -174,8 +162,8 @@ export const deleteSet = (setId) => async (dispatch) => {
     await deleteWithToken(route)
 
     dispatch(removeSet(setId))
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -205,8 +193,6 @@ export const fetchTabMessages = ({ tabId, page = 1, perPage = 50, prepend = fals
       messages,
       pagination
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTabMessagesLoading', value: false }))
   }
@@ -241,8 +227,6 @@ export const saveSetContent = (setId, editorContent) => async (dispatch) => {
     dispatch(updateSetContent({ setId, editorContent }))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSavingContent', value: false }))
   }
@@ -263,8 +247,8 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
     return {
       hasMore: response.data.hasMore || false
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -313,7 +297,8 @@ export const sendMessage = (tabId, message) => async (dispatch, getState) => {
       return
     }
     console.error('❌ sendMessage caught error:', err)
-    handleApiError(err, dispatch)
+    // Dispatch error to common reducer
+    dispatch(commonActions.setError(err.message || 'Terjadi kesalahan saat mengirim pesan'))
   } finally {
     console.log(`🧹 sendMessage finally block - clearing abort controller for tab ${tabId}`)
     // Clear loading state for THIS specific tab
@@ -322,7 +307,7 @@ export const sendMessage = (tabId, message) => async (dispatch, getState) => {
   }
 }
 
-export const finalizeMessage = (tabId, messageId, content, isComplete) => async (dispatch) => {
+export const finalizeMessage = (tabId, messageId, content, isComplete) => async () => {
   try {
     console.log(`📝 Finalizing message ${messageId} as ${isComplete ? 'completed' : 'truncated'}`)
 
@@ -665,7 +650,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
 
               // Store messageId for finalization
               if (data.data.aiMessage) {
-                savedMessageId = data.data.aiMessage.id
+                // savedMessageId = data.data.aiMessage.id
               }
 
               console.log('✅ Backend created streaming messages:', data.data)
@@ -728,13 +713,55 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
       console.log('⏸️ User stopped - stopStreaming will handle finalization')
       return null
     } else {
-      console.error('Streaming error:', error)
-      // Clean up on non-abort errors
-      dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
-      dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+      console.error('❌ Streaming error:', error)
+
+      // If we have partial content and backend created the message, save it
+      if (finalData && finalData.aiMessage && fullContent.length > 0) {
+        try {
+          console.log(`💾 Saving partial message due to error: ${fullContent.length} characters`)
+
+          // Finalize with partial content
+          await dispatch(finalizeMessage(
+            tabId,
+            finalData.aiMessage.id,
+            fullContent,
+            false // isComplete = false (error during streaming)
+          ))
+
+          // Remove temporary messages
+          dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+          dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+
+          // Add final messages
+          if (finalData.userMessage) {
+            dispatch(addMessageToTab({ tabId, message: finalData.userMessage }))
+          }
+
+          dispatch(addMessageToTab({
+            tabId,
+            message: {
+              ...finalData.aiMessage,
+              content: '', // Empty as saved in backend
+              status: 'error' // Mark as error status
+            }
+          }))
+
+          console.log('✅ Partial message saved successfully')
+        } catch (saveError) {
+          console.error('❌ Failed to save partial message:', saveError)
+        }
+      } else {
+        // If no partial content to save, just clean up temporary messages
+        dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+        dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+      }
+
+      // Dispatch error to common reducer
+      dispatch(commonActions.setError(error.message || 'Terjadi kesalahan saat streaming pesan'))
+
       dispatch(clearStreamingState(tabId))
       dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
-      throw error
+      return null
     }
   }
 }
@@ -754,9 +781,6 @@ export const generateDiagram = (tabId, diagramConfig) => async (dispatch) => {
     await dispatch(fetchDiagramHistory(tabId))
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isGeneratingDiagram', value: false }))
   }
@@ -775,8 +799,6 @@ export const fetchDiagramHistory = (tabId) => async (dispatch) => {
     dispatch(setDiagramsForTab({ tabId, diagrams }))
 
     return diagrams
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDiagramHistoryLoading', value: false }))
   }
@@ -790,9 +812,6 @@ export const fetchDiagramDetail = (diagramId) => async (dispatch) => {
     const response = await getWithToken(route)
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isDiagramDetailLoading', value: false }))
   }
@@ -806,9 +825,6 @@ export const updateDiagram = (diagramId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDiagram', value: false }))
   }
@@ -822,9 +838,6 @@ export const saveTabDiagram = (tabId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingTabDiagram', value: false }))
   }
@@ -841,9 +854,6 @@ export const createDiagram = (tabId, diagramData, diagramConfig = {}, creationMe
     await dispatch(fetchDiagramHistory(tabId))
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingDiagram', value: false }))
   }

@@ -36,8 +36,6 @@ export const fetchExerciseTopics = () => async (dispatch, getState) => {
 
     dispatch(setTopics(response.data.data || response.data.topics || []))
     dispatch(updatePagination(response.data.pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicsLoading', value: false }))
   }
@@ -57,8 +55,6 @@ export const startExerciseTopic = (topicId) => async (dispatch) => {
     const data = response.data.data
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isStartingExercise', value: false }))
   }
@@ -78,8 +74,6 @@ export const submitExerciseProgress = (topicId, answers) => async (dispatch) => 
     })
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoadingExercise', value: false }))
   }

@@ -1,6 +1,5 @@
 import { actions } from '@store/tagGroups/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken } from '../../utils/requestUtils'
 
 const {
@@ -22,8 +21,6 @@ export const fetchTagGroups = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
     const { data } = response.data
     dispatch(setTagGroups(data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListTagGroupsLoading', value: false }))
   }

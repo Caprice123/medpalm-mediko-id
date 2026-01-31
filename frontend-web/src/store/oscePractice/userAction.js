@@ -45,8 +45,6 @@ export const fetchUserOsceTopics = (params = {}) => async (dispatch) => {
     dispatch(setUserTopics(topics))
 
     return { topics, pagination }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isLoadingUserTopics', value: false }))
   }
@@ -73,8 +71,6 @@ export const fetchUserOsceSessions = () => async (dispatch, getState) => {
     dispatch(updateSessionsPagination(pagination))
 
     return { sessions, pagination }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isLoadingUserSessions', value: false }))
   }
@@ -90,8 +86,8 @@ export const createOsceSession = (topicId, onSuccess) => async (dispatch) => {
 
     if (onSuccess) onSuccess(response.data.data)
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingSession', value: false }))
@@ -108,8 +104,8 @@ export const startOsceSession = (sessionId, onSuccess) => async (dispatch) => {
 
     if (onSuccess) onSuccess(response.data.data)
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isStartingSession', value: false }))
@@ -127,8 +123,8 @@ export const fetchSessionDetail = (sessionId) => async (dispatch) => {
     const sessionDetail = response.data.data || null
     dispatch(setSessionDetail(sessionDetail))
     return sessionDetail
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingSessionDetail', value: false }))
@@ -159,8 +155,8 @@ export const fetchSessionMessages = (sessionId) => async (dispatch) => {
       hasMore: pagination.hasMore,
       nextCursor: pagination.nextCursor,
     }))
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingSessionMessages', value: false }))
@@ -198,8 +194,8 @@ export const loadMoreMessages = (sessionId, cursor) => async (dispatch) => {
     }))
 
     return transformedMessages.length
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingMoreMessages', value: false }))
@@ -217,8 +213,8 @@ export const fetchSessionObservations = (sessionId) => async (dispatch) => {
     const observations = response.data.data || []
     dispatch(setSessionObservations(observations))
     return observations
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isLoadingSessionObservations', value: false }))
@@ -238,8 +234,8 @@ export const saveSessionObservations = (sessionId, observations, onSuccess) => a
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingSessionObservations', value: false }))
@@ -259,8 +255,8 @@ export const saveSessionDiagnoses = (sessionId, diagnosesData, onSuccess) => asy
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingSessionDiagnoses', value: false }))
@@ -280,8 +276,8 @@ export const saveSessionTherapies = (sessionId, therapies, onSuccess) => async (
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingSessionTherapies', value: false }))
@@ -298,8 +294,8 @@ export const endOsceSession = (sessionId, data, onSuccess) => async (dispatch) =
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isEndingSession', value: false }))
@@ -358,13 +354,13 @@ export const sendMessage = (sessionId, message) => async (dispatch) => {
     // Use streaming for all messages
     await sendMessageStreaming(sessionId, message, dispatch, activeAbortController, tempUserMessage.id)
     console.log('✅ sendMessageStreaming completed')
-  } catch (err) {
+  } catch {
     if (err.name === 'AbortError') {
       console.log('OSCE stream was stopped by user')
       return
     }
     console.error('❌ sendMessage caught error:', err)
-    handleApiError(err, dispatch)
+    // no need to handle anything because already handled in api.jsx
   } finally {
     console.log('🧹 sendMessage finally block - clearing activeAbortController')
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
@@ -390,7 +386,7 @@ export const stopStreaming = () => async (dispatch) => {
     }
 
     return null
-  } catch (error) {
+  } catch {
     console.error('Error stopping stream:', error)
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
     dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
@@ -583,14 +579,14 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
             } else if (data.type === 'error') {
               throw new Error(data.error)
             }
-          } catch (parseError) {
+          } catch {
             console.error('Error parsing SSE data:', parseError)
           }
         }
       }
     }
 
-  } catch (error) {
+  } catch {
     if (error.name === 'AbortError') {
       console.log('✅ Stream aborted by user - typing animation will finish showing all received content')
       // Keep typing animation going to finish displaying all received content

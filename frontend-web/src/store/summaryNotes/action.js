@@ -34,8 +34,6 @@ export const fetchSummaryNotes = (filters, page, perPage) => async (dispatch, ge
     const response = await getWithToken(Endpoints.api.summaryNotes, queryParams)
     dispatch(setNotes(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 12, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isNotesLoading', value: false }))
   }
@@ -54,8 +52,6 @@ export const fetchUserSummaryNoteDetail = (noteId) => async (dispatch) => {
     const note = response.data.data
     dispatch(setDetail(note))
     return note
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isNoteDetailLoading', value: false }))
   }
@@ -87,8 +83,6 @@ export const fetchAdminSummaryNotes = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
     dispatch(setNotes(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 30, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAdminNotesLoading', value: false }))
   }
@@ -103,8 +97,6 @@ export const fetchSummaryNoteDetail = (noteId) => async (dispatch) => {
     const note = response.data.data
     dispatch(setDetail(note))
     return note
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isNoteDetailLoading', value: false }))
   }
@@ -118,8 +110,6 @@ export const createSummaryNote = (noteData) => async (dispatch) => {
     const response = await postWithToken(route, noteData)
     const note = response.data.data
     return note
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreating', value: false }))
   }
@@ -133,8 +123,6 @@ export const updateSummaryNote = (noteId, noteData) => async (dispatch) => {
     const response = await putWithToken(route, noteData)
     const note = response.data.data
     return note
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdating', value: false }))
   }
@@ -146,8 +134,6 @@ export const deleteSummaryNote = (noteId) => async (dispatch) => {
 
     const route = Endpoints.admin.summaryNotes + `/${noteId}`
     await deleteWithToken(route)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeleting', value: false }))
   }
@@ -169,8 +155,8 @@ export const uploadDocument = (file) => async (dispatch) => {
       byteSize: result.byteSize,
       url: result.url // Presigned URL for viewing
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -182,8 +168,6 @@ export const generateSummaryFromDocument = (blobId) => async (dispatch) => {
     const response = await postWithToken(route, { blobId })
     const result = response.data.data
     return result
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGenerating', value: false }))
   }

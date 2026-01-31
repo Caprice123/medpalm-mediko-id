@@ -41,8 +41,6 @@ export const fetchMcqTopics = () => async (dispatch, getState) => {
     const data = response.data
     dispatch(setTopics(data.data || []))
     dispatch(setPagination(data.pagination || { page: 1, limit: 30, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicsLoading', value: false }))
   }
@@ -61,8 +59,6 @@ export const fetchMcqTopicById = (topicId) => async (dispatch) => {
     const topic = response.data.data
     dispatch(actions.setCurrentTopic(topic))
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicLoading', value: false }))
   }
@@ -80,8 +76,6 @@ export const submitMcqAnswers = (topicId, answers) => async (dispatch) => {
 
     const result = response.data.data
     return result
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoading', value: false }))
   }
@@ -100,8 +94,6 @@ export const fetchMcqTopicSession = (topicId, mode = 'learning') => async (dispa
     const session = response.data.data
     dispatch(setCurrentSession(session))
     return session
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicLoading', value: false }))
   }
@@ -120,8 +112,6 @@ export const checkMcqAnswers = (topicId, answers) => async (dispatch) => {
     const result = response.data.data
     // Don't store in Redux, let the component handle it locally
     return result
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isChecking', value: false }))
   }
@@ -151,8 +141,6 @@ export const fetchAdminMcqTopics = () => async (dispatch, getState) => {
 
     dispatch(setTopics(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, limit: 30, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicsLoading', value: false }))
   }
@@ -173,8 +161,6 @@ export const fetchMcqTopicDetail = (topicId, onSuccess) => async (dispatch) => {
     dispatch(setQuestions(topic.questions || []))
     if (onSuccess) onSuccess(topic)
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTopicLoading', value: false }))
   }
@@ -206,8 +192,6 @@ export const generateMcqQuestions = ({ content, type, questionCount, blobId }, o
     const questions = response.data.data
     if (onSuccess) onSuccess(questions)
     return questions
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGenerating', value: false }))
   }
@@ -229,8 +213,6 @@ export const createMcqTopic = (topicData) => async (dispatch) => {
     dispatch(fetchAdminMcqTopics())
     dispatch(clearUploadedQuestionImage())
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingTopic', value: false }))
   }
@@ -248,8 +230,6 @@ export const updateMcqTopic = (topicId, topicData, onSuccess) => async (dispatch
 
     // Refresh the list to show updated topic
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
@@ -266,8 +246,6 @@ export const deleteMcqTopic = (topicId) => async (dispatch) => {
     await deleteWithToken(route)
 
     dispatch(removeTopic(topicId))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeletingTopic', value: false }))
   }

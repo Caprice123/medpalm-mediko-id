@@ -31,8 +31,6 @@ export const fetchAnatomyQuizzes = () => async (dispatch, getState) => {
 
     dispatch(setQuizzes(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListAnatomyQuizLoading', value: false }))
   }
@@ -48,8 +46,6 @@ export const fetchDetailAnatomyQuiz = (quizId) => async (dispatch) => {
 
     const quiz = response.data.data || response.data.quiz
     dispatch(setDetail(quiz))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailAnatomyQuizLoading', value: false }))
   }
@@ -65,8 +61,6 @@ export const submitAnatomyQuizAnswers = (quizId, answers) => async (dispatch) =>
 
     const result = response.data.data
     return result
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoading', value: false }))
   }

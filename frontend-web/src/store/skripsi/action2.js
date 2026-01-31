@@ -51,8 +51,6 @@ export const fetchAdminSets = () => async (dispatch, getState) => {
     dispatch(setPagination(response.data.pagination || {}))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetsLoading', value: false }))
   }
@@ -67,8 +65,6 @@ export const fetchAdminSet = (setId) => async (dispatch) => {
     const set = response.data.data
 
     return set
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAdminSetLoading', value: false }))
   }
@@ -81,8 +77,8 @@ export const deleteAdminSet = (setId) => async (dispatch) => {
     await deleteWithToken(route)
 
     dispatch(removeSet(setId))
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -99,8 +95,6 @@ export const fetchSets = (page = 1, perPage = 20) => async (dispatch) => {
     dispatch(setPagination(response.data.pagination || {}))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetsLoading', value: false }))
   }
@@ -117,8 +111,6 @@ export const createSet = (title, description) => async (dispatch) => {
     dispatch(addSet(newSet))
 
     return newSet
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetLoading', value: false }))
   }
@@ -143,8 +135,6 @@ export const fetchSet = (setId) => async (dispatch) => {
     }
 
     return set
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSetLoading', value: false }))
   }
@@ -160,8 +150,8 @@ export const updateSetInfo = (setId, title, description) => async (dispatch) => 
     dispatch(updateSet(updatedSet))
 
     return updatedSet
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -172,8 +162,8 @@ export const deleteSet = (setId) => async (dispatch) => {
     await deleteWithToken(route)
 
     dispatch(removeSet(setId))
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -203,8 +193,6 @@ export const fetchTabMessages = ({ tabId, page = 1, perPage = 50, prepend = fals
       messages,
       pagination
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isTabMessagesLoading', value: false }))
   }
@@ -239,8 +227,6 @@ export const saveSetContent = (setId, editorContent) => async (dispatch) => {
     dispatch(updateSetContent({ setId, editorContent }))
 
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isSavingContent', value: false }))
   }
@@ -261,8 +247,8 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
     return {
       hasMore: response.data.hasMore || false
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
   }
 }
 
@@ -297,7 +283,7 @@ export const sendMessage = (tabId, message) => async (dispatch) => {
       return
     }
     console.error('❌ sendMessage caught error:', err)
-    handleApiError(err, dispatch)
+    // no need to handle anything because already handled in api.jsx
   } finally {
     console.log(`🧹 sendMessage finally block - clearing abort controller for tab ${tabId}`)
     // Clear loading state for THIS specific tab
@@ -324,7 +310,7 @@ export const stopStreaming = (tabId) => async (dispatch) => {
     }
 
     return null
-  } catch (error) {
+  } catch {
     console.error('Error stopping stream:', error)
     dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
     return null
@@ -537,7 +523,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
             } else if (data.type === 'error') {
               throw new Error(data.error)
             }
-          } catch (parseError) {
+          } catch {
             console.error('Error parsing SSE data:', parseError)
           }
         }
@@ -611,8 +597,8 @@ export const generateDiagram = (tabId, diagramConfig) => async (dispatch) => {
     await dispatch(fetchDiagramHistory(tabId))
 
     return data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isGeneratingDiagram', value: false }))
@@ -632,8 +618,6 @@ export const fetchDiagramHistory = (tabId) => async (dispatch) => {
     dispatch(setDiagramsForTab({ tabId, diagrams }))
 
     return diagrams
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDiagramHistoryLoading', value: false }))
   }
@@ -647,8 +631,8 @@ export const fetchDiagramDetail = (diagramId) => async (dispatch) => {
     const response = await getWithToken(route)
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isDiagramDetailLoading', value: false }))
@@ -663,8 +647,8 @@ export const updateDiagram = (diagramId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDiagram', value: false }))
@@ -679,8 +663,8 @@ export const saveTabDiagram = (tabId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingTabDiagram', value: false }))
@@ -698,8 +682,8 @@ export const createDiagram = (tabId, diagramData, diagramConfig = {}, creationMe
     await dispatch(fetchDiagramHistory(tabId))
 
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
+  } catch {
+    // no need to handle anything because already handled in api.jsx
     throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingDiagram', value: false }))

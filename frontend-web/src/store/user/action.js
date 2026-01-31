@@ -1,6 +1,5 @@
 import { actions } from '@store/user/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, putWithToken } from '../../utils/requestUtils'
 
 const {
@@ -30,8 +29,6 @@ export const fetchUsers = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
     const { data } = response.data
     dispatch(setUsers(data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetUsersLoading', value: false }))
   }
@@ -51,8 +48,6 @@ export const adjustCredit = (userId, credit, onSuccess) => async (dispatch) => {
     if (onSuccess) onSuccess()
     // Fetch updated user details
     await dispatch(fetchUserDetail(userId))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAdjustCreditLoading', value: false }))
   }
@@ -70,8 +65,6 @@ export const adjustSubscription = (form, onSuccess) => async (dispatch) => {
     }
     await putWithToken(route, requestBody)
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAdjustSubscriptionLoading', value: false }))
   }
@@ -92,8 +85,6 @@ export const addSubscription = (userId, startDate, endDate, onSuccess) => async 
     // Fetch updated user details and subscriptions
     await dispatch(fetchUserDetail(userId))
     await dispatch(fetchUserSubscriptions(userId))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isAddSubscriptionLoading', value: false }))
   }
@@ -111,8 +102,6 @@ export const fetchUserDetail = (userId) => async (dispatch) => {
     dispatch(setDetail(userData))
 
     return userData
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchUserDetailLoading', value: false }))
   }
@@ -136,8 +125,6 @@ export const fetchUserSubscriptions = (userId) => async (dispatch, getState) => 
 
     dispatch(setSubscriptions(data))
     dispatch(setSubscriptionPagination(pagination))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchUserSubscriptionsLoading', value: false }))
   }

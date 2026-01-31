@@ -39,8 +39,6 @@ export const fetchAdminOsceTopics = () => async (dispatch, getState) => {
     if (paginationData) {
       dispatch(updatePagination(paginationData))
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListTopicsLoading', value: false }))
   }
@@ -57,8 +55,6 @@ export const fetchOsceTopic = (topicId, onSuccess) => async (dispatch) => {
     dispatch(setTopicDetail(topic))
     if (onSuccess) onSuccess()
     return topic
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetTopicDetailLoading', value: false }))
   }
@@ -74,8 +70,6 @@ export const createOsceTopic = (data, onSuccess) => async (dispatch) => {
     if (onSuccess) onSuccess()
     dispatch(fetchAdminOsceTopics())
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingTopic', value: false }))
   }
@@ -91,8 +85,6 @@ export const updateOsceTopic = (topicId, data, onSuccess) => async (dispatch) =>
     if (onSuccess) onSuccess()
     dispatch(fetchAdminOsceTopics())
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
@@ -107,8 +99,6 @@ export const createObservationGroup = (data, onSuccess) => async (dispatch) => {
     await postWithToken(route, data)
 
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingTopic', value: false }))
   }
@@ -122,8 +112,6 @@ export const updateObservationGroup = (groupId, data, onSuccess) => async (dispa
     await putWithToken(route, data)
 
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingObservationGroup', value: false }))
   }
@@ -140,8 +128,6 @@ export const fetchAdminOsceObservations = (data, onSuccess) => async (dispatch) 
     const observations = response.data.data || []
     dispatch(setObservations(observations))
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListObservationsLoading', value: false }))
   }
@@ -155,8 +141,6 @@ export const createObservation = (data, onSuccess) => async (dispatch) => {
     await postWithToken(route, data)
 
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingTopic', value: false }))
   }
@@ -170,8 +154,6 @@ export const updateObservation = (observationId, data, onSuccess) => async (disp
     await putWithToken(route, data)
 
     if (onSuccess) onSuccess()
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
@@ -200,8 +182,6 @@ export const fetchAdminOsceRubrics = () => async (dispatch, getState) => {
     if (paginationData) {
       dispatch(updateRubricPagination(paginationData))
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: "isGetListRubricsLoading", value: false }))
   }
@@ -218,8 +198,6 @@ export const fetchOsceRubric = (rubricId, onSuccess) => async (dispatch) => {
     dispatch(setRubricDetail(rubric))
     if (onSuccess) onSuccess()
     return rubric
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: "isGetRubricDetailLoading", value: false }))
   }
@@ -235,8 +213,6 @@ export const createOsceRubric = (data, onSuccess) => async (dispatch) => {
     if (onSuccess) onSuccess()
     dispatch(fetchAdminOsceRubrics())
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: "isCreatingRubric", value: false }))
   }
@@ -252,8 +228,6 @@ export const updateOsceRubric = (rubricId, data, onSuccess) => async (dispatch) 
     if (onSuccess) onSuccess()
     dispatch(fetchAdminOsceRubrics())
     return response.data.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: "isUpdatingRubric", value: false }))
   }
@@ -269,8 +243,6 @@ export const deleteOsceRubric = (rubricId, onSuccess) => async (dispatch) => {
     if (onSuccess) onSuccess()
     dispatch(fetchAdminOsceRubrics())
     return response.data
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: "isDeletingRubric", value: false }))
   }
@@ -288,8 +260,6 @@ export const fetchAllRubrics = () => async (dispatch) => {
     const rubrics = response.data.data || []
     dispatch(setAllRubrics(rubrics))
     return rubrics
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingAllRubrics', value: false }))
   }

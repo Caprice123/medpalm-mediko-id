@@ -32,8 +32,6 @@ export const fetchAdminFlashcardDecks = () => async (dispatch, getState) => {
     if (paginationData) {
       dispatch(updatePagination(paginationData))
     }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetListDecksLoading', value: false }))
   }
@@ -50,8 +48,6 @@ export const fetchFlashcardDeck = (deckId, onSuccess) => async (dispatch) => {
     dispatch(setDetail(deck))
     if (onSuccess) onSuccess()
     return deck
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGetDetailFlashcardDeckLoading', value: false }))
   }
@@ -74,8 +70,6 @@ export const generateFlashcards = (content, type, cardCount = 10) => async (disp
     const response = await postWithToken(route, requestBody)
     const cards = response.data.data || response.data.cards || []
     return cards
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGeneratingCards', value: false }))
   }
@@ -102,8 +96,6 @@ export const generateFlashcardsFromPDF = (pdfFile, cardCount = 10, blobId) => as
     const cards = data.cards || []
 
     return { cards, blobId }
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isGeneratingCards', value: false }))
   }
@@ -119,8 +111,6 @@ export const createFlashcardDeck = (deckData) => async (dispatch) => {
 
     const route = Endpoints.admin.flashcards
     await postWithToken(route, deckData)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isCreatingDeck', value: false }))
   }
@@ -138,8 +128,6 @@ export const updateDeckCards = (deckId, cards) => async (dispatch) => {
       route,
       { cards }
     )
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDeck', value: false }))
   }
@@ -155,8 +143,6 @@ export const updateFlashcardDeck = (deckId, deckData) => async (dispatch) => {
 
     const route = Endpoints.admin.flashcards + `/${deckId}`
     await putWithToken(route, deckData)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDeck', value: false }))
   }
@@ -171,8 +157,6 @@ export const deleteFlashcardDeck = (deckId) => async (dispatch) => {
 
     const route = Endpoints.admin.flashcards + `/${deckId}`
     await deleteWithToken(route)
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isDeletingDeck', value: false }))
   }
