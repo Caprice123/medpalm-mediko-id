@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSessionDetail } from '@store/oscePractice/userAction'
+import { SessionResultSkeleton } from '@components/common/SkeletonCard'
 import HasilTab from './components/tabs/HasilTab'
 import ChatsTab from './components/tabs/ChatsTab'
 import ObservationTab from './components/tabs/ObservationTab'
@@ -102,10 +103,7 @@ function SessionResult() {
   if (loading.isLoadingSessionDetail) {
     return (
       <Container>
-        <LoadingContainer>
-          <LoadingSpinner />
-          <div style={{ marginTop: '1rem' }}>Memuat detail sesi...</div>
-        </LoadingContainer>
+        <SessionResultSkeleton />
       </Container>
     )
   }

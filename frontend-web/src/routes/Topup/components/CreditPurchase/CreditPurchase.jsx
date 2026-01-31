@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchPricingPlans, purchasePricingPlan } from '@store/pricing/action'
+import { CreditPurchaseSkeleton } from '@components/common/SkeletonCard'
 import {
   Modal,
   ModalContent,
@@ -107,89 +108,91 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           {/* Plan Selection */}
-          <>
-              <FilterTabs>
-            <FilterTab
-              $active={activeFilter === 'all'}
-              onClick={() => setActiveFilter('all')}
-            >
-              Semua Paket
-            </FilterTab>
-            <FilterTab
-              $active={activeFilter === 'credits'}
-              onClick={() => setActiveFilter('credits')}
-            >
-              Kredit
-            </FilterTab>
-            <FilterTab
-              $active={activeFilter === 'subscription'}
-              onClick={() => setActiveFilter('subscription')}
-            >
-              Berlangganan
-            </FilterTab>
-            <FilterTab
-              $active={activeFilter === 'hybrid'}
-              onClick={() => setActiveFilter('hybrid')}
-            >
-              Paket Hybrid
-            </FilterTab>
-          </FilterTabs>
-
           {loading ? (
-            <LoadingState>Memuat paket...</LoadingState>
-          ) : filteredPlans.length > 0 ? (
-            <PlansGrid>
-              {filteredPlans.map((plan) => (
-                <PlanCard key={plan.id}>
-                  {plan.isPopular && <PopularBadge>Paling Populer</PopularBadge>}
-                  <PlanName>{plan.name}</PlanName>
-
-                  <PlanCredits>
-                    {plan.bundleType === 'subscription' ? (
-                      `${plan.durationDays || 0} Hari Akses`
-                    ) : plan.bundleType === 'hybrid' ? (
-                      <>
-                        {(plan.creditsIncluded || 0).toLocaleString()} Kredit
-                        <br />
-                        {plan.durationDays || 0} Hari
-                      </>
-                    ) : (
-                      `${(plan.creditsIncluded || 0).toLocaleString()} Kredit`
-                    )}
-                  </PlanCredits>
-
-                  <PlanPrice>
-                    Rp {Number(plan.price || 0).toLocaleString('id-ID')}
-                    {plan.discount > 0 && (
-                      <DiscountBadge>Hemat {plan.discount}%</DiscountBadge>
-                    )}
-                  </PlanPrice>
-
-                  <PlanDescription>
-                    {plan.description || 'Akses semua fitur pembelajaran premium'}
-                  </PlanDescription>
-
-                  <Button
-                    variant="primary"
-                    onClick={() => handlePlanSelect(plan)}
-                    fullWidth
-                    disabled={purchasingPlanId === plan.id}
-                  >
-                    {purchasingPlanId === plan.id ? 'Memproses...' : 'Pilih Paket'}
-                  </Button>
-                </PlanCard>
-              ))}
-            </PlansGrid>
+            <CreditPurchaseSkeleton planCount={6} />
           ) : (
-            <EmptyState>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>
-              <div>Tidak ada paket tersedia</div>
-              <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                Pilih kategori lain atau coba lagi nanti
-              </div>
-            </EmptyState>
+            <>
+              <FilterTabs>
+                <FilterTab
+                  $active={activeFilter === 'all'}
+                  onClick={() => setActiveFilter('all')}
+                >
+                  Semua Paket
+                </FilterTab>
+                <FilterTab
+                  $active={activeFilter === 'credits'}
+                  onClick={() => setActiveFilter('credits')}
+                >
+                  Kredit
+                </FilterTab>
+                <FilterTab
+                  $active={activeFilter === 'subscription'}
+                  onClick={() => setActiveFilter('subscription')}
+                >
+                  Berlangganan
+                </FilterTab>
+                <FilterTab
+                  $active={activeFilter === 'hybrid'}
+                  onClick={() => setActiveFilter('hybrid')}
+                >
+                  Paket Hybrid
+                </FilterTab>
+              </FilterTabs>
+
+              {filteredPlans.length > 0 ? (
+                <PlansGrid>
+                  {filteredPlans.map((plan) => (
+                    <PlanCard key={plan.id}>
+                      {plan.isPopular && <PopularBadge>Paling Populer</PopularBadge>}
+                      <PlanName>{plan.name}</PlanName>
+
+                      <PlanCredits>
+                        {plan.bundleType === 'subscription' ? (
+                          `${plan.durationDays || 0} Hari Akses`
+                        ) : plan.bundleType === 'hybrid' ? (
+                          <>
+                            {(plan.creditsIncluded || 0).toLocaleString()} Kredit
+                            <br />
+                            {plan.durationDays || 0} Hari
+                          </>
+                        ) : (
+                          `${(plan.creditsIncluded || 0).toLocaleString()} Kredit`
+                        )}
+                      </PlanCredits>
+
+                      <PlanPrice>
+                        Rp {Number(plan.price || 0).toLocaleString('id-ID')}
+                        {plan.discount > 0 && (
+                          <DiscountBadge>Hemat {plan.discount}%</DiscountBadge>
+                        )}
+                      </PlanPrice>
+
+                      <PlanDescription>
+                        {plan.description || 'Akses semua fitur pembelajaran premium'}
+                      </PlanDescription>
+
+                      <Button
+                        variant="primary"
+                        onClick={() => handlePlanSelect(plan)}
+                        fullWidth
+                        disabled={purchasingPlanId === plan.id}
+                      >
+                        {purchasingPlanId === plan.id ? 'Memproses...' : 'Pilih Paket'}
+                      </Button>
+                    </PlanCard>
+                  ))}
+                </PlansGrid>
+              ) : (
+                <EmptyState>
+                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>
+                  <div>Tidak ada paket tersedia</div>
+                  <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                    Pilih kategori lain atau coba lagi nanti
+                  </div>
+                </EmptyState>
+              )}
+            </>
           )}
-          </>
         </ModalBody>
       </ModalContent>
     </Modal>

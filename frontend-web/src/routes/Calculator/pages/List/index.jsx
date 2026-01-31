@@ -35,14 +35,16 @@ function CalculatorPage() {
 
         <CalculatorList />
 
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isGetListCalculatorsLoading}
-          variant="user"
-          language="id"
-        />
+        {!loading.isGetListCalculatorsLoading && (
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isGetListCalculatorsLoading}
+            variant="admin"
+            language="id"
+          />
+        )}
       </CalculatorSelectionContainer>
     </Container>
   )

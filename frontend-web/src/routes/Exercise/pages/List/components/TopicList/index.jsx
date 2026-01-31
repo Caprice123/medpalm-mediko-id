@@ -3,9 +3,9 @@ import { useMemo } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import { ExerciseRoute } from '../../../../routes'
 import {
-  LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
@@ -33,12 +33,12 @@ function TopicList() {
     return tags?.find(tag => tag.name === 'semester')?.id
   }, [tags])
 
-  // Loading state
-  if (loading.isTopicsLoading) {
-    return <LoadingOverlay>Memuat topik latihan...</LoadingOverlay>
+  // Loading state - show skeleton when loading OR when we don't know loading state yet
+  if (loading.isTopicsLoading || (topics.length === 0 && loading.isTopicsLoading !== false)) {
+    return <LearningContentSkeletonGrid count={6} statsCount={2} />
   }
 
-  // Empty state
+  // Empty state - only show when we're sure loading is complete
   if (topics.length === 0) {
     return (
       <EmptyState>

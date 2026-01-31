@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
+import { CalculatorSkeletonGrid } from '@components/common/SkeletonCard'
 import {
-  LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
@@ -26,7 +26,7 @@ function CalculatorList() {
 
   // Loading state
   if (loading.isGetListCalculatorsLoading) {
-    return <LoadingOverlay>Memuat kalkulator...</LoadingOverlay>
+    return <CalculatorSkeletonGrid count={6} />
   }
 
   // Empty state

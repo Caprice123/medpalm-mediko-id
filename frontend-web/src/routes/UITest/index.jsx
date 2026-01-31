@@ -6,6 +6,7 @@ import CurrencyInput from '@components/common/CurrencyInput'
 import Textarea from '@components/common/Textarea'
 import Table from '@components/common/Table'
 import FileUpload from '@components/common/FileUpload'
+import Loading from '@components/common/Loading'
 import { Card, CardHeader, CardBody, CardFooter } from '@components/common/Card'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
@@ -1192,6 +1193,299 @@ function UITest() {
                 emptyText="No users found"
                 emptySubtext="Try adding some users to get started"
               />
+            </ComponentDemo>
+          </ComponentCard>
+        </ComponentGrid>
+      </Section>
+
+      {/* Loading Component Section */}
+      <Section>
+        <SectionTitle>Loading Component</SectionTitle>
+        <ComponentGrid>
+          <ComponentCard>
+            <ComponentLabel>Spinner Types</ComponentLabel>
+            <ComponentDemo>
+              <StateLabel>Oval (Default)</StateLabel>
+              <Loading type="oval" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Three Dots</StateLabel>
+              <Loading type="dots" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Tail Spin</StateLabel>
+              <Loading type="tailspin" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Circles</StateLabel>
+              <Loading type="circles" size="medium" />
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard>
+            <ComponentLabel>More Spinner Types</ComponentLabel>
+            <ComponentDemo>
+              <StateLabel>Rotating Lines</StateLabel>
+              <Loading type="rotating" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Puff</StateLabel>
+              <Loading type="puff" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Rings</StateLabel>
+              <Loading type="rings" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Color Ring</StateLabel>
+              <Loading type="color-ring" size="medium" />
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard>
+            <ComponentLabel>Spinner Sizes</ComponentLabel>
+            <ComponentDemo>
+              <StateLabel>Small (40px)</StateLabel>
+              <Loading type="oval" size="small" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Medium (60px)</StateLabel>
+              <Loading type="oval" size="medium" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Large (80px)</StateLabel>
+              <Loading type="oval" size="large" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Custom Size (100px)</StateLabel>
+              <Loading type="oval" size={100} />
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard>
+            <ComponentLabel>With Text</ComponentLabel>
+            <ComponentDemo>
+              <StateLabel>Loading with text</StateLabel>
+              <Loading type="oval" size="medium" text="Loading..." />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Custom text</StateLabel>
+              <Loading type="tailspin" size="medium" text="Please wait..." textSize="large" />
+            </ComponentDemo>
+            <ComponentDemo>
+              <StateLabel>Fetching data</StateLabel>
+              <Loading type="circles" size="medium" text="Fetching data..." textColor="#6BB9E8" textWeight="500" />
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Color Variations</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <StateLabel>Primary Blue</StateLabel>
+                  <Loading type="oval" size="medium" color="#6BB9E8" text="Primary" />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <StateLabel>Success Green</StateLabel>
+                  <Loading type="oval" size="medium" color="#8DC63F" text="Success" />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <StateLabel>Danger Red</StateLabel>
+                  <Loading type="oval" size="medium" color="#ef4444" text="Error" />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <StateLabel>Warning Orange</StateLabel>
+                  <Loading type="oval" size="medium" color="#f59e0b" text="Warning" />
+                </div>
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Overlay Examples</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                  <p style={{ padding: '1rem', margin: 0 }}>Content behind overlay</p>
+                  <Loading overlay type="oval" size="small" text="Loading..." />
+                </div>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                  <p style={{ padding: '1rem', margin: 0 }}>Content with blur</p>
+                  <Loading overlay blur type="tailspin" size="small" text="Processing..." />
+                </div>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                  <p style={{ padding: '1rem', margin: 0 }}>Dark overlay</p>
+                  <Loading overlay overlayColor="rgba(0,0,0,0.5)" type="rotating" size="small" text="Please wait..." textColor="#fff" />
+                </div>
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Usage in Cards</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                <Card>
+                  <CardHeader title="Loading State" />
+                  <CardBody>
+                    <Loading type="dots" size="medium" text="Loading content..." minHeight="150px" />
+                  </CardBody>
+                </Card>
+                <Card>
+                  <CardHeader title="Processing" />
+                  <CardBody>
+                    <Loading type="mutating" size="medium" text="Processing your request..." minHeight="150px" />
+                  </CardBody>
+                </Card>
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Component Props Documentation</ComponentLabel>
+            <ComponentDemo>
+              <div style={{
+                background: '#f9fafb',
+                padding: '1.5rem',
+                borderRadius: '8px',
+                fontSize: '0.875rem'
+              }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                  Loading Component Props
+                </h4>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>type</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>oval</td>
+                      <td style={{ padding: '0.5rem' }}>Spinner type: oval, dots, circles, tailspin, puff, rings, hearts, grid, audio, triangle, bars, revolving, rotating, mutating, watch, color-ring, ball-triangle</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>size</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String | Number</td>
+                      <td style={{ padding: '0.5rem' }}>medium</td>
+                      <td style={{ padding: '0.5rem' }}>small (40), medium (60), large (80), or custom number</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>color</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>#6BB9E8</td>
+                      <td style={{ padding: '0.5rem' }}>Primary spinner color</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>secondaryColor</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>#8DC63F</td>
+                      <td style={{ padding: '0.5rem' }}>Secondary color for some spinners</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>text</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Loading text to display below spinner</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textSize</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>medium</td>
+                      <td style={{ padding: '0.5rem' }}>small, medium, large</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textColor</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>#6b7280</td>
+                      <td style={{ padding: '0.5rem' }}>Text color</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textWeight</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>400</td>
+                      <td style={{ padding: '0.5rem' }}>Text font weight</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>overlay</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
+                      <td style={{ padding: '0.5rem' }}>false</td>
+                      <td style={{ padding: '0.5rem' }}>Show as overlay with background</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>overlayColor</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>rgba(255,255,255,0.9)</td>
+                      <td style={{ padding: '0.5rem' }}>Background color for overlay</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>blur</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
+                      <td style={{ padding: '0.5rem' }}>false</td>
+                      <td style={{ padding: '0.5rem' }}>Apply backdrop blur effect when overlay is true</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>height</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>auto</td>
+                      <td style={{ padding: '0.5rem' }}>Container height</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>minHeight</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>auto</td>
+                      <td style={{ padding: '0.5rem' }}>Container minimum height</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>width</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>100%</td>
+                      <td style={{ padding: '0.5rem' }}>Container width</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>padding</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>0</td>
+                      <td style={{ padding: '0.5rem' }}>Container padding</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>gap</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>1rem</td>
+                      <td style={{ padding: '0.5rem' }}>Gap between spinner and text</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                  <strong style={{ color: '#1e40af' }}>💡 Usage Examples:</strong>
+                  <div style={{ marginTop: '0.75rem', background: '#1f2937', color: '#e5e7eb', padding: '1rem', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
+{`// Simple loading
+<Loading type="oval" size="medium" text="Loading..." />
+
+// Custom colors
+<Loading type="tailspin" color="#8DC63F" text="Processing..." />
+
+// Overlay loading
+<div style={{ position: 'relative' }}>
+  <YourContent />
+  <Loading overlay blur type="circles" text="Loading..." />
+</div>
+
+// In a card
+<Card>
+  <CardBody>
+    <Loading type="dots" minHeight="200px" text="Fetching data..." />
+  </CardBody>
+</Card>`}
+                  </div>
+                </div>
+              </div>
             </ComponentDemo>
           </ComponentCard>
         </ComponentGrid>

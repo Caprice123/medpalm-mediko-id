@@ -39,15 +39,16 @@ function AnatomyQuizPage() {
 
           <QuizList />
 
-          
-        <Pagination
-            currentPage={pagination.page}
-            isLastPage={pagination.isLastPage}
-            onPageChange={handlePageChange}
-            isLoading={loading.isGetListAnatomyQuizLoading}
-            variant="admin"
-            language="id"
-        />
+          {!loading.isGetListAnatomyQuizLoading && (
+            <Pagination
+              currentPage={pagination.page}
+              isLastPage={pagination.isLastPage}
+              onPageChange={handlePageChange}
+              isLoading={loading.isGetListAnatomyQuizLoading}
+              variant="admin"
+              language="id"
+            />
+          )}
 
         </Content>
       </Container>

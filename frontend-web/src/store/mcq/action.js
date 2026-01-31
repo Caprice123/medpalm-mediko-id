@@ -39,7 +39,6 @@ export const fetchMcqTopics = () => async (dispatch, getState) => {
     const response = await getWithToken(route, queryParams)
 
     const data = response.data
-    console.log(data)
     dispatch(setTopics(data.data || []))
     dispatch(setPagination(data.pagination || { page: 1, limit: 30, isLastPage: false }))
   } catch (err) {

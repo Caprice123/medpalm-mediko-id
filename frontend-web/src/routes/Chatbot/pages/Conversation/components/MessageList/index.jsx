@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
+import { ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   Container,
@@ -146,12 +147,7 @@ function MessageList({ isLoading, isSending, scrollTrigger }) {
   }, [])
 
   if (isLoading) {
-    return (
-      <EmptyState>
-        <div>⏳</div>
-        <div>Memuat pesan...</div>
-      </EmptyState>
-    )
+    return <ChatbotMessagesSkeleton messageCount={6} />
   }
 
   if (!messages || messages.length === 0) {

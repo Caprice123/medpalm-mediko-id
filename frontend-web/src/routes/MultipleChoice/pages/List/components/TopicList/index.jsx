@@ -2,9 +2,9 @@ import { useSelector } from 'react-redux'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import { MultipleChoiceRoute } from '../../../../routes'
 import {
-  LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
@@ -29,7 +29,7 @@ function TopicList() {
 
   // Loading state
   if (loading?.isTopicsLoading) {
-    return <LoadingOverlay>Memuat topik...</LoadingOverlay>
+    return <LearningContentSkeletonGrid count={6} hasTwoButtons={true} statsCount={3} />
   }
 
   // Empty state

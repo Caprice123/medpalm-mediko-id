@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/action'
 import { actions, selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
+import { ChatbotMessagesSkeleton, ChatbotLoadingIndicator } from '@components/common/SkeletonCard'
 import MessageList from './components/MessageList'
 import MessageInput from './components/MessageInput'
 import ModeSelector from './components/ModeSelector'
@@ -261,10 +262,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   if (loading.isCurrentConversationLoading && !currentConversation) {
     return (
       <Container>
-        <LoadingState>
-          <div>⏳</div>
-          <div>Memuat percakapan...</div>
-        </LoadingState>
+        <ChatbotMessagesSkeleton messageCount={6} />
       </Container>
     )
   }
@@ -311,10 +309,8 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       />
 
       <ChatArea ref={chatAreaRef} onScroll={handleScroll}>
-        {!pagination.isLastPage && (
-          <div style={{ textAlign: 'center', padding: '10px', color: '#6b7280', fontSize: '13px' }}>
-            {loading.isMessagesLoading && currentPage > 1 ? '⏳ Memuat pesan lama...' : ''}
-          </div>
+        {!pagination.isLastPage && loading.isMessagesLoading && currentPage > 1 && (
+          <ChatbotLoadingIndicator variant="spinner" />
         )}
         <MessageList
           key={conversationId}

@@ -3,6 +3,7 @@ import { useAppDispatch } from '@store/store'
 import { sendMessage, loadOlderMessages, stopStreaming } from '@store/skripsi/action'
 import { selectMessagesForActiveTab, selectLoadingForActiveTab } from '@store/skripsi/reducer'
 import { FaPaperPlane, FaStop } from 'react-icons/fa'
+import { ChatbotLoadingIndicator, ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   ChatPanel as StyledChatPanel,
@@ -113,6 +114,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
   // Get per-tab loading state
   const tabLoading = useSelector(selectLoadingForActiveTab)
   const isSendingMessage = tabLoading.isSendingMessage || false
+  const isInitialLoading = tabLoading.isMessagesLoading || false
 
   // Get streaming state from Redux (same pattern as chatbot)
   const streamingStateByTab = useSelector(state => state.skripsi.streamingStateByTab)
@@ -218,11 +220,11 @@ const ChatPanel = memo(({ currentTab, style }) => {
     <StyledChatPanel style={style}>
       <ChatMessages ref={chatMessagesRef} onScroll={handleScroll}>
         {isLoadingOlder && hasMore && (
-          <div style={{ textAlign: 'center', padding: '10px', color: '#9ca3af', fontSize: '13px' }}>
-            Memuat pesan lama...
-          </div>
+          <ChatbotLoadingIndicator variant="spinner" />
         )}
-        {messages.length === 0 ? (
+        {isInitialLoading && messages.length === 0 ? (
+          <ChatbotMessagesSkeleton messageCount={4} />
+        ) : messages.length === 0 ? (
           <EmptyMessages>
             Belum ada percakapan. Mulai chat dengan AI untuk mendapatkan bantuan!
           </EmptyMessages>

@@ -192,7 +192,7 @@ function PricingPlans() {
           onPageChange={handlePageChange}
           isLoading={loading}
           variant="admin"
-          language="en"
+          language="id"
         />
       )}
 

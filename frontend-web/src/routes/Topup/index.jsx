@@ -4,6 +4,7 @@ import { fetchPurchaseHistory, fetchUserStatus } from '@store/pricing/action'
 import Table from '@components/common/Table'
 import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
+import { TopupTableSkeleton } from '@components/common/SkeletonCard'
 import CreditPurchase from './components/CreditPurchase/CreditPurchase'
 import TransactionDetail from './components/TransactionDetail/TransactionDetail'
 import {
@@ -230,25 +231,31 @@ function Topup() {
           📋 Riwayat Transaksi
         </SectionTitle>
 
-        <Table
-          columns={columns}
-          data={safeHistory}
-          loading={loading}
-          striped
-          hoverable
-          emptyText="Belum ada transaksi"
-          emptySubtext="Mulai top up untuk melihat riwayat transaksi Anda"
-        />
+        {loading ? (
+          <TopupTableSkeleton rowCount={5} />
+        ) : (
+          <>
+            <Table
+              columns={columns}
+              data={safeHistory}
+              loading={loading}
+              striped
+              hoverable
+              emptyText="Belum ada transaksi"
+              emptySubtext="Mulai top up untuk melihat riwayat transaksi Anda"
+            />
 
-        {(pagination.page > 1 || !pagination.isLastPage) && (
-          <Pagination
-            currentPage={pagination.page}
-            isLastPage={pagination.isLastPage}
-            onPageChange={handlePageChange}
-            isLoading={loading}
-            variant="user"
-            language="id"
-          />
+            {!loading && (pagination.page > 1 || !pagination.isLastPage) && (
+              <Pagination
+                currentPage={pagination.page}
+                isLastPage={pagination.isLastPage}
+                onPageChange={handlePageChange}
+                isLoading={loading}
+                variant="admin"
+                language="id"
+              />
+            )}
+          </>
         )}
       </TableSection>
 

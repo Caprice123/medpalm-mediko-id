@@ -6,6 +6,7 @@ import {
   attachPaymentEvidence,
   clearTransactionDetail
 } from '@store/pricing/action'
+import { TransactionDetailSkeleton } from '@components/common/SkeletonCard'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
 import {
@@ -138,19 +139,13 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
         </ModalHeader>
 
         <ModalBody>
-          {loading.isTransactionDetailLoading && (
-            <LoadingState>
-              Memuat detail transaksi...
-            </LoadingState>
-          )}
-
-          {error && (
+          {loading.isTransactionDetailLoading ? (
+            <TransactionDetailSkeleton />
+          ) : error ? (
             <ErrorState>
               {error}
             </ErrorState>
-          )}
-
-          {!loading.isTransactionDetailLoading && !error && transaction && (
+          ) : transaction ? (
             <>
               <DetailSection>
                 <SectionTitle>Informasi Paket</SectionTitle>
@@ -290,7 +285,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                 </ActionButtons>
               )}
             </>
-          )}
+          ) : null}
         </ModalBody>
       </ModalContent>
     </Modal>

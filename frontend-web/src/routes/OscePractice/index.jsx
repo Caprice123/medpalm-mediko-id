@@ -6,6 +6,7 @@ import { actions } from '@store/oscePractice/reducer'
 import SessionCard from './components/SessionCard'
 import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
+import { OsceSessionSkeletonGrid } from '@components/common/SkeletonCard'
 import {
   PageContainer,
   Header,
@@ -14,8 +15,6 @@ import {
   Section,
   SectionHeader,
   SectionTitle,
-  LoadingContainer,
-  LoadingSpinner,
   EmptyState,
   Container,
 } from './OscePractice.styles'
@@ -38,18 +37,19 @@ function OscePracticePage() {
     dispatch(fetchUserOsceSessions())
   }
 
-  // Loading state
-  if (loading.isLoadingUserTopics && loading.isLoadingUserSessions) {
+  // Initial loading state
+  if (loading.isLoadingUserSessions) {
     return (
-
-    <Container>
-      <PageContainer>
-        <LoadingContainer>
-          <LoadingSpinner />
-          <div style={{ marginTop: '1rem' }}>Memuat data...</div>
-        </LoadingContainer>
-      </PageContainer>
-    </Container>
+      <Container>
+        <PageContainer>
+          <Section>
+            <SectionHeader>
+              <SectionTitle>Riwayat Latihan</SectionTitle>
+            </SectionHeader>
+            <OsceSessionSkeletonGrid count={6} />
+          </Section>
+        </PageContainer>
+      </Container>
     )
   }
 
@@ -66,10 +66,7 @@ function OscePracticePage() {
             </SectionHeader>
 
             {loading.isLoadingUserSessions ? (
-            <LoadingContainer>
-                <LoadingSpinner />
-                <div style={{ marginTop: '1rem' }}>Memuat riwayat...</div>
-            </LoadingContainer>
+              <OsceSessionSkeletonGrid count={6} />
             ) : userSessions.length === 0 ? (
             <EmptyState>
                 <div>📋</div>
@@ -86,14 +83,16 @@ function OscePracticePage() {
                   ))}
               </div>
 
-              <Pagination
-                currentPage={sessionsPagination.page}
-                isLastPage={sessionsPagination.isLastPage}
-                onPageChange={handlePageChange}
-                isLoading={loading.isLoadingUserSessions}
-                variant="user"
-                language="id"
-              />
+              {!loading.isLoadingUserSessions && (
+                <Pagination
+                  currentPage={sessionsPagination.page}
+                  isLastPage={sessionsPagination.isLastPage}
+                  onPageChange={handlePageChange}
+                  isLoading={loading.isLoadingUserSessions}
+                  variant="admin"
+                  language="id"
+                />
+              )}
             </>
             )}
         </Section>

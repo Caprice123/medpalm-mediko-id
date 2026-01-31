@@ -236,6 +236,7 @@ function TopicSelectionModal({ onClose }) {
                 isLastPage={pagination.isLastPage}
                 onPageChange={handlePageChange}
                 isLoading={loading.isLoadingUserTopics}
+                variant="admin"
                 language="id"
               />
             </div>

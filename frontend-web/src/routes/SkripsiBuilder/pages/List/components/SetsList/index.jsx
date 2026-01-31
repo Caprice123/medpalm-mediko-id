@@ -5,6 +5,7 @@ import { FaTrash } from 'react-icons/fa'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import Modal from '@components/common/Modal'
+import { SkripsiSetSkeletonGrid } from '@components/common/SkeletonCard'
 import { useAppDispatch } from '@store/store'
 import { deleteSet } from '@store/skripsi/action'
 import {
@@ -45,7 +46,7 @@ function SetsList() {
 
   // Loading state
   if (loading?.isSetsLoading) {
-    return <LoadingOverlay>Memuat data...</LoadingOverlay>
+    return <SkripsiSetSkeletonGrid count={6} />
   }
 
   // Empty state

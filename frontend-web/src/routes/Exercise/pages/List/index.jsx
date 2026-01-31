@@ -27,14 +27,16 @@ function ExerciseListPage() {
 
         <TopicList />
 
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isTopicsLoading}
-          variant="user"
-          language="id"
+        {!loading.isTopicsLoading && (
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isTopicsLoading}
+            variant="admin"
+            language="id"
           />
+        )}
       </TopicSelectionContainer>
     </Container>
   )

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import 'react-photo-view/dist/react-photo-view.css'
 import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import { SummaryNoteDetailSkeleton } from '@components/common/SkeletonCard'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
 import { fetchUserSummaryNoteDetail } from '@store/summaryNotes/action'
 import { actions } from '@store/summaryNotes/reducer'
@@ -16,8 +17,7 @@ import {
   TopicInfo,
   TagList,
   Tag,
-  ContentSection,
-  LoadingSpinner
+  ContentSection
 } from './Detail.styles'
 
 const SummaryNotesDetail = () => {
@@ -65,10 +65,7 @@ const SummaryNotesDetail = () => {
     return (
       <Container>
         <Content>
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <LoadingSpinner />
-            <p style={{ marginTop: '1rem', color: '#64748b' }}>Memuat ringkasan...</p>
-          </div>
+          <SummaryNoteDetailSkeleton />
         </Content>
       </Container>
     )
@@ -85,7 +82,7 @@ const SummaryNotesDetail = () => {
           </HeaderTop>
 
           <TopicInfo>
-            <h2>📝 {note.title}</h2>
+            <h2>{note.title}</h2>
             {note.description && (
               <p>{note.description}</p>
             )}

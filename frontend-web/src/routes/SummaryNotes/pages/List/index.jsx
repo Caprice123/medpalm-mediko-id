@@ -35,14 +35,16 @@ function SummaryNotesPage() {
 
         <NotesList />
 
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isNotesLoading}
-          variant="admin"
-          language="id"
-        />
+        {!loading.isNotesLoading && (
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isNotesLoading}
+            variant="admin"
+            language="id"
+          />
+        )}
       </Content>
     </Container>
   )

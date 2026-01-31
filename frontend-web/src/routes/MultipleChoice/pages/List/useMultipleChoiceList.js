@@ -9,7 +9,7 @@ import { actions } from '@store/mcq/reducer'
 export const useMultipleChoiceList = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { topics, loading, pagination, filter } = useSelector(state => state.mcq)
+  const { topics, loading, pagination } = useSelector(state => state.mcq)
   const { tags } = useSelector(state => state.tags)
 
   const [filters, setFilters] = useState({

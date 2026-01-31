@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import { SummaryNoteSkeletonGrid } from '@components/common/SkeletonCard'
 import {
-  LoadingOverlay,
   EmptyState,
   EmptyStateIcon,
   EmptyStateText,
@@ -21,7 +21,7 @@ function NotesList() {
 
   // Loading state
   if (loading?.isNotesLoading) {
-    return <LoadingOverlay>Memuat ringkasan...</LoadingOverlay>
+    return <SummaryNoteSkeletonGrid count={6} />
   }
 
   // Empty state

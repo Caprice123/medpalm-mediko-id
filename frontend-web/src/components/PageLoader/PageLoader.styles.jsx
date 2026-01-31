@@ -2,13 +2,14 @@ import styled from 'styled-components';
 import { colors } from '@config/colors';
 
 export const LoaderWrapper = styled.div`
-  position: absolute;
+  position: ${props => props.fullScreen ? 'fixed' : 'absolute'};
   inset: 0;
   z-index: 100000;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: ${props => props.fullScreen ? '100vw' : '100%'};
   height: ${props => props.fullScreen ? '100vh' : '400px'};
   min-height: ${props => props.minHeight || 'auto'};
   background: ${props => props.fullScreen

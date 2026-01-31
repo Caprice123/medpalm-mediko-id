@@ -27,14 +27,16 @@ function FlashcardListPage() {
 
         <DeckList />
 
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isGetListDecksLoading}
-          variant="user"
-          language="id"
-        />
+        {!loading.isGetListDecksLoading && (
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isGetListDecksLoading}
+            variant="admin"
+            language="id"
+          />
+        )}
       </DeckSelectionContainer>
     </Container>
   )

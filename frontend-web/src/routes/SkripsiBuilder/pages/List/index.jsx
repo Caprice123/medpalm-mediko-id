@@ -69,14 +69,16 @@ const SkripsiList = () => {
 
         <SetsList />
 
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isSetsLoading}
-          variant="admin"
-          language="id"
-        />
+        {!loading.isSetsLoading && (
+          <Pagination
+            currentPage={pagination.page}
+            isLastPage={pagination.isLastPage}
+            onPageChange={handlePageChange}
+            isLoading={loading.isSetsLoading}
+            variant="admin"
+            language="id"
+          />
+        )}
       </ContentWrapper>
 
       {/* Create Set Modal */}

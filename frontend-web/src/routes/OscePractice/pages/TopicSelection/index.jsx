@@ -9,6 +9,7 @@ import Pagination from '@components/Pagination'
 import FilterComponent from '@components/common/Filter'
 import Dropdown from '@components/common/Dropdown'
 import TextInput from '@components/common/TextInput'
+import { OsceTopicSkeletonGrid } from '@components/common/SkeletonCard'
 import {
   PageContainer,
   Header,
@@ -29,8 +30,6 @@ import {
   StatValue,
   CardActions,
   EmptyState,
-  LoadingContainer,
-  LoadingSpinner,
   Container,
 } from './TopicSelection.styles'
 
@@ -148,10 +147,7 @@ function TopicSelection() {
             </SearchSection>
 
             {loading.isLoadingUserTopics ? (
-                <LoadingContainer>
-                <LoadingSpinner />
-                <div style={{ marginTop: '1rem' }}>Memuat topik...</div>
-                </LoadingContainer>
+                <OsceTopicSkeletonGrid count={6} />
             ) : userTopics.length === 0 ? (
                 <EmptyState>
                 <div style={{ fontSize: '3rem' }}>🔍</div>
@@ -240,15 +236,18 @@ function TopicSelection() {
                     })}
                 </TopicsGrid>
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-                    <Pagination
-                    currentPage={pagination.page}
-                    isLastPage={pagination.isLastPage}
-                    onPageChange={handlePageChange}
-                    isLoading={loading.isLoadingUserTopics}
-                    language="id"
-                    />
-                </div>
+                {!loading.isLoadingUserTopics && (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                      <Pagination
+                        currentPage={pagination.page}
+                        isLastPage={pagination.isLastPage}
+                        onPageChange={handlePageChange}
+                        isLoading={loading.isLoadingUserTopics}
+                        variant="admin"
+                        language="id"
+                      />
+                  </div>
+                )}
                 </>
             )}
         </Container>

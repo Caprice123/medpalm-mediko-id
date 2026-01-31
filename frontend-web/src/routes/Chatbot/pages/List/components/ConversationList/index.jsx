@@ -1,4 +1,5 @@
 import React from 'react'
+import { ConversationListSkeleton } from '@components/common/SkeletonCard'
 import {
   Container,
   ConversationItem,
@@ -38,10 +39,7 @@ const ConversationList = ({
   if (isLoading) {
     return (
       <Container>
-        <LoadingContainer>
-          <LoadingSpinner>⏳</LoadingSpinner>
-          <div>Memuat percakapan...</div>
-        </LoadingContainer>
+        <ConversationListSkeleton count={8} />
       </Container>
     )
   }
