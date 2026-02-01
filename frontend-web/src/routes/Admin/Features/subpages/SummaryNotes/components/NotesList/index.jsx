@@ -1,10 +1,8 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   NotesGrid,
   NoteCard,
   NoteCardHeader,
@@ -30,15 +28,13 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (notes.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📝</EmptyStateIcon>
-        <EmptyStateText>No summary notes found</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Create Your First Summary Note
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="📝"
+        title="No summary notes found"
+        actionLabel={onCreateFirst && "Create Your First Summary Note"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 

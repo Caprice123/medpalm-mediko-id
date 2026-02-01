@@ -2,12 +2,10 @@ import { useSelector } from 'react-redux'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import { MultipleChoiceRoute } from '../../../../routes'
 import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   TopicsGrid,
   TopicDescription,
   TopicStats,
@@ -35,10 +33,10 @@ function TopicList() {
   // Empty state
   if (topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📝</EmptyStateIcon>
-        <EmptyStateText>Tidak ada topik ditemukan</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="📝"
+        title="Tidak ada topik ditemukan"
+      />
     )
   }
 

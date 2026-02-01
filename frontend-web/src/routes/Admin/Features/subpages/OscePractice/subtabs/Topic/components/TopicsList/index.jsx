@@ -1,10 +1,8 @@
 import { useSelector } from 'react-redux'
 import TopicCard from '../TopicCard'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   TopicsGrid
 } from './TopicsList.styles'
 import Button from '@components/common/Button'
@@ -20,15 +18,13 @@ function TopicsList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>🏥</EmptyStateIcon>
-        <EmptyStateText>Belum ada topic OSCE</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Buat Topic Pertama
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="🏥"
+        title="Belum ada topic OSCE"
+        actionLabel={onCreateFirst && "Buat Topic Pertama"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 

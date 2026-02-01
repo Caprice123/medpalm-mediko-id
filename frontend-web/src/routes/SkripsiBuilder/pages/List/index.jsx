@@ -21,7 +21,7 @@ const SkripsiList = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const { loading, pagination } = useAppSelector((state) => state.skripsi)
+  const { loading, pagination, sets } = useAppSelector((state) => state.skripsi)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
@@ -36,6 +36,8 @@ const SkripsiList = () => {
   const handlePageChange = (page) => {
     dispatch(fetchSets(page))
   }
+
+  const hasMorePages = !pagination.isLastPage || pagination.page > 1
 
   const handleCreateSet = async () => {
     if (!formData.title.trim()) {
@@ -69,7 +71,7 @@ const SkripsiList = () => {
 
         <SetsList />
 
-        {!loading.isSetsLoading && (
+        {!loading.isSetsLoading && sets.length > 0 && hasMorePages && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

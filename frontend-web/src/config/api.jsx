@@ -115,9 +115,15 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 dispatch(creditActions.setBalance(balance));
                 dispatch(pricingActions.updateCreditBalance(balance));
             }
+
             return response;
         },
         (error) => {
+            console.error('API Error Interceptor triggered:', error);
+            console.error('Error response:', error.response);
+            console.error('Error status:', error.response?.status);
+            console.error('Error data:', error.response?.data);
+
             // Also check headers in error responses
             const remainingQuota = error.response?.headers?.['x-remaining-quota'];
             if (remainingQuota !== undefined && dispatch) {
@@ -136,10 +142,14 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
 
             // If we get a 403 error, feature is disabled - redirect to dashboard with error message
             if (error.response && error.response.status === 403) {
-                // Dispatch error to common state for display
-                handleApiError(error, dispatch);
                 // Redirect to dashboard
                 navigate('/dashboard');
+            }
+
+            // Handle 500 errors
+            if (error.response && error.response.status === 500) {
+                console.error('Server error (500):', error.response.data);
+                handleApiError(error, dispatch);
             }
 
             return Promise.reject(error);

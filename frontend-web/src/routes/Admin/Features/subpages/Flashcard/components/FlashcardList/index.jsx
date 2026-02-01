@@ -1,10 +1,8 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   QuizzesGrid,
   QuizCard,
   QuizCardHeader,
@@ -33,15 +31,13 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (decks.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📋</EmptyStateIcon>
-        <EmptyStateText>No flashcards found</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Create Your First Quiz
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="📋"
+        title="No flashcards found"
+        actionLabel={onCreateFirst && "Create Your First Quiz"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 

@@ -14,7 +14,7 @@ import Pagination from '@components/Pagination'
 
 function CalculatorPage() {
   const dispatch = useDispatch()
-  const { pagination, loading } = useSelector(state => state.calculator)
+  const { pagination, loading, topics } = useSelector(state => state.calculator)
 
   // Fetch calculators on mount
   useEffect(() => {
@@ -28,6 +28,8 @@ function CalculatorPage() {
     dispatch(getCalculatorTopics())
   }
 
+  const hasMorePages = !pagination.isLastPage || pagination.page > 1
+
   return (
     <Container>
       <CalculatorSelectionContainer>
@@ -35,7 +37,7 @@ function CalculatorPage() {
 
         <CalculatorList />
 
-        {!loading.isGetListCalculatorsLoading && (
+        {!loading.isGetListCalculatorsLoading && topics.length > 0 && hasMorePages && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

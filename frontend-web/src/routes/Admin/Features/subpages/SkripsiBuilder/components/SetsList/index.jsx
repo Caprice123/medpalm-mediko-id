@@ -1,10 +1,8 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   SetsGrid,
   SetCard,
   SetHeader,
@@ -31,10 +29,10 @@ function SetsList({ onView, onDelete }) {
   // Empty state
   if (sets.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📚</EmptyStateIcon>
-        <EmptyStateText>Belum ada skripsi set</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="📚"
+        title="Belum ada skripsi set"
+      />
     )
   }
 

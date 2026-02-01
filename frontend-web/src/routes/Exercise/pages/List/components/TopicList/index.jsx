@@ -3,12 +3,10 @@ import { useMemo } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import { ExerciseRoute } from '../../../../routes'
 import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   TopicGrid,
   TopicDescription,
   TagList,
@@ -41,10 +39,10 @@ function TopicList() {
   // Empty state - only show when we're sure loading is complete
   if (topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📝</EmptyStateIcon>
-        <EmptyStateText>Tidak ada topik latihan ditemukan</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="📝"
+        title="Tidak ada topik latihan ditemukan"
+      />
     )
   }
 

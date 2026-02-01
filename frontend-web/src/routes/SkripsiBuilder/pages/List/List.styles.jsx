@@ -1,9 +1,12 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  min-height: calc(100vh - 63px);
+  min-height: calc(100vh - 90px);
   background: #f0fdfa;
   padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   @media (max-width: 768px) {
     padding: 1.5rem 1rem;
@@ -12,7 +15,10 @@ export const Container = styled.div`
 
 export const ContentWrapper = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 `
 
 export const Header = styled.div`

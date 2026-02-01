@@ -13,12 +13,14 @@ import {
 function ExerciseListPage() {
   useExerciseList()
   const dispatch = useDispatch()
-  const { pagination, loading } = useSelector(state => state.exercise)
+  const { pagination, loading, topics } = useSelector(state => state.exercise)
 
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
     dispatch(fetchExerciseTopics())
   }
+
+  const hasMorePages = !pagination.isLastPage || pagination.page > 1
 
   return (
     <Container>
@@ -27,7 +29,7 @@ function ExerciseListPage() {
 
         <TopicList />
 
-        {!loading.isTopicsLoading && (
+        {!loading.isTopicsLoading && topics.length > 0 && hasMorePages && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

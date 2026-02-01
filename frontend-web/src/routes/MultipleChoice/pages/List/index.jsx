@@ -12,12 +12,14 @@ const List = () => {
     handlePageChange
   } = useMultipleChoiceList()
 
+  const hasMorePages = !pagination.isLastPage || pagination.page > 1
+
   return (
     <Container>
       <Content>
         <Filter />
         <TopicList topics={filteredTopics} />
-        {!loading.isTopicsLoading && (
+        {!loading.isTopicsLoading && filteredTopics.length > 0 && hasMorePages && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

@@ -1,11 +1,9 @@
 import { useSelector } from 'react-redux'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   DeckGrid,
   DeckDescription,
   TagList,
@@ -30,10 +28,10 @@ function DeckList() {
   // Empty state - only show when we're sure loading is complete
   if (decks.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>🎴</EmptyStateIcon>
-        <EmptyStateText>Tidak ada deck flashcard ditemukan</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="🎴"
+        title="Tidak ada deck flashcard ditemukan"
+      />
     )
   }
 

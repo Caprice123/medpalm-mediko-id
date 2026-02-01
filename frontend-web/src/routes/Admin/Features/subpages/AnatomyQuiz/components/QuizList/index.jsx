@@ -1,9 +1,7 @@
 import { useSelector } from 'react-redux'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   QuizzesGrid,
   QuizCard,
   QuizCardHeader,
@@ -33,15 +31,13 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (quizzes.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📋</EmptyStateIcon>
-        <EmptyStateText>No quizzes found</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Create Your First Quiz
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="📋"
+        title="No quizzes found"
+        actionLabel={onCreateFirst && "Create Your First Quiz"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 

@@ -1,9 +1,7 @@
 import { useSelector } from 'react-redux'
+import EmptyState from '@components/common/EmptyState'
 import { CalculatorSkeletonGrid } from '@components/common/SkeletonCard'
 import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   CalculatorGrid,
   CalculatorCard,
   CalculatorCardHeader,
@@ -32,10 +30,10 @@ function CalculatorList() {
   // Empty state
   if (topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>🧮</EmptyStateIcon>
-        <EmptyStateText>Tidak ada kalkulator ditemukan</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="🧮"
+        title="Tidak ada kalkulator ditemukan"
+      />
     )
   }
 

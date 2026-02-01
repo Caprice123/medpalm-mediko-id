@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 
 export const PageContainer = styled.div`
-  min-height: calc(100vh - 63px);
+  min-height: calc(100vh - 90px);
   background: #f0fdfa;
   padding: 2rem;
 

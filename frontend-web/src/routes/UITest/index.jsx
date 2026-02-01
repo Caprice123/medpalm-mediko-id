@@ -7,6 +7,7 @@ import Textarea from '@components/common/Textarea'
 import Table from '@components/common/Table'
 import FileUpload from '@components/common/FileUpload'
 import Loading from '@components/common/Loading'
+import EmptyState from '@components/common/EmptyState'
 import { Card, CardHeader, CardBody, CardFooter } from '@components/common/Card'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
@@ -1593,6 +1594,287 @@ function UITest() {
                 <div>#f9fafb</div>
               </ColorSwatch>
             </ColorPalette>
+          </ComponentCard>
+        </ComponentGrid>
+      </Section>
+
+      {/* Empty State Component Section */}
+      <Section>
+        <SectionTitle>Empty State Component</SectionTitle>
+        <ComponentGrid>
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Basic Empty States</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="📝"
+                    title="Tidak ada set skripsi ditemukan"
+                  />
+                </div>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="🎴"
+                    title="Tidak ada deck flashcard"
+                  />
+                </div>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="💬"
+                    title="Tidak ada percakapan"
+                  />
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                background: '#1f2937',
+                color: '#e5e7eb',
+                padding: '1rem',
+                borderRadius: '6px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem'
+              }}>
+{`<EmptyState
+  icon="📝"
+  title="Tidak ada set skripsi ditemukan"
+/>`}
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>With Description</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <EmptyState
+                  icon="📋"
+                  title="Tidak ada data ditemukan"
+                  description="Anda belum memiliki data apapun. Mulai dengan membuat data baru menggunakan tombol di bawah ini."
+                />
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                background: '#1f2937',
+                color: '#e5e7eb',
+                padding: '1rem',
+                borderRadius: '6px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem'
+              }}>
+{`<EmptyState
+  icon="📋"
+  title="Tidak ada data ditemukan"
+  description="Anda belum memiliki data apapun. Mulai dengan membuat data baru."
+/>`}
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>With Action Button</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <EmptyState
+                  icon="📝"
+                  title="Belum ada catatan"
+                  description="Mulai buat catatan pertama Anda untuk menyimpan informasi penting."
+                  actionLabel="Buat Catatan Baru"
+                  onAction={() => alert('Create new note!')}
+                  actionVariant="primary"
+                />
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                background: '#1f2937',
+                color: '#e5e7eb',
+                padding: '1rem',
+                borderRadius: '6px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem'
+              }}>
+{`<EmptyState
+  icon="📝"
+  title="Belum ada catatan"
+  description="Mulai buat catatan pertama Anda."
+  actionLabel="Buat Catatan Baru"
+  onAction={() => handleCreate()}
+  actionVariant="primary"
+/>`}
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>With Custom Actions</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <EmptyState
+                  icon="🔍"
+                  title="Tidak ada hasil pencarian"
+                  description="Coba gunakan kata kunci yang berbeda atau buat item baru."
+                  customAction={
+                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                      <Button variant="secondary" onClick={() => alert('Clear filters')}>
+                        Reset Filter
+                      </Button>
+                      <Button variant="primary" onClick={() => alert('Create new')}>
+                        Buat Baru
+                      </Button>
+                    </div>
+                  }
+                />
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                background: '#1f2937',
+                color: '#e5e7eb',
+                padding: '1rem',
+                borderRadius: '6px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem'
+              }}>
+{`<EmptyState
+  icon="🔍"
+  title="Tidak ada hasil pencarian"
+  description="Coba gunakan kata kunci yang berbeda."
+  customAction={
+    <>
+      <Button variant="secondary" onClick={handleReset}>
+        Reset Filter
+      </Button>
+      <Button variant="primary" onClick={handleCreate}>
+        Buat Baru
+      </Button>
+    </>
+  }
+/>`}
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Different Contexts</ComponentLabel>
+            <ComponentDemo>
+              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="📊"
+                    title="Tidak ada data statistik"
+                    description="Data statistik akan muncul setelah Anda memulai aktivitas."
+                  />
+                </div>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="🎯"
+                    title="Tidak ada latihan"
+                    description="Mulai belajar dengan memilih topik latihan."
+                    actionLabel="Pilih Topik"
+                    onAction={() => alert('Select topic')}
+                  />
+                </div>
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <EmptyState
+                    icon="⚠️"
+                    title="Koneksi terputus"
+                    description="Tidak dapat memuat data. Periksa koneksi internet Anda."
+                    actionLabel="Coba Lagi"
+                    onAction={() => alert('Retry')}
+                    actionVariant="success"
+                  />
+                </div>
+              </div>
+            </ComponentDemo>
+          </ComponentCard>
+
+          <ComponentCard style={{ gridColumn: '1 / -1' }}>
+            <ComponentLabel>Component Props Documentation</ComponentLabel>
+            <ComponentDemo>
+              <div style={{
+                background: '#f9fafb',
+                padding: '1.5rem',
+                borderRadius: '8px',
+                fontSize: '0.875rem'
+              }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                  EmptyState Component Props
+                </h4>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
+                      <th style={{ padding: '0.5rem', fontWeight: 600 }}>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>icon</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String | ReactNode</td>
+                      <td style={{ padding: '0.5rem' }}>📭</td>
+                      <td style={{ padding: '0.5rem' }}>Icon to display (emoji or React component)</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>title</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>Tidak ada data ditemukan</td>
+                      <td style={{ padding: '0.5rem' }}>Main message to display</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>description</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Optional subtitle/description text</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actionLabel</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Label for action button</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>onAction</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Function</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Click handler for action button</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actionVariant</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>primary</td>
+                      <td style={{ padding: '0.5rem' }}>Button variant (primary, secondary, danger, success, outline)</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>customAction</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>ReactNode</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Custom action component (overrides actionLabel/onAction)</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>className</td>
+                      <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
+                      <td style={{ padding: '0.5rem' }}>-</td>
+                      <td style={{ padding: '0.5rem' }}>Additional CSS class</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                  <strong style={{ color: '#1e40af' }}>💡 Usage Tips:</strong>
+                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: '#1e3a8a' }}>
+                    <li>Use contextual emojis that match the type of content (📝 for notes, 🎴 for flashcards, etc.)</li>
+                    <li>Keep title messages concise and actionable</li>
+                    <li>Add descriptions to guide users on what to do next</li>
+                    <li>Use action buttons for primary actions (create, refresh, etc.)</li>
+                    <li>For multiple actions, use customAction prop to pass multiple buttons</li>
+                    <li>Replace existing local EmptyState implementations with this reusable component</li>
+                  </ul>
+                </div>
+              </div>
+            </ComponentDemo>
           </ComponentCard>
         </ComponentGrid>
       </Section>

@@ -8,6 +8,7 @@ import CreateObservationModal from './CreateObservationModal'
 import UpdateObservationGroupModal from './UpdateObservationGroupModal'
 import UpdateObservationModal from './UpdateObservationModal'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import {
   Container,
   Header,
@@ -22,8 +23,7 @@ import {
   ObservationLabel,
   ObservationActions,
   IconButton,
-  LoadingOverlay,
-  EmptyState
+  LoadingOverlay
 } from './ObservationsTab.styles'
 
 function ObservationsTab() {
@@ -52,10 +52,11 @@ function ObservationsTab() {
             </Button>
           </HeaderButtons>
         </Header>
-        <EmptyState>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
-          <p>Belum ada observation groups. Buat group pertama untuk memulai.</p>
-        </EmptyState>
+        <EmptyState
+          icon="📋"
+          title="Belum ada observation groups"
+          description="Buat group pertama untuk memulai."
+        />
         {isCreateGroupModalOpen && (
           <CreateObservationGroupModal onClose={() => setIsCreateGroupModalOpen(false)} />
         )}

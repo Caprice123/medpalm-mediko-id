@@ -7,6 +7,7 @@ import CalculatorSettingsModal from './components/CalculatorSettingsModal'
 import { Filter } from './components/Filter'
 import { useCalculatorSection } from './hooks/useCalculatorSection'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import Pagination from '@components/Pagination'
 import {
   Container,
@@ -25,7 +26,6 @@ import {
   StatLabel,
   StatValue,
   CardActions,
-  EmptyState,
   TagList,
   Tag
 } from './Calculator.styles'
@@ -79,15 +79,17 @@ function Calculator({ onBack }) {
       <Filter />
 
       {loading.isGetListCalculatorsLoading ? (
-        <EmptyState>
-          <h3>Loading...</h3>
-          <p>Memuat data kalkulator...</p>
-        </EmptyState>
+        <EmptyState
+          icon="⏳"
+          title="Loading..."
+          description="Memuat data kalkulator..."
+        />
       ) : topics.length === 0 ? (
-        <EmptyState>
-          <h3>Belum Ada Kalkulator</h3>
-          <p>Klik "Tambah Kalkulator" untuk membuat kalkulator pertama Anda</p>
-        </EmptyState>
+        <EmptyState
+          icon="🧮"
+          title="Belum Ada Kalkulator"
+          description="Klik 'Tambah Kalkulator' untuk membuat kalkulator pertama Anda"
+        />
       ) : (
         <>
           <TopicsGrid>

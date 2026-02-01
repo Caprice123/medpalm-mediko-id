@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux'
 import RubricCard from '../RubricCard'
 import Button from '@components/common/Button'
-import { Container, Grid, LoadingContainer, EmptyState } from './RubricsList.styles'
+import EmptyState from '@components/common/EmptyState'
+import { Container, Grid, LoadingContainer } from './RubricsList.styles'
 
 function RubricsList({ onEdit, onCreateFirst }) {
   const { rubrics, loading } = useSelector(state => state.oscePractice)
@@ -19,14 +20,14 @@ function RubricsList({ onEdit, onCreateFirst }) {
   if (!rubrics || rubrics.length === 0) {
     return (
       <Container>
-        <EmptyState>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📋</div>
-          <h3>Belum ada rubrik</h3>
-          <p>Mulai dengan membuat rubrik evaluasi OSCE pertama Anda</p>
-          <Button variant="primary" onClick={onCreateFirst}>
-            Buat Rubrik Pertama
-          </Button>
-        </EmptyState>
+        <EmptyState
+          icon="📋"
+          title="Belum ada rubrik"
+          description="Mulai dengan membuat rubrik evaluasi OSCE pertama Anda"
+          actionLabel="Buat Rubrik Pertama"
+          onAction={onCreateFirst}
+          actionVariant="primary"
+        />
       </Container>
     )
   }

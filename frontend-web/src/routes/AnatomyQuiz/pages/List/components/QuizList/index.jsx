@@ -1,11 +1,9 @@
 import { useSelector } from 'react-redux'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import { LearningContentSkeletonGrid } from '@components/common/SkeletonCard'
 import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   QuizzesGrid,
   QuizDescription,
   QuizStats,
@@ -30,10 +28,10 @@ function QuizList() {
   // Empty state - only show when we're sure loading is complete
   if (quizzes.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📋</EmptyStateIcon>
-        <EmptyStateText>No quizzes found</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="📋"
+        title="No quizzes found"
+      />
     )
   }
 

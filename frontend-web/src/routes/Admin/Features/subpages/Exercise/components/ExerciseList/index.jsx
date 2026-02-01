@@ -2,11 +2,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminExerciseTopics } from '@store/exercise/adminAction'
 import { actions } from '@store/exercise/reducer'
 import Pagination from '@components/common/Pagination'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   TopicsGrid,
   TopicCard,
   TopicCardHeader,
@@ -41,15 +39,13 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (!topics || topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📚</EmptyStateIcon>
-        <EmptyStateText>Belum Ada Topik</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Buat Topik Pertama
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="📚"
+        title="Belum Ada Topik"
+        actionLabel={onCreateFirst && "Buat Topik Pertama"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 

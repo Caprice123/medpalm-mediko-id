@@ -1,9 +1,7 @@
 import { useSelector } from 'react-redux'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   ConversationsGrid,
   ConversationCard,
   ConversationHeader,
@@ -30,10 +28,10 @@ function ConversationsList({ onView, onDelete }) {
   // Empty state
   if (conversations.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>💬</EmptyStateIcon>
-        <EmptyStateText>Belum ada percakapan</EmptyStateText>
-      </EmptyState>
+      <EmptyState
+        icon="💬"
+        title="Belum ada percakapan"
+      />
     )
   }
 

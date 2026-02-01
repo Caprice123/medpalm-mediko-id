@@ -1,4 +1,5 @@
 import React from 'react'
+import EmptyState from '@components/common/EmptyState'
 import { ConversationListSkeleton } from '@components/common/SkeletonCard'
 import {
   Container,
@@ -8,10 +9,7 @@ import {
   ConversationTime,
   ConversationPreview,
   LoadingContainer,
-  LoadingSpinner,
-  EmptyState,
-  EmptyIcon,
-  EmptyText
+  LoadingSpinner
 } from './ConversationList.styles'
 
 const ConversationList = ({
@@ -47,10 +45,10 @@ const ConversationList = ({
   if (!conversations || conversations.length === 0) {
     return (
       <Container>
-        <EmptyState>
-          <EmptyIcon>💬</EmptyIcon>
-          <EmptyText>Belum ada percakapan</EmptyText>
-        </EmptyState>
+        <EmptyState
+          icon="💬"
+          title="Belum ada percakapan"
+        />
       </Container>
     )
   }

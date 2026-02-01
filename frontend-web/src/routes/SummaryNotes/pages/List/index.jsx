@@ -14,7 +14,7 @@ import Pagination from '@components/Pagination'
 
 function SummaryNotesPage() {
   const dispatch = useDispatch()
-  const { loading, pagination } = useSelector(state => state.summaryNotes)
+  const { loading, pagination, notes } = useSelector(state => state.summaryNotes)
 
   // Fetch notes on mount
   useEffect(() => {
@@ -28,6 +28,8 @@ function SummaryNotesPage() {
     dispatch(fetchSummaryNotes())
   }
 
+  const hasMorePages = !pagination.isLastPage || pagination.page > 1
+
   return (
     <Container>
       <Content>
@@ -35,7 +37,7 @@ function SummaryNotesPage() {
 
         <NotesList />
 
-        {!loading.isNotesLoading && (
+        {!loading.isNotesLoading && notes.length > 0 && hasMorePages && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

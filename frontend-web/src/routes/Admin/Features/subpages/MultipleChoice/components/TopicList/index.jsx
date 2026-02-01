@@ -1,10 +1,8 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateText,
   TopicsGrid,
   TopicCard,
   TopicCardHeader,
@@ -31,15 +29,13 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
   // Empty state
   if (topics.length === 0) {
     return (
-      <EmptyState>
-        <EmptyStateIcon>📝</EmptyStateIcon>
-        <EmptyStateText>No MCQ topics found</EmptyStateText>
-        {onCreateFirst && (
-          <Button variant="primary" onClick={onCreateFirst}>
-            Create Your First Topic
-          </Button>
-        )}
-      </EmptyState>
+      <EmptyState
+        icon="📝"
+        title="No MCQ topics found"
+        actionLabel={onCreateFirst && "Create Your First Topic"}
+        onAction={onCreateFirst}
+        actionVariant="primary"
+      />
     )
   }
 
