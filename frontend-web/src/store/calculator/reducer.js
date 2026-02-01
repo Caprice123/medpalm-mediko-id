@@ -4,7 +4,7 @@ import { resetAllState } from '../globalAction'
 const initialState = {
   topics: [],
   filters: {
-    name: '',
+    search: '',
     tagName: ''
   },
   detail: null,

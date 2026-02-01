@@ -176,6 +176,7 @@ model exercise_topics {
   @@index([created_by])
   @@index([is_active])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "exercise_topics_search_gin_idx")
 }
 
 model tags {
@@ -249,6 +250,7 @@ model flashcard_decks {
   @@index([created_by])
   @@index([is_active])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "flashcard_decks_search_gin_idx")
 }
 
 model flashcard_cards {
@@ -433,6 +435,7 @@ model summary_notes {
   @@index([created_by])
   @@index([is_active])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "summary_notes_search_gin_idx")
 }
 
 model summary_note_tags {
@@ -572,6 +575,7 @@ model calculator_topics {
   @@index([created_by])
   @@index([status])
   @@index([is_active])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "calculator_topics_search_gin_idx")
 }
 
 model calculator_topic_tags {
@@ -726,6 +730,7 @@ model anatomy_quizzes {
   @@index([created_by])
   @@index([is_active])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "anatomy_quizzes_search_gin_idx")
 }
 
 model anatomy_questions {
@@ -842,6 +847,7 @@ model mcq_topics {
   @@index([created_by])
   @@index([is_active])
   @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "mcq_topics_search_gin_idx")
 }
 
 model mcq_questions {
@@ -1031,6 +1037,7 @@ model skripsi_sets {
 
   @@index([user_id])
   @@index([is_deleted])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "skripsi_sets_search_gin_idx")
 }
 
 model skripsi_tabs {
@@ -1128,6 +1135,7 @@ model osce_topics {
   @@index([osce_rubric_id])
   @@index([status])
   @@index([is_active])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops")), scenario(ops: raw("gin_trgm_ops"))], type: Gin, map: "osce_topics_search_gin_idx")
 }
 
 model osce_topic_tags {

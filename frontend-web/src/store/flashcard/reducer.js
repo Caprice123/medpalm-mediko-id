@@ -16,6 +16,7 @@ const initialState = {
     isUploadingImage: false,
   },
   filters: {
+    search: '',
     university: '',
     semester: '',
     status: ''

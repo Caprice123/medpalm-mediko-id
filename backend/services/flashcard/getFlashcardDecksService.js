@@ -10,6 +10,8 @@ export class GetFlashcardDecksService extends BaseService {
         const page = parseInt(filters.page) || 1
         const perPage = parseInt(filters.perPage) || 20
         const skip = (page - 1) * perPage
+        // Fetch perPage + 1 to determine if there's a next page
+        const take = perPage + 1
 
         const where = {}
 
@@ -45,9 +47,18 @@ export class GetFlashcardDecksService extends BaseService {
             where.AND = tagFilters
         }
 
+        // Search filter (title and description, using ILIKE with GIN trigram index)
+        if (filters.search) {
+            const searchTerm = filters.search.trim()
+            where.OR = [
+                { title: { contains: searchTerm, mode: 'insensitive' } },
+                { description: { contains: searchTerm, mode: 'insensitive' } }
+            ]
+        }
+
         const decks = await prisma.flashcard_decks.findMany({
             skip,
-            take: perPage,
+            take,
             where,
             include: {
                 flashcard_deck_tags: {
@@ -70,12 +81,18 @@ export class GetFlashcardDecksService extends BaseService {
             }
         })
 
+        // Determine if this is the last page
+        const isLastPage = decks.length <= perPage
+
+        // Only return perPage items (exclude the +1 check item)
+        const paginatedDecks = decks.slice(0, perPage)
+
         return {
-            decks: decks,
+            decks: paginatedDecks,
             pagination: {
                 page,
                 perPage,
-                isLastPage: decks.length < perPage
+                isLastPage
             }
         }
     }

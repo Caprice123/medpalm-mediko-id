@@ -4,7 +4,7 @@ import { resetAllState } from '../globalAction'
 const initialState = {
   quizzes: [],
   filter: {
-    name: undefined,
+    search: undefined,
     university: undefined,
     semester: undefined,
     status: undefined

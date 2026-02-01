@@ -9,12 +9,12 @@ import { CalculatorTopicListSerializer } from '#serializers/admin/v1/calculatorT
 class CalculatorController {
   /**
    * Get all calculator topics
-   * GET /admin/v1/calculators?name=xxx&tagName=xxx&page=1&perPage=20
+   * GET /admin/v1/calculators?search=xxx&tagName=xxx&page=1&perPage=20
    */
   async getTopics(req, res) {
-    const { name, tagName, page, perPage } = req.query
+    const { search, tagName, page, perPage } = req.query
 
-    const result = await GetCalculatorTopicsService.call({ name, tagName, page, perPage })
+    const result = await GetCalculatorTopicsService.call({ search, tagName, page, perPage })
 
     return res.status(200).json({
       data: {

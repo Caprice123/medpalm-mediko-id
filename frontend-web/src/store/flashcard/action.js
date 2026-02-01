@@ -24,6 +24,7 @@ export const fetchFlashcardDecks = () => async (dispatch, getState) => {
       page: pagination.page,
       perPage: pagination.perPage
     }
+    if (filters.search) queryParams.search = filters.search
     if (filters.university) queryParams.university = filters.university
     if (filters.semester) queryParams.semester = filters.semester
 

@@ -6,12 +6,18 @@ import { ExerciseTopicSerializer } from '#serializers/api/v1/exerciseTopicSerial
 
 class ExerciseController {
   async getTopics(req, res) {
-    const { university, semester } = req.query
+    const { university, semester, search, page, perPage } = req.query
 
-    const result = await GetExerciseTopicsService.call({ university, semester })
+    const result = await GetExerciseTopicsService.call(
+      { university, semester, search },
+      page ? parseInt(page) : undefined,
+      perPage ? parseInt(perPage) : undefined
+    )
 
     return res.status(200).json({
-      data: ExerciseTopicListSerializer.serialize(result.topics)
+      data: ExerciseTopicListSerializer.serialize(result.topics),
+      pagination: result.pagination,
+      cost: result.cost
     })
   }
 

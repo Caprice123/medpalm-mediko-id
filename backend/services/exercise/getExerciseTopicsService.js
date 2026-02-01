@@ -37,9 +37,19 @@ export class GetExerciseTopicsService extends BaseService {
             where.AND = tagFilters
         }
 
+        // Search filter (title and description, using ILIKE with GIN trigram index)
+        if (filters.search) {
+            const searchTerm = filters.search.trim()
+            where.OR = [
+                { title: { contains: searchTerm, mode: 'insensitive' } },
+                { description: { contains: searchTerm, mode: 'insensitive' } }
+            ]
+        }
+
         // Calculate pagination
         const skip = (page - 1) * perPage
-        const take = perPage
+        // Fetch perPage + 1 to determine if there's a next page
+        const take = perPage + 1
 
         const topics = await prisma.exercise_topics.findMany({
             where,
@@ -62,14 +72,19 @@ export class GetExerciseTopicsService extends BaseService {
         ])
         const cost = exerciseConstant.exercise_credit_cost
 
+        // Determine if this is the last page
+        const isLastPage = topics.length <= perPage
+
+        // Only return perPage items (exclude the +1 check item)
+        const paginatedTopics = topics.slice(0, perPage)
 
         return {
-            topics,
+            topics: paginatedTopics,
             cost,
             pagination: {
                 page,
                 perPage,
-                isLastPage: topics.length < perPage || topics.length == 0
+                isLastPage
             }
         }
     }

@@ -7,12 +7,12 @@ import prisma from '#prisma/client'
 class CalculatorController {
   /**
    * Get all available calculator topics for users
-   * GET /api/v1/calculators/topics?name=xxx&tagName=xxx&page=1&perPage=20
+   * GET /api/v1/calculators/topics?search=xxx&tagName=xxx&page=1&perPage=20
    */
   async getTopics(req, res) {
-    const { name, tagName, page, perPage } = req.query
+    const { search, tagName, page, perPage } = req.query
 
-    const result = await GetCalculatorTopicsService.call({ name, tagName, page, perPage })
+    const result = await GetCalculatorTopicsService.call({ search, tagName, page, perPage })
 
     // Only return published and active calculators to users
     const publicTopics = result.topics.filter(topic =>

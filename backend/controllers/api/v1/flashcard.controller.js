@@ -6,9 +6,9 @@ import { FlashcardDeckSerializer } from '#serializers/api/v1/flashcardDeckSerial
 
 class FlashcardController {
   async getDecks(req, res) {
-    const { university, semester, page, perPage } = req.query
+    const { university, semester, search, page, perPage } = req.query
 
-    const result = await GetFlashcardDecksService.call({ university, semester, status: "published", page, perPage })
+    const result = await GetFlashcardDecksService.call({ university, semester, search, status: "published", page, perPage })
 
     return res.status(200).json({
       data: FlashcardDeckListSerializer.serialize(result.decks),

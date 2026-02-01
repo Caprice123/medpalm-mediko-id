@@ -21,7 +21,7 @@ export const fetchAdminCalculatorTopics = () => async (dispatch, getState) => {
       page: pagination.page,
       perPage: pagination.perPage
     }
-    if (filters.name) requestQuery.name = filters.name
+    if (filters.search) requestQuery.search = filters.search
     if (filters.tagName) requestQuery.tagName = filters.tagName
 
     const route = Endpoints.admin.calculators
@@ -99,7 +99,7 @@ export const getCalculatorTopics = () => async (dispatch, getState) => {
       page: pagination.page,
       perPage: pagination.perPage
     }
-    if (filters.name) requestQuery.name = filters.name
+    if (filters.search) requestQuery.search = filters.search
     if (filters.tagName) requestQuery.tagName = filters.tagName
 
     const route = Endpoints.api.calculators + "/topics"

@@ -57,11 +57,14 @@ export class GetSummaryNotesService extends BaseService {
       where.AND = tagFilters
     }
 
-    // Search filter (title or description)
+    // Search filter (title and description, using ILIKE with GIN trigram index)
     if (filters.search) {
+      const searchTerm = filters.search.trim()
+      // Use contains (case-insensitive) which uses ILIKE under the hood
+      // This will leverage the composite gin_trgm_ops index for fast substring search
       where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } }
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } }
       ]
     }
 
@@ -82,7 +85,7 @@ export class GetSummaryNotesService extends BaseService {
         }
       },
       orderBy: {
-        created_at: 'desc'
+        id: 'desc'
       }
     })
 
