@@ -23,11 +23,7 @@ export class GetListTagService extends BaseService {
                     select: {
                         id: true,
                         name: true,
-                        tag_group_id: true,
-                        is_active: true
-                    },
-                    where: {
-                        is_active: true,
+                        tag_group_id: true
                     },
                     orderBy: [
                         { name: 'asc' }

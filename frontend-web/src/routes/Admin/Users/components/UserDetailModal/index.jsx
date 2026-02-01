@@ -3,13 +3,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
+import Dropdown from '@components/common/Dropdown'
 import Pagination from '@components/common/Pagination'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions } from '@store/user/action'
+import { fetchUserSubscriptions, updateUserRole } from '@store/user/action'
 import { actions } from '@store/user/reducer'
+import { getUserData } from '../../../../../utils/authToken'
 import {
   UserSection,
   UserInfo,
@@ -42,11 +44,15 @@ import {
 
 function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription }) {
   const dispatch = useDispatch()
+  const currentUser = getUserData()
   const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter } = useSelector(state => state.user)
   const [showCreditForm, setShowCreditForm] = useState(false)
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false)
+  const [showRoleForm, setShowRoleForm] = useState(false)
   const [creditAmount, setCreditAmount] = useState('')
   const [creditError, setCreditError] = useState('')
+  const [selectedRole, setSelectedRole] = useState(null)
+  const [roleError, setRoleError] = useState('')
   const [subscriptionData, setSubscriptionData] = useState({
     startDate: null,
     endDate: null
@@ -69,8 +75,11 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const handleClose = () => {
     setShowCreditForm(false)
     setShowSubscriptionForm(false)
+    setShowRoleForm(false)
     setCreditAmount('')
     setCreditError('')
+    setSelectedRole(null)
+    setRoleError('')
     setSubscriptionData({ startDate: null, endDate: null })
     setSubscriptionError('')
     dispatch(actions.setSubscriptionPage(1))
@@ -124,6 +133,32 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setShowSubscriptionForm(false)
   }
 
+  // Role form handlers
+  const handleRoleSubmit = (e) => {
+    e.preventDefault()
+    setRoleError('')
+
+    if (!selectedRole) {
+      setRoleError('Please select a role')
+      return
+    }
+
+    // Call the action
+    dispatch(updateUserRole(user.id, selectedRole.value, () => {
+      setSelectedRole(null)
+      setShowRoleForm(false)
+    }))
+  }
+
+  const roleOptions = [
+    { label: 'User', value: 'user' },
+    { label: 'Admin', value: 'admin' },
+    { label: 'Superadmin', value: 'superadmin' },
+    { label: 'Tutor', value: 'tutor' }
+  ]
+
+  const isSuperAdmin = currentUser?.role === 'superadmin'
+
   if (!user) return null
 
   const currentBalance = user.userCredits?.balance || 0
@@ -155,7 +190,61 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
               </StatusBadge>
             </UserInfoValue>
           </UserInfoRow>
+          <UserInfoRow>
+            <UserInfoLabel>Role:</UserInfoLabel>
+            <UserInfoValue style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ textTransform: 'capitalize', fontWeight: 500 }}>
+                {user.role || 'user'}
+              </span>
+              {isSuperAdmin && !showRoleForm && (
+                <Button
+                  onClick={() => setShowRoleForm(true)}
+                  variant="outline"
+                  size="small"
+                  style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
+                >
+                  Change Role
+                </Button>
+              )}
+            </UserInfoValue>
+          </UserInfoRow>
         </UserInfo>
+
+        {showRoleForm && isSuperAdmin && (
+          <CreditForm onSubmit={handleRoleSubmit} style={{ marginTop: '1rem' }}>
+            <FormGroup>
+              <Label>Select New Role</Label>
+              <Dropdown
+                options={roleOptions}
+                value={selectedRole}
+                onChange={setSelectedRole}
+                placeholder="Select role..."
+                hasError={!!roleError}
+              />
+              {roleError && <ErrorText>{roleError}</ErrorText>}
+            </FormGroup>
+            <FormActions style={{ marginTop: '1.75rem' }}>
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowRoleForm(false)
+                  setSelectedRole(null)
+                  setRoleError('')
+                }}
+                disabled={loading.isUpdateUserRoleLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={loading.isUpdateUserRoleLoading}
+              >
+                {loading.isUpdateUserRoleLoading ? 'Updating...' : 'Update Role'}
+              </Button>
+            </FormActions>
+          </CreditForm>
+        )}
       </UserSection>
 
       {/* Credit Section */}

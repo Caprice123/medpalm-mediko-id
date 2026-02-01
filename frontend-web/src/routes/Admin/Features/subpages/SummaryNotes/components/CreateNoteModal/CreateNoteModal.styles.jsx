@@ -159,25 +159,34 @@ export const ErrorText = styled.div`
 
 export const StatusToggle = styled.div`
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: #f8fafc;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: #f1f5f9;
   border-radius: 8px;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 `
 
 export const StatusOption = styled.label`
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.625rem 1rem;
   cursor: pointer;
-  font-size: 0.95rem;
-  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s;
+  color: ${props => props.checked ? '#0ea5e9' : '#64748b'};
+  background: ${props => props.checked ? 'white' : 'transparent'};
+  box-shadow: ${props => props.checked ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'};
+
+  &:hover {
+    color: ${props => props.checked ? '#0ea5e9' : '#475569'};
+  }
 
   input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
+    display: none;
   }
 `
 

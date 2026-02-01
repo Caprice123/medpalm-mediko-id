@@ -83,6 +83,21 @@ function Users() {
       }
     },
     {
+      key: "role",
+      header: "Role",
+      align: 'center',
+      render: (role) => (
+        <span style={{
+          textTransform: 'capitalize',
+          fontWeight: 500,
+          color: role === 'superadmin' ? '#7c3aed' : role === 'admin' ? '#2563eb' : role === 'tutor' ? '#059669' : '#6b7280',
+          fontSize: '0.875rem'
+        }}>
+          {role || 'user'}
+        </span>
+      )
+    },
+    {
       key: "isActive",
       header: "Status",
       align: 'center',

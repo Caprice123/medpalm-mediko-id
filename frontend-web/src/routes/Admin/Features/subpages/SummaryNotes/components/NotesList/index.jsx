@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
+import StatusBadge from '@components/common/StatusBadge'
 import {
   LoadingOverlay,
   NotesGrid,
@@ -78,7 +79,7 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
           <NoteStats>
             <StatItem>
               <StatLabel>Status</StatLabel>
-              <StatValue>{note.is_active ? 'Active' : 'Inactive'}</StatValue>
+              <StatValue><StatusBadge status={note.status} /></StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Created</StatLabel>

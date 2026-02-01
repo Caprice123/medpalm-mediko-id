@@ -15,7 +15,6 @@ export class GetSummaryNotesService extends BaseService {
     const take = perPage + 1
 
     const where = {
-      is_active: true,
       status: 'published' // Only show published notes to users
     }
 

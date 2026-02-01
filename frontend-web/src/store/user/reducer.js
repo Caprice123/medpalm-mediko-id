@@ -28,6 +28,7 @@ const initialState = {
     isAddSubscriptionLoading: false,
     isFetchUserDetailLoading: false,
     isFetchUserSubscriptionsLoading: false,
+    isUpdateUserRoleLoading: false,
   },
 }
 

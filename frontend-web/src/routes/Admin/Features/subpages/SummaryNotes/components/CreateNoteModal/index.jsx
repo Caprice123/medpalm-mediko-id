@@ -182,38 +182,41 @@ const CreateNoteModal = ({ onClose }) => {
       </FormSection>
 
       {/* Status Selection */}
-      <StatusToggle>
-        <StatusOption>
-          <input
-            type="radio"
-            name="status"
-            value="draft"
-            checked={form.values.status === 'draft'}
-            onChange={(e) => form.setFieldValue('status', e.target.value)}
-          />
-          Draft
-        </StatusOption>
-        <StatusOption>
-          <input
-            type="radio"
-            name="status"
-            value="published"
-            checked={form.values.status === 'published'}
-            onChange={(e) => form.setFieldValue('status', e.target.value)}
-          />
-          Published
-        </StatusOption>
-        <StatusOption>
-          <input
-            type="radio"
-            name="status"
-            value="inactive"
-            checked={form.values.status === 'inactive'}
-            onChange={(e) => form.setFieldValue('status', e.target.value)}
-          />
-          Inactive
-        </StatusOption>
-      </StatusToggle>
+      <FormSection>
+        <Label>Status</Label>
+        <StatusToggle>
+          <StatusOption checked={form.values.status === 'draft'}>
+            <input
+              type="radio"
+              name="status"
+              value="draft"
+              checked={form.values.status === 'draft'}
+              onChange={(e) => form.setFieldValue('status', e.target.value)}
+            />
+            Draft
+          </StatusOption>
+          <StatusOption checked={form.values.status === 'testing'}>
+            <input
+              type="radio"
+              name="status"
+              value="testing"
+              checked={form.values.status === 'testing'}
+              onChange={(e) => form.setFieldValue('status', e.target.value)}
+            />
+            Testing
+          </StatusOption>
+          <StatusOption checked={form.values.status === 'published'}>
+            <input
+              type="radio"
+              name="status"
+              value="published"
+              checked={form.values.status === 'published'}
+              onChange={(e) => form.setFieldValue('status', e.target.value)}
+            />
+            Published
+          </StatusOption>
+        </StatusToggle>
+      </FormSection>
     </Modal>
   )
 }

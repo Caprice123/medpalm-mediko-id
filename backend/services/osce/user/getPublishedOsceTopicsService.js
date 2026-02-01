@@ -9,8 +9,7 @@ export class GetPublishedOsceTopicsService extends BaseService {
     const skip = (page - 1) * perPage
 
     const where = {
-      status: 'published',
-      is_active: true,
+      status: 'published'
     }
 
     // Search filter
@@ -68,11 +67,6 @@ export class GetPublishedOsceTopicsService extends BaseService {
         created_at: true,
         updated_at: true,
         osce_topic_tags: {
-          where: {
-            tags: {
-              is_active: true,
-            },
-          },
           select: {
             tags: {
               select: {
