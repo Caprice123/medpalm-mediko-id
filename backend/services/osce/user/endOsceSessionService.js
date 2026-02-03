@@ -2,15 +2,16 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { DateTime } from 'luxon'
+import { ValidationError } from '#errors/validationError'
 
 export class EndOsceSessionService extends BaseService {
   static async call(userId, sessionId, sessionData) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     try {
@@ -41,11 +42,11 @@ export class EndOsceSessionService extends BaseService {
       })
 
       if (!session) {
-        throw new Error('Session not found or access denied')
+        throw new ValidationError('Session not found or access denied')
       }
 
       if (session.status === 'completed') {
-        throw new Error('Session already completed')
+        throw new ValidationError('Session already completed')
       }
 
       // Save diagnoses
@@ -442,7 +443,7 @@ export class EndOsceSessionService extends BaseService {
         }
       } catch (parseError) {
         console.error('[EndOsceSessionService] Error parsing final evaluation:', parseError)
-        throw new parseError
+        throw parseError
       }
 
       // Calculate total score from criteria array
@@ -466,7 +467,7 @@ export class EndOsceSessionService extends BaseService {
       }
     } catch (error) {
       console.error('[EndOsceSessionService._generateAIEvaluation] Error:', error)
-      throw new error
+      throw error
     }
   }
 

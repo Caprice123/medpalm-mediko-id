@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { verifyWebhookToken } from '#services/xendit.service'
+import { ValidationError } from '#errors/validationError'
 
 const prisma = new PrismaClient()
 
@@ -132,7 +133,7 @@ async function handlePaidInvoice(transaction, paymentDetails) {
     })
 
     if (!userCredit) {
-      throw new Error('User credit account not found')
+      throw new ValidationError('User credit account not found')
     }
 
     const newBalance = userCredit.balance + transaction.amount

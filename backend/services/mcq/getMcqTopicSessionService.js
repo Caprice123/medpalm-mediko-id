@@ -13,7 +13,6 @@ export class GetMcqTopicSessionService extends BaseService {
     const topic = await prisma.mcq_topics.findUnique({
       where: {
         id: topicId,
-        is_active: true,
         status: 'published'
       },
       include: {

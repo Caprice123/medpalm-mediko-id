@@ -1,10 +1,11 @@
+import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class DeleteRubricService extends BaseService {
   static async call(rubricId) {
     if (!rubricId) {
-      throw new Error('Rubric ID is required')
+      throw new ValidationError('Rubric ID is required')
     }
 
     // Check if rubric exists
@@ -13,7 +14,7 @@ export class DeleteRubricService extends BaseService {
     })
 
     if (!existingRubric) {
-      throw new Error('Rubric not found')
+      throw new ValidationError('Rubric not found')
     }
 
     // Check if rubric is being used by any topics
@@ -22,7 +23,7 @@ export class DeleteRubricService extends BaseService {
     })
 
     if (topicsCount > 0) {
-      throw new Error(`Cannot delete rubric. It is currently used by ${topicsCount} topic(s)`)
+      throw new ValidationError(`Cannot delete rubric. It is currently used by ${topicsCount} topic(s)`)
     }
 
     await prisma.osce_rubrics.delete({

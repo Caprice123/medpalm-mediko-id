@@ -1,4 +1,5 @@
 import { BaseAiService } from "./base.service.js";
+import { ValidationError } from '#errors/validationError';
 import Perplexity from "@perplexity-ai/perplexity_ai";
 
 const perplexity = new Perplexity({
@@ -56,7 +57,7 @@ export class PerplexityService extends BaseAiService {
         console.log(`Processing PDF buffer - Size: ${fileSizeMB.toFixed(2)} MB`);
 
         if (fileSizeMB > 50) {
-            throw new Error(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 50 MB for Perplexity)`);
+            throw new ValidationError(`PDF too large: ${fileSizeMB.toFixed(2)} MB (max 50 MB for Perplexity)`);
         }
 
         // Convert to base64 (Perplexity expects base64 without data URI prefix)

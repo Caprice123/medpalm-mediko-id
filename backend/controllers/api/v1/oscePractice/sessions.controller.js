@@ -37,12 +37,14 @@ class SessionsController {
   async startSession(req, res) {
     const userId = req.user?.id
     const { sessionId } = req.params
+    const { sttProvider } = req.body
 
-    await StartOsceSessionService.call(userId, sessionId)
+    await StartOsceSessionService.call(userId, sessionId, sttProvider)
 
     return res.status(200).json({
         data: {
             success: true,
+            sttProvider: sttProvider || 'whisper',
         },
     })
   }

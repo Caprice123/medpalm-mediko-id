@@ -1,13 +1,13 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetUserOsceSessionsService extends BaseService {
   static async call(userId, filters = {}) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
-    try {
       // Pagination
       const page = parseInt(filters.page) || 1
       const perPage = parseInt(filters.perPage) || 20
@@ -44,9 +44,5 @@ export class GetUserOsceSessionsService extends BaseService {
           isLastPage: sessions.length < perPage
         }
       }
-    } catch (error) {
-      console.error('[GetUserOsceSessionsService] Error:', error)
-      throw new Error('Failed to fetch user OSCE sessions')
-    }
   }
 }

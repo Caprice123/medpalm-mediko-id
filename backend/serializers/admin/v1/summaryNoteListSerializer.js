@@ -16,7 +16,7 @@ export class SummaryNoteListSerializer {
         id: note.id,
         title: note.title,
         description: note.description,
-        is_active: note.is_active,
+        status: note.status,
         universityTags,
         semesterTags,
         createdAt: note.created_at

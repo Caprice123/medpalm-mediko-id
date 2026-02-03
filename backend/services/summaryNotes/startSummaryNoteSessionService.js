@@ -48,7 +48,7 @@ export class StartSummaryNoteSessionService extends BaseService {
         throw new ValidationError('Summary note not found')
       }
 
-      if (!summaryNote.is_active || summaryNote.status !== 'published') {
+      if (!summaryNote.status !== 'published') {
         throw new ValidationError('Summary note is not available')
       }
 

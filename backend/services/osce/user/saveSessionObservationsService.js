@@ -2,15 +2,16 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
 import idriveService from '#services/idrive.service'
+import { ValidationError } from '#errors/validationError'
 
 export class SaveSessionObservationsService extends BaseService {
   static async call(userId, sessionId, data) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     // Verify session belongs to user
@@ -22,7 +23,7 @@ export class SaveSessionObservationsService extends BaseService {
     })
 
     if (!session) {
-      throw new Error('Session not found or access denied')
+      throw new ValidationError('Session not found or access denied')
     }
 
     const isLocked = session.observations_locked
@@ -30,7 +31,7 @@ export class SaveSessionObservationsService extends BaseService {
     // Handle selection (first save)
     if (data.snapshotIds && Array.isArray(data.snapshotIds)) {
       if (isLocked) {
-        throw new Error('Observations selection is locked and cannot be changed')
+        throw new ValidationError('Observations selection is locked and cannot be changed')
       }
       // Mark selected observations as checked
       await Promise.all(

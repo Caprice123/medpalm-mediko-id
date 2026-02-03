@@ -4,6 +4,7 @@ import embeddingService from '#services/embedding/embeddingService'
 import MarkdownChunker from '#services/embedding/markdownChunker'
 import { queueEmbedChunk } from '#jobs/queues/summaryNotesQueue'
 import { blockNoteToMarkdown } from '#utils/blockNoteConverter'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Prepare Embeddings Job Handler
@@ -13,13 +14,17 @@ import { blockNoteToMarkdown } from '#utils/blockNoteConverter'
 export async function prepareEmbeddingsHandler(job) {
   const { summaryNoteId } = job.data
 
+  if (!summaryNoteId) {
+    throw new ValidationError('Summary note ID is required')
+  }
+
   // Fetch the summary note from database
   const summaryNote = await prisma.summary_notes.findUnique({
     where: { id: parseInt(summaryNoteId) }
   })
 
   if (!summaryNote) {
-    throw new Error(`Summary note ${summaryNoteId} not found`)
+    throw new ValidationError(`Summary note ${summaryNoteId} not found`)
   }
 
   // Check if still published (might have been unpublished while in queue)
@@ -35,7 +40,7 @@ export async function prepareEmbeddingsHandler(job) {
   const markdownContent = summaryNote.markdown_content
 
   if (!markdownContent || markdownContent.trim() === '') {
-    throw new Error(`Failed to convert content to markdown for note ${summaryNoteId}`)
+    throw new ValidationError(`Failed to convert content to markdown for note ${summaryNoteId}`)
   }
 
   console.log(`✓ Converted to markdown (${markdownContent.length} characters)`)

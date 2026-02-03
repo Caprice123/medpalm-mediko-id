@@ -127,7 +127,6 @@ export class CreateExerciseTopicService extends BaseService {
         const existingTags = await prisma.tags.findMany({
             where: {
                 id: { in: tagIds },
-                is_active: true
             }
         })
 

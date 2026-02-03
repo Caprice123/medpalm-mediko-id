@@ -33,7 +33,6 @@ export class SkripsiAIService extends BaseService {
 
     // Get constants for this mode and global settings
     const constantKeys = [
-      'skripsi_is_active',
       `skripsi_${mode}_enabled`,
       `skripsi_${mode}_model`,
       `skripsi_${mode}_context_messages`
@@ -57,12 +56,6 @@ export class SkripsiAIService extends BaseService {
 
     const constantsMap = {}
     constants.forEach(c => { constantsMap[c.key] = c.value })
-
-    // Check if feature is globally enabled
-    const featureActive = constantsMap['skripsi_is_active'] === 'true'
-    if (!featureActive) {
-      throw new ValidationError('Skripsi Builder feature is currently disabled')
-    }
 
     // Check if mode is enabled
     const modeEnabled = constantsMap[`skripsi_${mode}_enabled`] === 'true'

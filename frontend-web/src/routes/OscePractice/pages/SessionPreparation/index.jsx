@@ -26,6 +26,7 @@ import {
   HelpText,
 } from './SessionPreparation.styles'
 import { startOsceSession, fetchSessionDetail } from '@store/oscePractice/userAction'
+import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
 
 function SessionPreparation() {
   const navigate = useNavigate()
@@ -37,6 +38,8 @@ function SessionPreparation() {
   const [isRequesting, setIsRequesting] = useState(false)
   const [isStarting, setIsStarting] = useState(false)
   const [permissionError, setPermissionError] = useState(null)
+  const [sttProvider, setSttProvider] = useState(null)
+  const [testingProvider, setTestingProvider] = useState(false)
 
   // Fetch session detail on mount
   useEffect(() => {
@@ -48,6 +51,25 @@ function SessionPreparation() {
   // Check initial permission status
   useEffect(() => {
     checkPermissions()
+  }, [])
+
+  // Test STT provider connectivity on mount
+  useEffect(() => {
+    const testProvider = async () => {
+      setTestingProvider(true)
+      try {
+        const provider = await getAvailableSttProvider()
+        setSttProvider(provider)
+      } catch (err) {
+        console.error('Error testing STT provider:', err)
+        // Default to whisper on error
+        setSttProvider('whisper')
+      } finally {
+        setTestingProvider(false)
+      }
+    }
+
+    testProvider()
   }, [])
 
   const checkPermissions = async () => {
@@ -88,13 +110,15 @@ function SessionPreparation() {
       return
     }
 
+    if (!sttProvider) {
+      setPermissionError('Sedang memeriksa konektivitas layanan. Mohon tunggu sebentar.')
+      return
+    }
+
     setIsStarting(true)
     try {
-      // Start the session (this will deduct credits)
-      await dispatch(startOsceSession(sessionId))
-
-      // Clear old session detail from Redux so practice page starts fresh
-    //   dispatch(actions.setSessionDetail(null))
+      // Start the session with the determined STT provider
+      await dispatch(startOsceSession(sessionId, sttProvider))
 
       // Navigate to practice page after successfully starting session
       navigate(`/osce-practice/session/${sessionId}/practice`)
@@ -186,6 +210,26 @@ function SessionPreparation() {
           )}
         </PermissionCard>
 
+        {/* STT Provider Status */}
+        <PermissionCard granted={!!sttProvider && !testingProvider}>
+          <PermissionIconCircle>🌐</PermissionIconCircle>
+          <PermissionContent>
+            <StatusBadge granted={!!sttProvider && !testingProvider}>
+              {testingProvider ? '⏳ Memeriksa...' : sttProvider ? '✓ Siap' : '⏳ Memeriksa...'}
+            </StatusBadge>
+            <PermissionTitle>Layanan Speech-to-Text</PermissionTitle>
+            <PermissionDescription>
+              {testingProvider
+                ? 'Memeriksa konektivitas layanan transkripsi suara...'
+                : sttProvider === 'deepgram'
+                ? 'Menggunakan Deepgram (Real-time) untuk transkripsi suara berkualitas tinggi'
+                : sttProvider === 'whisper'
+                ? 'Menggunakan Whisper sebagai layanan transkripsi cadangan'
+                : 'Menentukan layanan transkripsi terbaik yang tersedia...'}
+            </PermissionDescription>
+          </PermissionContent>
+        </PermissionCard>
+
         <InfoGrid>
           <InfoBox>
             <InfoBoxTitle>
@@ -215,9 +259,9 @@ function SessionPreparation() {
           <Button
             variant="primary"
             onClick={handleStart}
-            disabled={!microphoneGranted || isStarting}
+            disabled={!microphoneGranted || isStarting || testingProvider || !sttProvider}
           >
-            {isStarting ? 'Memulai Sesi...' : 'Mulai Latihan'}
+            {isStarting ? 'Memulai Sesi...' : testingProvider ? 'Memeriksa Konektivitas...' : 'Mulai Latihan'}
           </Button>
         </Actions>
       </Card>

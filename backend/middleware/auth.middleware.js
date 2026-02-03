@@ -63,11 +63,15 @@ export const authorize = (...roles) => {
 export const authenticateToken = authenticate;
 
 // Helper middleware to require admin role
-export const requireAdmin = authorize('admin');
+export const requireAdmin = authorize('admin', 'superadmin');
+
+// Helper middleware to require superadmin role
+export const requireSuperAdmin = authorize('superadmin');
 
 export default {
   authenticate,
   authorize,
   authenticateToken,
-  requireAdmin
+  requireAdmin,
+  requireSuperAdmin
 };

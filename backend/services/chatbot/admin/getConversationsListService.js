@@ -3,7 +3,6 @@ import { BaseService } from '#services/baseService'
 
 export class GetConversationsListService extends BaseService {
   static async call({ page = 1, perPage = 30, search = '', userId = null } = {}) {
-    try {
       // Build where clause
       const where = {
         is_deleted: false
@@ -67,9 +66,5 @@ export class GetConversationsListService extends BaseService {
           isLastPage: conversations.length <= perPage
         }
       }
-    } catch (error) {
-      console.error('Error fetching admin conversations list:', error)
-      throw new Error('Failed to fetch conversations: ' + error.message)
-    }
   }
 }

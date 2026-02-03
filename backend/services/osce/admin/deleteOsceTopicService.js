@@ -18,9 +18,6 @@ export class DeleteOsceTopicService extends BaseService {
         // Soft delete by setting is_active to false
         await prisma.osce_topics.update({
             where: { id: parseInt(topicId) },
-            data: {
-                is_active: false
-            }
         })
 
         return true

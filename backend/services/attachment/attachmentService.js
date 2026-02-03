@@ -1,6 +1,7 @@
 import prisma from '#prisma/client';
 import blobService from '#services/attachment/blobService';
 import idriveService from '#services/idrive.service';
+import { ValidationError } from '#errors/validationError';
 import path from 'path';
 
 /**
@@ -192,7 +193,7 @@ class AttachmentService {
     });
 
     if (!attachment) {
-      throw new Error('Attachment not found');
+      throw new ValidationError('Attachment not found');
     }
 
     // Delete attachment record

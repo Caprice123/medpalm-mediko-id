@@ -1,6 +1,7 @@
 import prisma from "#prisma/client"
 import { BaseService } from "#services/baseService"
 import { RouterUtils } from "#utils/aiUtils/routerUtils"
+import { ValidationError } from '#errors/validationError'
 
 export class GenerateMcqQuestionsFromTextService extends BaseService {
   /**
@@ -29,7 +30,7 @@ export class GenerateMcqQuestionsFromTextService extends BaseService {
     const systemPrompt = constantsMap.mcq_generation_prompt
 
     if (!systemPrompt) {
-      throw new Error('MCQ generation prompt not configured in constants')
+      throw new ValidationError('MCQ generation prompt not configured in constants')
     }
 
     // Build prompt with variables

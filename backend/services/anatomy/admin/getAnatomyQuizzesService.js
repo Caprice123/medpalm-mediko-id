@@ -61,11 +61,6 @@ export class GetAnatomyQuizzesService extends BaseService {
       where.status = filters.status
     }
 
-    // Filter by is_active if provided
-    if (filters.is_active !== undefined) {
-      where.is_active = filters.is_active === 'true' || filters.is_active === true
-    }
-
     // Search filter (title or description)
     if (filters.search) {
       where.OR = [

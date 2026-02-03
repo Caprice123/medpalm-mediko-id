@@ -1,0 +1,89 @@
+import { createClient } from '@deepgram/sdk'
+
+/**
+ * Test Deepgram connectivity
+ * @returns {Promise<boolean>} True if Deepgram is available, false otherwise
+ */
+const testDeepgramConnection = async () => {
+  try {
+    const apiKey = "d7606aebf172034cc6dd376fb1d2bdef41071dc2"
+
+    if (!apiKey) {
+      console.warn('Deepgram API key not found')
+      return false
+    }
+
+    // Create Deepgram client
+    const deepgramClient = createClient(apiKey)
+
+    // Create a test connection
+    const connection = deepgramClient.listen.live({
+      model: 'nova-2',
+      language: 'id'
+    })
+
+    // Wait for connection to open or timeout
+    const isConnected = await new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('Deepgram connection test timeout')
+        resolve(false)
+      }, 3000) // 3 second timeout
+
+      let isResolved = false
+
+      const openHandler = () => {
+        if (!isResolved) {
+          isResolved = true
+          clearTimeout(timeout)
+          console.log('✅ Deepgram connection test successful')
+          resolve(true)
+        }
+      }
+
+      const errorHandler = (err) => {
+        if (!isResolved) {
+          isResolved = true
+          clearTimeout(timeout)
+          console.warn('❌ Deepgram connection test failed:', err)
+          resolve(false)
+        }
+      }
+
+      connection.addListener('open', openHandler)
+      connection.addListener('error', errorHandler)
+    })
+
+    // Clean up connection
+    try {
+      connection.finish()
+    } catch (err) {
+      // Ignore cleanup errors
+    }
+
+    return isConnected
+  } catch (error) {
+    console.warn('Deepgram connection test error:', error)
+    return false
+  }
+}
+
+/**
+ * Determine the available STT provider
+ * Tests Deepgram first (preferred), falls back to Whisper if unavailable
+ * @returns {Promise<'deepgram'|'whisper'>} The available STT provider
+ */
+export const getAvailableSttProvider = async () => {
+  console.log('🔍 Testing STT provider connectivity...')
+
+  // Test Deepgram first (preferred provider)
+  const deepgramAvailable = await testDeepgramConnection()
+
+  if (deepgramAvailable) {
+    console.log('✅ Using Deepgram as STT provider')
+    return 'deepgram'
+  }
+
+  // Fallback to Whisper
+  console.log('⚠️ Deepgram unavailable, falling back to Whisper')
+  return 'whisper'
+}

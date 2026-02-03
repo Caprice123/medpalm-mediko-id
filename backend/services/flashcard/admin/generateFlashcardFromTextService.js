@@ -2,6 +2,7 @@
 import prisma from "#prisma/client"
 import { BaseService } from "#services/baseService"
 import { RouterUtils } from "#utils/aiUtils/routerUtils"
+import { ValidationError } from '#errors/validationError'
 
 export class GenerateFlashcardFromTextService extends BaseService {
     static async call(content, cardCount) {

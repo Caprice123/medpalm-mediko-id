@@ -14,7 +14,6 @@ export class TagSerializer {
             id: tag.id,
             name: tag.name,
             tagGroupId: tag.tag_group_id,
-            isActive: tag.is_active
         }
     }
 }

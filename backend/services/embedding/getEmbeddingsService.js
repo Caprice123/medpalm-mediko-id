@@ -1,6 +1,7 @@
 import { getVectorDB } from '#services/vectorDB/vectorDBFactory'
 import embeddingService from '#services/embedding/embeddingService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetEmbeddingsService {
   /**
@@ -95,7 +96,7 @@ export class GetEmbeddingsService {
       const document = await vectorDB.getDocument(collectionName, documentId)
 
       if (!document) {
-        throw new Error('Document not found')
+        throw new ValidationError('Document not found')
       }
 
       return {

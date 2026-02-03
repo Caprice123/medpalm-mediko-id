@@ -95,14 +95,13 @@ export const createOsceSession = (topicId, onSuccess) => async (dispatch) => {
 }
 
 // Start an existing OSCE practice session (deducts credits)
-export const startOsceSession = (sessionId, onSuccess) => async (dispatch) => {
+export const startOsceSession = (sessionId, sttProvider) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isStartingSession', value: true }))
 
     const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/start`
-    const response = await postWithToken(route, {})
+    const response = await postWithToken(route, { sttProvider })
 
-    if (onSuccess) onSuccess(response.data.data)
     return response.data
   } catch {
     // no need to handle anything because already handled in api.jsx

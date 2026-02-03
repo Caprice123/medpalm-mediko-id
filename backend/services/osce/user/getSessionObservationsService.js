@@ -1,15 +1,16 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetSessionObservationsService extends BaseService {
   static async call(userId, sessionId) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     // Verify session belongs to user and get observation snapshots
@@ -38,7 +39,7 @@ export class GetSessionObservationsService extends BaseService {
     })
 
     if (!session) {
-      throw new Error('Session not found or access denied')
+      throw new ValidationError('Session not found or access denied')
     }
 
     // Transform snapshot data into structured groups with attachments

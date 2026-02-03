@@ -30,7 +30,7 @@ export class StartAnatomyQuizService extends BaseService {
         throw new ValidationError('Quiz not found')
       }
 
-      if (quiz.status !== 'published' || !quiz.is_active) {
+      if (quiz.status !== 'published') {
         throw new ValidationError('Quiz is not available')
       }
 

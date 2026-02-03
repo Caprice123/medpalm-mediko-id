@@ -1,3 +1,4 @@
+import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client';
 import { BaseService } from "../baseService.js";
 

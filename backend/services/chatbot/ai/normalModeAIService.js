@@ -62,7 +62,7 @@ export class NormalModeAIService extends BaseService {
       const AIService = RouterUtils.call(modelName)
 
       if (!AIService) {
-        throw new Error(`No AI provider found for model: ${modelName}`)
+        throw new ValidationError(`No AI provider found for model: ${modelName}`)
       }
 
       const stream = await AIService.generateStreamWithHistory(

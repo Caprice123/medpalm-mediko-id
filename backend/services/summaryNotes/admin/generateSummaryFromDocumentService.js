@@ -44,7 +44,7 @@ export class GenerateSummaryFromDocumentService extends BaseService {
     const systemPrompt = constantsMap.summary_notes_generation_prompt
 
     if (!systemPrompt) {
-      throw new Error('Summary notes generation prompt not configured in constants')
+      throw new ValidationError('Summary notes generation prompt not configured in constants')
     }
 
     // Download file from blob storage as buffer

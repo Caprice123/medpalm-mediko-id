@@ -15,9 +15,6 @@ export class GetMcqTopicsService extends BaseService {
       where.status = filters.status
     }
 
-    if (filters.is_active !== undefined) {
-      where.is_active = filters.is_active
-    }
 
     if (filters.search) {
       where.OR = [
@@ -105,7 +102,6 @@ export class GetMcqTopicsService extends BaseService {
         quiz_time_limit: topic.quiz_time_limit,
         passing_score: topic.passing_score,
         status: topic.status,
-        is_active: topic.is_active,
         question_count: topic.question_count || topic.mcq_questions.length,
         created_by: topic.created_by,
         created_at: topic.created_at,

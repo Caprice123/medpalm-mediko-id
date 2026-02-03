@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 const deleteAdminSkripsiSetService = async (setId) => {
   // Verify the set exists
@@ -10,7 +11,7 @@ const deleteAdminSkripsiSetService = async (setId) => {
   })
 
   if (!set) {
-    throw new Error('Skripsi set not found')
+    throw new ValidationError('Skripsi set not found')
   }
 
   // Hard delete for admin (delete all related data)

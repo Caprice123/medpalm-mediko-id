@@ -3,6 +3,7 @@ import MarkdownChunker from '#services/embedding/markdownChunker'
 import { blockNoteToMarkdown } from '#utils/blockNoteConverter'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
+import { ValidationError } from '#errors/validationError'
 
 class EmbeddingService {
   /**
@@ -81,7 +82,7 @@ class EmbeddingService {
       const markdownContent = blockNoteToMarkdown(summaryNote.content)
 
       if (!markdownContent || markdownContent.trim() === '') {
-        throw new Error(`Failed to convert content to markdown for note ${summaryNote.id}`)
+        throw new ValidationError(`Failed to convert content to markdown for note ${summaryNote.id}`)
       }
 
       // Chunk the markdown content by headings

@@ -12,7 +12,6 @@ export class GetSummaryNoteByIdService extends BaseService {
     const note = await prisma.summary_notes.findUnique({
       where: {
         id: parseInt(noteId),
-        is_active: true,
         status: 'published'
       },
       include: {

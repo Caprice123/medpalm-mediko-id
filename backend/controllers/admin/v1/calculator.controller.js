@@ -92,7 +92,6 @@ class CalculatorController {
       classifications,
       status,
       tags,
-      is_active
     } = req.body
 
     const topic = await UpdateCalculatorTopicService.call(id, {
@@ -106,7 +105,6 @@ class CalculatorController {
       classifications,
       status,
       tags,
-      is_active
     })
 
     return res.status(200).json({

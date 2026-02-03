@@ -18,9 +18,6 @@ export class DeleteOsceObservationService extends BaseService {
         // Soft delete by setting is_active to false
         await prisma.osce_observations.update({
             where: { id: parseInt(observationId) },
-            data: {
-                is_active: false
-            }
         })
 
         return true

@@ -12,13 +12,12 @@ import { ValidationError } from '#errors/validationError'
 
 class AnatomyController {
   async index(req, res) {
-    const { university, semester, status, is_active, page, perPage, search } = req.query
+    const { university, semester, status, page, perPage, search } = req.query
 
     const result = await GetAnatomyQuizzesService.call({
       university,
       semester,
       status,
-      is_active,
       page,
       perPage,
       search

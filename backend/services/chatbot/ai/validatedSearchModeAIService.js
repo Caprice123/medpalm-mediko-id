@@ -232,7 +232,7 @@ export class ValidatedSearchModeAIService extends BaseService {
       console.log(processedSystemPrompt)
 
       if (!AIService) {
-        throw new Error(`No AI provider found for model: ${modelName}`)
+        throw new ValidationError(`No AI provider found for model: ${modelName}`)
       }
 
       const stream = await AIService.generateStreamWithHistory(

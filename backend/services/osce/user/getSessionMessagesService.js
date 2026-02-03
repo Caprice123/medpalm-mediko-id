@@ -1,14 +1,15 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetSessionMessagesService extends BaseService {
   static async call(userId, sessionId, options = {}) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     const { cursor, limit = 20 } = options
@@ -22,7 +23,7 @@ export class GetSessionMessagesService extends BaseService {
     })
 
     if (!session) {
-      throw new Error('Session not found or access denied')
+      throw new ValidationError('Session not found or access denied')
     }
 
     // Build where clause

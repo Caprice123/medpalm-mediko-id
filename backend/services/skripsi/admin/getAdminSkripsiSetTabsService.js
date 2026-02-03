@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 const getAdminSkripsiSetTabsService = async (setId) => {
   // First verify the set exists
@@ -10,7 +11,7 @@ const getAdminSkripsiSetTabsService = async (setId) => {
   })
 
   if (!set) {
-    throw new Error('Skripsi set not found')
+    throw new ValidationError('Skripsi set not found')
   }
 
   // Get all tabs with their messages

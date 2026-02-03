@@ -2,29 +2,28 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { v4 as uuidv4 } from 'uuid'
 import attachmentService from '#services/attachment/attachmentService'
+import { ValidationError } from '#errors/validationError'
 
 export class CreateOsceSessionService extends BaseService {
   static async call(userId, topicId) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!topicId) {
-      throw new Error('Topic ID is required')
+      throw new ValidationError('Topic ID is required')
     }
 
-    try {
       // Verify topic exists and is published
       const topic = await prisma.osce_topics.findFirst({
         where: {
           id: topicId,
           status: 'published',
-          is_active: true,
         },
       })
 
       if (!topic) {
-        throw new Error('Topic not found or not available')
+        throw new ValidationError('Topic not found or not available')
       }
 
 
@@ -221,12 +220,5 @@ export class CreateOsceSessionService extends BaseService {
       })
 
       return session
-    } catch (error) {
-      console.error('[CreateOsceSessionService] Error:', error)
-      if (error.message.includes('not found')) {
-        throw error
-      }
-      throw new Error('Failed to create OSCE session')
-    }
   }
 }

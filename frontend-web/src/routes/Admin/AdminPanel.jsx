@@ -108,8 +108,8 @@ function AdminPanel() {
   useEffect(() => {
     const userData = getUserData()
 
-    // Check if user is admin
-    if (!userData || userData.role !== 'admin') {
+    // Check if user is admin or superadmin
+    if (!userData || (userData.role !== 'admin' && userData.role !== 'superadmin')) {
       navigate('/dashboard')
       return
     }

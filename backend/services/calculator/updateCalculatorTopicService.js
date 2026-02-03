@@ -7,7 +7,7 @@ export class UpdateCalculatorTopicService extends BaseService {
     static async call(topicId, data) {
         this.validate(data)
 
-        const { title, description, clinical_references, formula, result_label, result_unit, fields, classifications, tags, status, is_active } = data
+        const { title, description, clinical_references, formula, result_label, result_unit, fields, classifications, tags, status } = data
 
         // Check if topic exists
         const existingTopic = await prisma.calculator_topics.findUnique({
@@ -31,7 +31,6 @@ export class UpdateCalculatorTopicService extends BaseService {
                     result_label,
                     result_unit,
                     status,
-                    is_active
                 }
             })
 
@@ -220,7 +219,6 @@ export class UpdateCalculatorTopicService extends BaseService {
             result_label: finalTopic.result_label,
             result_unit: finalTopic.result_unit,
             status: finalTopic.status,
-            is_active: finalTopic.is_active,
             fields: finalTopic.calculator_fields,
             classifications: finalTopic.calculator_classifications,
             tags: finalTopic.calculator_topic_tags.map(tt => tt.tags),
@@ -252,12 +250,6 @@ export class UpdateCalculatorTopicService extends BaseService {
         if (data.status !== undefined) {
             if (!['draft', 'published'].includes(data.status)) {
                 throw new ValidationError('Status must be either "draft" or "published"')
-            }
-        }
-
-        if (data.is_active !== undefined) {
-            if (typeof data.is_active !== 'boolean') {
-                throw new ValidationError('is_active must be a boolean')
             }
         }
 

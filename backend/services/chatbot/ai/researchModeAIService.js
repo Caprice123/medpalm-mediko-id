@@ -3,6 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { GetTrustedDomainsService } from '#services/chatbot/getTrustedDomainsService'
+import { RouterUtils } from '#utils/aiUtils/routerUtils'
 
 export class ResearchModeAIService extends BaseService {
   /**
@@ -92,7 +93,7 @@ export class ResearchModeAIService extends BaseService {
       })
 
       if (!process.env.PERPLEXITY_API_KEY) {
-        throw new Error('api key not configured')
+        throw new ValidationError('api key not configured')
       }
 
       // Build messages array with history
@@ -175,7 +176,7 @@ export class ResearchModeAIService extends BaseService {
       return {
         stream: stream,
         sources: [], // Citations will be extracted from the stream
-        provider: RouterUtils.getProvider(modelName),
+        provider: RouterUtils.getProvider(model),
       }
     } catch (error) {
       console.error('Error calling Perplexity API:', error)

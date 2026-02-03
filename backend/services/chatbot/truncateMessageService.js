@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 export class TruncateMessageService {
   static async call({ userId, conversationId, messageId, characterCount }) {
@@ -11,7 +12,7 @@ export class TruncateMessageService {
     })
 
     if (!conversation) {
-      throw new Error('Conversation not found or access denied')
+      throw new ValidationError('Conversation not found or access denied')
     }
 
     // Find the AI message
@@ -24,7 +25,7 @@ export class TruncateMessageService {
     })
 
     if (!message) {
-      throw new Error('Message not found or not an AI message')
+      throw new ValidationError('Message not found or not an AI message')
     }
 
     // Truncate the content to the specified character count

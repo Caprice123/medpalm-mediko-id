@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 export class FinalizeMessageService {
   static async call({ userId, conversationId, messageId, content, isComplete }) {
@@ -11,7 +12,7 @@ export class FinalizeMessageService {
     })
 
     if (!conversation) {
-      throw new Error('Conversation not found or access denied')
+      throw new ValidationError('Conversation not found or access denied')
     }
 
     // Use transaction to prevent race condition
@@ -26,7 +27,7 @@ export class FinalizeMessageService {
       })
 
       if (!message) {
-        throw new Error('Message not found or not an AI message')
+        throw new ValidationError('Message not found or not an AI message')
       }
 
       // Check if status is still 'streaming'

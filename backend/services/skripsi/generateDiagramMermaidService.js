@@ -208,7 +208,6 @@ export class GenerateDiagramMermaidService extends BaseService {
       where: {
         key: {
           in: [
-            'skripsi_is_active',
             'skripsi_access_type',
             'skripsi_diagram_builder_enabled',
             'skripsi_diagram_builder_cost'
@@ -218,12 +217,6 @@ export class GenerateDiagramMermaidService extends BaseService {
     })
     const constantsMap = {}
     constants.forEach(c => { constantsMap[c.key] = c.value })
-
-    // Check if feature is globally active
-    const featureActive = constantsMap.skripsi_is_active === 'true'
-    if (!featureActive) {
-      throw new ValidationError('Fitur Skripsi Builder sedang tidak aktif. Silakan coba beberapa saat lagi')
-    }
 
     // Check if diagram builder is enabled
     const diagramBuilderEnabled = constantsMap.skripsi_diagram_builder_enabled === 'true'

@@ -11,7 +11,6 @@ export class CreateOsceObservationGroupService extends BaseService {
         const group = await prisma.osce_observation_groups.create({
             data: {
                 name,
-                is_active: true
             }
         })
 

@@ -80,7 +80,7 @@ export const Navbar = () => {
                 )}
                 </UserInfo>
             )}
-            {user?.role === 'admin' && (
+            {(user?.role === 'admin' || user?.role === 'superadmin') && (
                 <Button onClick={() => navigate('/admin')} variant="primary" size="small">
                 Admin
                 </Button>
@@ -139,7 +139,7 @@ export const Navbar = () => {
 
             <MobileMenuDivider />
 
-            {user?.role === 'admin' && (
+            {(user?.role === 'admin' || user?.role === 'superadmin') && (
                 <MobileMenuItem>
                     <Button
                         variant="primary"

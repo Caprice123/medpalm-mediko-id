@@ -15,7 +15,6 @@ export class OsceTopicSerializer {
             rubricId: topic.osce_rubric_id,
             durationMinutes: topic.duration_minutes,
             status: topic.status,
-            isActive: topic.is_active,
             createdBy: topic.created_by,
             createdAt: topic.created_at,
             updatedAt: topic.updated_at,

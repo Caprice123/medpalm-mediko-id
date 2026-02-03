@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 export class TruncateMessageService {
   static async call({ userId, tabId, messageId, characterCount }) {
@@ -17,7 +18,7 @@ export class TruncateMessageService {
     })
 
     if (!tab || tab.skripsi_set.user_id !== userId) {
-      throw new Error('Tab not found or access denied')
+      throw new ValidationError('Tab not found or access denied')
     }
 
     // Find the AI message
@@ -30,7 +31,7 @@ export class TruncateMessageService {
     })
 
     if (!message) {
-      throw new Error('Message not found or not an AI message')
+      throw new ValidationError('Message not found or not an AI message')
     }
 
     // Truncate the content to the specified character count

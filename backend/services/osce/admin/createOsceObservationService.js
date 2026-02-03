@@ -12,8 +12,6 @@ export class CreateOsceObservationService extends BaseService {
             data: {
                 name,
                 group_id: parseInt(groupId),
-                order: parseInt(order),
-                is_active: true
             },
             include: {
                 osce_observation_group: true

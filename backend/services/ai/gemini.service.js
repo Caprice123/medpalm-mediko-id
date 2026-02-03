@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { BaseAiService } from "./base.service.js";
+import { ValidationError } from '#errors/validationError';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -51,7 +52,7 @@ export class GeminiService extends BaseAiService {
         console.log(`Processing file buffer (${mimeType}) - Size: ${fileSizeMB.toFixed(2)} MB`);
 
         if (fileSizeMB > 50) {
-            throw new Error("File uploaded cannot more than 50 MB")
+            throw new ValidationError("File uploaded cannot more than 50 MB")
         }
 
         // Create temporary file

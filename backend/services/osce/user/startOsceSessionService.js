@@ -1,14 +1,20 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class StartOsceSessionService extends BaseService {
-  static async call(userId, sessionId) {
+  static async call(userId, sessionId, sttProvider = 'whisper') {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
+    }
+
+    // Validate STT provider
+    if (!['deepgram', 'whisper'].includes(sttProvider)) {
+      throw new ValidationError('Invalid STT provider. Must be either "deepgram" or "whisper"')
     }
 
       // Find the session
@@ -23,16 +29,16 @@ export class StartOsceSessionService extends BaseService {
       })
 
       if (!session) {
-        throw new Error('Session not found or access denied')
+        throw new ValidationError('Session not found or access denied')
       }
 
       // If session is already started, just return success
       if (session.status === 'started') {
-        return 
+        return
       }
 
       if (session.status === 'completed') {
-        throw new Error('Session has already been completed')
+        throw new ValidationError('Session has already been completed')
       }
 
       // Check OSCE feature is active and get session start cost
@@ -57,7 +63,7 @@ export class StartOsceSessionService extends BaseService {
       })
 
       if (!userCredit || userCredit.balance < sessionStartCost) {
-        throw new Error(`Insufficient credits. You need ${sessionStartCost} credits to start a session`)
+        throw new ValidationError(`Insufficient credits. You need ${sessionStartCost} credits to start a session`)
       }
 
       // Deduct credits and update session status
@@ -84,7 +90,7 @@ export class StartOsceSessionService extends BaseService {
           },
         })
 
-        // Update session status and credits used
+        // Update session status, credits used, and metadata
         await tx.osce_sessions.update({
           where: { id: session.id },
           data: {
@@ -92,6 +98,9 @@ export class StartOsceSessionService extends BaseService {
             started_at: new Date(),
             scheduled_end_at: new Date(Date.now() + session.osce_session_topic_snapshot.duration_minutes * 60 * 1000),
             credits_used: sessionStartCost,
+            metadata: {
+              stt_provider: sttProvider,
+            },
           },
         })
       })

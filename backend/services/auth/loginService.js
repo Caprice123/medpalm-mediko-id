@@ -148,7 +148,7 @@ class AuthService {
     });
 
     if (!session || !session.is_active) {
-      throw new Error('Session is invalid or expired');
+      throw new ValidationError('Session is invalid or expired');
     }
 
     // Check if session has expired
@@ -175,7 +175,7 @@ class AuthService {
     });
 
     if (!user || !user.is_active) {
-      throw new Error('User not found or inactive');
+      throw new ValidationError('User not found or inactive');
     }
 
     // Update last active time

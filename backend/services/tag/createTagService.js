@@ -36,7 +36,6 @@ export class CreateTagService extends BaseService {
                 name,
                 type,
                 tag_group_id: tagGroup.id,
-                is_active: true
             }
         })
 

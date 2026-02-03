@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Service to get full diagram details including diagram_data
@@ -20,7 +21,7 @@ export class GetDiagramDetailService {
     })
 
     if (!diagram) {
-      throw new Error('Diagram not found or access denied')
+      throw new ValidationError('Diagram not found or access denied')
     }
 
     // Parse diagram_data from JSON string

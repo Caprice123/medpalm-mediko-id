@@ -1,4 +1,5 @@
 import embeddingService from '#services/embedding/embeddingService'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Delete Summary Note Embedding Job Handler
@@ -7,6 +8,10 @@ import embeddingService from '#services/embedding/embeddingService'
  */
 export async function deleteSummaryNoteEmbeddingHandler(job) {
   const { summaryNoteId } = job.data
+
+  if (!summaryNoteId) {
+    throw new ValidationError('Summary note ID is required')
+  }
 
   console.log(`🗑️  Deleting embeddings for note ${summaryNoteId}`)
 

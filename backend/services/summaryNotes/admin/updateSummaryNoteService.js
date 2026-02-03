@@ -40,7 +40,6 @@ export class UpdateSummaryNoteService extends BaseService {
       if (content !== undefined) updateData.content = content
       if (markdownContent !== undefined) updateData.markdown_content = markdownContent
       if (status !== undefined) updateData.status = status
-      if (isActive !== undefined) updateData.is_active = isActive
 
       // Update the summary note
       const summaryNote = await tx.summary_notes.update({

@@ -1,10 +1,11 @@
+import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class UpdateRubricService extends BaseService {
   static async call(rubricId, { name, content }) {
     if (!rubricId) {
-      throw new Error('Rubric ID is required')
+      throw new ValidationError('Rubric ID is required')
     }
 
     // Check if rubric exists
@@ -13,7 +14,7 @@ export class UpdateRubricService extends BaseService {
     })
 
     if (!existingRubric) {
-      throw new Error('Rubric not found')
+      throw new ValidationError('Rubric not found')
     }
 
     // If name is being changed, check for uniqueness
@@ -23,7 +24,7 @@ export class UpdateRubricService extends BaseService {
       })
 
       if (duplicateRubric) {
-        throw new Error('Rubric with this name already exists')
+        throw new ValidationError('Rubric with this name already exists')
       }
     }
 

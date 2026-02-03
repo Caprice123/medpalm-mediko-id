@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Service to save/update the current diagram data to skripsi_tabs.content
@@ -21,12 +22,12 @@ export class SaveTabDiagramService {
     })
 
     if (!tab) {
-      throw new Error('Tab not found or access denied')
+      throw new ValidationError('Tab not found or access denied')
     }
 
     // Ensure tab is diagram_builder type
     if (tab.tab_type !== 'diagram_builder') {
-      throw new Error('This tab is not a diagram builder')
+      throw new ValidationError('This tab is not a diagram builder')
     }
 
     // Save diagram data to tab content

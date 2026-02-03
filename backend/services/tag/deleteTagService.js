@@ -14,16 +14,6 @@ export class DeleteTagService extends BaseService {
         if (!existingTag) {
             throw new ValidationError('Tag not found')
         }
-
-        // Soft delete by setting is_active to false
-        const deletedTag = await prisma.tags.update({
-            where: { id: parseInt(tagId) },
-            data: {
-                is_active: false
-            }
-        })
-
-        return deletedTag
     }
 
     static validate(tagId) {

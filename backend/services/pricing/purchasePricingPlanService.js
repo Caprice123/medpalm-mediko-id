@@ -1,5 +1,6 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class PurchasePricingPlanService extends BaseService {
   static async call(userId, pricingPlanId, paymentMethod = 'manual') {
@@ -9,11 +10,11 @@ export class PurchasePricingPlanService extends BaseService {
     })
 
     if (!plan) {
-      throw new Error('Pricing plan not found')
+      throw new ValidationError('Pricing plan not found')
     }
 
     if (!plan.is_active) {
-      throw new Error('Pricing plan is not active')
+      throw new ValidationError('Pricing plan is not active')
     }
 
     // For Xendit payments, create purchase with pending status

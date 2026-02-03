@@ -11,9 +11,7 @@ export class GetOsceTopicsService extends BaseService {
         const perPage = parseInt(filters.perPage) || 20
         const skip = (page - 1) * perPage
 
-        const where = {
-            is_active: true
-        }
+        const where = {}
 
         if (filters.status) {
             where.status = filters.status

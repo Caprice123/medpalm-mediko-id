@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
+import { ValidationError } from '#errors/validationError';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -28,7 +29,7 @@ export const verifyGoogleToken = async (token) => {
     };
   } catch (error) {
     console.error('Google token verification error:', error);
-    throw new Error('Invalid Google token');
+    throw new ValidationError('Invalid Google token');
   }
 };
 

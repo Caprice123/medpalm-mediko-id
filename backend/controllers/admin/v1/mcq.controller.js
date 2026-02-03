@@ -53,11 +53,10 @@ class McqController {
    * GET /admin/v1/mcq/topics
    */
   async index(req, res) {
-    const { page, limit, status, is_active, search, university, semester } = req.query
+    const { page, limit, status, search, university, semester } = req.query
 
     const filters = {}
     if (status) filters.status = status
-    if (is_active !== undefined) filters.is_active = is_active === 'true'
     if (search) filters.search = search
     if (university) filters.university = university
     if (semester) filters.semester = semester

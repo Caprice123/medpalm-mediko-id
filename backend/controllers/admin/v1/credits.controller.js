@@ -1,5 +1,6 @@
 import prisma from '#prisma/client'
 import { UserPurchaseSerializer } from '../../../serializers/userPurchaseSerializer.js'
+import { ValidationError } from '#errors/validationError'
 
 class CreditsController {
   /**
@@ -125,7 +126,7 @@ class CreditsController {
       })
 
       if (!userCredit || userCredit.balance < amount) {
-        throw new Error('Insufficient credits')
+        throw new ValidationError('Insufficient credits')
       }
 
       const balanceBefore = userCredit.balance

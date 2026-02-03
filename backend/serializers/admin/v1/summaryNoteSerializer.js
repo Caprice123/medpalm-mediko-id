@@ -21,7 +21,6 @@ export class SummaryNoteSerializer {
       description: note.description,
       content: note.content,
       status: note.status,
-      is_active: note.is_active,
       // Source document blob (if exists)
       blob: sourceBlob ? {
         id: sourceBlob.id,

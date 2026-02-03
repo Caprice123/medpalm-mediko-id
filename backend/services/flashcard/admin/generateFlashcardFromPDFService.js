@@ -1,6 +1,7 @@
 import { BaseService } from "#services/baseService"
 import { RouterUtils } from "#utils/aiUtils/routerUtils"
 import prisma from "#prisma/client"
+import { ValidationError } from '#errors/validationError'
 
 export class GenerateFlashcardFromPDFService extends BaseService {
     /**
@@ -30,7 +31,7 @@ export class GenerateFlashcardFromPDFService extends BaseService {
         const systemPrompt = constantsMap.flashcard_generation_prompt_document_based
 
         if (!systemPrompt) {
-            throw new Error('Document-based prompt not configured in constants')
+            throw new ValidationError('Document-based prompt not configured in constants')
         }
 
         // Build prompt with variables

@@ -1,18 +1,19 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class SaveDiagnosesService extends BaseService {
   static async call(userId, sessionId, diagnosisData) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     if (!diagnosisData) {
-      throw new Error('Diagnosis data is required')
+      throw new ValidationError('Diagnosis data is required')
     }
 
     try {
@@ -25,7 +26,7 @@ export class SaveDiagnosesService extends BaseService {
       })
 
       if (!session) {
-        throw new Error('Session not found or access denied')
+        throw new ValidationError('Session not found or access denied')
       }
 
       // Delete existing diagnoses for this session

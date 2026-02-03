@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Service to create a new diagram entry
@@ -21,18 +22,18 @@ export class CreateDiagramService {
     })
 
     if (!tab) {
-      throw new Error('Tab not found or access denied')
+      throw new ValidationError('Tab not found or access denied')
     }
 
     // Ensure tab is diagram_builder type
     if (tab.tab_type !== 'diagram_builder') {
-      throw new Error('This tab is not a diagram builder')
+      throw new ValidationError('This tab is not a diagram builder')
     }
 
     // Validate creation_method
     const validMethods = ['manual', 'ai_generated']
     if (!validMethods.includes(creationMethod)) {
-      throw new Error('Invalid creation_method. Must be "manual" or "ai_generated"')
+      throw new ValidationError('Invalid creation_method. Must be "manual" or "ai_generated"')
     }
 
     // Create new diagram entry (fields are nullable for manual diagrams)

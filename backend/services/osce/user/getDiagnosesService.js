@@ -1,14 +1,15 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetDiagnosesService extends BaseService {
   static async call(userId, sessionId) {
     if (!userId) {
-      throw new Error('User ID is required')
+      throw new ValidationError('User ID is required')
     }
 
     if (!sessionId) {
-      throw new Error('Session ID is required')
+      throw new ValidationError('Session ID is required')
     }
 
     try {
@@ -21,7 +22,7 @@ export class GetDiagnosesService extends BaseService {
       })
 
       if (!session) {
-        throw new Error('Session not found or access denied')
+        throw new ValidationError('Session not found or access denied')
       }
 
       // Get diagnoses for this session

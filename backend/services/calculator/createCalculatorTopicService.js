@@ -187,7 +187,6 @@ export class CreateCalculatorTopicService extends BaseService {
             result_label: finalTopic.result_label,
             result_unit: finalTopic.result_unit,
             status: finalTopic.status,
-            is_active: finalTopic.is_active,
             fields: finalTopic.calculator_fields,
             classifications: finalTopic.calculator_classifications,
             tags: finalTopic.calculator_topic_tags.map(tt => tt.tags),

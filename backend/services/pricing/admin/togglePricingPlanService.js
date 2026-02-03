@@ -1,5 +1,6 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class TogglePricingPlanService extends BaseService {
   static async call(id, req) {
@@ -8,7 +9,7 @@ export class TogglePricingPlanService extends BaseService {
     })
 
     if (!plan) {
-      throw new Error('Pricing plan not found')
+      throw new ValidationError('Pricing plan not found')
     }
 
     const updatedPlan = await prisma.pricing_plans.update({

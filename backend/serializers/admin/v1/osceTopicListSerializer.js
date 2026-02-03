@@ -20,7 +20,6 @@ export class OsceTopicListSerializer {
             aiModel: topic.ai_model,
             durationMinutes: topic.duration_minutes,
             status: topic.status,
-            isActive: topic.is_active,
             tags: topicTags.map(tag => ({
                 id: tag.tags ? tag.tags.id : (tag.tag ? tag.tag.id : tag.id),
                 name: tag.tags ? tag.tags.name : (tag.tag ? tag.tag.name : tag.name),

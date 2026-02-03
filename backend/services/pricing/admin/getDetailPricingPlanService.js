@@ -1,5 +1,6 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ValidationError } from '#errors/validationError'
 
 export class GetDetailPricingPlanService extends BaseService {
   static async call(id) {
@@ -8,7 +9,7 @@ export class GetDetailPricingPlanService extends BaseService {
     })
 
     if (!plan) {
-      throw new Error('Pricing plan not found')
+      throw new ValidationError('Pricing plan not found')
     }
 
     return plan

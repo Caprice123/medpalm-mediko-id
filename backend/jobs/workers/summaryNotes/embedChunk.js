@@ -3,6 +3,7 @@ import embeddingService from '#services/embedding/embeddingService'
 import MarkdownChunker from '#services/embedding/markdownChunker'
 import { generateChecksum } from '#utils/checksum'
 import { GetConstantsService } from '#services/constant/getConstantsService'
+import { ValidationError } from '#errors/validationError'
 
 /**
  * Embed Chunk Job Handler
@@ -12,6 +13,14 @@ import { GetConstantsService } from '#services/constant/getConstantsService'
  */
 export async function embedChunkHandler(job) {
   const { summaryNoteId, chunkIndex, chunk, metadata } = job.data
+
+  if (!summaryNoteId || chunkIndex === undefined || !chunk || !metadata) {
+    throw new ValidationError('Missing required job data: summaryNoteId, chunkIndex, chunk, or metadata')
+  }
+
+  if (!chunk.content) {
+    throw new ValidationError('Chunk content is required')
+  }
 
   console.log(`🧠 Processing chunk ${chunkIndex + 1} for note ${summaryNoteId}`)
 

@@ -3,6 +3,7 @@ import axios from 'axios';
 import jsdom from 'jsdom';
 import prisma from '#prisma/client';
 import idriveService from '#services/idrive.service';
+import { ValidationError } from '#errors/validationError';
 
 const { JSDOM } = jsdom;
 
@@ -414,7 +415,7 @@ async function fetchImageWithType(src) {
     // Base64 data URI
     const matches = src.match(/^data:([^;]+);base64,(.+)$/);
     if (!matches) {
-      throw new Error('Invalid data URI format');
+      throw new ValidationError('Invalid data URI format');
     }
 
     mimeType = matches[1];
@@ -425,7 +426,7 @@ async function fetchImageWithType(src) {
     // Extract blob ID from URL like "http://localhost:5000/api/v1/blobs/34"
     const blobIdMatch = src.match(/\/api\/v1\/blobs\/(\d+)/);
     if (!blobIdMatch) {
-      throw new Error('Invalid blob URL format');
+      throw new ValidationError('Invalid blob URL format');
     }
 
     const blobId = parseInt(blobIdMatch[1]);
@@ -436,7 +437,7 @@ async function fetchImageWithType(src) {
     });
 
     if (!blob) {
-      throw new Error(`Blob ${blobId} not found in database`);
+      throw new ValidationError(`Blob ${blobId} not found in database`);
     }
 
     // Get presigned URL from iDrive

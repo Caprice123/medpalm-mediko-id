@@ -8,7 +8,6 @@ export class GetMcqTopicByIdService extends BaseService {
       const topic = await tx.mcq_topics.findFirst({
         where: {
           id: topicId,
-          is_active: true,
           status: 'published'
         },
         include: {

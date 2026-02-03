@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
+import { ValidationError } from '#errors/validationError'
 
 export class SendOsceMessageService extends BaseService {
   static async call({
@@ -15,9 +16,9 @@ export class SendOsceMessageService extends BaseService {
   }) {
     try {
       // Validate inputs
-      if (!userId) throw new Error('User ID is required')
-      if (!sessionId) throw new Error('Session ID is required')
-      if (!message || !message.trim()) throw new Error('Message is required')
+      if (!userId) throw new ValidationError('User ID is required')
+      if (!sessionId) throw new ValidationError('Session ID is required')
+      if (!message || !message.trim()) throw new ValidationError('Message is required')
 
       // Get OSCE configuration from constants
       const constants = await prisma.constants.findMany({
@@ -66,7 +67,7 @@ export class SendOsceMessageService extends BaseService {
       })
 
       if (!session) {
-        throw new Error('Session not found or access denied')
+        throw new ValidationError('Session not found or access denied')
       }
 
     //   const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
@@ -78,7 +79,7 @@ export class SendOsceMessageService extends BaseService {
       })
 
       if (!userCredit || userCredit.balance < messageCost) {
-        throw new Error(`Insufficient credits. You need ${messageCost} credits to send a message`)
+        throw new ValidationError(`Insufficient credits. You need ${messageCost} credits to send a message`)
       }
 
       // Build system prompt with context, knowledge base, and scenario

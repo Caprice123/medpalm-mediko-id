@@ -33,7 +33,6 @@ export class SendMessageService extends BaseService {
       where: {
         key: {
           in: [
-            'skripsi_is_active',
             'skripsi_access_type',
             `skripsi_${mode}_enabled`,
             `skripsi_${mode}_cost`
@@ -43,12 +42,6 @@ export class SendMessageService extends BaseService {
     })
     const constantsMap = {}
     constants.forEach(c => { constantsMap[c.key] = c.value })
-
-    // Check if feature is globally active
-    const featureActive = constantsMap.skripsi_is_active === 'true'
-    if (!featureActive) {
-      throw new ValidationError('Fitur Skripsi Builder sedang tidak aktif. Silakan coba beberapa saat lagi')
-    }
 
     // Check if specific mode is enabled
     const modeEnabled = constantsMap[`skripsi_${mode}_enabled`] === 'true'
@@ -145,7 +138,7 @@ export class SendMessageService extends BaseService {
       }
 
       // Non-streaming fallback (shouldn't reach here with current implementation)
-      throw new Error('Streaming is required for Skripsi Builder')
+      throw new ValidationError('Streaming is required for Skripsi Builder')
     } catch (error) {
       if (onError) {
         onError(error)

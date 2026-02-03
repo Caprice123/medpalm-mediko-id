@@ -16,7 +16,7 @@ class CalculatorController {
 
     // Only return published and active calculators to users
     const publicTopics = result.topics.filter(topic =>
-      topic.status === 'published' && topic.is_active
+      topic.status === 'published'
     )
 
     return res.status(200).json({

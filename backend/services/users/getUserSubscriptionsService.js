@@ -1,3 +1,4 @@
+import { ValidationError } from '#errors/validationError';
 import prisma from '#prisma/client';
 import { ValidatePaginationUtils } from '#utils/validatePaginationUtils';
 import { BaseService } from "../baseService.js";
@@ -50,14 +51,14 @@ export class GetUserSubscriptionsService extends BaseService {
 
     static validate(userId, filters) {
         if (!userId || isNaN(parseInt(userId))) {
-            throw new Error("Valid userId is required")
+            throw new ValidationError("Valid userId is required")
         }
 
         ValidatePaginationUtils.validate(Number(filters.page), Number(filters.perPage))
 
         // Validate status if provided
         if (filters.status && !['all', 'active', 'not_active', 'expired'].includes(filters.status)) {
-            throw new Error("Status must be 'all', 'active', 'not_active', or 'expired'")
+            throw new ValidationError("Status must be 'all', 'active', 'not_active', or 'expired'")
         }
     }
 }

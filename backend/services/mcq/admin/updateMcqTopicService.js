@@ -52,7 +52,6 @@ export class UpdateMcqTopicService extends BaseService {
       if (quizTimeLimit !== undefined) updateData.quiz_time_limit = quizTimeLimit
       if (passingScore !== undefined) updateData.passing_score = passingScore
       if (status !== undefined) updateData.status = status
-      if (isActive !== undefined) updateData.is_active = isActive
 
       // Determine final contentType (use new if provided, otherwise keep existing)
       const finalContentType = contentType !== undefined ? contentType : existingTopic.content_type
@@ -206,7 +205,6 @@ export class UpdateMcqTopicService extends BaseService {
       const existingTags = await prisma.tags.findMany({
         where: {
           id: { in: tagIds },
-          is_active: true
         }
       })
 

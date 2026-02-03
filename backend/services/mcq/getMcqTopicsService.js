@@ -7,7 +7,6 @@ export class GetMcqTopicsService extends BaseService {
 
     // Build where clause - only show published and active topics
     const where = {
-      is_active: true,
       status: 'published'
     }
 

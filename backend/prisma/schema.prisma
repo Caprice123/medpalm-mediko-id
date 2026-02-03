@@ -164,7 +164,6 @@ model exercise_topics {
   content        String?
   question_count Int?
   status         String   @default("draft")
-  is_active      Boolean  @default(true)
   created_by     Int
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
@@ -174,7 +173,6 @@ model exercise_topics {
   exercise_topic_tags exercise_topic_tags[]
 
   @@index([created_by])
-  @@index([is_active])
   @@index([status])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "exercise_topics_search_gin_idx")
 }
@@ -183,7 +181,6 @@ model tags {
   id           Int      @id @default(autoincrement())
   name         String
   tag_group_id Int?
-  is_active    Boolean  @default(true)
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
 
@@ -199,7 +196,6 @@ model tags {
   osce_session_topic_snapshots osce_session_tag_snapshots[]
 
   @@unique([name, tag_group_id])
-  @@index([is_active])
 }
 
 model tag_groups {
@@ -238,7 +234,6 @@ model flashcard_decks {
   content         String?
   flashcard_count Int?
   status          String   @default("draft")
-  is_active       Boolean  @default(true)
   created_by      Int
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
@@ -248,7 +243,6 @@ model flashcard_decks {
   flashcard_sessions  flashcard_sessions[]
 
   @@index([created_by])
-  @@index([is_active])
   @@index([status])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "flashcard_decks_search_gin_idx")
 }
@@ -424,7 +418,6 @@ model summary_notes {
   markdown_content String? @db.Text // Markdown format for testing/export
 
   status     String   @default("draft")
-  is_active  Boolean  @default(true)
   created_by Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -433,7 +426,6 @@ model summary_notes {
   summary_note_sessions summary_note_sessions[]
 
   @@index([created_by])
-  @@index([is_active])
   @@index([status])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "summary_notes_search_gin_idx")
 }
@@ -563,7 +555,6 @@ model calculator_topics {
   result_label        String // Label for the result, e.g., "Total"
   result_unit         String? // Unit for result, e.g., "kg", "cm"
   status              String   @default("draft") // draft, published
-  is_active           Boolean  @default(true)
   created_by          Int
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
@@ -574,7 +565,6 @@ model calculator_topics {
 
   @@index([created_by])
   @@index([status])
-  @@index([is_active])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "calculator_topics_search_gin_idx")
 }
 
@@ -717,7 +707,6 @@ model anatomy_quizzes {
   title          String
   description    String?
   status         String   @default("draft")
-  is_active      Boolean  @default(true)
   question_count Int      @default(0)
   created_by     Int
   created_at     DateTime @default(now())
@@ -728,7 +717,6 @@ model anatomy_quizzes {
   anatomy_quiz_attempts anatomy_quiz_attempts[]
 
   @@index([created_by])
-  @@index([is_active])
   @@index([status])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "anatomy_quizzes_search_gin_idx")
 }
@@ -835,7 +823,6 @@ model mcq_topics {
   quiz_time_limit Int      @default(0) // in minutes, 0 = no limit
   passing_score   Int      @default(70) // percentage
   status          String   @default("draft") // draft, published
-  is_active       Boolean  @default(true)
   created_by      Int
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
@@ -845,7 +832,6 @@ model mcq_topics {
   mcq_attempts   mcq_attempts[]
 
   @@index([created_by])
-  @@index([is_active])
   @@index([status])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "mcq_topics_search_gin_idx")
 }
@@ -1120,7 +1106,6 @@ model osce_topics {
   osce_rubric_id   Int
   duration_minutes Int // Recommended practice duration
   status           String   @default("draft") // draft, published
-  is_active        Boolean  @default(true)
   created_by       Int
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now())
@@ -1134,7 +1119,6 @@ model osce_topics {
   @@index([created_by])
   @@index([osce_rubric_id])
   @@index([status])
-  @@index([is_active])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops")), scenario(ops: raw("gin_trgm_ops"))], type: Gin, map: "osce_topics_search_gin_idx")
 }
 
@@ -1217,6 +1201,7 @@ model osce_sessions {
   ai_feedback         String?   @db.Text // Overall feedback from AI
   credits_used        Int       @default(0)
   observations_locked Boolean   @default(false) // Whether user has saved observations (cannot change after)
+  metadata            Json?     // Session metadata (e.g., stt_provider, browser info, etc.)
   scheduled_end_at    DateTime? // When the session is expected to end (based on duration)
   started_at          DateTime? // When the session actually started (after preparation)
   created_at          DateTime  @default(now())
