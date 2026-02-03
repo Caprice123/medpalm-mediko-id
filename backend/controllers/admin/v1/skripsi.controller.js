@@ -1,5 +1,3 @@
-import getSkripsiConstantsService from '#services/skripsi/admin/getSkripsiConstantsService'
-import updateSkripsiConstantService from '#services/skripsi/admin/updateSkripsiConstantService'
 import { GetAdminSkripsiSetsService } from '#services/skripsi/admin/getAdminSkripsiSetsService'
 import getAdminSkripsiSetService from '#services/skripsi/admin/getAdminSkripsiSetService'
 import getAdminSkripsiSetTabsService from '#services/skripsi/admin/getAdminSkripsiSetTabsService'

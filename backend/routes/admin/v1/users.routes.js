@@ -1,11 +1,11 @@
 import express from 'express'
-import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
+import { authenticateToken, requireAdmin, requireSuperAdmin } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import usersController from '#controllers/admin/v1/users.controller'
 
 const router = express.Router()
 
-// All routes require authentication
+// All routes require authentication and admin role
 router.use(authenticateToken)
 router.use(requireAdmin)
 
@@ -17,5 +17,7 @@ router.get('/:id', asyncHandler(usersController.show.bind(usersController)))
 router.get('/:id/subscriptions', asyncHandler(usersController.getSubscriptions.bind(usersController)))
 // Adjust user credits
 router.put('/credits', asyncHandler(usersController.addCredit.bind(usersController)))
+// Update user role (superadmin only)
+router.put('/:id/role', requireSuperAdmin, asyncHandler(usersController.updateRole.bind(usersController)))
 
 export default router
