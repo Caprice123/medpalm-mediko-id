@@ -11,6 +11,7 @@ import DiagnosisTab from './components/DiagnosisTab'
 import TherapyTab from './components/TherapyTab'
 import SupportingDataTab from './components/SupportingDataTab'
 import EndSessionModal from './components/EndSessionModal'
+import SessionSkeleton from './components/SessionSkeleton'
 import {
   Container,
   MainContent,
@@ -22,6 +23,7 @@ import {
   MobileButtonWrapper,
 } from './SessionPractice.styles'
 import Button from '@components/common/Button'
+import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
 
 const TABS = [
   { id: 'conversation', label: 'Percakapan' },
@@ -55,6 +57,28 @@ function SessionPractice() {
 
   // Track if we've completed fetching for this sessionId
   const [hasFetchedForSession, setHasFetchedForSession] = useState(false)
+
+  // Track STT provider testing
+  const [isTestingSttProvider, setIsTestingSttProvider] = useState(true)
+  const [sttProvider, setSttProvider] = useState(null)
+
+  // Test STT provider on mount
+  useEffect(() => {
+    const testProvider = async () => {
+      setIsTestingSttProvider(true)
+      try {
+        const provider = await getAvailableSttProvider()
+        setSttProvider(provider)
+      } catch (err) {
+        console.error('Error testing STT provider:', err)
+        setSttProvider('whisper')
+      } finally {
+        setIsTestingSttProvider(false)
+      }
+    }
+
+    testProvider()
+  }, [])
 
   // Fetch session detail on mount
   useEffect(() => {
@@ -152,18 +176,9 @@ function SessionPractice() {
     ))
   }
 
-  // Show loading state or if session detail not loaded yet
-  if (loading.isLoadingSessionDetail) {
-    return (
-      <Container>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h2>Memuat Sesi...</h2>
-            <p>Mohon tunggu sebentar</p>
-          </div>
-        </div>
-      </Container>
-    )
+  // Show loading state if session detail loading OR still testing STT provider
+  if (loading.isLoadingSessionDetail || isTestingSttProvider) {
+    return <SessionSkeleton />
   }
 
   return (
@@ -192,7 +207,9 @@ function SessionPractice() {
             </TabBar>
 
             <TabContent>
-            {activeTab === 'conversation' && <ConversationTab />}
+            {activeTab === 'conversation' && (
+              <ConversationTab sttProvider={sttProvider} />
+            )}
 
             {activeTab === 'supporting' && (
                 <SupportingDataTab

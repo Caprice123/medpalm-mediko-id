@@ -27,6 +27,9 @@ export const useRecording = (
   const [accumulatedTranscript, setAccumulatedTranscript] = useState('')
   const [currentProvider, setCurrentProvider] = useState(sttProvider)
 
+  // TEST MODE: Set to true to force Deepgram to fail and test fallback
+  const FORCE_DEEPGRAM_FAILURE = false
+
   // Sync currentProvider with sttProvider prop changes
   useEffect(() => {
     setCurrentProvider(sttProvider)
@@ -76,23 +79,38 @@ export const useRecording = (
       } else {
         // If starting, handle potential Deepgram failure
         try {
+          console.log('🎤 Attempting to connect to Deepgram...')
+
+          // TEST MODE: Force failure for testing fallback
+          if (FORCE_DEEPGRAM_FAILURE) {
+            throw new Error('TEST MODE: Simulated Deepgram failure')
+          }
+
           await deepgram.startListening()
           // If startListening completes but useNova was set to false (connection failed)
           // automatically retry with Whisper
           if (!deepgram.useNova) {
+            console.log('❌ Deepgram connection failed (useNova=false)')
+            console.log('🔄 Automatically falling back to Whisper...')
             setCurrentProvider('whisper')
             if (onProviderChange) {
               onProviderChange('whisper')
             }
             whisper.startRecording()
+            console.log('✅ Whisper started successfully')
+          } else {
+            console.log('✅ Deepgram connected successfully')
           }
         } catch (error) {
           // If Deepgram fails, automatically try Whisper
+          console.log('❌ Deepgram error:', error.message)
+          console.log('🔄 Automatically falling back to Whisper...')
           setCurrentProvider('whisper')
           if (onProviderChange) {
             onProviderChange('whisper')
           }
           whisper.startRecording()
+          console.log('✅ Whisper started successfully')
         }
       }
     } else {
@@ -114,23 +132,38 @@ export const useRecording = (
     // If provider is deepgram, try deepgram first
     if (deepgram.useNova && currentProvider === 'deepgram') {
       try {
+        console.log('🎤 Attempting to connect to Deepgram...')
+
+        // TEST MODE: Force failure for testing fallback
+        if (FORCE_DEEPGRAM_FAILURE) {
+          throw new Error('TEST MODE: Simulated Deepgram failure')
+        }
+
         await deepgram.startListening()
         // If startListening completes but useNova was set to false (connection failed)
         // automatically retry with Whisper
         if (!deepgram.useNova) {
+          console.log('❌ Deepgram connection failed (useNova=false)')
+          console.log('🔄 Automatically falling back to Whisper...')
           setCurrentProvider('whisper')
           if (onProviderChange) {
             onProviderChange('whisper')
           }
           whisper.startRecording()
+          console.log('✅ Whisper started successfully')
+        } else {
+          console.log('✅ Deepgram connected successfully')
         }
       } catch (error) {
         // If Deepgram fails, automatically try Whisper
+        console.log('❌ Deepgram error:', error.message)
+        console.log('🔄 Automatically falling back to Whisper...')
         setCurrentProvider('whisper')
         if (onProviderChange) {
           onProviderChange('whisper')
         }
         whisper.startRecording()
+        console.log('✅ Whisper started successfully')
       }
     } else {
       // Fallback to Whisper

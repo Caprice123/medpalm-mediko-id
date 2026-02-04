@@ -103,7 +103,7 @@ export const getAvailableSttProvider = async () => {
   const mimeTypeCheck = checkMimeTypeSupport()
   if (!mimeTypeCheck.supported) {
     console.warn('⚠️ No supported audio MIME type, falling back to Whisper')
-    return 'whisper'
+    return 'deepgram'
   }
 
   // Test Deepgram first (preferred provider)
@@ -114,7 +114,7 @@ export const getAvailableSttProvider = async () => {
     return 'deepgram'
   }
 
-  // Fallback to Whisper
-  console.log('⚠️ Deepgram unavailable, falling back to Whisper')
-  return 'whisper'
+  // Fallback to deepgram
+  console.log('⚠️ Deepgram unavailable, falling back to deepgram')
+  return 'deepgram'
 }

@@ -6,7 +6,7 @@ const PageLoader = ({ fullScreen = true, text = 'Loading...', size = 80 }) => {
     <LoaderWrapper fullScreen={fullScreen}>
       <LogoContainer>
         <LogoImage>
-            <img src="/icon.jpg" alt="MedPalm Logo" style={{ height: '80px' }} />
+            <img src="/icon.svg" alt="Logo" style={{ height: '80px' }} />
         </LogoImage>
       </LogoContainer>
       {text && <LoaderText fullScreen={fullScreen}>{text}</LoaderText>}

@@ -9,7 +9,7 @@ import MessageListComponent from './subcomponents/MessageListComponent'
 import UserInput from './subcomponents/UserInput'
 import Guideline from './subcomponents/Guideline'
 
-function ConversationTab() {
+function ConversationTab({ sttProvider }) {
   const { sessionId } = useParams()
   const dispatch = useDispatch()
   const { sessionMessages, loading } = useSelector(state => state.oscePractice)
@@ -48,6 +48,7 @@ function ConversationTab() {
         key={sessionId} // Reset input when session changes
         onSendMessage={handleSendMessage}
         disabled={isSendingOrTyping}
+        sttProvider={sttProvider}
       />
     </ChatContainer>
   )

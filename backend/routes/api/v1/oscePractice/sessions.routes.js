@@ -20,6 +20,7 @@ router.get('/:sessionId/messages', asyncHandler(sessionController.getMessages.bi
 router.post('/:sessionId/messages', asyncHandler(sessionController.sendMessage.bind(sessionController)));
 router.post('/:sessionId/end', asyncHandler(sessionController.endSession.bind(sessionController)));
 router.post('/:sessionId/observations', asyncHandler(sessionController.saveObservations.bind(sessionController)));
+router.patch('/:sessionId/metadata', asyncHandler(sessionController.updateMetadata.bind(sessionController)));
 
 
 

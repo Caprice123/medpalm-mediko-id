@@ -32,35 +32,21 @@ const getAutoSendPreference = () => {
   }
 }
 
-function UserInput({ onSendMessage, disabled }) {
+function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider }) {
   const dispatch = useDispatch()
   const { sessionId } = useParams()
   const inputRef = useRef(null)
   const [inputText, setInputText] = useState('')
   const [interimText, setInterimText] = useState('') // Store interim/partial transcription
   const [autoSendEnabled, setAutoSendEnabled] = useState(() => getAutoSendPreference())
-  const [sttProvider, setSttProvider] = useState(null)
-  const [testingProvider, setTestingProvider] = useState(false)
+  const [sttProvider, setSttProvider] = useState(initialSttProvider)
 
-  // Test STT provider connectivity on mount
+  // Update sttProvider when initialSttProvider changes
   useEffect(() => {
-    const testProvider = async () => {
-      setTestingProvider(true)
-      try {
-        const provider = await getAvailableSttProvider()
-        setSttProvider(provider)
-        // Don't update metadata here - only update when fallback actually happens
-      } catch (err) {
-        console.error('Error testing STT provider:', err)
-        // Default to whisper on error
-        setSttProvider('whisper')
-      } finally {
-        setTestingProvider(false)
-      }
+    if (initialSttProvider) {
+      setSttProvider(initialSttProvider)
     }
-
-    testProvider()
-  }, []) // Empty deps - only run once on mount
+  }, [initialSttProvider])
 
   // Handle provider change (e.g., fallback from Deepgram to Whisper)
   const handleProviderChange = useCallback((newProvider) => {
@@ -184,15 +170,15 @@ function UserInput({ onSendMessage, disabled }) {
         <RecordButton
           onClick={handleToggleRecording}
           recording={recording.isRecording || recording.isTranscribing}
-          disabled={recording.isTranscribing || disabled || testingProvider}
+          disabled={recording.isTranscribing || disabled}
           title={
             recording.isTranscribing ? 'Mengirim ke Whisper...' :
             recording.isRecording ? 'Hentikan rekaman' :
-            (testingProvider ? 'Memeriksa koneksi...' : 'Mulai rekam')
+            'Mulai rekam'
           }
         >
           {recording.isRecording ? <FaMicrophone size={18} /> : <FaMicrophoneSlash size={18} />}
-          {testingProvider ? 'Memeriksa koneksi...' : determineRecordingText()}
+          {determineRecordingText()}
         </RecordButton>
 
         <SendButton
