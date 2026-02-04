@@ -2,6 +2,7 @@ import { NotFoundError } from '#errors/notFoundError'
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "../baseService.js"
+import { AttachmentService } from '#services/attachment/attachmentService'
 
 export class UpdateCalculatorTopicService extends BaseService {
     static async call(topicId, data) {
@@ -34,7 +35,24 @@ export class UpdateCalculatorTopicService extends BaseService {
                 }
             })
 
-            // Delete existing fields
+            // Delete attachments for existing field options before deleting fields
+            const existingFields = await tx.calculator_fields.findMany({
+                where: { calculator_topic_id: parseInt(topicId) },
+                include: {
+                    field_options: true
+                }
+            })
+
+            for (const field of existingFields) {
+                for (const option of field.field_options) {
+                    await AttachmentService.detachAll({
+                        recordType: 'calculator_field_option',
+                        recordId: option.id
+                    })
+                }
+            }
+
+            // Delete existing fields (cascade will delete field_options)
             await tx.calculator_fields.deleteMany({
                 where: { calculator_topic_id: parseInt(topicId) }
             })
@@ -93,14 +111,27 @@ export class UpdateCalculatorTopicService extends BaseService {
                     })
 
                     if (dbField) {
-                        await prisma.calculator_field_options.createMany({
-                            data: field.options.map((option, optIndex) => ({
-                                calculator_field_id: dbField.id,
-                                value: option.value,
-                                label: option.label,
-                                order: optIndex
-                            }))
-                        })
+                        // Create options one by one to handle attachments
+                        for (const [optIndex, option] of field.options.entries()) {
+                            const createdOption = await prisma.calculator_field_options.create({
+                                data: {
+                                    calculator_field_id: dbField.id,
+                                    value: option.value,
+                                    label: option.label,
+                                    order: optIndex
+                                }
+                            })
+
+                            // Create attachment if blobId is provided
+                            if (option.blobId) {
+                                await AttachmentService.attach({
+                                    blobId: option.blobId,
+                                    recordType: 'calculator_field_option',
+                                    recordId: createdOption.id,
+                                    name: 'image'
+                                })
+                            }
+                        }
                     }
                 }
             }

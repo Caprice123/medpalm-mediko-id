@@ -1,17 +1,43 @@
+import AttachmentService from '#services/attachment/attachmentService'
+
 export class CalculatorTopicSerializer {
-  static serialize(topic) {
-    const fields = (topic.calculator_fields || []).map(field => ({
-      key: field.key,
-      type: field.type,
-      label: field.label,
-      placeholder: field.placeholder,
-      description: field.description,
-      unit: field.unit,
-      is_required: field.is_required,
-      options: (field.field_options || []).map(opt => ({
-        value: opt.value,
-        label: opt.label
+  static async serialize(topic) {
+    // Process fields with their options
+    const fields = await Promise.all((topic.calculator_fields || []).map(async field => {
+      // Get attachments for each option
+      const optionsWithImages = await Promise.all((field.field_options || []).map(async opt => {
+        const attachments = await AttachmentService.getAttachmentsWithUrls({
+          recordType: 'calculator_field_option',
+          recordId: opt.id,
+          name: 'image'
+        })
+
+        const imageAttachment = attachments.length > 0 ? attachments[0] : null
+
+        return {
+          value: opt.value,
+          label: opt.label,
+          image: imageAttachment ? {
+            id: imageAttachment.blob_id,
+            url: imageAttachment.url,
+            key: imageAttachment.blob?.key,
+            filename: imageAttachment.blob?.filename,
+            contentType: imageAttachment.blob?.content_type,
+            byteSize: imageAttachment.blob?.byte_size
+          } : null
+        }
       }))
+
+      return {
+        key: field.key,
+        type: field.type,
+        label: field.label,
+        placeholder: field.placeholder,
+        description: field.description,
+        unit: field.unit,
+        is_required: field.is_required,
+        options: optionsWithImages
+      }
     }))
 
     const classifications = (topic.calculator_classifications || []).map(classification => ({

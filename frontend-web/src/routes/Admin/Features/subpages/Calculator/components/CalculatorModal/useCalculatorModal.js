@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
 import { fetchTagGroups } from '@store/tagGroups/action'
 import { fetchTags } from '../../../../../../../store/tags/action'
+import { upload } from '@store/common/action'
 
 export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) => {
   const dispatch = useDispatch()
@@ -227,7 +228,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
               ...f,
               options: [
                 ...(f.options || []),
-                { value: '', label: '' }
+                { value: '', label: '', image: null }
               ]
             }
           : f
@@ -258,6 +259,57 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
               ...f,
               options: f.options.map((opt, j) =>
                 j === optionIndex ? { ...opt, [fieldName]: value } : opt
+              )
+            }
+          : f
+      )
+    }))
+  }
+
+  const handleOptionImageUpload = async (fieldIndex, optionIndex, file) => {
+    try {
+      // Upload image to centralized endpoint
+      const result = await dispatch(upload(file, 'calculator'))
+      setFormData(prev => ({
+        ...prev,
+        fields: prev.fields.map((f, i) =>
+          i === fieldIndex
+            ? {
+                ...f,
+                options: f.options.map((opt, j) =>
+                  j === optionIndex
+                    ? {
+                        ...opt,
+                        image: {
+                          id: result.blobId, // Blob ID for backend
+                          url: result.url, // Temporary presigned URL for preview
+                          key: result.key,
+                          filename: result.filename,
+                          contentType: result.contentType,
+                          byteSize: result.byteSize,
+                        }
+                      }
+                    : opt
+                )
+              }
+            : f
+        )
+      }))
+    } catch (error) {
+      console.error('Failed to upload option image:', error)
+      alert('Failed to upload image. Please try again.')
+    }
+  }
+
+  const handleOptionImageRemove = (fieldIndex, optionIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) =>
+        i === fieldIndex
+          ? {
+              ...f,
+              options: f.options.map((opt, j) =>
+                j === optionIndex ? { ...opt, image: null } : opt
               )
             }
           : f
@@ -476,10 +528,23 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       return
     }
 
+    // Transform formData to send only blobIds for option images
+    const submitData = {
+      ...formData,
+      fields: formData.fields.map(field => ({
+        ...field,
+        options: field.options?.map(option => ({
+          value: option.value,
+          label: option.label,
+          blobId: option.image?.id || null
+        })) || []
+      }))
+    }
+
     if (calculator) {
-        await dispatch(updateCalculatorTopic(calculator.id, formData))
+        await dispatch(updateCalculatorTopic(calculator.id, submitData))
     } else {
-        await dispatch(createCalculatorTopic(formData))
+        await dispatch(createCalculatorTopic(submitData))
     }
     onSuccess()
   }
@@ -512,6 +577,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     addFieldOption,
     removeFieldOption,
     handleFieldOptionChange,
+    handleOptionImageUpload,
+    handleOptionImageRemove,
     addClassification,
     removeClassification,
     handleClassificationChange,

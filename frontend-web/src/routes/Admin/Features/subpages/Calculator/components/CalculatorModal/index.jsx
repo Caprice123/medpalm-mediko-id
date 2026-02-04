@@ -5,6 +5,7 @@ import TagSelector from '@components/common/TagSelector'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Button from '@components/common/Button'
+import FileUpload from '@components/common/FileUpload'
 import {
   Overlay,
   Modal,
@@ -101,6 +102,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     addFieldOption,
     removeFieldOption,
     handleFieldOptionChange,
+    handleOptionImageUpload,
+    handleOptionImageRemove,
     addClassification,
     removeClassification,
     handleClassificationChange,
@@ -284,20 +287,53 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                             <OptionsList>
                               {field.options && field.options.map((option, optIndex) => (
                                 <OptionItem key={optIndex}>
-                                  <TextInput
-                                    size="small"
-                                    type="text"
-                                    value={option.value}
-                                    onChange={(e) => handleFieldOptionChange(index, optIndex, 'value', e.target.value)}
-                                    placeholder="value (male)"
-                                  />
-                                  <TextInput
-                                    size="small"
-                                    type="text"
-                                    value={option.label}
-                                    onChange={(e) => handleFieldOptionChange(index, optIndex, 'label', e.target.value)}
-                                    placeholder="Label (Laki-laki)"
-                                  />
+                                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                      <TextInput
+                                        size="small"
+                                        type="text"
+                                        value={option.value}
+                                        onChange={(e) => handleFieldOptionChange(index, optIndex, 'value', e.target.value)}
+                                        placeholder="value (male)"
+                                      />
+                                      <TextInput
+                                        size="small"
+                                        type="text"
+                                        value={option.label}
+                                        onChange={(e) => handleFieldOptionChange(index, optIndex, 'label', e.target.value)}
+                                        placeholder="Label (Laki-laki)"
+                                      />
+                                    </div>
+
+                                    {/* Image Upload for Option */}
+                                    <div>
+                                      <SmallLabel style={{ fontSize: '0.75rem', marginBottom: '4px' }}>Gambar (Opsional)</SmallLabel>
+                                      <FileUpload
+                                        file={option.image?.key ? {
+                                          name: option.image?.filename || 'Image',
+                                          type: 'image/*',
+                                          size: option.image?.byteSize
+                                        } : null}
+                                        onFileSelect={(e) => {
+                                          const file = e.target?.files?.[0] || e
+                                          if (file) {
+                                            if (file.type.startsWith('image/')) {
+                                              handleOptionImageUpload(index, optIndex, file)
+                                            } else {
+                                              alert('Mohon pilih file gambar')
+                                            }
+                                          }
+                                        }}
+                                        onRemove={() => handleOptionImageRemove(index, optIndex)}
+                                        acceptedTypes={['image/*']}
+                                        acceptedTypesLabel="PNG, JPG, GIF"
+                                        maxSizeMB={5}
+                                        uploadText="Upload gambar"
+                                        actions={<></>}
+                                      />
+                                    </div>
+                                  </div>
+
                                   <Button
                                     variant="secondary"
                                     size="small"

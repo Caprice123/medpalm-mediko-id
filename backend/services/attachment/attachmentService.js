@@ -214,6 +214,53 @@ class AttachmentService {
   }
 
   /**
+   * Delete all attachments for a record
+   * @param {Object} options - Options
+   * @param {string} options.recordType - Type of record
+   * @param {number} options.recordId - ID of the record
+   * @param {boolean} deleteBlobs - Whether to delete blobs as well (default: true)
+   * @returns {Promise<void>}
+   */
+  async detachAll({ recordType, recordId }, deleteBlobs = true) {
+    const attachments = await prisma.attachments.findMany({
+      where: {
+        record_type: recordType,
+        record_id: recordId
+      }
+    });
+
+    for (const attachment of attachments) {
+      await this.deleteAttachment(attachment.id, deleteBlobs);
+    }
+  }
+
+  /**
+   * Get attachments with URLs (object parameter version for convenience)
+   * @param {Object} options - Options
+   * @param {string} options.recordType - Type of record
+   * @param {number} options.recordId - ID of the record
+   * @param {string} options.name - Attachment name (optional)
+   * @param {number} options.expiresIn - URL expiration in seconds (default: 3600)
+   * @returns {Promise<Array>} Attachments with URLs
+   */
+  async getAttachmentsWithUrls({ recordType, recordId, name = null, expiresIn = 3600 }) {
+    const attachments = await this.getAttachments(recordType, recordId, name);
+
+    // Generate presigned URLs for all attachments
+    const attachmentsWithUrls = await Promise.all(
+      attachments.map(async (attachment) => {
+        const presignedUrl = await idriveService.getSignedUrl(attachment.blob.key, expiresIn);
+        return {
+          ...attachment,
+          url: presignedUrl
+        };
+      })
+    );
+
+    return attachmentsWithUrls;
+  }
+
+  /**
    * Get content type from file extension
    * @param {string} ext - File extension
    * @returns {string} Content type

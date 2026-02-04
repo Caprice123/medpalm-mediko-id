@@ -29,8 +29,6 @@ export default function PricingSection() {
     ? pricingPlans
     : pricingPlans.filter(plan => plan.bundleType === pricingFilter)
 
-  console.log(pricingPlans)
-
   return (
     <Parallax speed={2}>
       <StyledPricingSection id="pricing">
@@ -76,10 +74,10 @@ export default function PricingSection() {
 
           <Parallax speed={-1}>
             <PricingGrid>
-              {filteredPricingPlans.length > 0 ? (
+              {filteredPricingPlans.length > 0 && (
                 filteredPricingPlans.map((plan, index) => (
                   <PricingCard
-                    key={plan.id}
+                    key={new Date().getTime() + index}
                     $isPopular={plan.isPopular}
                     data-aos="zoom-in"
                     data-aos-delay={index * 100}
@@ -117,51 +115,6 @@ export default function PricingSection() {
                     </LinkButton>
                   </PricingCard>
                 ))
-              ) : (
-                <>
-                  <PricingCard data-aos="zoom-in" data-aos-delay="0">
-                    <PricingName>Starter</PricingName>
-                    <PricingCredits>50 Kredit</PricingCredits>
-                    <PricingPrice>Rp 25.000</PricingPrice>
-                    <PricingDescription>
-                      Cocok untuk mencoba fitur-fitur dasar platform
-                    </PricingDescription>
-                    <LinkButton to="/sign-in" variant="outline" fullWidth>
-                      Pilih Paket
-                    </LinkButton>
-                  </PricingCard>
-
-                  <PricingCard $isPopular data-aos="zoom-in" data-aos-delay="100">
-                    <PopularBadge>Paling Populer</PopularBadge>
-                    <PricingName>Standard</PricingName>
-                    <PricingCredits>200 Kredit</PricingCredits>
-                    <PricingPrice>
-                      Rp 75.000
-                      <DiscountBadge>Hemat 25%</DiscountBadge>
-                    </PricingPrice>
-                    <PricingDescription>
-                      Pilihan terbaik untuk belajar rutin setiap minggu
-                    </PricingDescription>
-                    <LinkButton to="/sign-in" variant="primary" fullWidth>
-                      Pilih Paket
-                    </LinkButton>
-                  </PricingCard>
-
-                  <PricingCard data-aos="zoom-in" data-aos-delay="200">
-                    <PricingName>Premium</PricingName>
-                    <PricingCredits>500 Kredit</PricingCredits>
-                    <PricingPrice>
-                      Rp 150.000
-                      <DiscountBadge>Hemat 40%</DiscountBadge>
-                    </PricingPrice>
-                    <PricingDescription>
-                      Untuk persiapan intensif UKMPPD dan ujian blok
-                    </PricingDescription>
-                    <LinkButton to="/sign-in" variant="outline" fullWidth>
-                      Pilih Paket
-                    </LinkButton>
-                  </PricingCard>
-                </>
               )}
             </PricingGrid>
           </Parallax>

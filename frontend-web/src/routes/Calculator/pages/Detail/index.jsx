@@ -42,7 +42,7 @@ const CalculatorDetail = () => {
 
     const { id } = useParams()
     const { detail, loading } = useSelector(state => state.calculator)
-    const [inputs, setInputs] = useState({})
+    const [inputs, setInputs] = useState({}) // Stores full option objects for dropdown/radio, raw values for text/number
     const [formErrors, setFormErrors] = useState({})
 
     // Calculation state
@@ -57,15 +57,14 @@ const CalculatorDetail = () => {
         dispatch(getCalculatorTopicDetail(id))
     }, [dispatch, id])
 
-    
-    const handleInputChange = (e) => {
-        const { name, value } = e.target
+
+    const handleInputChange = (name, value) => {
         setInputs(prev => ({
           ...prev,
           [name]: value
         }))
-    
-        // Clear error for this field when user starts typing
+
+        // Clear error for this field when user changes value
         if (formErrors[name]) {
           setFormErrors(prev => ({
             ...prev,
@@ -76,13 +75,15 @@ const CalculatorDetail = () => {
     
       const validateInputs = () => {
         const errors = {}
-    
+
         if (!detail) return false
-    
+
         detail.calculator_fields.forEach(field => {
-          const value = inputs[field.key]
-    
-          if (field.is_required && (!value || value.trim() === '')) {
+          const input = inputs[field.key]
+          // Extract value from object or use raw value
+          const value = typeof input === 'object' && input !== null ? input.value : input
+
+          if (field.is_required && (!value || (typeof value === 'string' && value.trim() === ''))) {
             errors[field.key] = `${field.label} is required`
           } else if (value && field.type === 'number') {
             const numValue = parseFloat(value)
@@ -91,19 +92,26 @@ const CalculatorDetail = () => {
             }
           }
         })
-    
+
         setFormErrors(errors)
         return Object.keys(errors).length === 0
       }
     
       const handleCalculate = async (e) => {
         e.preventDefault()
-    
+
         if (!validateInputs()) {
           return
         }
 
-        const response = await dispatch(calculateResult(id, inputs))
+        // Extract values from inputs (objects for dropdown/radio, raw values for text/number)
+        const calculationInputs = {}
+        Object.keys(inputs).forEach(key => {
+          const input = inputs[key]
+          calculationInputs[key] = typeof input === 'object' && input !== null ? input.value : input
+        })
+
+        const response = await dispatch(calculateResult(id, calculationInputs))
         setResult(response)
       }
       if (!detail) {
@@ -162,28 +170,66 @@ const CalculatorDetail = () => {
                                 label: opt.label
                                 })) || []}
                                 value={inputs[field.key] ? {
-                                value: inputs[field.key],
-                                label: field.field_options?.find(opt => opt.value === inputs[field.key])?.label || inputs[field.key]
+                                value: typeof inputs[field.key] === 'object' ? inputs[field.key].value : inputs[field.key],
+                                label: typeof inputs[field.key] === 'object' ? inputs[field.key].label : (field.field_options?.find(opt => opt.value === inputs[field.key])?.label || inputs[field.key])
                                 } : null}
-                                onChange={(option) => handleInputChange({
-                                target: { name: field.key, value: option?.value || '' }
-                                })}
+                                onChange={(option) => {
+                                    if (option) {
+                                        // Find the full option object from field_options
+                                        const fullOption = field.field_options?.find(opt => opt.value === option.value)
+                                        handleInputChange(field.key, fullOption || option)
+                                    } else {
+                                        handleInputChange(field.key, '')
+                                    }
+                                }}
                                 placeholder={field.placeholder || `Select ${field.label}`}
                             //   usePortal={true}
                             />
                             ) : field.type === 'radio' ? (
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
                                 {field.field_options && field.field_options.map(option => (
-                                <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input
-                                    type="radio"
-                                    name={field.key}
-                                    value={option.value}
-                                    checked={inputs[field.key] === option.value}
-                                    onChange={handleInputChange}
-                                    style={{ cursor: 'pointer' }}
-                                    />
-                                    <span>{option.label}</span>
+                                <label
+                                    key={option.value}
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: option.image ? 'column' : 'row',
+                                        alignItems: option.image ? 'flex-start' : 'center',
+                                        gap: '8px',
+                                        cursor: 'pointer',
+                                        padding: option.image ? '12px' : '0',
+                                        border: option.image ? '2px solid #e0e0e0' : 'none',
+                                        borderRadius: option.image ? '8px' : '0',
+                                        backgroundColor: option.image && inputs[field.key] === option.value ? '#f0f7ff' : 'transparent',
+                                        borderColor: option.image && inputs[field.key] === option.value ? '#4A90E2' : '#e0e0e0',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {option.image && (
+                                        <img
+                                            src={option.image.url}
+                                            alt={option.label}
+                                            style={{
+                                                width: '100%',
+                                                maxWidth: '200px',
+                                                height: 'auto',
+                                                maxHeight: '150px',
+                                                objectFit: 'cover',
+                                                borderRadius: '6px',
+                                                marginBottom: '8px'
+                                            }}
+                                        />
+                                    )}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <input
+                                        type="radio"
+                                        name={field.key}
+                                        value={option.value}
+                                        checked={(typeof inputs[field.key] === 'object' ? inputs[field.key]?.value : inputs[field.key]) === option.value}
+                                        onChange={() => handleInputChange(field.key, option)}
+                                        style={{ cursor: 'pointer' }}
+                                        />
+                                        <span>{option.label}</span>
+                                    </div>
                                 </label>
                                 ))}
                             </div>
@@ -192,7 +238,7 @@ const CalculatorDetail = () => {
                                 type="number"
                                 name={field.key}
                                 value={inputs[field.key] || ''}
-                                onChange={handleInputChange}
+                                onChange={(e) => handleInputChange(field.key, e.target.value)}
                                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                                 step="any"
                             />
@@ -201,7 +247,7 @@ const CalculatorDetail = () => {
                                 type="text"
                                 name={field.key}
                                 value={inputs[field.key] || ''}
-                                onChange={handleInputChange}
+                                onChange={(e) => handleInputChange(field.key, e.target.value)}
                                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                             />
                             )}
