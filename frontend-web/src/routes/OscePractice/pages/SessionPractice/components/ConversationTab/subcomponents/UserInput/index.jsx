@@ -1,7 +1,10 @@
 import { useState, memo, useCallback, useEffect, useRef } from 'react'
 import { useRecording } from '@hooks/useRecording'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { actions as commonActions } from '@store/common/reducer'
+import { updateSessionMetadata } from '@store/oscePractice/userAction'
+import { useParams } from 'react-router-dom'
+import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
 import {
   InputArea,
   InputWrapper,
@@ -31,10 +34,41 @@ const getAutoSendPreference = () => {
 
 function UserInput({ onSendMessage, disabled }) {
   const dispatch = useDispatch()
+  const { sessionId } = useParams()
   const inputRef = useRef(null)
   const [inputText, setInputText] = useState('')
   const [interimText, setInterimText] = useState('') // Store interim/partial transcription
   const [autoSendEnabled, setAutoSendEnabled] = useState(() => getAutoSendPreference())
+  const [sttProvider, setSttProvider] = useState(null)
+  const [testingProvider, setTestingProvider] = useState(false)
+
+  // Test STT provider connectivity on mount
+  useEffect(() => {
+    const testProvider = async () => {
+      setTestingProvider(true)
+      try {
+        const provider = await getAvailableSttProvider()
+        setSttProvider(provider)
+        // Don't update metadata here - only update when fallback actually happens
+      } catch (err) {
+        console.error('Error testing STT provider:', err)
+        // Default to whisper on error
+        setSttProvider('whisper')
+      } finally {
+        setTestingProvider(false)
+      }
+    }
+
+    testProvider()
+  }, []) // Empty deps - only run once on mount
+
+  // Handle provider change (e.g., fallback from Deepgram to Whisper)
+  const handleProviderChange = useCallback((newProvider) => {
+    setSttProvider(newProvider)
+    if (sessionId) {
+      dispatch(updateSessionMetadata(sessionId, { sttProvider: newProvider }))
+    }
+  }, [sessionId, dispatch])
 
   // Recording hook with Deepgram-first, Whisper fallback
   const handleTranscriptUpdate = useCallback((interimText) => {
@@ -42,18 +76,10 @@ function UserInput({ onSendMessage, disabled }) {
     setInterimText(interimText)
   }, [])
 
-  // Handle auto-send after recording completes
-  const handleAutoSend = useCallback((finalText) => {
-    if (!finalText.trim()) return
-
-    console.log('🚀 Auto-sending message after recording:', finalText)
-    onSendMessage(finalText.trim())
-  }, [onSendMessage])
-
-  // Handle manual edit mode - add transcript to input for editing
+  // Handle manual edit mode - set transcript as input value (replace, not append)
   const handleTranscriptFinal = useCallback((finalText) => {
     setInterimText('') // Clear interim text
-    setInputText(prev => prev + finalText)
+    setInputText(finalText)
   }, [])
 
   const handleRecordingError = useCallback((error) => {
@@ -94,21 +120,28 @@ function UserInput({ onSendMessage, disabled }) {
     }
   }, [])
 
+
+  const handleSendMessage = useCallback((textToSend) => {
+    // If textToSend is provided (from auto-send), use it; otherwise use inputText
+    const message = textToSend || inputText.trim()
+
+    if (!message || disabled) return
+
+    setInputText('')
+    onSendMessage(message)
+  }, [inputText, disabled, onSendMessage])
+
+
   const recording = useRecording(
     handleTranscriptUpdate,
     handleTranscriptFinal,
     autoSendEnabled, // autoSendEnabled - set to true for immediate send, false for manual edit
-    autoSendEnabled ? handleAutoSend : null, // onAutoSend - send immediately if auto-send enabled
-    handleRecordingError
+    autoSendEnabled ? handleSendMessage : null, // onAutoSend - send immediately if auto-send enabled
+    handleRecordingError,
+    sttProvider || 'whisper', // Pass the determined STT provider (default whisper while testing)
+    handleProviderChange // Handle provider change (fallback)
   )
 
-  const handleSendMessage = useCallback(() => {
-    if (!inputText.trim() || disabled) return
-
-    const message = inputText.trim()
-    setInputText('')
-    onSendMessage(message)
-  }, [inputText, disabled, onSendMessage])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -122,6 +155,9 @@ function UserInput({ onSendMessage, disabled }) {
   }, [recording])
 
   const determineRecordingText = () => {
+    if (recording.isTranscribing) {
+      return "Mengirim ke Whisper..."
+    }
     const isActive = recording.isRecording
     return isActive ? "Merekam..." : "Mulai Rekam"
   }
@@ -147,12 +183,16 @@ function UserInput({ onSendMessage, disabled }) {
       <InputActions>
         <RecordButton
           onClick={handleToggleRecording}
-          recording={recording.isRecording}
-          disabled={recording.isTranscribing || disabled}
-          title={recording.isRecording ? 'Hentikan rekaman' : 'Mulai rekam'}
+          recording={recording.isRecording || recording.isTranscribing}
+          disabled={recording.isTranscribing || disabled || testingProvider}
+          title={
+            recording.isTranscribing ? 'Mengirim ke Whisper...' :
+            recording.isRecording ? 'Hentikan rekaman' :
+            (testingProvider ? 'Memeriksa koneksi...' : 'Mulai rekam')
+          }
         >
           {recording.isRecording ? <FaMicrophone size={18} /> : <FaMicrophoneSlash size={18} />}
-          {determineRecordingText()}
+          {testingProvider ? 'Memeriksa koneksi...' : determineRecordingText()}
         </RecordButton>
 
         <SendButton

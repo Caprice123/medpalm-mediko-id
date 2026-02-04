@@ -23,7 +23,7 @@ const TimerSection = ({ onEndSession, isEndingSession }) => {
 
         // Only auto-end if session is started and time is actually up
         if (durationInSeconds <= 1) {
-            handleTimeUp()
+            // handleTimeUp()
             return
         }
 
@@ -31,7 +31,7 @@ const TimerSection = ({ onEndSession, isEndingSession }) => {
         timerRef.current = setInterval(() => {
             setTimeRemaining(prev => {
             if (prev <= 1) {
-                handleTimeUp()
+                // handleTimeUp()
                 return 0
             }
             return prev - 1

@@ -597,9 +597,6 @@ export const generateDiagram = (tabId, diagramConfig) => async (dispatch) => {
     await dispatch(fetchDiagramHistory(tabId))
 
     return data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isGeneratingDiagram', value: false }))
   }
@@ -631,9 +628,6 @@ export const fetchDiagramDetail = (diagramId) => async (dispatch) => {
     const response = await getWithToken(route)
 
     return response.data.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isDiagramDetailLoading', value: false }))
   }
@@ -647,9 +641,6 @@ export const updateDiagram = (diagramId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isUpdatingDiagram', value: false }))
   }
@@ -663,9 +654,6 @@ export const saveTabDiagram = (tabId, diagramData) => async (dispatch) => {
     const response = await putWithToken(route, { diagramData })
 
     return response.data.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isSavingTabDiagram', value: false }))
   }
@@ -682,9 +670,6 @@ export const createDiagram = (tabId, diagramData, diagramConfig = {}, creationMe
     await dispatch(fetchDiagramHistory(tabId))
 
     return response.data.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isCreatingDiagram', value: false }))
   }

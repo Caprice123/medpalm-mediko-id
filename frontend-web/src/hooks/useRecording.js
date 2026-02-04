@@ -11,6 +11,8 @@ import { useCustomWhisper } from './useCustomWhisper'
  * @param {boolean} autoSendEnabled - Whether to auto-send transcript when recording stops
  * @param {Function} onAutoSend - Called when auto-send is triggered
  * @param {Function} onError - Called when an error occurs (for Redux error handling)
+ * @param {string} sttProvider - STT provider to use: 'deepgram' or 'whisper'
+ * @param {Function} onProviderChange - Called when provider changes (e.g., fallback from deepgram to whisper)
  * @returns {Object} Recording controls and state
  */
 export const useRecording = (
@@ -18,10 +20,17 @@ export const useRecording = (
   onTranscriptFinal = null,
   autoSendEnabled = false,
   onAutoSend = null,
-  onError = null
+  onError = null,
+  sttProvider = 'deepgram',
+  onProviderChange = null
 ) => {
   const [accumulatedTranscript, setAccumulatedTranscript] = useState('')
-  const [usingWhisper, setUsingWhisper] = useState(false)
+  const [currentProvider, setCurrentProvider] = useState(sttProvider)
+
+  // Sync currentProvider with sttProvider prop changes
+  useEffect(() => {
+    setCurrentProvider(sttProvider)
+  }, [sttProvider])
 
   // Deepgram hook (primary)
   const deepgram = useDeepgram(
@@ -39,7 +48,7 @@ export const useRecording = (
 
   // Whisper hook (fallback)
   const whisper = useCustomWhisper(
-    deepgram.useNova,
+    currentProvider === 'whisper' ? false : deepgram.useNova,
     (text) => {
       setAccumulatedTranscript(text)
       if (onTranscriptFinal) {
@@ -51,73 +60,121 @@ export const useRecording = (
     onError
   )
 
-  // Monitor Deepgram availability and switch to Whisper if needed
-  useEffect(() => {
-    if (!deepgram.useNova && !usingWhisper) {
-      setUsingWhisper(true)
-      if (onError) {
-        onError({
-          message: 'Beralih ke mode transkripsi Whisper (non-realtime)',
-          code: 'FALLBACK_TO_WHISPER'
-        })
-      }
-    }
-  }, [deepgram.useNova, usingWhisper, onError])
-
   // Unified toggle function
-  const toggleRecording = useCallback(() => {
-    if (deepgram.useNova) {
-      deepgram.toggleListening()
+  const toggleRecording = useCallback(async () => {
+    // If provider is whisper, use whisper directly
+    if (currentProvider === 'whisper') {
+      whisper.toggleRecording()
+      return
+    }
+
+    // If provider is deepgram
+    if (deepgram.useNova && currentProvider === 'deepgram') {
+      if (deepgram.isListening) {
+        // If already recording, just stop
+        deepgram.stopListening()
+      } else {
+        // If starting, handle potential Deepgram failure
+        try {
+          await deepgram.startListening()
+          // If startListening completes but useNova was set to false (connection failed)
+          // automatically retry with Whisper
+          if (!deepgram.useNova) {
+            setCurrentProvider('whisper')
+            if (onProviderChange) {
+              onProviderChange('whisper')
+            }
+            whisper.startRecording()
+          }
+        } catch (error) {
+          // If Deepgram fails, automatically try Whisper
+          setCurrentProvider('whisper')
+          if (onProviderChange) {
+            onProviderChange('whisper')
+          }
+          whisper.startRecording()
+        }
+      }
     } else {
+      // Fallback to Whisper
       whisper.toggleRecording()
     }
-  }, [deepgram.useNova, deepgram.toggleListening, whisper.toggleRecording])
+  }, [currentProvider, deepgram, whisper, onProviderChange])
 
   // Start recording
-  const startRecording = useCallback(() => {
+  const startRecording = useCallback(async () => {
     setAccumulatedTranscript('')
-    if (deepgram.useNova) {
-      deepgram.startListening()
+
+    // If provider is whisper, use whisper directly
+    if (currentProvider === 'whisper') {
+      whisper.startRecording()
+      return
+    }
+
+    // If provider is deepgram, try deepgram first
+    if (deepgram.useNova && currentProvider === 'deepgram') {
+      try {
+        await deepgram.startListening()
+        // If startListening completes but useNova was set to false (connection failed)
+        // automatically retry with Whisper
+        if (!deepgram.useNova) {
+          setCurrentProvider('whisper')
+          if (onProviderChange) {
+            onProviderChange('whisper')
+          }
+          whisper.startRecording()
+        }
+      } catch (error) {
+        // If Deepgram fails, automatically try Whisper
+        setCurrentProvider('whisper')
+        if (onProviderChange) {
+          onProviderChange('whisper')
+        }
+        whisper.startRecording()
+      }
     } else {
+      // Fallback to Whisper
       whisper.startRecording()
     }
-  }, [deepgram.useNova, deepgram.startListening, whisper.startRecording])
+  }, [currentProvider, deepgram, whisper, onProviderChange])
 
   // Stop recording
   const stopRecording = useCallback(() => {
-    if (deepgram.useNova) {
+    if (currentProvider === 'deepgram' && deepgram.useNova) {
       deepgram.stopListening()
     } else {
       whisper.stopRecording()
     }
-  }, [deepgram.useNova, deepgram.stopListening, whisper.stopRecording])
+  }, [currentProvider, deepgram.useNova, deepgram.stopListening, whisper.stopRecording])
 
-  // Determine if recording is active
-  const isRecording = deepgram.useNova ? deepgram.isListening : whisper.recording
+  // Determine if recording is active based on current provider
+  const isRecording = currentProvider === 'deepgram' && deepgram.useNova
+    ? deepgram.isListening
+    : whisper.recording
 
   // Determine current transcript
-  const currentTranscript = deepgram.useNova
+  const currentTranscript = currentProvider === 'deepgram' && deepgram.useNova
     ? (deepgram.transcript || accumulatedTranscript)
     : accumulatedTranscript
 
   // Get current status
-  const status = deepgram.useNova
+  const status = currentProvider === 'deepgram' && deepgram.useNova
     ? deepgram.connectionStatus
     : (whisper.transcribing ? 'transcribing' : whisper.recording ? 'recording' : 'disconnected')
 
   // Get current error
-  const currentError = deepgram.useNova ? deepgram.error : null
+  const currentError = currentProvider === 'deepgram' && deepgram.useNova ? deepgram.error : null
 
   return {
     // State
     isRecording,
     transcript: currentTranscript,
-    finalTranscript: deepgram.useNova ? deepgram.finalTranscript : accumulatedTranscript,
+    finalTranscript: currentProvider === 'deepgram' && deepgram.useNova ? deepgram.finalTranscript : accumulatedTranscript,
     status,
     error: currentError,
-    usingDeepgram: deepgram.useNova,
-    usingWhisper: !deepgram.useNova,
-    isTranscribing: deepgram.useNova ? false : whisper.transcribing,
+    usingDeepgram: currentProvider === 'deepgram' && deepgram.useNova,
+    usingWhisper: currentProvider === 'whisper',
+    isTranscribing: currentProvider === 'whisper' ? whisper.transcribing : false,
 
     // Actions
     toggleRecording,

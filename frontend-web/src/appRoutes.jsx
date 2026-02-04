@@ -22,6 +22,8 @@ const UITest = lazy(() => import('@routes/UITest'));
 const EditorTest = lazy(() => import('@routes/EditorTest'));
 const HtmlToDocxExample = lazy(() => import('@components/HtmlToDocxExample'));
 const ExcalidrawBuilderMockup = lazy(() => import('@mockups/ExcalidrawBuilder/ExcalidrawBuilderMockup'));
+const TestWhisper = lazy(() => import('@routes/TestWhisper'));
+const TestWhisperManual = lazy(() => import('@routes/TestWhisperManual'));
 
 // Wrapper to add Suspense to each route
 const withSuspense = (Component) => (
@@ -37,6 +39,8 @@ const appRoutes = [
     { path: '/editor-test', element: withSuspense(<EditorTest />) },
     { path: '/docx-test', element: withSuspense(<HtmlToDocxExample />) },
     { path: '/excalidraw-mockup', element: withSuspense(<ExcalidrawBuilderMockup />) },
+    { path: '/test-whisper', element: withSuspense(<TestWhisper />) },
+    { path: '/test-whisper-manual', element: withSuspense(<TestWhisperManual />) },
     {
         path: "/",
         element: <PrivateRoute />,

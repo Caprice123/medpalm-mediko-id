@@ -1,9 +1,9 @@
 import { actions } from '@store/oscePractice/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, patchWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
+import { checkMimeTypeSupport } from '@utils/testDeepgramConnection'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -86,10 +86,7 @@ export const createOsceSession = (topicId, onSuccess) => async (dispatch) => {
 
     if (onSuccess) onSuccess(response.data.data)
     return response.data.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isCreatingSession', value: false }))
   }
 }
@@ -99,15 +96,33 @@ export const startOsceSession = (sessionId, sttProvider) => async (dispatch) => 
   try {
     dispatch(setLoading({ key: 'isStartingSession', value: true }))
 
+    // Check supported MIME type
+    const mimeTypeCheck = checkMimeTypeSupport()
+    const supportedMimeType = mimeTypeCheck.mimeType
+
     const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/start`
-    const response = await postWithToken(route, { sttProvider })
+    const response = await postWithToken(route, {
+      sttProvider,
+      supportedMimeType
+    })
 
     return response.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isStartingSession', value: false }))
+  }
+}
+
+// Update OSCE session metadata (e.g., STT provider fallback)
+export const updateSessionMetadata = (sessionId, metadata) => async (dispatch) => {
+  try {
+    const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/metadata`
+    const response = await patchWithToken(route, metadata)
+
+    // Don't refetch - just update silently to avoid re-renders
+    return response.data
+  } catch (err) {
+    console.error('Failed to update session metadata:', err)
+    throw err
   }
 }
 
@@ -122,10 +137,7 @@ export const fetchSessionDetail = (sessionId) => async (dispatch) => {
     const sessionDetail = response.data.data || null
     dispatch(setSessionDetail(sessionDetail))
     return sessionDetail
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isLoadingSessionDetail', value: false }))
   }
 }
@@ -154,10 +166,7 @@ export const fetchSessionMessages = (sessionId) => async (dispatch) => {
       hasMore: pagination.hasMore,
       nextCursor: pagination.nextCursor,
     }))
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isLoadingSessionMessages', value: false }))
   }
 }
@@ -193,10 +202,7 @@ export const loadMoreMessages = (sessionId, cursor) => async (dispatch) => {
     }))
 
     return transformedMessages.length
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isLoadingMoreMessages', value: false }))
   }
 }
@@ -212,10 +218,7 @@ export const fetchSessionObservations = (sessionId) => async (dispatch) => {
     const observations = response.data.data || []
     dispatch(setSessionObservations(observations))
     return observations
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isLoadingSessionObservations', value: false }))
   }
 }
@@ -233,10 +236,7 @@ export const saveSessionObservations = (sessionId, observations, onSuccess) => a
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isSavingSessionObservations', value: false }))
   }
 }
@@ -254,10 +254,7 @@ export const saveSessionDiagnoses = (sessionId, diagnosesData, onSuccess) => asy
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isSavingSessionDiagnoses', value: false }))
   }
 }
@@ -275,10 +272,7 @@ export const saveSessionTherapies = (sessionId, therapies, onSuccess) => async (
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isSavingSessionTherapies', value: false }))
   }
 }
@@ -293,10 +287,7 @@ export const endOsceSession = (sessionId, data, onSuccess) => async (dispatch) =
 
     if (onSuccess) onSuccess(response.data)
     return response.data
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
-  } finally {
+  }finally {
     dispatch(setLoading({ key: 'isEndingSession', value: false }))
   }
 }
@@ -353,7 +344,7 @@ export const sendMessage = (sessionId, message) => async (dispatch) => {
     // Use streaming for all messages
     await sendMessageStreaming(sessionId, message, dispatch, activeAbortController, tempUserMessage.id)
     console.log('✅ sendMessageStreaming completed')
-  } catch {
+  } catch (err) {
     if (err.name === 'AbortError') {
       console.log('OSCE stream was stopped by user')
       return
@@ -385,7 +376,7 @@ export const stopStreaming = () => async (dispatch) => {
     }
 
     return null
-  } catch {
+  } catch (error) {
     console.error('Error stopping stream:', error)
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
     dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
@@ -578,14 +569,14 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
             } else if (data.type === 'error') {
               throw new Error(data.error)
             }
-          } catch {
+          } catch (parseError) {
             console.error('Error parsing SSE data:', parseError)
           }
         }
       }
     }
 
-  } catch {
+  } catch (error) {
     if (error.name === 'AbortError') {
       console.log('✅ Stream aborted by user - typing animation will finish showing all received content')
       // Keep typing animation going to finish displaying all received content

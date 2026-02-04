@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 
 export class StartOsceSessionService extends BaseService {
-  static async call(userId, sessionId, sttProvider = 'whisper') {
+  static async call(userId, sessionId, sttProvider = 'whisper', supportedMimeType = null) {
     if (!userId) {
       throw new ValidationError('User ID is required')
     }
@@ -100,6 +100,7 @@ export class StartOsceSessionService extends BaseService {
             credits_used: sessionStartCost,
             metadata: {
               stt_provider: sttProvider,
+              supported_mime_type: supportedMimeType,
             },
           },
         })

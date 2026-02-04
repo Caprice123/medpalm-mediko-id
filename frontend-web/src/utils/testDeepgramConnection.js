@@ -1,6 +1,30 @@
 import { createClient } from '@deepgram/sdk'
 
 /**
+ * Check MIME type support for audio recording
+ * @returns {Object} Object with supported mimeType or null if none supported
+ */
+export const checkMimeTypeSupport = () => {
+  // Check MIME type support first before doing anything else
+  let mimeType = null
+  if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+    mimeType = 'audio/webm;codecs=opus'
+  } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+    mimeType = 'audio/webm'
+  } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+    mimeType = 'audio/mp4'
+  }
+
+  if (!mimeType) {
+    console.error('❌ No supported audio MIME type found')
+    return { supported: false, mimeType: null }
+  }
+
+  console.log('✅ Supported MIME type:', mimeType)
+  return { supported: true, mimeType }
+}
+
+/**
  * Test Deepgram connectivity
  * @returns {Promise<boolean>} True if Deepgram is available, false otherwise
  */
@@ -55,7 +79,7 @@ const testDeepgramConnection = async () => {
 
     // Clean up connection
     try {
-      connection.finish()
+      connection.requestClose()
     } catch (err) {
       // Ignore cleanup errors
     }
@@ -74,6 +98,13 @@ const testDeepgramConnection = async () => {
  */
 export const getAvailableSttProvider = async () => {
   console.log('🔍 Testing STT provider connectivity...')
+
+  // Check MIME type support first
+  const mimeTypeCheck = checkMimeTypeSupport()
+  if (!mimeTypeCheck.supported) {
+    console.warn('⚠️ No supported audio MIME type, falling back to Whisper')
+    return 'whisper'
+  }
 
   // Test Deepgram first (preferred provider)
   const deepgramAvailable = await testDeepgramConnection()

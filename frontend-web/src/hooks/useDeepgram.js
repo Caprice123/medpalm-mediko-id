@@ -140,7 +140,7 @@ export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabl
       // Close any existing connection first
       if (deepgramRef.current) {
         try {
-          deepgramRef.current.finish()
+          deepgramRef.current.requestClose()
         } catch (err) {
           // Ignore errors when closing old connection
         }
@@ -197,7 +197,7 @@ export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabl
         // Clean up stream since we can't use it
         stream.getTracks().forEach(track => track.stop())
         streamRef.current = null
-        return
+        throw new Error('Deepgram connection failed')
       }
 
       // Start health check interval to monitor connection
@@ -292,7 +292,7 @@ export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabl
     // Close Deepgram connection
     if (deepgramRef.current) {
       try {
-        deepgramRef.current.finish()
+        deepgramRef.current.requestClose()
       } catch (err) {
         // Ignore errors when closing
       }

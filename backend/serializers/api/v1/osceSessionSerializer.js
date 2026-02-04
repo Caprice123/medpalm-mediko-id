@@ -103,6 +103,7 @@ class OsceSessionSerializer {
       status: session.status,
       observationsLocked: session.observations_locked,
       startedAt: session.started_at,
+      metadata: session.metadata || {},
       tags: session.osce_session_tag_snapshots?.map((snapshot) => ({
         id: snapshot.tag_id,
         name: snapshot.tags.name,

@@ -119,9 +119,6 @@ export const fetchUserTransactionDetail = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isTransactionDetailLoading', value: false }))
   }
@@ -147,9 +144,6 @@ export const attachPaymentEvidence = (purchaseId, blobId) => async (dispatch) =>
 
     return response.data
 
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isAttachingEvidence', value: false }))
   }
@@ -267,9 +261,6 @@ export const fetchTransactionDetail = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isTransactionDetailLoading', value: false }))
   }
@@ -295,9 +286,6 @@ export const approveTransaction = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isApprovingTransaction', value: false }))
   }
@@ -323,9 +311,6 @@ export const rejectTransaction = (purchaseId) => async (dispatch) => {
 
     return response.data
 
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-    throw err
   } finally {
     dispatch(setLoading({ key: 'isRejectingTransaction', value: false }))
   }
