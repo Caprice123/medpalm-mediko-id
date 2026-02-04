@@ -27,6 +27,53 @@ export const useCustomWhisper = (
     }
   }
 
+  // Check if audio is silent or too quiet to transcribe
+  const isSilentAudio = async (audioBlob) => {
+    try {
+      // First check: blob size (very small = silent)
+      if (audioBlob.size < 2000) {
+        return true
+      }
+
+      // Second check: analyze audio amplitude
+      const arrayBuffer = await audioBlob.arrayBuffer()
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+
+      try {
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+        const channelData = audioBuffer.getChannelData(0)
+
+        // Calculate RMS (Root Mean Square) amplitude
+        let sum = 0
+        let maxAmplitude = 0
+        for (let i = 0; i < channelData.length; i++) {
+          const value = Math.abs(channelData[i])
+          sum += channelData[i] * channelData[i]
+          maxAmplitude = Math.max(maxAmplitude, value)
+        }
+        const rms = Math.sqrt(sum / channelData.length)
+
+        audioContext.close()
+
+        // Thresholds for silence detection
+        // RMS < 0.015 = very quiet (likely silence or background noise)
+        // Max amplitude < 0.03 = no loud sounds (likely not speech)
+        if (rms < 0.015 || maxAmplitude < 0.03) {
+          return true
+        }
+
+        return false
+      } catch (decodeErr) {
+        // If can't decode, assume not silent to avoid skipping valid audio
+        audioContext.close()
+        return false
+      }
+    } catch (err) {
+      // If analysis fails, assume not silent to avoid skipping valid audio
+      return false
+    }
+  }
+
   // Start recording function
   const startRecording = async () => {
     try {
@@ -55,9 +102,9 @@ export const useCustomWhisper = (
         // Create audio blob
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
 
-        // Check if audio is too small (likely silent or very short)
-        // Typical silent/empty webm is less than 1000 bytes
-        if (audioBlob.size < 1000) {
+        // Check if audio is silent or too quiet
+        const isSilent = await isSilentAudio(audioBlob)
+        if (isSilent) {
           setInitialLoad(false)
           handleError("Audio terlalu pendek atau tidak terdeteksi. Coba berbicara lebih lama.", 'AUDIO_TOO_SHORT')
           return
@@ -71,6 +118,8 @@ export const useCustomWhisper = (
           formData.append('file', audioBlob, 'audio.webm')
           formData.append('model', 'whisper-1')
           formData.append('language', 'id')
+          // Add medical context to improve transcription of medical terms
+          formData.append('prompt', 'Ini adalah konsultasi medis antara dokter dan pasien. Pasien menjelaskan keluhan kesehatan, gejala penyakit, riwayat medis. Dokter mendiagnosis, memberikan resep obat, menjelaskan prosedur medis, pemeriksaan laboratorium.')
 
           const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
             method: 'POST',
