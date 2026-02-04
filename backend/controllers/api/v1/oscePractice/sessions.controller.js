@@ -4,6 +4,7 @@ import { StartOsceSessionService } from '#services/osce/user/startOsceSessionSer
 import { EndOsceSessionService } from '#services/osce/user/endOsceSessionService'
 import { GetSessionObservationsService } from '#services/osce/user/getSessionObservationsService'
 import { SaveSessionObservationsService } from '#services/osce/user/saveSessionObservationsService'
+import { UpdateSessionMetadataService } from '#services/osce/user/updateSessionMetadataService'
 import OsceSessionSerializer from '#serializers/api/v1/osceSessionSerializer';
 import prisma from '#prisma/client';
 import { GetSessionMessagesService } from '#services/osce/user/getSessionMessagesService'
@@ -37,14 +38,15 @@ class SessionsController {
   async startSession(req, res) {
     const userId = req.user?.id
     const { sessionId } = req.params
-    const { sttProvider } = req.body
+    const { sttProvider, supportedMimeType } = req.body
 
-    await StartOsceSessionService.call(userId, sessionId, sttProvider)
+    await StartOsceSessionService.call(userId, sessionId, sttProvider, supportedMimeType)
 
     return res.status(200).json({
         data: {
             success: true,
             sttProvider: sttProvider || 'whisper',
+            supportedMimeType: supportedMimeType || null,
         },
     })
   }
@@ -198,6 +200,21 @@ class SessionsController {
         })
     }
   
+    // PATCH /api/v1/osce/sessions/:sessionId/metadata - Update session metadata
+    async updateMetadata(req, res) {
+      const userId = req.user?.id
+      const { sessionId } = req.params
+      const { sttProvider } = req.body
+
+      await UpdateSessionMetadataService.call(userId, sessionId, { sttProvider })
+
+      return res.status(200).json({
+        data: {
+          success: true,
+        },
+      })
+    }
+
     // POST /api/v1/osce/sessions/:sessionId/messages - Send message with streaming
     async sendMessage(req, res) {
       const userId = req.user?.id;
