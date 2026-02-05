@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
-import { fetchTagGroups } from '@store/tagGroups/action'
-import { fetchTags } from '../../../../../../../store/tags/action'
+import { fetchTags } from '@store/tags/action'
 import { upload } from '@store/common/action'
 
 export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) => {
@@ -38,8 +37,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
 
   // Get category tags from tags
   const { tags } = useSelector(state => state.tags)
-  const categoryTags = tags.find(tag => tag.name === 'kategori')?.tags ?? []
-  const selectedTags = formData.tags || []
+  const categoryTags = useMemo(() =>
+    tags.find(tag => tag.name === 'kategori')?.tags ?? []
+  , [tags])
+  const selectedTags = useMemo(() => formData.tags || [], [formData.tags])
 
   useEffect(() => {
     if (calculator) {
@@ -142,25 +143,25 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     return Object.keys(newErrors).length === 0
   }
 
-  const handleFieldChange = (e) => {
+  const handleFieldChange = useCallback((e) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-  }
+  }, [])
 
   // Field management
-  const handleFieldItemChange = (index, fieldName, value) => {
+  const handleFieldItemChange = useCallback((index, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
         i === index ? { ...f, [fieldName]: value } : f
       )
     }))
-  }
+  }, [])
 
-  const addField = () => {
+  const addField = useCallback(() => {
     setFormData(prev => ({
       ...prev,
       fields: [
@@ -178,49 +179,48 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         }
       ]
     }))
-  }
+  }, [])
 
-  const removeField = (index) => {
+  const removeField = useCallback((index) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.filter((_, i) => i !== index)
     }))
-  }
+  }, [])
 
   // Drag and drop for fields
-  const handleDragStart = (e, index) => {
+  const handleDragStart = useCallback((e, index) => {
     setDraggedIndex(index)
     e.dataTransfer.effectAllowed = 'move'
-  }
+  }, [])
 
-  const handleDragOver = (e) => {
+  const handleDragOver = useCallback((e) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
-  }
+  }, [])
 
-  const handleDrop = (e, targetIndex) => {
+  const handleDrop = useCallback((e, targetIndex) => {
     e.preventDefault()
-    if (draggedIndex === null) return
+    setDraggedIndex(draggedIndex => {
+      if (draggedIndex === null) return draggedIndex
 
-    const newFields = [...formData.fields]
-    const draggedField = newFields[draggedIndex]
+      setFormData(prev => {
+        const newFields = [...prev.fields]
+        const draggedField = newFields[draggedIndex]
+        newFields.splice(draggedIndex, 1)
+        newFields.splice(targetIndex, 0, draggedField)
+        return { ...prev, fields: newFields }
+      })
+      return null
+    })
+  }, [])
 
-    newFields.splice(draggedIndex, 1)
-    newFields.splice(targetIndex, 0, draggedField)
-
-    setFormData(prev => ({
-      ...prev,
-      fields: newFields
-    }))
+  const handleDragEnd = useCallback(() => {
     setDraggedIndex(null)
-  }
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null)
-  }
+  }, [])
 
   // Field options management (for dropdown/radio)
-  const addFieldOption = (fieldIndex) => {
+  const addFieldOption = useCallback((fieldIndex) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -235,9 +235,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
-  const removeFieldOption = (fieldIndex, optionIndex) => {
+  const removeFieldOption = useCallback((fieldIndex, optionIndex) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -249,9 +249,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
-  const handleFieldOptionChange = (fieldIndex, optionIndex, fieldName, value) => {
+  const handleFieldOptionChange = useCallback((fieldIndex, optionIndex, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -265,9 +265,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
-  const handleOptionImageUpload = async (fieldIndex, optionIndex, file) => {
+  const handleOptionImageUpload = useCallback(async (fieldIndex, optionIndex, file) => {
     try {
       // Upload image to centralized endpoint
       const result = await dispatch(upload(file, 'calculator'))
@@ -300,9 +300,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       console.error('Failed to upload option image:', error)
       alert('Failed to upload image. Please try again.')
     }
-  }
+  }, [dispatch])
 
-  const handleOptionImageRemove = (fieldIndex, optionIndex) => {
+  const handleOptionImageRemove = useCallback((fieldIndex, optionIndex) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -316,10 +316,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
   // Display conditions management
-  const addDisplayCondition = (fieldIndex) => {
+  const addDisplayCondition = useCallback((fieldIndex) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -334,9 +334,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
-  const removeDisplayCondition = (fieldIndex, conditionIndex) => {
+  const removeDisplayCondition = useCallback((fieldIndex, conditionIndex) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -348,9 +348,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
-  const handleDisplayConditionChange = (fieldIndex, conditionIndex, fieldName, value) => {
+  const handleDisplayConditionChange = useCallback((fieldIndex, conditionIndex, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.map((f, i) =>
@@ -364,10 +364,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : f
       )
     }))
-  }
+  }, [])
 
   // Classification management
-  const addClassification = () => {
+  const addClassification = useCallback(() => {
     setFormData(prev => ({
       ...prev,
       classifications: [
@@ -391,26 +391,26 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         }
       ]
     }))
-  }
+  }, [])
 
-  const removeClassification = (index) => {
+  const removeClassification = useCallback((index) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.filter((_, i) => i !== index)
     }))
-  }
+  }, [])
 
-  const handleClassificationChange = (index, fieldName, value) => {
+  const handleClassificationChange = useCallback((index, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
         i === index ? { ...c, [fieldName]: value } : c
       )
     }))
-  }
+  }, [])
 
   // Classification option management
-  const addClassificationOption = (classIndex) => {
+  const addClassificationOption = useCallback((classIndex) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -436,9 +436,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
-  const removeClassificationOption = (classIndex, optIndex) => {
+  const removeClassificationOption = useCallback((classIndex, optIndex) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -450,9 +450,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
-  const handleClassificationOptionChange = (classIndex, optIndex, fieldName, value) => {
+  const handleClassificationOptionChange = useCallback((classIndex, optIndex, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -466,10 +466,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
   // Condition management (for classification options)
-  const addCondition = (classIndex, optIndex) => {
+  const addCondition = useCallback((classIndex, optIndex) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -496,9 +496,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
-  const removeCondition = (classIndex, optIndex, condIndex) => {
+  const removeCondition = useCallback((classIndex, optIndex, condIndex) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -517,9 +517,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
-  const handleConditionChange = (classIndex, optIndex, condIndex, fieldName, value) => {
+  const handleConditionChange = useCallback((classIndex, optIndex, condIndex, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
       classifications: prev.classifications.map((c, i) =>
@@ -540,10 +540,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           : c
       )
     }))
-  }
+  }, [])
 
   // Clinical References handlers
-  const addClinicalReference = () => {
+  const addClinicalReference = useCallback(() => {
     const trimmedRef = newReference.trim()
     if (!trimmedRef) {
       return
@@ -553,22 +553,22 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       clinical_references: [...prev.clinical_references, trimmedRef]
     }))
     setNewReference('') // Clear input and hide it
-  }
+  }, [newReference])
 
-  const removeClinicalReference = (index) => {
+  const removeClinicalReference = useCallback((index) => {
     setFormData(prev => ({
       ...prev,
       clinical_references: prev.clinical_references.filter((_, i) => i !== index)
     }))
-  }
+  }, [])
 
   // Tag handlers
-  const handleTagsChange = (newTags) => {
+  const handleTagsChange = useCallback((newTags) => {
     setFormData(prev => ({
       ...prev,
       tags: newTags
     }))
-  }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
