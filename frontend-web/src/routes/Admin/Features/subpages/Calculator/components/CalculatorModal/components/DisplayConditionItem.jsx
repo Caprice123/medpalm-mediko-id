@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import isEqual from 'react-fast-compare'
 import Dropdown from '@components/common/Dropdown'
 import TextInput from '@components/common/TextInput'
@@ -16,6 +16,14 @@ const DisplayConditionItem = memo(({
   onDisplayConditionChange,
   onRemoveDisplayCondition
 }) => {
+  // Local state for smooth typing
+  const [localValue, setLocalValue] = useState(condition.value)
+
+  // Sync when condition changes
+  useEffect(() => {
+    setLocalValue(condition.value)
+  }, [condition.value])
+
   return (
     <ConditionItem>
       <Dropdown
@@ -43,8 +51,9 @@ const DisplayConditionItem = memo(({
       />
       <TextInput
         type="text"
-        value={condition.value}
-        onChange={(e) => onDisplayConditionChange(fieldIndex, condIndex, 'value', e.target.value)}
+        value={localValue}
+        onChange={(e) => setLocalValue(e.target.value)}
+        onBlur={(e) => onDisplayConditionChange(fieldIndex, condIndex, 'value', e.target.value)}
         placeholder="value"
       />
       {!isLastCondition && (

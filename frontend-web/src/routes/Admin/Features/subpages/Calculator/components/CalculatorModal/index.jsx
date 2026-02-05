@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useCalculatorModal } from './useCalculatorModal'
 import Dropdown from '@components/common/Dropdown'
 import TagSelector from '@components/common/TagSelector'
@@ -6,6 +8,12 @@ import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Button from '@components/common/Button'
 import FileUpload from '@components/common/FileUpload'
+import { FieldItem } from './components/FieldItem'
+import { ClassificationSection } from './components/ClassificationSection'
+import { BasicInfoSection } from './components/BasicInfoSection'
+import { FormulaSection } from './components/FormulaSection'
+import { StatusSection } from './components/StatusSection'
+import { ClinicalReferencesSection } from './components/ClinicalReferencesSection'
 import {
   Overlay,
   Modal,
@@ -21,13 +29,13 @@ import {
   FieldsSection,
   SectionTitle,
   FieldsList,
-  FieldItem,
+  FieldItem as StyledFieldItem,
   DragHandle,
   FieldItemContent,
   FieldInputWrapper,
   SmallLabel,
   OptionsList,
-  OptionItem,
+  OptionItem as StyledOptionItem,
   ClassificationsSection,
   ClassificationsList,
   ClassificationItem,
@@ -36,7 +44,7 @@ import {
   ClassificationOptionItem,
   OptionHeader,
   ConditionsList,
-  ConditionItem,
+  ConditionItem as StyledConditionItem,
   SubLabel,
   ModalFooter,
   ConfirmOverlay,
@@ -62,6 +70,22 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [expandedOptions, setExpandedOptions] = useState({})
   const [expandedClassifications, setExpandedClassifications] = useState({})
 
+  // Local state for top-level inputs to prevent lag
+  const [localTitle, setLocalTitle] = useState('')
+  const [localDescription, setLocalDescription] = useState('')
+  const [localFormula, setLocalFormula] = useState('')
+  const [localResultLabel, setLocalResultLabel] = useState('')
+  const [localResultUnit, setLocalResultUnit] = useState('')
+
+  // Setup drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  )
+
   const toggleOption = (classIndex, optIndex) => {
     const key = `${classIndex}-${optIndex}`
     setExpandedOptions(prev => ({
@@ -81,7 +105,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     formData,
     setFormData,
     errors,
-    draggedIndex,
     showConfirmClose,
     loading,
     newReference,
@@ -95,9 +118,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     handleFieldItemChange,
     addField,
     removeField,
-    handleDragStart,
-    handleDragOver,
-    handleDrop,
     handleDragEnd,
     addFieldOption,
     removeFieldOption,
@@ -122,6 +142,50 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     handleCancelClose
   } = useCalculatorModal({ isOpen, calculator, onSuccess, onClose })
 
+  // Memoize field IDs to prevent recreating array on every render
+  const fieldIds = useMemo(() => formData.fields.map(f => f._id), [formData.fields])
+
+  // Sync local state with formData
+  useEffect(() => {
+    setLocalTitle(formData.title)
+    setLocalDescription(formData.description)
+    setLocalFormula(formData.formula)
+    setLocalResultLabel(formData.result_label)
+    setLocalResultUnit(formData.result_unit)
+  }, [formData.title, formData.description, formData.formula, formData.result_label, formData.result_unit])
+
+  // Memoized handlers for BasicInfoSection
+  const handleTitleChange = useCallback((e) => setLocalTitle(e.target.value), [])
+  const handleDescriptionChange = useCallback((e) => setLocalDescription(e.target.value), [])
+
+  // Memoized handlers for FormulaSection
+  const handleFormulaChange = useCallback((e) => setLocalFormula(e.target.value), [])
+  const handleResultLabelChange = useCallback((e) => setLocalResultLabel(e.target.value), [])
+  const handleResultUnitChange = useCallback((e) => setLocalResultUnit(e.target.value), [])
+
+  // Memoized handlers for ClinicalReferencesSection
+  const handleReferenceChange = useCallback((index, value) => {
+    setFormData(prev => {
+      const updated = [...prev.clinical_references];
+      updated[index] = value;
+      return { ...prev, clinical_references: updated };
+    });
+  }, [setFormData])
+
+  const handleRemoveReference = useCallback((index) => {
+    setFormData(prev => ({
+      ...prev,
+      clinical_references: prev.clinical_references.filter((_, i) => i !== index)
+    }));
+  }, [setFormData])
+
+  const handleAddReference = useCallback(() => {
+    setFormData(prev => ({
+      ...prev,
+      clinical_references: [...prev.clinical_references, '']
+    }));
+  }, [setFormData])
+
   if (!isOpen) return null
 
   return (
@@ -138,359 +202,76 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
           <ModalBody>
             <form onSubmit={handleSubmit}>
               {/* Step 1: Basic Information */}
-              <FormGroup>
-                <TextInput
-                  label="Judul Kalkulator"
-                  required
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleFieldChange}
-                  placeholder="Contoh: Kalkulator BMI, Kalkulator Dosis Obat"
-                  error={errors.title}
-                />
-              </FormGroup>
+              <BasicInfoSection
+                localTitle={localTitle}
+                localDescription={localDescription}
+                selectedTags={selectedTags}
+                categoryTags={categoryTags}
+                errors={errors}
+                onTitleChange={handleTitleChange}
+                onTitleBlur={handleFieldChange}
+                onDescriptionChange={handleDescriptionChange}
+                onDescriptionBlur={handleFieldChange}
+                onTagsChange={handleTagsChange}
+              />
 
-              <FormGroup>
-                <Textarea
-                  label="Deskripsi"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleFieldChange}
-                  placeholder="Jelaskan fungsi kalkulator ini dan untuk apa digunakan..."
-                  hint="Opsional - Deskripsi singkat tentang kalkulator"
-                />
-              </FormGroup>
-
-              {/* Category Tags Section */}
-              <FormGroup>
-                <FormLabel>Kategori</FormLabel>
-                <TagSelector
-                  allTags={categoryTags || []}
-                  selectedTags={selectedTags}
-                  onTagsChange={handleTagsChange}
-                  placeholder="-- Pilih Kategori --"
-                  helpText="Pilih kategori untuk membantu mengorganisir kalkulator"
-                />
-              </FormGroup>
-
-              {/* Step 2: Result Configuration */}
-              <FormRow>
-                <FormGroup>
-                  <TextInput
-                    label="Label Hasil"
-                    required
-                    type="text"
-                    name="result_label"
-                    value={formData.result_label}
-                    onChange={handleFieldChange}
-                    placeholder="Contoh: BMI Anda, Dosis Obat"
-                    error={errors.result_label}
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <TextInput
-                    label="Satuan Hasil"
-                    type="text"
-                    name="result_unit"
-                    value={formData.result_unit}
-                    onChange={handleFieldChange}
-                    placeholder="Contoh: kg/m², mg, ml"
-                    hint="Opsional - Satuan untuk hasil"
-                  />
-                </FormGroup>
-              </FormRow>
+              {/* Step 2: Result Configuration & Formula */}
+              <FormulaSection
+                localFormula={localFormula}
+                localResultLabel={localResultLabel}
+                localResultUnit={localResultUnit}
+                errors={errors}
+                onFormulaChange={handleFormulaChange}
+                onFormulaBlur={handleFieldChange}
+                onResultLabelChange={handleResultLabelChange}
+                onResultLabelBlur={handleFieldChange}
+                onResultUnitChange={handleResultUnitChange}
+                onResultUnitBlur={handleFieldChange}
+              />
 
               {/* Step 3: Input Fields */}
               <FieldsSection>
                 <SectionTitle>Input Fields *</SectionTitle>
                 {errors.fields && <ErrorMessage>{errors.fields}</ErrorMessage>}
 
-                <FieldsList>
-                  {formData.fields.map((field, index) => (
-                    <FieldItem
-                      key={index}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                      onDragEnd={handleDragEnd}
-                      isDragging={draggedIndex === index}
-                    >
-                      <DragHandle>⋮⋮</DragHandle>
-
-                      <FieldItemContent>
-                        <FieldInputWrapper>
-                          <TextInput
-                            label="Key * (untuk formula)"
-                            type="text"
-                            value={field.key}
-                            onChange={(e) => handleFieldItemChange(index, 'key', e.target.value)}
-                            placeholder="weight"
-                            error={errors[`field_${index}_key`]}
-                          />
-                        </FieldInputWrapper>
-
-                        <FieldInputWrapper>
-                          <Dropdown
-                            label="Type *"
-                            options={[
-                              { value: 'number', label: 'Number' },
-                              { value: 'text', label: 'Text' },
-                              { value: 'dropdown', label: 'Dropdown' },
-                              { value: 'radio', label: 'Radio Button' }
-                            ]}
-                            value={{ value: field.type, label: field.type.charAt(0).toUpperCase() + field.type.slice(1) }}
-                            onChange={(option) => handleFieldItemChange(index, 'type', option.value)}
-                          />
-                        </FieldInputWrapper>
-
-                        <FieldInputWrapper fullWidth>
-                          <TextInput
-                            label="Label * (tampil ke user)"
-                            type="text"
-                            value={field.label}
-                            onChange={(e) => handleFieldItemChange(index, 'label', e.target.value)}
-                            placeholder="Berat Badan"
-                            error={errors[`field_${index}_label`]}
-                          />
-                        </FieldInputWrapper>
-
-                        <FieldInputWrapper fullWidth>
-                          <TextInput
-                            label="Placeholder * (petunjuk untuk user)"
-                            type="text"
-                            value={field.placeholder}
-                            onChange={(e) => handleFieldItemChange(index, 'placeholder', e.target.value)}
-                            placeholder="Masukkan berat badan dalam kg"
-                            error={errors[`field_${index}_placeholder`]}
-                          />
-                        </FieldInputWrapper>
-
-                        {field.type === 'number' && (
-                          <FieldInputWrapper fullWidth>
-                            <TextInput
-                              label="Unit (untuk angka)"
-                              type="text"
-                              value={field.unit || ''}
-                              onChange={(e) => handleFieldItemChange(index, 'unit', e.target.value)}
-                              placeholder="kg, cm, mg, dll"
-                            />
-                          </FieldInputWrapper>
-                        )}
-
-                        {/* Display Conditions */}
-                        <FieldInputWrapper fullWidth>
-                          <SmallLabel>Display Conditions (Tampilkan field ini jika...)</SmallLabel>
-                          <HelpText style={{ marginBottom: '0.5rem', fontSize: '0.75rem' }}>
-                            Field ini hanya akan tampil jika kondisi terpenuhi. Kosongkan jika ingin selalu tampil.
-                          </HelpText>
-                          {field.display_conditions && field.display_conditions.length > 0 && (
-                            <ConditionsList>
-                              {field.display_conditions.map((condition, condIndex) => {
-                                const isLastCondition = condIndex === field.display_conditions.length - 1
-                                return (
-                                  <ConditionItem key={condIndex}>
-                                    <Dropdown
-                                      options={formData.fields
-                                        .filter((f, i) => i !== index) // Exclude current field
-                                        .map(f => ({ value: f.key, label: f.label || f.key }))}
-                                      value={condition.field_key ? {
-                                        value: condition.field_key,
-                                        label: formData.fields.find(f => f.key === condition.field_key)?.label || condition.field_key
-                                      } : null}
-                                      onChange={(option) => handleDisplayConditionChange(index, condIndex, 'field_key', option?.value || '')}
-                                      placeholder="Pilih field"
-                                    />
-                                    <Dropdown
-                                      options={[
-                                        { value: '==', label: '==' },
-                                        { value: '!=', label: '!=' },
-                                        { value: '>', label: '>' },
-                                        { value: '<', label: '<' },
-                                        { value: '>=', label: '>=' },
-                                        { value: '<=', label: '<=' }
-                                      ]}
-                                      value={{ value: condition.operator, label: condition.operator }}
-                                      onChange={(option) => handleDisplayConditionChange(index, condIndex, 'operator', option.value)}
-                                    />
-                                    <TextInput
-                                      type="text"
-                                      value={condition.value}
-                                      onChange={(e) => handleDisplayConditionChange(index, condIndex, 'value', e.target.value)}
-                                      placeholder="value"
-                                    />
-                                    {!isLastCondition && (
-                                      <Dropdown
-                                        options={[
-                                          { value: 'AND', label: 'AND' },
-                                          { value: 'OR', label: 'OR' }
-                                        ]}
-                                        value={{
-                                          value: condition.logical_operator || 'AND',
-                                          label: condition.logical_operator || 'AND'
-                                        }}
-                                        onChange={(option) => handleDisplayConditionChange(index, condIndex, 'logical_operator', option.value)}
-                                      />
-                                    )}
-                                    {isLastCondition && (
-                                      <div style={{
-                                        fontSize: '0.7rem',
-                                        color: '#8b5cf6',
-                                        textAlign: 'center',
-                                        padding: '0.5rem',
-                                        background: 'rgba(139, 92, 246, 0.1)',
-                                        borderRadius: '4px',
-                                        fontWeight: 600,
-                                        border: '1px solid rgba(139, 92, 246, 0.3)'
-                                      }}>
-                                        null
-                                      </div>
-                                    )}
-                                    <Button
-                                      variant="secondary"
-                                      type="button"
-                                      onClick={() => removeDisplayCondition(index, condIndex)}
-                                    >
-                                      ✕
-                                    </Button>
-                                  </ConditionItem>
-                                )
-                              })}
-                            </ConditionsList>
-                          )}
-                          <Button
-                            variant="outline"
-                            fullWidth
-                            type="button"
-                            onClick={() => addDisplayCondition(index)}
-                            style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.5rem' }}
-                          >
-                            + Tambah Kondisi Display
-                          </Button>
-                        </FieldInputWrapper>
-
-                        {(field.type === 'dropdown' || field.type === 'radio') && (
-                          <FieldInputWrapper fullWidth>
-                            <SmallLabel>Options (pilihan untuk user)</SmallLabel>
-                            <OptionsList>
-                              {field.options && field.options.map((option, optIndex) => (
-                                <OptionItem key={optIndex}>
-                                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                      <TextInput
-                                        type="text"
-                                        value={option.value}
-                                        onChange={(e) => handleFieldOptionChange(index, optIndex, 'value', e.target.value)}
-                                        placeholder="value (male)"
-                                      />
-                                      <TextInput
-                                        type="text"
-                                        value={option.label}
-                                        onChange={(e) => handleFieldOptionChange(index, optIndex, 'label', e.target.value)}
-                                        placeholder="Label (Laki-laki)"
-                                      />
-                                    </div>
-
-                                    {/* Image Upload for Option */}
-                                    <div>
-                                      <SmallLabel style={{ fontSize: '0.75rem', marginBottom: '4px' }}>Gambar (Opsional)</SmallLabel>
-                                      <FileUpload
-                                        file={option.image?.key ? {
-                                          name: option.image?.filename || 'Image',
-                                          type: 'image/*',
-                                          size: option.image?.byteSize
-                                        } : null}
-                                        onFileSelect={(e) => {
-                                          const file = e.target?.files?.[0] || e
-                                          if (file) {
-                                            if (file.type.startsWith('image/')) {
-                                              handleOptionImageUpload(index, optIndex, file)
-                                            } else {
-                                              alert('Mohon pilih file gambar')
-                                            }
-                                          }
-                                        }}
-                                        onRemove={() => handleOptionImageRemove(index, optIndex)}
-                                        acceptedTypes={['image/*']}
-                                        acceptedTypesLabel="PNG, JPG, GIF"
-                                        maxSizeMB={5}
-                                        uploadText="Upload gambar"
-                                        actions={<></>}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <Button
-                                    variant="secondary"
-                                    type="button"
-                                    onClick={() => removeFieldOption(index, optIndex)}
-                                    style={{
-                                      padding: '4px 6px',
-                                      fontSize: '0.75rem',
-                                      minWidth: 'auto',
-                                      height: 'fit-content',
-                                      marginTop: '4px'
-                                    }}
-                                  >
-                                    ✕
-                                  </Button>
-                                </OptionItem>
-                              ))}
-                            </OptionsList>
-                            <Button variant="outline" fullWidth type="button" onClick={() => addFieldOption(index)} style={{ marginTop: '4px' }}>
-                              + Tambah Option
-                            </Button>
-                          </FieldInputWrapper>
-                        )}
-                      </FieldItemContent>
-
-                      <Button
-                        variant="danger"
-                        type="button"
-                        onClick={() => removeField(index)}
-                      >
-                        Hapus
-                      </Button>
-                    </FieldItem>
-                  ))}
-                </FieldsList>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={fieldIds}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <FieldsList>
+                      {formData.fields.map((field, index) => (
+                        <FieldItem
+                          key={field._id || index}
+                          field={field}
+                          index={index}
+                          errors={errors}
+                          fields={field.display_conditions?.length > 0 ? formData.fields : []}
+                          onFieldItemChange={handleFieldItemChange}
+                          onRemoveField={removeField}
+                          onAddFieldOption={addFieldOption}
+                          onRemoveFieldOption={removeFieldOption}
+                          onFieldOptionChange={handleFieldOptionChange}
+                          onOptionImageUpload={handleOptionImageUpload}
+                          onOptionImageRemove={handleOptionImageRemove}
+                          onAddDisplayCondition={addDisplayCondition}
+                          onRemoveDisplayCondition={removeDisplayCondition}
+                          onDisplayConditionChange={handleDisplayConditionChange}
+                        />
+                      ))}
+                    </FieldsList>
+                  </SortableContext>
+                </DndContext>
 
                 <Button variant="outline" fullWidth type="button" onClick={addField}>
                   + Tambah Field Baru
                 </Button>
               </FieldsSection>
 
-              {/* Step 4: Formula */}
-              <InfoBox>
-                <InfoIcon>🧮</InfoIcon>
-                <InfoText>
-                  <strong>Formula menggunakan KEY dari field yang sudah dibuat.</strong>
-                  <br />Gunakan operator: + (tambah), - (kurang), * (kali), / (bagi), () (kurung)
-                  <br />Fungsi Math juga tersedia: Math.sqrt(), Math.pow(), dll
-                </InfoText>
-              </InfoBox>
-
-              <FormGroup>
-                <Textarea
-                  label="Formula"
-                  required
-                  name="formula"
-                  value={formData.formula}
-                  onChange={handleFieldChange}
-                  placeholder="weight / ((height/100) * (height/100))"
-                  style={{ fontFamily: 'monospace', fontSize: '13px', minHeight: '100px' }}
-                  error={errors.formula}
-                />
-
-                <ExampleBox style={{ marginTop: '0.5rem' }}>
-                  <strong>Contoh Formula:</strong>
-                  <br />• BMI: weight / ((height/100) * (height/100))
-                  <br />• Rata-rata: (nilai1 + nilai2 + nilai3) / 3
-                  <br />• Akar kuadrat: Math.sqrt(angka)
-                </ExampleBox>
-              </FormGroup>
 
               {/* Step 5: Classifications (Optional) */}
               <ClassificationsSection>
@@ -602,7 +383,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                     {option.conditions && option.conditions.map((condition, condIndex) => {
                                       const isLastCondition = condIndex === option.conditions.length - 1
                                       return (
-                                        <ConditionItem key={condIndex}>
+                                        <StyledConditionItem key={condIndex}>
                                           <TextInput
                                             type="text"
                                             value={condition.result_key}
@@ -663,7 +444,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                           >
                                             ✕
                                           </Button>
-                                        </ConditionItem>
+                                        </StyledConditionItem>
                                       )
                                     })}
                                   </ConditionsList>
@@ -721,63 +502,35 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
               </ClassificationsSection>
 
               {/* Step 6: Status */}
-              <FormRow>
-                <FormGroup>
-                  <FormLabel>Status</FormLabel>
-                  <Dropdown
-                    options={[
-                      { value: 'draft', label: 'Draft (belum dipublikasi)' },
-                      { value: 'published', label: 'Published (dapat digunakan user)' }
-                    ]}
-                    value={{
-                      value: formData.status,
-                      label: formData.status === 'draft' ? 'Draft (belum dipublikasi)' : 'Published (dapat digunakan user)'
-                    }}
-                    onChange={(option) => handleFieldChange({ target: { name: 'status', value: option.value } })}
-                  />
-                  <HelpText>Draft: hanya admin yang bisa lihat. Published: tersedia untuk semua user.</HelpText>
-                </FormGroup>
-              </FormRow>
+              <StatusSection
+                status={formData.status}
+                onFieldChange={handleFieldChange}
+              />
 
-              
+
               {/* Clinical References Section */}
-              <FormGroup>
-                <FormLabel>Referensi Klinis</FormLabel>
-                {formData.clinical_references.map((ref, index) => (
-                  <AddReferenceWrapper key={index} style={{ marginBottom: '0.5rem' }}>
-                    <TextInput
-                      type="text"
-                      value={ref}
-                      onChange={(e) => {
-                        setFormData(prev => {
-                            const updated = [...prev.clinical_references];
-                            updated[index] = e.target.value;
-
-                            return { ...prev, clinical_references: updated };
-                        });
-                      }}
-                      placeholder="Contoh: American Heart Association Guidelines 2020"
-                      autoFocus
-                    />
-                    <Button
-                      variant="secondary"
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, clinical_references: prev.clinical_references.filter((_, i) => i !== index) }))}
-                    >
-                      ✕
-                    </Button>
-                  </AddReferenceWrapper>
-                ))}
-                  <Button
-                    variant="outline"
-                    fullWidth
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, clinical_references: [...prev.clinical_references, ''] }))}
-                  >
-                    + Tambah Referensi
-                  </Button>
-                <HelpText>Tambahkan referensi klinis atau guideline untuk kalkulator ini</HelpText>
-              </FormGroup>
+              <ClinicalReferencesSection
+                clinicalReferences={formData.clinical_references}
+                onReferenceChange={(index, value) => {
+                  setFormData(prev => {
+                    const updated = [...prev.clinical_references];
+                    updated[index] = value;
+                    return { ...prev, clinical_references: updated };
+                  });
+                }}
+                onRemoveReference={(index) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    clinical_references: prev.clinical_references.filter((_, i) => i !== index)
+                  }));
+                }}
+                onAddReference={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    clinical_references: [...prev.clinical_references, '']
+                  }));
+                }}
+              />
             </form>
           </ModalBody>
 

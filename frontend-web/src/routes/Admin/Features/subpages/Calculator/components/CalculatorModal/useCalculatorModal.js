@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
 import { fetchTags } from '@store/tags/action'
@@ -25,7 +25,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
 
   const [initialFormData, setInitialFormData] = useState(null)
   const [errors, setErrors] = useState({})
-  const [draggedIndex, setDraggedIndex] = useState(null)
   const [showConfirmClose, setShowConfirmClose] = useState(false)
 
   // Fetch tags filtered by "kategori" tag group on mount
@@ -52,7 +51,10 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         formula: calculator.formula,
         result_label: calculator.result_label,
         result_unit: calculator.result_unit || '',
-        fields: calculator.fields || [],
+        fields: (calculator.fields || []).map(field => ({
+          ...field,
+          _id: field._id || `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        })),
         classifications: calculator.classifications || [],
         status: calculator.status || 'draft'
       }
@@ -75,7 +77,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       setInitialFormData(JSON.stringify(data))
     }
     setErrors({})
-    setDraggedIndex(null)
     setShowConfirmClose(false)
     setNewReference('')
   }, [calculator, isOpen])
@@ -167,6 +168,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       fields: [
         ...prev.fields,
         {
+          _id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           key: '',
           type: 'number',
           label: '',
@@ -188,35 +190,19 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     }))
   }, [])
 
-  // Drag and drop for fields
-  const handleDragStart = useCallback((e, index) => {
-    setDraggedIndex(index)
-    e.dataTransfer.effectAllowed = 'move'
-  }, [])
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-  }, [])
-
-  const handleDrop = useCallback((e, targetIndex) => {
-    e.preventDefault()
-    setDraggedIndex(draggedIndex => {
-      if (draggedIndex === null) return draggedIndex
-
+  // Drag and drop for fields using @dnd-kit
+  const handleDragEnd = useCallback((event) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
       setFormData(prev => {
+        const oldIndex = prev.fields.findIndex(f => f._id === active.id)
+        const newIndex = prev.fields.findIndex(f => f._id === over.id)
         const newFields = [...prev.fields]
-        const draggedField = newFields[draggedIndex]
-        newFields.splice(draggedIndex, 1)
-        newFields.splice(targetIndex, 0, draggedField)
+        const [removed] = newFields.splice(oldIndex, 1)
+        newFields.splice(newIndex, 0, removed)
         return { ...prev, fields: newFields }
       })
-      return null
-    })
-  }, [])
-
-  const handleDragEnd = useCallback(() => {
-    setDraggedIndex(null)
+    }
   }, [])
 
   // Field options management (for dropdown/radio)
@@ -580,14 +566,17 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     // Transform formData to send only blobIds for option images
     const submitData = {
       ...formData,
-      fields: formData.fields.map(field => ({
-        ...field,
-        options: field.options?.map(option => ({
-          value: option.value,
-          label: option.label,
-          blobId: option.image?.id || null
-        })) || []
-      }))
+      fields: formData.fields.map(field => {
+        const { _id, ...fieldWithoutId } = field
+        return {
+          ...fieldWithoutId,
+          options: field.options?.map(option => ({
+            value: option.value,
+            label: option.label,
+            blobId: option.image?.id || null
+          })) || []
+        }
+      })
     }
 
     if (calculator) {
@@ -602,7 +591,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     formData,
     setFormData,
     errors,
-    draggedIndex,
     showConfirmClose,
     loading: loading.isCreateCalculatorLoading || loading.isUpdateCalculatorLoading,
     // Clinical References
@@ -619,9 +607,6 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     handleFieldItemChange,
     addField,
     removeField,
-    handleDragStart,
-    handleDragOver,
-    handleDrop,
     handleDragEnd,
     addFieldOption,
     removeFieldOption,

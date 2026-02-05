@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import isEqual from 'react-fast-compare'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
@@ -17,20 +17,32 @@ const OptionItem = memo(({
   onOptionImageUpload,
   onOptionImageRemove
 }) => {
+  // Local state for smooth typing
+  const [localValue, setLocalValue] = useState(option.value)
+  const [localLabel, setLocalLabel] = useState(option.label)
+
+  // Sync when option changes
+  useEffect(() => {
+    setLocalValue(option.value)
+    setLocalLabel(option.label)
+  }, [option.value, option.label])
+
   return (
     <StyledOptionItem>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <TextInput
             type="text"
-            value={option.value}
-            onChange={(e) => onFieldOptionChange(fieldIndex, optIndex, 'value', e.target.value)}
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
+            onBlur={(e) => onFieldOptionChange(fieldIndex, optIndex, 'value', e.target.value)}
             placeholder="value (male)"
           />
           <TextInput
             type="text"
-            value={option.label}
-            onChange={(e) => onFieldOptionChange(fieldIndex, optIndex, 'label', e.target.value)}
+            value={localLabel}
+            onChange={(e) => setLocalLabel(e.target.value)}
+            onBlur={(e) => onFieldOptionChange(fieldIndex, optIndex, 'label', e.target.value)}
             placeholder="Label (Laki-laki)"
           />
         </div>

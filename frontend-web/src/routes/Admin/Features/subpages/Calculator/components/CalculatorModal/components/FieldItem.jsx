@@ -1,5 +1,6 @@
-import React, { memo } from 'react'
-import isEqual from 'react-fast-compare'
+import React, { memo, useState, useEffect } from 'react'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
@@ -19,15 +20,10 @@ import {
 const FieldItem = memo(({
   field,
   index,
-  draggedIndex,
   errors,
   fields,
   onFieldItemChange,
   onRemoveField,
-  onDragStart,
-  onDragOver,
-  onDrop,
-  onDragEnd,
   onAddFieldOption,
   onRemoveFieldOption,
   onFieldOptionChange,
@@ -37,24 +33,50 @@ const FieldItem = memo(({
   onRemoveDisplayCondition,
   onDisplayConditionChange
 }) => {
+  // Local state for all text inputs to prevent lag
+  const [localKey, setLocalKey] = useState(field.key)
+  const [localLabel, setLocalLabel] = useState(field.label)
+  const [localPlaceholder, setLocalPlaceholder] = useState(field.placeholder)
+  const [localUnit, setLocalUnit] = useState(field.unit || '')
+
+  // Sync local state when field changes from parent
+  useEffect(() => {
+    setLocalKey(field.key)
+    setLocalLabel(field.label)
+    setLocalPlaceholder(field.placeholder)
+    setLocalUnit(field.unit || '')
+  }, [field.key, field.label, field.placeholder, field.unit])
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: field._id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
   return (
     <StyledFieldItem
-      draggable
-      onDragStart={(e) => onDragStart(e, index)}
-      onDragOver={onDragOver}
-      onDrop={(e) => onDrop(e, index)}
-      onDragEnd={onDragEnd}
-      isDragging={draggedIndex === index}
+      ref={setNodeRef}
+      style={style}
+      isDragging={isDragging}
     >
-      <DragHandle>⋮⋮</DragHandle>
+      <DragHandle {...attributes} {...listeners}>⋮⋮</DragHandle>
 
       <FieldItemContent>
         <FieldInputWrapper>
           <TextInput
             label="Key * (untuk formula)"
             type="text"
-            value={field.key}
-            onChange={(e) => onFieldItemChange(index, 'key', e.target.value)}
+            value={localKey}
+            onChange={(e) => setLocalKey(e.target.value)}
+            onBlur={(e) => onFieldItemChange(index, 'key', e.target.value)}
             placeholder="weight"
             error={errors[`field_${index}_key`]}
           />
@@ -78,8 +100,9 @@ const FieldItem = memo(({
           <TextInput
             label="Label * (tampil ke user)"
             type="text"
-            value={field.label}
-            onChange={(e) => onFieldItemChange(index, 'label', e.target.value)}
+            value={localLabel}
+            onChange={(e) => setLocalLabel(e.target.value)}
+            onBlur={(e) => onFieldItemChange(index, 'label', e.target.value)}
             placeholder="Berat Badan"
             error={errors[`field_${index}_label`]}
           />
@@ -89,8 +112,9 @@ const FieldItem = memo(({
           <TextInput
             label="Placeholder * (petunjuk untuk user)"
             type="text"
-            value={field.placeholder}
-            onChange={(e) => onFieldItemChange(index, 'placeholder', e.target.value)}
+            value={localPlaceholder}
+            onChange={(e) => setLocalPlaceholder(e.target.value)}
+            onBlur={(e) => onFieldItemChange(index, 'placeholder', e.target.value)}
             placeholder="Masukkan berat badan dalam kg"
             error={errors[`field_${index}_placeholder`]}
           />
@@ -101,8 +125,9 @@ const FieldItem = memo(({
             <TextInput
               label="Unit (untuk angka)"
               type="text"
-              value={field.unit || ''}
-              onChange={(e) => onFieldItemChange(index, 'unit', e.target.value)}
+              value={localUnit}
+              onChange={(e) => setLocalUnit(e.target.value)}
+              onBlur={(e) => onFieldItemChange(index, 'unit', e.target.value)}
               placeholder="kg, cm, mg, dll"
             />
           </FieldInputWrapper>
@@ -174,46 +199,6 @@ const FieldItem = memo(({
       </Button>
     </StyledFieldItem>
   )
-}, (prevProps, nextProps) => {
-  // Custom comparison function for React.memo
-  // Return true if props are equal (don't re-render)
-  // Return false if props are different (do re-render)
-
-  // Check if this field's data changed
-  if (!isEqual(prevProps.field, nextProps.field)) {
-    return false
-  }
-
-  // Check if drag state changed
-  if (prevProps.draggedIndex !== nextProps.draggedIndex) {
-    return false
-  }
-
-  // Check if errors changed for this field
-  const prevErrors = Object.keys(prevProps.errors).filter(key => key.includes(`field_${prevProps.index}`))
-  const nextErrors = Object.keys(nextProps.errors).filter(key => key.includes(`field_${nextProps.index}`))
-  if (!isEqual(prevErrors, nextErrors)) {
-    return false
-  }
-
-  // Only check fields array if this field has display conditions
-  // This prevents unnecessary re-renders when typing in key/label of other fields
-  const hasDisplayConditions = nextProps.field.display_conditions && nextProps.field.display_conditions.length > 0
-  if (hasDisplayConditions) {
-    // Fast check: compare fields length and keys/labels as a simple string
-    if (prevProps.fields.length !== nextProps.fields.length) {
-      return false
-    }
-    // Create a hash string for quick comparison instead of deep object comparison
-    const prevHash = prevProps.fields.map(f => `${f.key}:${f.label}`).join('|')
-    const nextHash = nextProps.fields.map(f => `${f.key}:${f.label}`).join('|')
-    if (prevHash !== nextHash) {
-      return false
-    }
-  }
-
-  // Props are equal, don't re-render
-  return true
 })
 
 FieldItem.displayName = 'FieldItem'
