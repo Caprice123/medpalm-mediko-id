@@ -307,9 +307,9 @@ export const OptionsList = styled.div`
 
 export const OptionItem = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 0.5rem;
-  align-items: center;
+  align-items: flex-start;
 `
 
 export const SmallButton = styled.button`

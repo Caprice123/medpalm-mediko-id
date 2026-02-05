@@ -24,7 +24,6 @@ class CalculatorController {
         topics: CalculatorTopicListSerializer.serialize(publicTopics),
         pagination: result.pagination
       },
-      message: 'Calculator topics retrieved successfully'
     })
   }
 
@@ -58,15 +57,14 @@ class CalculatorController {
       }
     })
 
-    if (!topic || topic.status !== 'published' || !topic.is_active) {
+    if (!topic || topic.status !== 'published') {
       return res.status(404).json({
         message: 'Calculator topic not found or not available'
       })
     }
 
     return res.status(200).json({
-      data: CalculatorTopicSerializer.serialize(topic),
-      message: 'Calculator topic detail retrieved successfully'
+      data: await CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -82,7 +80,6 @@ class CalculatorController {
 
     return res.status(200).json({
       data: result,
-      message: 'Calculation completed successfully'
     })
   }
 }

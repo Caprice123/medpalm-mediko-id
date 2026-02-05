@@ -34,7 +34,7 @@ class CalculatorController {
     const topic = await GetCalculatorTopicDetailService.call(id)
 
     return res.status(200).json({
-      data: CalculatorTopicSerializer.serialize(topic),
+      data: await CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -71,7 +71,7 @@ class CalculatorController {
     })
 
     return res.status(201).json({
-      data: CalculatorTopicSerializer.serialize(topic),
+      data: await CalculatorTopicSerializer.serialize(topic),
     })
   }
 
@@ -108,7 +108,7 @@ class CalculatorController {
     })
 
     return res.status(200).json({
-      data: CalculatorTopicSerializer.serialize(topic),
+      data: await CalculatorTopicSerializer.serialize(topic),
     })
   }
 

@@ -26,7 +26,13 @@ import {
   ClinicalReferenceBox,
   FormLabel,
   LabelWithDescription,
-  ClinicalReferenceItem
+  ClinicalReferenceItem,
+  OptionCard,
+  OptionLabel,
+  OptionContent,
+  OptionImageContainer,
+  OptionImage,
+  OptionTextContent
 } from './Detail.styles'
 import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
@@ -35,6 +41,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { calculateResult, getCalculatorTopicDetail } from '../../../../store/calculator/action'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Col, Row } from '../../../../components/common/Grid/Grid.styles'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 
 const CalculatorDetail = () => {
     const dispatch = useDispatch()
@@ -57,6 +65,79 @@ const CalculatorDetail = () => {
         dispatch(getCalculatorTopicDetail(id))
     }, [dispatch, id])
 
+    // Clear hidden field values when inputs change
+    useEffect(() => {
+        if (!detail?.calculator_fields) return
+
+        const visibleFieldKeys = detail.calculator_fields
+            .filter(shouldDisplayField)
+            .map(field => field.key)
+
+        // Remove inputs for hidden fields
+        setInputs(prev => {
+            const newInputs = { ...prev }
+            Object.keys(newInputs).forEach(key => {
+                if (!visibleFieldKeys.includes(key)) {
+                    delete newInputs[key]
+                }
+            })
+            return newInputs
+        })
+    }, [detail?.calculator_fields, inputs])
+
+    // Evaluate display conditions for a field
+    const shouldDisplayField = (field) => {
+        if (!field.display_conditions || field.display_conditions.length === 0) {
+            return true // No conditions means always show
+        }
+
+        let result = true
+        for (let i = 0; i < field.display_conditions.length; i++) {
+            const condition = field.display_conditions[i]
+            const input = inputs[condition.field_key]
+            const value = typeof input === 'object' && input !== null ? input.value : input
+
+            let conditionMet = false
+            const condValue = condition.value
+
+            switch (condition.operator) {
+                case '==':
+                    conditionMet = String(value) === String(condValue)
+                    break
+                case '!=':
+                    conditionMet = String(value) !== String(condValue)
+                    break
+                case '>':
+                    conditionMet = parseFloat(value) > parseFloat(condValue)
+                    break
+                case '<':
+                    conditionMet = parseFloat(value) < parseFloat(condValue)
+                    break
+                case '>=':
+                    conditionMet = parseFloat(value) >= parseFloat(condValue)
+                    break
+                case '<=':
+                    conditionMet = parseFloat(value) <= parseFloat(condValue)
+                    break
+                default:
+                    conditionMet = false
+            }
+
+            if (i === 0) {
+                result = conditionMet
+            } else {
+                const prevLogicalOperator = field.display_conditions[i - 1].logical_operator
+                if (prevLogicalOperator === 'AND') {
+                    result = result && conditionMet
+                } else if (prevLogicalOperator === 'OR') {
+                    result = result || conditionMet
+                }
+            }
+        }
+
+        return result
+    }
+
 
     const handleInputChange = (name, value) => {
         setInputs(prev => ({
@@ -78,7 +159,8 @@ const CalculatorDetail = () => {
 
         if (!detail) return false
 
-        detail.calculator_fields.forEach(field => {
+        // Only validate visible fields
+        detail.calculator_fields.filter(shouldDisplayField).forEach(field => {
           const input = inputs[field.key]
           // Extract value from object or use raw value
           const value = typeof input === 'object' && input !== null ? input.value : input
@@ -104,11 +186,15 @@ const CalculatorDetail = () => {
           return
         }
 
-        // Extract values from inputs (objects for dropdown/radio, raw values for text/number)
+        // Extract values from inputs - only include visible fields
         const calculationInputs = {}
-        Object.keys(inputs).forEach(key => {
-          const input = inputs[key]
-          calculationInputs[key] = typeof input === 'object' && input !== null ? input.value : input
+        const visibleFields = detail.calculator_fields.filter(shouldDisplayField)
+
+        visibleFields.forEach(field => {
+          const input = inputs[field.key]
+          if (input !== undefined && input !== null && input !== '') {
+            calculationInputs[field.key] = typeof input === 'object' && input !== null ? input.value : input
+          }
         })
 
         const response = await dispatch(calculateResult(id, calculationInputs))
@@ -149,7 +235,7 @@ const CalculatorDetail = () => {
                 <form onSubmit={handleCalculate}>
                 <InputsSection>
                     <Row>
-                    {detail.calculator_fields?.map(field => (
+                    {detail.calculator_fields?.filter(shouldDisplayField).map(field => (
                         <Col xs={12} md={6} key={field.key}>
                         <FormGroup>
                             <LabelWithDescription>
@@ -186,53 +272,41 @@ const CalculatorDetail = () => {
                             //   usePortal={true}
                             />
                             ) : field.type === 'radio' ? (
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
-                                {field.field_options && field.field_options.map(option => (
-                                <label
-                                    key={option.value}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: option.image ? 'column' : 'row',
-                                        alignItems: option.image ? 'flex-start' : 'center',
-                                        gap: '8px',
-                                        cursor: 'pointer',
-                                        padding: option.image ? '12px' : '0',
-                                        border: option.image ? '2px solid #e0e0e0' : 'none',
-                                        borderRadius: option.image ? '8px' : '0',
-                                        backgroundColor: option.image && inputs[field.key] === option.value ? '#f0f7ff' : 'transparent',
-                                        borderColor: option.image && inputs[field.key] === option.value ? '#4A90E2' : '#e0e0e0',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    {option.image && (
-                                        <img
-                                            src={option.image.url}
-                                            alt={option.label}
-                                            style={{
-                                                width: '100%',
-                                                maxWidth: '200px',
-                                                height: 'auto',
-                                                maxHeight: '150px',
-                                                objectFit: 'cover',
-                                                borderRadius: '6px',
-                                                marginBottom: '8px'
-                                            }}
-                                        />
-                                    )}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <input
-                                        type="radio"
-                                        name={field.key}
-                                        value={option.value}
-                                        checked={(typeof inputs[field.key] === 'object' ? inputs[field.key]?.value : inputs[field.key]) === option.value}
-                                        onChange={() => handleInputChange(field.key, option)}
-                                        style={{ cursor: 'pointer' }}
-                                        />
-                                        <span>{option.label}</span>
-                                    </div>
-                                </label>
-                                ))}
-                            </div>
+                            <PhotoProvider>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
+                                    {field.field_options && field.field_options.map(option => {
+                                        const isSelected = (typeof inputs[field.key] === 'object' ? inputs[field.key]?.value : inputs[field.key]) === option.value
+                                        return (
+                                        <OptionCard
+                                            key={option.value}
+                                            selected={isSelected}
+                                            onClick={() => handleInputChange(field.key, option)}
+                                        >
+                                            <OptionLabel>
+                                                <input
+                                                    type="radio"
+                                                    name={field.key}
+                                                    value={option.value}
+                                                    checked={isSelected}
+                                                    onChange={() => handleInputChange(field.key, option)}
+                                                    style={{ cursor: 'pointer', width: '18px', height: '18px' }}
+                                                />
+                                            </OptionLabel>
+                                            <OptionContent>
+                                                {option.label && <OptionTextContent>{option.label}</OptionTextContent>}
+                                                {option.image && (
+                                                    <PhotoView src={option.image.url}>
+                                                        <OptionImageContainer>
+                                                            <OptionImage src={option.image.url} alt={option.label || 'Option image'} />
+                                                        </OptionImageContainer>
+                                                    </PhotoView>
+                                                )}
+                                            </OptionContent>
+                                        </OptionCard>
+                                        )
+                                    })}
+                                </div>
+                            </PhotoProvider>
                             ) : field.type === 'number' ? (
                             <TextInput
                                 type="number"

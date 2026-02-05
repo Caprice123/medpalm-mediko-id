@@ -35,6 +35,7 @@ export class CalculatorTopicSerializer {
         placeholder: field.placeholder,
         description: field.description,
         unit: field.unit,
+        display_conditions: field.display_conditions || null,
         is_required: field.is_required,
         options: optionsWithImages
       }

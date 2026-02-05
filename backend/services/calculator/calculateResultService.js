@@ -53,7 +53,14 @@ export class CalculateResultService extends BaseService {
         // Build the calculation context
         const context = {}
         topic.calculator_fields.forEach(field => {
+            const isVisible = this.shouldDisplayField(field, inputs)
             const inputValue = inputs[field.key]
+
+            // For hidden fields or fields without values, use default value of 0
+            if (!isVisible || inputValue === undefined || inputValue === null || inputValue === '') {
+                context[field.key] = 0
+                return
+            }
 
             if (field.type === 'number') {
                 context[field.key] = parseFloat(inputValue)
@@ -191,13 +198,70 @@ export class CalculateResultService extends BaseService {
         }
     }
 
+    static shouldDisplayField(field, inputs) {
+        // If no display conditions, always show
+        if (!field.display_conditions || field.display_conditions.length === 0) {
+            return true
+        }
+
+        let result = true
+        for (let i = 0; i < field.display_conditions.length; i++) {
+            const condition = field.display_conditions[i]
+            const inputValue = inputs[condition.field_key]
+
+            let conditionMet = false
+            const condValue = condition.value
+
+            switch (condition.operator) {
+                case '==':
+                    conditionMet = String(inputValue) === String(condValue)
+                    break
+                case '!=':
+                    conditionMet = String(inputValue) !== String(condValue)
+                    break
+                case '>':
+                    conditionMet = parseFloat(inputValue) > parseFloat(condValue)
+                    break
+                case '<':
+                    conditionMet = parseFloat(inputValue) < parseFloat(condValue)
+                    break
+                case '>=':
+                    conditionMet = parseFloat(inputValue) >= parseFloat(condValue)
+                    break
+                case '<=':
+                    conditionMet = parseFloat(inputValue) <= parseFloat(condValue)
+                    break
+                default:
+                    conditionMet = false
+            }
+
+            if (i === 0) {
+                result = conditionMet
+            } else {
+                const prevLogicalOperator = field.display_conditions[i - 1].logical_operator
+                if (prevLogicalOperator === 'AND') {
+                    result = result && conditionMet
+                } else if (prevLogicalOperator === 'OR') {
+                    result = result || conditionMet
+                }
+            }
+        }
+
+        return result
+    }
+
     static validateInputs(inputs, fields) {
         if (!inputs || typeof inputs !== 'object') {
             throw new ValidationError('Inputs must be provided as an object')
         }
 
-        // Check all required fields are provided
+        // Check all required fields are provided - but only for visible fields
         fields.forEach(field => {
+            // Only validate if field should be displayed
+            if (!this.shouldDisplayField(field, inputs)) {
+                return
+            }
+
             if (field.is_required) {
                 if (!(field.key in inputs) || inputs[field.key] === null || inputs[field.key] === '') {
                     throw new ValidationError(`Field '${field.label}' is required`)

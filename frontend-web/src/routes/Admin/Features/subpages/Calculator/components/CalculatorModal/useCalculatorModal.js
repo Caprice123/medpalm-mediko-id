@@ -172,6 +172,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           placeholder: '',
           description: '',
           unit: '',
+          display_conditions: [],
           is_required: true,
           options: []
         }
@@ -310,6 +311,54 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
               ...f,
               options: f.options.map((opt, j) =>
                 j === optionIndex ? { ...opt, image: null } : opt
+              )
+            }
+          : f
+      )
+    }))
+  }
+
+  // Display conditions management
+  const addDisplayCondition = (fieldIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) =>
+        i === fieldIndex
+          ? {
+              ...f,
+              display_conditions: [
+                ...(f.display_conditions || []),
+                { field_key: '', operator: '==', value: '', logical_operator: 'AND' }
+              ]
+            }
+          : f
+      )
+    }))
+  }
+
+  const removeDisplayCondition = (fieldIndex, conditionIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) =>
+        i === fieldIndex
+          ? {
+              ...f,
+              display_conditions: (f.display_conditions || []).filter((_, j) => j !== conditionIndex)
+            }
+          : f
+      )
+    }))
+  }
+
+  const handleDisplayConditionChange = (fieldIndex, conditionIndex, fieldName, value) => {
+    setFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) =>
+        i === fieldIndex
+          ? {
+              ...f,
+              display_conditions: (f.display_conditions || []).map((cond, j) =>
+                j === conditionIndex ? { ...cond, [fieldName]: value } : cond
               )
             }
           : f
@@ -579,6 +628,9 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     handleFieldOptionChange,
     handleOptionImageUpload,
     handleOptionImageRemove,
+    addDisplayCondition,
+    removeDisplayCondition,
+    handleDisplayConditionChange,
     addClassification,
     removeClassification,
     handleClassificationChange,

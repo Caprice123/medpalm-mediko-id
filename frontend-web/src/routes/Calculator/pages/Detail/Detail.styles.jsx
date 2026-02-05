@@ -645,3 +645,64 @@ export const ClinicalReferenceItem = styled.div`
     color: #78350f;
   }
 `
+
+// MCQ-style Option Cards
+export const OptionCard = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid ${props => props.selected ? '#8b5cf6' : '#e5e7eb'};
+  border-radius: 12px;
+  background: ${props => props.selected ? '#f5f3ff' : 'white'};
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #8b5cf6;
+    background: #faf5ff;
+  }
+`
+
+export const OptionLabel = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+`
+
+export const OptionContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`
+
+export const OptionTextContent = styled.div`
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.5;
+  font-weight: 500;
+`
+
+export const OptionImageContainer = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: zoom-in;
+  transition: all 0.2s;
+  max-width: 300px;
+
+  &:hover {
+    border-color: #8b5cf6;
+    transform: scale(1.02);
+  }
+`
+
+export const OptionImage = styled.img`
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+`

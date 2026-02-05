@@ -104,6 +104,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     handleFieldOptionChange,
     handleOptionImageUpload,
     handleOptionImageRemove,
+    addDisplayCondition,
+    removeDisplayCondition,
+    handleDisplayConditionChange,
     addClassification,
     removeClassification,
     handleClassificationChange,
@@ -221,7 +224,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                         <FieldInputWrapper>
                           <TextInput
                             label="Key * (untuk formula)"
-                            size="small"
                             type="text"
                             value={field.key}
                             onChange={(e) => handleFieldItemChange(index, 'key', e.target.value)}
@@ -231,8 +233,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                         </FieldInputWrapper>
 
                         <FieldInputWrapper>
-                          <SmallLabel>Type *</SmallLabel>
                           <Dropdown
+                            label="Type *"
                             options={[
                               { value: 'number', label: 'Number' },
                               { value: 'text', label: 'Text' },
@@ -247,7 +249,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                         <FieldInputWrapper fullWidth>
                           <TextInput
                             label="Label * (tampil ke user)"
-                            size="small"
                             type="text"
                             value={field.label}
                             onChange={(e) => handleFieldItemChange(index, 'label', e.target.value)}
@@ -259,7 +260,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                         <FieldInputWrapper fullWidth>
                           <TextInput
                             label="Placeholder * (petunjuk untuk user)"
-                            size="small"
                             type="text"
                             value={field.placeholder}
                             onChange={(e) => handleFieldItemChange(index, 'placeholder', e.target.value)}
@@ -272,7 +272,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                           <FieldInputWrapper fullWidth>
                             <TextInput
                               label="Unit (untuk angka)"
-                              size="small"
                               type="text"
                               value={field.unit || ''}
                               onChange={(e) => handleFieldItemChange(index, 'unit', e.target.value)}
@@ -280,6 +279,97 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                             />
                           </FieldInputWrapper>
                         )}
+
+                        {/* Display Conditions */}
+                        <FieldInputWrapper fullWidth>
+                          <SmallLabel>Display Conditions (Tampilkan field ini jika...)</SmallLabel>
+                          <HelpText style={{ marginBottom: '0.5rem', fontSize: '0.75rem' }}>
+                            Field ini hanya akan tampil jika kondisi terpenuhi. Kosongkan jika ingin selalu tampil.
+                          </HelpText>
+                          {field.display_conditions && field.display_conditions.length > 0 && (
+                            <ConditionsList>
+                              {field.display_conditions.map((condition, condIndex) => {
+                                const isLastCondition = condIndex === field.display_conditions.length - 1
+                                return (
+                                  <ConditionItem key={condIndex}>
+                                    <Dropdown
+                                      options={formData.fields
+                                        .filter((f, i) => i !== index) // Exclude current field
+                                        .map(f => ({ value: f.key, label: f.label || f.key }))}
+                                      value={condition.field_key ? {
+                                        value: condition.field_key,
+                                        label: formData.fields.find(f => f.key === condition.field_key)?.label || condition.field_key
+                                      } : null}
+                                      onChange={(option) => handleDisplayConditionChange(index, condIndex, 'field_key', option?.value || '')}
+                                      placeholder="Pilih field"
+                                    />
+                                    <Dropdown
+                                      options={[
+                                        { value: '==', label: '==' },
+                                        { value: '!=', label: '!=' },
+                                        { value: '>', label: '>' },
+                                        { value: '<', label: '<' },
+                                        { value: '>=', label: '>=' },
+                                        { value: '<=', label: '<=' }
+                                      ]}
+                                      value={{ value: condition.operator, label: condition.operator }}
+                                      onChange={(option) => handleDisplayConditionChange(index, condIndex, 'operator', option.value)}
+                                    />
+                                    <TextInput
+                                      type="text"
+                                      value={condition.value}
+                                      onChange={(e) => handleDisplayConditionChange(index, condIndex, 'value', e.target.value)}
+                                      placeholder="value"
+                                    />
+                                    {!isLastCondition && (
+                                      <Dropdown
+                                        options={[
+                                          { value: 'AND', label: 'AND' },
+                                          { value: 'OR', label: 'OR' }
+                                        ]}
+                                        value={{
+                                          value: condition.logical_operator || 'AND',
+                                          label: condition.logical_operator || 'AND'
+                                        }}
+                                        onChange={(option) => handleDisplayConditionChange(index, condIndex, 'logical_operator', option.value)}
+                                      />
+                                    )}
+                                    {isLastCondition && (
+                                      <div style={{
+                                        fontSize: '0.7rem',
+                                        color: '#8b5cf6',
+                                        textAlign: 'center',
+                                        padding: '0.5rem',
+                                        background: 'rgba(139, 92, 246, 0.1)',
+                                        borderRadius: '4px',
+                                        fontWeight: 600,
+                                        border: '1px solid rgba(139, 92, 246, 0.3)'
+                                      }}>
+                                        null
+                                      </div>
+                                    )}
+                                    <Button
+                                      variant="secondary"
+                                      type="button"
+                                      onClick={() => removeDisplayCondition(index, condIndex)}
+                                    >
+                                      ✕
+                                    </Button>
+                                  </ConditionItem>
+                                )
+                              })}
+                            </ConditionsList>
+                          )}
+                          <Button
+                            variant="outline"
+                            fullWidth
+                            type="button"
+                            onClick={() => addDisplayCondition(index)}
+                            style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.5rem' }}
+                          >
+                            + Tambah Kondisi Display
+                          </Button>
+                        </FieldInputWrapper>
 
                         {(field.type === 'dropdown' || field.type === 'radio') && (
                           <FieldInputWrapper fullWidth>
@@ -290,14 +380,12 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                       <TextInput
-                                        size="small"
                                         type="text"
                                         value={option.value}
                                         onChange={(e) => handleFieldOptionChange(index, optIndex, 'value', e.target.value)}
                                         placeholder="value (male)"
                                       />
                                       <TextInput
-                                        size="small"
                                         type="text"
                                         value={option.label}
                                         onChange={(e) => handleFieldOptionChange(index, optIndex, 'label', e.target.value)}
@@ -336,9 +424,15 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
                                   <Button
                                     variant="secondary"
-                                    size="small"
                                     type="button"
                                     onClick={() => removeFieldOption(index, optIndex)}
+                                    style={{
+                                      padding: '4px 6px',
+                                      fontSize: '0.75rem',
+                                      minWidth: 'auto',
+                                      height: 'fit-content',
+                                      marginTop: '4px'
+                                    }}
                                   >
                                     ✕
                                   </Button>
@@ -354,7 +448,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
                       <Button
                         variant="danger"
-                        size="small"
                         type="button"
                         onClick={() => removeField(index)}
                       >
@@ -430,7 +523,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                           </div>
                           <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
                             <TextInput
-                              size="small"
                               type="text"
                               value={classification.name}
                               onChange={(e) => handleClassificationChange(classIndex, 'name', e.target.value)}
@@ -440,7 +532,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                           </div>
                           <Button
                             variant="danger"
-                            size="small"
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
@@ -478,7 +569,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                   </div>
                                   <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
                                     <TextInput
-                                      size="small"
                                       type="text"
                                       value={option.label || option.value}
                                       onChange={(e) => {
@@ -491,7 +581,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                   </div>
                                   <Button
                                     variant="secondary"
-                                    size="small"
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation()
@@ -515,7 +604,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                       return (
                                         <ConditionItem key={condIndex}>
                                           <TextInput
-                                            size="small"
                                             type="text"
                                             value={condition.result_key}
                                             onChange={(e) => handleConditionChange(classIndex, optIndex, condIndex, 'result_key', e.target.value)}
@@ -535,7 +623,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                             onChange={(option) => handleConditionChange(classIndex, optIndex, condIndex, 'operator', option.value)}
                                           />
                                           <TextInput
-                                            size="small"
                                             type="number"
                                             value={condition.value}
                                             onChange={(e) => handleConditionChange(classIndex, optIndex, condIndex, 'value', e.target.value)}
@@ -571,7 +658,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                                           )}
                                           <Button
                                             variant="secondary"
-                                            size="small"
                                             type="button"
                                             onClick={() => removeCondition(classIndex, optIndex, condIndex)}
                                           >
@@ -675,7 +761,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                     />
                     <Button
                       variant="secondary"
-                      size="small"
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, clinical_references: prev.clinical_references.filter((_, i) => i !== index) }))}
                     >

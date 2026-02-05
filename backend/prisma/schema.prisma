@@ -591,6 +591,7 @@ model calculator_fields {
   placeholder         String // Placeholder text for input field
   description         String? // Helpful description
   unit                String? // Unit of measurement, e.g., "kg", "cm"
+  display_conditions  Json?    // Conditions to show/hide field: [{ field_key, operator, value, logical_operator }]
   order               Int      @default(0)
   is_required         Boolean  @default(true)
   created_at          DateTime @default(now())

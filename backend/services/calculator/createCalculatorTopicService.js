@@ -1,7 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "../baseService.js"
-import { AttachmentService } from '#services/attachment/attachmentService'
+import AttachmentService from '#services/attachment/attachmentService'
 
 export class CreateCalculatorTopicService extends BaseService {
     static async call(data) {
@@ -28,6 +28,7 @@ export class CreateCalculatorTopicService extends BaseService {
                             placeholder: field.placeholder,
                             description: field.description || null,
                             unit: field.unit || null,
+                            display_conditions: field.display_conditions || null,
                             order: index,
                             is_required: field.is_required !== undefined ? field.is_required : true
                         }))
@@ -74,14 +75,21 @@ export class CreateCalculatorTopicService extends BaseService {
                             }
                         })
 
-                        // Create attachment if blobId is provided
+                        // Create attachment if blobId is provided and valid
                         if (option.blobId) {
-                            await AttachmentService.attach({
-                                blobId: option.blobId,
-                                recordType: 'calculator_field_option',
-                                recordId: createdOption.id,
-                                name: 'image'
+                            // Verify blob exists before creating attachment
+                            const blobExists = await prisma.blobs.findUnique({
+                                where: { id: parseInt(option.blobId) }
                             })
+
+                            if (blobExists) {
+                                await AttachmentService.attach({
+                                    blobId: parseInt(option.blobId),
+                                    recordType: 'calculator_field_option',
+                                    recordId: createdOption.id,
+                                    name: 'image'
+                                })
+                            }
                         }
                     }
                 }
