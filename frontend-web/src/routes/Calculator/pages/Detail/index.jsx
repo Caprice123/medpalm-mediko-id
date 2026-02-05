@@ -251,19 +251,19 @@ const CalculatorDetail = () => {
     
                             {field.type === 'dropdown' ? (
                             <Dropdown
-                                options={field.field_options?.map(opt => ({
-                                value: opt.value,
-                                label: opt.label
+                                options={field.field_options?.map((opt, idx) => ({
+                                value: `${opt.id || idx}_${opt.value}`, // Use id or index + value as unique key
+                                label: opt.label,
+                                originalValue: opt.value,
+                                originalOption: opt
                                 })) || []}
                                 value={inputs[field.key] ? {
-                                value: typeof inputs[field.key] === 'object' ? inputs[field.key].value : inputs[field.key],
-                                label: typeof inputs[field.key] === 'object' ? inputs[field.key].label : (field.field_options?.find(opt => opt.value === inputs[field.key])?.label || inputs[field.key])
+                                value: `${inputs[field.key].id || ''}_${inputs[field.key].value}`,
+                                label: inputs[field.key].label
                                 } : null}
                                 onChange={(option) => {
                                     if (option) {
-                                        // Find the full option object from field_options
-                                        const fullOption = field.field_options?.find(opt => opt.value === option.value)
-                                        handleInputChange(field.key, fullOption || option)
+                                        handleInputChange(field.key, option.originalOption)
                                     } else {
                                         handleInputChange(field.key, '')
                                     }
@@ -274,11 +274,17 @@ const CalculatorDetail = () => {
                             ) : field.type === 'radio' ? (
                             <PhotoProvider>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
-                                    {field.field_options && field.field_options.map(option => {
-                                        const isSelected = (typeof inputs[field.key] === 'object' ? inputs[field.key]?.value : inputs[field.key]) === option.value
+                                    {field.field_options && field.field_options.map((option, idx) => {
+                                        // Use unique identifier: id if available, otherwise index + value
+                                        const optionKey = option.id || `${idx}_${option.value}`
+                                        const selectedKey = inputs[field.key]?.id || (typeof inputs[field.key] === 'object' ? `${inputs[field.key]?.value}` : inputs[field.key])
+                                        const isSelected = inputs[field.key] && (
+                                            (option.id && inputs[field.key].id === option.id) ||
+                                            (inputs[field.key].value === option.value && inputs[field.key].label === option.label)
+                                        )
                                         return (
                                         <OptionCard
-                                            key={option.value}
+                                            key={optionKey}
                                             selected={isSelected}
                                             onClick={() => handleInputChange(field.key, option)}
                                         >
@@ -286,7 +292,7 @@ const CalculatorDetail = () => {
                                                 <input
                                                     type="radio"
                                                     name={field.key}
-                                                    value={option.value}
+                                                    value={optionKey}
                                                     checked={isSelected}
                                                     onChange={() => handleInputChange(field.key, option)}
                                                     style={{ cursor: 'pointer', width: '18px', height: '18px' }}
