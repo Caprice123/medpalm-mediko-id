@@ -7,10 +7,8 @@ import {
   SectionTitle,
   ClassificationsList,
   ClassificationItem as StyledClassificationItem,
-  ClassificationHeader,
   ClassificationOptionsList,
   ClassificationOptionItem as StyledClassificationOptionItem,
-  OptionHeader,
   ConditionsList,
   ConditionItem as StyledConditionItem,
   SubLabel,
@@ -119,18 +117,34 @@ const ClassificationOptionItem = memo(({
   onRemoveCondition,
   onConditionChange
 }) => {
-  const [localValue, setLocalValue] = useState(option.value)
-  const [localLabel, setLocalLabel] = useState(option.label)
+  const [localValue, setLocalValue] = useState(option.label || option.value)
 
   useEffect(() => {
-    setLocalValue(option.value)
-    setLocalLabel(option.label)
-  }, [option.value, option.label])
+    setLocalValue(option.label || option.value)
+  }, [option.label, option.value])
 
   return (
     <StyledClassificationOptionItem>
-      <OptionHeader onClick={() => onToggleOption(classIndex, optIndex)}>
-        <div style={{ flex: 1, display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      {/* Rule Header - Clickable to toggle */}
+      <div
+        onClick={() => onToggleOption(classIndex, optIndex)}
+        style={{
+          background: 'rgba(139, 92, 246, 0.05)',
+          padding: '0.75rem',
+          borderRadius: '6px',
+          marginBottom: isExpanded ? '0.75rem' : '0',
+          border: '1px solid rgba(139, 92, 246, 0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          cursor: 'pointer',
+          transition: 'all 0.2s'
+        }}
+      >
+        <div style={{ fontSize: '0.9rem', color: '#8b5cf6', fontWeight: 600 }}>
+          {isExpanded ? '▼' : '▶'}
+        </div>
+        <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
           <TextInput
             type="text"
             value={localValue}
@@ -140,26 +154,12 @@ const ClassificationOptionItem = memo(({
             }}
             onBlur={(e) => {
               e.stopPropagation()
-              onClassificationOptionChange(classIndex, optIndex, 'value', e.target.value)
+              const val = e.target.value
+              onClassificationOptionChange(classIndex, optIndex, 'value', val)
+              onClassificationOptionChange(classIndex, optIndex, 'label', val)
             }}
             onClick={(e) => e.stopPropagation()}
-            placeholder="Value (normal)"
-            style={{ flex: 1 }}
-          />
-          <TextInput
-            type="text"
-            value={localLabel}
-            onChange={(e) => {
-              e.stopPropagation()
-              setLocalLabel(e.target.value)
-            }}
-            onBlur={(e) => {
-              e.stopPropagation()
-              onClassificationOptionChange(classIndex, optIndex, 'label', e.target.value)
-            }}
-            onClick={(e) => e.stopPropagation()}
-            placeholder="Label (Normal)"
-            style={{ flex: 1 }}
+            placeholder="Underweight"
           />
         </div>
         <Button
@@ -170,59 +170,62 @@ const ClassificationOptionItem = memo(({
             onRemoveClassificationOption(classIndex, optIndex)
           }}
         >
-          Hapus
+          ✕
         </Button>
-      </OptionHeader>
+      </div>
 
-      {isExpanded && (
-        <div>
-          <SubLabel style={{ fontSize: '0.8rem' }}>
-            Kondisi untuk "{option.label || option.value || 'klasifikasi ini'}"
-          </SubLabel>
-          <HelpText style={{ marginTop: '0.25rem', marginBottom: '0.5rem', fontSize: '0.75rem' }}>
-            Kondisi terakhir otomatis tanpa logical operator (null). Gunakan AND jika semua harus terpenuhi, OR jika salah satu saja.
-          </HelpText>
+      {/* Conditions - Collapsible */}
+      {isExpanded && <div>
+        <SubLabel style={{ fontSize: '0.8rem' }}>Kondisi untuk "{option.label || option.value || 'klasifikasi ini'}"</SubLabel>
+        <HelpText style={{ marginTop: '0.25rem', marginBottom: '0.5rem', fontSize: '0.75rem' }}>
+          Kondisi terakhir otomatis tanpa logical operator (null). Gunakan AND jika semua harus terpenuhi, OR jika salah satu saja.
+        </HelpText>
 
-          <ConditionsList>
-            {option.conditions && option.conditions.map((condition, condIndex) => {
-              const isLastCondition = condIndex === option.conditions.length - 1
-              return (
-                <ConditionItem
-                  key={condIndex}
-                  condition={condition}
-                  classIndex={classIndex}
-                  optIndex={optIndex}
-                  condIndex={condIndex}
-                  isLastCondition={isLastCondition}
-                  onConditionChange={onConditionChange}
-                  onRemoveCondition={onRemoveCondition}
-                />
-              )
-            })}
-          </ConditionsList>
+        <ConditionsList>
+          {option.conditions && option.conditions.map((condition, condIndex) => {
+            const isLastCondition = condIndex === option.conditions.length - 1
+            return (
+              <ConditionItem
+                key={condIndex}
+                condition={condition}
+                classIndex={classIndex}
+                optIndex={optIndex}
+                condIndex={condIndex}
+                isLastCondition={isLastCondition}
+                onConditionChange={onConditionChange}
+                onRemoveCondition={onRemoveCondition}
+              />
+            )
+          })}
+        </ConditionsList>
 
-          {option.conditions && option.conditions.length > 0 && (
-            <ExampleBox style={{ marginTop: '0.5rem', fontSize: '0.7rem', background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
-              <strong style={{ color: '#8b5cf6' }}>Akan aktif jika:</strong> {option.conditions.map((c, i) => (
-                <span key={i}>
-                  {i > 0 && ` ${option.conditions[i - 1].logical_operator || ''} `}
-                  result {c.operator} {c.value}
-                </span>
-              ))}
-            </ExampleBox>
-          )}
+        {option.conditions && option.conditions.length > 0 && (
+          <ExampleBox style={{ marginTop: '0.5rem', fontSize: '0.7rem', background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+            <strong style={{ color: '#8b5cf6' }}>Akan aktif jika:</strong> {option.conditions.map((c, i) => (
+              <span key={i}>
+                {c.result_key} {c.operator} {c.value}
+                {i < option.conditions.length - 1 && <strong style={{ color: '#8b5cf6' }}> {c.logical_operator} </strong>}
+              </span>
+            ))}
+          </ExampleBox>
+        )}
 
-          <Button
-            variant="outline"
-            fullWidth
-            type="button"
-            onClick={() => onAddCondition(classIndex, optIndex)}
-            style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.5rem' }}
-          >
-            + Tambah Kondisi
-          </Button>
-        </div>
-      )}
+        <Button
+          variant="outline"
+          fullWidth
+          type="button"
+          onClick={() => onAddCondition(classIndex, optIndex)}
+          style={{
+            marginTop: '0.5rem',
+            fontSize: '0.75rem',
+            padding: '0.5rem',
+            background: 'rgba(139, 92, 246, 0.1)',
+            borderColor: '#8b5cf6'
+          }}
+        >
+          + Tambah Kondisi
+        </Button>
+      </div>}
     </StyledClassificationOptionItem>
   )
 })
@@ -233,7 +236,9 @@ ClassificationOptionItem.displayName = 'ClassificationOptionItem'
 const ClassificationItem = memo(({
   classification,
   classIndex,
+  isClassificationExpanded,
   expandedOptions,
+  onToggleClassification,
   onToggleOption,
   onClassificationChange,
   onRemoveClassification,
@@ -252,55 +257,87 @@ const ClassificationItem = memo(({
 
   return (
     <StyledClassificationItem>
-      <ClassificationHeader>
-        <TextInput
-          label="Nama Klasifikasi"
-          type="text"
-          value={localName}
-          onChange={(e) => setLocalName(e.target.value)}
-          onBlur={(e) => onClassificationChange(classIndex, 'name', e.target.value)}
-          placeholder="Contoh: Kategori BMI"
-          style={{ flex: 1 }}
-        />
+      {/* Classification Header - Purple Theme - Accordion */}
+      <div
+        onClick={() => onToggleClassification(classIndex)}
+        style={{
+          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1))',
+          padding: '0.75rem',
+          borderRadius: '8px',
+          marginBottom: isClassificationExpanded ? '1rem' : '0.5rem',
+          border: '2px solid rgba(139, 92, 246, 0.3)',
+          boxShadow: '0 2px 8px rgba(139, 92, 246, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          cursor: 'pointer',
+          transition: 'all 0.2s'
+        }}
+      >
+        <div style={{ fontSize: '1rem', color: '#7c3aed', fontWeight: 700 }}>
+          {isClassificationExpanded ? '▼' : '▶'}
+        </div>
+        <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
+          <TextInput
+            type="text"
+            value={localName}
+            onChange={(e) => {
+              e.stopPropagation()
+              setLocalName(e.target.value)
+            }}
+            onBlur={(e) => {
+              e.stopPropagation()
+              onClassificationChange(classIndex, 'name', e.target.value)
+            }}
+            onClick={(e) => e.stopPropagation()}
+            placeholder="Kategori BMI"
+            style={{ borderColor: 'rgba(139, 92, 246, 0.3)' }}
+          />
+        </div>
         <Button
           variant="danger"
           type="button"
-          onClick={() => onRemoveClassification(classIndex)}
+          onClick={(e) => {
+            e.stopPropagation()
+            onRemoveClassification(classIndex)
+          }}
         >
-          Hapus Klasifikasi
+          ✕
         </Button>
-      </ClassificationHeader>
+      </div>
 
-      <ClassificationOptionsList>
-        {classification.options && classification.options.map((option, optIndex) => {
-          const isExpanded = expandedOptions[`${classIndex}-${optIndex}`]
-          return (
-            <ClassificationOptionItem
-              key={optIndex}
-              option={option}
-              classIndex={classIndex}
-              optIndex={optIndex}
-              isExpanded={isExpanded}
-              onToggleOption={onToggleOption}
-              onClassificationOptionChange={onClassificationOptionChange}
-              onRemoveClassificationOption={onRemoveClassificationOption}
-              onAddCondition={onAddCondition}
-              onRemoveCondition={onRemoveCondition}
-              onConditionChange={onConditionChange}
-            />
-          )
-        })}
-      </ClassificationOptionsList>
-
-      <Button
-        variant="outline"
-        fullWidth
-        type="button"
-        onClick={() => onAddClassificationOption(classIndex)}
-        style={{ marginTop: '0.5rem' }}
-      >
-        + Tambah Option Klasifikasi
-      </Button>
+      {/* Rules Section - Collapsible */}
+      {isClassificationExpanded && <div>
+        <ClassificationOptionsList>
+          {classification.options && classification.options.map((option, optIndex) => {
+            const isExpanded = expandedOptions[`${classIndex}-${optIndex}`]
+            return (
+              <ClassificationOptionItem
+                key={optIndex}
+                option={option}
+                classIndex={classIndex}
+                optIndex={optIndex}
+                isExpanded={isExpanded}
+                onToggleOption={onToggleOption}
+                onClassificationOptionChange={onClassificationOptionChange}
+                onRemoveClassificationOption={onRemoveClassificationOption}
+                onAddCondition={onAddCondition}
+                onRemoveCondition={onRemoveCondition}
+                onConditionChange={onConditionChange}
+              />
+            )
+          })}
+        </ClassificationOptionsList>
+        <Button
+          variant="outline"
+          fullWidth
+          type="button"
+          onClick={() => onAddClassificationOption(classIndex)}
+          style={{ marginTop: '0.75rem' }}
+        >
+          + Tambah Jenis Klasifikasi
+        </Button>
+      </div>}
     </StyledClassificationItem>
   )
 })
@@ -326,34 +363,37 @@ const ClassificationSection = memo(({
 }) => {
   return (
     <ClassificationsSection>
-      <SectionTitle>Klasifikasi Hasil (Opsional)</SectionTitle>
-      <HelpText style={{ marginBottom: '1rem' }}>
-        Klasifikasi digunakan untuk memberikan interpretasi atau kategori berdasarkan hasil perhitungan.
-        Contoh: BMI 18.5-24.9 = "Normal", BMI &gt; 25 = "Overweight"
-      </HelpText>
+      <SectionTitle>Classifications</SectionTitle>
 
-      <ClassificationsList>
-        {classifications.map((classification, classIndex) => (
-          <ClassificationItem
-            key={classIndex}
-            classification={classification}
-            classIndex={classIndex}
-            expandedOptions={expandedOptions}
-            onToggleOption={onToggleOption}
-            onClassificationChange={onClassificationChange}
-            onRemoveClassification={onRemoveClassification}
-            onAddClassificationOption={onAddClassificationOption}
-            onRemoveClassificationOption={onRemoveClassificationOption}
-            onClassificationOptionChange={onClassificationOptionChange}
-            onAddCondition={onAddCondition}
-            onRemoveCondition={onRemoveCondition}
-            onConditionChange={onConditionChange}
-          />
-        ))}
-      </ClassificationsList>
+      {classifications && classifications.length > 0 && (
+        <ClassificationsList>
+          {classifications.map((classification, classIndex) => {
+            const isClassificationExpanded = expandedClassifications[classIndex]
+            return (
+              <ClassificationItem
+                key={classIndex}
+                classification={classification}
+                classIndex={classIndex}
+                isClassificationExpanded={isClassificationExpanded}
+                expandedOptions={expandedOptions}
+                onToggleClassification={onToggleClassification}
+                onToggleOption={onToggleOption}
+                onClassificationChange={onClassificationChange}
+                onRemoveClassification={onRemoveClassification}
+                onAddClassificationOption={onAddClassificationOption}
+                onRemoveClassificationOption={onRemoveClassificationOption}
+                onClassificationOptionChange={onClassificationOptionChange}
+                onAddCondition={onAddCondition}
+                onRemoveCondition={onRemoveCondition}
+                onConditionChange={onConditionChange}
+              />
+            )
+          })}
+        </ClassificationsList>
+      )}
 
       <Button variant="outline" fullWidth type="button" onClick={onAddClassification}>
-        + Tambah Klasifikasi Baru
+        + Tambah Grup Klasifikasi
       </Button>
     </ClassificationsSection>
   )
