@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import {
@@ -8,17 +8,22 @@ import {
 } from '../CalculatorModal.styles'
 
 const FormulaSection = memo(({
-  localFormula,
-  localResultLabel,
-  localResultUnit,
+  formula,
+  resultLabel,
+  resultUnit,
   errors,
-  onFormulaChange,
-  onFormulaBlur,
-  onResultLabelChange,
-  onResultLabelBlur,
-  onResultUnitChange,
-  onResultUnitBlur
+  onFieldChange
 }) => {
+  const [localFormula, setLocalFormula] = useState(formula)
+  const [localResultLabel, setLocalResultLabel] = useState(resultLabel)
+  const [localResultUnit, setLocalResultUnit] = useState(resultUnit)
+
+  useEffect(() => {
+    setLocalFormula(formula)
+    setLocalResultLabel(resultLabel)
+    setLocalResultUnit(resultUnit)
+  }, [formula, resultLabel, resultUnit])
+
   return (
     <>
       <FormGroup>
@@ -27,8 +32,8 @@ const FormulaSection = memo(({
           required
           name="formula"
           value={localFormula}
-          onChange={onFormulaChange}
-          onBlur={onFormulaBlur}
+          onChange={(e) => setLocalFormula(e.target.value)}
+          onBlur={onFieldChange}
           placeholder="weight / ((height/100) * (height/100))"
           style={{ fontFamily: 'monospace', fontSize: '13px', minHeight: '100px' }}
           error={errors.formula}
@@ -52,8 +57,8 @@ const FormulaSection = memo(({
             type="text"
             name="result_label"
             value={localResultLabel}
-            onChange={onResultLabelChange}
-            onBlur={onResultLabelBlur}
+            onChange={(e) => setLocalResultLabel(e.target.value)}
+            onBlur={onFieldChange}
             placeholder="Contoh: BMI Anda, Dosis Obat"
             error={errors.result_label}
           />
@@ -65,8 +70,8 @@ const FormulaSection = memo(({
             type="text"
             name="result_unit"
             value={localResultUnit}
-            onChange={onResultUnitChange}
-            onBlur={onResultUnitBlur}
+            onChange={(e) => setLocalResultUnit(e.target.value)}
+            onBlur={onFieldChange}
             placeholder="Contoh: kg/m², mg, ml"
             hint="Opsional - Satuan untuk hasil"
           />

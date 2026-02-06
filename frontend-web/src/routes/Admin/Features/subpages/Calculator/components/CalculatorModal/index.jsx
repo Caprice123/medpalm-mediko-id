@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useCalculatorModal } from './useCalculatorModal'
@@ -70,13 +70,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [expandedOptions, setExpandedOptions] = useState({})
   const [expandedClassifications, setExpandedClassifications] = useState({})
 
-  // Local state for top-level inputs to prevent lag
-  const [localTitle, setLocalTitle] = useState('')
-  const [localDescription, setLocalDescription] = useState('')
-  const [localFormula, setLocalFormula] = useState('')
-  const [localResultLabel, setLocalResultLabel] = useState('')
-  const [localResultUnit, setLocalResultUnit] = useState('')
-
   // Setup drag and drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -145,24 +138,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   // Memoize field IDs to prevent recreating array on every render
   const fieldIds = useMemo(() => formData.fields.map(f => f._id), [formData.fields])
 
-  // Sync local state with formData
-  useEffect(() => {
-    setLocalTitle(formData.title)
-    setLocalDescription(formData.description)
-    setLocalFormula(formData.formula)
-    setLocalResultLabel(formData.result_label)
-    setLocalResultUnit(formData.result_unit)
-  }, [formData.title, formData.description, formData.formula, formData.result_label, formData.result_unit])
-
-  // Memoized handlers for BasicInfoSection
-  const handleTitleChange = useCallback((e) => setLocalTitle(e.target.value), [])
-  const handleDescriptionChange = useCallback((e) => setLocalDescription(e.target.value), [])
-
-  // Memoized handlers for FormulaSection
-  const handleFormulaChange = useCallback((e) => setLocalFormula(e.target.value), [])
-  const handleResultLabelChange = useCallback((e) => setLocalResultLabel(e.target.value), [])
-  const handleResultUnitChange = useCallback((e) => setLocalResultUnit(e.target.value), [])
-
   // Memoized handlers for ClinicalReferencesSection
   const handleReferenceChange = useCallback((index, value) => {
     setFormData(prev => {
@@ -203,30 +178,22 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
             <form onSubmit={handleSubmit}>
               {/* Step 1: Basic Information */}
               <BasicInfoSection
-                localTitle={localTitle}
-                localDescription={localDescription}
+                title={formData.title}
+                description={formData.description}
                 selectedTags={selectedTags}
                 categoryTags={categoryTags}
                 errors={errors}
-                onTitleChange={handleTitleChange}
-                onTitleBlur={handleFieldChange}
-                onDescriptionChange={handleDescriptionChange}
-                onDescriptionBlur={handleFieldChange}
+                onFieldChange={handleFieldChange}
                 onTagsChange={handleTagsChange}
               />
 
               {/* Step 2: Result Configuration & Formula */}
               <FormulaSection
-                localFormula={localFormula}
-                localResultLabel={localResultLabel}
-                localResultUnit={localResultUnit}
+                formula={formData.formula}
+                resultLabel={formData.result_label}
+                resultUnit={formData.result_unit}
                 errors={errors}
-                onFormulaChange={handleFormulaChange}
-                onFormulaBlur={handleFieldChange}
-                onResultLabelChange={handleResultLabelChange}
-                onResultLabelBlur={handleFieldChange}
-                onResultUnitChange={handleResultUnitChange}
-                onResultUnitBlur={handleFieldChange}
+                onFieldChange={handleFieldChange}
               />
 
               {/* Step 3: Input Fields */}
@@ -271,7 +238,6 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                   + Tambah Field Baru
                 </Button>
               </FieldsSection>
-
 
               {/* Step 5: Classifications (Optional) */}
               <ClassificationsSection>

@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import TagSelector from '@components/common/TagSelector'
@@ -8,17 +8,22 @@ import {
 } from '../CalculatorModal.styles'
 
 const BasicInfoSection = memo(({
-  localTitle,
-  localDescription,
+  title,
+  description,
   selectedTags,
   categoryTags,
   errors,
-  onTitleChange,
-  onTitleBlur,
-  onDescriptionChange,
-  onDescriptionBlur,
+  onFieldChange,
   onTagsChange
 }) => {
+  const [localTitle, setLocalTitle] = useState(title)
+  const [localDescription, setLocalDescription] = useState(description)
+
+  useEffect(() => {
+    setLocalTitle(title)
+    setLocalDescription(description)
+  }, [title, description])
+
   return (
     <>
       <FormGroup>
@@ -28,8 +33,8 @@ const BasicInfoSection = memo(({
           type="text"
           name="title"
           value={localTitle}
-          onChange={onTitleChange}
-          onBlur={onTitleBlur}
+          onChange={(e) => setLocalTitle(e.target.value)}
+          onBlur={onFieldChange}
           placeholder="Contoh: Kalkulator BMI, Kalkulator Dosis Obat"
           error={errors.title}
         />
@@ -40,8 +45,8 @@ const BasicInfoSection = memo(({
           label="Deskripsi"
           name="description"
           value={localDescription}
-          onChange={onDescriptionChange}
-          onBlur={onDescriptionBlur}
+          onChange={(e) => setLocalDescription(e.target.value)}
+          onBlur={onFieldChange}
           placeholder="Jelaskan fungsi kalkulator ini dan untuk apa digunakan..."
           hint="Opsional - Deskripsi singkat tentang kalkulator"
         />
