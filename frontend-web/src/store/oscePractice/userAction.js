@@ -1,4 +1,5 @@
 import { actions } from '@store/oscePractice/reducer'
+import { actions as pricingActions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, patchWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
@@ -553,6 +554,12 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
             const data = JSON.parse(line.slice(6))
 
             if (data.type === 'chunk') {
+              // Check if first chunk contains userQuota and update credit balance
+              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
+                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+              }
+
               // Only add chunk if user hasn't stopped the stream
               if (!userStoppedStreamFlag) {
                 // Handle both formats: data.content (old) and data.data.content (new Skripsi-style)

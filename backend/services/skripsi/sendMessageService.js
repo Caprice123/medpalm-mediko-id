@@ -175,6 +175,10 @@ export class SendMessageService extends BaseService {
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 1
 
+    // Track if first chunk has been sent (for credit deduction)
+    let isFirstChunk = true
+    let newBalance = null
+
     try {
       // CREATE MESSAGE RECORDS FIRST (before streaming)
       userMessage = await prisma.skripsi_messages.create({
@@ -263,14 +267,49 @@ export class SendMessageService extends BaseService {
             const chunkToSend = accumulatedChunk.substring(0, CHARS_PER_CHUNK)
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
+            // Deduct credits on FIRST chunk
+            if (isFirstChunk && messageCost > 0) {
+              const userCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+
+              newBalance = userCredit.balance - messageCost
+
+              await prisma.user_credits.update({
+                where: { user_id: userId },
+                data: { balance: newBalance }
+              })
+
+              await prisma.credit_transactions.create({
+                data: {
+                  user_id: userId,
+                  user_credit_id: userCredit.id,
+                  type: 'deduction',
+                  amount: -messageCost,
+                  balance_before: userCredit.balance,
+                  balance_after: newBalance,
+                  description: `Skripsi Builder - 1 pesan`,
+                  payment_status: 'completed'
+                }
+              })
+            }
+
             // Try to send chunk to client
             try {
-              onStream({
+              const chunkData = {
                 type: 'chunk',
                 data: {
                   content: chunkToSend
                 }
-              }, () => {
+              }
+
+              // Include userQuota in first chunk
+              if (isFirstChunk && newBalance !== null) {
+                chunkData.data.userQuota = { balance: newBalance }
+                isFirstChunk = false // Mark first chunk as sent
+              }
+
+              onStream(chunkData, () => {
                 // Only add to sentContentToClient if callback fires (client still connected)
                 sentContentToClient += chunkToSend
               })
@@ -363,38 +402,7 @@ export class SendMessageService extends BaseService {
 
         // Deduct credits if cost > 0
         if (messageCost > 0) {
-          // Get full user credit record before deduction
-          const userCredit = await prisma.user_credits.findUnique({
-            where: { user_id: userId }
-          })
-
-          // Deduct credits
-          await prisma.user_credits.update({
-            where: { user_id: userId },
-            data: {
-              balance: { decrement: messageCost }
-            }
-          })
-
-          // Get updated balance
-          const creditAfter = await prisma.user_credits.findUnique({
-            where: { user_id: userId },
-            select: { balance: true }
-          })
-
-          // Log credit transaction
-          await prisma.credit_transactions.create({
-            data: {
-              user_id: userId,
-              user_credit_id: userCredit.id,
-              amount: -messageCost,
-              type: 'deduction',
-              description: `Skripsi Builder - Message sent`,
-              balance_before: userCredit.balance,
-              balance_after: creditAfter.balance,
-              payment_status: 'completed'
-            }
-          })
+          // Credits already deducted when first chunk was sent
         }
 
         // Update tab and set timestamps
@@ -454,6 +462,10 @@ export class SendMessageService extends BaseService {
 
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 1
+
+    // Track if first chunk has been sent (for credit deduction)
+    let isFirstChunk = true
+    let newBalance = null
 
     try {
       // CREATE MESSAGE RECORDS FIRST (before streaming)
@@ -530,14 +542,49 @@ export class SendMessageService extends BaseService {
             const chunkToSend = accumulatedChunk.substring(0, CHARS_PER_CHUNK)
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
+            // Deduct credits on FIRST chunk
+            if (isFirstChunk && messageCost > 0) {
+              const userCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+
+              newBalance = userCredit.balance - messageCost
+
+              await prisma.user_credits.update({
+                where: { user_id: userId },
+                data: { balance: newBalance }
+              })
+
+              await prisma.credit_transactions.create({
+                data: {
+                  user_id: userId,
+                  user_credit_id: userCredit.id,
+                  type: 'deduction',
+                  amount: -messageCost,
+                  balance_before: userCredit.balance,
+                  balance_after: newBalance,
+                  description: `Skripsi Builder - 1 pesan`,
+                  payment_status: 'completed'
+                }
+              })
+            }
+
             // Try to send chunk to client
             try {
-              onStream({
+              const chunkData = {
                 type: 'chunk',
                 data: {
                   content: chunkToSend
                 }
-              }, () => {
+              }
+
+              // Include userQuota in first chunk
+              if (isFirstChunk && newBalance !== null) {
+                chunkData.data.userQuota = { balance: newBalance }
+                isFirstChunk = false // Mark first chunk as sent
+              }
+
+              onStream(chunkData, () => {
                 // Only add to sentContentToClient if callback fires (client still connected)
                 sentContentToClient += chunkToSend
               })
@@ -604,38 +651,7 @@ export class SendMessageService extends BaseService {
 
         // Deduct credits if cost > 0
         if (messageCost > 0) {
-          // Get full user credit record before deduction
-          const userCredit = await prisma.user_credits.findUnique({
-            where: { user_id: userId }
-          })
-
-          // Deduct credits
-          await prisma.user_credits.update({
-            where: { user_id: userId },
-            data: {
-              balance: { decrement: messageCost }
-            }
-          })
-
-          // Get updated balance
-          const creditAfter = await prisma.user_credits.findUnique({
-            where: { user_id: userId },
-            select: { balance: true }
-          })
-
-          // Log credit transaction
-          await prisma.credit_transactions.create({
-            data: {
-              user_id: userId,
-              user_credit_id: userCredit.id,
-              amount: -messageCost,
-              type: 'deduction',
-              description: `Skripsi Builder - Message sent`,
-              balance_before: userCredit.balance,
-              balance_after: creditAfter.balance,
-              payment_status: 'completed'
-            }
-          })
+          // Credits already deducted when first chunk was sent
         }
 
         // Update tab and set timestamps

@@ -1,5 +1,6 @@
 import { actions } from '@store/skripsi/reducer'
 import { actions as commonActions } from '@store/common/reducer'
+import { actions as pricingActions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
@@ -634,6 +635,12 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
               }))
               console.log('🆔 Stored real message IDs:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
             } else if (data.type === 'chunk') {
+              // Check if first chunk contains userQuota and update credit balance
+              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
+                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+              }
+
               // Only add chunk if user hasn't stopped the stream
               const state = getState()
               const streamingState = state.skripsi.streamingStateByTab[tabId]

@@ -184,7 +184,7 @@ export class SendMessageService extends BaseService {
         }
       })
 
-      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      // SEND MESSAGE IDs to frontend (quota will be sent when first chunk arrives)
       try {
         onStream({
           type: 'started',
@@ -218,6 +218,10 @@ export class SendMessageService extends BaseService {
       throw dbError
     }
 
+    // Track if first chunk has been sent (for credit deduction)
+    let isFirstChunk = true
+    let newBalance = null
+
     try {
       // Process Gemini stream chunks with pacing
       for await (const chunk of stream) {
@@ -248,16 +252,50 @@ export class SendMessageService extends BaseService {
             const chunkToSend = accumulatedChunk.substring(0, CHARS_PER_CHUNK)
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
+            // Deduct credits on FIRST chunk
+            if (isFirstChunk && requiresCredits && creditsUsed > 0) {
+              const userCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+
+              newBalance = userCredit.balance - creditsUsed
+
+              await prisma.user_credits.update({
+                where: { user_id: userId },
+                data: { balance: newBalance }
+              })
+
+              await prisma.credit_transactions.create({
+                data: {
+                  user_id: userId,
+                  user_credit_id: userCredit.id,
+                  type: 'deduction',
+                  amount: -creditsUsed,
+                  balance_before: userCredit.balance,
+                  balance_after: newBalance,
+                  description: `Chatbot ${mode} mode - 1 pesan`,
+                  payment_status: 'completed'
+                }
+              })
+            }
+
             // Try to send chunk to client
             try {
                 // Only add to sentContentToClient AFTER successfully sending
-                
-                onStream({
+                const chunkData = {
                     type: 'chunk',
                     data: {
                         content: chunkToSend
                     }
-                }, () => {
+                }
+
+                // Include userQuota in first chunk
+                if (isFirstChunk && newBalance !== null) {
+                  chunkData.data.userQuota = { balance: newBalance }
+                  isFirstChunk = false // Mark first chunk as sent
+                }
+
+                onStream(chunkData, () => {
                     sentContentToClient += chunkToSend
                     console.log(sentContentToClient)
                     console.log(chunkToSend)
@@ -340,32 +378,7 @@ export class SendMessageService extends BaseService {
         sources = filteredSources
       }
 
-      // Deduct credits from user and create transaction
-      if (requiresCredits && creditsUsed > 0) {
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
-
-        const newBalance = userCredit.balance - creditsUsed
-
-        await prisma.user_credits.update({
-          where: { user_id: userId },
-          data: { balance: newBalance }
-        })
-
-        await prisma.credit_transactions.create({
-          data: {
-            user_id: userId,
-            user_credit_id: userCredit.id,
-            type: 'deduction',
-            amount: -creditsUsed,
-            balance_before: userCredit.balance,
-            balance_after: newBalance,
-            description: `Chatbot ${mode} mode - 1 pesan`,
-            payment_status: 'completed'
-          }
-        })
-      }
+      // Credits already deducted at the start of streaming
 
       // Update conversation timestamp
       await prisma.chatbot_conversations.update({
@@ -471,7 +484,35 @@ export class SendMessageService extends BaseService {
         }
       })
 
-      // SEND MESSAGE IDs IMMEDIATELY to frontend
+      // Deduct credits IMMEDIATELY at start of streaming
+      let newBalance = null
+      if (requiresCredits && creditsUsed > 0) {
+        const userCredit = await prisma.user_credits.findUnique({
+          where: { user_id: userId }
+        })
+
+        newBalance = userCredit.balance - creditsUsed
+
+        await prisma.user_credits.update({
+          where: { user_id: userId },
+          data: { balance: newBalance }
+        })
+
+        await prisma.credit_transactions.create({
+          data: {
+            user_id: userId,
+            user_credit_id: userCredit.id,
+            type: 'deduction',
+            amount: -creditsUsed,
+            balance_before: userCredit.balance,
+            balance_after: newBalance,
+            description: `Chatbot ${mode} mode - 1 pesan`,
+            payment_status: 'completed'
+          }
+        })
+      }
+
+      // SEND MESSAGE IDs IMMEDIATELY to frontend with updated quota
       try {
         onStream({
           type: 'started',
@@ -487,9 +528,10 @@ export class SendMessageService extends BaseService {
                 senderType: aiMessage.sender_type,
                 modeType: aiMessage.mode_type,
                 content: aiMessage.content,
-                sources: sources,
+                sources: [],
                 createdAt: aiMessage.created_at.toISOString()
-            }
+            },
+            userQuota: newBalance !== null ? { balance: newBalance } : null
           }
         })
         console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
@@ -546,6 +588,10 @@ export class SendMessageService extends BaseService {
       return filteredText
     }
 
+    // Track if first chunk has been sent (for credit deduction)
+    let isFirstChunk = true
+    let newBalance = null
+
     try {
       // Process stream chunks with pacing
       for await (const chunk of stream) {
@@ -579,14 +625,49 @@ export class SendMessageService extends BaseService {
             const chunkToSend = accumulatedChunk.substring(0, CHARS_PER_CHUNK)
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
+            // Deduct credits on FIRST chunk
+            if (isFirstChunk && requiresCredits && creditsUsed > 0) {
+              const userCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+
+              newBalance = userCredit.balance - creditsUsed
+
+              await prisma.user_credits.update({
+                where: { user_id: userId },
+                data: { balance: newBalance }
+              })
+
+              await prisma.credit_transactions.create({
+                data: {
+                  user_id: userId,
+                  user_credit_id: userCredit.id,
+                  type: 'deduction',
+                  amount: -creditsUsed,
+                  balance_before: userCredit.balance,
+                  balance_after: newBalance,
+                  description: `Chatbot ${mode} mode - 1 pesan`,
+                  payment_status: 'completed'
+                }
+              })
+            }
+
             // Try to send chunk to client
             try {
-              onStream({
+              const chunkData = {
                 type: 'chunk',
                 data: {
                   content: chunkToSend
                 }
-              }, () => {
+              }
+
+              // Include userQuota in first chunk
+              if (isFirstChunk && newBalance !== null) {
+                chunkData.data.userQuota = { balance: newBalance }
+                isFirstChunk = false // Mark first chunk as sent
+              }
+
+              onStream(chunkData, () => {
                   sentContentToClient += chunkToSend
               })
 
@@ -754,32 +835,7 @@ export class SendMessageService extends BaseService {
         })))
       }
 
-      // Deduct credits from user and create transaction
-      if (requiresCredits && creditsUsed > 0) {
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
-
-        const newBalance = userCredit.balance - creditsUsed
-
-        await prisma.user_credits.update({
-          where: { user_id: userId },
-          data: { balance: newBalance }
-        })
-
-        await prisma.credit_transactions.create({
-          data: {
-            user_id: userId,
-            user_credit_id: userCredit.id,
-            type: 'deduction',
-            amount: -creditsUsed,
-            balance_before: userCredit.balance,
-            balance_after: newBalance,
-            description: `Chatbot ${mode} mode - 1 pesan`,
-            payment_status: 'completed'
-          }
-        })
-      }
+      // Credits already deducted at the start of streaming
 
       // Update conversation timestamp
       await prisma.chatbot_conversations.update({
