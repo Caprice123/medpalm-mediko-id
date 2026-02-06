@@ -10,11 +10,14 @@ import {
   FormattingToolbar,
 } from "@blocknote/react";
 import { useEffect, useRef, useState } from 'react'
+import { PhotoProvider } from 'react-photo-view'
+import 'react-photo-view/dist/react-photo-view.css'
 import { EditorContainer, EditorWrapper, ModeToggle, ModeButton } from './BlockNoteEditor.styles'
 import { createEmbedBlock } from './customBlocks/EmbedBlock'
 import { insertEmbed } from './customBlocks/EmbedSlashMenu'
 import { CropImageButton } from './CropImageButton'
 import ImageCropModal from './ImageCropModal'
+import { PhotoViewerToolbar } from './PhotoViewerToolbar'
 import { filterSuggestionItems } from "@blocknote/core/extensions";
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 
@@ -22,6 +25,9 @@ import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
   const [cropModalData, setCropModalData] = useState(null) // { imageUrl, blockId }
+  const [photoIndex, setPhotoIndex] = useState(0)
+  const [photoVisible, setPhotoVisible] = useState(false)
+  const [images, setImages] = useState([])
 
   const schema = BlockNoteSchema.create({
     blockSpecs: {
@@ -98,6 +104,43 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
     })
   }
 
+  // Handle image click for preview (view-only mode)
+  const handleEditorClick = (e) => {
+    if (!editable && e.target.tagName === 'IMG') {
+      const clickedSrc = e.target.src
+
+      // Get all images from editor
+      const allImages = editor.document
+        .filter(block => block.type === 'image' && block.props.url)
+        .map(block => block.props.url)
+
+      setImages(allImages)
+      const clickedIndex = allImages.indexOf(clickedSrc)
+      setPhotoIndex(clickedIndex >= 0 ? clickedIndex : 0)
+      setPhotoVisible(true)
+    }
+  }
+
+  // Handle image download
+  const handleDownload = async (imageUrl) => {
+    try {
+      const response = await fetch(imageUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `image-${Date.now()}.jpg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download image:', error)
+      // Fallback to opening in new tab
+      window.open(imageUrl, '_blank')
+    }
+  }
+
   // Update editor content when initialContent changes externally
   useEffect(() => {
     if (!editor || !initialContent) return
@@ -157,65 +200,81 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
 
   return (
     <>
-      <EditorContainer>
-        {showModeToggle && (
-          <ModeToggle>
-            <ModeButton
-              $active={viewMode === 'structured'}
-              onClick={() => setViewMode('structured')}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-              </svg>
-              Structured
-            </ModeButton>
-            <ModeButton
-              $active={viewMode === 'aesthetic'}
-              onClick={() => setViewMode('aesthetic')}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
-              Aesthetic
-            </ModeButton>
-          </ModeToggle>
+      <PhotoProvider
+        visible={photoVisible}
+        onVisibleChange={setPhotoVisible}
+        images={images.map(src => ({ src }))}
+        index={photoIndex}
+        onIndexChange={setPhotoIndex}
+        maskOpacity={0.9}
+        toolbarRender={(props) => (
+          <PhotoViewerToolbar {...props} onDownload={handleDownload} />
         )}
-
-        <EditorWrapper $isStructured={viewMode === 'structured'}>
-          <BlockNoteView
-              editor={editor}
-              theme={"black"}
-              editable={editable}
-              formattingToolbar={false}
-              onKeyDown={(e) => {
-                  if (e.key === 'Tab') {
-                  e.stopPropagation()
-                  }
-              }}
+      >
+        <EditorContainer>
+          {showModeToggle && (
+            <ModeToggle>
+              <ModeButton
+                $active={viewMode === 'structured'}
+                onClick={() => setViewMode('structured')}
               >
-              <SuggestionMenuController
-                  triggerCharacter="/"
-                  getItems={async (query) =>
-                  filterSuggestionItems(slashItems, query)
-                  }
-              />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+                Structured
+              </ModeButton>
+              <ModeButton
+                $active={viewMode === 'aesthetic'}
+                onClick={() => setViewMode('aesthetic')}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Aesthetic
+              </ModeButton>
+            </ModeToggle>
+          )}
 
-              <FormattingToolbarController
-                formattingToolbar={() => (
-                  <FormattingToolbar>
-                    {getFormattingToolbarItems()}
-                    <CropImageButton onCropClick={handleCropClick} />
-                  </FormattingToolbar>
-                )}
-              />
-              </BlockNoteView>
+          <EditorWrapper
+            $isStructured={viewMode === 'structured'}
+            onClick={handleEditorClick}
+            data-editable={editable}
+          >
+            <BlockNoteView
+                editor={editor}
+                theme={"black"}
+                editable={editable}
+                formattingToolbar={false}
+                onKeyDown={(e) => {
+                    if (e.key === 'Tab') {
+                    e.stopPropagation()
+                    }
+                }}
+                >
+                <SuggestionMenuController
+                    triggerCharacter="/"
+                    getItems={async (query) =>
+                    filterSuggestionItems(slashItems, query)
+                    }
+                />
 
-        </EditorWrapper>
-      </EditorContainer>
+                <FormattingToolbarController
+                  formattingToolbar={() => (
+                    <FormattingToolbar>
+                      {getFormattingToolbarItems()}
+                      {editable && onImageUpload && <CropImageButton onCropClick={handleCropClick} />}
+                    </FormattingToolbar>
+                  )}
+                />
+                </BlockNoteView>
+
+          </EditorWrapper>
+        </EditorContainer>
+      </PhotoProvider>
 
       {cropModalData && (
         <ImageCropModal

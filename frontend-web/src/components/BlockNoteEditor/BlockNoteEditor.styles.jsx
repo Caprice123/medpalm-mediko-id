@@ -152,4 +152,16 @@ export const EditorWrapper = styled.div`
     max-height: 300px !important;
     overflow-y: auto !important;
   }
+
+  /* Make images clickable and add hover effect in view-only mode */
+  &[data-editable="false"] img {
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    border-radius: 4px;
+
+    &:hover {
+      opacity: 0.85;
+      transform: scale(1.01);
+    }
+  }
 `
