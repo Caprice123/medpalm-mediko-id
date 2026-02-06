@@ -1,21 +1,28 @@
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
-import { useCreateBlockNote } from "@blocknote/react";
+import {
+  useCreateBlockNote,
+  SuggestionMenuController,
+  getDefaultReactSlashMenuItems,
+  FormattingToolbarController,
+  getFormattingToolbarItems,
+  FormattingToolbar,
+} from "@blocknote/react";
 import { useEffect, useRef, useState } from 'react'
 import { EditorContainer, EditorWrapper, ModeToggle, ModeButton } from './BlockNoteEditor.styles'
 import { createEmbedBlock } from './customBlocks/EmbedBlock'
 import { insertEmbed } from './customBlocks/EmbedSlashMenu'
-import {
-  SuggestionMenuController,
-  getDefaultReactSlashMenuItems,
-} from "@blocknote/react";
+import { CropImageButton } from './CropImageButton'
+import ImageCropModal from './ImageCropModal'
 import { filterSuggestionItems } from "@blocknote/core/extensions";
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 
 
 function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
+  const [cropModalData, setCropModalData] = useState(null) // { imageUrl, blockId }
+
   const schema = BlockNoteSchema.create({
     blockSpecs: {
         ...defaultBlockSpecs,
@@ -57,6 +64,39 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
 
   const previousContentRef = useRef(null)
   const isInternalUpdateRef = useRef(false) // Track if update is from user typing
+
+  // Handle crop click for existing images
+  const handleCropClick = async (imageBlock) => {
+    if (!imageBlock || !imageBlock.props.url || !onImageUpload) return
+
+    setCropModalData({
+      imageUrl: imageBlock.props.url,
+      blockId: imageBlock.id,
+      onSave: async (croppedFile) => {
+        try {
+          // Upload the cropped image
+          const newUrl = await onImageUpload(croppedFile)
+
+          // Update the block with the new URL
+          editor.updateBlock(imageBlock.id, {
+            type: "image",
+            props: {
+              ...imageBlock.props,
+              url: newUrl
+            }
+          })
+
+          setCropModalData(null)
+        } catch (error) {
+          console.error('Failed to upload cropped image:', error)
+          alert('Failed to upload cropped image. Please try again.')
+        }
+      },
+      onCancel: () => {
+        setCropModalData(null)
+      }
+    })
+  }
 
   // Update editor content when initialContent changes externally
   useEffect(() => {
@@ -116,55 +156,75 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
   }
 
   return (
-    <EditorContainer>
-      {showModeToggle && (
-        <ModeToggle>
-          <ModeButton
-            $active={viewMode === 'structured'}
-            onClick={() => setViewMode('structured')}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-            Structured
-          </ModeButton>
-          <ModeButton
-            $active={viewMode === 'aesthetic'}
-            onClick={() => setViewMode('aesthetic')}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            Aesthetic
-          </ModeButton>
-        </ModeToggle>
-      )}
-
-      <EditorWrapper $isStructured={viewMode === 'structured'}>
-        <BlockNoteView
-            editor={editor}
-            theme={"black"}
-            editable={editable}
-            onKeyDown={(e) => {
-                if (e.key === 'Tab') {
-                e.stopPropagation()
-                }
-            }}
+    <>
+      <EditorContainer>
+        {showModeToggle && (
+          <ModeToggle>
+            <ModeButton
+              $active={viewMode === 'structured'}
+              onClick={() => setViewMode('structured')}
             >
-            <SuggestionMenuController
-                triggerCharacter="/"
-                getItems={async (query) =>
-                filterSuggestionItems(slashItems, query)
-                }
-            />
-            </BlockNoteView>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Structured
+            </ModeButton>
+            <ModeButton
+              $active={viewMode === 'aesthetic'}
+              onClick={() => setViewMode('aesthetic')}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+              Aesthetic
+            </ModeButton>
+          </ModeToggle>
+        )}
 
-      </EditorWrapper>
-    </EditorContainer>
+        <EditorWrapper $isStructured={viewMode === 'structured'}>
+          <BlockNoteView
+              editor={editor}
+              theme={"black"}
+              editable={editable}
+              formattingToolbar={false}
+              onKeyDown={(e) => {
+                  if (e.key === 'Tab') {
+                  e.stopPropagation()
+                  }
+              }}
+              >
+              <SuggestionMenuController
+                  triggerCharacter="/"
+                  getItems={async (query) =>
+                  filterSuggestionItems(slashItems, query)
+                  }
+              />
+
+              <FormattingToolbarController
+                formattingToolbar={() => (
+                  <FormattingToolbar>
+                    {getFormattingToolbarItems()}
+                    <CropImageButton onCropClick={handleCropClick} />
+                  </FormattingToolbar>
+                )}
+              />
+              </BlockNoteView>
+
+        </EditorWrapper>
+      </EditorContainer>
+
+      {cropModalData && (
+        <ImageCropModal
+          imageUrl={cropModalData.imageUrl}
+          onSave={cropModalData.onSave}
+          onCancel={cropModalData.onCancel}
+        />
+      )}
+    </>
   )
 }
 
