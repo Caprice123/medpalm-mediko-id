@@ -146,4 +146,10 @@ export const EditorWrapper = styled.div`
       font-size: 0.75rem;
     }
   `}
+
+  /* Fix background color dropdown height */
+  .bn-color-picker-dropdown {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
 `
