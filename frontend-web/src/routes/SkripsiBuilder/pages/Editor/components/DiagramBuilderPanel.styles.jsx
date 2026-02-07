@@ -1,28 +1,15 @@
 import styled from 'styled-components';
 
 export const DiagramBuilderContainer = styled.div`
-  width: 50%;
-  min-width: 500px;
-  max-width: 900px;
+  width: 100%;
+  height: 100%;
   background: white;
-  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
-  @media (max-width: 1200px) {
-    width: 45%;
-    min-width: 450px;
-  }
-
-  @media (max-width: 1024px) {
-    width: 400px;
-    min-width: 400px;
-  }
-
   @media (max-width: 768px) {
     width: 100%;
-    min-width: 100%;
     height: ${props => props.$activeSubTab === 'preview' ? '600px' : '100vh'};
     flex-shrink: 0;
     border-right: none;

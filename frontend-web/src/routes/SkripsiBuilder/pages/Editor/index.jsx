@@ -6,6 +6,7 @@ import { fetchSet, switchTab, saveSetContent } from '@store/skripsi/action'
 import { upload } from '@store/common/action'
 import { exportBlocksToDocx } from '@components/BlockNoteEditor/exportToDocx'
 import { blocksToHTML, htmlToBlocks } from '@utils/blockNoteConversion'
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { Container, EditorArea, LoadingState, Wrapper } from './Editor.styles'
 import TopBar from './components/TopBar'
 import TabBar from './components/TabBar'
@@ -36,6 +37,29 @@ const SkripsiEditor = () => {
   const [isLoadingContent, setIsLoadingContent] = useState(false)
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
   const [isSavingBeforeLeave, setIsSavingBeforeLeave] = useState(false)
+
+  // Detect mobile for responsive layout
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  // Get initial panel size from localStorage
+  const getInitialPanelSize = () => {
+    try {
+      const saved = localStorage.getItem('skripsi-chat-panel-width')
+      return saved ? parseFloat(saved) : 400
+    } catch (error) {
+      return 400
+    }
+  }
+
+  const [chatPanelSize, _] = useState(getInitialPanelSize)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Image upload handler
   const handleImageUpload = useCallback(async (file) => {
@@ -225,27 +249,84 @@ const SkripsiEditor = () => {
         />
 
         <EditorArea>
-            {/* Keep both panels mounted to preserve state, toggle with CSS */}
-            <DiagramBuilderPanel
-            currentTab={currentTab}
-            style={{ display: currentTab?.tabType === 'diagram_builder' ? 'flex' : 'none' }}
-            />
+          {isMobile ? (
+            // Mobile: Stack vertically without resizable panels
+            <>
+              {/* Keep both panels mounted to preserve state, toggle with CSS */}
+              <DiagramBuilderPanel
+                currentTab={currentTab}
+                style={{
+                  display: currentTab?.tabType === 'diagram_builder' ? 'flex' : 'none',
+                }}
+              />
 
-            <ChatPanel
-            currentTab={currentTab}
-            style={{ display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none' }}
-            />
+              <ChatPanel
+                currentTab={currentTab}
+                style={{
+                  display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none',
+                }}
+              />
 
-            <EditorPanel
-            editorContent={editorContent}
-            onContentChange={handleContentChange}
-            onImageUpload={handleImageUpload}
-            hasUnsavedChanges={hasUnsavedChanges}
-            isSavingContent={isSavingContent}
-            onSave={handleSave}
-            onExportWord={handleExportWord}
-            isLoadingContent={isLoadingContent}
-            />
+              <EditorPanel
+                editorContent={editorContent}
+                onContentChange={handleContentChange}
+                onImageUpload={handleImageUpload}
+                hasUnsavedChanges={hasUnsavedChanges}
+                isSavingContent={isSavingContent}
+                onSave={handleSave}
+                onExportWord={handleExportWord}
+                isLoadingContent={isLoadingContent}
+              />
+            </>
+          ) : (
+            // Desktop: Horizontal resizable panels
+            <PanelGroup direction="horizontal" autoSaveId="skripsi-editor-panels">
+              {/* Chat/Diagram Panel */}
+              <Panel
+                defaultSize={chatPanelSize}
+                minSize={300}
+                maxSize={800}
+                onResize={(size) => {
+                  // Save the chat panel size to localStorage when resizing
+                  localStorage.setItem('skripsi-chat-panel-width', size.inPixels.toString())
+                }}
+                style={{ display: 'flex' }}
+              >
+                {/* Keep both panels mounted to preserve state, toggle with CSS */}
+                <DiagramBuilderPanel
+                  currentTab={currentTab}
+                  style={{
+                    display: currentTab?.tabType === 'diagram_builder' ? 'flex' : 'none',
+                    width: '100%'
+                  }}
+                />
+
+                <ChatPanel
+                  currentTab={currentTab}
+                  style={{
+                    display: currentTab?.tabType !== 'diagram_builder' ? 'flex' : 'none',
+                    width: '100%'
+                  }}
+                />
+              </Panel>
+
+              <PanelResizeHandle className="resize-handle-skripsi" />
+
+              {/* Editor Panel */}
+              <Panel minSize={50} style={{ display: 'flex' }}>
+                <EditorPanel
+                  editorContent={editorContent}
+                  onContentChange={handleContentChange}
+                  onImageUpload={handleImageUpload}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  isSavingContent={isSavingContent}
+                  onSave={handleSave}
+                  onExportWord={handleExportWord}
+                  isLoadingContent={isLoadingContent}
+                />
+              </Panel>
+            </PanelGroup>
+          )}
         </EditorArea>
 
         <UnsavedChangesDialog
