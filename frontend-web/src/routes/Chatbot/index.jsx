@@ -30,6 +30,25 @@ const Chatbot = () => {
   const conversations = useSelector(state => state.chatbot.conversations)
   const loading = useSelector(state => state.chatbot.loading)
 
+  // Control body overflow on desktop (prevent page scroll)
+  useEffect(() => {
+    // Check if desktop (width >= 769px)
+    const isDesktop = window.innerWidth >= 769
+
+    if (isDesktop) {
+      // Save original overflow value
+      const originalOverflow = document.body.style.overflow
+
+      // Set body to overflow hidden on desktop
+      document.body.style.overflow = 'hidden'
+
+      // Cleanup: restore original overflow when unmounting
+      return () => {
+        document.body.style.overflow = originalOverflow
+      }
+    }
+  }, [])
+
   // Fetch chatbot config on mount (to get available modes)
   useEffect(() => {
     dispatch(fetchChatbotConfig())

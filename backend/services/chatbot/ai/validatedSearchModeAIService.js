@@ -166,6 +166,7 @@ export class ValidatedSearchModeAIService extends BaseService {
         threshold: threshold,
         model: embeddingModel,
       })
+      console.log(queryForRetrieval, ragResults)
 
       // Group chunks by note ID to avoid duplicate sources
       const groupedByNote = {}

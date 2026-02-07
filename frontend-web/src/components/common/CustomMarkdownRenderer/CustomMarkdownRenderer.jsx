@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import {
   Heading1,
   Heading2,
@@ -39,7 +42,13 @@ const MarkdownBlock = React.memo(({ content }) => {
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+      urlTransform={(url) => ({
+        href: url,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      })}
       components={markdownComponents}
     >
       {processedText}
@@ -91,7 +100,8 @@ const CustomMarkdownRenderer = ({ item, isStreaming = false }) => {
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       components={markdownComponents}
     >
       {processedText}

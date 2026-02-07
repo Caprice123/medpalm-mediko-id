@@ -96,7 +96,7 @@ const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWith
   return true
 })
 
-function MessageList({ isLoading, isSending, scrollTrigger }) {
+function MessageList({ isLoading, isStreaming, scrollTrigger }) {
   // Subscribe to messages for current conversation only
   const messages = useSelector(selectMessagesForCurrentConversation)
   const messagesEndRef = useRef(null)
@@ -171,7 +171,7 @@ function MessageList({ isLoading, isSending, scrollTrigger }) {
         />
       ))}
 
-      {isSending && (
+      {isStreaming && (
         <MessageBubble isUser={false}>
           <AIMessage>
             <TypingIndicator>

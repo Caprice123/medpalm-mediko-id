@@ -315,7 +315,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         <MessageList
           key={conversationId}
           isLoading={loading.isMessagesLoading && currentPage === 1}
-          isSending={loading.isSendingMessage}
+          isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
           scrollTrigger={scrollTrigger}
         />
       </ChatArea>
@@ -324,7 +324,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         key={conversationId}
         onSend={handleSendMessage}
         onStop={handleStopStreaming}
-        disabled={loading.isSendingMessage}
+        disabled={!!(conversationStreamingState?.isTyping || conversationStreamingState?.isSending)}
         currentMode={currentMode}
         isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
       />
