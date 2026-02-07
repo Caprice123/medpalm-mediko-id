@@ -13,14 +13,12 @@ import { useEffect, useRef, useState } from 'react'
 import { PhotoProvider } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import { EditorContainer, EditorWrapper, ModeToggle, ModeButton } from './BlockNoteEditor.styles'
-import { createEmbedBlock } from './customBlocks/EmbedBlock'
 import { insertEmbed } from './customBlocks/EmbedSlashMenu'
 import { CropImageButton } from './CropImageButton'
 import ImageCropModal from './ImageCropModal'
 import { PhotoViewerToolbar } from './PhotoViewerToolbar'
-import { filterSuggestionItems } from "@blocknote/core/extensions";
-import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
-
+import { filterSuggestionItems } from "@blocknote/core/extensions"
+import { editorSchema } from './schema'
 
 function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
@@ -29,12 +27,8 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
   const [photoVisible, setPhotoVisible] = useState(false)
   const [images, setImages] = useState([])
 
-  const schema = BlockNoteSchema.create({
-    blockSpecs: {
-        ...defaultBlockSpecs,
-        embed: createEmbedBlock(),
-    },
-  });
+  // Use the shared schema instead of creating a new one
+  const schema = editorSchema;
   const editor = useCreateBlockNote({
     initialContent: initialContent || [
       {

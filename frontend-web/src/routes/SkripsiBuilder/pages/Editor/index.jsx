@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from '@store/store'
 import { shallowEqual } from 'react-redux'
 import { fetchSet, switchTab, saveSetContent } from '@store/skripsi/action'
 import { upload } from '@store/common/action'
-import { convertHtmlToDocxReliable } from '@utils/htmlToDocx'
+import { exportBlocksToDocx } from '@components/BlockNoteEditor/exportToDocx'
 import { blocksToHTML, htmlToBlocks } from '@utils/blockNoteConversion'
 import { Container, EditorArea, LoadingState, Wrapper } from './Editor.styles'
 import TopBar from './components/TopBar'
@@ -138,11 +138,15 @@ const SkripsiEditor = () => {
     if (!currentSet) return
 
     try {
-      // Convert BlockNote blocks to HTML for Word export
-      const htmlContent = await blocksToHTML(editorContent)
+      // Export BlockNote blocks directly to DOCX
       const fileName = currentSet.title.replace(/[^a-z0-9]/gi, '_')
 
-      await convertHtmlToDocxReliable(htmlContent, fileName)
+      await exportBlocksToDocx(editorContent, fileName, {
+        title: currentSet.title,
+        description: currentSet.description || '',
+        creator: 'Mediko',
+        subject: 'Skripsi',
+      })
 
       alert('Berhasil mengekspor ke Word!')
     } catch (error) {
