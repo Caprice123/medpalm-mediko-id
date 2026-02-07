@@ -32,7 +32,7 @@ function SummaryNotes({ onBack }) {
 
   useEffect(() => {
     dispatch(fetchAdminSummaryNotes({}, 1, 30))
-    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester", "topic", "department"]}))
     dispatch(fetchTags())
   }, [dispatch])
 

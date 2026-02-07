@@ -139,6 +139,18 @@ export const Tag = styled.span`
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
+
+  ${props => props.topic && `
+    background: #FEF3C7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+  `}
+
+  ${props => props.department && `
+    background: #FCE7F3;
+    color: #9f1239;
+    border: 1px solid #ec4899;
+  `}
 `
 
 export const ContentSection = styled.div`

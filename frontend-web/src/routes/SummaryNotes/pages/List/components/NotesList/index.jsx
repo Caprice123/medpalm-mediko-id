@@ -66,6 +66,30 @@ function NotesList() {
               </TagList>
             )}
 
+            {/* Topic Tags */}
+            {note.topicTags && note.topicTags.length > 0 && (
+              <TagList>
+                {note.topicTags.map((tag) => (
+                  <Tag key={tag.id} topic>
+                    🔬 {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+
+            {/* Department Tags */}
+            {note.departmentTags && note.departmentTags.length > 0 && (
+              <TagList>
+                {note.departmentTags.map((tag) => (
+                  <Tag key={tag.id} department>
+                    🏥 {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+
+            <div style={{flex: 1}}></div>
+
             <UpdatedText>
               Terakhir diperbarui: {new Date(note.updatedAt).toLocaleDateString("id-ID", {
                 day: 'numeric',

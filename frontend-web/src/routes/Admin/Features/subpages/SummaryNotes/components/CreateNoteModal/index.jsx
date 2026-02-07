@@ -32,13 +32,21 @@ const CreateNoteModal = ({ onClose }) => {
     handleImageUpload
   } = useCreateNote(onClose)
 
-  // Get tags from both university and semester groups - memoized
+  // Get tags from all groups - memoized
   const universityTags = useMemo(() =>
     tags.find(t => t.name === 'university')?.tags || [],
     [tags]
   )
   const semesterTags = useMemo(() =>
     tags.find(t => t.name === 'semester')?.tags || [],
+    [tags]
+  )
+  const topicTags = useMemo(() =>
+    tags.find(t => t.name === 'topic')?.tags || [],
+    [tags]
+  )
+  const departmentTags = useMemo(() =>
+    tags.find(t => t.name === 'department')?.tags || [],
     [tags]
   )
 
@@ -49,6 +57,14 @@ const CreateNoteModal = ({ onClose }) => {
 
   const handleSemesterTagsChange = (newTags) => {
     form.setFieldValue('semesterTags', newTags)
+  }
+
+  const handleTopicTagsChange = (newTags) => {
+    form.setFieldValue('topicTags', newTags)
+  }
+
+  const handleDepartmentTagsChange = (newTags) => {
+    form.setFieldValue('departmentTags', newTags)
   }
 
   const handleModalClose = () => {
@@ -178,6 +194,30 @@ const CreateNoteModal = ({ onClose }) => {
           onTagsChange={handleSemesterTagsChange}
           placeholder="-- Pilih Semester --"
           helpText="Pilih semester untuk membantu mengorganisir ringkasan"
+        />
+      </FormSection>
+
+      {/* Topic Tags */}
+      <FormSection>
+        <Label>Topik</Label>
+        <TagSelector
+          allTags={topicTags}
+          selectedTags={form.values.topicTags || []}
+          onTagsChange={handleTopicTagsChange}
+          placeholder="-- Pilih Topik --"
+          helpText="Pilih topik materi (mis. Anatomi, Fisiologi, dll)"
+        />
+      </FormSection>
+
+      {/* Department Tags */}
+      <FormSection>
+        <Label>Departemen</Label>
+        <TagSelector
+          allTags={departmentTags}
+          selectedTags={form.values.departmentTags || []}
+          onTagsChange={handleDepartmentTagsChange}
+          placeholder="-- Pilih Departemen --"
+          helpText="Pilih departemen yang relevan"
         />
       </FormSection>
 
