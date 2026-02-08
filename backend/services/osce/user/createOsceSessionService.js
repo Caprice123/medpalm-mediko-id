@@ -10,14 +10,14 @@ export class CreateOsceSessionService extends BaseService {
       throw new ValidationError('User ID is required')
     }
 
-    if (!topic.id) {
+    if (!topicId) {
       throw new ValidationError('Topic ID is required')
     }
 
       // Verify topic exists and is published
       const topic = await prisma.osce_topics.findFirst({
         where: {
-          unique_id: topic.id,
+          unique_id: topicId,
           status: 'published',
         },
       })

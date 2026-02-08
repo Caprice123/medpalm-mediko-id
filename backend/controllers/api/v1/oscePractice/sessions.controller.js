@@ -42,12 +42,55 @@ class SessionsController {
 
     await StartOsceSessionService.call(userId, sessionId, sttProvider, supportedMimeType)
 
-    return res.status(200).json({
-        data: {
-            success: true,
-            sttProvider: sttProvider || 'whisper',
-            supportedMimeType: supportedMimeType || null,
+    // Fetch the updated session data to return to frontend
+    const session = await prisma.osce_sessions.findFirst({
+      where: {
+        unique_id: sessionId,
+        user_id: userId,
+      },
+      include: {
+        osce_session_observations: {
+          include: {
+            observation_snapshot: true
+          }
         },
+        osce_session_tag_snapshots: {
+          include: {
+            tags: {
+              include: {
+                tag_group: true
+              }
+            }
+          }
+        },
+        osce_session_topic_snapshot: true,
+        osce_session_observation_group_snapshots: {
+          include: {
+            osce_session_observation_snapshots: {
+              include: {
+                session_observations: true,
+              },
+              orderBy: {
+                observation_name: 'asc',
+              },
+            },
+          },
+        },
+        osce_session_diagnoses: {
+          orderBy: {
+            id: 'asc',
+          },
+        },
+        osce_session_therapies: {
+          orderBy: {
+            id: 'asc',
+          },
+        },
+      },
+    })
+
+    return res.status(200).json({
+        data: await OsceSessionSerializer.serialize(session),
     })
   }
 
