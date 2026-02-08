@@ -2,6 +2,7 @@ export class FlashcardDeckListSerializer {
   static serialize(decks) {
     return decks.map(deck => ({
       id: deck.id,
+      uniqueId: deck.unique_id,
       title: deck.title,
       description: deck.description,
       tags: (deck.flashcard_deck_tags || []).map(t => ({

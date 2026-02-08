@@ -8,7 +8,7 @@ export class GetOsceTopicDetailService extends BaseService {
         this.validate(topicId)
 
         const topic = await prisma.osce_topics.findUnique({
-            where: { id: parseInt(topicId) },
+            where: { unique_id: topicId },
             include: {
                 osce_topic_tags: {
                     include: {
@@ -89,13 +89,8 @@ export class GetOsceTopicDetailService extends BaseService {
     }
 
     static validate(topicId) {
-        if (!topicId) {
+        if (!topicId || typeof topicId !== 'string') {
             throw new ValidationError('Topic ID is required')
-        }
-
-        const id = parseInt(topicId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid topic ID')
         }
     }
 }

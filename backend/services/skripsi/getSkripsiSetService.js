@@ -6,7 +6,7 @@ export class GetSkripsiSetService extends BaseService {
   static async call({ setId, userId, includeMessages = true, messageLimit = 50 }) {
     const set = await prisma.skripsi_sets.findFirst({
       where: {
-        id: setId,
+        unique_id: setId,
         user_id: userId,
         is_deleted: false
       },

@@ -23,9 +23,9 @@ class SkripsiController {
   }
 
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const set = await getAdminSkripsiSetService(parseInt(id))
+    const set = await getAdminSkripsiSetService(uniqueId)
 
     res.status(200).json({
       data: SkripsiSetSerializer.serialize(set)
@@ -33,9 +33,9 @@ class SkripsiController {
   }
 
   async getSetTabs(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const tabs = await getAdminSkripsiSetTabsService(parseInt(id))
+    const tabs = await getAdminSkripsiSetTabsService(uniqueId)
 
     res.status(200).json({
       data: tabs
@@ -43,9 +43,9 @@ class SkripsiController {
   }
 
   async destroy(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    await deleteAdminSkripsiSetService(parseInt(id))
+    await deleteAdminSkripsiSetService(uniqueId)
 
     res.status(200).json({
       data: {

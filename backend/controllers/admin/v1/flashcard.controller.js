@@ -54,9 +54,9 @@ class FlashcardController {
   }
   
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const deck = await GetFlashcardDeckDetailService.call(id)
+    const deck = await GetFlashcardDeckDetailService.call(uniqueId)
 
     return res.status(200).json({
       data: FlashcardDeckSerializer.serialize(deck)
@@ -64,13 +64,13 @@ class FlashcardController {
   }
 
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { title, description, contentType, content, status, tags, cards, blobId } = req.body
 
     // Check if this is a full deck update or just cards
     if (title !== undefined || tags !== undefined) {
       // Full deck update
-      const updatedDeck = await UpdateFlashcardDeckService.call(id, {
+      const updatedDeck = await UpdateFlashcardDeckService.call(uniqueId, {
         title,
         description,
         contentType,
@@ -86,7 +86,7 @@ class FlashcardController {
       })
     } else {
       // Simple cards update (backward compatibility)
-      const updatedDeck = await UpdateFlashcardCardsService.call(id, cards)
+      const updatedDeck = await UpdateFlashcardCardsService.call(uniqueId, cards)
 
       return res.status(200).json({
         data: FlashcardDeckSerializer.serialize(updatedDeck),

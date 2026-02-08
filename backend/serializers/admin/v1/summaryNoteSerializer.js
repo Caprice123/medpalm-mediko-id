@@ -19,6 +19,7 @@ export class SummaryNoteSerializer {
 
     return {
       id: note.id,
+      uniqueId: note.unique_id,
       title: note.title,
       description: note.description,
       content: note.content,

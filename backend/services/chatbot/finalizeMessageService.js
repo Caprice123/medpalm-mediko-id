@@ -6,14 +6,17 @@ export class FinalizeMessageService {
     // Verify the conversation belongs to the user
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         user_id: userId
-      }
+      },
+      select: { id: true }
     })
 
     if (!conversation) {
       throw new ValidationError('Conversation not found or access denied')
     }
+
+    const internalConversationId = conversation.id
 
     // Use transaction to prevent race condition
     const result = await prisma.$transaction(async (tx) => {
@@ -21,7 +24,7 @@ export class FinalizeMessageService {
       const message = await tx.chatbot_messages.findFirst({
         where: {
           id: messageId,
-          conversation_id: conversationId,
+          conversation_id: internalConversationId,
           sender_type: 'ai'
         }
       })
@@ -51,7 +54,7 @@ export class FinalizeMessageService {
 
       // Update conversation's last_message (trimmed to 50 chars)
       await tx.chatbot_conversations.update({
-        where: { id: conversationId },
+        where: { id: internalConversationId },
         data: {
           last_message: content.substring(0, 50),
           updated_at: new Date()

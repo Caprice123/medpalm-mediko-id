@@ -55,9 +55,9 @@ class AnatomyController {
   }
 
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const quiz = await GetAnatomyQuizDetailService.call(id)
+    const quiz = await GetAnatomyQuizDetailService.call(uniqueId)
 
     return res.status(200).json({
       data: AnatomyQuizSerializer.serialize(quiz)
@@ -65,7 +65,7 @@ class AnatomyController {
   }
 
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const {
       title,
       description,
@@ -76,7 +76,7 @@ class AnatomyController {
     } = req.body
 
     const updatedQuiz = await UpdateAnatomyQuizService.call({
-      quizId: id,
+      quizId: uniqueId,
       title,
       description,
       blobId: blobId ? parseInt(blobId) : null,
@@ -91,10 +91,10 @@ class AnatomyController {
   }
 
   async delete(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { hardDelete = false } = req.query
 
-    await DeleteAnatomyQuizService.call(id, hardDelete === 'true')
+    await DeleteAnatomyQuizService.call(uniqueId, hardDelete === 'true')
 
     return res.status(200).json({
         data: {

@@ -8,7 +8,7 @@ export class UpdateOsceTopicService extends BaseService {
 
         // Check if topic exists
         const topic = await prisma.osce_topics.findUnique({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         if (!topic) {
@@ -34,7 +34,7 @@ export class UpdateOsceTopicService extends BaseService {
 
             // Update topic basic info
             await tx.osce_topics.update({
-                where: { id: parseInt(topicId) },
+                where: { unique_id: topicId },
                 data: updateData
             })
 
@@ -42,14 +42,14 @@ export class UpdateOsceTopicService extends BaseService {
             if (tags && Array.isArray(tags)) {
                 // Delete existing tags
                 await tx.osce_topic_tags.deleteMany({
-                    where: { topic_id: parseInt(topicId) }
+                    where: { topic_id: topic.id }
                 })
 
                 // Create new tags
                 if (tags.length > 0) {
                     await tx.osce_topic_tags.createMany({
                         data: tags.map(tagId => ({
-                            topic_id: parseInt(topicId),
+                            topic_id: topic.id,
                             tag_id: typeof tagId === 'object' ? tagId.id : parseInt(tagId)
                         }))
                     })
@@ -62,7 +62,7 @@ export class UpdateOsceTopicService extends BaseService {
                 await tx.attachments.deleteMany({
                     where: {
                         record_type: 'osce_topic',
-                        record_id: parseInt(topicId)
+                        record_id: topic.id
                     }
                 })
 
@@ -72,7 +72,7 @@ export class UpdateOsceTopicService extends BaseService {
                         data: attachments.map((att, index) => ({
                             name: `attachment_${index}`,
                             record_type: 'osce_topic',
-                            record_id: parseInt(topicId),
+                            record_id: topic.id,
                             blob_id: att.blobId
                         }))
                     })
@@ -83,7 +83,7 @@ export class UpdateOsceTopicService extends BaseService {
             if (observations !== undefined && Array.isArray(observations)) {
                 // Get existing observations to delete their attachments
                 const existingObservations = await tx.osce_topic_observations.findMany({
-                    where: { topic_id: parseInt(topicId) }
+                    where: { topic_id: topic.id }
                 })
 
                 // Delete attachments for existing observations
@@ -99,7 +99,7 @@ export class UpdateOsceTopicService extends BaseService {
                 // Delete existing observations
                 await tx.osce_topic_observations.deleteMany({
                     where: {
-                        topic_id: parseInt(topicId)
+                        topic_id: topic.id
                     }
                 })
 
@@ -108,7 +108,7 @@ export class UpdateOsceTopicService extends BaseService {
                     for (const obs of observations) {
                         const topicObs = await tx.osce_topic_observations.create({
                             data: {
-                                topic_id: parseInt(topicId),
+                                topic_id: topic.id,
                                 observation_id: obs.observationId,
                                 observation_text: obs.observationText || '',
                                 requires_interpretation: obs.requiresInterpretation || false,
@@ -132,7 +132,7 @@ export class UpdateOsceTopicService extends BaseService {
 
             // Fetch and return updated topic
             return await tx.osce_topics.findUnique({
-                where: { id: parseInt(topicId) },
+                where: { unique_id: topicId },
                 include: {
                     osce_topic_tags: {
                         include: {
@@ -151,13 +151,8 @@ export class UpdateOsceTopicService extends BaseService {
     }
 
     static validate(topicId, { title, scenario, aiModel, rubricId, durationMinutes, status }) {
-        if (!topicId) {
+        if (!topicId || typeof topicId !== 'string') {
             throw new ValidationError('Topic ID is required')
-        }
-
-        const id = parseInt(topicId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid topic ID')
         }
 
         if (title !== undefined && (!title || title.trim().length < 3)) {

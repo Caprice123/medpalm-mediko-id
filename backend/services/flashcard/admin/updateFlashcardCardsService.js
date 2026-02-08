@@ -8,7 +8,7 @@ export class UpdateFlashcardCardsService extends BaseService {
 
         // Check if deck exists
         const deck = await prisma.flashcard_decks.findUnique({
-            where: { id: parseInt(deckId) }
+            where: { unique_id: deckId }
         })
 
         if (!deck) {
@@ -19,13 +19,13 @@ export class UpdateFlashcardCardsService extends BaseService {
         const updatedDeck = await prisma.$transaction(async (tx) => {
             // Delete existing cards
             await tx.flashcard_cards.deleteMany({
-                where: { deck_id: parseInt(deckId) }
+                where: { deck_id: deck.id }
             })
 
             // Create new cards
             await tx.flashcard_cards.createMany({
                 data: cards.map((card, index) => ({
-                    deck_id: parseInt(deckId),
+                    deck_id: deck.id,
                     front: card.front,
                     back: card.back,
                     image_url: card.image_url || null,
@@ -34,7 +34,7 @@ export class UpdateFlashcardCardsService extends BaseService {
             })
 
             await tx.flashcard_decks.update({
-                where: { id: parseInt(deckId) },
+                where: { unique_id: deckId },
                 data: {
                     flashcard_count: cards.length,
                 }
@@ -42,7 +42,7 @@ export class UpdateFlashcardCardsService extends BaseService {
 
             // Fetch and return updated deck
             return await tx.flashcard_decks.findUnique({
-                where: { id: parseInt(deckId) },
+                where: { unique_id: deckId },
                 include: {
                     flashcard_cards: {
                         orderBy: { order: 'asc' }
@@ -56,12 +56,11 @@ export class UpdateFlashcardCardsService extends BaseService {
 
     static validate(deckId, cards) {
         if (!deckId) {
-            throw new ValidationError('Deck ID is required')
+            throw new ValidationError('Deck unique ID is required')
         }
 
-        const id = parseInt(deckId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid deck ID')
+        if (typeof deckId !== 'string' || deckId.trim() === '') {
+            throw new ValidationError('Invalid deck unique ID')
         }
 
         if (!cards || !Array.isArray(cards)) {

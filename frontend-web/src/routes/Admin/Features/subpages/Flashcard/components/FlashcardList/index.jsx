@@ -111,14 +111,14 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
               <Button variant="secondary" fullWidth onClick={() => onEdit(quiz)}>
                 Edit
               </Button>
-              <Button
+              {/* <Button
                 variant="danger"
                 fullWidth
-                onClick={() => onDelete(quiz.id)}
+                onClick={() => onDelete(quiz.uniqueId)}
                 disabled={loading?.isDeleteAnatomyQuizLoading}
               >
                 Delete
-              </Button>
+              </Button> */}
             </CardActions>
           </QuizCard>
         )

@@ -46,7 +46,7 @@ class SkripsiSetsController {
   // Get a specific skripsi set with tabs (WITHOUT messages - fetch messages separately per tab)
   async getSet(req, res) {
     const userId = req.user.id
-    const setId = parseInt(req.params.id)
+    const setId = req.params.uniqueId
 
     const set = await GetSkripsiSetService.call({
       setId,
@@ -62,7 +62,7 @@ class SkripsiSetsController {
   // Update a skripsi set
   async updateSet(req, res) {
     const userId = req.user.id
-    const setId = parseInt(req.params.id)
+    const setId = req.params.uniqueId
     const { title, description } = req.body
 
     const set = await UpdateSkripsiSetService.call({
@@ -81,7 +81,7 @@ class SkripsiSetsController {
   // Update set editor content
   async updateContent(req, res) {
     const userId = req.user.id
-    const setId = parseInt(req.params.id)
+    const setId = req.params.uniqueId
     const { editorContent } = req.body
 
     const set = await UpdateSetContentService.call({
@@ -99,7 +99,7 @@ class SkripsiSetsController {
   // Delete a skripsi set
   async deleteSet(req, res) {
     const userId = req.user.id
-    const setId = parseInt(req.params.id)
+    const setId = req.params.uniqueId
 
     const result = await DeleteSkripsiSetService.call({
       setId,

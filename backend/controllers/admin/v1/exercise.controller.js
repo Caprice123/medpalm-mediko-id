@@ -118,12 +118,12 @@ class ExerciseController {
 
   /**
    * Get single topic detail with questions
-   * GET /admin/v1/exercises/topics/:id
+   * GET /admin/v1/exercises/topics/:uniqueId
    */
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const topic = await GetExerciseTopicDetailService.call(id)
+    const topic = await GetExerciseTopicDetailService.call(uniqueId)
 
     return res.status(200).json({
       data: ExerciseTopicSerializer.serialize(topic)
@@ -131,10 +131,10 @@ class ExerciseController {
   }
 
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { title, description, contentType, content, status, tags, questions, blobId } = req.body
 
-    const updatedTopic = await UpdateExerciseTopicService.call(id, {
+    const updatedTopic = await UpdateExerciseTopicService.call(uniqueId, {
       title,
       description,
       contentType,

@@ -4,6 +4,7 @@ export class ChatbotConversationSerializer {
 
     return {
       id: conversation.id,
+      uniqueId: conversation.unique_id,
       topic: conversation.title,
       mode: conversation.mode,
       userId: conversation.user_id,

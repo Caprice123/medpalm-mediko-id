@@ -12,7 +12,7 @@ export class UpdateSummaryNoteService extends BaseService {
 
     // Check if summary note exists
     const existing = await prisma.summary_notes.findUnique({
-      where: { id: parseInt(id) }
+      where: { unique_id: id }
     })
 
     if (!existing) {
@@ -43,7 +43,7 @@ export class UpdateSummaryNoteService extends BaseService {
 
       // Update the summary note
       const summaryNote = await tx.summary_notes.update({
-        where: { id: parseInt(id) },
+        where: { unique_id: id },
         data: updateData
       })
 
@@ -51,7 +51,7 @@ export class UpdateSummaryNoteService extends BaseService {
       if (tagIds !== undefined) {
         // Delete existing tags
         await tx.summary_note_tags.deleteMany({
-          where: { summary_note_id: parseInt(id) }
+          where: { summary_note_id: existing.id }
         })
 
         // Create new tag associations
@@ -71,7 +71,7 @@ export class UpdateSummaryNoteService extends BaseService {
         await tx.attachments.deleteMany({
           where: {
             record_type: 'summary_note',
-            record_id: parseInt(id),
+            record_id: existing.id,
             name: 'source_document'
           }
         })
@@ -82,7 +82,7 @@ export class UpdateSummaryNoteService extends BaseService {
             data: {
               name: 'source_document',
               record_type: 'summary_note',
-              record_id: parseInt(id),
+              record_id: existing.id,
               blob_id: parseInt(blobId)
             }
           })
@@ -111,16 +111,16 @@ export class UpdateSummaryNoteService extends BaseService {
 
       if (!wasPublished && isPublished) {
         // Status changed from draft to published → queue embedding job
-        await queueEmbedSummaryNote(result.id)
-        console.log(`✓ Queued embedding job for summary note ${result.id}`)
+        await queueEmbedSummaryNote(result.id, result.unique_id)
+        console.log(`✓ Queued embedding job for summary note ${result.unique_id}`)
       } else if (wasPublished && !isPublished) {
         // Status changed from published to draft → queue deletion job
-        await queueDeleteSummaryNoteEmbedding(result.id)
-        console.log(`✓ Queued embedding deletion job for summary note ${result.id}`)
+        await queueDeleteSummaryNoteEmbedding(result.id, result.unique_id)
+        console.log(`✓ Queued embedding deletion job for summary note ${result.unique_id}`)
       } else if (isPublished) {
         // Still published → queue update embedding job (in case content changed)
-        await queueEmbedSummaryNote(result.id)
-        console.log(`✓ Queued embedding update job for summary note ${result.id}`)
+        await queueEmbedSummaryNote(result.id, result.unique_id)
+        console.log(`✓ Queued embedding update job for summary note ${result.unique_id}`)
       }
     } catch (error) {
       console.error('Failed to queue embedding job:', error)

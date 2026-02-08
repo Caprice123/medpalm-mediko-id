@@ -5,7 +5,7 @@ const deleteAdminSkripsiSetService = async (setId) => {
   // Verify the set exists
   const set = await prisma.skripsi_sets.findFirst({
     where: {
-      id: setId,
+      unique_id: setId,
       is_deleted: false
     }
   })
@@ -19,7 +19,7 @@ const deleteAdminSkripsiSetService = async (setId) => {
   await prisma.skripsi_messages.deleteMany({
     where: {
       skripsi_tab: {
-        set_id: setId
+        set_id: set.id
       }
     }
   })
@@ -27,14 +27,14 @@ const deleteAdminSkripsiSetService = async (setId) => {
   // Delete tabs
   await prisma.skripsi_tabs.deleteMany({
     where: {
-      set_id: setId
+      set_id: set.id
     }
   })
 
   // Delete the set
   await prisma.skripsi_sets.delete({
     where: {
-      id: setId
+      id: set.id
     }
   })
 

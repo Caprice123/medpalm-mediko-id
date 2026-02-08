@@ -6,12 +6,12 @@ export class DeleteConversationService extends BaseService {
   static async call({ userId, conversationId }) {
     this.validate({ userId, conversationId })
 
-    const conversation = await prisma.chatbot_conversations.findUnique({
-      where: { id: conversationId },
-      select: { user_id: true, is_deleted: true }
+    const conversation = await prisma.chatbot_conversations.findFirst({
+      where: { unique_id: conversationId, is_deleted: false },
+      select: { id: true, user_id: true, is_deleted: true }
     })
 
-    if (!conversation || conversation.is_deleted) {
+    if (!conversation) {
       throw new ValidationError('Conversation not found')
     }
 
@@ -20,9 +20,9 @@ export class DeleteConversationService extends BaseService {
       throw new ValidationError('You do not have access to this conversation')
     }
 
-    // Soft delete
+    // Soft delete using internal id
     await prisma.chatbot_conversations.update({
-      where: { id: conversationId },
+      where: { id: conversation.id },
       data: { is_deleted: true }
     })
 
@@ -34,7 +34,7 @@ export class DeleteConversationService extends BaseService {
       throw new ValidationError('Invalid user ID')
     }
 
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
   }

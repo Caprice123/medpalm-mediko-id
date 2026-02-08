@@ -5,7 +5,7 @@ import { BaseService } from "../baseService.js"
 export class GetCalculatorTopicDetailService extends BaseService {
     static async call(topicId) {
         const topic = await prisma.calculator_topics.findUnique({
-            where: { id: parseInt(topicId) },
+            where: { unique_id: topicId },
             include: {
                 calculator_fields: {
                     orderBy: {

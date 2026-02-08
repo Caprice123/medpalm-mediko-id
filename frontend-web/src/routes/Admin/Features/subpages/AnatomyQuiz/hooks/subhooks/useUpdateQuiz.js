@@ -90,7 +90,7 @@ export const useUpdateQuiz = (closeCallback) => {
         dispatch(fetchAdminAnatomyQuizzes())
       }
 
-      dispatch(updateAnatomyQuiz(selectedQuiz.id, quizData, onSuccess))
+      dispatch(updateAnatomyQuiz(selectedQuiz.uniqueId, quizData, onSuccess))
     }
   })
 

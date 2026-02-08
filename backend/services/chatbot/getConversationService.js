@@ -8,7 +8,7 @@ export class GetConversationService extends BaseService {
 
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
       },
     })
@@ -24,6 +24,7 @@ export class GetConversationService extends BaseService {
 
     return {
       id: conversation.id,
+      uniqueId: conversation.unique_id,
       topic: conversation.topic,
       createdAt: conversation.created_at,
       updatedAt: conversation.updated_at
@@ -35,7 +36,7 @@ export class GetConversationService extends BaseService {
       throw new ValidationError('Invalid user ID')
     }
 
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
   }

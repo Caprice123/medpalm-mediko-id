@@ -20,7 +20,7 @@ router.post('/generate-from-pdf', asyncHandler(exerciseController.generateQuesti
 // Topic CRUD
 router.post('/topics', asyncHandler(exerciseController.create.bind(exerciseController)))
 router.get('/topics', asyncHandler(exerciseController.index.bind(exerciseController)))
-router.get('/topics/:id', asyncHandler(exerciseController.show.bind(exerciseController)))
-router.put('/topics/:id', asyncHandler(exerciseController.update.bind(exerciseController)))
+router.get('/topics/:uniqueId', asyncHandler(exerciseController.show.bind(exerciseController)))
+router.put('/topics/:uniqueId', asyncHandler(exerciseController.update.bind(exerciseController)))
 
 export default router

@@ -6,6 +6,7 @@ export class AnatomyQuizSerializer {
 
     return {
       id: quiz.id,
+      uniqueId: quiz.unique_id,
       title: quiz.title,
       description: quiz.description,
       blob: quiz.blobId ? {

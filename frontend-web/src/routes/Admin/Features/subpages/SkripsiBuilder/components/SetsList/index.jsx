@@ -40,7 +40,7 @@ function SetsList({ onView, onDelete }) {
   return (
     <SetsGrid>
       {sets.map(set => (
-        <SetCard key={set.id}>
+        <SetCard key={set.uniqueId}>
           <SetHeader>
             <SetTitle>{set.title || 'Untitled Set'}</SetTitle>
           </SetHeader>

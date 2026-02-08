@@ -17,6 +17,7 @@ export class FlashcardDeckListSerializer {
 
         return {
             id: deck.id,
+            uniqueId: deck.unique_id,
             title: deck.title,
             description: deck.description,
             status: deck.status,

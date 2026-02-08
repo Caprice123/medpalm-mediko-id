@@ -32,7 +32,8 @@ class RAGService {
         description: result.metadata.description,
         content: result.content,
         score: result.score,
-        noteId: result.metadata.note_id,
+        noteId: result.metadata.note_id,  // Keep numeric ID for backward compatibility
+        noteUniqueId: result.metadata.note_unique_id,  // Add unique_id for UUID-based operations
         created_at: result.metadata.created_at
       }))
     } catch (error) {
@@ -74,7 +75,8 @@ class RAGService {
         content: result.content.substring(0, 500), // First 500 chars for preview
         url: null, // No URL for internal summary notes
         score: result.score,
-        noteId: result.noteId
+        noteId: result.noteId,  // Keep for backward compatibility
+        noteUniqueId: result.noteUniqueId  // Add unique_id for UUID-based operations
       }))
 
       return {
@@ -140,7 +142,8 @@ class RAGService {
         description: result.metadata.description,
         content: result.content,
         score: result.score,
-        noteId: result.metadata.note_id,
+        noteId: result.metadata.note_id,  // Keep numeric ID for backward compatibility
+        noteUniqueId: result.metadata.note_unique_id,  // Add unique_id for UUID-based operations
         created_at: result.metadata.created_at
       }))
     } catch (error) {

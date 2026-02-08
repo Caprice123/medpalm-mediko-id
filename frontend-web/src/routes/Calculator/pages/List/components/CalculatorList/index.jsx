@@ -89,7 +89,7 @@ function CalculatorList() {
               </StatItem>
             </CalculatorStats>
 
-            <Button variant="primary" onClick={() => navigate(generatePath(CalculatorRoute.detailRoute, { id: calculator.id }))}>
+            <Button variant="primary" onClick={() => navigate(generatePath(CalculatorRoute.detailRoute, { id: calculator.uniqueId }))}>
               Gunakan Kalkulator
             </Button>
           </CalculatorCard>

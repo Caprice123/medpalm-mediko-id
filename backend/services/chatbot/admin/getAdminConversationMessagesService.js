@@ -9,22 +9,24 @@ export class GetAdminConversationMessagesService extends BaseService {
     // Verify conversation exists
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
-      }
+      },
+      select: { id: true }
     })
 
     if (!conversation) {
       throw new ValidationError('Conversation not found')
     }
 
+    const internalConversationId = conversation.id
     const skip = (page - 1) * perPage
     const take = perPage + 1 // Take one extra to check if there are more
 
     // Get messages for this conversation with pagination (DESC order - newest first for backend)
     const messages = await prisma.chatbot_messages.findMany({
       where: {
-        conversation_id: conversationId,
+        conversation_id: internalConversationId,
         is_deleted: false
       },
       include: {
@@ -53,7 +55,7 @@ export class GetAdminConversationMessagesService extends BaseService {
   }
 
   static validate({ conversationId, page, perPage }) {
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
 

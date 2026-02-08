@@ -6,7 +6,7 @@ import idriveService from '#services/idrive.service'
 export class GetMcqTopicDetailService extends BaseService {
   static async call({ id }) {
     const topic = await prisma.mcq_topics.findUnique({
-      where: { id },
+      where: { unique_id: id },
       include: {
         mcq_questions: {
           orderBy: { order: 'asc' }
@@ -31,7 +31,7 @@ export class GetMcqTopicDetailService extends BaseService {
     const topicPdfAttachment = await prisma.attachments.findFirst({
       where: {
         record_type: 'mcq_topic',
-        record_id: id,
+        record_id: topic.id,
         name: 'pdf'
       },
       include: {

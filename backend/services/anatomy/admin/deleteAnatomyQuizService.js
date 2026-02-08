@@ -9,7 +9,7 @@ export class DeleteAnatomyQuizService extends BaseService {
 
     // Check if quiz exists
     const quiz = await prisma.anatomy_quizzes.findUnique({
-      where: { id: parseInt(quizId) }
+      where: { unique_id: quizId }
     })
 
     if (!quiz) {
@@ -17,7 +17,7 @@ export class DeleteAnatomyQuizService extends BaseService {
     }
 
     await prisma.anatomy_quizzes.delete({
-        where: { id: parseInt(quizId) }
+        where: { unique_id: quizId }
     })
 
     // Delete image from iDrive E2 if exists
@@ -32,13 +32,8 @@ export class DeleteAnatomyQuizService extends BaseService {
   }
 
   static validate(quizId) {
-    if (!quizId) {
+    if (!quizId || typeof quizId !== 'string') {
       throw new ValidationError('Quiz ID is required')
-    }
-
-    const id = parseInt(quizId)
-    if (isNaN(id) || id <= 0) {
-      throw new ValidationError('Invalid quiz ID')
     }
   }
 }

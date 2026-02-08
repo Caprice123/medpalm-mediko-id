@@ -15,7 +15,7 @@ export class StartAnatomyQuizService extends BaseService {
 
       // Get the quiz with questions
       const quiz = await tx.anatomy_quizzes.findUnique({
-        where: { id: parseInt(quizId) },
+        where: { unique_id: quizId },
         include: {
           anatomy_questions: {
             orderBy: { order: 'asc' }
@@ -118,6 +118,7 @@ export class StartAnatomyQuizService extends BaseService {
       // Return quiz data with sorted questions
       const quizSnapshot = {
         id: quiz.id,
+        uniqueId: quiz.unique_id,
         title: quiz.title,
         description: quiz.description,
         image_url: quiz.image_url,
@@ -145,17 +146,12 @@ export class StartAnatomyQuizService extends BaseService {
   }
 
   static validate({ quizId, userId }) {
-    if (!quizId) {
+    if (!quizId || typeof quizId !== 'string') {
       throw new ValidationError('Quiz ID is required')
     }
 
     if (!userId) {
       throw new ValidationError('User ID is required')
-    }
-
-    const id = parseInt(quizId)
-    if (isNaN(id) || id <= 0) {
-      throw new ValidationError('Invalid quiz ID')
     }
   }
 }

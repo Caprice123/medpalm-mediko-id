@@ -9,7 +9,7 @@ export class UpdateFlashcardDeckService extends BaseService {
 
         // Check if deck exists
         const deck = await prisma.flashcard_decks.findUnique({
-            where: { id: parseInt(deckId) }
+            where: { unique_id: deckId }
         })
 
         if (!deck) {
@@ -42,7 +42,7 @@ export class UpdateFlashcardDeckService extends BaseService {
 
             // Update deck basic info
             await tx.flashcard_decks.update({
-                where: { id: parseInt(deckId) },
+                where: { unique_id: deckId },
                 data: updateData
             })
 
@@ -52,7 +52,7 @@ export class UpdateFlashcardDeckService extends BaseService {
                 await tx.attachments.deleteMany({
                     where: {
                         record_type: 'flashcard_deck',
-                        record_id: parseInt(deckId),
+                        record_id: deck.id,
                         name: 'pdf'
                     }
                 })
@@ -62,7 +62,7 @@ export class UpdateFlashcardDeckService extends BaseService {
                     await attachmentService.attach({
                         name: 'pdf',
                         recordType: 'flashcard_deck',
-                        recordId: parseInt(deckId),
+                        recordId: deck.id,
                         blobId: blobId
                     })
                 }
@@ -72,14 +72,14 @@ export class UpdateFlashcardDeckService extends BaseService {
             if (tags && Array.isArray(tags)) {
                 // Delete existing tags
                 await tx.flashcard_deck_tags.deleteMany({
-                    where: { deck_id: parseInt(deckId) }
+                    where: { deck_id: deck.id }
                 })
 
                 // Create new tags
                 if (tags.length > 0) {
                     await tx.flashcard_deck_tags.createMany({
                         data: tags.map(tagId => ({
-                            deck_id: parseInt(deckId),
+                            deck_id: deck.id,
                             tag_id: parseInt(tagId)
                         }))
                     })
@@ -89,7 +89,7 @@ export class UpdateFlashcardDeckService extends BaseService {
             // Update cards
             // First, get existing cards to delete their attachments
             const existingCards = await tx.flashcard_cards.findMany({
-                where: { deck_id: parseInt(deckId) }
+                where: { deck_id: deck.id }
             })
 
             // Delete attachments for existing cards
@@ -104,7 +104,7 @@ export class UpdateFlashcardDeckService extends BaseService {
 
             // Delete existing cards
             await tx.flashcard_cards.deleteMany({
-                where: { deck_id: parseInt(deckId) }
+                where: { deck_id: deck.id }
             })
 
             // Create new cards
@@ -113,7 +113,7 @@ export class UpdateFlashcardDeckService extends BaseService {
                 const card = cards[i]
                 const createdCard = await tx.flashcard_cards.create({
                     data: {
-                        deck_id: parseInt(deckId),
+                        deck_id: deck.id,
                         front: card.front,
                         back: card.back,
                         order: card.order !== undefined ? card.order : i
@@ -134,7 +134,7 @@ export class UpdateFlashcardDeckService extends BaseService {
 
             // Fetch and return updated deck
             return await tx.flashcard_decks.findUnique({
-                where: { id: parseInt(deckId) },
+                where: { unique_id: deckId },
                 include: {
                     flashcard_cards: {
                         orderBy: { order: 'asc' }
@@ -171,12 +171,11 @@ export class UpdateFlashcardDeckService extends BaseService {
 
     static validate(deckId, { title, cards }) {
         if (!deckId) {
-            throw new ValidationError('Deck ID is required')
+            throw new ValidationError('Deck unique ID is required')
         }
 
-        const id = parseInt(deckId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid deck ID')
+        if (typeof deckId !== 'string' || deckId.trim() === '') {
+            throw new ValidationError('Invalid deck unique ID')
         }
 
         if (title !== undefined && (!title || typeof title !== 'string')) {

@@ -5,7 +5,7 @@ const getAdminSkripsiSetTabsService = async (setId) => {
   // First verify the set exists
   const set = await prisma.skripsi_sets.findFirst({
     where: {
-      id: setId,
+      unique_id: setId,
       is_deleted: false
     }
   })
@@ -17,7 +17,7 @@ const getAdminSkripsiSetTabsService = async (setId) => {
   // Get all tabs with their messages
   const tabs = await prisma.skripsi_tabs.findMany({
     where: {
-      set_id: setId
+      set_id: set.id
     },
     include: {
       messages: {

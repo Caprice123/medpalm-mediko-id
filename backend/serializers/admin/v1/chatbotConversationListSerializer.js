@@ -2,6 +2,7 @@ export class ChatbotConversationListSerializer {
   static serialize(conversations) {
     return conversations.map(conversation => ({
       id: conversation.id,
+      uniqueId: conversation.unique_id,
       topic: conversation.topic || conversation.title,
       user: conversation.user || (conversation.users ? {
         id: conversation.users.id,

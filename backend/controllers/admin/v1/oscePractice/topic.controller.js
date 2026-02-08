@@ -63,9 +63,9 @@ class TopicController {
   }
 
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const topic = await GetOsceTopicDetailService.call(id)
+    const topic = await GetOsceTopicDetailService.call(uniqueId)
 
     return res.status(200).json({
       data: OsceTopicSerializer.serialize(topic)
@@ -73,7 +73,7 @@ class TopicController {
   }
 
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const {
       title,
       description,
@@ -91,7 +91,7 @@ class TopicController {
       tags
     } = req.body
 
-    const updatedTopic = await UpdateOsceTopicService.call(id, {
+    const updatedTopic = await UpdateOsceTopicService.call(uniqueId, {
       title,
       description,
       scenario,

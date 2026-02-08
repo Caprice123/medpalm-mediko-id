@@ -158,6 +158,7 @@ model exercise_topic_tags {
 
 model exercise_topics {
   id             Int      @id @default(autoincrement())
+  unique_id      String   @unique @default(uuid())
   title          String
   description    String?
   content_type   String
@@ -228,6 +229,7 @@ model user_learning_sessions {
 
 model flashcard_decks {
   id              Int      @id @default(autoincrement())
+  unique_id       String   @unique @default(uuid())
   title           String
   description     String?
   content_type    String
@@ -412,6 +414,7 @@ model user_credits {
 
 model summary_notes {
   id               Int     @id @default(autoincrement())
+  unique_id        String  @unique @default(uuid())
   title            String
   description      String?
   content          String  @db.Text // BlockNote JSON format
@@ -548,6 +551,7 @@ model features {
 
 model calculator_topics {
   id                  Int      @id @default(autoincrement())
+  unique_id           String   @unique @default(uuid())
   title               String
   description         String?
   clinical_references String[] @default([])
@@ -705,6 +709,7 @@ model blobs {
 
 model anatomy_quizzes {
   id             Int      @id @default(autoincrement())
+  unique_id      String   @unique @default(uuid())
   title          String
   description    String?
   status         String   @default("draft")
@@ -813,6 +818,7 @@ model user_anatomy_progress {
 
 model mcq_topics {
   id              Int      @id @default(autoincrement())
+  unique_id       String   @unique @default(uuid())
   title           String
   description     String?
   content_type    String // 'pdf', 'text', 'manual'
@@ -935,6 +941,7 @@ model user_mcq_progress {
 
 model chatbot_conversations {
   id           Int      @id @default(autoincrement())
+  unique_id    String   @unique @default(uuid())
   user_id      Int
   topic        String
   last_message String?  @db.VarChar(50)
@@ -1011,6 +1018,7 @@ model chatbot_message_feedbacks {
 // Skripsi Builder Tables
 model skripsi_sets {
   id             Int      @id @default(autoincrement())
+  unique_id      String   @unique @default(uuid())
   user_id        Int
   title          String
   description    String?  @db.Text
@@ -1113,6 +1121,7 @@ model skripsi_constants {
 
 model osce_topics {
   id               Int      @id @default(autoincrement())
+  unique_id        String   @unique @default(uuid())
   title            String
   description      String?
   scenario         String   @db.Text // The OSCE case/scenario

@@ -17,7 +17,7 @@ router.post('/generate-from-pdf', asyncHandler(flashcardController.generateCards
 // Deck CRUD
 router.post('/', asyncHandler(flashcardController.create.bind(flashcardController)))
 router.get('/', asyncHandler(flashcardController.index.bind(flashcardController)))
-router.get('/:id', asyncHandler(flashcardController.show.bind(flashcardController)))
-router.put('/:id', asyncHandler(flashcardController.update.bind(flashcardController)))
+router.get('/:uniqueId', asyncHandler(flashcardController.show.bind(flashcardController)))
+router.put('/:uniqueId', asyncHandler(flashcardController.update.bind(flashcardController)))
 
 export default router

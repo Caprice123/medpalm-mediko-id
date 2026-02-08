@@ -20,21 +20,21 @@ router.get('/config', asyncHandler(ChatbotController.getConfig))
 // Conversation management
 router.get('/conversations', asyncHandler(ConversationController.index))
 router.post('/conversations', asyncHandler(ConversationController.create))
-router.get('/conversations/:id', asyncHandler(ConversationController.show))
-router.put('/conversations/:id', asyncHandler(ConversationController.update))
-router.delete('/conversations/:id', asyncHandler(ConversationController.delete))
+router.get('/conversations/:uniqueId', asyncHandler(ConversationController.show))
+router.put('/conversations/:uniqueId', asyncHandler(ConversationController.update))
+router.delete('/conversations/:uniqueId', asyncHandler(ConversationController.delete))
 
 // Message management
-router.get('/conversations/:conversationId/messages', asyncHandler(MessageController.index))
-router.post('/conversations/:conversationId/send', asyncHandler(MessageController.create))
+router.get('/conversations/:conversationUniqueId/messages', asyncHandler(MessageController.index))
+router.post('/conversations/:conversationUniqueId/send', asyncHandler(MessageController.create))
 
 // Message feedback
 router.post('/messages/:messageId/feedback', asyncHandler(MessageController.feedback))
 
 // Finalize message (for both completed and truncated streams)
-router.post('/conversations/:conversationId/messages/:messageId/finalize', asyncHandler(MessageController.finalize))
+router.post('/conversations/:conversationUniqueId/messages/:messageId/finalize', asyncHandler(MessageController.finalize))
 
 // Truncate message when streaming is stopped (DEPRECATED - use finalize instead)
-router.patch('/conversations/:conversationId/messages/:messageId/truncate', asyncHandler(MessageController.truncate))
+router.patch('/conversations/:conversationUniqueId/messages/:messageId/truncate', asyncHandler(MessageController.truncate))
 
 export default router

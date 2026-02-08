@@ -16,7 +16,7 @@ export class StartFlashcardDeckService extends BaseService {
 
       // Get the deck with cards
       const deck = await tx.flashcard_decks.findUnique({
-        where: { id: parseInt(flashcardDeckId) },
+        where: { unique_id: flashcardDeckId },
         include: {
           flashcard_cards: {
             orderBy: { order: 'asc' }
@@ -163,6 +163,7 @@ export class StartFlashcardDeckService extends BaseService {
       // NOTE: Flashcard needs 'back' (answer) for client-side similarity calculation
       const deckSnapshot = {
         id: deck.id,
+        uniqueId: deck.unique_id,
         title: deck.title || 'Untitled',
         description: deck.description || '',
         tags: (deck.flashcard_deck_tags || []).map(t => ({

@@ -15,7 +15,7 @@ export class StartExerciseTopicService extends BaseService {
       }
       // Get the topic with questions
       const topic = await tx.exercise_topics.findUnique({
-        where: { id: parseInt(exerciseTopicId) },
+        where: { unique_id: exerciseTopicId },
         include: {
           exercise_questions: true,
           exercise_topic_tags: {
@@ -128,6 +128,7 @@ export class StartExerciseTopicService extends BaseService {
       // NOTE: Do NOT include answer or explanation here - they should only be sent after submission
       const topicSnapshot = {
         id: topic.id,
+        uniqueId: topic.unique_id,
         title: topic.title || 'Untitled',
         description: topic.description || '',
         exercise_topic_tags: topic.exercise_topic_tags || [],

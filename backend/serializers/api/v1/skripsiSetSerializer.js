@@ -4,6 +4,7 @@ export class SkripsiSetSerializer {
 
     return {
       id: set.id,
+      uniqueId: set.unique_id,
       title: set.title,
       editorContent: set.editor_content,
       tabs: tabs.map(tab => ({

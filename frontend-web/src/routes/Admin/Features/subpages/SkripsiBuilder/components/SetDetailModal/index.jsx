@@ -47,10 +47,10 @@ function SetDetailModal({ set, isOpen, onClose }) {
   const chatMessagesRef = useRef(null)
 
   useEffect(() => {
-    if (isOpen && set?.id) {
+    if (isOpen && set?.uniqueId) {
       fetchSetData()
     }
-  }, [isOpen, set?.id])
+  }, [isOpen, set?.uniqueId])
 
   useEffect(() => {
     if (chatMessagesRef.current) {
@@ -60,7 +60,7 @@ function SetDetailModal({ set, isOpen, onClose }) {
 
   const fetchSetData = async () => {
     try {
-      const setData = await dispatch(fetchAdminSet(set.id))
+      const setData = await dispatch(fetchAdminSet(set.uniqueId))
       setSetData(setData)
       if (setData.tabs && setData.tabs.length > 0) {
         setCurrentTab(setData.tabs[0])

@@ -26,12 +26,12 @@ class CalculatorController {
 
   /**
    * Get a specific calculator topic
-   * GET /admin/v1/calculators/:id
+   * GET /admin/v1/calculators/:uniqueId
    */
   async getTopicDetail(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const topic = await GetCalculatorTopicDetailService.call(id)
+    const topic = await GetCalculatorTopicDetailService.call(uniqueId)
 
     return res.status(200).json({
       data: await CalculatorTopicSerializer.serialize(topic),
@@ -77,10 +77,10 @@ class CalculatorController {
 
   /**
    * Update a calculator topic
-   * PUT /admin/v1/calculators/:id
+   * PUT /admin/v1/calculators/:uniqueId
    */
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const {
       title,
       description,
@@ -94,7 +94,7 @@ class CalculatorController {
       tags,
     } = req.body
 
-    const topic = await UpdateCalculatorTopicService.call(id, {
+    const topic = await UpdateCalculatorTopicService.call(uniqueId, {
       title,
       description,
       clinical_references,
@@ -114,12 +114,12 @@ class CalculatorController {
 
   /**
    * Delete a calculator topic
-   * DELETE /admin/v1/calculators/:id
+   * DELETE /admin/v1/calculators/:uniqueId
    */
   async delete(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const result = await DeleteCalculatorTopicService.call(id)
+    const result = await DeleteCalculatorTopicService.call(uniqueId)
 
     return res.status(200).json({
       data: result,

@@ -168,21 +168,23 @@ export class ValidatedSearchModeAIService extends BaseService {
       })
       console.log(queryForRetrieval, ragResults)
 
-      // Group chunks by note ID to avoid duplicate sources
+      // Group chunks by note unique ID to avoid duplicate sources
       const groupedByNote = {}
       ragResults.sources.forEach(source => {
-        if (!groupedByNote[source.noteId]) {
-          groupedByNote[source.noteId] = {
-            noteId: source.noteId,
+        const groupKey = source.noteUniqueId || source.noteId  // Fallback to noteId if noteUniqueId not available
+        if (!groupedByNote[groupKey]) {
+          groupedByNote[groupKey] = {
+            noteId: source.noteId,  // Keep numeric ID for backward compatibility
+            noteUniqueId: source.noteUniqueId,  // Use unique_id for URLs
             title: source.title,
             chunks: [],
             maxScore: source.score
           }
         }
-        groupedByNote[source.noteId].chunks.push(source.content)
+        groupedByNote[groupKey].chunks.push(source.content)
         // Keep the highest score for this note
-        if (source.score > groupedByNote[source.noteId].maxScore) {
-          groupedByNote[source.noteId].maxScore = source.score
+        if (source.score > groupedByNote[groupKey].maxScore) {
+          groupedByNote[groupKey].maxScore = source.score
         }
       })
 
@@ -191,15 +193,16 @@ export class ValidatedSearchModeAIService extends BaseService {
         sourceType: 'summary_note',
         title: note.title,
         content: note.chunks.join('\n\n'), // Combine all chunks from same note
-        noteId: note.noteId,
+        noteId: note.noteId,  // Keep for backward compatibility
+        noteUniqueId: note.noteUniqueId,  // Use for URLs
         score: note.maxScore
       }))
 
       console.log(`Grouped ${ragResults.sources.length} chunks into ${uniqueSources.length} unique notes`)
 
-      // Construct context with unique note IDs
+      // Construct context with unique note IDs (use unique_id for display)
       const contextParts = uniqueSources.map((source, index) => {
-        return `[Sumber ${index + 1} - Note ID: ${source.noteId} - ${source.title}]\n${source.content}\n`
+        return `[Sumber ${index + 1} - Note ID: ${source.noteUniqueId || source.noteId} - ${source.title}]\n${source.content}\n`
       })
       const context = contextParts.join('\n---\n\n')
 
@@ -243,10 +246,10 @@ export class ValidatedSearchModeAIService extends BaseService {
         message
       )
 
-      // Map sources to include proper URLs for summary notes
+      // Map sources to include proper URLs for summary notes (use unique_id for URLs)
       const sourcesWithUrls = uniqueSources.map(source => ({
         ...source,
-        url: `/summary-notes/${source.noteId}`
+        url: `/summary-notes/${source.noteUniqueId || source.noteId}`  // Prefer unique_id, fallback to numeric id
       }))
 
       return {

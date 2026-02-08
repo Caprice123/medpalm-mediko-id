@@ -16,11 +16,11 @@ router.use(checkFeature(featureConstantKey))
 router.get('/', asyncHandler(anatomyController.index.bind(anatomyController)))
 
 // Get single quiz for user to take
-router.get('/:id', asyncHandler(anatomyController.show.bind(anatomyController)))
+router.get('/:uniqueId', asyncHandler(anatomyController.show.bind(anatomyController)))
 
 // Submit answers for a quiz (simpler approach without sessions)
 router.post(
-  '/:id/submit',
+  '/:uniqueId/submit',
   asyncHandler(anatomyController.submit.bind(anatomyController))
 )
 

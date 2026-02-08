@@ -138,7 +138,7 @@ const SkripsiEditor = () => {
     try {
       // Convert BlockNote blocks to HTML before saving
       const htmlContent = await blocksToHTML(editorContent)
-      await dispatch(saveSetContent(currentSet.id, htmlContent))
+      await dispatch(saveSetContent(currentSet.uniqueId, htmlContent))
       setHasUnsavedChanges(false)
     } catch (error) {
       console.error('Failed to save:', error)

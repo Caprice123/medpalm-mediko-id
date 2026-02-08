@@ -94,6 +94,7 @@ export class GetMcqTopicsService extends BaseService {
       return {
         id: topic.id,
         title: topic.title,
+        unique_id: topic.unique_id,
         description: topic.description,
         content_type: topic.content_type,
         source_url: topic.source_url,

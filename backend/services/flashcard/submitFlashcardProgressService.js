@@ -56,7 +56,7 @@ export class SubmitFlashcardProgressService extends BaseService {
     const result = await prisma.$transaction(async (tx) => {
       // Get the deck with cards to verify answers
       const deck = await tx.flashcard_decks.findUnique({
-        where: { id: parseInt(deckId) },
+        where: { unique_id: deckId },
         include: {
           flashcard_cards: true
         }

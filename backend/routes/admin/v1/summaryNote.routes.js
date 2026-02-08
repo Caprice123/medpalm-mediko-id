@@ -10,10 +10,10 @@ router.use(requireAdmin)
 
 // CRUD routes
 router.get('/', asyncHandler(SummaryNotesAdminController.index))
-router.get('/:id', asyncHandler(SummaryNotesAdminController.show))
+router.get('/:uniqueId', asyncHandler(SummaryNotesAdminController.show))
 router.post('/', asyncHandler(SummaryNotesAdminController.create))
-router.put('/:id', asyncHandler(SummaryNotesAdminController.update))
-router.delete('/:id', asyncHandler(SummaryNotesAdminController.destroy))
+router.put('/:uniqueId', asyncHandler(SummaryNotesAdminController.update))
+router.delete('/:uniqueId', asyncHandler(SummaryNotesAdminController.destroy))
 
 // Generate summary from document
 router.post('/generate', asyncHandler(SummaryNotesAdminController.generateFromDocument))

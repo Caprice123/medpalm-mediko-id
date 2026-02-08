@@ -56,6 +56,7 @@ export class CalculatorTopicSerializer {
     return {
       id: topic.id,
       title: topic.title,
+      uniqueId: topic.unique_id,
       description: topic.description,
       result_label: topic.result_label,
       result_unit: topic.result_unit,

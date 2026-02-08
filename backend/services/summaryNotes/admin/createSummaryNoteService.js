@@ -81,8 +81,8 @@ export class CreateSummaryNoteService extends BaseService {
     // Queue embedding job if status is 'published'
     if (result.status === 'published') {
       try {
-        await queueEmbedSummaryNote(result.id)
-        console.log(`✓ Queued embedding job for summary note ${result.id}`)
+        await queueEmbedSummaryNote(result.id, result.unique_id)
+        console.log(`✓ Queued embedding job for summary note ${result.unique_id}`)
       } catch (error) {
         console.error('Failed to queue embedding job:', error)
         // Don't throw - note was created successfully, embedding is supplementary

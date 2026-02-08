@@ -7,7 +7,7 @@ export class GetMcqTopicByIdService extends BaseService {
     return await prisma.$transaction(async (tx) => {
       const topic = await tx.mcq_topics.findFirst({
         where: {
-          id: topicId,
+          unique_id: topicId,
           status: 'published'
         },
         include: {

@@ -16,8 +16,8 @@ router.use('/constants', constantRoutes)
 // Calculator CRUD
 router.get('/', asyncHandler(calculatorController.getTopics.bind(calculatorController)))
 router.post('/', asyncHandler(calculatorController.create.bind(calculatorController)))
-router.get('/:id', asyncHandler(calculatorController.getTopicDetail.bind(calculatorController)))
-router.put('/:id', asyncHandler(calculatorController.update.bind(calculatorController)))
-router.delete('/:id', asyncHandler(calculatorController.delete.bind(calculatorController)))
+router.get('/:uniqueId', asyncHandler(calculatorController.getTopicDetail.bind(calculatorController)))
+router.put('/:uniqueId', asyncHandler(calculatorController.update.bind(calculatorController)))
+router.delete('/:uniqueId', asyncHandler(calculatorController.delete.bind(calculatorController)))
 
 export default router

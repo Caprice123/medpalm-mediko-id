@@ -18,8 +18,8 @@ router.post(
 // Topic CRUD
 router.post('/topics', asyncHandler(mcqController.create.bind(mcqController)))
 router.get('/topics', asyncHandler(mcqController.index.bind(mcqController)))
-router.get('/topics/:id', asyncHandler(mcqController.show.bind(mcqController)))
-router.put('/topics/:id', asyncHandler(mcqController.update.bind(mcqController)))
-router.delete('/topics/:id', asyncHandler(mcqController.delete.bind(mcqController)))
+router.get('/topics/:uniqueId', asyncHandler(mcqController.show.bind(mcqController)))
+router.put('/topics/:uniqueId', asyncHandler(mcqController.update.bind(mcqController)))
+router.delete('/topics/:uniqueId', asyncHandler(mcqController.delete.bind(mcqController)))
 
 export default router

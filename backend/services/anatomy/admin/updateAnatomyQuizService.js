@@ -17,7 +17,7 @@ export class UpdateAnatomyQuizService extends BaseService {
 
     // Check if quiz exists
     const existingQuiz = await prisma.anatomy_quizzes.findUnique({
-      where: { id: parseInt(quizId) }
+      where: { unique_id: quizId }
     })
 
     if (!existingQuiz) {
@@ -28,16 +28,16 @@ export class UpdateAnatomyQuizService extends BaseService {
     const updatedQuiz = await prisma.$transaction(async tx => {
       // Delete existing questions and tags
       await tx.anatomy_questions.deleteMany({
-        where: { quiz_id: parseInt(quizId) }
+        where: { quiz_id: existingQuiz.id }
       })
 
       await tx.anatomy_quiz_tags.deleteMany({
-        where: { quiz_id: parseInt(quizId) }
+        where: { quiz_id: existingQuiz.id }
       })
 
       // Update quiz with new data
       const quiz = await tx.anatomy_quizzes.update({
-        where: { id: parseInt(quizId) },
+        where: { unique_id: quizId },
         data: {
           title,
           description: description || '',
@@ -79,7 +79,7 @@ export class UpdateAnatomyQuizService extends BaseService {
       const oldAttachment = await prisma.attachments.findFirst({
         where: {
           record_type: 'anatomy_quiz',
-          record_id: parseInt(quizId),
+          record_id: existingQuiz.id,
           name: 'image'
         }
       })
@@ -101,13 +101,8 @@ export class UpdateAnatomyQuizService extends BaseService {
   }
 
   static async validate({ quizId, title, tags, questions }) {
-    if (!quizId) {
+    if (!quizId || typeof quizId !== 'string') {
       throw new ValidationError('Quiz ID is required')
-    }
-
-    const id = parseInt(quizId)
-    if (isNaN(id) || id <= 0) {
-      throw new ValidationError('Invalid quiz ID')
     }
 
     if (!title) {

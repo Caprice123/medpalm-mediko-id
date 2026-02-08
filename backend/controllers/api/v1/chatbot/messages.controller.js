@@ -10,12 +10,12 @@ class MessageController {
   // Get messages for a conversation
   async index(req, res) {
     const userId = req.user.id
-    const { conversationId } = req.params
+    const { conversationUniqueId } = req.params
     const { page, perPage } = req.query
 
     const result = await GetMessagesService.call({
       userId,
-      conversationId: parseInt(conversationId),
+      conversationId: conversationUniqueId,
       page: parseInt(page) || 1,
       perPage: parseInt(perPage) || 50
     })
@@ -29,7 +29,7 @@ class MessageController {
   // Send a message and get AI response (with streaming support)
   async create(req, res) {
     const userId = req.user.id
-    const { conversationId } = req.params
+    const { conversationUniqueId } = req.params
     const { message, mode } = req.body
 
     // Set headers for Server-Sent Events
@@ -67,7 +67,7 @@ class MessageController {
     try {
       await SendMessageService.call({
         userId,
-        conversationId: parseInt(conversationId),
+        conversationId: conversationUniqueId,
         message,
         mode,
         streamAbortSignal: streamAbortController.signal, // Pass abort signal
@@ -210,7 +210,7 @@ class MessageController {
   // Finalize message content (called by frontend for both completed and truncated)
   async finalize(req, res) {
     const userId = req.user.id
-    const { conversationId, messageId } = req.params
+    const { conversationUniqueId, messageId } = req.params
     const { content, isComplete } = req.body
 
     if (typeof content !== 'string') {
@@ -222,7 +222,7 @@ class MessageController {
     try {
       const result = await FinalizeMessageService.call({
         userId,
-        conversationId: parseInt(conversationId),
+        conversationId: conversationUniqueId,
         messageId: parseInt(messageId),
         content: content,
         isComplete: isComplete === true
@@ -260,7 +260,7 @@ class MessageController {
   // Truncate message content when user stops streaming (DEPRECATED - use finalize)
   async truncate(req, res) {
     const userId = req.user.id
-    const { conversationId, messageId } = req.params
+    const { conversationUniqueId, messageId } = req.params
     const { characterCount } = req.body
 
     if (!characterCount || characterCount < 0) {
@@ -271,7 +271,7 @@ class MessageController {
 
     const result = await TruncateMessageService.call({
       userId,
-      conversationId: parseInt(conversationId),
+      conversationId: conversationUniqueId,
       messageId: parseInt(messageId),
       characterCount: parseInt(characterCount)
     })

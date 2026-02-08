@@ -34,7 +34,7 @@ function AnatomyQuiz({ onBack }) {
 
   const handleEditQuiz = async (quiz) => {
     // Fetch full quiz details including questions
-    await dispatch(fetchAdminAnatomyQuiz(quiz.id, () => {
+    await dispatch(fetchAdminAnatomyQuiz(quiz.uniqueId, () => {
         setUiState({
           ...uiState,
           isCalculatorModalOpen: true,

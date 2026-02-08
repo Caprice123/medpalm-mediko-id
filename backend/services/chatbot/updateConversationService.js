@@ -11,7 +11,7 @@ export class UpdateConversationService extends BaseService {
     // Verify conversation exists and user has access
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
       }
     })
@@ -24,14 +24,15 @@ export class UpdateConversationService extends BaseService {
       throw new AuthorizationError('You do not have access to this conversation')
     }
 
-    // Update conversation
+    // Update conversation using internal id
     const updatedConversation = await prisma.chatbot_conversations.update({
-      where: { id: conversationId },
+      where: { id: conversation.id },
       data: { topic }
     })
 
     return {
       id: updatedConversation.id,
+      uniqueId: updatedConversation.unique_id,
       topic: updatedConversation.topic,
       lastMessage: updatedConversation.last_message || null,
       createdAt: updatedConversation.created_at,
@@ -44,7 +45,7 @@ export class UpdateConversationService extends BaseService {
       throw new ValidationError('Invalid user ID')
     }
 
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
 

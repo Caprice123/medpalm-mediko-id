@@ -9,10 +9,10 @@ export class GetMessagesService extends BaseService {
     // Verify conversation exists and user has access
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
       },
-      select: { user_id: true }
+      select: { id: true, user_id: true }
     })
 
     if (!conversation) {
@@ -28,7 +28,7 @@ export class GetMessagesService extends BaseService {
 
     const messages = await prisma.chatbot_messages.findMany({
       where: {
-        conversation_id: conversationId,
+        conversation_id: conversation.id,
         is_deleted: false
       },
       take,
@@ -64,7 +64,7 @@ export class GetMessagesService extends BaseService {
       throw new ValidationError('Invalid user ID')
     }
 
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
 
