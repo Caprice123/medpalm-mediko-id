@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState, useRef, useCallback, useMemo, memo } from 'react'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/action'
 import { actions, selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
 import { ChatbotMessagesSkeleton, ChatbotLoadingIndicator } from '@components/common/SkeletonCard'
@@ -18,26 +18,87 @@ import {
 } from './Conversation.styles'
 import Button from '@components/common/Button'
 
+// Memoized Header Component - only re-renders when title or editing state changes
+const ConversationHeader = memo(({
+  currentConversation,
+  isEditingTitle,
+  editedTitle,
+  onBack,
+  onTitleClick,
+  onTitleChange,
+  onTitleBlur,
+  onTitleKeyDown,
+  titleInputRef
+}) => {
+  // Debug: See when header re-renders
+  console.log('🔄 ConversationHeader rendered')
+
+  return (
+    <Header>
+      <HeaderContent>
+        {onBack && (
+          <Button variant="secondary" onClick={onBack}>
+            ← Kembali
+          </Button>
+        )}
+        {isEditingTitle ? (
+          <TopicInput
+            ref={titleInputRef}
+            value={editedTitle}
+            onChange={onTitleChange}
+            onBlur={onTitleBlur}
+            onKeyDown={onTitleKeyDown}
+          />
+        ) : (
+          <TopicTitle onClick={onTitleClick}>
+            {currentConversation?.topic || 'Untitled'}
+          </TopicTitle>
+        )}
+      </HeaderContent>
+    </Header>
+  )
+}, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if these specific props change
+  return (
+    prevProps.isEditingTitle === nextProps.isEditingTitle &&
+    prevProps.editedTitle === nextProps.editedTitle &&
+    prevProps.currentConversation?.topic === nextProps.currentConversation?.topic &&
+    prevProps.onBack === nextProps.onBack &&
+    prevProps.onTitleClick === nextProps.onTitleClick &&
+    prevProps.onTitleChange === nextProps.onTitleChange &&
+    prevProps.onTitleBlur === nextProps.onTitleBlur &&
+    prevProps.onTitleKeyDown === nextProps.onTitleKeyDown
+  )
+})
+
 function ChatbotConversationPanel({ conversationId, onBack }) {
   const dispatch = useDispatch()
 
-  const {
-    conversations,
-    currentConversation,
-    currentMode,
-    availableModes,
-    loading,
-    pagination,
-    messagesByConversation,
-    streamingStateByConversation
-  } = useSelector(state => state.chatbot)
-  console.log(currentConversation)
+  // Optimize selectors - only select what's needed to prevent unnecessary re-renders
+  const conversations = useSelector(state => state.chatbot.conversations, shallowEqual)
+  const currentConversation = useSelector(
+    state => state.chatbot.currentConversation,
+    (prev, next) => {
+      // Custom equality: only re-render if id or topic changes
+      if (!prev && !next) return true
+      if (!prev || !next) return false
+      return prev.id === next.id && prev.topic === next.topic
+    }
+  )
+  const currentMode = useSelector(state => state.chatbot.currentMode)
+  const availableModes = useSelector(state => state.chatbot.availableModes, shallowEqual)
+  const loading = useSelector(state => state.chatbot.loading, shallowEqual)
+  const pagination = useSelector(state => state.chatbot.pagination, shallowEqual)
+  const messagesByConversation = useSelector(state => state.chatbot.messagesByConversation, shallowEqual)
+
+  // Get streaming state for this specific conversation only
+  const conversationStreamingState = useSelector(
+    state => state.chatbot.streamingStateByConversation[conversationId] || null,
+    shallowEqual
+  )
 
   // Get messages for the current conversation using selector
   const messages = useSelector(selectMessagesForCurrentConversation)
-
-  // Get streaming state for this specific conversation
-  const conversationStreamingState = streamingStateByConversation[conversationId] || null
 
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -50,6 +111,19 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const titleInputRef = useRef(null)
   console.log(conversationStreamingState)
   const isInitialScrollRef = useRef(false)
+
+  // Use refs to avoid recreating callbacks
+  const currentConversationRef = useRef(currentConversation)
+  const editedTitleRef = useRef(editedTitle)
+
+  // Keep refs updated
+  useEffect(() => {
+    currentConversationRef.current = currentConversation
+  }, [currentConversation])
+
+  useEffect(() => {
+    editedTitleRef.current = editedTitle
+  }, [editedTitle])
 
   useEffect(() => {
     if (conversationId) {
@@ -228,28 +302,32 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     }
   }, [availableModes, currentMode, dispatch])
 
+  // Stable callbacks using refs to prevent recreating on every render
   const handleTitleClick = useCallback(() => {
-    if (currentConversation) {
-      setEditedTitle(currentConversation.topic)
+    if (currentConversationRef.current) {
+      setEditedTitle(currentConversationRef.current.topic)
       setIsEditingTitle(true)
       setTimeout(() => titleInputRef.current?.select(), 0)
     }
-  }, [currentConversation])
+  }, []) // No dependencies - uses ref
 
   const handleTitleChange = useCallback((e) => {
     setEditedTitle(e.target.value)
   }, [])
 
   const handleTitleBlur = useCallback(async () => {
-    if (editedTitle.trim() && editedTitle !== currentConversation.topic) {
+    const currentTitle = editedTitleRef.current
+    const originalTopic = currentConversationRef.current?.topic
+
+    if (currentTitle.trim() && currentTitle !== originalTopic) {
       try {
-        await dispatch(renameConversation(conversationId, editedTitle.trim()))
+        await dispatch(renameConversation(conversationId, currentTitle.trim()))
       } catch (error) {
         console.error('Failed to rename conversation:', error)
       }
     }
     setIsEditingTitle(false)
-  }, [editedTitle, currentConversation, conversationId, dispatch])
+  }, [conversationId, dispatch]) // Removed editedTitle and currentConversation - uses refs
 
   const handleTitleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
@@ -280,28 +358,17 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
   return (
     <Container>
-      <Header>
-        <HeaderContent>
-          {onBack && (
-            <Button variant="secondary" onClick={onBack}>
-              ← Kembali
-            </Button>
-          )}
-          {isEditingTitle ? (
-            <TopicInput
-              ref={titleInputRef}
-              value={editedTitle}
-              onChange={handleTitleChange}
-              onBlur={handleTitleBlur}
-              onKeyDown={handleTitleKeyDown}
-            />
-          ) : (
-            <TopicTitle onClick={handleTitleClick}>
-              {currentConversation.topic}
-            </TopicTitle>
-          )}
-        </HeaderContent>
-      </Header>
+      <ConversationHeader
+        currentConversation={currentConversation}
+        isEditingTitle={isEditingTitle}
+        editedTitle={editedTitle}
+        onBack={onBack}
+        onTitleClick={handleTitleClick}
+        onTitleChange={handleTitleChange}
+        onTitleBlur={handleTitleBlur}
+        onTitleKeyDown={handleTitleKeyDown}
+        titleInputRef={titleInputRef}
+      />
 
       <ModeSelector
         currentMode={currentMode}

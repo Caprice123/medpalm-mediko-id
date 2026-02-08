@@ -5,6 +5,7 @@ import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
+import { setTimeout as setWorkerTimeout, clearTimeout as clearWorkerTimeout } from 'worker-timers'
 
 const {
   setLoading,
@@ -503,8 +504,8 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
       }))
     }
 
-    // Schedule next character
-    setTimeout(typeNextCharacter, TYPING_SPEED_MS)
+    // Schedule next character using worker-timers to prevent tab throttling
+    setWorkerTimeout(typeNextCharacter, TYPING_SPEED_MS)
   }
 
   // Add chunk to content and start typing if needed

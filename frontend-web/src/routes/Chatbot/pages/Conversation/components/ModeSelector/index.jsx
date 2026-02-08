@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux'
-import { useState } from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
+import { useState, memo, useMemo } from 'react'
 import {
   Container,
   ModeButton,
@@ -15,7 +15,13 @@ import {
 } from './ModeSelector.styles'
 
 function ModeSelector({ currentMode, onModeChange }) {
-  const { availableModes, costs, userInformation } = useSelector(state => state.chatbot)
+  // Debug: See when ModeSelector re-renders
+  console.log('🔄 ModeSelector rendered')
+
+  // Optimize selectors to prevent unnecessary re-renders
+  const availableModes = useSelector(state => state.chatbot.availableModes, shallowEqual)
+  const costs = useSelector(state => state.chatbot.costs, shallowEqual)
+  const userInformation = useSelector(state => state.chatbot.userInformation, shallowEqual)
   const [showInfoModal, setShowInfoModal] = useState(false)
   const [showModeModal, setShowModeModal] = useState(false)
 
@@ -41,13 +47,15 @@ function ModeSelector({ currentMode, onModeChange }) {
     }
   ]
 
-  // Filter modes based on availability and add costs from config
-  const modes = allModes
-    .filter(mode => availableModes[mode.id])
-    .map(mode => ({
-      ...mode,
-      cost: costs && costs[mode.id] ? costs[mode.id] : 0
-    }))
+  // Filter modes based on availability and add costs from config - memoized
+  const modes = useMemo(() => {
+    return allModes
+      .filter(mode => availableModes[mode.id])
+      .map(mode => ({
+        ...mode,
+        cost: costs && costs[mode.id] ? costs[mode.id] : 0
+      }))
+  }, [availableModes, costs])
 
   // If no modes available, show message
   if (modes.length === 0) {
@@ -66,7 +74,10 @@ function ModeSelector({ currentMode, onModeChange }) {
     )
   }
 
-  const currentModeInfo = modes.find(m => m.id === currentMode)
+  const currentModeInfo = useMemo(() =>
+    modes.find(m => m.id === currentMode),
+    [modes, currentMode]
+  )
 
   return (
     <>
@@ -165,4 +176,10 @@ function ModeSelector({ currentMode, onModeChange }) {
   )
 }
 
-export default ModeSelector
+export default memo(ModeSelector, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if these specific props change
+  return (
+    prevProps.currentMode === nextProps.currentMode &&
+    prevProps.onModeChange === nextProps.onModeChange
+  )
+})

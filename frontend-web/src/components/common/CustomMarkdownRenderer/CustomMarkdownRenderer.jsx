@@ -109,4 +109,23 @@ const CustomMarkdownRenderer = ({ item, isStreaming = false }) => {
   );
 };
 
-export default React.memo(CustomMarkdownRenderer);
+// Memoize with custom comparison to only re-render when content actually changes
+export default React.memo(CustomMarkdownRenderer, (prevProps, nextProps) => {
+  // If both are not streaming and content is the same, skip re-render
+  if (!prevProps.isStreaming && !nextProps.isStreaming && prevProps.item === nextProps.item) {
+    return true; // Skip re-render
+  }
+
+  // If streaming state changed, re-render
+  if (prevProps.isStreaming !== nextProps.isStreaming) {
+    return false; // Re-render
+  }
+
+  // If content changed, re-render
+  if (prevProps.item !== nextProps.item) {
+    return false; // Re-render
+  }
+
+  // Otherwise skip re-render
+  return true;
+});
