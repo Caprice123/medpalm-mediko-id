@@ -14,14 +14,9 @@ class CalculatorController {
 
     const result = await GetCalculatorTopicsService.call({ search, tagName, page, perPage })
 
-    // Only return published and active calculators to users
-    const publicTopics = result.topics.filter(topic =>
-      topic.status === 'published'
-    )
-
     return res.status(200).json({
       data: {
-        topics: CalculatorTopicListSerializer.serialize(publicTopics),
+        topics: CalculatorTopicListSerializer.serialize(result.topics),
         pagination: result.pagination
       },
     })

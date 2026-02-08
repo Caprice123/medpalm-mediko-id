@@ -12,7 +12,9 @@ export class GetCalculatorTopicsService extends BaseService {
         // Fetch perPage + 1 to determine if there's a next page
         const take = itemsPerPage + 1
 
-        const where = {}
+        const where = {
+            status: 'published'
+        }
 
         // Search filter (title and description, using ILIKE with GIN trigram index)
         if (search) {
