@@ -19,7 +19,7 @@ function SummaryNotesPage() {
   // Fetch notes on mount
   useEffect(() => {
     dispatch(fetchSummaryNotes())
-    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester", "topic", "department"]}))
     dispatch(fetchTags())
   }, [dispatch])
 

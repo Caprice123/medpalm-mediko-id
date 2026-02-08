@@ -58,7 +58,7 @@ export const StyledTextarea = styled.textarea`
   }
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 0.875rem;
     padding: 0.75rem 1rem;
     min-height: ${props =>
       props.size === 'small' ? '80px' :

@@ -26,6 +26,8 @@ export const fetchSummaryNotes = (filters, page, perPage) => async (dispatch, ge
     if (currentFilters.search) queryParams.search = currentFilters.search
     if (currentFilters.university) queryParams.university = currentFilters.university
     if (currentFilters.semester) queryParams.semester = currentFilters.semester
+    if (currentFilters.topic) queryParams.topic = currentFilters.topic
+    if (currentFilters.department) queryParams.department = currentFilters.department
 
     // Add pagination parameters
     queryParams.page = currentPage
@@ -73,6 +75,8 @@ export const fetchAdminSummaryNotes = () => async (dispatch, getState) => {
     if (currentFilters.search) queryParams.search = currentFilters.search
     if (currentFilters.university) queryParams.university = currentFilters.university
     if (currentFilters.semester) queryParams.semester = currentFilters.semester
+    if (currentFilters.topic) queryParams.topic = currentFilters.topic
+    if (currentFilters.department) queryParams.department = currentFilters.department
     if (currentFilters.status) queryParams.status = currentFilters.status
 
     // Add pagination parameters

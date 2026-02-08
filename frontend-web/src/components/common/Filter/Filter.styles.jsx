@@ -8,7 +8,7 @@ export const FilterContainer = styled.div`
   margin-bottom: 1rem;
 
   @media (max-width: 768px) {
-    padding: 1rem;
+    /* padding: 1rem; */
   }
 `
 
@@ -48,7 +48,6 @@ export const FilterGrid = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
 `
 

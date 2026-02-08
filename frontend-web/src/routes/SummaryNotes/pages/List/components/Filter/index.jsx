@@ -24,6 +24,14 @@ export const Filter = () => {
         return tags?.find(tag => tag.name == "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
 
+    const topicTags = useMemo(() => {
+        return tags?.find(tag => tag.name == "topic")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
+    }, [tags])
+
+    const departmentTags = useMemo(() => {
+        return tags?.find(tag => tag.name == "department")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
+    }, [tags])
+
     return (
         <div style={{
             background: 'white',
@@ -36,6 +44,7 @@ export const Filter = () => {
                 e.preventDefault()
                 onSearch()
             }}>
+                {/* Row 1: Name Search */}
                 <FilterComponent>
                     <FilterComponent.Group>
                         <FilterComponent.Label>Nama Ringkasan</FilterComponent.Label>
@@ -51,7 +60,10 @@ export const Filter = () => {
                             }}
                         />
                     </FilterComponent.Group>
+                </FilterComponent>
 
+                {/* Row 2: Filters */}
+                <FilterComponent>
                     <FilterComponent.Group>
                         <FilterComponent.Label>Universitas</FilterComponent.Label>
                         <Dropdown
@@ -69,6 +81,26 @@ export const Filter = () => {
                             value={filters.semester ? semesterTags.find(t => t.value === filters.semester) : null}
                             onChange={(option) => dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan semester..."
+                        />
+                    </FilterComponent.Group>
+
+                    <FilterComponent.Group>
+                        <FilterComponent.Label>Topik</FilterComponent.Label>
+                        <Dropdown
+                            options={topicTags}
+                            value={filters.topic ? topicTags.find(t => t.value === filters.topic) : null}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "topic", value: option?.value || "" }))}
+                            placeholder="Filter berdasarkan topik..."
+                        />
+                    </FilterComponent.Group>
+
+                    <FilterComponent.Group>
+                        <FilterComponent.Label>Departemen</FilterComponent.Label>
+                        <Dropdown
+                            options={departmentTags}
+                            value={filters.department ? departmentTags.find(t => t.value === filters.department) : null}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "department", value: option?.value || "" }))}
+                            placeholder="Filter berdasarkan departemen..."
                         />
                     </FilterComponent.Group>
                 </FilterComponent>

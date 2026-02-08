@@ -20,21 +20,10 @@ import {
  */
 function Filter({
   children,
-  onClear,
-  title,
-  showClear = true,
   className = ''
 }) {
   return (
     <FilterContainer className={className}>
-      <FilterHeader>
-        {title && <FilterTitle>{title}</FilterTitle>}
-        {showClear && onClear && (
-          <ClearButton onClick={onClear}>
-            Clear All
-          </ClearButton>
-        )}
-      </FilterHeader>
       <FilterGrid>
         {children}
       </FilterGrid>

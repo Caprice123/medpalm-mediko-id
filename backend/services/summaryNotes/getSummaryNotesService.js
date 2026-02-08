@@ -51,6 +51,36 @@ export class GetSummaryNotesService extends BaseService {
       })
     }
 
+    // Multiple topic filter: ?topic=1,2,3
+    if (filters.topic) {
+      const topicIds = Array.isArray(filters.topic)
+        ? filters.topic.map(id => parseInt(id))
+        : filters.topic.split(',').map(id => parseInt(id))
+
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tag_id: { in: topicIds }
+          }
+        }
+      })
+    }
+
+    // Multiple department filter: ?department=1,2
+    if (filters.department) {
+      const departmentIds = Array.isArray(filters.department)
+        ? filters.department.map(id => parseInt(id))
+        : filters.department.split(',').map(id => parseInt(id))
+
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tag_id: { in: departmentIds }
+          }
+        }
+      })
+    }
+
     // Apply tag filters with AND logic
     if (tagFilters.length > 0) {
       where.AND = tagFilters
@@ -130,6 +160,34 @@ export class GetSummaryNotesService extends BaseService {
         const semesterId = parseInt(id)
         if (isNaN(semesterId) || semesterId <= 0) {
           throw new ValidationError('Invalid semester filter')
+        }
+      }
+    }
+
+    // Validate topic filter if provided
+    if (filters.topic) {
+      const topicIds = Array.isArray(filters.topic)
+        ? filters.topic
+        : filters.topic.split(',')
+
+      for (const id of topicIds) {
+        const topicId = parseInt(id)
+        if (isNaN(topicId) || topicId <= 0) {
+          throw new ValidationError('Invalid topic filter')
+        }
+      }
+    }
+
+    // Validate department filter if provided
+    if (filters.department) {
+      const departmentIds = Array.isArray(filters.department)
+        ? filters.department
+        : filters.department.split(',')
+
+      for (const id of departmentIds) {
+        const departmentId = parseInt(id)
+        if (isNaN(departmentId) || departmentId <= 0) {
+          throw new ValidationError('Invalid department filter')
         }
       }
     }

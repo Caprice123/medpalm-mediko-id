@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetSummaryNotesListService extends BaseService {
-  static async call({ page = 1, perPage = 30, status, search, university, semester }) {
+  static async call({ page = 1, perPage = 30, status, search, university, semester, topic, department }) {
     // Calculate pagination
     const limit = parseInt(perPage)
     const offset = (parseInt(page) - 1) * limit
@@ -21,38 +21,27 @@ export class GetSummaryNotesListService extends BaseService {
       ]
     }
 
+    // Build tag filters array
+    const tagFilters = []
+
     // Filter by university tag
     if (university) {
-      where.summary_note_tags = {
-        some: {
-          tags: {
-            type: 'university',
-            name: { equals: university, mode: 'insensitive' }
-          }
-        }
-      }
-    }
-
-    // Filter by semester tag (need to handle if university filter is also set)
-    if (semester) {
-      if (where.summary_note_tags) {
-        // If university filter exists, we need to use AND
-        where.AND = [
-          { summary_note_tags: where.summary_note_tags },
-          {
-            summary_note_tags: {
-              some: {
-                tags: {
-                  type: 'semester',
-                  name: { equals: semester, mode: 'insensitive' }
-                }
-              }
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tags: {
+              type: 'university',
+              name: { equals: university, mode: 'insensitive' }
             }
           }
-        ]
-        delete where.summary_note_tags
-      } else {
-        where.summary_note_tags = {
+        }
+      })
+    }
+
+    // Filter by semester tag
+    if (semester) {
+      tagFilters.push({
+        summary_note_tags: {
           some: {
             tags: {
               type: 'semester',
@@ -60,7 +49,40 @@ export class GetSummaryNotesListService extends BaseService {
             }
           }
         }
-      }
+      })
+    }
+
+    // Filter by topic tag
+    if (topic) {
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tags: {
+              type: 'topic',
+              name: { equals: topic, mode: 'insensitive' }
+            }
+          }
+        }
+      })
+    }
+
+    // Filter by department tag
+    if (department) {
+      tagFilters.push({
+        summary_note_tags: {
+          some: {
+            tags: {
+              type: 'department',
+              name: { equals: department, mode: 'insensitive' }
+            }
+          }
+        }
+      })
+    }
+
+    // Apply tag filters with AND logic if any exist
+    if (tagFilters.length > 0) {
+      where.AND = tagFilters
     }
 
     // Get summary notes with pagination
@@ -103,6 +125,8 @@ export class GetSummaryNotesListService extends BaseService {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+      const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
+      const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
       return {
         id: note.id,
@@ -113,7 +137,9 @@ export class GetSummaryNotesListService extends BaseService {
         updated_at: note.updated_at,
         tags: allTags,
         universityTags,
-        semesterTags
+        semesterTags,
+        topicTags,
+        departmentTags
       }
     })
 
