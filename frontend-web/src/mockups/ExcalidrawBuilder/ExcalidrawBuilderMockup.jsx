@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Excalidraw, exportToBlob, exportToSvg } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import './ExcalidrawBuilderMockup.css';
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 const ExcalidrawBuilderMockup = () => {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);

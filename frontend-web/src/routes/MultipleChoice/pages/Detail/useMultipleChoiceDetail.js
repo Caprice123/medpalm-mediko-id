@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { fetchMcqTopicById, submitMcqAnswers } from '@store/mcq/action'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 export const useMultipleChoiceDetail = () => {
   const dispatch = useDispatch()

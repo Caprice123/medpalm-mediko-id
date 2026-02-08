@@ -48,6 +48,7 @@ import {
   GenerateButtonWrapper,
 } from './DiagramBuilderPanel.styles';
 import Button from '@components/common/Button'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 const DiagramBuilderPanel = ({ currentTab, style }) => {
   const dispatch = useAppDispatch();

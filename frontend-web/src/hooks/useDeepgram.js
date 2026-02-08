@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@deepgram/sdk'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabled = false, onAutoSend = null, onError = null) => {
   const [useNova, setUseNova] = useState(true)

@@ -1,10 +1,10 @@
 import { useState, memo, useCallback, useEffect, useRef } from 'react'
 import { useRecording } from '@hooks/useRecording'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { actions as commonActions } from '@store/common/reducer'
 import { updateSessionMetadata } from '@store/oscePractice/userAction'
 import { useParams } from 'react-router-dom'
-import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
+import { setInterval, clearInterval } from 'worker-timers'
 import {
   InputArea,
   InputWrapper,
@@ -62,10 +62,19 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider })
     setInterimText(interimText)
   }, [])
 
-  // Handle manual edit mode - set transcript as input value (replace, not append)
+  // Handle manual edit mode - append transcript to existing input value
   const handleTranscriptFinal = useCallback((finalText) => {
     setInterimText('') // Clear interim text
-    setInputText(finalText)
+    setInputText(prev => {
+      // Append with proper spacing
+      const trimmedPrev = prev?.trim() || ''
+      const trimmedNew = finalText?.trim() || ''
+
+      if (trimmedPrev && trimmedNew) {
+        return `${trimmedPrev} ${trimmedNew}`
+      }
+      return trimmedNew || trimmedPrev
+    })
   }, [])
 
   const handleRecordingError = useCallback((error) => {
@@ -108,8 +117,11 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider })
 
 
   const handleSendMessage = useCallback((textToSend) => {
-    // If textToSend is provided (from auto-send), use it; otherwise use inputText
-    const message = textToSend || inputText.trim()
+    // If textToSend is provided AND is a string (from auto-send), use it; otherwise use inputText
+    // This check prevents event objects from being passed as the message
+    const message = (typeof textToSend === 'string' && textToSend.trim())
+      ? textToSend.trim()
+      : inputText.trim()
 
     if (!message || disabled) return
 

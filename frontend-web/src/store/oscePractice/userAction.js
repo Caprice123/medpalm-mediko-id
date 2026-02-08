@@ -5,6 +5,7 @@ import { getWithToken, postWithToken, putWithToken, patchWithToken } from '../..
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 import { checkMimeTypeSupport } from '@utils/testDeepgramConnection'
+import { setTimeout } from 'worker-timers'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 

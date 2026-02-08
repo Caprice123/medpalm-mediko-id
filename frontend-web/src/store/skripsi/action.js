@@ -5,6 +5,7 @@ import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 

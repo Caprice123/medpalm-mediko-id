@@ -45,8 +45,31 @@ export class EndOsceSessionService extends BaseService {
         throw new ValidationError('Session not found or access denied')
       }
 
+      // If session is already completed, return the existing results
       if (session.status === 'completed') {
-        throw new ValidationError('Session already completed')
+        const savedDiagnoses = await prisma.osce_session_diagnoses.findMany({
+          where: { osce_session_id: session.id },
+          orderBy: [
+            { type: 'desc' },
+            { created_at: 'asc' },
+          ],
+        })
+
+        const savedTherapies = await prisma.osce_session_therapies.findMany({
+          where: { osce_session_id: session.id },
+          orderBy: { order: 'asc' },
+        })
+
+        const aiFeedback = session.ai_feedback ? JSON.parse(session.ai_feedback) : null
+
+        return {
+          totalScore: session.total_score,
+          maxScore: session.max_score,
+          percentage: Math.round((session.total_score / session.max_score) * 100),
+          feedback: aiFeedback,
+          diagnoses: savedDiagnoses,
+          therapies: savedTherapies,
+        }
       }
 
       // Save diagnoses

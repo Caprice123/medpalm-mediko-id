@@ -1,4 +1,5 @@
 import { createClient } from '@deepgram/sdk'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 /**
  * Check MIME type support for audio recording

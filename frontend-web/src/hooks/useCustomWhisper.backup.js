@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import useWhisper from "@chengsokdara/use-whisper"
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
 
 export const useCustomWhisper = (
   useNova,

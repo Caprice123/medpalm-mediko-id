@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { FaClock } from 'react-icons/fa'
 import { TimerCard, TimerDisplay, TimerIcon, TimerLabel } from '../../../../SessionPractice.styles'
+import { setInterval, clearInterval } from 'worker-timers'
 
 const TimerSection = ({ onEndSession, isEndingSession }) => {
     const { sessionDetail } = useSelector(state => state.oscePractice)
@@ -23,18 +24,18 @@ const TimerSection = ({ onEndSession, isEndingSession }) => {
 
         // Only auto-end if session is started and time is actually up
         if (durationInSeconds <= 1) {
-            // handleTimeUp()
+            handleTimeUp()
             return
         }
 
         // Start countdown timer
         timerRef.current = setInterval(() => {
             setTimeRemaining(prev => {
-            if (prev <= 1) {
-                // handleTimeUp()
-                return 0
-            }
-            return prev - 1
+                if (prev <= 1) {
+                    handleTimeUp()
+                    return 0
+                }
+                return prev - 1
             })
         }, 1000)
 

@@ -12,7 +12,7 @@ import Guideline from './subcomponents/Guideline'
 function ConversationTab({ sttProvider }) {
   const { sessionId } = useParams()
   const dispatch = useDispatch()
-  const { sessionMessages, loading } = useSelector(state => state.oscePractice)
+  const { loading } = useSelector(state => state.oscePractice)
 
   // Fetch message history on mount
   useEffect(() => {
