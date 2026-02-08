@@ -547,47 +547,6 @@ export class SendMessageService extends BaseService {
       throw dbError
     }
 
-    // Helper function to filter out <think>...</think> tags
-    const filterThinkTags = (text) => {
-      buffer += text
-      let filteredText = ''
-
-      while (buffer.length > 0) {
-        if (isInThinkTag) {
-          // We're inside a <think> tag, look for </think>
-          const closeTagIndex = buffer.indexOf('</think>')
-          if (closeTagIndex !== -1) {
-            // Found closing tag, skip everything up to and including it
-            buffer = buffer.substring(closeTagIndex + 8) // 8 = '</think>'.length
-            isInThinkTag = false
-          } else {
-            // Haven't found closing tag yet, discard entire buffer
-            buffer = ''
-            break
-          }
-        } else {
-          // We're outside a <think> tag, look for <think>
-          const openTagIndex = buffer.indexOf('<think>')
-          if (openTagIndex !== -1) {
-            // Found opening tag, keep everything before it
-            filteredText += buffer.substring(0, openTagIndex)
-            buffer = buffer.substring(openTagIndex + 7) // 7 = '<think>'.length
-            isInThinkTag = true
-          } else {
-            // No opening tag found
-            // Keep all but last 6 chars (in case '<think' is split across chunks)
-            if (buffer.length > 6) {
-              filteredText += buffer.substring(0, buffer.length - 6)
-              buffer = buffer.substring(buffer.length - 6)
-            }
-            break
-          }
-        }
-      }
-
-      return filteredText
-    }
-
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let newBalance = null
@@ -617,8 +576,7 @@ export class SendMessageService extends BaseService {
           fullResponseFromAI += content
 
           // Filter out <think> tags before accumulating
-          const filteredContent = filterThinkTags(content)
-          accumulatedChunk += filteredContent
+          accumulatedChunk += content
 
           // Send chunk when we have 20+ characters
           while (accumulatedChunk.length >= CHARS_PER_CHUNK) {

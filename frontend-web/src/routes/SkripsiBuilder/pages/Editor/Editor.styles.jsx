@@ -528,6 +528,29 @@ export const MessageTime = styled.span`
   margin-top: 4px;
 `
 
+export const SourcesSection = styled.div`
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+
+  .sources-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+`
+
+export const SourceItem = styled.a`
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+
+  &:hover {
+    color: #3b82f6;
+  }
+`
+
 export const ChatInputArea = styled.div`
   padding: 16px;
   border-top: 1px solid #e5e7eb;
@@ -567,6 +590,11 @@ export const ChatInput = styled.textarea`
 
   &::placeholder {
     color: #9ca3af;
+  }
+
+  &:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
   }
 
   @media (max-width: 768px) {

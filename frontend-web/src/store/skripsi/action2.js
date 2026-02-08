@@ -370,6 +370,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, abortController, o
       id: streamingMessageId,
       senderType: 'ai',
       content: '',
+      sources: [],
       createdAt: messageCreatedAt
     }
   }))

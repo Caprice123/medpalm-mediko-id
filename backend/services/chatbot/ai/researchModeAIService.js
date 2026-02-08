@@ -68,6 +68,7 @@ export class ResearchModeAIService extends BaseService {
 
       return {
         stream: result.stream,
+        provider: RouterUtils.getProvider(model),
         sources: result.sources
       }
     } catch (error) {
@@ -173,6 +174,7 @@ export class ResearchModeAIService extends BaseService {
       // Create streaming chat completion
       const stream = await perplexity.chat.completions.create(requestParams)
 
+      console.log("Stream:", stream)
       return {
         stream: stream,
         sources: [], // Citations will be extracted from the stream

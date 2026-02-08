@@ -123,7 +123,11 @@ class SkripsiTabsController {
             id: result.message.id,
             content: result.message.content,
             status: result.message.status,
-            updatedAt: result.message.updated_at.toISOString()
+            updatedAt: result.message.updated_at.toISOString(),
+            sources: (result.message.skripsi_message_sources || []).map(src => ({
+              url: src.url,
+              title: src.title
+            }))
           }
         })
       }
@@ -134,7 +138,11 @@ class SkripsiTabsController {
           id: result.message.id,
           content: result.message.content,
           status: result.message.status,
-          updatedAt: result.message.updated_at.toISOString()
+          updatedAt: result.message.updated_at.toISOString(),
+          sources: (result.message.skripsi_message_sources || []).map(src => ({
+            url: src.url,
+            title: src.title
+          }))
         }
       })
     } catch (error) {

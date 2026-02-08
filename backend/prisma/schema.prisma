@@ -1053,11 +1053,28 @@ model skripsi_messages {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id], onDelete: Cascade)
+  skripsi_tab             skripsi_tabs             @relation(fields: [tab_id], references: [id], onDelete: Cascade)
+  skripsi_message_sources skripsi_message_sources[]
 
   @@index([tab_id])
   @@index([sender_type])
   @@index([status])
+}
+
+model skripsi_message_sources {
+  id          Int      @id @default(autoincrement())
+  message_id  Int
+  source_type String // 'web_search'
+  title       String
+  content     String   @db.Text
+  url         String?
+  score       Float? // Similarity/relevance score
+  created_at  DateTime @default(now())
+
+  skripsi_message skripsi_messages @relation(fields: [message_id], references: [id], onDelete: Cascade)
+
+  @@index([message_id])
+  @@index([source_type])
 }
 
 model skripsi_diagrams {

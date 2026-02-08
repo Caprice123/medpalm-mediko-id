@@ -29,6 +29,9 @@ export class FinalizeMessageService {
           id: messageId,
           tab_id: tabId,
           sender_type: 'ai'
+        },
+        include: {
+          skripsi_message_sources: true
         }
       })
 
@@ -53,6 +56,9 @@ export class FinalizeMessageService {
           content: content, // Exact content from frontend
           status: isComplete ? 'completed' : 'truncated',
           updated_at: new Date()
+        },
+        include: {
+          skripsi_message_sources: true
         }
       })
 

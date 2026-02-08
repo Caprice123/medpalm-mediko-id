@@ -19,34 +19,63 @@ import {
   SendButton,
   EmptyMessages,
   TypingIndicator,
-  TypingDot
+  TypingDot,
+  SourcesSection,
+  SourceItem
 } from '../Editor.styles'
 import { useSelector } from 'react-redux'
 
 // Memoized message component - only rerenders when its own content changes
-const ChatMessage = memo(({ message, formatTime }) => {
+const ChatMessage = memo(({ message, formatTime, processContentWithCitations }) => {
   // Check if this message is currently streaming (temp ID starting with 'streaming-')
   const isStreaming = message.id && message.id.toString().startsWith('streaming-')
 
   return (
     <Message $sender={message.senderType}>
       <MessageBubble $sender={message.senderType}>
-        <CustomMarkdownRenderer item={message.content} isStreaming={isStreaming} />
+        <CustomMarkdownRenderer
+          item={message.senderType === 'ai'
+            ? processContentWithCitations(message.content, message.sources)
+            : message.content
+          }
+          isStreaming={isStreaming}
+        />
+
+        {message.senderType === 'ai' && message.sources && message.sources.length > 0 && (
+          <SourcesSection>
+            <div className="sources-title">📚 Sumber:</div>
+            {message.sources.map((source, index) => (
+              <React.Fragment key={index}>
+                <SourceItem href={source.url} target='_blank' rel='noopener noreferrer'>
+                  [{index + 1}] {source.title || source.url}
+                </SourceItem>
+                <br />
+              </React.Fragment>
+            ))}
+          </SourcesSection>
+        )}
       </MessageBubble>
       <MessageTime>{formatTime(message.createdAt)}</MessageTime>
     </Message>
   )
 }, (prevProps, nextProps) => {
-  // Only rerender if content or id changes
+  // Only rerender if content, id, or sources change
+  const prevSources = prevProps.message.sources || []
+  const nextSources = nextProps.message.sources || []
+
+  const sourcesChanged = prevSources.length !== nextSources.length ||
+    prevSources.some((src, i) => src?.url !== nextSources[i]?.url)
+
   return prevProps.message.content === nextProps.message.content &&
-         prevProps.message.id === nextProps.message.id
+         prevProps.message.id === nextProps.message.id &&
+         !sourcesChanged
 })
 
 // Memoized input section - manages its own state, isolated from parent
 const ChatInputSection = memo(({
   onSendMessage,
   onStopStreaming,
-  isSendingMessage,
+  disabled,
   isStreaming
 }) => {
   const [chatInput, setChatInput] = useState('')
@@ -73,7 +102,7 @@ const ChatInputSection = memo(({
           onChange={(e) => setChatInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ketik pesan... (Enter untuk kirim, Shift+Enter untuk baris baru)"
-          disabled={isSendingMessage}
+          disabled={disabled}
         />
         {isStreaming ? (
           <SendButton
@@ -86,7 +115,7 @@ const ChatInputSection = memo(({
         ) : (
           <SendButton
             onClick={handleSendMessage}
-            disabled={!chatInput.trim() || isSendingMessage}
+            disabled={!chatInput.trim() || disabled}
           >
             <FaPaperPlane />
           </SendButton>
@@ -95,8 +124,8 @@ const ChatInputSection = memo(({
     </ChatInputArea>
   )
 }, (prevProps, nextProps) => {
-  // Only rerender if sending state or streaming state changes
-  return prevProps.isSendingMessage === nextProps.isSendingMessage &&
+  // Only rerender if disabled state or streaming state changes
+  return prevProps.disabled === nextProps.disabled &&
          prevProps.isStreaming === nextProps.isStreaming
 })
 
@@ -113,7 +142,6 @@ const ChatPanel = memo(({ currentTab, style }) => {
   const messages = useSelector(selectMessagesForActiveTab)
   // Get per-tab loading state
   const tabLoading = useSelector(selectLoadingForActiveTab)
-  const isSendingMessage = tabLoading.isSendingMessage || false
   const isInitialLoading = tabLoading.isMessagesLoading || false
 
   // Get streaming state from Redux (same pattern as chatbot)
@@ -122,10 +150,12 @@ const ChatPanel = memo(({ currentTab, style }) => {
 
   // Check if currently streaming using Redux state
   const isStreaming = !!(tabStreamingState?.isSending || tabStreamingState?.isTyping)
+  // Input disabled when typing or sending (same as chatbot)
+  const isInputDisabled = !!(tabStreamingState?.isTyping || tabStreamingState?.isSending)
 
   // Debug streaming state changes
   useEffect(() => {
-    console.log(`🔄 Streaming state for tab ${currentTab?.id}:`, isStreaming, tabStreamingState)
+    // console.log(`🔄 Streaming state for tab ${currentTab?.id}:`, isStreaming, tabStreamingState)
   }, [isStreaming, currentTab?.id, tabStreamingState])
 
   // Only scroll to bottom when a NEW message is added or tab changes
@@ -192,6 +222,25 @@ const ChatPanel = memo(({ currentTab, style }) => {
     return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   }
 
+  // Process content to add inline citation links
+  const processContentWithCitations = useCallback((content, sources) => {
+    if (!sources || sources.length === 0) {
+      return content
+    }
+
+    // Replace [1], [2], etc. with clickable links
+    // Use [[1]] as link text so brackets are visible
+    let processed = content
+    sources.forEach((source, index) => {
+      const citationNumber = index + 1
+      const citationPattern = new RegExp(`\\[${citationNumber}\\]`, 'g')
+      const citationLink = `[[${citationNumber}]](${source.url})`
+      processed = processed.replace(citationPattern, citationLink)
+    })
+
+    return processed
+  }, [])
+
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!currentTab) return
     if (!userMessageText) return
@@ -235,6 +284,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
                 key={msg.id || idx}
                 message={msg}
                 formatTime={formatTime}
+                processContentWithCitations={processContentWithCitations}
               />
             ))}
           </>
@@ -245,7 +295,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
         key={currentTab?.id} // Reset input when tab changes
         onSendMessage={handleSendMessage}
         onStopStreaming={handleStopStreaming}
-        isSendingMessage={isSendingMessage}
+        disabled={isInputDisabled}
         isStreaming={isStreaming}
       />
     </StyledChatPanel>

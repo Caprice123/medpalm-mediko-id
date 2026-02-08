@@ -584,6 +584,11 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
             onChange={() => {
                 hasChanges.current = true
             }}
+            initialData={{
+              appState: {
+                currentItemFontFamily: 1, // Default font
+              }
+            }}
           >
             <MainMenu>
               <MainMenu.DefaultItems.SaveToActiveFile />

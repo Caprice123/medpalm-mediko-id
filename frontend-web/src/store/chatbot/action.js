@@ -596,8 +596,14 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
               finalData = data.data
               showSources = true // Now we can show sources since streaming is complete
 
+              // Use filtered sources from backend (only citations actually used in the response)
+              if (data.data.sources && data.data.sources.length > 0) {
+                sources.length = 0 // Clear all collected citations
+                sources.push(...data.data.sources) // Use only filtered sources from backend
+              }
+
               console.log('✅ Backend saved messages:', data.data)
-              console.log('✅ Citations ready to display:', sources.length)
+              console.log('✅ Filtered citations ready to display:', sources.length)
 
               // Store the real message IDs for potential truncation
               if (data.data.aiMessage && data.data.aiMessage.id) {

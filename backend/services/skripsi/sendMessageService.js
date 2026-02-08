@@ -227,6 +227,7 @@ export class SendMessageService extends BaseService {
 
       // Process Perplexity stream chunks with pacing
       for await (const chunk of stream) {
+        console.log(chunk)
         // Check if stream was aborted BEFORE processing chunk (client disconnected)
         if (streamAbortSignal && streamAbortSignal.aborted) {
           console.log('Stream aborted - client disconnected')
@@ -337,23 +338,70 @@ export class SendMessageService extends BaseService {
         if (streamAborted) break
 
         // Extract and send citations if available
-        if (chunk.citations && chunk.citations.length > 0) {
-          chunk.citations.forEach(citation => {
-            if (!sentCitations.has(citation)) {
-              sentCitations.add(citation)
-              citations.push(citation)
+        // Try both 'citations' (old format - array of URLs) and 'search_results' (new format - array of objects)
+        console.log('=== CHUNK DEBUG ===')
+        console.log('Chunk keys:', Object.keys(chunk))
+        console.log('Chunk.choices[0]:', chunk.choices?.[0])
+        console.log('Citations (top level):', chunk.citations)
+        console.log('Search results (top level):', chunk.search_results)
+        console.log('Message citations:', chunk.choices?.[0]?.message?.citations)
+        console.log('Delta citations:', chunk.choices?.[0]?.delta?.citations)
+        console.log('Finish reason:', chunk.choices?.[0]?.finish_reason)
+        console.log('==================')
+
+        // Check for citations in multiple possible locations
+        let foundCitations = null
+
+        // Location 1: Top-level search_results (new format)
+        if (chunk.search_results && chunk.search_results.length > 0) {
+          foundCitations = chunk.search_results
+          console.log('✅ Found search_results at top level:', foundCitations.length)
+        }
+        // Location 2: Top-level citations (old format)
+        else if (chunk.citations && chunk.citations.length > 0) {
+          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations at top level:', foundCitations.length)
+        }
+        // Location 3: Message-level citations
+        else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
+          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations in message:', foundCitations.length)
+        }
+        // Location 4: Delta-level citations
+        else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
+          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+          console.log('✅ Found citations in delta:', foundCitations.length)
+        }
+
+        // Process found citations
+        if (foundCitations && Array.isArray(foundCitations)) {
+          foundCitations.forEach(citation => {
+            // Handle both object format {url, title, date} and string format (URL)
+            const citationUrl = typeof citation === 'string' ? citation : citation.url
+            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
+            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
+
+            if (!sentCitations.has(citationUrl)) {
+              sentCitations.add(citationUrl)
+              citations.push({
+                url: citationUrl,
+                title: citationTitle,
+                date: citationDate
+              })
 
               // Send citation to client immediately
               try {
                 onStream({
                   type: 'citation',
                   data: {
-                    url: citation,
-                    title: citation.substring(0, 200)
+                    url: citationUrl,
+                    title: citationTitle,
+                    date: citationDate
                   }
                 })
+                console.log('📤 Sent citation to client:', citationUrl)
               } catch (e) {
-                // Ignore if client disconnected
+                console.log('❌ Failed to send citation:', e)
               }
             }
           })
@@ -397,6 +445,42 @@ export class SendMessageService extends BaseService {
       // Message stays in 'streaming' status until frontend calls /finalize
       console.log('⏸️  Not saving to DB - waiting for frontend to finalize')
 
+      // Save sources/citations if any (send all citations, no filtering)
+      const sources = []
+      if (citations.length > 0) {
+        // Remove duplicates based on URL
+        const uniqueCitations = Array.from(
+          new Map(citations.map(c => [c.url, c])).values()
+        )
+
+        // Create source objects with citation numbers
+        console.log(citations)
+        const allSources = uniqueCitations.map((citation, index) => ({
+          sourceType: 'web_search',
+          title: citation.title || citation.url.substring(0, 200),
+          content: citation.url.substring(0, 500),
+          url: citation.url,
+          score: 1.0 - (index * 0.1)
+        }))
+
+        // Save all sources to database (no filtering)
+        if (allSources.length > 0) {
+          await prisma.skripsi_message_sources.createMany({
+            data: allSources.map(src => ({
+              message_id: aiMessage.id,
+              source_type: src.sourceType,
+              title: src.title,
+              content: src.content,
+              url: src.url,
+              score: src.score
+            }))
+          })
+
+          // Format all sources for response
+          sources.push(...allSources)
+        }
+      }
+
       // Streaming complete - deduct credits
       try {
 
@@ -430,7 +514,7 @@ export class SendMessageService extends BaseService {
             content: aiMessage.content,
             createdAt: aiMessage.created_at.toISOString()
           },
-          sources: citations
+          sources: sources
         })
       } catch (dbError) {
         console.error('Database error after streaming:', dbError)

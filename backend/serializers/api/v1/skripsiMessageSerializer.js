@@ -13,6 +13,10 @@ export class SkripsiMessageSerializer {
         id: msg.id,
         senderType: msg.sender_type || msg.senderType,
         content: msg.content,
+        sources: (msg.skripsi_message_sources || msg.sources || []).map(src => ({
+          url: src.url,
+          title: src.title
+        })),
         createdAt: msg.created_at || msg.createdAt
       }
 
