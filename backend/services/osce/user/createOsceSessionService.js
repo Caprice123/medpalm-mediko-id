@@ -5,7 +5,7 @@ import attachmentService from '#services/attachment/attachmentService'
 import { ValidationError } from '#errors/validationError'
 
 export class CreateOsceSessionService extends BaseService {
-  static async call(userId, topic.id) {
+  static async call(userId, topicId) {
     if (!userId) {
       throw new ValidationError('User ID is required')
     }
