@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class GetSummaryNoteByIdService extends BaseService {
   static async call({ noteId }) {
@@ -30,6 +31,17 @@ export class GetSummaryNoteByIdService extends BaseService {
     if (!note) {
       throw new ValidationError('Summary note not found')
     }
+
+    // Get source document attachment if exists
+    const sourceAttachment = await attachmentService.getAttachmentWithUrl(
+      'summary_note',
+      parseInt(noteId),
+      'source_document',
+      3600 // 1 hour expiration
+    )
+
+    // Attach source document to summary note
+    note.sourceAttachment = sourceAttachment
 
     // Return raw Prisma data - serializers handle transformation
     return note

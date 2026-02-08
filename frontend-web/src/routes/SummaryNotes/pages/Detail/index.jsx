@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import 'react-photo-view/dist/react-photo-view.css'
 import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import FileUpload from '@components/common/FileUpload'
 import { SummaryNoteDetailSkeleton } from '@components/common/SkeletonCard'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
 import { fetchUserSummaryNoteDetail } from '@store/summaryNotes/action'
@@ -17,7 +18,9 @@ import {
   TopicInfo,
   TagList,
   Tag,
-  ContentSection
+  ContentSection,
+  ReferenceSection,
+  ReferenceTitle
 } from './Detail.styles'
 
 const SummaryNotesDetail = () => {
@@ -141,6 +144,34 @@ const SummaryNotesDetail = () => {
               editable={false}
             />
           </ContentSection>
+
+          {/* Reference Section */}
+          {note.sourceDocument && (
+            <ReferenceSection>
+              <ReferenceTitle>
+                📚 Referensi
+              </ReferenceTitle>
+              <FileUpload
+                file={{
+                  name: note.sourceDocument.filename,
+                  type: note.sourceDocument.contentType,
+                  size: note.sourceDocument.byteSize
+                }}
+                actions={
+                  <Button
+                    variant="primary"
+                    size="small"
+                    as="a"
+                    href={note.sourceDocument.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Lihat Dokumen
+                  </Button>
+                }
+              />
+            </ReferenceSection>
+          )}
         </NoteContainer>
       </Content>
     </Container>

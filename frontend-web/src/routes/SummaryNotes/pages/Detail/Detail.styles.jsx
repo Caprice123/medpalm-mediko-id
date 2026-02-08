@@ -176,3 +176,18 @@ export const LoadingSpinner = styled.div`
     100% { transform: rotate(360deg); }
   }
 `
+
+export const ReferenceSection = styled.div`
+  margin-top: 2rem;
+  padding: 1.5rem;
+`
+
+export const ReferenceTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${colors.text.primary};
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`

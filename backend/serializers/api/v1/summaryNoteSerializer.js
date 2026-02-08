@@ -11,11 +11,20 @@ export class SummaryNoteSerializer {
     const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
     const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
+    // Extract source document from attachment
+    const sourceDocument = note.sourceAttachment ? {
+      filename: note.sourceAttachment.blob.filename,
+      contentType: note.sourceAttachment.blob.content_type,
+      byteSize: note.sourceAttachment.blob.byte_size,
+      url: note.sourceAttachment.url
+    } : null
+
     return {
       id: note.id,
       title: note.title,
       description: note.description,
       content: note.content,
+      sourceDocument,
       universityTags,
       semesterTags,
       topicTags,
