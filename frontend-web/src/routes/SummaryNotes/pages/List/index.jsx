@@ -28,8 +28,6 @@ function SummaryNotesPage() {
     dispatch(fetchSummaryNotes())
   }
 
-  const hasMorePages = !pagination.isLastPage || pagination.page > 1
-
   return (
     <Container>
       <Content>
@@ -37,7 +35,7 @@ function SummaryNotesPage() {
 
         <NotesList />
 
-        {!loading.isNotesLoading && notes.length > 0 && hasMorePages && (
+        {!loading.isNotesLoading && notes.length > 0 && (pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

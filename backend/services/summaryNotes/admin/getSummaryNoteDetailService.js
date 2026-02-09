@@ -20,6 +20,16 @@ export class GetSummaryNoteDetailService extends BaseService {
               }
             }
           }
+        },
+        summary_note_flashcard_decks: {
+          include: {
+            flashcard_deck: true
+          }
+        },
+        summary_note_mcq_topics: {
+          include: {
+            mcq_topic: true
+          }
         }
       }
     })

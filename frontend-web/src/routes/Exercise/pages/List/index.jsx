@@ -20,8 +20,6 @@ function ExerciseListPage() {
     dispatch(fetchExerciseTopics())
   }
 
-  const hasMorePages = !pagination.isLastPage || pagination.page > 1
-
   return (
     <Container>
       <TopicSelectionContainer>
@@ -29,7 +27,7 @@ function ExerciseListPage() {
 
         <TopicList />
 
-        {!loading.isTopicsLoading && topics.length > 0 && hasMorePages && (
+        {!loading.isTopicsLoading && topics.length > 0 && (pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

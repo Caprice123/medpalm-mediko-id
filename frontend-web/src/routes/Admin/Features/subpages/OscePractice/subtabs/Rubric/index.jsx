@@ -57,7 +57,7 @@ function RubricsTab() {
         onCreateFirst={() => setIsCreateModalOpen(true)}
       />
 
-      {rubricPagination && (
+      {rubricPagination && (rubricPagination.page > 1 || (rubricPagination.page === 1 && !rubricPagination.isLastPage)) && (
         <Pagination
           currentPage={rubricPagination.page}
           isLastPage={rubricPagination.isLastPage}

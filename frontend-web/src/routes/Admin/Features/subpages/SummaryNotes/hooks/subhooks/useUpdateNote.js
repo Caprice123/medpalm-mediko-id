@@ -32,7 +32,10 @@ export const useUpdateNote = (onClose) => {
       // File upload state merged into Formik
       uploadedFile: null,
       blobId: null,
-      sourceFileInfo: null
+      sourceFileInfo: null,
+      // Linked resources
+      selectedFlashcards: [],
+      selectedMcqTopics: []
     },
     validate: (values) => {
       const errors = {}
@@ -80,7 +83,9 @@ export const useUpdateNote = (onClose) => {
           status: apiStatus,
           isActive: isActive,
           tagIds: allTags.map(t => t.id),
-          blobId: values.blobId || null
+          blobId: values.blobId || null,
+          flashcardDeckIds: values.selectedFlashcards.map(f => f.id),
+          mcqTopicIds: values.selectedMcqTopics.map(m => m.id)
       }
 
       await dispatch(updateSummaryNote(detail.id, payload))
@@ -137,7 +142,9 @@ export const useUpdateNote = (onClose) => {
         departmentTags: departmentTags,
         uploadedFile: null,
         blobId: null,
-        sourceFileInfo: null
+        sourceFileInfo: null,
+        selectedFlashcards: detail.flashcardDecks || [],
+        selectedMcqTopics: detail.mcqTopics || []
       }
 
       // Set blobId and source file info if exists

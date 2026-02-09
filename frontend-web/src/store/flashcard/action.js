@@ -1,6 +1,5 @@
 import { actions } from '@store/flashcard/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken } from '../../utils/requestUtils'
 
 const {

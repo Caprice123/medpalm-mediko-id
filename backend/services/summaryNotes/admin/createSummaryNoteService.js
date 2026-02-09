@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote } from '#jobs/queues/summaryNotesQueue'
 
 export class CreateSummaryNoteService extends BaseService {
-  static async call({ title, description, content, markdownContent, blobId, status, tagIds, createdBy }) {
+  static async call({ title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds, createdBy }) {
     // Validate required fields
     if (!title) {
       throw new ValidationError('Title is required')
@@ -60,6 +60,26 @@ export class CreateSummaryNoteService extends BaseService {
             record_id: summaryNote.id,
             blob_id: parseInt(blobId)
           }
+        })
+      }
+
+      // Create flashcard deck links if provided
+      if (flashcardDeckIds && flashcardDeckIds.length > 0) {
+        await tx.summary_note_flashcard_decks.createMany({
+          data: flashcardDeckIds.map(deckId => ({
+            summary_note_id: summaryNote.id,
+            flashcard_deck_id: parseInt(deckId)
+          }))
+        })
+      }
+
+      // Create MCQ topic links if provided
+      if (mcqTopicIds && mcqTopicIds.length > 0) {
+        await tx.summary_note_mcq_topics.createMany({
+          data: mcqTopicIds.map(topicId => ({
+            summary_note_id: summaryNote.id,
+            mcq_topic_id: parseInt(topicId)
+          }))
         })
       }
 

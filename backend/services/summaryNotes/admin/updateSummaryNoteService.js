@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote, queueDeleteSummaryNoteEmbedding } from '#jobs/queues/summaryNotesQueue'
 
 export class UpdateSummaryNoteService extends BaseService {
-  static async call({ id, title, description, content, markdownContent, blobId, status, isActive, tagIds }) {
+  static async call({ id, title, description, content, markdownContent, blobId, status, isActive, tagIds, flashcardDeckIds, mcqTopicIds }) {
     // Validate required fields
     if (!id) {
       throw new ValidationError('Summary note ID is required')
@@ -85,6 +85,42 @@ export class UpdateSummaryNoteService extends BaseService {
               record_id: parseInt(id),
               blob_id: parseInt(blobId)
             }
+          })
+        }
+      }
+
+      // Update flashcard deck links if provided
+      if (flashcardDeckIds !== undefined) {
+        // Delete existing flashcard deck links
+        await tx.summary_note_flashcard_decks.deleteMany({
+          where: { summary_note_id: parseInt(id) }
+        })
+
+        // Create new flashcard deck links
+        if (flashcardDeckIds.length > 0) {
+          await tx.summary_note_flashcard_decks.createMany({
+            data: flashcardDeckIds.map(deckId => ({
+              summary_note_id: parseInt(id),
+              flashcard_deck_id: parseInt(deckId)
+            }))
+          })
+        }
+      }
+
+      // Update MCQ topic links if provided
+      if (mcqTopicIds !== undefined) {
+        // Delete existing MCQ topic links
+        await tx.summary_note_mcq_topics.deleteMany({
+          where: { summary_note_id: parseInt(id) }
+        })
+
+        // Create new MCQ topic links
+        if (mcqTopicIds.length > 0) {
+          await tx.summary_note_mcq_topics.createMany({
+            data: mcqTopicIds.map(topicId => ({
+              summary_note_id: parseInt(id),
+              mcq_topic_id: parseInt(topicId)
+            }))
           })
         }
       }

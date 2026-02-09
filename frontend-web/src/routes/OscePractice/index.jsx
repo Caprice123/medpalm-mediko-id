@@ -83,7 +83,7 @@ function OscePracticePage() {
                   ))}
               </div>
 
-              {!loading.isLoadingUserSessions && (
+              {!loading.isLoadingUserSessions && (sessionsPagination.page > 1 || (sessionsPagination.page === 1 && !sessionsPagination.isLastPage)) && (
                 <Pagination
                   currentPage={sessionsPagination.page}
                   isLastPage={sessionsPagination.isLastPage}

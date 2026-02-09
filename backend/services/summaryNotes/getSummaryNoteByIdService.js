@@ -24,6 +24,26 @@ export class GetSummaryNoteByIdService extends BaseService {
               }
             }
           }
+        },
+        summary_note_flashcard_decks: {
+          where: {
+            flashcard_deck: {
+              status: 'published'
+            }
+          },
+          include: {
+            flashcard_deck: true
+          }
+        },
+        summary_note_mcq_topics: {
+          where: {
+            mcq_topic: {
+              status: 'published'
+            }
+          },
+          include: {
+            mcq_topic: true
+          }
         }
       }
     })

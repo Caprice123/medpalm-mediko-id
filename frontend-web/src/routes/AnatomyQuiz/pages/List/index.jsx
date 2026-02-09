@@ -31,9 +31,6 @@ function AnatomyQuizPage() {
     dispatch(fetchAdminAnatomyQuizzes())
   }
 
-  const hasMorePages = !pagination.isLastPage || pagination.page > 1
-
-
     return (
       <Container>
         <Content>
@@ -41,7 +38,7 @@ function AnatomyQuizPage() {
 
           <QuizList />
 
-          {!loading.isGetListAnatomyQuizLoading && quizzes.length > 0 && hasMorePages && (
+          {!loading.isGetListAnatomyQuizLoading && quizzes.length > 0 && (pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
             <Pagination
               currentPage={pagination.page}
               isLastPage={pagination.isLastPage}

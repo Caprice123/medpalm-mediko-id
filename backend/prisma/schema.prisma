@@ -238,9 +238,10 @@ model flashcard_decks {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  flashcard_cards     flashcard_cards[]
-  flashcard_deck_tags flashcard_deck_tags[]
-  flashcard_sessions  flashcard_sessions[]
+  flashcard_cards              flashcard_cards[]
+  flashcard_deck_tags          flashcard_deck_tags[]
+  flashcard_sessions           flashcard_sessions[]
+  summary_note_flashcard_decks summary_note_flashcard_decks[]
 
   @@index([created_by])
   @@index([status])
@@ -422,8 +423,10 @@ model summary_notes {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  summary_note_tags     summary_note_tags[]
-  summary_note_sessions summary_note_sessions[]
+  summary_note_tags            summary_note_tags[]
+  summary_note_sessions        summary_note_sessions[]
+  summary_note_flashcard_decks summary_note_flashcard_decks[]
+  summary_note_mcq_topics      summary_note_mcq_topics[]
 
   @@index([created_by])
   @@index([status])
@@ -457,6 +460,34 @@ model summary_note_sessions {
 
   @@index([user_learning_session_id])
   @@index([summary_note_id])
+}
+
+model summary_note_flashcard_decks {
+  id                 Int      @id @default(autoincrement())
+  summary_note_id    Int
+  flashcard_deck_id  Int
+  created_at         DateTime @default(now())
+
+  summary_note    summary_notes   @relation(fields: [summary_note_id], references: [id], onDelete: Cascade)
+  flashcard_deck  flashcard_decks @relation(fields: [flashcard_deck_id], references: [id], onDelete: Cascade)
+
+  @@unique([summary_note_id, flashcard_deck_id])
+  @@index([summary_note_id])
+  @@index([flashcard_deck_id])
+}
+
+model summary_note_mcq_topics {
+  id              Int      @id @default(autoincrement())
+  summary_note_id Int
+  mcq_topic_id    Int
+  created_at      DateTime @default(now())
+
+  summary_note summary_notes @relation(fields: [summary_note_id], references: [id], onDelete: Cascade)
+  mcq_topic    mcq_topics    @relation(fields: [mcq_topic_id], references: [id], onDelete: Cascade)
+
+  @@unique([summary_note_id, mcq_topic_id])
+  @@index([summary_note_id])
+  @@index([mcq_topic_id])
 }
 
 // ============= Platform Statistics =============
@@ -828,9 +859,10 @@ model mcq_topics {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  mcq_questions  mcq_questions[]
-  mcq_topic_tags mcq_topic_tags[]
-  mcq_attempts   mcq_attempts[]
+  mcq_questions           mcq_questions[]
+  mcq_topic_tags          mcq_topic_tags[]
+  mcq_attempts            mcq_attempts[]
+  summary_note_mcq_topics summary_note_mcq_topics[]
 
   @@index([created_by])
   @@index([status])

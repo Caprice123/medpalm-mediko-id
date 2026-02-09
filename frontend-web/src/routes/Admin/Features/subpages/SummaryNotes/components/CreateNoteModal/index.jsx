@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TagSelector from '@components/common/TagSelector'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
+import FlashcardSelectorModal from '../FlashcardSelectorModal'
+import McqSelectorModal from '../McqSelectorModal'
+import SelectedResourcesDisplay from '../SelectedResourcesDisplay'
 import {
   FormSection,
   Label,
@@ -17,12 +20,14 @@ import {
 } from './CreateNoteModal.styles'
 import { useSelector } from 'react-redux'
 import { useCreateNote } from '../../hooks/subhooks/useCreateNote'
-import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 
 const CreateNoteModal = ({ onClose }) => {
   const { loading } = useSelector(state => state.summaryNotes)
   const { loading: commonLoading } = useSelector(state => state.common)
   const { tags } = useSelector(state => state.tags)
+
+  const [flashcardSelectorOpen, setFlashcardSelectorOpen] = useState(false)
+  const [mcqSelectorOpen, setMcqSelectorOpen] = useState(false)
 
   const {
     form,
@@ -76,6 +81,7 @@ const CreateNoteModal = ({ onClose }) => {
   }
 
   return (
+    <>
     <Modal
       isOpen={true}
       onClose={handleModalClose}
@@ -221,6 +227,42 @@ const CreateNoteModal = ({ onClose }) => {
         />
       </FormSection>
 
+      {/* Flashcard Terkait */}
+      <FormSection>
+        <Label>Flashcard Terkait</Label>
+        <SelectedResourcesDisplay
+          selectedItems={form.values.selectedFlashcards}
+          onOpenSelector={() => setFlashcardSelectorOpen(true)}
+          onRemove={(id) => {
+            form.setFieldValue(
+              'selectedFlashcards',
+              form.values.selectedFlashcards.filter(f => f.id !== id)
+            )
+          }}
+          emptyText="Pilih flashcard deck"
+          icon="🃏"
+          getItemMeta={(item) => `${item.cardCount || 0} kartu`}
+        />
+      </FormSection>
+
+      {/* MCQ Terkait */}
+      <FormSection>
+        <Label>MCQ Terkait</Label>
+        <SelectedResourcesDisplay
+          selectedItems={form.values.selectedMcqTopics}
+          onOpenSelector={() => setMcqSelectorOpen(true)}
+          onRemove={(id) => {
+            form.setFieldValue(
+              'selectedMcqTopics',
+              form.values.selectedMcqTopics.filter(m => m.id !== id)
+            )
+          }}
+          emptyText="Pilih MCQ topic"
+          icon="📝"
+          getItemMeta={(item) => `${item.questionCount || 0} soal`}
+        />
+      </FormSection>
+
       {/* Status Selection */}
       <FormSection>
         <Label>Status</Label>
@@ -258,6 +300,21 @@ const CreateNoteModal = ({ onClose }) => {
         </StatusToggle>
       </FormSection>
     </Modal>
+
+    <FlashcardSelectorModal
+      isOpen={flashcardSelectorOpen}
+      onClose={() => setFlashcardSelectorOpen(false)}
+      onSelect={(selected) => form.setFieldValue('selectedFlashcards', selected)}
+      initialSelected={form.values.selectedFlashcards}
+    />
+
+    <McqSelectorModal
+      isOpen={mcqSelectorOpen}
+      onClose={() => setMcqSelectorOpen(false)}
+      onSelect={(selected) => form.setFieldValue('selectedMcqTopics', selected)}
+      initialSelected={form.values.selectedMcqTopics}
+    />
+    </>
   )
 }
 

@@ -1,3 +1,6 @@
+import { FlashcardDeckListSerializer } from './flashcardDeckListSerializer.js'
+import { McqTopicListSerializer } from './mcqTopicListSerializer.js'
+
 export class SummaryNoteSerializer {
   static serialize(note) {
     const allTags = (note.summary_note_tags || []).map(t => ({
@@ -19,6 +22,16 @@ export class SummaryNoteSerializer {
       url: note.sourceAttachment.url
     } : null
 
+    // Extract linked flashcard decks and use existing serializer
+    const flashcardDecks = FlashcardDeckListSerializer.serialize(
+      (note.summary_note_flashcard_decks || []).map(link => link.flashcard_deck)
+    )
+
+    // Extract linked MCQ topics and use existing serializer
+    const mcqTopics = McqTopicListSerializer.serialize(
+      (note.summary_note_mcq_topics || []).map(link => link.mcq_topic)
+    )
+
     return {
       id: note.id,
       title: note.title,
@@ -28,7 +41,9 @@ export class SummaryNoteSerializer {
       universityTags,
       semesterTags,
       topicTags,
-      departmentTags
+      departmentTags,
+      flashcardDecks,
+      mcqTopics
     }
   }
 }

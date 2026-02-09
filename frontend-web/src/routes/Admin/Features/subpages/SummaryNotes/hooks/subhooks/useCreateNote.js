@@ -29,7 +29,10 @@ export const useCreateNote = (onClose) => {
       departmentTags: [],
       // File upload state merged into Formik
       uploadedFile: null,
-      blobId: null
+      blobId: null,
+      // Linked resources
+      selectedFlashcards: [],
+      selectedMcqTopics: []
     },
     validate: (values) => {
       const errors = {}
@@ -67,7 +70,9 @@ export const useCreateNote = (onClose) => {
           status: values.status,
           isActive: true,
           tagIds: allTags.map(t => t.id),
-          blobId: values.blobId || null
+          blobId: values.blobId || null,
+          flashcardDeckIds: values.selectedFlashcards.map(f => f.id),
+          mcqTopicIds: values.selectedMcqTopics.map(m => m.id)
         }
 
         await dispatch(createSummaryNote(payload))

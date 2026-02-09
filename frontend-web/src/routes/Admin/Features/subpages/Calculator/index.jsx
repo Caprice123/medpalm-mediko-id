@@ -159,14 +159,16 @@ function Calculator({ onBack }) {
             })}
           </TopicsGrid>
 
-          <Pagination
-            currentPage={pagination.page}
-            isLastPage={pagination.isLastPage}
-            onPageChange={handlePageChange}
-            isLoading={loading.isGetListCalculatorsLoading}
-            variant="admin"
-            language="id"
-          />
+          {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+            <Pagination
+              currentPage={pagination.page}
+              isLastPage={pagination.isLastPage}
+              onPageChange={handlePageChange}
+              isLoading={loading.isGetListCalculatorsLoading}
+              variant="admin"
+              language="id"
+            />
+          )}
         </>
       )}
 

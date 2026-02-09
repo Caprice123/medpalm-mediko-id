@@ -84,14 +84,16 @@ function MultipleChoice({ onBack }) {
         onCreateFirst={() => setUiState({ ...uiState, isTopicModalOpen: true, mode: "create", selectedTopic: null })}
       />
 
-      <Pagination
-        currentPage={pagination.page}
-        isLastPage={pagination.isLastPage}
-        onPageChange={handlePageChange}
-        isLoading={loading.isTopicsLoading}
-        variant="admin"
-        language="id"
-      />
+      {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+        <Pagination
+          currentPage={pagination.page}
+          isLastPage={pagination.isLastPage}
+          onPageChange={handlePageChange}
+          isLoading={loading.isTopicsLoading}
+          variant="admin"
+          language="id"
+        />
+      )}
 
       { uiState.isTopicModalOpen && uiState.mode === "create" && (
         <CreateTopicModal onClose={() => setUiState({ ...uiState, isTopicModalOpen: false, mode: null, selectedTopic: null })} />

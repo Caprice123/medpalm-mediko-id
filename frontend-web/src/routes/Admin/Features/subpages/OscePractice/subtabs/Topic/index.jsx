@@ -46,14 +46,16 @@ function TopicsTab() {
         onCreateFirst={() => setIsCreateModalOpen(true)}
       />
 
-      <Pagination
-        currentPage={pagination.page}
-        isLastPage={pagination.isLastPage}
-        onPageChange={handlePageChange}
-        isLoading={loading.isGetListTopicsLoading}
-        variant="admin"
-        language="id"
-      />
+      {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+        <Pagination
+          currentPage={pagination.page}
+          isLastPage={pagination.isLastPage}
+          onPageChange={handlePageChange}
+          isLoading={loading.isGetListTopicsLoading}
+          variant="admin"
+          language="id"
+        />
+      )}
 
       {isCreateModalOpen && (
         <CreateTopicModal onClose={() => setIsCreateModalOpen(false)} />

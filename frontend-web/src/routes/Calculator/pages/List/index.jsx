@@ -28,8 +28,6 @@ function CalculatorPage() {
     dispatch(getCalculatorTopics())
   }
 
-  const hasMorePages = !pagination.isLastPage || pagination.page > 1
-
   return (
     <Container>
       <CalculatorSelectionContainer>
@@ -37,7 +35,7 @@ function CalculatorPage() {
 
         <CalculatorList />
 
-        {!loading.isGetListCalculatorsLoading && topics.length > 0 && hasMorePages && (
+        {!loading.isGetListCalculatorsLoading && topics.length > 0 && (pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
           <Pagination
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}

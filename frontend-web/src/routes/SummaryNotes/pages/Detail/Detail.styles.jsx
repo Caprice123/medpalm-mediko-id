@@ -191,3 +191,106 @@ export const ReferenceTitle = styled.h3`
   align-items: center;
   gap: 0.5rem;
 `
+
+export const LinkedResourcesSection = styled.div`
+  margin-top: 2rem;
+  padding: 1.5rem;
+`
+
+export const SectionTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${colors.text.primary};
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+export const ToggleButtons = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+`
+
+export const ToggleButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid ${props => props.active ? colors.primary.main : '#e5e7eb'};
+  background: ${props => props.active ? colors.primary.main : 'white'};
+  color: ${props => props.active ? 'white' : colors.text.secondary};
+
+  &:hover:not(:disabled) {
+    border-color: ${colors.primary.main};
+    background: ${props => props.active ? colors.primary.dark : colors.primary.light};
+    color: ${props => props.active ? 'white' : colors.primary.main};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`
+
+export const ResourceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+export const ResourceDescription = styled.p`
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`
+
+export const ResourceStats = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+`
+
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`
+
+export const StatLabel = styled.span`
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  font-weight: 600;
+`
+
+export const StatValue = styled.span`
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 700;
+`
+
+export const ModeButtonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+`

@@ -31,16 +31,18 @@ export const ModalOverlay = styled.div`
 
 export const ModalContainer = styled.div`
   background: white;
-  border-radius: 12px;
+  border-radius: ${props => props.size === 'fullscreen' ? '0' : '12px'};
   max-width: ${props => props.size === 'small' ? '400px' :
                        props.size === 'large' ? '900px' :
+                       props.size === 'fullscreen' ? '100%' :
                        '600px'};
-  width: 100%;
-  max-height: 90vh;
+  width: ${props => props.size === 'fullscreen' ? '100vw' : '100%'};
+  max-height: ${props => props.size === 'fullscreen' ? '100vh' : '90vh'};
+  height: ${props => props.size === 'fullscreen' ? '100vh' : 'auto'};
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
+  box-shadow: ${props => props.size === 'fullscreen' ? 'none' : '0 20px 50px rgba(0, 0, 0, 0.3)'};
+  animation: ${props => props.size === 'fullscreen' ? 'fadeIn 0.2s ease' : 'slideUp 0.3s ease'};
   position: relative;
   overflow: visible;
 
@@ -51,6 +53,15 @@ export const ModalContainer = styled.div`
     }
     to {
       transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
       opacity: 1;
     }
   }

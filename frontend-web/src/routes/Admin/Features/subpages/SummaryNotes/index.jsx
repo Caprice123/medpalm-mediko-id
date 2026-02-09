@@ -99,14 +99,16 @@ function SummaryNotes({ onBack }) {
         onCreateFirst={() => setUiState({ ...uiState, isModalOpen: true, mode: 'create' })}
       />
 
-      <Pagination
-        currentPage={pagination.page}
-        isLastPage={pagination.isLastPage}
-        onPageChange={handlePageChange}
-        isLoading={loading.isAdminNotesLoading}
-        variant="admin"
-        language="id"
-      />
+      {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+        <Pagination
+          currentPage={pagination.page}
+          isLastPage={pagination.isLastPage}
+          onPageChange={handlePageChange}
+          isLoading={loading.isAdminNotesLoading}
+          variant="admin"
+          language="id"
+        />
+      )}
 
       {uiState.isModalOpen && uiState.mode === 'create' && (
         <CreateNoteModal onClose={handleCloseModal} />
