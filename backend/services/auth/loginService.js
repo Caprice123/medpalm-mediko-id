@@ -57,9 +57,6 @@ class AuthService {
       }
     }
 
-    // Deactivate all old sessions for this user
-    await this.deactivateUserSessions(user.id);
-
     // Generate access token (short-lived)
     const accessToken = jwt.sign(
       {
@@ -214,7 +211,7 @@ class AuthService {
     });
 
     if (!session || !session.is_active) {
-      throw new AuthorizationError('Invalid or expired refresh token');
+      throw new AuthorizationError('Silakan login kembali. Anda sudah terlogout.');
     }
 
     // Check if refresh token has expired
