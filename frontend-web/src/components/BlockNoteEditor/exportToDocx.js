@@ -92,9 +92,88 @@ export async function exportBlocksToDocx(blocks, fileName = 'document', options 
     const resolvedBlocks = await resolveBlockImageUrls(blocks)
     console.log('Image URLs resolved successfully')
 
-    // Create custom mappings that include the embed block handler
+    // Create custom mappings that include the embed block handler and font overrides
     const customMappings = {
       ...docxDefaultSchemaMappings,
+      // Override inline content mapping to force Times New Roman
+      inlineContentMapping: {
+        ...docxDefaultSchemaMappings.inlineContentMapping,
+        text: (inline) => {
+          return new TextRun({
+            text: inline.text,
+            font: 'Times New Roman',
+          })
+        },
+      },
+      // Override style mappings to force Times New Roman on styled text
+      styleMapping: {
+        ...docxDefaultSchemaMappings.styleMapping,
+        bold: (inline, convertInlineContent) => {
+          const children = convertInlineContent(inline.content)
+          // Apply bold to all children and ensure Times New Roman
+          return children.map(child => {
+            if (child instanceof TextRun) {
+              return new TextRun({
+                text: child.text || '',
+                bold: true,
+                font: 'Times New Roman',
+              })
+            }
+            return child
+          })
+        },
+        italic: (inline, convertInlineContent) => {
+          const children = convertInlineContent(inline.content)
+          return children.map(child => {
+            if (child instanceof TextRun) {
+              return new TextRun({
+                text: child.text || '',
+                italics: true,
+                font: 'Times New Roman',
+              })
+            }
+            return child
+          })
+        },
+        underline: (inline, convertInlineContent) => {
+          const children = convertInlineContent(inline.content)
+          return children.map(child => {
+            if (child instanceof TextRun) {
+              return new TextRun({
+                text: child.text || '',
+                underline: {},
+                font: 'Times New Roman',
+              })
+            }
+            return child
+          })
+        },
+        strike: (inline, convertInlineContent) => {
+          const children = convertInlineContent(inline.content)
+          return children.map(child => {
+            if (child instanceof TextRun) {
+              return new TextRun({
+                text: child.text || '',
+                strike: true,
+                font: 'Times New Roman',
+              })
+            }
+            return child
+          })
+        },
+        code: (inline, convertInlineContent) => {
+          const children = convertInlineContent(inline.content)
+          return children.map(child => {
+            if (child instanceof TextRun) {
+              return new TextRun({
+                text: child.text || '',
+                font: 'Courier New', // Use monospace for code
+              })
+            }
+            return child
+          })
+        },
+      },
       blockMapping: {
         ...docxDefaultSchemaMappings.blockMapping,
         // Custom handler for embed blocks
