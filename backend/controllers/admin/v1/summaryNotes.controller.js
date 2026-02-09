@@ -42,7 +42,7 @@ class SummaryNotesAdminController {
 
   // Create new summary note
   async create(req, res) {
-    const { title, description, content, markdownContent, blobId, status, tagIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
     const createdBy = req.user.id
 
     const summaryNote = await CreateSummaryNoteService.call({
@@ -53,6 +53,8 @@ class SummaryNotesAdminController {
       blobId,
       status,
       tagIds,
+      flashcardDeckIds,
+      mcqTopicIds,
       createdBy
     })
 
@@ -64,8 +66,9 @@ class SummaryNotesAdminController {
   // Update summary note
   async update(req, res) {
     const { id } = req.params
-    const { title, description, content, markdownContent, blobId, status, isActive, tagIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, isActive, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
 
+    console.log(flashcardDeckIds)
     const summaryNote = await UpdateSummaryNoteService.call({
       id,
       title,
@@ -75,7 +78,9 @@ class SummaryNotesAdminController {
       blobId,
       status,
       isActive,
-      tagIds
+      tagIds,
+      flashcardDeckIds,
+      mcqTopicIds
     })
 
     return res.status(200).json({
