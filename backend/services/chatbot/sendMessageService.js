@@ -888,7 +888,7 @@ export class SendMessageService extends BaseService {
       throw new ValidationError('Invalid user ID')
     }
 
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId) {
       throw new ValidationError('Invalid conversation ID')
     }
 
