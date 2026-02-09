@@ -99,7 +99,7 @@ function DeckList() {
               <Button
                 variant="primary"
                 fullWidth
-                onClick={() => navigate(generatePath(FlashcardRoute.detailRoute, { id: deck.id }))}
+                onClick={() => navigate(generatePath(FlashcardRoute.detailRoute, { id: deck.uniqueId }))}
               >
                 Mulai Belajar
               </Button>

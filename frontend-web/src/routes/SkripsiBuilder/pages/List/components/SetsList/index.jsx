@@ -62,7 +62,7 @@ function SetsList() {
     <>
       <SetsGrid>
         {sets.map(set => (
-          <Card key={set.id} shadow hoverable>
+          <Card key={set.uniqueId} shadow hoverable>
             <CardHeader title={set.title} divider={false} />
 
             <CardBody padding="0 1.25rem 1.25rem 1.25rem">
@@ -78,13 +78,13 @@ function SetsList() {
                 <Button
                   variant="primary"
                   fullWidth
-                  onClick={() => navigate(`/sets/${set.id}`)}
+                  onClick={() => navigate(`/sets/${set.uniqueId}`)}
                 >
                   Buka Set
                 </Button>
                 <Button
                   variant="danger"
-                  onClick={() => setDeleteId(set.id)}
+                  onClick={() => setDeleteId(set.uniqueId)}
                 >
                   <FaTrash />
                 </Button>

@@ -26,10 +26,10 @@ class ChatbotAdminController {
 
   // Get conversation details
   async getConversation(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
     const conversation = await GetAdminConversationService.call({
-      conversationId: parseInt(id)
+      conversationId: uniqueId
     })
 
     return res.status(200).json({
@@ -39,11 +39,11 @@ class ChatbotAdminController {
 
   // Get all messages for a conversation
   async getConversationMessages(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { page, perPage } = req.query
 
     const result = await GetAdminConversationMessagesService.call({
-      conversationId: parseInt(id),
+      conversationId: uniqueId,
       page: parseInt(page) || 1,
       perPage: parseInt(perPage) || 50
     })
@@ -56,10 +56,10 @@ class ChatbotAdminController {
 
   // Delete conversation (hard delete for admin)
   async deleteConversation(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
     await DeleteAdminConversationService.call({
-      conversationId: parseInt(id)
+      conversationId: uniqueId
     })
 
     return res.status(200).json({

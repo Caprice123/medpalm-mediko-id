@@ -4,6 +4,7 @@ export class OsceTopicSerializer {
 
         return {
             id: topic.id,
+            uniqueId: topic.unique_id,
             title: topic.title,
             description: topic.description,
             scenario: topic.scenario,

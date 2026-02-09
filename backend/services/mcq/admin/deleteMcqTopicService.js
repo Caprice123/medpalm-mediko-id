@@ -6,7 +6,7 @@ export class DeleteMcqTopicService extends BaseService {
   static async call({ id }) {
     // Validate topic exists
     const existingTopic = await prisma.mcq_topics.findUnique({
-      where: { id }
+      where: { unique_id: id }
     })
 
     if (!existingTopic) {
@@ -15,7 +15,7 @@ export class DeleteMcqTopicService extends BaseService {
 
     // Delete topic (cascade will handle questions, tags, attempts)
     await prisma.mcq_topics.delete({
-      where: { id }
+      where: { unique_id: id }
     })
 
     return { success: true }

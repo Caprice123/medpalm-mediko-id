@@ -60,6 +60,7 @@ export class GetPublishedOsceTopicsService extends BaseService {
       select: {
         id: true,
         title: true,
+        unique_id: true,
         description: true,
         scenario: true,
         ai_model: true,

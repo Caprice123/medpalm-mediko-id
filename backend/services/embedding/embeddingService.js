@@ -76,7 +76,7 @@ class EmbeddingService {
       const collectionName = vectorDB.getCollectionName('summary_notes', model)
 
       // First, delete any existing chunks for this note (to handle updates)
-      await this.deleteSummaryNoteEmbedding(summaryNote.id, model)
+      await this.deleteSummaryNoteEmbedding(summaryNote.unique_id, model)
 
       // Convert BlockNote content to markdown
       const markdownContent = blockNoteToMarkdown(summaryNote.content)
@@ -91,7 +91,7 @@ class EmbeddingService {
         markdownContent
       )
 
-      console.log(`📄 Chunking summary note ${summaryNote.id}: "${summaryNote.title}" into ${chunks.length} chunks`)
+      console.log(`📄 Chunking summary note ${summaryNote.unique_id}: "${summaryNote.title}" into ${chunks.length} chunks`)
 
       // Prepare texts for embedding (with context)
       const textsToEmbed = chunks.map(chunk =>
@@ -103,11 +103,12 @@ class EmbeddingService {
 
       // Prepare documents for ChromaDB
       const documents = chunks.map((chunk, index) => ({
-        id: `${summaryNote.id}-${index}`,  // Unique ID per chunk
+        id: `${summaryNote.unique_id}-${index}`,  // Use UUID-based chunk ID
         embedding: embeddings[index],
         content: chunk.content,
         metadata: {
-          note_id: summaryNote.id,
+          note_id: summaryNote.id,  // Keep numeric ID for validated search
+          note_unique_id: summaryNote.unique_id,  // Add unique_id for UUID-based operations
           chunk_index: index,
           total_chunks: chunks.length,
           title: summaryNote.title,
@@ -122,7 +123,7 @@ class EmbeddingService {
 
       // Store all chunks in ChromaDB using environment-aware collection name
       await vectorDB.addDocuments(collectionName, documents)
-      console.log(`✓ Created ${chunks.length} embeddings for summary note: ${summaryNote.id} in collection: ${collectionName}`)
+      console.log(`✓ Created ${chunks.length} embeddings for summary note: ${summaryNote.unique_id} in collection: ${collectionName}`)
     } catch (error) {
       console.error('Error embedding summary note:', error)
       throw new Error('Failed to embed summary note: ' + error.message)
@@ -180,11 +181,11 @@ class EmbeddingService {
 
   /**
    * Delete all chunks for a summary note from ChromaDB
-   * @param {number} summaryNoteId - ID of the summary note to delete
+   * @param {string} summaryNoteUniqueId - Unique ID of the summary note to delete
    * @param {string} model - Embedding model name (optional)
    * @returns {Promise<void>}
    */
-  async deleteSummaryNoteEmbedding(summaryNoteId, model = null) {
+  async deleteSummaryNoteEmbedding(summaryNoteUniqueId, model = null) {
     try {
       const vectorDB = await getVectorDB()
 
@@ -196,12 +197,12 @@ class EmbeddingService {
 
       const collectionName = vectorDB.getCollectionName('summary_notes', model)
 
-      // Delete all chunks for this note using metadata filter
+      // Delete all chunks for this note using unique_id metadata filter
       await vectorDB.deleteDocumentsByMetadata(collectionName, {
-        note_id: parseInt(summaryNoteId)
+        note_unique_id: summaryNoteUniqueId
       })
 
-      console.log(`✓ Deleted all embeddings for summary note: ${summaryNoteId} from collection: ${collectionName}`)
+      console.log(`✓ Deleted all embeddings for summary note: ${summaryNoteUniqueId} from collection: ${collectionName}`)
     } catch (error) {
       console.error('Error deleting summary note embedding:', error)
       // Don't throw - allow silent failure for deletion

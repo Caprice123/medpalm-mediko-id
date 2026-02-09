@@ -55,27 +55,27 @@ const skripsiSlice = createSlice({
       state.sets.unshift(action.payload)
     },
     updateSet: (state, action) => {
-      const index = state.sets.findIndex(s => s.id === action.payload.id)
+      const index = state.sets.findIndex(s => s.uniqueId === action.payload.uniqueId)
       if (index !== -1) {
         state.sets[index] = action.payload
       }
-      if (state.currentSet?.id === action.payload.id) {
+      if (state.currentSet?.uniqueId === action.payload.uniqueId) {
         state.currentSet = { ...state.currentSet, ...action.payload }
       }
     },
     removeSet: (state, action) => {
-      state.sets = state.sets.filter(s => s.id !== action.payload)
-      if (state.currentSet?.id === action.payload) {
+      state.sets = state.sets.filter(s => s.uniqueId !== action.payload)
+      if (state.currentSet?.uniqueId === action.payload) {
         state.currentSet = null
       }
     },
     updateSetContent: (state, action) => {
       const { setId, editorContent } = action.payload
-      if (state.currentSet && state.currentSet.id === setId) {
+      if (state.currentSet && state.currentSet.uniqueId === setId) {
         state.currentSet.editorContent = editorContent
       }
       // Also update in sets list
-      const setIndex = state.sets.findIndex(s => s.id === setId)
+      const setIndex = state.sets.findIndex(s => s.uniqueId === setId)
       if (setIndex !== -1) {
         state.sets[setIndex].editorContent = editorContent
       }

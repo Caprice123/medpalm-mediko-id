@@ -18,11 +18,11 @@ class AnatomyController {
   }
 
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const userId = req.user.id
 
     // Fetch quiz with questions
-    const quiz = await GetAnatomyQuizDetailService.call(id)
+    const quiz = await GetAnatomyQuizDetailService.call(uniqueId)
 
     // Check if quiz is published
     if (quiz.status !== 'published') {
@@ -40,13 +40,13 @@ class AnatomyController {
   }
 
   async submit(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { answers } = req.body // Array of { question_id, answer }
     const userId = req.user.id
 
     // Fetch quiz with questions
     const quiz = await prisma.anatomy_quizzes.findUnique({
-      where: { id: parseInt(id) },
+      where: { unique_id: uniqueId },
       include: {
         anatomy_questions: true
       }

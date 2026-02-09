@@ -10,8 +10,10 @@ class OsceTopicSerializer {
       } : null
     })) || [];
 
+    console.log(topic)
     return {
       id: topic.id,
+      uniqueId: topic.unique_id,
       title: topic.title,
       description: topic.description,
       scenario: topic.scenario,

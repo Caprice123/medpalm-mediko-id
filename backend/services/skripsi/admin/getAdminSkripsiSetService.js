@@ -5,7 +5,7 @@ import { ValidationError } from '#errors/validationError'
 const getAdminSkripsiSetService = async (setId) => {
   const set = await prisma.skripsi_sets.findFirst({
     where: {
-      id: setId,
+      unique_id: setId,
       is_deleted: false
     },
     include: {

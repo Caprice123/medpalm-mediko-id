@@ -15,6 +15,7 @@ export class McqTopicSerializer {
 
     return {
       id: topic.id,
+      uniqueId: topic.unique_id,
       title: topic.title,
       description: topic.description,
       contentType: topic.content_type,

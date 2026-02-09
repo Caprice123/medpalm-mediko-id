@@ -48,7 +48,7 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
     }
 
     try {
-      await dispatch(deleteAdminSet(set.id))
+      await dispatch(deleteAdminSet(set.uniqueId))
       await dispatch(fetchAdminSets({}, pagination.page, 20))
     } catch (error) {
       console.error('Failed to delete set:', error)

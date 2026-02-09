@@ -6,25 +6,25 @@ export class DeleteAdminConversationService extends BaseService {
   static async call({ conversationId }) {
     this.validate({ conversationId })
 
-    const conversation = await prisma.chatbot_conversations.findUnique({
-      where: { id: conversationId },
-      select: { id: true, is_deleted: true }
+    const conversation = await prisma.chatbot_conversations.findFirst({
+      where: { unique_id: conversationId, is_deleted: false },
+      select: { id: true }
     })
 
-    if (!conversation || conversation.is_deleted) {
+    if (!conversation) {
       throw new ValidationError('Conversation not found')
     }
 
     // Hard delete for admin (cascade delete will handle messages, sources, feedbacks)
     await prisma.chatbot_conversations.delete({
-      where: { id: conversationId }
+      where: { id: conversation.id }
     })
 
     return true
   }
 
   static validate({ conversationId }) {
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
   }

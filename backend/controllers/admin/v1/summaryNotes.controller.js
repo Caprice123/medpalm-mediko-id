@@ -31,9 +31,9 @@ class SummaryNotesAdminController {
 
   // Get single summary note detail
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const summaryNote = await GetSummaryNoteDetailService.call({ id })
+    const summaryNote = await GetSummaryNoteDetailService.call({ id: uniqueId })
 
     return res.status(200).json({
       data: SummaryNoteSerializer.serialize(summaryNote)
@@ -65,12 +65,12 @@ class SummaryNotesAdminController {
 
   // Update summary note
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { title, description, content, markdownContent, blobId, status, isActive, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
 
     console.log(flashcardDeckIds)
     const summaryNote = await UpdateSummaryNoteService.call({
-      id,
+      id: uniqueId,
       title,
       description,
       content,
@@ -90,9 +90,9 @@ class SummaryNotesAdminController {
 
   // Delete summary note
   async destroy(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    await DeleteSummaryNoteService.call({ id })
+    await DeleteSummaryNoteService.call({ id: uniqueId })
 
     return res.status(200).json({
       data: {

@@ -215,7 +215,7 @@ function TopicSelectionModal({ onClose }) {
                         variant="primary"
                         onClick={(e) => {
                           e.stopPropagation()
-                          handleSelectTopic(topic.id)
+                          handleSelectTopic(topic.uniqueId)
                         }}
                         fullWidth
                         disabled={loading.isCreatingSession}

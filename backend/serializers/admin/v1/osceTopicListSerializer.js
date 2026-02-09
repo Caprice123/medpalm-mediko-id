@@ -15,6 +15,7 @@ export class OsceTopicListSerializer {
 
         return {
             id: topic.id,
+            uniqueId: topic.unique_id,
             title: topic.title,
             description: topic.description,
             aiModel: topic.ai_model,

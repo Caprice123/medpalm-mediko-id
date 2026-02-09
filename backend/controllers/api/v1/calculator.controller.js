@@ -30,7 +30,7 @@ class CalculatorController {
     const { topicId } = req.params
 
     const topic = await prisma.calculator_topics.findUnique({
-      where: { id: Number(topicId) },
+      where: { unique_id: topicId },
       include: {
         calculator_fields: {
           orderBy: {

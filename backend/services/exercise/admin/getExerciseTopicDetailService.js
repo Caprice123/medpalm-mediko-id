@@ -8,7 +8,7 @@ export class GetExerciseTopicDetailService extends BaseService {
         this.validate(topicId)
 
         const topic = await prisma.exercise_topics.findUnique({
-            where: { id: parseInt(topicId) },
+            where: { unique_id: topicId },
             include: {
                 exercise_questions: {
                     orderBy: { order: 'asc' }
@@ -107,12 +107,11 @@ export class GetExerciseTopicDetailService extends BaseService {
 
     static validate(topicId) {
         if (!topicId) {
-            throw new ValidationError('Topic ID is required')
+            throw new ValidationError('Topic unique ID is required')
         }
 
-        const id = parseInt(topicId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid topic ID')
+        if (typeof topicId !== 'string' || topicId.trim() === '') {
+            throw new ValidationError('Invalid topic unique ID')
         }
     }
 }

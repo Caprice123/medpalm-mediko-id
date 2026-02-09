@@ -75,12 +75,12 @@ class McqController {
 
   /**
    * Get single MCQ topic detail
-   * GET /admin/v1/mcq/topics/:id
+   * GET /admin/v1/mcq/topics/:uniqueId
    */
   async show(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    const topic = await GetMcqTopicDetailService.call({ id: parseInt(id) })
+    const topic = await GetMcqTopicDetailService.call({ id: uniqueId })
 
     return res.status(200).json({
       data: McqTopicSerializer.serialize(topic)
@@ -89,10 +89,10 @@ class McqController {
 
   /**
    * Update MCQ topic
-   * PUT /admin/v1/mcq/topics/:id
+   * PUT /admin/v1/mcq/topics/:uniqueId
    */
   async update(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
     const {
       title,
       description,
@@ -108,7 +108,7 @@ class McqController {
     } = req.body
 
     const topic = await UpdateMcqTopicService.call({
-      id: parseInt(id),
+      id: uniqueId,
       title,
       description,
       contentType,
@@ -129,12 +129,12 @@ class McqController {
 
   /**
    * Delete MCQ topic
-   * DELETE /admin/v1/mcq/topics/:id
+   * DELETE /admin/v1/mcq/topics/:uniqueId
    */
   async delete(req, res) {
-    const { id } = req.params
+    const { uniqueId } = req.params
 
-    await DeleteMcqTopicService.call({ id: parseInt(id) })
+    await DeleteMcqTopicService.call({ id: uniqueId })
 
     return res.status(200).json({
       data: {

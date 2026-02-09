@@ -7,7 +7,7 @@ export class UpdateSetContentService extends BaseService {
     // Verify ownership
     const set = await prisma.skripsi_sets.findFirst({
       where: {
-        id: setId,
+        unique_id: setId,
         user_id: userId,
         is_deleted: false
       }
@@ -19,7 +19,7 @@ export class UpdateSetContentService extends BaseService {
 
     // Update the set with new content
     const updatedSet = await prisma.skripsi_sets.update({
-      where: { id: setId },
+      where: { unique_id: setId },
       data: {
         editor_content: editorContent,
         updated_at: new Date()

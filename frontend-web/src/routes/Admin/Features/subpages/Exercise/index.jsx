@@ -26,7 +26,7 @@ function LatihanSoal({ onBack }) {
 
   const handleEditTopic = async (topic) => {
     try {
-      const fullTopic = await dispatch(fetchExerciseTopic(topic.id))
+      const fullTopic = await dispatch(fetchExerciseTopic(topic.uniqueId))
       setUiState({
         ...uiState,
         isTopicModalOpen: true,

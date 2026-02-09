@@ -10,7 +10,7 @@ export class GetSummaryNoteDetailService extends BaseService {
     }
 
     const summaryNote = await prisma.summary_notes.findUnique({
-      where: { id: parseInt(id) },
+      where: { unique_id: id },
       include: {
         summary_note_tags: {
           include: {
@@ -38,7 +38,7 @@ export class GetSummaryNoteDetailService extends BaseService {
     const sourceAttachment = await prisma.attachments.findFirst({
       where: {
         record_type: 'summary_note',
-        record_id: parseInt(id),
+        record_id: summaryNote.id,
         name: 'source_document'
       },
       include: {

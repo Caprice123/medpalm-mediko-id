@@ -35,7 +35,7 @@ function MultipleChoice({ onBack }) {
   }
 
   const handleEditTopic = async (topic) => {
-    await dispatch(fetchMcqTopicDetail(topic.id, () => {
+    await dispatch(fetchMcqTopicDetail(topic.uniqueId, () => {
       setUiState({
         ...uiState,
         isTopicModalOpen: true,
@@ -50,7 +50,7 @@ function MultipleChoice({ onBack }) {
     }
 
     try {
-      await dispatch(deleteMcqTopic(topic.id))
+      await dispatch(deleteMcqTopic(topic.uniqueId))
       await dispatch(fetchAdminMcqTopics())
     } catch (error) {
       console.error('Failed to delete topic:', error)

@@ -110,7 +110,7 @@ function TopicList() {
               <Button
                 variant="primary"
                 fullWidth
-                onClick={() => navigate(generatePath(ExerciseRoute.detailRoute, { id: topic.id }))}
+                onClick={() => navigate(generatePath(ExerciseRoute.detailRoute, { id: topic.uniqueId }))}
               >
                 Mulai Latihan
               </Button>

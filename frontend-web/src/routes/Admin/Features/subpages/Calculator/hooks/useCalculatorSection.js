@@ -38,7 +38,7 @@ export const useCalculatorSection = () => {
 
   const handleCalculatorClick = async (calculator) => {
     try {
-      const fullCalculator = await dispatch(fetchAdminCalculatorTopic(calculator.id))
+      const fullCalculator = await dispatch(fetchAdminCalculatorTopic(calculator.uniqueId))
       setCalculatorToEdit(fullCalculator)
       setIsModalOpen(true)
     } catch (error) {

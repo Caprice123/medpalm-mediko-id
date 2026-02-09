@@ -6,7 +6,7 @@ export class DeleteCalculatorTopicService extends BaseService {
     static async call(topicId) {
         // Check if topic exists
         const existingTopic = await prisma.calculator_topics.findUnique({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         if (!existingTopic) {
@@ -15,12 +15,12 @@ export class DeleteCalculatorTopicService extends BaseService {
 
         // Delete the topic (cascade will delete fields)
         await prisma.calculator_topics.delete({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         return {
             message: 'Calculator topic deleted successfully',
-            id: parseInt(topicId)
+            id: topicId
         }
     }
 }

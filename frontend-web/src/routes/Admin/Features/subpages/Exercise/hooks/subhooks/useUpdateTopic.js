@@ -36,7 +36,7 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
     validationSchema: updateTopicSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        if (!topicToEdit?.id) {
+        if (!topicToEdit?.uniqueId) {
           console.error('No topic selected for update')
           return
         }
@@ -85,7 +85,7 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
         console.log('Content Type:', values.contentType)
         console.log('Status being sent:', values.status)
 
-        await dispatch(updateExerciseTopic(topicToEdit.id, updatePayload))
+        await dispatch(updateExerciseTopic(topicToEdit.uniqueId, updatePayload))
 
         // Refresh the list
         await dispatch(fetchAdminExerciseTopics())

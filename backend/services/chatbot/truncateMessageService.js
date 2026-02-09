@@ -6,20 +6,23 @@ export class TruncateMessageService {
     // Verify the conversation belongs to the user
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         user_id: userId
-      }
+      },
+      select: { id: true }
     })
 
     if (!conversation) {
       throw new ValidationError('Conversation not found or access denied')
     }
 
+    const internalConversationId = conversation.id
+
     // Find the AI message
     const message = await prisma.chatbot_messages.findFirst({
       where: {
         id: messageId,
-        conversation_id: conversationId,
+        conversation_id: internalConversationId,
         sender_type: 'ai'
       }
     })

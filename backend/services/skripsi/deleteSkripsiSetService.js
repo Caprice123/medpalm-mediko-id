@@ -7,7 +7,7 @@ export class DeleteSkripsiSetService extends BaseService {
     // Verify ownership
     const set = await prisma.skripsi_sets.findFirst({
       where: {
-        id: setId,
+        unique_id: setId,
         user_id: userId,
         is_deleted: false
       }
@@ -19,7 +19,7 @@ export class DeleteSkripsiSetService extends BaseService {
 
     // Soft delete
     await prisma.skripsi_sets.update({
-      where: { id: setId },
+      where: { unique_id: setId },
       data: {
         is_deleted: true,
         updated_at: new Date()

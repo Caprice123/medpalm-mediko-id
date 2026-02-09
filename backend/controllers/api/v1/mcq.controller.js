@@ -51,7 +51,7 @@ class McqController {
     const userId = req.user?.id
 
     const topic = await GetMcqTopicByIdService.call({
-      topicId: parseInt(req.params.id),
+      topicId: req.params.id,
       userId // Pass userId for spaced repetition question ordering
     })
 

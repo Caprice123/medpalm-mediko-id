@@ -4,6 +4,7 @@ export class SkripsiSetSerializer {
 
     return {
       id: set.id,
+      uniqueId: set.unique_id,
       title: set.title,
       description: set.description,
       editorContent: set.editor_content,

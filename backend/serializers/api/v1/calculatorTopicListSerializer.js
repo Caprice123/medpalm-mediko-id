@@ -7,6 +7,7 @@ export class CalculatorTopicListSerializer {
       return {
         id: topic.id,
         title: topic.title,
+        uniqueId: topic.unique_id,
         description: topic.description,
         tags: topicTags.map(tt => ({
           id: tt.tags ? tt.tags.id : tt.id,

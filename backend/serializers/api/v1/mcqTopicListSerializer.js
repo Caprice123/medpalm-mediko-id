@@ -5,6 +5,7 @@ export class McqTopicListSerializer {
 
       return {
         id: topic.id,
+        uniqueId: topic.unique_id,
         title: topic.title,
         description: topic.description,
         quizTimeLimit: topic.quiz_time_limit,

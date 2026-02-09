@@ -29,8 +29,8 @@ describe('Skripsi Reducer', () => {
   describe('setSets', () => {
     it('should set sets', () => {
       const sets = [
-        { id: 1, title: 'Set 1' },
-        { id: 2, title: 'Set 2' },
+        { id: 1, uniqueId: 'uuid-1', title: 'Set 1' },
+        { id: 2, uniqueId: 'uuid-2', title: 'Set 2' },
       ]
 
       const state = reducer(initialState, actions.setSets(sets))
@@ -43,10 +43,10 @@ describe('Skripsi Reducer', () => {
     it('should add a new set to the beginning', () => {
       const existingState = {
         ...initialState,
-        sets: [{ id: 1, title: 'Set 1' }],
+        sets: [{ id: 1, uniqueId: 'uuid-1', title: 'Set 1' }],
       }
 
-      const newSet = { id: 2, title: 'Set 2' }
+      const newSet = { id: 2, uniqueId: 'uuid-2', title: 'Set 2' }
       const state = reducer(existingState, actions.addSet(newSet))
 
       expect(state.sets).toHaveLength(2)
@@ -59,12 +59,12 @@ describe('Skripsi Reducer', () => {
       const existingState = {
         ...initialState,
         sets: [
-          { id: 1, title: 'Set 1' },
-          { id: 2, title: 'Set 2' },
+          { id: 1, uniqueId: 'uuid-1', title: 'Set 1' },
+          { id: 2, uniqueId: 'uuid-2', title: 'Set 2' },
         ],
       }
 
-      const updatedSet = { id: 1, title: 'Updated Set 1' }
+      const updatedSet = { id: 1, uniqueId: 'uuid-1', title: 'Updated Set 1' }
       const state = reducer(existingState, actions.updateSet(updatedSet))
 
       expect(state.sets[0].title).toBe('Updated Set 1')
@@ -73,10 +73,10 @@ describe('Skripsi Reducer', () => {
     it('should update currentSet if it matches', () => {
       const existingState = {
         ...initialState,
-        currentSet: { id: 1, title: 'Set 1' },
+        currentSet: { id: 1, uniqueId: 'uuid-1', title: 'Set 1' },
       }
 
-      const updatedSet = { id: 1, title: 'Updated Set 1' }
+      const updatedSet = { id: 1, uniqueId: 'uuid-1', title: 'Updated Set 1' }
       const state = reducer(existingState, actions.updateSet(updatedSet))
 
       expect(state.currentSet.title).toBe('Updated Set 1')
@@ -88,24 +88,24 @@ describe('Skripsi Reducer', () => {
       const existingState = {
         ...initialState,
         sets: [
-          { id: 1, title: 'Set 1' },
-          { id: 2, title: 'Set 2' },
+          { id: 1, uniqueId: 'uuid-1', title: 'Set 1' },
+          { id: 2, uniqueId: 'uuid-2', title: 'Set 2' },
         ],
       }
 
-      const state = reducer(existingState, actions.removeSet(1))
+      const state = reducer(existingState, actions.removeSet('uuid-1'))
 
       expect(state.sets).toHaveLength(1)
-      expect(state.sets[0].id).toBe(2)
+      expect(state.sets[0].uniqueId).toBe('uuid-2')
     })
 
     it('should clear currentSet if removed set matches', () => {
       const existingState = {
         ...initialState,
-        currentSet: { id: 1, title: 'Set 1' },
+        currentSet: { id: 1, uniqueId: 'uuid-1', title: 'Set 1' },
       }
 
-      const state = reducer(existingState, actions.removeSet(1))
+      const state = reducer(existingState, actions.removeSet('uuid-1'))
 
       expect(state.currentSet).toBeNull()
     })
@@ -126,6 +126,7 @@ describe('Skripsi Reducer', () => {
         ...initialState,
         currentSet: {
           id: 1,
+          uniqueId: 'uuid-1',
           title: 'My Set',
           editor_content: '',
           tabs: [
@@ -137,7 +138,7 @@ describe('Skripsi Reducer', () => {
 
       const state = reducer(
         existingState,
-        actions.updateSetContent({ setId: 1, editorContent: '<p>New content</p>' })
+        actions.updateSetContent({ setId: 'uuid-1', editorContent: '<p>New content</p>' })
       )
 
       expect(state.currentSet.editorContent).toBe('<p>New content</p>')

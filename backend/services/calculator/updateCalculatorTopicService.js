@@ -12,7 +12,7 @@ export class UpdateCalculatorTopicService extends BaseService {
 
         // Check if topic exists
         const existingTopic = await prisma.calculator_topics.findUnique({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         if (!existingTopic) {
@@ -23,7 +23,7 @@ export class UpdateCalculatorTopicService extends BaseService {
         const topic = await prisma.$transaction(async (tx) => {
             // Update the topic
             const updated = await tx.calculator_topics.update({
-                where: { id: parseInt(topicId) },
+                where: { unique_id: topicId },
                 data: {
                     title,
                     description,
@@ -37,7 +37,7 @@ export class UpdateCalculatorTopicService extends BaseService {
 
             // Delete attachments for existing field options before deleting fields
             const existingFields = await tx.calculator_fields.findMany({
-                where: { calculator_topic_id: parseInt(topicId) },
+                where: { calculator_topic_id: existingTopic.id },
                 include: {
                     field_options: true
                 }
@@ -55,24 +55,24 @@ export class UpdateCalculatorTopicService extends BaseService {
 
             // Delete existing fields (cascade will delete field_options)
             await tx.calculator_fields.deleteMany({
-                where: { calculator_topic_id: parseInt(topicId) }
+                where: { calculator_topic_id: existingTopic.id }
             })
 
             // Delete existing classifications (cascade will delete conditions and options)
             await tx.calculator_classifications.deleteMany({
-                where: { calculator_topic_id: parseInt(topicId) }
+                where: { calculator_topic_id: existingTopic.id }
             })
 
             // Delete existing tags
             await tx.calculator_topic_tags.deleteMany({
-                where: { calculator_topic_id: parseInt(topicId) }
+                where: { calculator_topic_id: existingTopic.id }
             })
 
             // Create new fields
             if (fields && Array.isArray(fields)) {
                 await tx.calculator_fields.createMany({
                     data: fields.map((field, index) => ({
-                        calculator_topic_id: parseInt(topicId),
+                        calculator_topic_id: existingTopic.id,
                         key: field.key,
                         type: field.type,
                         label: field.label,
@@ -88,7 +88,7 @@ export class UpdateCalculatorTopicService extends BaseService {
 
             // Return updated topic with fields
             return await tx.calculator_topics.findUnique({
-                where: { id: parseInt(topicId) },
+                where: { id: existingTopic.id },
                 include: {
                     calculator_fields: {
                         orderBy: {
@@ -106,7 +106,7 @@ export class UpdateCalculatorTopicService extends BaseService {
                     const dbField = await prisma.calculator_fields.findUnique({
                         where: {
                             calculator_topic_id_key: {
-                                calculator_topic_id: parseInt(topicId),
+                                calculator_topic_id: existingTopic.id,
                                 key: field.key
                             }
                         }
@@ -152,7 +152,7 @@ export class UpdateCalculatorTopicService extends BaseService {
                 // Create classification
                 const classifRecord = await prisma.calculator_classifications.create({
                     data: {
-                        calculator_topic_id: parseInt(topicId),
+                        calculator_topic_id: existingTopic.id,
                         name: classification.name || classification.label || 'Classification Group',
                         order: classIndex
                     }
@@ -198,7 +198,7 @@ export class UpdateCalculatorTopicService extends BaseService {
         // Create calculator topic tags
         if (tags && Array.isArray(tags) && tags.length > 0) {
             const tagData = tags.map(tag => ({
-                calculator_topic_id: parseInt(topicId),
+                calculator_topic_id: existingTopic.id,
                 tag_id: typeof tag === 'object' ? tag.id : tag
             }))
 
@@ -209,7 +209,7 @@ export class UpdateCalculatorTopicService extends BaseService {
 
         // Refetch with all relations
         const finalTopic = await prisma.calculator_topics.findUnique({
-            where: { id: parseInt(topicId) },
+            where: { id: existingTopic.id },
             include: {
                 calculator_fields: {
                     orderBy: {

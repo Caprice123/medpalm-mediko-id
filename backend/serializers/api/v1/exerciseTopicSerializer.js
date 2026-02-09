@@ -2,6 +2,7 @@ export class ExerciseTopicSerializer {
   static serialize(topic) {
     return {
       id: topic.id,
+      uniqueId: topic.uniqueId || topic.unique_id,
       title: topic.title,
       description: topic.description,
       tags: (topic.exercise_topic_tags || []).map(t => ({

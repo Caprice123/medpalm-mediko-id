@@ -37,7 +37,7 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
     }
 
     try {
-      await dispatch(updateSetInfo(currentSet.id, editedTitle.trim(), currentSet.description))
+      await dispatch(updateSetInfo(currentSet.uniqueId, editedTitle.trim(), currentSet.description))
       setIsEditingTitle(false)
       setEditedTitle('')
     } catch (error) {

@@ -14,10 +14,10 @@ export class SendMessageService extends BaseService {
     // Verify conversation exists and user has access
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
       },
-      select: { user_id: true }
+      select: { id: true, user_id: true }
     })
 
     if (!conversation) {
@@ -27,6 +27,9 @@ export class SendMessageService extends BaseService {
     if (conversation.user_id !== userId) {
       throw new ValidationError('You do not have access to this conversation')
     }
+
+    // Use internal id for all database operations
+    const internalConversationId = conversation.id
 
     const constants = await GetConstantsService.call([
         'chatbot_access_type',
@@ -79,18 +82,18 @@ export class SendMessageService extends BaseService {
     try {
         let result
       if (mode === 'normal') {
-        result = await NormalModeAIService.call({ userId, conversationId, message })
+        result = await NormalModeAIService.call({ userId, conversationId: internalConversationId, message })
       } else if (mode === 'validated') {
-        result = await ValidatedSearchModeAIService.call({ userId, conversationId, message })
+        result = await ValidatedSearchModeAIService.call({ userId, conversationId: internalConversationId, message })
       } else if (mode === 'research') {
-        result = await ResearchModeAIService.call({ userId, conversationId, message })
+        result = await ResearchModeAIService.call({ userId, conversationId: internalConversationId, message })
       }
 
       if (onStream && result.stream) {
         if (result.provider == "gemini") {
             return await this.handleGeminiStreamingResponse({
                 userId,
-                conversationId,
+                conversationId: internalConversationId,
                 userMessageContent: message,
                 stream: result.stream,
                 creditsUsed: creditsUsed,
@@ -106,7 +109,7 @@ export class SendMessageService extends BaseService {
         } else if (result.provider == "perplexity") {
             return await this.handlePerplexityStreamingResponse({
                 userId,
-                conversationId,
+                conversationId: internalConversationId,
                 userMessageContent: message,
                 stream: result.stream,
                 creditsUsed: creditsUsed,

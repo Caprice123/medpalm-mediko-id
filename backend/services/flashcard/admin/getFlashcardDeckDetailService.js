@@ -8,7 +8,7 @@ export class GetFlashcardDeckDetailService extends BaseService {
         this.validate(deckId)
 
         const deck = await prisma.flashcard_decks.findUnique({
-            where: { id: parseInt(deckId) },
+            where: { unique_id: deckId },
             include: {
                 flashcard_cards: {
                     orderBy: { order: 'asc' }
@@ -152,12 +152,11 @@ export class GetFlashcardDeckDetailService extends BaseService {
 
     static validate(deckId) {
         if (!deckId) {
-            throw new ValidationError('Deck ID is required')
+            throw new ValidationError('Deck unique ID is required')
         }
 
-        const id = parseInt(deckId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid deck ID')
+        if (typeof deckId !== 'string' || deckId.trim() === '') {
+            throw new ValidationError('Invalid deck unique ID')
         }
     }
 }

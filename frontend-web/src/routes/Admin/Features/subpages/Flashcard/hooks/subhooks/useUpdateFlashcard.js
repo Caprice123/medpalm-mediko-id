@@ -37,7 +37,7 @@ export const useUpdateFlashcard = (onClose) => {
     validationSchema: updateFlashcardSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        if (!detail?.id) {
+        if (!detail?.uniqueId) {
           console.error('No deck selected for update')
           return
         }
@@ -81,7 +81,7 @@ export const useUpdateFlashcard = (onClose) => {
         }
 
         console.log('Update flashcard payload:', payload)
-        await dispatch(updateFlashcardDeck(detail.id, payload))
+        await dispatch(updateFlashcardDeck(detail.uniqueId, payload))
 
         // Refresh the list
         await dispatch(fetchAdminFlashcardDecks())

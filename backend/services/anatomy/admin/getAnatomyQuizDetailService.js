@@ -8,7 +8,7 @@ export class GetAnatomyQuizDetailService extends BaseService {
     this.validate(quizId)
 
     const quiz = await prisma.anatomy_quizzes.findUnique({
-      where: { id: parseInt(quizId) },
+      where: { unique_id: quizId },
       include: {
         anatomy_questions: {
           orderBy: { order: 'asc' }
@@ -51,13 +51,8 @@ export class GetAnatomyQuizDetailService extends BaseService {
   }
 
   static validate(quizId) {
-    if (!quizId) {
+    if (!quizId || typeof quizId !== 'string') {
       throw new ValidationError('Quiz ID is required')
-    }
-
-    const id = parseInt(quizId)
-    if (isNaN(id) || id <= 0) {
-      throw new ValidationError('Invalid quiz ID')
     }
   }
 }

@@ -20,7 +20,7 @@ export class UpdateMcqTopicService extends BaseService {
   }) {
     // Validate topic exists
     const existingTopic = await prisma.mcq_topics.findUnique({
-      where: { id }
+      where: { unique_id: id }
     })
 
     if (!existingTopic) {
@@ -65,7 +65,7 @@ export class UpdateMcqTopicService extends BaseService {
         await tx.attachments.deleteMany({
           where: {
             record_type: 'mcq_topic',
-            record_id: id,
+            record_id: existingTopic.id,
             name: 'pdf'
           }
         })
@@ -77,7 +77,7 @@ export class UpdateMcqTopicService extends BaseService {
         await tx.attachments.deleteMany({
           where: {
             record_type: 'mcq_topic',
-            record_id: id,
+            record_id: existingTopic.id,
             name: 'pdf'
           }
         })
@@ -87,7 +87,7 @@ export class UpdateMcqTopicService extends BaseService {
           await attachmentService.attach({
             name: 'pdf',
             recordType: 'mcq_topic',
-            recordId: id,
+            recordId: existingTopic.id,
             blobId: blobId
           })
         }
@@ -95,7 +95,7 @@ export class UpdateMcqTopicService extends BaseService {
 
       // Update basic fields
       await tx.mcq_topics.update({
-        where: { id },
+        where: { unique_id: id },
         data: updateData
       })
 
@@ -103,13 +103,13 @@ export class UpdateMcqTopicService extends BaseService {
       if (questions) {
         // Update question count
         await tx.mcq_topics.update({
-          where: { id },
+          where: { unique_id: id },
           data: { question_count: questions.length }
         })
 
         // Get existing questions to delete their attachments
         const existingQuestions = await tx.mcq_questions.findMany({
-          where: { topic_id: id }
+          where: { topic_id: existingTopic.id }
         })
 
         // Delete attachments for existing questions
@@ -124,7 +124,7 @@ export class UpdateMcqTopicService extends BaseService {
 
         // Delete existing questions
         await tx.mcq_questions.deleteMany({
-          where: { topic_id: id }
+          where: { topic_id: existingTopic.id }
         })
 
         // Create new questions
@@ -133,7 +133,7 @@ export class UpdateMcqTopicService extends BaseService {
           const q = questions[i]
           const createdQuestion = await tx.mcq_questions.create({
             data: {
-              topic_id: id,
+              topic_id: existingTopic.id,
               question: q.question,
               options: q.options,
               correct_answer: q.correct_answer,
@@ -159,13 +159,13 @@ export class UpdateMcqTopicService extends BaseService {
       if (tags) {
         // Delete existing tags
         await tx.mcq_topic_tags.deleteMany({
-          where: { topic_id: id }
+          where: { topic_id: existingTopic.id }
         })
 
         // Create new tags
         await tx.mcq_topic_tags.createMany({
           data: tags.map(tag => ({
-            topic_id: id,
+            topic_id: existingTopic.id,
             tag_id: typeof tag === 'object' ? Number(tag.id) : tag
           }))
         })
@@ -173,7 +173,7 @@ export class UpdateMcqTopicService extends BaseService {
 
       // Return updated topic with relations
       return await tx.mcq_topics.findUnique({
-        where: { id },
+        where: { unique_id: id },
         include: {
           mcq_questions: {
             orderBy: { order: 'asc' }

@@ -42,11 +42,11 @@ class ConversationController {
   // Get conversation details with messages
   async show(req, res) {
     const userId = req.user.id
-    const { id } = req.params
+    const { uniqueId } = req.params
 
     const conversation = await GetConversationService.call({
       userId,
-      conversationId: parseInt(id)
+      conversationId: uniqueId
     })
 
     return res.status(200).json({
@@ -57,12 +57,12 @@ class ConversationController {
   // Update conversation (rename topic)
   async update(req, res) {
     const userId = req.user.id
-    const { id } = req.params
+    const { uniqueId } = req.params
     const { topic } = req.body
 
     const conversation = await UpdateConversationService.call({
       userId,
-      conversationId: parseInt(id),
+      conversationId: uniqueId,
       topic
     })
 
@@ -74,11 +74,11 @@ class ConversationController {
   // Delete conversation (soft delete)
   async delete(req, res) {
     const userId = req.user.id
-    const { id } = req.params
+    const { uniqueId } = req.params
 
     await DeleteConversationService.call({
       userId,
-      conversationId: parseInt(id)
+      conversationId: uniqueId
     })
 
     return res.status(200).json({

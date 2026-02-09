@@ -100,14 +100,14 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
             <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
               Edit
             </Button>
-            <Button
+            {/* <Button
               variant="danger"
               fullWidth
               onClick={() => onDelete(topic)}
               disabled={loading?.isDeletingTopic}
             >
               Delete
-            </Button>
+            </Button> */}
           </CardActions>
         </TopicCard>
       ))}

@@ -17,7 +17,7 @@ export class CreateOsceSessionService extends BaseService {
       // Verify topic exists and is published
       const topic = await prisma.osce_topics.findFirst({
         where: {
-          id: topicId,
+          unique_id: topicId,
           status: 'published',
         },
       })
@@ -40,7 +40,7 @@ export class CreateOsceSessionService extends BaseService {
       // Fetch topic-specific observations (the ones configured for this topic)
       const topicObservations = await prisma.osce_topic_observations.findMany({
         where: {
-          topic_id: topicId,
+          topic_id: topic.id,
         },
       })
 
@@ -72,7 +72,7 @@ export class CreateOsceSessionService extends BaseService {
           data: {
             unique_id: uuidv4(),
             user_id: userId,
-            osce_topic_id: topicId,
+            osce_topic_id: topic.id,
             status: 'created',
             time_taken: 0,
             credits_used: 0,
@@ -118,7 +118,7 @@ export class CreateOsceSessionService extends BaseService {
         })
 
         // Clone topic-level attachments
-        const topicAttachments = await attachmentService.getAttachments('osce_topic', topicId)
+        const topicAttachments = await attachmentService.getAttachments('osce_topic', topic.id)
         for (const attachment of topicAttachments) {
           await tx.attachments.create({
             data: {

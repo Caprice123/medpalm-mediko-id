@@ -10,8 +10,8 @@ router.use(requireAdmin)
 
 // Conversation management
 router.get('/conversations', asyncHandler(ChatbotAdminController.getConversations))
-router.get('/conversations/:id', asyncHandler(ChatbotAdminController.getConversation))
-router.get('/conversations/:id/messages', asyncHandler(ChatbotAdminController.getConversationMessages))
-router.delete('/conversations/:id', asyncHandler(ChatbotAdminController.deleteConversation))
+router.get('/conversations/:uniqueId', asyncHandler(ChatbotAdminController.getConversation))
+router.get('/conversations/:uniqueId/messages', asyncHandler(ChatbotAdminController.getConversationMessages))
+router.delete('/conversations/:uniqueId', asyncHandler(ChatbotAdminController.deleteConversation))
 
 export default router

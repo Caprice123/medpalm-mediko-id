@@ -33,7 +33,7 @@ function FlashcardAdminPage({ onBack }) {
   }
 
   const handleEditFlashcard = async (deck) => {
-    await dispatch(fetchFlashcardDeck(deck.id, () => {
+    await dispatch(fetchFlashcardDeck(deck.uniqueId, () => {
       setUiState({
         ...uiState,
         isDeckModalOpen: true,

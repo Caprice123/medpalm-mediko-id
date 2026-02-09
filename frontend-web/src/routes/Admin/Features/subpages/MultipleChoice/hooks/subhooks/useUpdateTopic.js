@@ -62,7 +62,7 @@ export const useUpdateTopic = (closeCallback) => {
 
         console.log('Update MCQ topic payload:', topicData)
 
-        await dispatch(updateMcqTopic(selectedTopic.id, topicData, () => {
+        await dispatch(updateMcqTopic(selectedTopic.uniqueId, topicData, () => {
           dispatch(fetchAdminMcqTopics())
           resetForm()
           if (closeCallback) closeCallback()

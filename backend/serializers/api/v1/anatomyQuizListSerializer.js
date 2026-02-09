@@ -15,6 +15,7 @@ export class AnatomyQuizListSerializer {
 
       return {
         id: quiz.id,
+        uniqueId: quiz.unique_id,
         title: quiz.title,
         description: quiz.description,
         universityTags: universityTags.map(tag => ({

@@ -100,10 +100,10 @@ function TopicList() {
               </TopicStats>
 
               <ModeButtonContainer>
-                <Button variant="secondary" onClick={() => handleSelectMode(topic.id, 'learning')} style={{ flex: 1 }}>
+                <Button variant="secondary" onClick={() => handleSelectMode(topic.uniqueId, 'learning')} style={{ flex: 1 }}>
                   📖 Learning
                 </Button>
-                <Button variant="primary" onClick={() => handleSelectMode(topic.id, 'quiz')} style={{ flex: 1 }}>
+                <Button variant="primary" onClick={() => handleSelectMode(topic.uniqueId, 'quiz')} style={{ flex: 1 }}>
                   ⏱️ Quiz
                 </Button>
               </ModeButtonContainer>

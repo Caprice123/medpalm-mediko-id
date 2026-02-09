@@ -8,7 +8,7 @@ export class DeleteOsceTopicService extends BaseService {
 
         // Check if topic exists
         const topic = await prisma.osce_topics.findUnique({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         if (!topic) {
@@ -17,20 +17,15 @@ export class DeleteOsceTopicService extends BaseService {
 
         // Soft delete by setting is_active to false
         await prisma.osce_topics.update({
-            where: { id: parseInt(topicId) },
+            where: { unique_id: topicId },
         })
 
         return true
     }
 
     static validate(topicId) {
-        if (!topicId) {
+        if (!topicId || typeof topicId !== 'string') {
             throw new ValidationError('Topic ID is required')
-        }
-
-        const id = parseInt(topicId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid topic ID')
         }
     }
 }

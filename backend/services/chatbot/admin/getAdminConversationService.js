@@ -8,7 +8,7 @@ export class GetAdminConversationService extends BaseService {
 
     const conversation = await prisma.chatbot_conversations.findFirst({
       where: {
-        id: conversationId,
+        unique_id: conversationId,
         is_deleted: false
       },
       include: {
@@ -54,6 +54,7 @@ export class GetAdminConversationService extends BaseService {
 
     return {
       id: conversation.id,
+      uniqueId: conversation.unique_id,
       userId: conversation.user_id,
       topic: conversation.topic,
       messages: transformedMessages,
@@ -63,7 +64,7 @@ export class GetAdminConversationService extends BaseService {
   }
 
   static validate({ conversationId }) {
-    if (!conversationId || isNaN(parseInt(conversationId))) {
+    if (!conversationId || typeof conversationId !== 'string') {
       throw new ValidationError('Invalid conversation ID')
     }
   }

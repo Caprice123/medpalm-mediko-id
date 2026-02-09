@@ -12,7 +12,7 @@ export class UpdateExerciseTopicService extends BaseService {
 
         // Check if topic exists
         const topic = await prisma.exercise_topics.findUnique({
-            where: { id: parseInt(topicId) }
+            where: { unique_id: topicId }
         })
 
         if (!topic) {
@@ -51,7 +51,7 @@ export class UpdateExerciseTopicService extends BaseService {
             }
 
             await tx.exercise_topics.update({
-                where: { id: parseInt(topicId) },
+                where: { unique_id: topicId },
                 data: updateData
             })
 
@@ -61,7 +61,7 @@ export class UpdateExerciseTopicService extends BaseService {
                 await tx.attachments.deleteMany({
                     where: {
                         record_type: 'exercise_topic',
-                        record_id: parseInt(topicId),
+                        record_id: topic.id,
                         name: 'pdf'
                     }
                 })
@@ -72,7 +72,7 @@ export class UpdateExerciseTopicService extends BaseService {
                         data: {
                             name: 'pdf',
                             record_type: 'exercise_topic',
-                            record_id: parseInt(topicId),
+                            record_id: topic.id,
                             blob_id: blobId
                         }
                     })
@@ -83,14 +83,14 @@ export class UpdateExerciseTopicService extends BaseService {
             if (tags && Array.isArray(tags)) {
                 // Delete existing tags
                 await tx.exercise_topic_tags.deleteMany({
-                    where: { topic_id: parseInt(topicId) }
+                    where: { topic_id: topic.id }
                 })
 
                 // Create new tags
                 if (tags.length > 0) {
                     await tx.exercise_topic_tags.createMany({
                         data: tags.map(tagId => ({
-                            topic_id: parseInt(topicId),
+                            topic_id: topic.id,
                             tag_id: parseInt(tagId)
                         }))
                     })
@@ -101,7 +101,7 @@ export class UpdateExerciseTopicService extends BaseService {
             if (questions && Array.isArray(questions)) {
                 // Get existing questions
                 const existingQuestions = await tx.exercise_questions.findMany({
-                    where: { topic_id: parseInt(topicId) }
+                    where: { topic_id: topic.id }
                 })
 
                 const existingIds = new Set(existingQuestions.map(q => q.id))
@@ -153,7 +153,7 @@ export class UpdateExerciseTopicService extends BaseService {
                     for (const q of newQuestions) {
                         const createdQuestion = await tx.exercise_questions.create({
                             data: {
-                                topic_id: parseInt(topicId),
+                                topic_id: topic.id,
                                 question: q.question,
                                 answer: q.answer,
                                 explanation: q.explanation || '',
@@ -189,18 +189,18 @@ export class UpdateExerciseTopicService extends BaseService {
 
                 // 4. Update question_count after all question operations
                 const questionCount = await tx.exercise_questions.count({
-                    where: { topic_id: parseInt(topicId) }
+                    where: { topic_id: topic.id }
                 })
 
                 await tx.exercise_topics.update({
-                    where: { id: parseInt(topicId) },
+                    where: { unique_id: topicId },
                     data: { question_count: questionCount }
                 })
             }
 
             // Fetch and return updated topic with all relations
             const updatedTopicData = await tx.exercise_topics.findUnique({
-                where: { id: parseInt(topicId) },
+                where: { unique_id: topicId },
                 include: {
                     exercise_questions: {
                         orderBy: { order: 'asc' }
@@ -289,12 +289,11 @@ export class UpdateExerciseTopicService extends BaseService {
 
     static validate(topicId, { title, questions }) {
         if (!topicId) {
-            throw new ValidationError('Topic ID is required')
+            throw new ValidationError('Topic unique ID is required')
         }
 
-        const id = parseInt(topicId)
-        if (isNaN(id) || id <= 0) {
-            throw new ValidationError('Invalid topic ID')
+        if (typeof topicId !== 'string' || topicId.trim() === '') {
+            throw new ValidationError('Invalid topic unique ID')
         }
 
         if (title !== undefined && (!title || typeof title !== 'string')) {
