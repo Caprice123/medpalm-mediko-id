@@ -270,7 +270,7 @@ const SummaryNotesDetail = () => {
                           <Button
                             variant="primary"
                             fullWidth
-                            onClick={() => navigate(`/flashcards/${deck.id}`)}
+                            onClick={() => navigate(`/flashcards/${deck.uniqueId}`)}
                           >
                             Mulai Belajar
                           </Button>
@@ -341,14 +341,14 @@ const SummaryNotesDetail = () => {
                           <ModeButtonContainer>
                             <Button
                               variant="secondary"
-                              onClick={() => navigate(`/multiple-choice/${topic.id}?mode=learning`)}
+                              onClick={() => navigate(`/multiple-choice/${topic.uniqueId}?mode=learning`)}
                               style={{ flex: 1 }}
                             >
                               📖 Learning
                             </Button>
                             <Button
                               variant="primary"
-                              onClick={() => navigate(`/multiple-choice/${topic.id}?mode=quiz`)}
+                              onClick={() => navigate(`/multiple-choice/${topic.uniqueId}?mode=quiz`)}
                               style={{ flex: 1 }}
                             >
                               ⏱️ Quiz
