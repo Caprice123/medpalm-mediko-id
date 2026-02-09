@@ -49,7 +49,7 @@ function ConversationDetailModal({ conversation, isOpen, onClose }) {
   }
 
   useEffect(() => {
-    if (isOpen && conversation?.id) {
+    if (isOpen && conversation?.uniqueId) {
       // Reset state when opening modal
       dispatch(actions.resetMessages())
       setCurrentPage(1)
@@ -58,7 +58,7 @@ function ConversationDetailModal({ conversation, isOpen, onClose }) {
 
       // Fetch initial messages
       dispatch(fetchAdminConversationMessages({
-        conversationId: conversation.id,
+        conversationId: conversation.uniqueId,
         page: 1,
         perPage: 50,
         prepend: false
@@ -74,7 +74,7 @@ function ConversationDetailModal({ conversation, isOpen, onClose }) {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, conversation?.id, dispatch])
+  }, [isOpen, conversation?.uniqueId, dispatch])
 
   useEffect(() => {
     // Auto scroll to bottom for page 1 (initial load)
@@ -116,7 +116,7 @@ function ConversationDetailModal({ conversation, isOpen, onClose }) {
     setCurrentPage(nextPage)
 
     await dispatch(fetchAdminConversationMessages({
-      conversationId: conversation.id,
+      conversationId: conversation.uniqueId,
       page: nextPage,
       perPage: 50,
       prepend: true // Signal to prepend instead of replace

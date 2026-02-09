@@ -57,9 +57,9 @@ const ConversationList = ({
     <Container>
       {conversations.map((conversation) => (
         <ConversationItem
-          key={conversation.id}
-          $isSelected={selectedConversationId === conversation.id}
-          onClick={() => onConversationSelect(conversation.id)}
+          key={conversation.uniqueId}
+          $isSelected={selectedConversationId === conversation.uniqueId}
+          onClick={() => onConversationSelect(conversation.uniqueId)}
         >
           <ConversationHeader>
             <ConversationTopic>{conversation.topic}</ConversationTopic>

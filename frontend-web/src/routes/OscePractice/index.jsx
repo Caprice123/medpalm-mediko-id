@@ -77,7 +77,7 @@ function OscePracticePage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
                   {userSessions.map((session) => (
                   <SessionCard
-                      key={session.id}
+                      key={session.uniqueId}
                       session={session}
                   />
                   ))}

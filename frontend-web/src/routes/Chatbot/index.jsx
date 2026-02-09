@@ -69,7 +69,7 @@ const Chatbot = () => {
         createConversation("Percakapan Baru", "normal")
       )
       // Select the new conversation
-      setSelectedConversationId(newConversation.id)
+      setSelectedConversationId(newConversation.uniqueId)
     } catch (error) {
       console.error('Failed to create conversation:', error)
     }

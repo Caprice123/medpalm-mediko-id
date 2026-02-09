@@ -52,7 +52,7 @@ function Chatbot({ onBack }) {
     }
 
     try {
-      await dispatch(deleteAdminConversation(conversation.id))
+      await dispatch(deleteAdminConversation(conversation.uniqueId))
       await dispatch(fetchAdminConversations({}, pagination.page, 20))
     } catch (error) {
       console.error('Failed to delete conversation:', error)

@@ -55,7 +55,7 @@ function DeckList() {
         const semesterTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
         return (
-          <Card key={deck.id} shadow hoverable>
+          <Card key={deck.uniqueId} shadow hoverable>
             <CardHeader title={deck.title} divider={false} />
 
             <CardBody padding="0 1.25rem 1.25rem 1.25rem">

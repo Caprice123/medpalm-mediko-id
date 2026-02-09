@@ -36,7 +36,7 @@ function NotesList() {
   return (
     <NotesGrid>
       {notes.map(note => (
-        <Card key={note.id} shadow hoverable>
+        <Card key={note.uniqueId} shadow hoverable>
           <CardHeader title={note.title} divider={false} />
 
           <CardBody padding="0 1.25rem 1.25rem 1.25rem">
@@ -101,7 +101,7 @@ function NotesList() {
             <Button
               variant="primary"
               fullWidth
-              onClick={() => navigate(generatePath(SummaryNotesRoute.detailRoute, { id: note.id }))}
+              onClick={() => navigate(generatePath(SummaryNotesRoute.detailRoute, { id: note.uniqueId }))}
             >
               Lihat Ringkasan
             </Button>

@@ -58,7 +58,7 @@ const chatbotSlice = createSlice({
       state.currentConversation = action.payload
       // Also set as active conversation
       if (action.payload) {
-        state.activeConversationId = action.payload.id
+        state.activeConversationId = action.payload.uniqueId
       }
     },
     setActiveConversationId: (state, action) => {
@@ -225,13 +225,13 @@ const chatbotSlice = createSlice({
       state.conversations.unshift(action.payload)
     },
     updateConversation: (state, action) => {
-      const index = state.conversations.findIndex(c => c.id === action.payload.id)
+      const index = state.conversations.findIndex(c => c.uniqueId === action.payload.uniqueId)
       if (index !== -1) {
         state.conversations[index] = action.payload
       }
     },
     removeConversation: (state, action) => {
-      state.conversations = state.conversations.filter(c => c.id !== action.payload)
+      state.conversations = state.conversations.filter(c => c.uniqueId !== action.payload)
     },
     setError: (state, action) => {
       state.error = action.payload

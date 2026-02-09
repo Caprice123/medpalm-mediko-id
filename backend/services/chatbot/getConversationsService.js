@@ -48,6 +48,7 @@ export class GetConversationsService extends BaseService {
 
     const transformedConversations = paginatedConversations.map(conv => ({
       id: conv.id,
+      uniqueId: conv.unique_id,
       topic: conv.topic,
       lastMessage: conv.last_message || null,
       createdAt: conv.created_at,

@@ -73,7 +73,6 @@ function EndSessionModal({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={!isProcessing ? onClose : undefined}
       title={isProcessing ? (autoEnd ? '⏱️ Waktu Habis!' : '🔄 Mengevaluasi Sesi...') : '⚠️ Akhiri Sesi Latihan?'}
       size="medium"
       closeOnOverlayClick={!isProcessing}

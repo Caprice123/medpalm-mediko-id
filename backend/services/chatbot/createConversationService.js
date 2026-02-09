@@ -15,6 +15,7 @@ export class CreateConversationService extends BaseService {
 
     return {
       id: conversation.id,
+      uniqueId: conversation.unique_id,
       topic: conversation.topic,
       messageCount: 0,
       lastMessage: null,

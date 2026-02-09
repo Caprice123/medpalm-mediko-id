@@ -79,10 +79,10 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const currentConversation = useSelector(
     state => state.chatbot.currentConversation,
     (prev, next) => {
-      // Custom equality: only re-render if id or topic changes
+      // Custom equality: only re-render if uniqueId or topic changes
       if (!prev && !next) return true
       if (!prev || !next) return false
-      return prev.id === next.id && prev.topic === next.topic
+      return prev.uniqueId === next.uniqueId && prev.topic === next.topic
     }
   )
   const currentMode = useSelector(state => state.chatbot.currentMode)
@@ -159,7 +159,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         console.log(`✅ Using cached data for conversation ${conversationId} (${cachedMessages.length} messages)`)
 
         // Find the conversation in the list and set it as current (to update the title)
-        const conversation = conversations.find(c => c.id === conversationId)
+        const conversation = conversations.find(c => c.uniqueId === conversationId)
         if (conversation) {
           dispatch(actions.setCurrentConversation(conversation))
         }

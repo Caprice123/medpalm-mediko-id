@@ -39,7 +39,7 @@ function QuizList() {
   return (
     <QuizzesGrid>
       {quizzes.map(quiz => (
-        <Card key={quiz.id} shadow hoverable>
+        <Card key={quiz.uniqueId} shadow hoverable>
           <CardHeader title={quiz.title} divider={false} />
 
           <CardBody padding="0 1.25rem 1.25rem 1.25rem">
@@ -87,7 +87,7 @@ function QuizList() {
             <Button
               variant="primary"
               fullWidth
-              onClick={() => navigate(generatePath(AnatomyQuizRoute.detailRoute, { id: quiz.id }))}
+              onClick={() => navigate(generatePath(AnatomyQuizRoute.detailRoute, { id: quiz.uniqueId }))}
             >
               Select
             </Button>

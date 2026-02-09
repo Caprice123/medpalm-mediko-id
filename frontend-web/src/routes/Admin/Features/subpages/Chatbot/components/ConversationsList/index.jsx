@@ -39,7 +39,7 @@ function ConversationsList({ onView, onDelete }) {
   return (
     <ConversationsGrid>
       {conversations.map(conversation => (
-        <ConversationCard key={conversation.id} onClick={() => onView(conversation)}>
+        <ConversationCard key={conversation.uniqueId} onClick={() => onView(conversation)}>
           <ConversationHeader>
             <ConversationTitle>{conversation.topic || 'Untitled Conversation'}</ConversationTitle>
           </ConversationHeader>

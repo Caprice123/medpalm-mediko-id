@@ -32,8 +32,10 @@ export class SummaryNoteSerializer {
       (note.summary_note_mcq_topics || []).map(link => link.mcq_topic)
     )
 
+    console.log(note)
     return {
       id: note.id,
+      uniqueId: note.unique_id,
       title: note.title,
       description: note.description,
       content: note.content,

@@ -66,7 +66,7 @@ function TopicList() {
         const semesterTags = topic.tags?.filter(tag => tag.tagGroupId === semesterGroupId) || []
 
         return (
-          <Card key={topic.id} shadow hoverable>
+          <Card key={topic.uniqueId} shadow hoverable>
             <CardHeader title={topic.title} divider={false} />
 
             <CardBody padding="0 1.25rem 1.25rem 1.25rem">

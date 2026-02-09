@@ -56,7 +56,8 @@ export class SubmitExerciseProgressService extends BaseService {
     const result = await prisma.$transaction(async (tx) => {
       // Get the topic with questions to verify answers
       const topic = await tx.exercise_topics.findUnique({
-        where: { id: parseInt(topicId) },
+        where: { unique_id: topicId },
+
         include: {
           exercise_questions: true
         }

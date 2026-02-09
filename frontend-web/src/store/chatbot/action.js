@@ -326,7 +326,7 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
           }))
 
           // Update conversation's lastMessage in the conversations list
-          const conversation = state.chatbot.conversations.find(c => c.id === conversationId)
+          const conversation = state.chatbot.conversations.find(c => c.uniqueId === conversationId)
           if (conversation) {
             const lastMessage = response.data.data.content.substring(0, 50)
             dispatch(updateConversation({
@@ -445,7 +445,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
 
             // Update conversation's lastMessage in the conversations list
             const state = getState()
-            const conversation = state.chatbot.conversations.find(c => c.id === conversationId)
+            const conversation = state.chatbot.conversations.find(c => c.uniqueId === conversationId)
             if (conversation) {
               const lastMessage = fullContent.substring(0, 50)
               dispatch(updateConversation({

@@ -9,7 +9,7 @@ export class SubmitMcqAnswersService extends BaseService {
       // Get topic with questions
       const topic = await tx.mcq_topics.findFirst({
         where: {
-          id: topicId,
+          unique_id: topicId,
         },
         include: {
           mcq_questions: {
