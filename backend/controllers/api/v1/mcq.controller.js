@@ -95,7 +95,7 @@ class McqController {
     const userId = req.user?.id
 
     const result = await SubmitMcqAnswersService.call({
-      topicId: parseInt(id),
+      topicId: id,
       answers,
       userId
     })
