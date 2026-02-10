@@ -43,7 +43,7 @@ function SummaryNotes({ onBack }) {
 
   const handleEditNote = async (note) => {
     try {
-      await dispatch(fetchSummaryNoteDetail(note.id))
+      await dispatch(fetchSummaryNoteDetail(note.uniqueId))
       setUiState({
         ...uiState,
         isModalOpen: true,

@@ -88,7 +88,7 @@ export const useUpdateNote = (onClose) => {
           mcqTopicIds: values.selectedMcqTopics.map(m => m.id)
       }
 
-      await dispatch(updateSummaryNote(detail.id, payload))
+      await dispatch(updateSummaryNote(detail.uniqueId, payload))
 
       // Refresh the list
       await dispatch(fetchAdminSummaryNotes())

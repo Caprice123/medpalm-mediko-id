@@ -93,14 +93,14 @@ export class UpdateSummaryNoteService extends BaseService {
       if (flashcardDeckIds !== undefined) {
         // Delete existing flashcard deck links
         await tx.summary_note_flashcard_decks.deleteMany({
-          where: { summary_note_id: parseInt(id) }
+          where: { summary_note_id: summaryNote.id }
         })
 
         // Create new flashcard deck links
         if (flashcardDeckIds.length > 0) {
           await tx.summary_note_flashcard_decks.createMany({
             data: flashcardDeckIds.map(deckId => ({
-              summary_note_id: parseInt(id),
+              summary_note_id: summaryNote.id,
               flashcard_deck_id: parseInt(deckId)
             }))
           })
@@ -111,14 +111,14 @@ export class UpdateSummaryNoteService extends BaseService {
       if (mcqTopicIds !== undefined) {
         // Delete existing MCQ topic links
         await tx.summary_note_mcq_topics.deleteMany({
-          where: { summary_note_id: parseInt(id) }
+          where: { summary_note_id: summaryNote.id }
         })
 
         // Create new MCQ topic links
         if (mcqTopicIds.length > 0) {
           await tx.summary_note_mcq_topics.createMany({
             data: mcqTopicIds.map(topicId => ({
-              summary_note_id: parseInt(id),
+              summary_note_id: summaryNote.id,
               mcq_topic_id: parseInt(topicId)
             }))
           })

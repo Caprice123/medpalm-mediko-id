@@ -55,7 +55,7 @@ export class GetSummaryNoteByIdService extends BaseService {
     // Get source document attachment if exists
     const sourceAttachment = await attachmentService.getAttachmentWithUrl(
       'summary_note',
-      parseInt(noteId),
+      parseInt(note.id),
       'source_document',
       3600 // 1 hour expiration
     )

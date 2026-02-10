@@ -10,7 +10,7 @@ export class UpdateRubricService extends BaseService {
 
     // Check if rubric exists
     const existingRubric = await prisma.osce_rubrics.findUnique({
-      where: { id: rubricId },
+      where: { id: parseInt(rubricId) },
     })
 
     if (!existingRubric) {
@@ -39,7 +39,7 @@ export class UpdateRubricService extends BaseService {
     updateData.updated_at = new Date()
 
     const rubric = await prisma.osce_rubrics.update({
-      where: { id: rubricId },
+      where: { id: parseInt(rubricId) },
       data: updateData,
     })
 

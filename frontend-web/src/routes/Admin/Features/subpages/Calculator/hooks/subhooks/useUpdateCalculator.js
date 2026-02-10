@@ -17,6 +17,7 @@ export const useUpdateCalculator = (setUiState) => {
   const formik = useFormik({
     initialValues: {
       id: null,
+      uniqueId: null,
       title: '',
       description: '',
       clinical_references: [],
@@ -33,7 +34,8 @@ export const useUpdateCalculator = (setUiState) => {
     validateOnBlur: false,
     onSubmit: async (values) => {
       try {
-        await dispatch(updateCalculatorTopic(values.id, values))
+        console.log(values)
+        await dispatch(updateCalculatorTopic(values.uniqueId, values))
         setUiState(prev => ({ ...prev, isCalculatorModalOpen: false, mode: null }))
       } catch (error) {
         console.error('Error updating calculator:', error)
@@ -54,6 +56,7 @@ export const useUpdateCalculator = (setUiState) => {
 
       formik.setValues({
         id: fullCalculator.id,
+        uniqueId: fullCalculator.uniqueId,
         title: fullCalculator.title,
         description: fullCalculator.description || '',
         clinical_references: fullCalculator.clinical_references || [],

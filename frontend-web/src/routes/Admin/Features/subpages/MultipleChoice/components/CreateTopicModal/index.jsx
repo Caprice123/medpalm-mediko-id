@@ -223,8 +223,6 @@ const CreateTopicModal = ({ onClose }) => {
           type="number"
           value={form.values.questionCount}
           onChange={(e) => form.setFieldValue('questionCount', parseInt(e.target.value) || 5)}
-          min="1"
-          max="50"
         />
         <HelpText>Pilih antara 1-50 soal</HelpText>
       </FormSection>

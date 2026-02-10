@@ -26,7 +26,7 @@ function TopicsTab() {
   }
 
   const handleEditTopic = async (topic) => {
-    await dispatch(fetchOsceTopic(topic.id, () => {
+    await dispatch(fetchOsceTopic(topic.uniqueId, () => {
       setIsUpdateModalOpen(true)
     }))
   }

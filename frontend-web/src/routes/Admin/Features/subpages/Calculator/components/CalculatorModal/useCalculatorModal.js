@@ -580,7 +580,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     }
 
     if (calculator) {
-        await dispatch(updateCalculatorTopic(calculator.id, submitData))
+        await dispatch(updateCalculatorTopic(calculator.uniqueId, submitData))
     } else {
         await dispatch(createCalculatorTopic(submitData))
     }

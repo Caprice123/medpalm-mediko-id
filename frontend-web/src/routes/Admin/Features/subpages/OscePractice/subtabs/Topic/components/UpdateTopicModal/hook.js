@@ -60,7 +60,7 @@ export const useUpdateTopicModal = (onClose) => {
           }))
         }
 
-        dispatch(updateOsceTopic(topicDetail.id, payload, () => {
+        dispatch(updateOsceTopic(topicDetail.uniqueId, payload, () => {
           onClose()
         }))
       }
