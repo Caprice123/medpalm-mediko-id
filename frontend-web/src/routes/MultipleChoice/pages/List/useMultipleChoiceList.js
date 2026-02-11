@@ -19,7 +19,7 @@ export const useMultipleChoiceList = () => {
 
   useEffect(() => {
     dispatch(fetchMcqTopics())
-    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
     dispatch(fetchTags())
   }, [dispatch])
 

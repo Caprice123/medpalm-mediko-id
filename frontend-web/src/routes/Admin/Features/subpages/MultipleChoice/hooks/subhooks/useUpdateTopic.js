@@ -16,6 +16,8 @@ export const useUpdateTopic = (closeCallback) => {
       description: '',
       quiz_time_limit: 0,
       passing_score: 70,
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       questions: [],
@@ -48,7 +50,7 @@ export const useUpdateTopic = (closeCallback) => {
           passing_score: values.passing_score,
           status: values.status,
           questions: questions,
-          tags: [...values.universityTags, ...values.semesterTags].map(t => t.id)
+          tags: [...values.topicTags, ...values.departmentTags, ...values.universityTags, ...values.semesterTags].map(t => t.id)
         }
 
         // Add content or blobId based on contentType
@@ -107,6 +109,8 @@ export const useUpdateTopic = (closeCallback) => {
         description: selectedTopic.description || '',
         quiz_time_limit: selectedTopic.quizTimeLimit || selectedTopic.quiz_time_limit || 0,
         passing_score: selectedTopic.passingScore || selectedTopic.passing_score || 70,
+        topicTags: selectedTopic.topicTags || [],
+        departmentTags: selectedTopic.departmentTags || [],
         universityTags: selectedTopic.universityTags || [],
         semesterTags: selectedTopic.semesterTags || [],
         questions: questions,

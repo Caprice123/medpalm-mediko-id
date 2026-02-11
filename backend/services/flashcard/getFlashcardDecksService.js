@@ -22,6 +22,26 @@ export class GetFlashcardDecksService extends BaseService {
         // Build filter conditions for tags
         const tagFilters = []
 
+        if (filters.topic) {
+            tagFilters.push({
+                flashcard_deck_tags: {
+                    some: {
+                        tag_id: parseInt(filters.topic)
+                    }
+                }
+            })
+        }
+
+        if (filters.department) {
+            tagFilters.push({
+                flashcard_deck_tags: {
+                    some: {
+                        tag_id: parseInt(filters.department)
+                    }
+                }
+            })
+        }
+
         if (filters.university) {
             tagFilters.push({
                 flashcard_deck_tags: {
@@ -98,6 +118,22 @@ export class GetFlashcardDecksService extends BaseService {
     }
 
     static validate(filters) {
+        // Validate topic filter if provided
+        if (filters.topic) {
+            const topicId = parseInt(filters.topic)
+            if (isNaN(topicId) || topicId <= 0) {
+                throw new ValidationError('Invalid topic filter')
+            }
+        }
+
+        // Validate department filter if provided
+        if (filters.department) {
+            const departmentId = parseInt(filters.department)
+            if (isNaN(departmentId) || departmentId <= 0) {
+                throw new ValidationError('Invalid department filter')
+            }
+        }
+
         // Validate university filter if provided
         if (filters.university) {
             const universityId = parseInt(filters.university)

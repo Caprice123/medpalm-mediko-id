@@ -21,6 +21,8 @@ export const useCreateFlashcard = (onClose) => {
       title: '',
       description: '',
       cards: [],
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       status: 'draft',
@@ -34,8 +36,13 @@ export const useCreateFlashcard = (onClose) => {
     validationSchema: createFlashcardSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        // Combine university and semester tags
-        const allTags = [...values.universityTags, ...values.semesterTags]
+        // Combine all tags (topic, department, university, semester)
+        const allTags = [
+          ...values.topicTags,
+          ...values.departmentTags,
+          ...values.universityTags,
+          ...values.semesterTags
+        ]
 
         // Build payload based on content type
         const payload = {

@@ -23,6 +23,8 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
       description: '',
       status: 'draft',
       questions: [],
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       blobId: null,
@@ -51,8 +53,10 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
           order: index
         }))
 
-        // Prepare tags - combine university and semester tags
+        // Prepare tags - combine all tags
         const allTags = [
+          ...(values.topicTags || []),
+          ...(values.departmentTags || []),
           ...(values.universityTags || []),
           ...(values.semesterTags || [])
         ].map(tag => tag.id)
@@ -109,6 +113,14 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
   useEffect(() => {
     if (topicToEdit) {
       // Map tags to the format expected by TagSelector
+      const topicTags = topicToEdit.tags?.filter(tag =>
+        tag.tagGroup?.name === 'topic'
+      ) || []
+
+      const departmentTags = topicToEdit.tags?.filter(tag =>
+        tag.tagGroup?.name === 'department'
+      ) || []
+
       const universityTags = topicToEdit.tags?.filter(tag =>
         tag.tagGroup?.name === 'university'
       ) || []
@@ -128,6 +140,8 @@ export const useUpdateTopic = (topicToEdit, onClose) => {
           description: topicToEdit.description || '',
           status: topicToEdit.status || 'draft',
           questions: questionsWithIds,
+          topicTags: topicTags,
+          departmentTags: departmentTags,
           universityTags: universityTags,
           semesterTags: semesterTags,
           blobId: topicToEdit.blob?.id || null

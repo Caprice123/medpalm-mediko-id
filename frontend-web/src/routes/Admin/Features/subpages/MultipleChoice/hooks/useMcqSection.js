@@ -17,7 +17,7 @@ export const useMcqSection = () => {
   // Fetch topics and tags on mount
   useEffect(() => {
     dispatch(fetchAdminMcqTopics())
-    dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
     dispatch(fetchTags())
   }, [dispatch])
 

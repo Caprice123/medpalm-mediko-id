@@ -42,7 +42,14 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
   // Data state - render topic grid
   return (
     <TopicsGrid>
-      {topics.map(topic => (
+      {topics.map(topic => {
+        // Filter tags by tag_group
+        const topicTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+        const departmentTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
+        const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
+        const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
+
+        return (
         <TopicCard key={topic.id}>
           <TopicCardHeader>
             <TopicCardTitle>{topic.title}</TopicCardTitle>
@@ -57,10 +64,32 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
 
           <div style={{flex: "1"}}></div>
 
-          {/* University Tags */}
-          {topic.universityTags && topic.universityTags.length > 0 && (
+          {/* Topic Tags */}
+          {topicTags.length > 0 && (
             <TagList>
-              {topic.universityTags.map((tag) => (
+              {topicTags.map((tag) => (
+                <Tag key={tag.id} topic>
+                  🏥 {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
+          {/* Department Tags */}
+          {departmentTags.length > 0 && (
+            <TagList>
+              {departmentTags.map((tag) => (
+                <Tag key={tag.id} department>
+                  🏨 {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
+          {/* University Tags */}
+          {universityTags.length > 0 && (
+            <TagList>
+              {universityTags.map((tag) => (
                 <Tag key={tag.id} university>
                   🏛️ {tag.name}
                 </Tag>
@@ -69,9 +98,9 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
           )}
 
           {/* Semester Tags */}
-          {topic.semesterTags && topic.semesterTags.length > 0 && (
+          {semesterTags.length > 0 && (
             <TagList>
-              {topic.semesterTags.map((tag) => (
+              {semesterTags.map((tag) => (
                 <Tag key={tag.id} semester>
                   📚 {tag.name}
                 </Tag>

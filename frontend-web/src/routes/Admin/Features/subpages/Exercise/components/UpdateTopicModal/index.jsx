@@ -159,7 +159,15 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
 
   const { loading: commonLoading } = useSelector(state => state.common)
 
-  // Get tags from both university and semester groups - memoized
+  // Get tags from all tag groups - memoized
+  const topicTags = useMemo(() =>
+    tags.find(t => t.name === 'topic')?.tags || [],
+    [tags]
+  )
+  const departmentTags = useMemo(() =>
+    tags.find(t => t.name === 'department')?.tags || [],
+    [tags]
+  )
   const universityTags = useMemo(() =>
     tags.find(t => t.name === 'university')?.tags || [],
     [tags]
@@ -169,7 +177,15 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
     [tags]
   )
 
-  // Handlers for tag changes (Note: Tags are read-only in update mode, but keeping for consistency)
+  // Handlers for tag changes
+  const handleTopicTagsChange = (newTags) => {
+    form.setFieldValue('topicTags', newTags)
+  }
+
+  const handleDepartmentTagsChange = (newTags) => {
+    form.setFieldValue('departmentTags', newTags)
+  }
+
   const handleUniversityTagsChange = (newTags) => {
     form.setFieldValue('universityTags', newTags)
   }
@@ -225,6 +241,30 @@ const UpdateTopicModal = ({ topicToEdit, onClose }) => {
           value={form.values.description}
           onChange={(e) => form.setFieldValue('description', e.target.value)}
           placeholder="Brief description of this topic"
+        />
+      </FormSection>
+
+      {/* Topic Tags */}
+      <FormSection>
+        <Label>Topik</Label>
+        <TagSelector
+          allTags={topicTags}
+          selectedTags={form.values.topicTags || []}
+          onTagsChange={handleTopicTagsChange}
+          placeholder="-- Pilih Topik --"
+          helpText="Pilih topik medis untuk membantu mengorganisir topik"
+        />
+      </FormSection>
+
+      {/* Department Tags */}
+      <FormSection>
+        <Label>Departemen</Label>
+        <TagSelector
+          allTags={departmentTags}
+          selectedTags={form.values.departmentTags || []}
+          onTagsChange={handleDepartmentTagsChange}
+          placeholder="-- Pilih Departemen --"
+          helpText="Pilih departemen untuk membantu mengorganisir topik"
         />
       </FormSection>
 

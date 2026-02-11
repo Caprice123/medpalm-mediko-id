@@ -23,6 +23,8 @@ export const useUpdateFlashcard = (onClose) => {
       title: '',
       description: '',
       cards: [],
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       status: 'draft',
@@ -42,10 +44,12 @@ export const useUpdateFlashcard = (onClose) => {
           return
         }
 
-        // Combine university and semester tags
+        // Combine all tags (topic, department, university, semester)
+        const topicTagIds = values.topicTags?.map(tag => tag.id) || []
+        const departmentTagIds = values.departmentTags?.map(tag => tag.id) || []
         const universityTagIds = values.universityTags?.map(tag => tag.id) || []
         const semesterTagIds = values.semesterTags?.map(tag => tag.id) || []
-        const allTagIds = [...universityTagIds, ...semesterTagIds]
+        const allTagIds = [...topicTagIds, ...departmentTagIds, ...universityTagIds, ...semesterTagIds]
 
         // Prepare cards data
         const cardsData = values.cards.map((card, index) => ({
@@ -104,6 +108,14 @@ export const useUpdateFlashcard = (onClose) => {
   useEffect(() => {
     if (detail) {
       // Map tags to the format expected by TagSelector
+      const topicTags = detail.tags?.filter(tag =>
+        tag.tagGroup?.name === 'topic'
+      ) || []
+
+      const departmentTags = detail.tags?.filter(tag =>
+        tag.tagGroup?.name === 'department'
+      ) || []
+
       const universityTags = detail.tags?.filter(tag =>
         tag.tagGroup?.name === 'university'
       ) || []
@@ -132,6 +144,8 @@ export const useUpdateFlashcard = (onClose) => {
         title: detail.title || '',
         description: detail.description || '',
         cards: cardsWithTempIds,
+        topicTags: topicTags,
+        departmentTags: departmentTags,
         universityTags: universityTags,
         semesterTags: semesterTags,
         status: detail.status || 'draft',

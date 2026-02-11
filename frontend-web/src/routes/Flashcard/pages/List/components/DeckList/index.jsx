@@ -51,6 +51,8 @@ function DeckList() {
     <DeckGrid>
       {decks.map((deck) => {
         // Get tag groups
+        const topicTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+        const departmentTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
         const universityTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
         const semesterTags = deck.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
@@ -62,6 +64,28 @@ function DeckList() {
               <DeckDescription>
                 {deck.description || 'Tidak ada deskripsi'}
               </DeckDescription>
+
+              {/* Topic Tags */}
+              {topicTags.length > 0 && (
+                <TagList>
+                  {topicTags.map((tag) => (
+                    <Tag key={tag.id} topic>
+                      🏥 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {/* Department Tags */}
+              {departmentTags.length > 0 && (
+                <TagList>
+                  {departmentTags.map((tag) => (
+                    <Tag key={tag.id} department>
+                      🏨 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
 
               {/* University Tags */}
               {universityTags.length > 0 && (

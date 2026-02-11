@@ -17,6 +17,8 @@ const initialState = {
   },
   filters: {
     search: '',
+    topic: '',
+    department: '',
     university: '',
     semester: '',
     status: ''

@@ -45,6 +45,8 @@ function TopicList() {
     <TopicsGrid>
       {topics.map(topic => {
         // Get tag groups
+        const topicTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
+        const departmentTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
         const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
         const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
 
@@ -56,8 +58,30 @@ function TopicList() {
               <TopicDescription>
                 {topic.description || 'Tidak ada deskripsi'}
               </TopicDescription>
-              
+
               <div style={{ flex: 1 }}></div>
+
+              {/* Topic Tags */}
+              {topicTags.length > 0 && (
+                <TagList>
+                  {topicTags.map((tag) => (
+                    <Tag key={tag.id} topic>
+                      🏥 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {/* Department Tags */}
+              {departmentTags.length > 0 && (
+                <TagList>
+                  {departmentTags.map((tag) => (
+                    <Tag key={tag.id} department>
+                      🏨 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
 
               {/* University Tags */}
               {universityTags.length > 0 && (

@@ -23,6 +23,14 @@ function TopicList() {
   const navigate = useNavigate()
 
   // Get tag group IDs
+  const topicGroupId = useMemo(() => {
+    return tags?.find(tag => tag.name === 'topic')?.id
+  }, [tags])
+
+  const departmentGroupId = useMemo(() => {
+    return tags?.find(tag => tag.name === 'department')?.id
+  }, [tags])
+
   const universityGroupId = useMemo(() => {
     return tags?.find(tag => tag.name === 'university')?.id
   }, [tags])
@@ -62,6 +70,8 @@ function TopicList() {
     <TopicGrid>
       {topics.map((topic) => {
         // Get tag groups using tagGroupId
+        const topicTags = topic.tags?.filter(tag => tag.tagGroupId === topicGroupId) || []
+        const departmentTags = topic.tags?.filter(tag => tag.tagGroupId === departmentGroupId) || []
         const universityTags = topic.tags?.filter(tag => tag.tagGroupId === universityGroupId) || []
         const semesterTags = topic.tags?.filter(tag => tag.tagGroupId === semesterGroupId) || []
 
@@ -73,6 +83,28 @@ function TopicList() {
               <TopicDescription>
                 {topic.description || 'Tidak ada deskripsi'}
               </TopicDescription>
+
+              {/* Topic Tags */}
+              {topicTags.length > 0 && (
+                <TagList>
+                  {topicTags.map((tag) => (
+                    <Tag key={tag.id} topic>
+                      🏥 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {/* Department Tags */}
+              {departmentTags.length > 0 && (
+                <TagList>
+                  {departmentTags.map((tag) => (
+                    <Tag key={tag.id} department>
+                      🏨 {tag.name}
+                    </Tag>
+                  ))}
+                </TagList>
+              )}
 
               {/* University Tags */}
               {universityTags.length > 0 && (

@@ -16,7 +16,7 @@ export const useExerciseSection = () => {
 
     useEffect(() => {
         dispatch(fetchAdminExerciseTopics({}))
-        dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+        dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
         dispatch(fetchTags())
     }, [dispatch])
 

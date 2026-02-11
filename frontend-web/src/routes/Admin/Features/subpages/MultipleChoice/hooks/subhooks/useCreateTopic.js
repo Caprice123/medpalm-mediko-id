@@ -16,6 +16,8 @@ export const useCreateTopic = (closeCallback) => {
       description: '',
       quizTimeLimit: 0,
       passingScore: 70,
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       questions: [],
@@ -48,7 +50,7 @@ export const useCreateTopic = (closeCallback) => {
           passingScore: values.passingScore,
           status: values.status,
           questions: questions,
-          tags: [...values.universityTags, ...values.semesterTags].map(t => t.id)
+          tags: [...values.topicTags, ...values.departmentTags, ...values.universityTags, ...values.semesterTags].map(t => t.id)
         }
 
         // Add content or blobId based on contentType

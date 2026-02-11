@@ -17,7 +17,7 @@ export const useFlashcardSection = () => {
 
     useEffect(() => {
         dispatch(fetchAdminFlashcardDecks())
-        dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+        dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
         dispatch(fetchTags())
     }, [dispatch])
 

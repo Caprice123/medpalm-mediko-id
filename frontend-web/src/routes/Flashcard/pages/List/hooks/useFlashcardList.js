@@ -10,7 +10,7 @@ export const useFlashcardList = () => {
   // Fetch decks and tags when component mounts
   useEffect(() => {
     dispatch(fetchFlashcardDecks())
-    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
     dispatch(fetchTags())
   }, [dispatch])
 }

@@ -21,6 +21,8 @@ export const useCreateTopic = (onClose) => {
       title: '',
       description: '',
       questions: [],
+      topicTags: [],
+      departmentTags: [],
       universityTags: [],
       semesterTags: [],
       status: 'draft',
@@ -34,8 +36,8 @@ export const useCreateTopic = (onClose) => {
     validationSchema: createTopicSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        // Combine university and semester tags
-        const allTags = [...values.universityTags, ...values.semesterTags]
+        // Combine all tags
+        const allTags = [...values.topicTags, ...values.departmentTags, ...values.universityTags, ...values.semesterTags]
 
         // Build payload based on content type
         const payload = {

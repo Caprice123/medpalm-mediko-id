@@ -10,45 +10,55 @@ export class GetMcqTopicsService extends BaseService {
       status: 'published'
     }
 
-    // Tag filtering
-    if (filters.universityTagIds && filters.universityTagIds.length > 0) {
-      where.mcq_topic_tags = {
-        some: {
-          tag_id: {
-            in: filters.universityTagIds.map(Number)
+    // Tag filtering - build AND conditions for each tag filter
+    const tagAndConditions = []
+
+    if (filters.topicTagIds && filters.topicTagIds.length > 0) {
+      tagAndConditions.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: { in: filters.topicTagIds.map(Number) }
           }
         }
-      }
+      })
+    }
+
+    if (filters.departmentTagIds && filters.departmentTagIds.length > 0) {
+      tagAndConditions.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: { in: filters.departmentTagIds.map(Number) }
+          }
+        }
+      })
+    }
+
+    if (filters.universityTagIds && filters.universityTagIds.length > 0) {
+      tagAndConditions.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: { in: filters.universityTagIds.map(Number) }
+          }
+        }
+      })
     }
 
     if (filters.semesterTagIds && filters.semesterTagIds.length > 0) {
-      if (!where.mcq_topic_tags) {
-        where.mcq_topic_tags = { some: {} }
-      }
-
-      // If we already have university filter, we need to combine them
-      if (filters.universityTagIds && filters.universityTagIds.length > 0) {
-        where.AND = [
-          {
-            mcq_topic_tags: {
-              some: {
-                tag_id: { in: filters.universityTagIds.map(Number) }
-              }
-            }
-          },
-          {
-            mcq_topic_tags: {
-              some: {
-                tag_id: { in: filters.semesterTagIds.map(Number) }
-              }
-            }
+      tagAndConditions.push({
+        mcq_topic_tags: {
+          some: {
+            tag_id: { in: filters.semesterTagIds.map(Number) }
           }
-        ]
-        delete where.mcq_topic_tags
-      } else {
-        where.mcq_topic_tags.some.tag_id = {
-          in: filters.semesterTagIds.map(Number)
         }
+      })
+    }
+
+    // Apply all tag filters with AND logic
+    if (tagAndConditions.length > 0) {
+      if (where.AND) {
+        where.AND = [...where.AND, ...tagAndConditions]
+      } else {
+        where.AND = tagAndConditions
       }
     }
 

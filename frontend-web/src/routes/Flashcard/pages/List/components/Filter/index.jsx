@@ -12,6 +12,14 @@ export const Filter = () => {
     const { filters } = useSelector((state) => state.flashcard)
     const { tags } = useSelector((state) => state.tags)
 
+    const topicTags = useMemo(() => {
+        return tags?.find(tag => tag.name === 'topic')?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
+    }, [tags])
+
+    const departmentTags = useMemo(() => {
+        return tags?.find(tag => tag.name === 'department')?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
+    }, [tags])
+
     const universityTags = useMemo(() => {
         return tags?.find(tag => tag.name === 'university')?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
@@ -55,10 +63,30 @@ export const Filter = () => {
                 </FilterComponent.Group>
 
                 <FilterComponent.Group>
+                    <FilterComponent.Label>Topik</FilterComponent.Label>
+                    <Dropdown
+                    options={topicTags}
+                    value={filters.topic ? topicTags.find((tag) => tag.value === filters.topic) : null}
+                    onChange={(option) => dispatch(actions.updateFilter({ key: 'topic', value: option?.value }))}
+                    placeholder="Filter berdasarkan topik..."
+                    />
+                </FilterComponent.Group>
+
+                <FilterComponent.Group>
+                    <FilterComponent.Label>Departemen</FilterComponent.Label>
+                    <Dropdown
+                    options={departmentTags}
+                    value={filters.department ? departmentTags.find((tag) => tag.value === filters.department) : null}
+                    onChange={(option) => dispatch(actions.updateFilter({ key: 'department', value: option?.value }))}
+                    placeholder="Filter berdasarkan departemen..."
+                    />
+                </FilterComponent.Group>
+
+                <FilterComponent.Group>
                     <FilterComponent.Label>Universitas</FilterComponent.Label>
                     <Dropdown
                     options={universityTags}
-                    value={filters.university ? universityTags.find((tag) => tag.id == filters.university) : null}
+                    value={filters.university ? universityTags.find((tag) => tag.value === filters.university) : null}
                     onChange={(option) => dispatch(actions.updateFilter({ key: 'university', value: option?.value }))}
                     placeholder="Filter berdasarkan universitas..."
                     />
@@ -68,7 +96,7 @@ export const Filter = () => {
                     <FilterComponent.Label>Semester</FilterComponent.Label>
                     <Dropdown
                     options={semesterTags}
-                    value={filters.semester ? semesterTags.find((tag) => tag.id == filters.semester) : null}
+                    value={filters.semester ? semesterTags.find((tag) => tag.value === filters.semester) : null}
                     onChange={(option) => dispatch(actions.updateFilter({ key: 'semester', value: option?.value }))}
                     placeholder="Filter berdasarkan semester..."
                     />
