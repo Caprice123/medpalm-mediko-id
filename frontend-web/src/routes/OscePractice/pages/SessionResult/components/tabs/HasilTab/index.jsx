@@ -47,7 +47,7 @@ function HasilTab({ session }) {
     )
   }
 
-  const { result, topic, topicTitle, topicBatch, startedAt, durationMinutes, timeTaken } = session
+  const { result, topic, topicTitle, topicBatch, startedAt, timeTaken } = session
 
   // Parse aiFeedback if it's a JSON string
   let scoreBreakdown = []
@@ -96,8 +96,8 @@ function HasilTab({ session }) {
 
   // Calculate total scores from categories
   const categories = scoreBreakdown
-  const totalPossibleScore = categories.reduce((sum, cat) => sum + ((cat.maxScore || 0) * (cat.weight || 1)), 0)
-  const totalEarnedScore = categories.reduce((sum, cat) => sum + ((cat.score || 0) * (cat.weight || 1)), 0)
+  const totalPossibleScore = categories.reduce((sum, cat) => sum + ((cat.maxScore || 0) / (cat.maxScore || 1) * (cat.weight || 1)), 0)
+  const totalEarnedScore = categories.reduce((sum, cat) => sum + ((cat.score || 0) / (cat.maxScore || 1) * (cat.weight || 1)), 0)
 
   
   const topicTags = session.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
@@ -183,7 +183,7 @@ function HasilTab({ session }) {
           <AnalysisGrid>
             {categories.map((category, index) => {
             const catPercentage = category.maxScore ? Math.round((category.score / category.maxScore) * 100) : 0
-            const weightedScore = (category.score || 0) * (category.weight || 1)
+            const weightedScore = (category.score || 0) / (category.maxScore || 1) * (category.weight || 1)
             return (
               <CategoryCard key={index}>
                 <CategoryTitle>{category.type || category.name || category.category}</CategoryTitle>

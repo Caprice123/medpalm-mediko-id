@@ -26,7 +26,12 @@ export class EndOsceSessionService extends BaseService {
           osce_session_rubric_snapshots: true,
           osce_session_messages: {
             orderBy: {
-              created_at: 'asc',
+              id: 'asc',
+            },
+          },
+          osce_session_physical_interactions: {
+            orderBy: {
+              id: 'asc',
             },
           },
           osce_session_observations: {
@@ -176,6 +181,7 @@ export class EndOsceSessionService extends BaseService {
       const evaluation = await this._generateAIEvaluation({
         session,
         messages: session.osce_session_messages,
+        physicalExamMessages: session.osce_session_physical_interactions,
         observations: savedObservations,
         diagnoses: savedDiagnoses,
         therapies: savedTherapies,
@@ -219,7 +225,7 @@ export class EndOsceSessionService extends BaseService {
     }
   }
 
-  static async _generateAIEvaluation({ session, messages, observations, diagnoses, therapies }) {
+  static async _generateAIEvaluation({ session, messages, physicalExamMessages, observations, diagnoses, therapies }) {
     try {
       const topicSnapshot = session.osce_session_topic_snapshot
       const model = topicSnapshot.ai_model || 'gemini-2.0-flash'
@@ -234,7 +240,10 @@ export class EndOsceSessionService extends BaseService {
       const constants = await prisma.constants.findMany({
         where: {
           key: {
-            in: ['osce_practice_chunk_analysis_prompt', 'osce_practice_evaluation_prompt'],
+            in: [
+              'osce_practice_flexible_chunk_analysis_prompt',
+              'osce_practice_evaluation_prompt'
+            ],
           },
         },
       })
@@ -242,17 +251,21 @@ export class EndOsceSessionService extends BaseService {
       const constantsMap = {}
       constants.forEach(c => { constantsMap[c.key] = c.value })
 
-      const chunkPrompt = constantsMap['osce_practice_chunk_analysis_prompt']
+      const chunkPrompt = constantsMap['osce_practice_flexible_chunk_analysis_prompt']
       const finalPrompt = constantsMap['osce_practice_evaluation_prompt']
 
+      console.log(!chunkPrompt)
+      console.log(!finalPrompt)
       if (!chunkPrompt || !finalPrompt) {
-        throw new Error('Chunk or final analyzer prompt not found in constants, using fallback')
+        throw new Error('Evaluation prompts not found in constants')
       }
+
 
       const rubric = session.osce_session_rubric_snapshots[0]
 
-      // Extract rubric categories from system prompt (if available)
-      const rubricCategories = this._extractRubricCategories(rubric.content || '')
+      // Combine conversation and physical exam messages in chronological order
+      const allMessages = [...messages, ...(physicalExamMessages || [])]
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 
       // Smart batching - process every 30 messages
       const pageSize = 30 // Process 30 messages per chunk
@@ -261,8 +274,8 @@ export class EndOsceSessionService extends BaseService {
       let chunkNumber = 1
 
       // Process messages in chunks
-      while (lastMessageIndex < messages.length) {
-        const chunkMessages = messages.slice(lastMessageIndex, lastMessageIndex + pageSize)
+      while (lastMessageIndex < allMessages.length) {
+        const chunkMessages = allMessages.slice(lastMessageIndex, lastMessageIndex + pageSize)
 
         if (chunkMessages.length === 0) {
           break
@@ -270,30 +283,44 @@ export class EndOsceSessionService extends BaseService {
 
         lastMessageIndex += chunkMessages.length
 
-        // Format messages for AI
+        // Format messages for AI (handle both conversation and physical exam)
         const conversationChunk = chunkMessages
-          .map(msg => `${msg.sender_type === 'user' ? 'Dokter' : 'Pasien'}: ${msg.content}`)
+          .map(msg => {
+            const isPhysicalExam = msg.hasOwnProperty('message') // Physical exam uses 'message' field
+            const content = isPhysicalExam ? msg.message : msg.content
+
+            if (msg.sender_type === 'user') {
+              return isPhysicalExam
+                ? `Dokter (Pemeriksaan Fisik): ${content}`
+                : `Dokter (Anamnesis): ${content}`
+            } else {
+              return isPhysicalExam
+                ? `Temuan Fisik: ${content}`
+                : `Pasien: ${content}`
+            }
+          })
           .join('\n')
 
-        // Build chunk analyzer prompt
+        // Build chunk analyzer prompt with flexible format
         const chunkNumberInfo = chunkNumber === 1
-          ? '- Ini adalah bagian awal percakapan.'
-          : `- Bagian ini melanjutkan dari bagian sebelumnya (Bagian ${chunkNumber - 1}) dan bergantung pada konteks yang telah dibangun sebelumnya.\n- Praktisi mungkin merujuk pada informasi yang telah dibahas di bagian sebelumnya.`
+          ? 'Ini adalah bagian awal interaksi.'
+          : `Ini adalah bagian ke-${chunkNumber}. Bagian ini melanjutkan dari bagian sebelumnya dan mungkin merujuk pada informasi yang telah dibahas sebelumnya.`
 
-        // Create sample findingsPerArea object for the prompt
-        const findingsPerAreaSample = rubricCategories.reduce((acc, category) => {
-          acc[category] = `temuan tentang ${category}`
-          return acc
-        }, {})
+        // Build knowledge base string
+        let knowledgeBase = ""
+        if (topicSnapshot?.knowledge_base) {
+          knowledgeBase = "**BASIS PENGETAHUAN REFERENSI:**\n" +
+            `${topicSnapshot.knowledge_base.map(kb => `[${kb.key}]\n${kb.value}`).join('\n\n')}`
+        }
 
         const compiledChunkPrompt = chunkPrompt
+          .replace(/\{\{rubricContent\}\}/g, rubric.content || '')
           .replace(/\{\{scenario\}\}/g, topicSnapshot.scenario || '')
           .replace(/\{\{context\}\}/g, topicSnapshot.context || '')
+          .replace(/\{\{knowledgeBase\}\}/g, knowledgeBase)
           .replace(/\{\{chunkNumber\}\}/g, chunkNumber.toString())
-          .replace(/\{\{chunkNumberInitialInformation\}\}/g, chunkNumberInfo)
-          .replace(/\{\{rubricCategories\}\}/g, rubricCategories.join(', '))
+          .replace(/\{\{chunkNumberInfo\}\}/g, chunkNumberInfo)
           .replace(/\{\{conversationChunk\}\}/g, conversationChunk)
-          .replace(/\{\{findingsPerArea\}\}/g, JSON.stringify(findingsPerAreaSample, null, 2))
 
         chunkInsights.push({
           chunkNumber,
@@ -315,19 +342,27 @@ export class EndOsceSessionService extends BaseService {
           // Parse JSON response
           let parsedInsight = {}
           try {
-            // Try to extract JSON from response
-            const jsonMatch = response.match(/\{[\s\S]*\}/)
-            if (jsonMatch) {
-              parsedInsight = JSON.parse(jsonMatch[0])
+            // Try to extract JSON from response (handle markdown code blocks)
+            let jsonText = response
+            const codeBlockMatch = response.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/)
+            if (codeBlockMatch) {
+              jsonText = codeBlockMatch[1]
+            } else {
+              const jsonMatch = response.match(/\{[\s\S]*\}/)
+              if (jsonMatch) {
+                jsonText = jsonMatch[0]
+              }
             }
+            parsedInsight = JSON.parse(jsonText)
           } catch (parseError) {
             console.error(`[EndOsceSessionService] Error parsing chunk ${chunk.chunkNumber}:`, parseError)
+            console.error('Response was:', response.substring(0, 500))
             parsedInsight = {
               chunkNumber: chunk.chunkNumber,
-              summary: [response.substring(0, 200)],
+              summary: ['Error parsing chunk response'],
               strengths: [],
               weaknesses: [],
-              findingsPerArea: {},
+              rubricObservations: {},
             }
           }
 
@@ -342,7 +377,7 @@ export class EndOsceSessionService extends BaseService {
             summary: ['Error processing chunk'],
             strengths: [],
             weaknesses: [],
-            findingsPerArea: {},
+            rubricObservations: {},
           }
         }
       })
@@ -363,25 +398,35 @@ export class EndOsceSessionService extends BaseService {
         .map(w => `- ${w}`)
         .join('\n')
 
-      // Combine findings per area from all chunks
-      const combinedFindings = {}
-      console.log(rubricCategories)
-      rubricCategories.forEach(category => {
-        const categoryFindings = analyzedChunks
-          .map(chunk => chunk.findingsPerArea?.[category])
-          .filter(Boolean)
-
-        combinedFindings[category] = categoryFindings.length > 0
-          ? categoryFindings.map(finding => `\n       • ${finding}`).join('')
-          : 'Tidak ada temuan'
+      // Combine rubric observations from all chunks
+      // Collect all unique rubric aspects mentioned across all chunks
+      const allRubricAspects = new Set()
+      analyzedChunks.forEach(chunk => {
+        if (chunk.rubricObservations) {
+          Object.keys(chunk.rubricObservations).forEach(aspect => {
+            allRubricAspects.add(aspect)
+          })
+        }
       })
 
-      const combinedFindingsFormatted = rubricCategories
-        .map(category => {
-          const displayCategory = category.charAt(0).toUpperCase() + category.slice(1)
-          return `- ${displayCategory}: ${combinedFindings[category] || 'Tidak ada temuan'}`
+      // Combine observations for each rubric aspect
+      const combinedRubricObservations = {}
+      allRubricAspects.forEach(aspect => {
+        const aspectObservations = analyzedChunks
+          .map(chunk => chunk.rubricObservations?.[aspect])
+          .filter(Boolean)
+
+        combinedRubricObservations[aspect] = aspectObservations.length > 0
+          ? aspectObservations.map(obs => `  • ${obs}`).join('\n')
+          : 'Tidak ada observasi'
+      })
+
+      // Format for prompt
+      const combinedObservationsFormatted = Array.from(allRubricAspects)
+        .map(aspect => {
+          return `${aspect}:\n${combinedRubricObservations[aspect]}`
         })
-        .join('\n')
+        .join('\n\n')
 
       // Build observations info
       const supportingObservations = observations
@@ -441,7 +486,8 @@ export class EndOsceSessionService extends BaseService {
         .replace(/\{\{combinedSummary\}\}/g, combinedSummary || 'Tidak ada ringkasan')
         .replace(/\{\{combinedStrength\}\}/g, combinedStrength || 'Tidak ada kekuatan yang teridentifikasi')
         .replace(/\{\{combinedWeakness\}\}/g, combinedWeakness || 'Tidak ada kelemahan yang teridentifikasi')
-        .replace(/\{\{combinedFindings\}\}/g, combinedFindingsFormatted || 'Tidak ada temuan')
+        .replace(/\{\{combinedFindings\}\}/g, combinedObservationsFormatted || 'Tidak ada observasi')
+        .replace(/\{\{combinedObservations\}\}/g, combinedObservationsFormatted || 'Tidak ada observasi')
         .replace(/\{\{supportingObservations\}\}/g, supportingObservations || 'Tidak ada pemeriksaan penunjang')
         .replace(/\{\{userAnswerSupportingObservations\}\}/g, userAnswerSupportingObservations || 'Tidak ada pilihan atas data penunjang')
         .replace(/\{\{userAnswerDiagnosis\}\}/g, userAnswerDiagnosis)
@@ -495,24 +541,20 @@ export class EndOsceSessionService extends BaseService {
   }
 
   /**
-   * Extract rubric categories from system prompt
-   * Looks for lines like "1. CATEGORY_NAME (Bobot:"
+   * [DEPRECATED] Extract rubric categories from system prompt
+   * No longer used with flexible chunk analysis approach.
+   * AI now determines relevant categories from rubric content automatically.
    */
-  static _extractRubricCategories(systemPrompt) {
-    if (!systemPrompt) return []
-
-    const categories = []
-    const lines = systemPrompt.split('\n')
-
-    for (const line of lines) {
-      // Match pattern like: "1. ANAMNESIS (Bobot:"
-      const match = line.match(/^\d+\.\s+([A-Z\s&]+)\s+\(Bobot:/i)
-      if (match && match[1]) {
-        categories.push(match[1].trim().toLowerCase())
-      }
-    }
-
-    // Default categories if none found
-    return categories.length > 0 ? categories : ['anamnesis', 'pemeriksaan fisik', 'diagnosis', 'terapi']
-  }
+  // static _extractRubricCategories(systemPrompt) {
+  //   if (!systemPrompt) return []
+  //   const categories = []
+  //   const lines = systemPrompt.split('\n')
+  //   for (const line of lines) {
+  //     const match = line.match(/^\d+\.\s+([A-Z\s&]+)\s+\(Bobot:/i)
+  //     if (match && match[1]) {
+  //       categories.push(match[1].trim().toLowerCase())
+  //     }
+  //   }
+  //   return categories.length > 0 ? categories : ['anamnesis', 'pemeriksaan fisik', 'diagnosis', 'terapi']
+  // }
 }

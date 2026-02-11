@@ -32,7 +32,7 @@ const getAutoSendPreference = () => {
   }
 }
 
-function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider }) {
+function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, placeholder = "Ketik pesan Anda..." }) {
   const dispatch = useDispatch()
   const { sessionId } = useParams()
   const inputRef = useRef(null)
@@ -169,6 +169,7 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider })
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled || recording.isRecording || recording.isTranscribing}
+          placeholder={placeholder}
         />
         {interimText && (
           <InterimOverlay>

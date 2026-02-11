@@ -9,6 +9,8 @@ import OsceSessionSerializer from '#serializers/api/v1/osceSessionSerializer';
 import prisma from '#prisma/client';
 import { GetSessionMessagesService } from '#services/osce/user/getSessionMessagesService'
 import { SendOsceMessageService } from '#services/osce/user/sendOsceMessageService'
+import { GetPhysicalExamMessagesService } from '#services/osce/user/getPhysicalExamMessagesService'
+import { SendPhysicalExamMessageService } from '#services/osce/user/sendPhysicalExamMessageService'
 
 class SessionsController {
   // GET /api/v1/osce/sessions - Get user's session history
@@ -120,6 +122,7 @@ class SessionsController {
             }
           },
             osce_session_topic_snapshot: true,
+            osce_topic: true, // Include original topic as fallback
             osce_session_observation_group_snapshots: {
               include: {
                 osce_session_observation_snapshots: {
@@ -293,6 +296,99 @@ class SessionsController {
   
       try {
         await SendOsceMessageService.call({
+          userId,
+          sessionId,
+          message,
+          streamAbortSignal: streamAbortController.signal,
+          checkClientConnected: () => !clientDisconnected,
+          onStream: (chunk, onSend) => {
+            if (!clientDisconnected) {
+              res.write(`data: ${JSON.stringify(chunk)}\n\n`)
+              onSend()
+            }
+          },
+          onComplete: (result) => {
+            if (!clientDisconnected) {
+              res.write(`data: ${JSON.stringify({ type: 'done', data: result })}\n\n`)
+              res.end()
+            }
+          },
+          onError: (error) => {
+            if (!clientDisconnected) {
+              res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+              res.end()
+            }
+          },
+        })
+      } catch (error) {
+        if (!clientDisconnected) {
+          res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+          res.end()
+        }
+      }
+    }
+
+    /* GET /api/v1/osce/sessions/:sessionId/physical-exam/messages - Get physical exam messages for a session */
+    async getPhysicalExamMessages(req, res) {
+      const userId = req.user?.id
+      const { sessionId } = req.params
+      const { cursor, limit } = req.query
+
+      const result = await GetPhysicalExamMessagesService.call(userId, sessionId, {
+        cursor,
+        limit: limit ? parseInt(limit) : undefined,
+      })
+
+      return res.status(200).json({
+        data: result.messages.map(msg => ({
+          id: msg.id,
+          senderType: msg.sender_type,
+          content: msg.content,
+          creditsUsed: msg.credits_used,
+          createdAt: msg.created_at,
+        })),
+        pagination: {
+          hasMore: result.hasMore,
+          nextCursor: result.nextCursor,
+        },
+      })
+    }
+
+    /* POST /api/v1/osce/sessions/:sessionId/physical-exam/messages - Send physical exam message with streaming */
+    async sendPhysicalExamMessage(req, res) {
+      const userId = req.user?.id;
+      const { sessionId } = req.params;
+      const { message } = req.body;
+
+      // Set headers for Server-Sent Events
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+
+      // Track if client disconnected
+      let clientDisconnected = false;
+      const streamAbortController = new AbortController();
+
+      req.on('close', () => {
+        console.log('🔴 Client disconnected (Physical Exam)');
+        clientDisconnected = true;
+        streamAbortController.abort();
+      });
+
+      res.on('close', () => {
+        console.log('🔴 Response stream closed (Physical Exam)');
+        clientDisconnected = true;
+        streamAbortController.abort();
+      });
+
+      res.on('error', (err) => {
+        console.log('🔴 Response error (Physical Exam):', err.message);
+        clientDisconnected = true;
+        streamAbortController.abort();
+      });
+
+      try {
+        await SendPhysicalExamMessageService.call({
           userId,
           sessionId,
           message,

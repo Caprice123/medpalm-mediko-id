@@ -18,6 +18,7 @@ export const useUpdateTopicModal = (onClose) => {
         guide: '',
         context: '',
         answerKey: '',
+        physicalExamGuideline: '',
         knowledgeBase: [
           { key: '', value: '' }
         ],
@@ -41,6 +42,7 @@ export const useUpdateTopicModal = (onClose) => {
           guide: values.guide,
           context: values.context,
           answerKey: values.answerKey,
+          physicalExamGuideline: values.physicalExamGuideline,
           knowledgeBase: values.knowledgeBase,
           aiModel: values.aiModel,
           rubricId: values.rubricId,
@@ -89,6 +91,7 @@ export const useUpdateTopicModal = (onClose) => {
           guide: topicDetail.guide || '',
           context: topicDetail.context || '',
           answerKey: topicDetail.answerKey || '',
+          physicalExamGuideline: topicDetail.physicalExamGuideline || '',
           knowledgeBase: (topicDetail.knowledgeBase && topicDetail.knowledgeBase.length > 0) ? topicDetail.knowledgeBase : [{ key: '', value: '' }],
           observations: topicDetail.observations ? topicDetail.observations.map(obs => ({
             observationId: obs.observationId,

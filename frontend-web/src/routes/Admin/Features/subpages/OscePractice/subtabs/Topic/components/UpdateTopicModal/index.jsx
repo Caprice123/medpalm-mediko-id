@@ -130,6 +130,19 @@ function UpdateTopicModal({ onClose }) {
         </FormSection>
 
         <FormSection>
+          <Textarea
+            label="Physical Exam Guideline"
+            name="physicalExamGuideline"
+            value={form.values.physicalExamGuideline}
+            onChange={form.handleChange}
+            onBlur={form.handleBlur}
+            placeholder="Panduan pemeriksaan fisik untuk topik ini (mendukung Markdown)..."
+            rows={8}
+            hint="Panduan untuk tab pemeriksaan fisik. Jika kosong, akan menggunakan panduan default."
+          />
+        </FormSection>
+
+        <FormSection>
           <KnowledgeBaseSection
             knowledgeBase={form.values.knowledgeBase}
             setFieldValue={form.setFieldValue}

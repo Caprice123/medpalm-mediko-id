@@ -18,6 +18,7 @@ const initialState = {
   // Session result details
   sessionDetail: null,
   sessionMessages: [],
+  physicalExamMessages: [],
   sessionObservations: [],
   sessionDiagnoses: [],
   sessionTherapies: [],
@@ -39,13 +40,21 @@ const initialState = {
     isLoadingSessionDetail: false,
     isLoadingSessionMessages: false,
     isLoadingMoreMessages: false,
+    isLoadingPhysicalExamMessages: false,
+    isLoadingMorePhysicalExamMessages: false,
     isLoadingSessionObservations: false,
     isLoadingSessionDiagnoses: false,
     isLoadingSessionTherapies: false,
     isSendingMessage: false,
     isAssistantTyping: false, // Tracks when assistant is streaming/typing response
+    isSendingPhysicalExamMessage: false,
+    isPhysicalExamAssistantTyping: false,
   },
   messagesPagination: {
+    hasMore: false,
+    nextCursor: null,
+  },
+  physicalExamMessagesPagination: {
     hasMore: false,
     nextCursor: null,
   },
@@ -151,6 +160,31 @@ const { reducer, actions } = createSlice({
     prependMessages: (state, { payload: { sessionId, messages } }) => {
       // Add messages to the beginning of the array (for loading older messages)
       state.sessionMessages = [...messages, ...state.sessionMessages]
+    },
+    setMessagesPagination: (state, { payload }) => {
+      state.messagesPagination = payload
+    },
+    // Physical Exam Messages
+    setPhysicalExamMessages: (state, { payload }) => {
+      state.physicalExamMessages = payload
+    },
+    addPhysicalExamMessage: (state, { payload: { sessionId, message } }) => {
+      state.physicalExamMessages.push(message)
+    },
+    updatePhysicalExamMessage: (state, { payload: { sessionId, messageId, content } }) => {
+      const messageIndex = state.physicalExamMessages.findIndex(m => m.id === messageId)
+      if (messageIndex !== -1) {
+        state.physicalExamMessages[messageIndex].content = content
+      }
+    },
+    removePhysicalExamMessage: (state, { payload: { sessionId, messageId } }) => {
+      state.physicalExamMessages = state.physicalExamMessages.filter(m => m.id !== messageId)
+    },
+    prependPhysicalExamMessages: (state, { payload: { sessionId, messages } }) => {
+      state.physicalExamMessages = [...messages, ...state.physicalExamMessages]
+    },
+    setPhysicalExamMessagesPagination: (state, { payload }) => {
+      state.physicalExamMessagesPagination = payload
     },
     setSessionObservations: (state, { payload }) => {
       state.sessionObservations = payload

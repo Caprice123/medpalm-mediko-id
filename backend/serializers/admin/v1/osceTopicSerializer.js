@@ -11,6 +11,7 @@ export class OsceTopicSerializer {
             guide: topic.guide,
             context: topic.context,
             answerKey: topic.answer_key,
+            physicalExamGuideline: topic.physical_exam_guideline,
             knowledgeBase: topic.knowledge_base || [],
             aiModel: topic.ai_model,
             rubricId: topic.osce_rubric_id,

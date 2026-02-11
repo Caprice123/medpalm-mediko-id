@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class CreateOsceTopicService extends BaseService {
-    static async call({ title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, rubricId, durationMinutes, tags, status, attachments, observations, created_by }) {
+    static async call({ title, description, scenario, guide, context, answerKey, physicalExamGuideline, knowledgeBase, aiModel, rubricId, durationMinutes, tags, status, attachments, observations, created_by }) {
         // Validate inputs
         await this.validate({ title, scenario, aiModel, rubricId, durationMinutes, tags, status })
 
@@ -18,6 +18,7 @@ export class CreateOsceTopicService extends BaseService {
                     guide: guide || '',
                     context: context || '',
                     answer_key: answerKey || '',
+                    physical_exam_guideline: physicalExamGuideline || '',
                     knowledge_base: knowledgeBase || [],
                     ai_model: aiModel,
                     osce_rubric_id: rubricId,

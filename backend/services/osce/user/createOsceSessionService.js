@@ -140,6 +140,7 @@ export class CreateOsceSessionService extends BaseService {
             guide: topic.guide,
             context: topic.context,
             answer_key: topic.answer_key,
+            physical_exam_guideline: topic.physical_exam_guideline,
             knowledge_base: topic.knowledge_base,
             ai_model: topic.ai_model,
             system_prompt: topic.system_prompt,

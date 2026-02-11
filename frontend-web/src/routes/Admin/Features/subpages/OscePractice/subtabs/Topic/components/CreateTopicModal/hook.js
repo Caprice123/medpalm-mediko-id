@@ -18,6 +18,7 @@ export const useCreateTopicModal = (onClose) => {
         guide: '',
         context: '',
         answerKey: '',
+        physicalExamGuideline: '',
         knowledgeBase: [
           { key: '', value: '' }
         ],
@@ -41,6 +42,7 @@ export const useCreateTopicModal = (onClose) => {
           guide: values.guide,
           context: values.context,
           answerKey: values.answerKey,
+          physicalExamGuideline: values.physicalExamGuideline,
           knowledgeBase: values.knowledgeBase,
           aiModel: values.aiModel,
           rubricId: values.rubricId,

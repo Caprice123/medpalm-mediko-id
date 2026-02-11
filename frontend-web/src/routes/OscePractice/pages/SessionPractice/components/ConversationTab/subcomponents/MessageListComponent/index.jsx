@@ -12,16 +12,42 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
-import { loadMoreMessages } from '@store/oscePractice/userAction'
+import { loadMoreMessages, loadMorePhysicalExamMessages } from '@store/oscePractice/userAction'
 
-const MessageListComponent = () => {
+const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' }) => {
   const { sessionId } = useParams()
   const dispatch = useDispatch()
-  const sessionMessages = useSelector(state => state.oscePractice.sessionMessages)
-  const isLoadingMessage = useSelector(state => state.oscePractice.loading.isLoadingSessionMessages)
-  const isLoadingMoreMessages = useSelector(state => state.oscePractice.loading.isLoadingMoreMessages)
-  const isSendingMessage = useSelector(state => state.oscePractice.loading.isSendingMessage)
-  const messagesPagination = useSelector(state => state.oscePractice.messagesPagination)
+
+  // Use props if provided, otherwise use Redux state
+  const isPhysicalExam = mode === 'physical_exam'
+
+  const sessionMessages = messagesProp || useSelector(state =>
+    isPhysicalExam ? state.oscePractice.physicalExamMessages : state.oscePractice.sessionMessages
+  )
+
+  const isLoadingMessage = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.loading.isLoadingPhysicalExamMessages
+      : state.oscePractice.loading.isLoadingSessionMessages
+  )
+
+  const isLoadingMoreMessages = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.loading.isLoadingMorePhysicalExamMessages
+      : state.oscePractice.loading.isLoadingMoreMessages
+  )
+
+  const isSendingMessage = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.loading.isSendingPhysicalExamMessage
+      : state.oscePractice.loading.isSendingMessage
+  )
+
+  const messagesPagination = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.physicalExamMessagesPagination
+      : state.oscePractice.messagesPagination
+  )
   const messagesEndRef = useRef(null)
   const messageListRef = useRef(null)
   const prevMessagesLengthRef = useRef(0)
@@ -29,8 +55,9 @@ const MessageListComponent = () => {
   const isLoadingMoreRef = useRef(false)
 
   // Check if there's a streaming message
+  const streamingPrefix = isPhysicalExam ? 'streaming-pe-' : 'streaming-'
   const hasStreamingMessage = sessionMessages.some(msg =>
-    msg.id && msg.id.toString().startsWith('streaming-')
+    msg.id && msg.id.toString().startsWith(streamingPrefix)
   )
 
   // Show typing indicator if sending but no streaming message yet (waiting for AI to start)
@@ -94,7 +121,8 @@ const MessageListComponent = () => {
       const previousScrollTop = container.scrollTop
 
       try {
-        const loadedCount = await dispatch(loadMoreMessages(sessionId, messagesPagination.nextCursor))
+        const loadMoreAction = isPhysicalExam ? loadMorePhysicalExamMessages : loadMoreMessages
+        const loadedCount = await dispatch(loadMoreAction(sessionId, messagesPagination.nextCursor))
 
         // Restore scroll position after loading (so user stays in same place)
         if (loadedCount > 0) {
@@ -129,7 +157,9 @@ const MessageListComponent = () => {
         </EmptyState>
       ) : sessionMessages.length === 0 ? (
         <EmptyState>
-          Mulai percakapan dengan mengetik pesan atau merekam audio
+          {isPhysicalExam
+            ? 'Mulai pemeriksaan fisik dengan mengetik pemeriksaan yang ingin dilakukan'
+            : 'Mulai percakapan dengan mengetik pesan atau merekam audio'}
         </EmptyState>
       ) : (
         <>
@@ -146,7 +176,7 @@ const MessageListComponent = () => {
           )}
 
           {sessionMessages.map(message => (
-            <MessageComponent key={message.id} message={message} />
+            <MessageComponent key={message.id} message={message} mode={mode} />
           ))}
 
           {showTypingIndicator && (
@@ -170,14 +200,18 @@ const MessageListComponent = () => {
   )
 }
 
-const MessageComponent = memo(function MessageComponent({ message }) {
+const MessageComponent = memo(function MessageComponent({ message, mode = 'conversation' }) {
   // Check if this message is currently streaming
-  const isStreaming = message.id && message.id.toString().startsWith('streaming-')
+  const isPhysicalExam = mode === 'physical_exam'
+  const streamingPrefix = isPhysicalExam ? 'streaming-pe-' : 'streaming-'
+  const isStreaming = message.id && message.id.toString().startsWith(streamingPrefix)
+
+  const aiAuthorName = isPhysicalExam ? 'Temuan Fisik' : 'AI Pasien'
 
   return (
     <Message isUser={message.isUser}>
       <MessageAuthor>
-        {message.isUser ? 'Anda' : 'AI Pasien'}
+        {message.isUser ? 'Anda' : aiAuthorName}
       </MessageAuthor>
       <MessageText>
         <CustomMarkdownRenderer

@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 
 export class UpdateOsceTopicService extends BaseService {
-    static async call(topicId, { title, description, scenario, guide, context, answerKey, knowledgeBase, aiModel, rubricId, durationMinutes, status, tags, attachments, observations }) {
+    static async call(topicId, { title, description, scenario, guide, context, answerKey, physicalExamGuideline, knowledgeBase, aiModel, rubricId, durationMinutes, status, tags, attachments, observations }) {
         this.validate(topicId, { title, scenario, aiModel, rubricId, durationMinutes, status })
 
         // Check if topic exists
@@ -26,6 +26,7 @@ export class UpdateOsceTopicService extends BaseService {
             if (guide !== undefined) updateData.guide = guide
             if (context !== undefined) updateData.context = context
             if (answerKey !== undefined) updateData.answer_key = answerKey
+            if (physicalExamGuideline !== undefined) updateData.physical_exam_guideline = physicalExamGuideline
             if (knowledgeBase !== undefined) updateData.knowledge_base = knowledgeBase
             if (aiModel !== undefined) updateData.ai_model = aiModel
             if (rubricId !== undefined) updateData.osce_rubric_id = rubricId

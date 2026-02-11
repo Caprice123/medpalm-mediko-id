@@ -18,6 +18,8 @@ router.post('/:sessionId/start', asyncHandler(sessionController.startSession.bin
 router.get('/:uniqueId', asyncHandler(sessionController.show.bind(sessionController)));
 router.get('/:sessionId/messages', asyncHandler(sessionController.getMessages.bind(sessionController)));
 router.post('/:sessionId/messages', asyncHandler(sessionController.sendMessage.bind(sessionController)));
+router.get('/:sessionId/physical-exam/messages', asyncHandler(sessionController.getPhysicalExamMessages.bind(sessionController)));
+router.post('/:sessionId/physical-exam/messages', asyncHandler(sessionController.sendPhysicalExamMessage.bind(sessionController)));
 router.post('/:sessionId/end', asyncHandler(sessionController.endSession.bind(sessionController)));
 router.post('/:sessionId/observations', asyncHandler(sessionController.saveObservations.bind(sessionController)));
 router.patch('/:sessionId/metadata', asyncHandler(sessionController.updateMetadata.bind(sessionController)));

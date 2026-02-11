@@ -5,6 +5,7 @@ import { fetchSessionDetail } from '@store/oscePractice/userAction'
 import { SessionResultSkeleton } from '@components/common/SkeletonCard'
 import HasilTab from './components/tabs/HasilTab'
 import ChatsTab from './components/tabs/ChatsTab'
+import PhysicalExamTab from './components/tabs/PhysicalExamTab'
 import ObservationTab from './components/tabs/ObservationTab'
 import DiagnosisTab from './components/tabs/DiagnosisTab'
 import TherapyTab from './components/tabs/TherapyTab'
@@ -33,11 +34,11 @@ import {
   ErrorMessage,
   Wrapper,
 } from './styles'
-import { oscePracticeRoutes } from '../../routes'
 
 const TABS = [
   { id: 'hasil', label: 'Hasil' },
   { id: 'chats', label: 'Percakapan' },
+  { id: 'physical_exam', label: 'Pemeriksaan Fisik' },
   { id: 'observation', label: 'Observasi' },
   { id: 'diagnosis', label: 'Diagnosis' },
   { id: 'therapy', label: 'Terapi' },
@@ -152,6 +153,7 @@ function SessionResult() {
                 <TabContent>
                 {activeTab === 'hasil' && <HasilTab session={sessionDetail} />}
                 {activeTab === 'chats' && <ChatsTab sessionId={sessionDetail.uniqueId} />}
+                {activeTab === 'physical_exam' && <PhysicalExamTab sessionId={sessionDetail.uniqueId} />}
                 {activeTab === 'observation' && <ObservationTab sessionId={sessionDetail.uniqueId} />}
                 {activeTab === 'diagnosis' && <DiagnosisTab sessionId={sessionDetail.uniqueId} />}
                 {activeTab === 'therapy' && <TherapyTab sessionId={sessionDetail.uniqueId} />}

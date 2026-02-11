@@ -38,6 +38,7 @@ export default {
         oscePractice: "/api/v1/oscePractice",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
+        oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,
         osceObservations: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/observations`,
         osceDiagnoses: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/diagnoses`,
         osceTherapies: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/therapies`,

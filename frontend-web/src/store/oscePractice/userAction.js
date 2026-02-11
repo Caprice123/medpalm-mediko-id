@@ -15,14 +15,20 @@ const {
   setUserSessions,
   setSessionDetail,
   setSessionMessages,
+  setPhysicalExamMessages,
   setSessionObservations,
   setSessionDiagnoses,
   setSessionTherapies,
   setMessagesPagination,
+  setPhysicalExamMessagesPagination,
   addMessage,
+  addPhysicalExamMessage,
   updateMessage,
+  updatePhysicalExamMessage,
   removeMessage,
+  removePhysicalExamMessage,
   prependMessages,
+  prependPhysicalExamMessages,
   updateSessionsPagination,
 } = actions
 
@@ -298,9 +304,11 @@ export const endOsceSession = (sessionId, data, onSuccess) => async (dispatch) =
 
 // Store active abort controller for stream cancellation
 let activeAbortController = null
+let activePhysicalExamAbortController = null
 
 // Track if user stopped the stream
 let userStoppedStreamFlag = false
+let physicalExamUserStoppedStreamFlag = false
 
 // Helper function to ensure token is valid and refreshed if needed
 const ensureValidToken = async () => {
@@ -596,6 +604,341 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
       dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
       dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
+      throw error
+    }
+  }
+}
+
+// ============ PHYSICAL EXAM ACTIONS ============
+
+// Fetch physical exam messages for a session
+export const fetchPhysicalExamMessages = (sessionId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isLoadingPhysicalExamMessages', value: true }))
+
+    const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/physical-exam/messages`
+    const response = await getWithToken(route)
+
+    const { data, pagination } = response.data
+
+    // Transform API data to frontend format
+    const transformedMessages = data.map(msg => ({
+      id: msg.id,
+      content: msg.content,
+      isUser: msg.senderType === 'user',
+      createdAt: msg.createdAt,
+      creditsUsed: msg.creditsUsed,
+    }))
+
+    dispatch(setPhysicalExamMessages(transformedMessages))
+    dispatch(setPhysicalExamMessagesPagination({
+      hasMore: pagination.hasMore,
+      nextCursor: pagination.nextCursor,
+    }))
+  } finally {
+    dispatch(setLoading({ key: 'isLoadingPhysicalExamMessages', value: false }))
+  }
+}
+
+// Load more physical exam messages (for infinite scroll - get older messages)
+export const loadMorePhysicalExamMessages = (sessionId, cursor) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isLoadingMorePhysicalExamMessages', value: true }))
+
+    const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/physical-exam/messages?cursor=${cursor}`
+    const response = await getWithToken(route)
+
+    const { data, pagination } = response.data
+
+    // Transform API data to frontend format
+    const transformedMessages = data.map(msg => ({
+      id: msg.id,
+      content: msg.content,
+      isUser: msg.senderType === 'user',
+      createdAt: msg.createdAt,
+      creditsUsed: msg.creditsUsed,
+    }))
+
+    // Prepend older messages to the beginning
+    dispatch(prependPhysicalExamMessages({
+      sessionId,
+      messages: transformedMessages,
+    }))
+
+    dispatch(setPhysicalExamMessagesPagination({
+      hasMore: pagination.hasMore,
+      nextCursor: pagination.nextCursor,
+    }))
+  } finally {
+    dispatch(setLoading({ key: 'isLoadingMorePhysicalExamMessages', value: false }))
+  }
+}
+
+// Send physical exam message with streaming
+export const sendPhysicalExamMessage = (sessionId, message) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: true }))
+
+    // Add user message immediately (optimistic UI)
+    const tempUserMessage = {
+      id: `temp-user-${Date.now()}`,
+      isUser: true,
+      content: message,
+      timestamp: new Date().toISOString()
+    }
+    dispatch(addPhysicalExamMessage({ sessionId, message: tempUserMessage }))
+
+    // Create new AbortController for this stream
+    activePhysicalExamAbortController = new AbortController()
+    console.log('🆕 Created new Physical Exam AbortController:', activePhysicalExamAbortController)
+
+    // Use streaming
+    await sendPhysicalExamMessageStreaming(sessionId, message, dispatch, activePhysicalExamAbortController, tempUserMessage.id)
+    console.log('✅ sendPhysicalExamMessageStreaming completed')
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      console.log('Physical Exam stream was stopped by user')
+      return
+    }
+    console.error('❌ sendPhysicalExamMessage caught error:', err)
+  } finally {
+    console.log('🧹 sendPhysicalExamMessage finally block - clearing activePhysicalExamAbortController')
+    dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+    activePhysicalExamAbortController = null
+  }
+}
+
+// Stop physical exam streaming
+export const stopPhysicalExamStreaming = () => async (dispatch) => {
+  try {
+    console.log('⏹️ User clicked stop button (Physical Exam)')
+    console.log('📋 Current activePhysicalExamAbortController:', activePhysicalExamAbortController)
+
+    physicalExamUserStoppedStreamFlag = true
+
+    // Abort the fetch connection
+    if (activePhysicalExamAbortController) {
+      console.log('🛑 Aborting active physical exam stream...')
+      activePhysicalExamAbortController.abort()
+      console.log('✅ Physical exam stream aborted - backend will save partial content')
+    } else {
+      console.warn('⚠️ No active physical exam abort controller found - stream might have already finished')
+    }
+
+    dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+    dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
+  } catch (error) {
+    console.error('Error stopping physical exam stream:', error)
+  }
+}
+
+// Physical exam streaming implementation
+const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, abortController, optimisticUserId) => {
+  // Ensure token is valid and refreshed if needed
+  const accessToken = await ensureValidToken()
+  const route = API_BASE_URL + Endpoints.api.oscePhysicalExamMessages(sessionId)
+
+  const streamingMessageId = `streaming-pe-${Date.now()}`
+  const messageCreatedAt = new Date().toISOString()
+
+  // Reset user stopped flag
+  physicalExamUserStoppedStreamFlag = false
+
+  // Typing animation state
+  let fullContent = ''
+  let displayedContent = ''
+  let isTyping = false
+  let backendSavedMessage = false
+  let finalData = null
+
+  const TYPING_SPEED_MS = 1
+
+  // Add initial streaming message and set assistant typing state
+  dispatch(addPhysicalExamMessage({
+    sessionId,
+    message: {
+      id: streamingMessageId,
+      isUser: false,
+      content: '',
+      timestamp: messageCreatedAt
+    }
+  }))
+  dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: true }))
+
+  // Typing animation - type character by character
+  const typeNextCharacter = () => {
+    // If user stopped stream and we've typed everything received, stop
+    if (physicalExamUserStoppedStreamFlag && displayedContent.length >= fullContent.length) {
+      console.log('✅ Finished typing all received content after stop (Physical Exam)')
+      isTyping = false
+
+      // Remove the streaming message and re-add with a non-streaming ID
+      dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
+      dispatch(addPhysicalExamMessage({
+        sessionId,
+        message: {
+          id: `partial-pe-${Date.now()}`,
+          isUser: false,
+          content: displayedContent,
+          timestamp: messageCreatedAt
+        }
+      }))
+
+      dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+      dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
+      physicalExamUserStoppedStreamFlag = false
+      return
+    }
+
+    // If all characters displayed
+    if (displayedContent.length >= fullContent.length) {
+      isTyping = false
+
+      // If backend is done and all characters displayed, finalize
+      if (backendSavedMessage && finalData) {
+        dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
+        dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
+
+        if (finalData.userMessage) {
+          dispatch(addPhysicalExamMessage({
+            sessionId,
+            message: {
+              id: finalData.userMessage.id,
+              isUser: true,
+              content: finalData.userMessage.content,
+              timestamp: finalData.userMessage.createdAt
+            }
+          }))
+        }
+        if (finalData.aiMessage) {
+          dispatch(addPhysicalExamMessage({
+            sessionId,
+            message: {
+              id: finalData.aiMessage.id,
+              isUser: false,
+              content: finalData.aiMessage.content,
+              timestamp: finalData.aiMessage.createdAt,
+              creditsUsed: finalData.aiMessage.creditsUsed
+            }
+          }))
+        }
+
+        dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+        dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
+        physicalExamUserStoppedStreamFlag = false
+      }
+      return
+    }
+
+    isTyping = true
+    // Display next character
+    displayedContent = fullContent.substring(0, displayedContent.length + 1)
+
+    dispatch(updatePhysicalExamMessage({
+      sessionId,
+      messageId: streamingMessageId,
+      content: displayedContent
+    }))
+
+    // Schedule next character
+    setTimeout(typeNextCharacter, TYPING_SPEED_MS)
+  }
+
+  // Add chunk to content and start typing if needed
+  const addChunkToContent = (text) => {
+    // If user stopped stream, don't add new chunks
+    if (physicalExamUserStoppedStreamFlag) return
+
+    fullContent += text
+
+    // Start typing animation if not already running
+    if (!isTyping) {
+      typeNextCharacter()
+    }
+  }
+
+  let buffer = ''
+
+  try {
+    console.log('Physical Exam Streaming URL:', route)
+    console.log('Sending physical exam message:', content)
+
+    const response = await fetch(route, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ message: content }),
+      signal: abortController?.signal
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Response error:', response.status, errorText)
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+
+    while (true) {
+      const { value, done } = await reader.read()
+
+      if (done) {
+        break
+      }
+
+      const chunk = decoder.decode(value, { stream: true })
+      buffer += chunk
+
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6))
+
+            if (data.type === 'chunk') {
+              // Check if first chunk contains userQuota and update credit balance
+              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
+                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+              }
+
+              // Only add chunk if user hasn't stopped the stream
+              if (!physicalExamUserStoppedStreamFlag) {
+                const chunkContent = data.data?.content || data.content
+                addChunkToContent(chunkContent)
+              } else {
+                console.log('⏸️ Ignoring new chunk - user stopped physical exam stream')
+              }
+            } else if (data.type === 'done') {
+              // Backend saved to database
+              backendSavedMessage = true
+              finalData = data.data
+            } else if (data.type === 'error') {
+              throw new Error(data.error)
+            }
+          } catch (parseError) {
+            console.error('Error parsing SSE data:', parseError)
+          }
+        }
+      }
+    }
+
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('✅ Physical exam stream aborted by user - typing animation will finish showing all received content')
+      return null
+    } else {
+      console.error('Physical exam streaming error:', error)
+      // Clean up on non-abort errors
+      dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
+      dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
+      dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+      dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
       throw error
     }
   }

@@ -139,7 +139,8 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
             </Button> */}
           </CardActions>
         </TopicCard>
-      ))}
+      )
+      })}
     </TopicsGrid>
   )
 }

@@ -1152,22 +1152,23 @@ model skripsi_constants {
 // ============= OSCE Practice Feature =============
 
 model osce_topics {
-  id               Int      @id @default(autoincrement())
-  unique_id        String   @unique @default(uuid())
-  title            String
-  description      String?
-  scenario         String   @db.Text // The OSCE case/scenario
-  guide            String?  @db.Text // Guide or instructions for students
-  context          String?  @db.Text // Additional context or background
-  answer_key       String?  @db.Text // Expected answers or key points
-  knowledge_base   Json? // Key-value pairs of knowledge items
-  ai_model         String // AI model for this topic (e.g., 'gemini-1.5-pro', 'gpt-4o')
-  osce_rubric_id   Int
-  duration_minutes Int // Recommended practice duration
-  status           String   @default("draft") // draft, published
-  created_by       Int
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now())
+  id                      Int      @id @default(autoincrement())
+  unique_id               String   @unique @default(uuid())
+  title                   String
+  description             String?
+  scenario                String   @db.Text // The OSCE case/scenario
+  guide                   String?  @db.Text // Guide or instructions for students
+  context                 String?  @db.Text // Additional context or background
+  answer_key              String?  @db.Text // Expected answers or key points
+  knowledge_base          Json? // Key-value pairs of knowledge items
+  physical_exam_guideline String?  @db.Text // Guideline for physical examination tab
+  ai_model                String // AI model for this topic (e.g., 'gemini-1.5-pro', 'gpt-4o')
+  osce_rubric_id          Int
+  duration_minutes        Int // Recommended practice duration
+  status                  String   @default("draft") // draft, published
+  created_by              Int
+  created_at              DateTime @default(now())
+  updated_at              DateTime @default(now())
 
   osce_topic_tags               osce_topic_tags[]
   osce_sessions                 osce_sessions[]
@@ -1274,6 +1275,7 @@ model osce_sessions {
   osce_session_observation_group_snapshots osce_session_observation_group_snapshots[]
   osce_session_observations                osce_session_observations[]
   osce_session_messages                    osce_session_messages[]
+  osce_session_physical_interactions       osce_session_physical_interactions[]
   osce_session_diagnoses                   osce_session_diagnoses[]
   osce_session_therapies                   osce_session_therapies[]
 
@@ -1285,18 +1287,19 @@ model osce_sessions {
 
 // Snapshot of topic data at session creation time
 model osce_session_topic_snapshots {
-  id               Int      @id @default(autoincrement())
-  osce_session_id  Int      @unique
-  title            String
-  description      String?
-  scenario         String   @db.Text
-  guide            String?  @db.Text
-  context          String?  @db.Text
-  answer_key       String?  @db.Text
-  knowledge_base   Json?
-  ai_model         String
-  duration_minutes Int
-  created_at       DateTime @default(now())
+  id                      Int      @id @default(autoincrement())
+  osce_session_id         Int      @unique
+  title                   String
+  description             String?
+  scenario                String   @db.Text
+  guide                   String?  @db.Text
+  context                 String?  @db.Text
+  answer_key              String?  @db.Text
+  physical_exam_guideline String?  @db.Text
+  knowledge_base          Json?
+  ai_model                String
+  duration_minutes        Int
+  created_at              DateTime @default(now())
 
   osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 
@@ -1392,6 +1395,22 @@ model osce_session_messages {
   osce_session_id Int
   sender_type     String // 'user' or 'ai'
   content         String   @db.Text
+  credits_used    Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+
+  @@index([osce_session_id])
+  @@index([sender_type])
+  @@index([created_at])
+}
+
+model osce_session_physical_interactions {
+  id              Int      @id @default(autoincrement())
+  osce_session_id Int
+  content         String   @db.Text
+  sender_type     String // 'user' or 'ai'
   credits_used    Int      @default(0)
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())

@@ -118,6 +118,7 @@ class OsceSessionSerializer {
           answerKey: session.status == "completed" ? topicData.answer_key : null,
           scenario: topicData.scenario,
           guide: topicData.guide,
+          physicalExamGuideline: topicData.physical_exam_guideline,
           attachments: attachmentsWithUrls || [],
           remainingTime: remainingSeconds,
       },

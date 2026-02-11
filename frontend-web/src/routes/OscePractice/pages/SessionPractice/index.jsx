@@ -7,6 +7,7 @@ import {
 } from '@store/oscePractice/userAction'
 import SessionSidebar from './components/SessionSidebar'
 import ConversationTab from './components/ConversationTab'
+import PhysicalExaminationTab from './components/PhysicalExaminationTab'
 import DiagnosisTab from './components/DiagnosisTab'
 import TherapyTab from './components/TherapyTab'
 import SupportingDataTab from './components/SupportingDataTab'
@@ -27,6 +28,7 @@ import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
 
 const TABS = [
   { id: 'conversation', label: 'Percakapan' },
+  { id: 'physical_exam', label: 'Pemeriksaan Fisik' },
   { id: 'supporting', label: 'Data Penunjang' },
   { id: 'diagnosis', label: 'Diagnosa' },
   { id: 'therapy', label: 'Terapi' },
@@ -209,6 +211,10 @@ function SessionPractice() {
             <TabContent>
             {activeTab === 'conversation' && (
               <ConversationTab sttProvider={sttProvider} />
+            )}
+
+            {activeTab === 'physical_exam' && (
+              <PhysicalExaminationTab sttProvider={sttProvider} />
             )}
 
             {activeTab === 'supporting' && (
