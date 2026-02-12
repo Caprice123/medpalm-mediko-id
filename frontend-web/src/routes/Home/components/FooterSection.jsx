@@ -3,7 +3,7 @@ import {
   FooterContent,
   FooterColumn,
   FooterLogo,
-  LogoIcon,
+  FooterLogoIcon,
   FooterDescription,
   FooterTitle,
   FooterLinks,
@@ -17,10 +17,9 @@ export default function FooterSection({ scrollToSection }) {
       <FooterContent>
         <FooterColumn>
           <FooterLogo>
-            <LogoIcon>
-              <img src="/icon.jpg" alt="MedPalm Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-            </LogoIcon>
-            MedPalm
+            <FooterLogoIcon>
+              <img src="/icon.png" alt="MedPal Logo" style={{ height: '60px' }} />
+            </FooterLogoIcon>
           </FooterLogo>
           <FooterDescription>
             Platform pembelajaran medis berbasis AI yang membantu mahasiswa
@@ -56,7 +55,7 @@ export default function FooterSection({ scrollToSection }) {
       </FooterContent>
 
       <FooterBottom>
-        © 2025 MedPalm. All rights reserved.
+        © 2025 MedPal. All rights reserved.
       </FooterBottom>
     </Footer>
   )

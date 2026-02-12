@@ -60,7 +60,7 @@ export function Login() {
         <BrandSection>
           <LogoText>
             <LogoIcon>
-              <img src="/icon.png" alt="MedPalm Logo" style={{ height: '60px' }} />
+              <img src="/icon.png" alt="MedPal Logo" style={{ height: '60px' }} />
             </LogoIcon>
           </LogoText>
           <Tagline>Platform Belajar Kedokteran Berbasis AI</Tagline>
@@ -93,7 +93,7 @@ export function Login() {
       <RightPanel>
         <MobileLogo>
           <MobileLogoIcon>
-            <img src="/icon.jpg" alt="MedPalm Logo" style={{ height: '60px' }} />
+            <img src="/icon.jpg" alt="MedPal Logo" style={{ height: '60px' }} />
           </MobileLogoIcon>
           <MobileLogoText>MedPal</MobileLogoText>
           <MobileTagline>Platform Belajar Kedokteran Berbasis AI</MobileTagline>

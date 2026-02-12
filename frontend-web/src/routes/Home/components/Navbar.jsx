@@ -20,7 +20,7 @@ export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSecti
         <NavContent>
           <Logo>
             <LogoIcon>
-              <img src="/icon.png" alt="MedPalm Logo" style={{ width: '108px', height: '48px', objectFit: 'contain' }} />
+              <img src="/icon.png" alt="MedPal Logo" style={{ width: '108px', height: '48px', objectFit: 'contain' }} />
             </LogoIcon>
           </Logo>
           <NavLinks>

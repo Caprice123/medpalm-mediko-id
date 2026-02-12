@@ -43,7 +43,7 @@ export const Navbar = () => {
         <Container>
             <Logo>
                 <Link to="/dashboard">
-                    <img src="/icon.png" alt="MedPalm Logo" style={{ height: "48px"}} />
+                    <img src="/icon.png" alt="MedPal Logo" style={{ height: "48px"}} />
                 </Link>
             </Logo>
 

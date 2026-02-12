@@ -25,7 +25,7 @@ export default function TestimonialsSection() {
             <SectionBadge>💬 Testimoni</SectionBadge>
             <SectionTitle>Apa Kata Mahasiswa Kami</SectionTitle>
             <SectionSubtitle>
-              Dengar pengalaman dari mahasiswa kedokteran yang telah menggunakan MedPalm
+              Dengar pengalaman dari mahasiswa kedokteran yang telah menggunakan MedPal
             </SectionSubtitle>
           </SectionHeader>
 

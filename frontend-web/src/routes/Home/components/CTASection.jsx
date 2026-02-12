@@ -17,7 +17,7 @@ export default function CTASection() {
           </CTATitle>
           <CTASubtitle data-aos="fade-up" data-aos-delay="100">
             Bergabunglah dengan ribuan mahasiswa kedokteran yang telah meningkatkan
-            pembelajaran mereka dengan MedPalm. Mulai gratis hari ini!
+            pembelajaran mereka dengan MedPal. Mulai gratis hari ini!
           </CTASubtitle>
           <div data-aos="zoom-in" data-aos-delay="200">
             <LinkButton

@@ -751,6 +751,19 @@ export const FooterLogo = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const FooterLogoIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+
+  img {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 6px;
+  }
+`;
+
 export const FooterDescription = styled.p`
   font-size: 0.938rem;
   line-height: 1.6;

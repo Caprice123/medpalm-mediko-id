@@ -15,9 +15,9 @@ export default function HowItWorksSection() {
         <SectionContent>
           <SectionHeader data-aos="fade-up">
             <SectionBadge>🎬 Lihat Demo</SectionBadge>
-            <SectionTitle>Cara Kerja MedPalm</SectionTitle>
+            <SectionTitle>Cara Kerja MedPal</SectionTitle>
             <SectionSubtitle>
-              Tonton video demo untuk melihat bagaimana MedPalm dapat membantu pembelajaran Anda
+              Tonton video demo untuk melihat bagaimana MedPal dapat membantu pembelajaran Anda
             </SectionSubtitle>
           </SectionHeader>
 
@@ -38,7 +38,7 @@ export default function HowItWorksSection() {
               <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
                 <iframe
                   src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-                  title="MedPalm Demo"
+                  title="MedPal Demo"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
