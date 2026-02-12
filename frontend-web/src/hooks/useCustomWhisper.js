@@ -199,7 +199,14 @@ export const useCustomWhisper = (
 
         // Auto-send when transcription is complete (only for Whisper)
         if (autoSendEnabled && onAutoSend && !recording) {
+          console.log('🚀 [Whisper] Auto-sending transcript:', newText)
           onAutoSend(newText)
+        } else if (autoSendEnabled) {
+          console.log('⚠️ [Whisper] Auto-send conditions not met:', {
+            autoSendEnabled,
+            hasOnAutoSend: !!onAutoSend,
+            recording
+          })
         }
       }
     } else if (justFinishedTranscribing && !transcript.text) {

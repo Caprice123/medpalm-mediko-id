@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSessionDetail } from '@store/oscePractice/userAction'
+import {
+  fetchSessionDetail,
+  fetchSessionMessages,
+  fetchPhysicalExamMessages
+} from '@store/oscePractice/userAction'
 import { SessionResultSkeleton } from '@components/common/SkeletonCard'
 import HasilTab from './components/tabs/HasilTab'
 import ChatsTab from './components/tabs/ChatsTab'
@@ -53,9 +57,15 @@ function SessionResult() {
   const [activeTab, setActiveTab] = useState('hasil')
   const [error, setError] = useState(null)
 
+  // Fetch session detail and all messages on mount (only once)
   useEffect(() => {
     if (sessionId) {
-      dispatch(fetchSessionDetail(sessionId)).catch(err => {
+      // Fetch session detail and all messages in parallel
+      Promise.all([
+        dispatch(fetchSessionDetail(sessionId)),
+        dispatch(fetchSessionMessages(sessionId)),
+        dispatch(fetchPhysicalExamMessages(sessionId))
+      ]).catch(err => {
         setError(err.message || 'Gagal memuat detail sesi')
       })
     }
@@ -73,33 +83,6 @@ function SessionResult() {
       }
     }
   }, [sessionDetail, sessionId, navigate])
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
-  }
-
-  const formatDuration = (minutes) => {
-    if (!minutes) return '-'
-    return `${minutes} menit`
-  }
-
-  const calculatePercentage = () => {
-    if (!sessionDetail?.totalScore || !sessionDetail?.maxScore) return 0
-    return Math.round((sessionDetail.totalScore / sessionDetail.maxScore) * 100)
-  }
-
-  const isPassing = () => {
-    const percentage = calculatePercentage()
-    return percentage >= 60 // Assuming 60% is passing
-  }
 
   if (loading.isLoadingSessionDetail) {
     return (

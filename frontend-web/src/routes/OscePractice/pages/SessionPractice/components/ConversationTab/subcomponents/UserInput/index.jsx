@@ -32,7 +32,7 @@ const getAutoSendPreference = () => {
   }
 }
 
-function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, placeholder = "Ketik pesan Anda..." }) {
+function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, placeholder = "" }) {
   const dispatch = useDispatch()
   const { sessionId } = useParams()
   const inputRef = useRef(null)
@@ -149,6 +149,11 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, p
   }, [handleSendMessage])
 
   const handleToggleRecording = useCallback(() => {
+    // If starting to record (not currently recording), clear the input
+    if (!recording.isRecording) {
+      setInputText('')
+      setInterimText('')
+    }
     recording.toggleRecording()
   }, [recording])
 

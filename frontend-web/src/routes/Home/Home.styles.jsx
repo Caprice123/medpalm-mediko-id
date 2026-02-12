@@ -220,28 +220,6 @@ export const HeroSection = styled.section`
   position: relative;
   overflow: hidden;
 
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -10%;
-    left: -5%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(141, 198, 63, 0.06) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: float 25s ease-in-out infinite reverse;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-    }
-    50% {
-      transform: translate(20px, -20px) scale(1.05);
-    }
-  }
-
   @media (max-width: 768px) {
     padding: 6rem 1.5rem 4rem;
   }

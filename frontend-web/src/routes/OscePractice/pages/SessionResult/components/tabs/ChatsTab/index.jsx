@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSessionMessages, loadMoreMessages } from '@store/oscePractice/userAction'
+import { loadMoreMessages } from '@store/oscePractice/userAction'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
@@ -36,12 +36,8 @@ function ChatsTab({ sessionId }) {
   const messagesEndRef = useRef(null)
   const isLoadingMoreRef = useRef(false)
 
-  useEffect(() => {
-    if (sessionId) {
-      console.log('[ChatsTab] Fetching messages for sessionId:', sessionId)
-      dispatch(fetchSessionMessages(sessionId))
-    }
-  }, [sessionId, dispatch])
+  // Messages are fetched by parent component (SessionResult) on initial render
+  // No need to fetch here - just use what's in the store
 
   // Debug: log when sessionMessages updates
   useEffect(() => {

@@ -1,10 +1,10 @@
-import { useEffect, memo, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ChatContainer,
 } from '../../SessionPractice.styles'
-import { fetchPhysicalExamMessages, sendPhysicalExamMessage } from '../../../../../../store/oscePractice/userAction'
+import { sendPhysicalExamMessage } from '../../../../../../store/oscePractice/userAction'
 import MessageListComponent from '../ConversationTab/subcomponents/MessageListComponent'
 import UserInput from '../ConversationTab/subcomponents/UserInput'
 import PhysicalExamGuideline from './subcomponents/PhysicalExamGuideline'
@@ -14,12 +14,8 @@ function PhysicalExaminationTab({ sttProvider }) {
   const dispatch = useDispatch()
   const { loading, physicalExamMessages, sessionDetail } = useSelector(state => state.oscePractice)
 
-  // Fetch physical exam message history on mount
-  useEffect(() => {
-    if (!sessionId) return
-
-    dispatch(fetchPhysicalExamMessages(sessionId))
-  }, [sessionId, dispatch])
+  // Physical exam messages are fetched by parent component (SessionPractice) on initial render
+  // No need to fetch here - just use what's in the store
 
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!sessionId) return
@@ -50,7 +46,6 @@ function PhysicalExaminationTab({ sttProvider }) {
         onSendMessage={handleSendMessage}
         disabled={isSendingOrTyping}
         sttProvider={sttProvider}
-        placeholder="Ketik pemeriksaan fisik yang ingin dilakukan (contoh: 'periksa tanda vital', 'auskultasi paru', 'palpasi abdomen')..."
       />
     </ChatContainer>
   )

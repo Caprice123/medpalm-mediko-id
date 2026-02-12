@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchSessionDetail,
+  fetchSessionMessages,
+  fetchPhysicalExamMessages,
   endOsceSession,
 } from '@store/oscePractice/userAction'
 import SessionSidebar from './components/SessionSidebar'
@@ -89,12 +91,18 @@ function SessionPractice() {
     testProvider()
   }, [])
 
-  // Fetch session detail on mount
+  // Fetch session detail and all messages on mount (only once)
   useEffect(() => {
     if (sessionId) {
       setHasFetchedForSession(false) // Reset when sessionId changes
-      dispatch(fetchSessionDetail(sessionId)).then(() => {
-        setHasFetchedForSession(true) // Mark complete after fetch
+
+      // Fetch session detail and all messages in parallel
+      Promise.all([
+        dispatch(fetchSessionDetail(sessionId)),
+        dispatch(fetchSessionMessages(sessionId)),
+        dispatch(fetchPhysicalExamMessages(sessionId))
+      ]).then(() => {
+        setHasFetchedForSession(true) // Mark complete after all fetches
       })
     }
   }, [sessionId, dispatch])

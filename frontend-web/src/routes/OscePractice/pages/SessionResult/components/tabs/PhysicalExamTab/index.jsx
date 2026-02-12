@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPhysicalExamMessages, loadMorePhysicalExamMessages } from '@store/oscePractice/userAction'
+import { loadMorePhysicalExamMessages } from '@store/oscePractice/userAction'
 import {
   Sidebar,
   MainContent,
@@ -24,12 +24,8 @@ function PhysicalExamTab({ sessionId }) {
   const messagesEndRef = useRef(null)
   const isLoadingMoreRef = useRef(false)
 
-  useEffect(() => {
-    if (sessionId) {
-      console.log('[PhysicalExamTab Result] Fetching messages for sessionId:', sessionId)
-      dispatch(fetchPhysicalExamMessages(sessionId))
-    }
-  }, [sessionId, dispatch])
+  // Physical exam messages are fetched by parent component (SessionResult) on initial render
+  // No need to fetch here - just use what's in the store
 
   // Auto-scroll to bottom when messages load (instant, not smooth)
   useEffect(() => {

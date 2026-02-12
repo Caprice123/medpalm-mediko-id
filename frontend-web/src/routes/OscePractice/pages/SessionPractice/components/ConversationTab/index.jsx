@@ -1,10 +1,10 @@
-import { useEffect, memo, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ChatContainer,
 } from '../../SessionPractice.styles'
-import { fetchSessionMessages, sendMessage } from '../../../../../../store/oscePractice/userAction'
+import { sendMessage } from '../../../../../../store/oscePractice/userAction'
 import MessageListComponent from './subcomponents/MessageListComponent'
 import UserInput from './subcomponents/UserInput'
 import Guideline from './subcomponents/Guideline'
@@ -14,12 +14,8 @@ function ConversationTab({ sttProvider }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.oscePractice)
 
-  // Fetch message history on mount
-  useEffect(() => {
-    if (!sessionId) return
-
-    dispatch(fetchSessionMessages(sessionId))
-  }, [sessionId, dispatch])
+  // Messages are fetched by parent component (SessionPractice) on initial render
+  // No need to fetch here - just use what's in the store
 
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!sessionId) return
@@ -35,8 +31,6 @@ function ConversationTab({ sttProvider }) {
 
   // Use centralized loading states from reducer
   const isSendingOrTyping = loading.isSendingMessage || loading.isAssistantTyping
-  console.log(loading.isSendingMessage)
-  console.log(loading.isAssistantTyping)
 
   return (
     <ChatContainer>

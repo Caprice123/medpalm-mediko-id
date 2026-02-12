@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { GlobalStyles, LandingContainer } from './Home.styles'
@@ -20,7 +19,6 @@ import FooterSection from './components/FooterSection'
 
 function Home() {
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {

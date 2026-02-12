@@ -43,6 +43,12 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
       : state.oscePractice.loading.isSendingMessage
   )
 
+  const isAssistantTyping = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.loading.isPhysicalExamAssistantTyping
+      : state.oscePractice.loading.isAssistantTyping
+  )
+
   const messagesPagination = useSelector(state =>
     isPhysicalExam
       ? state.oscePractice.physicalExamMessagesPagination
@@ -53,17 +59,22 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
   const prevMessagesLengthRef = useRef(0)
   const wasLoadingRef = useRef(false)
   const isLoadingMoreRef = useRef(false)
+  const hasMountedRef = useRef(false)
 
-  // Check if there's a streaming message
-  const streamingPrefix = isPhysicalExam ? 'streaming-pe-' : 'streaming-'
-  const hasStreamingMessage = sessionMessages.some(msg =>
-    msg.id && msg.id.toString().startsWith(streamingPrefix)
-  )
+  // Show typing indicator if sending but assistant hasn't started typing yet (waiting for AI to start)
+  const showTypingIndicator = isSendingMessage && !isAssistantTyping
 
-  // Show typing indicator if sending but no streaming message yet (waiting for AI to start)
-  const showTypingIndicator = isSendingMessage && !hasStreamingMessage
+  // Instant scroll to bottom on initial mount (tab switch)
+  useEffect(() => {
+    if (!hasMountedRef.current && sessionMessages.length > 0) {
+      // First mount - scroll instantly to bottom
+      messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+      prevMessagesLengthRef.current = sessionMessages.length
+      hasMountedRef.current = true
+    }
+  }, [sessionMessages.length])
 
-  // Instant scroll to bottom when loading completes (tab switch)
+  // Instant scroll to bottom when loading completes
   useEffect(() => {
     // When loading finishes (was loading, now not loading)
     if (wasLoadingRef.current && !isLoadingMessage && sessionMessages.length > 0) {
@@ -77,8 +88,8 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
 
   // Smooth scroll only when new messages are added (not during streaming/typing)
   useEffect(() => {
-    // Don't scroll if currently loading
-    if (isLoadingMessage) return
+    // Don't scroll if currently loading or just mounted
+    if (isLoadingMessage || !hasMountedRef.current) return
 
     // Only scroll when message count increases (new message added)
     const shouldScroll = sessionMessages.length > prevMessagesLengthRef.current
@@ -201,10 +212,25 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
 }
 
 const MessageComponent = memo(function MessageComponent({ message, mode = 'conversation' }) {
-  // Check if this message is currently streaming
   const isPhysicalExam = mode === 'physical_exam'
-  const streamingPrefix = isPhysicalExam ? 'streaming-pe-' : 'streaming-'
-  const isStreaming = message.id && message.id.toString().startsWith(streamingPrefix)
+
+  // Get streaming state from Redux instead of checking message ID
+  const isAssistantTyping = useSelector(state =>
+    isPhysicalExam
+      ? state.oscePractice.loading.isPhysicalExamAssistantTyping
+      : state.oscePractice.loading.isAssistantTyping
+  )
+
+  const sessionMessages = useSelector(state =>
+    isPhysicalExam ? state.oscePractice.physicalExamMessages : state.oscePractice.sessionMessages
+  )
+
+  // Check if this is the last AI message AND assistant is typing
+  const isLastAIMessage = !message.isUser &&
+    sessionMessages.length > 0 &&
+    sessionMessages[sessionMessages.length - 1].id === message.id
+
+  const isStreaming = isLastAIMessage && isAssistantTyping
 
   const aiAuthorName = isPhysicalExam ? 'Temuan Fisik' : 'AI Pasien'
 

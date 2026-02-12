@@ -302,7 +302,10 @@ export const useDeepgram = (onTranscriptUpdate, onTranscriptFinal, autoSendEnabl
 
     // Handle auto-send if enabled
     if (autoSendEnabled && onAutoSend && finalTranscript.trim()) {
+      console.log('🚀 [Deepgram] Auto-sending transcript:', finalTranscript.trim())
       onAutoSend(finalTranscript.trim())
+    } else if (autoSendEnabled && !finalTranscript.trim()) {
+      console.log('⚠️ [Deepgram] Auto-send enabled but transcript is empty')
     }
 
     setConnectionStatus('disconnected')
