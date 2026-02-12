@@ -3,7 +3,6 @@ import {
   FormContainer,
   FormSection,
   SectionTitle,
-  HintText,
   AddItemContainer,
   ItemsList,
   ItemCard,
@@ -14,13 +13,25 @@ import {
 import Button from "@components/common/Button"
 import TextInput from '@components/common/TextInput'
 
-function DiagnosisTab({
+function PsikiatriDiagnosisTab({
   diagnosisUtama,
   setDiagnosisUtama,
   diagnosisPembanding,
   setDiagnosisPembanding,
 }) {
+  const [newDiagnosisUtama, setNewDiagnosisUtama] = useState('')
   const [newDiagnosisPembanding, setNewDiagnosisPembanding] = useState('')
+
+  const handleAddDiagnosisUtama = () => {
+    if (!newDiagnosisUtama.trim()) return
+
+    setDiagnosisUtama(prev => [...prev, newDiagnosisUtama.trim()])
+    setNewDiagnosisUtama('')
+  }
+
+  const handleRemoveDiagnosisUtama = (index) => {
+    setDiagnosisUtama(prev => prev.filter((_, i) => i !== index))
+  }
 
   const handleAddDiagnosisPembanding = () => {
     if (!newDiagnosisPembanding.trim()) return
@@ -34,6 +45,13 @@ function DiagnosisTab({
   }
 
   // Handle Enter key press for auto-add
+  const handleUtamaKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddDiagnosisUtama()
+    }
+  }
+
   const handlePembandingKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -48,14 +66,40 @@ function DiagnosisTab({
         <SectionTitle>
           DIAGNOSA UTAMA
         </SectionTitle>
-        <TextInput
-          placeholder="Masukkan diagnosa utama..."
-          value={diagnosisUtama}
-          onChange={(e) => setDiagnosisUtama(e.target.value)}
-        />
-        <HintText>
-          Contoh: Gastritis Akut, Diabetes Mellitus Tipe 2
-        </HintText>
+
+        <AddItemContainer>
+          <TextInput
+            placeholder="Tambahkan diagnosa utama (tekan Enter untuk menambah)..."
+            value={newDiagnosisUtama}
+            onChange={(e) => setNewDiagnosisUtama(e.target.value)}
+            onKeyDown={handleUtamaKeyDown}
+          />
+          <Button variant="primary"
+            onClick={handleAddDiagnosisUtama}
+            disabled={!newDiagnosisUtama.trim()}
+          >
+            Tambah
+          </Button>
+        </AddItemContainer>
+
+        {diagnosisUtama.length > 0 ? (
+          <ItemsList>
+            {diagnosisUtama.map((diagnosis, index) => (
+              <ItemCard key={index}>
+                <ItemText>
+                  {index + 1}. {diagnosis}
+                </ItemText>
+                <RemoveButton onClick={() => handleRemoveDiagnosisUtama(index)}>
+                  ❌
+                </RemoveButton>
+              </ItemCard>
+            ))}
+          </ItemsList>
+        ) : (
+          <EmptyListText>
+            Belum ada diagnosa utama
+          </EmptyListText>
+        )}
       </FormSection>
 
       {/* Diagnosa Pembanding */}
@@ -102,4 +146,4 @@ function DiagnosisTab({
   )
 }
 
-export default memo(DiagnosisTab)
+export default memo(PsikiatriDiagnosisTab)

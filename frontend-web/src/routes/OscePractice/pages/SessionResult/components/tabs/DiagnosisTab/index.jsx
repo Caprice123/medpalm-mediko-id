@@ -13,6 +13,9 @@ function DiagnosisTab() {
   const mainDiagnosis = diagnosis.utama
   const differentialDiagnoses = diagnosis.pembanding || []
 
+  // Check if utama is array (psikiatri) or string
+  const isUtamaArray = Array.isArray(mainDiagnosis)
+
   if (loading.isLoadingSessionDetail) {
     return (
       <LoadingContainer>
@@ -28,11 +31,32 @@ function DiagnosisTab() {
         <SectionTitle>
           DIAGNOSA UTAMA
         </SectionTitle>
-        <TextInput
-          placeholder="Masukkan diagnosa utama..."
-          value={mainDiagnosis}
-          disabled
-        />
+
+        {isUtamaArray ? (
+          // Array format for Psikiatri
+          mainDiagnosis.length > 0 ? (
+            <ItemsList>
+              {mainDiagnosis.map((diagnosisItem, index) => (
+                <ItemCard key={index}>
+                  <ItemText>
+                    {index + 1}. {diagnosisItem}
+                  </ItemText>
+                </ItemCard>
+              ))}
+            </ItemsList>
+          ) : (
+            <EmptyListText>
+              Belum ada diagnosa utama
+            </EmptyListText>
+          )
+        ) : (
+          // Single input for non-Psikiatri
+          <TextInput
+            placeholder="Masukkan diagnosa utama..."
+            value={mainDiagnosis}
+            disabled
+          />
+        )}
       </FormSection>
 
       {/* Diagnosa Pembanding */}

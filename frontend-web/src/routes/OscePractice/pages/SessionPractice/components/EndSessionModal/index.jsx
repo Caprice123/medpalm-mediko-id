@@ -76,6 +76,7 @@ function EndSessionModal({
       title={isProcessing ? (autoEnd ? '⏱️ Waktu Habis!' : '🔄 Mengevaluasi Sesi...') : '⚠️ Akhiri Sesi Latihan?'}
       size="medium"
       closeOnOverlayClick={!isProcessing}
+      showCloseButton={!isProcessing}
     >
       <ModalContent>
         {showConfirmation && (

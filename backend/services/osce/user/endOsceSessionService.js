@@ -24,6 +24,15 @@ export class EndOsceSessionService extends BaseService {
         include: {
           osce_session_topic_snapshot: true,
           osce_session_rubric_snapshots: true,
+          osce_session_tag_snapshots: {
+            include: {
+              tags: {
+                include: {
+                  tag_group: true,
+                },
+              },
+            },
+          },
           osce_session_messages: {
             orderBy: {
               id: 'asc',
@@ -74,8 +83,28 @@ export class EndOsceSessionService extends BaseService {
 
       // Save diagnoses as JSONB
       if (sessionData.diagnoses) {
+        // Check if session has psikiatri tag
+        const hasPsikiatriTag = session.osce_session_tag_snapshots?.some(tagSnapshot => {
+          const tagName = tagSnapshot.tags?.name?.toLowerCase()
+          const tagGroupName = tagSnapshot.tags?.tag_group?.name?.toLowerCase()
+          return tagGroupName === 'topic' && tagName === 'psikiatri'
+        })
+
+        let utamaData
+        if (hasPsikiatriTag) {
+          // For psikiatri: utama is array
+          utamaData = Array.isArray(sessionData.diagnoses.utama)
+            ? sessionData.diagnoses.utama.filter(d => d && d.trim()).map(d => d.trim())
+            : []
+        } else {
+          // For non-psikiatri: utama is string
+          utamaData = typeof sessionData.diagnoses.utama === 'string'
+            ? sessionData.diagnoses.utama.trim()
+            : ''
+        }
+
         const diagnosisData = {
-          utama: sessionData.diagnoses.utama?.trim() || '',
+          utama: utamaData,
           pembanding: Array.isArray(sessionData.diagnoses.pembanding)
             ? sessionData.diagnoses.pembanding.filter(d => d && d.trim()).map(d => d.trim())
             : [],
@@ -422,9 +451,18 @@ export class EndOsceSessionService extends BaseService {
     console.log(observations)
 
       // Build diagnosis info
-      const userAnswerDiagnosis = diagnosis?.utama
-        ? `- ${diagnosis.utama}`
-        : 'Tidak ada jawaban atas diagnosa kerja'
+      let userAnswerDiagnosis
+      if (Array.isArray(diagnosis?.utama)) {
+        // Psikiatri: utama is array
+        userAnswerDiagnosis = diagnosis.utama.length > 0
+          ? diagnosis.utama.map(d => `- ${d}`).join('\n')
+          : 'Tidak ada jawaban atas diagnosa kerja'
+      } else {
+        // Non-psikiatri: utama is string
+        userAnswerDiagnosis = diagnosis?.utama
+          ? `- ${diagnosis.utama}`
+          : 'Tidak ada jawaban atas diagnosa kerja'
+      }
 
       const userAnswerDifferentialAnalysis = diagnosis?.pembanding && diagnosis.pembanding.length > 0
         ? diagnosis.pembanding.map(d => `- ${d}`).join('\n')

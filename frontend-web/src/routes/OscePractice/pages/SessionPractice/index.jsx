@@ -9,6 +9,7 @@ import SessionSidebar from './components/SessionSidebar'
 import ConversationTab from './components/ConversationTab'
 import PhysicalExaminationTab from './components/PhysicalExaminationTab'
 import DiagnosisTab from './components/DiagnosisTab'
+import PsikiatriDiagnosisTab from './components/PsikiatriDiagnosisTab'
 import TherapyTab from './components/TherapyTab'
 import SupportingDataTab from './components/SupportingDataTab'
 import EndSessionModal from './components/EndSessionModal'
@@ -42,8 +43,14 @@ function SessionPractice() {
 
   const [activeTab, setActiveTab] = useState('conversation')
 
-  // Diagnosa state
-  const [diagnosisUtama, setDiagnosisUtama] = useState('')
+  // Check if session has psikiatri tag
+  const isPsikiatri = sessionDetail?.tags?.some(tag =>
+    tag.tagGroup?.name?.toLowerCase() === 'topic' &&
+    tag.name?.toLowerCase() === 'psikiatri'
+  ) || false
+
+  // Diagnosa state - utama is array for psikiatri, string otherwise
+  const [diagnosisUtama, setDiagnosisUtama] = useState(isPsikiatri ? [] : '')
   const [diagnosisPembanding, setDiagnosisPembanding] = useState([])
 
   // Terapi state
@@ -98,7 +105,12 @@ function SessionPractice() {
       // Populate diagnosis from new JSONB format
       if (sessionDetail.userAnswer?.diagnosis) {
         const diagnosis = sessionDetail.userAnswer.diagnosis
-        setDiagnosisUtama(diagnosis.utama || '')
+        // Handle both array and string format for utama
+        if (Array.isArray(diagnosis.utama)) {
+          setDiagnosisUtama(diagnosis.utama)
+        } else {
+          setDiagnosisUtama(diagnosis.utama || (isPsikiatri ? [] : ''))
+        }
         setDiagnosisPembanding(diagnosis.pembanding || [])
       }
 
@@ -121,7 +133,7 @@ function SessionPractice() {
         setInterpretations(interp)
       }
     }
-  }, [sessionDetail, sessionId])
+  }, [sessionDetail, sessionId, isPsikiatri])
 
   // Redirect based on session status - ONLY after fetch completes
   useEffect(() => {
@@ -223,12 +235,21 @@ function SessionPractice() {
             )}
 
             {activeTab === 'diagnosis' && (
-                <DiagnosisTab
-                diagnosisUtama={diagnosisUtama}
-                setDiagnosisUtama={setDiagnosisUtama}
-                diagnosisPembanding={diagnosisPembanding}
-                setDiagnosisPembanding={setDiagnosisPembanding}
+              isPsikiatri ? (
+                <PsikiatriDiagnosisTab
+                  diagnosisUtama={diagnosisUtama}
+                  setDiagnosisUtama={setDiagnosisUtama}
+                  diagnosisPembanding={diagnosisPembanding}
+                  setDiagnosisPembanding={setDiagnosisPembanding}
                 />
+              ) : (
+                <DiagnosisTab
+                  diagnosisUtama={diagnosisUtama}
+                  setDiagnosisUtama={setDiagnosisUtama}
+                  diagnosisPembanding={diagnosisPembanding}
+                  setDiagnosisPembanding={setDiagnosisPembanding}
+                />
+              )
             )}
 
             {activeTab === 'therapy' && (
