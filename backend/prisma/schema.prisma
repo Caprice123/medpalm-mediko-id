@@ -1424,28 +1424,24 @@ model osce_session_physical_interactions {
 
 model osce_session_diagnoses {
   id              Int      @id @default(autoincrement())
-  osce_session_id Int
-  type            String // 'utama' or 'pembanding'
-  diagnosis       String   @db.Text
+  osce_session_id Int      @unique
+  diagnosis       Json     // Stores { utama: string, pembanding: string[] }
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
   osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 
   @@index([osce_session_id])
-  @@index([type])
 }
 
 model osce_session_therapies {
   id              Int      @id @default(autoincrement())
-  osce_session_id Int
-  therapy         String   @db.Text
-  order           Int      @default(0)
+  osce_session_id Int      @unique
+  therapy         Json     // Can store string or array
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
   osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
 
   @@index([osce_session_id])
-  @@index([order])
 }

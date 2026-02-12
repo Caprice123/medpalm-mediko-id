@@ -52,17 +52,12 @@ export class EndOsceSessionService extends BaseService {
 
       // If session is already completed, return the existing results
       if (session.status === 'completed') {
-        const savedDiagnoses = await prisma.osce_session_diagnoses.findMany({
+        const savedDiagnosis = await prisma.osce_session_diagnoses.findUnique({
           where: { osce_session_id: session.id },
-          orderBy: [
-            { type: 'desc' },
-            { created_at: 'asc' },
-          ],
         })
 
-        const savedTherapies = await prisma.osce_session_therapies.findMany({
+        const savedTherapy = await prisma.osce_session_therapies.findUnique({
           where: { osce_session_id: session.id },
-          orderBy: { order: 'asc' },
         })
 
         const aiFeedback = session.ai_feedback ? JSON.parse(session.ai_feedback) : null
@@ -72,65 +67,48 @@ export class EndOsceSessionService extends BaseService {
           maxScore: session.max_score,
           percentage: Math.round((session.total_score / session.max_score) * 100),
           feedback: aiFeedback,
-          diagnoses: savedDiagnoses,
-          therapies: savedTherapies,
+          diagnosis: savedDiagnosis?.diagnosis || { utama: '', pembanding: [] },
+          therapy: savedTherapy?.therapy || '',
         }
       }
 
-      // Save diagnoses
+      // Save diagnoses as JSONB
       if (sessionData.diagnoses) {
-        await prisma.osce_session_diagnoses.deleteMany({
+        const diagnosisData = {
+          utama: sessionData.diagnoses.utama?.trim() || '',
+          pembanding: Array.isArray(sessionData.diagnoses.pembanding)
+            ? sessionData.diagnoses.pembanding.filter(d => d && d.trim()).map(d => d.trim())
+            : [],
+        }
+
+        await prisma.osce_session_diagnoses.upsert({
           where: { osce_session_id: session.id },
-        })
-
-        const diagnosesToCreate = []
-
-        if (sessionData.diagnoses.utama && sessionData.diagnoses.utama.trim()) {
-          diagnosesToCreate.push({
+          create: {
             osce_session_id: session.id,
-            type: 'utama',
-            diagnosis: sessionData.diagnoses.utama.trim(),
-          })
-        }
-
-        if (sessionData.diagnoses.pembanding && Array.isArray(sessionData.diagnoses.pembanding)) {
-          sessionData.diagnoses.pembanding.forEach(diagnosis => {
-            if (diagnosis && diagnosis.trim()) {
-              diagnosesToCreate.push({
-                osce_session_id: session.id,
-                type: 'pembanding',
-                diagnosis: diagnosis.trim(),
-              })
-            }
-          })
-        }
-
-        if (diagnosesToCreate.length > 0) {
-          await prisma.osce_session_diagnoses.createMany({
-            data: diagnosesToCreate,
-          })
-        }
+            diagnosis: diagnosisData,
+          },
+          update: {
+            diagnosis: diagnosisData,
+          },
+        })
       }
 
-      // Save therapies
-      if (sessionData.therapies && Array.isArray(sessionData.therapies)) {
-        await prisma.osce_session_therapies.deleteMany({
+      // Save therapy as JSONB string
+      if (sessionData.therapies !== undefined) {
+        const therapyData = typeof sessionData.therapies === 'string'
+          ? sessionData.therapies.trim()
+          : ''
+
+        await prisma.osce_session_therapies.upsert({
           where: { osce_session_id: session.id },
-        })
-
-        const therapiesToCreate = sessionData.therapies
-          .filter(therapy => therapy && therapy.trim())
-          .map((therapy, index) => ({
+          create: {
             osce_session_id: session.id,
-            therapy: therapy.trim(),
-            order: index,
-          }))
-
-        if (therapiesToCreate.length > 0) {
-          await prisma.osce_session_therapies.createMany({
-            data: therapiesToCreate,
-          })
-        }
+            therapy: therapyData,
+          },
+          update: {
+            therapy: therapyData,
+          },
+        })
       }
 
       // Update observations with interpretations
@@ -157,17 +135,12 @@ export class EndOsceSessionService extends BaseService {
       }
 
       // Fetch saved diagnoses and therapies
-      const savedDiagnoses = await prisma.osce_session_diagnoses.findMany({
+      const savedDiagnosis = await prisma.osce_session_diagnoses.findUnique({
         where: { osce_session_id: session.id },
-        orderBy: [
-          { type: 'desc' },
-          { created_at: 'asc' },
-        ],
       })
 
-      const savedTherapies = await prisma.osce_session_therapies.findMany({
+      const savedTherapy = await prisma.osce_session_therapies.findUnique({
         where: { osce_session_id: session.id },
-        orderBy: { order: 'asc' },
       })
 
       const savedObservations = await prisma.osce_session_observations.findMany({
@@ -183,8 +156,8 @@ export class EndOsceSessionService extends BaseService {
         messages: session.osce_session_messages,
         physicalExamMessages: session.osce_session_physical_interactions,
         observations: savedObservations,
-        diagnoses: savedDiagnoses,
-        therapies: savedTherapies,
+        diagnosis: savedDiagnosis?.diagnosis || { utama: '', pembanding: [] },
+        therapy: savedTherapy?.therapy || '',
       })
 
       // Calculate time taken (in seconds) using Luxon
@@ -216,8 +189,8 @@ export class EndOsceSessionService extends BaseService {
         maxScore: evaluation.maxScore,
         percentage: Math.round((evaluation.totalScore / evaluation.maxScore) * 100),
         feedback: evaluation.feedback,
-        diagnoses: savedDiagnoses,
-        therapies: savedTherapies,
+        diagnosis: savedDiagnosis?.diagnosis || { utama: '', pembanding: [] },
+        therapy: savedTherapy?.therapy || '',
       }
     } catch (error) {
       console.error('[EndOsceSessionService] Error:', error)
@@ -225,7 +198,7 @@ export class EndOsceSessionService extends BaseService {
     }
   }
 
-  static async _generateAIEvaluation({ session, messages, physicalExamMessages, observations, diagnoses, therapies }) {
+  static async _generateAIEvaluation({ session, messages, physicalExamMessages, observations, diagnosis, therapy }) {
     try {
       const topicSnapshot = session.osce_session_topic_snapshot
       const model = topicSnapshot.ai_model || 'gemini-2.0-flash'
@@ -449,20 +422,17 @@ export class EndOsceSessionService extends BaseService {
     console.log(observations)
 
       // Build diagnosis info
-      const mainDiagnosis = diagnoses.find(d => d.type === 'utama')
-      const differentialDiagnoses = diagnoses.filter(d => d.type === 'pembanding')
-
-      const userAnswerDiagnosis = mainDiagnosis?.diagnosis
-        ? `- ${mainDiagnosis.diagnosis}`
+      const userAnswerDiagnosis = diagnosis?.utama
+        ? `- ${diagnosis.utama}`
         : 'Tidak ada jawaban atas diagnosa kerja'
 
-      const userAnswerDifferentialAnalysis = differentialDiagnoses.length > 0
-        ? differentialDiagnoses.map(d => `- ${d.diagnosis}`).join('\n')
+      const userAnswerDifferentialAnalysis = diagnosis?.pembanding && diagnosis.pembanding.length > 0
+        ? diagnosis.pembanding.map(d => `- ${d}`).join('\n')
         : 'Tidak ada jawaban atas diagnosa banding'
 
       // Build therapy info
-      const userAnswerPrescriptions = therapies.length > 0
-        ? therapies.map(t => `- ${t.therapy}`).join('\n')
+      const userAnswerPrescriptions = therapy && therapy.trim()
+        ? therapy
         : 'Tidak ada jawaban atas terapi'
 
       // Answer key from snapshot

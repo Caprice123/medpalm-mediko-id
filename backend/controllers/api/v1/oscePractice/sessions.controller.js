@@ -206,16 +206,8 @@ class SessionsController {
             percentage: result.percentage,
           },
           feedback: result.feedback,
-          diagnoses: result.diagnoses.map(d => ({
-            id: d.id,
-            type: d.type,
-            diagnosis: d.diagnosis,
-          })),
-          therapies: result.therapies.map(t => ({
-            id: t.id,
-            therapy: t.therapy,
-            order: t.order,
-          })),
+          diagnosis: result.diagnosis,
+          therapy: result.therapy,
         },
       })
   }

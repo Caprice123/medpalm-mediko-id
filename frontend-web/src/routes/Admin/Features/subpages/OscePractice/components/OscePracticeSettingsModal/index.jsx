@@ -23,10 +23,10 @@ function OscePracticeSettingsModal({ onClose }) {
       osce_practice_feature_description: 'Practice clinical scenarios with AI assessment',
       osce_practice_access_type: 'credits',
       osce_practice_credit_cost: '5',
-      osce_practice_default_model: 'gemini-1.5-pro',
       osce_practice_context_message_count: '10',
       osce_practice_chat_completion_prompt: '',
-      osce_practice_chunk_analysis_prompt: '',
+      osce_practice_physical_exam_prompt: '',
+      osce_practice_flexible_chunk_analysis_prompt: '',
       osce_practice_evaluation_prompt: ''
     },
     onSubmit: async (values) => {
@@ -47,10 +47,10 @@ function OscePracticeSettingsModal({ onClose }) {
         "osce_practice_access_type",
         "osce_practice_credit_cost",
         "osce_practice_is_active",
-        "osce_practice_default_model",
         "osce_practice_context_message_count",
         "osce_practice_chat_completion_prompt",
-        "osce_practice_chunk_analysis_prompt",
+        "osce_practice_physical_exam_prompt",
+        "osce_practice_flexible_chunk_analysis_prompt",
         "osce_practice_evaluation_prompt"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
@@ -165,34 +165,46 @@ function OscePracticeSettingsModal({ onClose }) {
 
       <FormGroup>
         <Textarea
-          label="Prompt untuk Chat Completion"
+          label="Prompt untuk Chat Completion (Tab Percakapan)"
           placeholder="Masukkan Prompt untuk Chat Completion"
           value={form.values.osce_practice_chat_completion_prompt}
           onChange={(e) => form.setFieldValue('osce_practice_chat_completion_prompt', e.target.value)}
           style={{ minHeight: '200px' }}
         />
+        <HintText>Prompt yang digunakan saat mahasiswa berinteraksi dengan pasien simulasi di tab Percakapan</HintText>
       </FormGroup>
 
-      
       <FormGroup>
         <Textarea
-          label="Prompt untuk Chunk Analyser"
-          placeholder="Masukkan Prompt untuk Chunk Analyser"
-          value={form.values.osce_practice_chunk_analysis_prompt}
-          onChange={(e) => form.setFieldValue('osce_practice_chunk_analysis_prompt', e.target.value)}
+          label="Prompt untuk Physical Exam (Tab Pemeriksaan Fisik)"
+          placeholder="Masukkan Prompt untuk Physical Exam"
+          value={form.values.osce_practice_physical_exam_prompt}
+          onChange={(e) => form.setFieldValue('osce_practice_physical_exam_prompt', e.target.value)}
           style={{ minHeight: '200px' }}
         />
+        <HintText>Prompt yang digunakan saat mahasiswa melakukan pemeriksaan fisik di tab Pemeriksaan Fisik</HintText>
       </FormGroup>
 
-      
       <FormGroup>
         <Textarea
-          label="Prompt untuk Final Analyser"
-          placeholder="Masukkan Prompt untuk Final Analyser"
+          label="Prompt untuk Flexible Chunk Analyser"
+          placeholder="Masukkan Prompt untuk Flexible Chunk Analyser"
+          value={form.values.osce_practice_flexible_chunk_analysis_prompt}
+          onChange={(e) => form.setFieldValue('osce_practice_flexible_chunk_analysis_prompt', e.target.value)}
+          style={{ minHeight: '200px' }}
+        />
+        <HintText>Prompt untuk menganalisis chunk percakapan saat evaluasi sesi OSCE. Digunakan untuk analisis per batch pesan.</HintText>
+      </FormGroup>
+
+      <FormGroup>
+        <Textarea
+          label="Prompt untuk Final Evaluator"
+          placeholder="Masukkan Prompt untuk Final Evaluator"
           value={form.values.osce_practice_evaluation_prompt}
           onChange={(e) => form.setFieldValue('osce_practice_evaluation_prompt', e.target.value)}
           style={{ minHeight: '200px' }}
         />
+        <HintText>Prompt untuk evaluasi final berdasarkan semua chunk yang telah dianalisis. Menghasilkan feedback keseluruhan.</HintText>
       </FormGroup>
     </Modal>
   )

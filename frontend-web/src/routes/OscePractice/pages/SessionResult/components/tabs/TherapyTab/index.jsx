@@ -1,16 +1,8 @@
 import { useSelector } from 'react-redux'
 import { LoadingContainer, LoadingSpinner, EmptyState } from '../../../styles/shared'
-import {
-  Container,
-  TherapyList,
-  TherapyItem,
-  TherapyNumber,
-  TherapyText,
-  SummaryCard,
-  SummaryText,
-  SummaryCount,
-} from './styles'
-import { EmptyListText, FormSection, ItemCard, ItemsList, ItemText, SectionTitle } from '../../../../SessionPractice/SessionPractice.styles'
+import { Container } from './styles'
+import { FormSection, SectionTitle } from '../../../../SessionPractice/SessionPractice.styles'
+import Textarea from '@components/common/Textarea'
 
 function TherapyTab() {
   const { sessionDetail, loading } = useSelector(state => state.oscePractice)
@@ -23,9 +15,9 @@ function TherapyTab() {
     )
   }
 
-  const sessionTherapies = sessionDetail.userAnswer.therapies
+  const therapy = sessionDetail.userAnswer.therapy
 
-  if (sessionTherapies.length === 0) {
+  if (!therapy || !therapy.trim()) {
     return (
       <EmptyState>
         💊 Belum ada terapi yang dicatat dalam sesi ini.
@@ -40,21 +32,11 @@ function TherapyTab() {
           TERAPI
         </SectionTitle>
 
-        {sessionTherapies.length > 0 ? (
-          <ItemsList>
-            {sessionTherapies.map((therapy, index) => (
-              <ItemCard key={index}>
-                <ItemText>
-                  {index + 1}. {therapy.therapy}
-                </ItemText>
-              </ItemCard>
-            ))}
-          </ItemsList>
-        ) : (
-          <EmptyListText>
-            Belum ada terapi yang ditambahkan
-          </EmptyListText>
-        )}
+        <Textarea
+          value={therapy}
+          disabled
+          rows={6}
+        />
       </FormSection>
     </Container>
   )

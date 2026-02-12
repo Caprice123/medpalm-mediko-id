@@ -47,7 +47,7 @@ function SessionPractice() {
   const [diagnosisPembanding, setDiagnosisPembanding] = useState([])
 
   // Terapi state
-  const [therapies, setTherapies] = useState([])
+  const [therapies, setTherapies] = useState('')
 
   // Observations state (for interpretations)
   const [observations, setObservations] = useState([])
@@ -95,20 +95,16 @@ function SessionPractice() {
   // Populate diagnoses, therapies, and observations from sessionDetail when it loads
   useEffect(() => {
     if (sessionDetail && sessionDetail.uniqueId === sessionId) {
-      // Populate diagnoses
-      if (sessionDetail.diagnoses && sessionDetail.diagnoses.length > 0) {
-        const utama = sessionDetail.diagnoses.find(d => d.type === 'utama')
-        const pembanding = sessionDetail.diagnoses.filter(d => d.type === 'pembanding')
-
-        if (utama) setDiagnosisUtama(utama.diagnosis)
-        if (pembanding.length > 0) {
-          setDiagnosisPembanding(pembanding.map(d => d.diagnosis))
-        }
+      // Populate diagnosis from new JSONB format
+      if (sessionDetail.userAnswer?.diagnosis) {
+        const diagnosis = sessionDetail.userAnswer.diagnosis
+        setDiagnosisUtama(diagnosis.utama || '')
+        setDiagnosisPembanding(diagnosis.pembanding || [])
       }
 
-      // Populate therapies
-      if (sessionDetail.therapies && sessionDetail.therapies.length > 0) {
-        setTherapies(sessionDetail.therapies.map(t => t.therapy))
+      // Populate therapy from new string format
+      if (sessionDetail.userAnswer?.therapy !== undefined) {
+        setTherapies(sessionDetail.userAnswer.therapy || '')
       }
 
       // Populate observations with interpretations

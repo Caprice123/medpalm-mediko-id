@@ -67,21 +67,13 @@ class OsceSessionSerializer {
       })
     )
 
-    // Serialize diagnoses
-    const diagnoses = session.osce_session_diagnoses?.map(d => ({
-      id: d.id,
-      type: d.type,
-      diagnosis: d.diagnosis,
-      createdAt: d.created_at,
-    })) || []
+    // Serialize diagnosis (JSONB format)
+    const diagnosisRecord = session.osce_session_diagnoses?.[0]
+    const diagnosis = diagnosisRecord?.diagnosis || { utama: '', pembanding: [] }
 
-    // Serialize therapies
-    const therapies = session.osce_session_therapies?.map(t => ({
-      id: t.id,
-      therapy: t.therapy,
-      order: t.order,
-      createdAt: t.created_at,
-    })) || []
+    // Serialize therapy (JSONB string format)
+    const therapyRecord = session.osce_session_therapies?.[0]
+    const therapy = therapyRecord?.therapy || ''
 
     // Calculate remaining time
     let remainingSeconds = 0
@@ -131,8 +123,8 @@ class OsceSessionSerializer {
       availableObservation: observationGroups,
       userAnswer: {
           observations: observationsWithAttachments,
-          diagnoses: diagnoses,
-          therapies: therapies,
+          diagnosis: diagnosis,
+          therapy: therapy,
       }
     };
   }

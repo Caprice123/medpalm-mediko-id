@@ -1,35 +1,12 @@
-import { useState, memo } from 'react'
+import { memo } from 'react'
 import {
   FormContainer,
   FormSection,
   SectionTitle,
-  FormInput,
-  HintText,
-  AddItemContainer,
-  AddButton,
-  ItemsList,
-  ItemCard,
-  ItemText,
-  RemoveButton,
-  EmptyListText,
 } from '../../SessionPractice.styles'
-import Button from "@components/common/Button"
-import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
 
 function TherapyTab({ therapies, setTherapies }) {
-  const [newTherapy, setNewTherapy] = useState('')
-
-  const handleAddTherapy = () => {
-    if (!newTherapy.trim()) return
-
-    setTherapies(prev => [...prev, newTherapy.trim()])
-    setNewTherapy('')
-  }
-
-  const handleRemoveTherapy = (index) => {
-    setTherapies(prev => prev.filter((_, i) => i !== index))
-  }
-
   return (
     <FormContainer>
       <FormSection>
@@ -37,42 +14,13 @@ function TherapyTab({ therapies, setTherapies }) {
           TERAPI
         </SectionTitle>
 
-        <AddItemContainer>
-          <TextInput
-            placeholder="Tambahkan terapi/pengobatan..."
-            value={newTherapy}
-            onChange={(e) => setNewTherapy(e.target.value)}
-          />
-          <Button variant="primary"
-            onClick={handleAddTherapy}
-            disabled={!newTherapy.trim()}
-          >
-            Tambah
-          </Button>
-        </AddItemContainer>
-
-        <HintText>
-          Contoh: Omeprazole 20mg 2x1, Diet rendah lemak
-        </HintText>
-
-        {therapies.length > 0 ? (
-          <ItemsList>
-            {therapies.map((therapy, index) => (
-              <ItemCard key={index}>
-                <ItemText>
-                  {index + 1}. {therapy}
-                </ItemText>
-                <RemoveButton onClick={() => handleRemoveTherapy(index)}>
-                  ❌
-                </RemoveButton>
-              </ItemCard>
-            ))}
-          </ItemsList>
-        ) : (
-          <EmptyListText>
-            Belum ada terapi yang ditambahkan
-          </EmptyListText>
-        )}
+        <Textarea
+          placeholder="Tuliskan terapi/pengobatan yang diberikan...&#10;&#10;Contoh:&#10;Omeprazole 20mg 2x1&#10;Diet rendah lemak&#10;Istirahat cukup"
+          value={therapies}
+          onChange={(e) => setTherapies(e.target.value)}
+          rows={6}
+          hint="Tuliskan semua terapi/pengobatan yang Anda berikan kepada pasien"
+        />
       </FormSection>
     </FormContainer>
   )
