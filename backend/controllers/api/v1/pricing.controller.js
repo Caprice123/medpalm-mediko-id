@@ -5,6 +5,7 @@ import { GetUserPurchaseHistoryService } from '#services/pricing/getUserPurchase
 import { GetUserPurchaseDetailService } from '#services/pricing/getUserPurchaseDetailService'
 import { AttachPaymentEvidenceService } from '#services/pricing/uploadPaymentEvidenceService'
 import { createInvoice } from '#services/xendit.service'
+import { createSnapToken } from '#services/midtrans.service'
 import prisma from '#prisma/client'
 
 class PricingController {
@@ -149,6 +150,73 @@ class PricingController {
           error: 'Failed to create payment invoice. Please try again.'
         })
       }
+    } else if (paymentMethod === 'midtrans') {
+      try {
+        // Get user details
+        const user = await prisma.users.findUnique({
+          where: { id: userId },
+          select: { email: true, name: true }
+        })
+
+        if (!user || !user.email) {
+          return res.status(400).json({
+            error: 'User email is required for Midtrans payment'
+          })
+        }
+
+        // Parse user name
+        const nameParts = (user.name || 'Customer').split(' ')
+        const firstName = nameParts[0]
+        const lastName = nameParts.slice(1).join(' ') || ''
+
+        const orderId = `PURCHASE-${purchase.id}-${Date.now()}`
+        const description = `${purchase.pricing_plan.name} - ${purchase.bundle_type === 'credits' ? `${purchase.pricing_plan.credits_included} Credits` : purchase.bundle_type === 'subscription' ? 'Subscription' : 'Hybrid Package'}`
+
+        // Create Midtrans Snap token
+        const snapResult = await createSnapToken({
+          orderId,
+          amount: Number(purchase.amount_paid),
+          customerDetails: {
+            email: user.email,
+            firstName,
+            lastName
+          },
+          itemDetails: [
+            {
+              id: purchase.pricing_plan_id,
+              price: Number(purchase.amount_paid),
+              quantity: 1,
+              name: description
+            }
+          ]
+        })
+
+        console.log('Midtrans Snap token created:', snapResult)
+
+        // Store order ID in payment_reference
+        await prisma.user_purchases.update({
+          where: { id: purchase.id },
+          data: { payment_reference: orderId }
+        })
+
+        paymentInfo = {
+          snapToken: snapResult.token,
+          redirectUrl: snapResult.redirectUrl,
+          orderId,
+          clientKey: process.env.MIDTRANS_CLIENT_KEY
+        }
+
+        console.log('Midtrans payment info being sent:', paymentInfo)
+      } catch (error) {
+        console.error('Error creating Midtrans Snap token:', error)
+        // Delete the pending purchase if Snap token creation failed
+        await prisma.user_purchases.delete({
+          where: { id: purchase.id }
+        })
+        return res.status(500).json({
+          error: 'Failed to create payment token. Please try again.'
+        })
+      }
     }
 
     res.status(201).json({
@@ -160,7 +228,7 @@ class PricingController {
         paymentStatus: purchase.payment_status,
         paymentInfo: paymentInfo
       },
-      message: paymentMethod === 'xendit' ? 'Payment invoice created. Please complete payment.' : 'Purchase completed successfully'
+      message: (paymentMethod === 'xendit' || paymentMethod === 'midtrans') ? 'Payment invoice created. Please complete payment.' : 'Purchase completed successfully'
     })
   }
 

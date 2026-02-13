@@ -1,25 +1,24 @@
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
+// Track if Sentry is initialized
+let isSentryInitialized = false;
+
 /**
  * Initialize Sentry for error tracking and performance monitoring
  * @param {Express} app - Express application instance
  */
 export const initSentry = (app) => {
-  // Only initialize in production
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('ℹ️ Sentry disabled in development mode');
-    return;
-  }
-
   if (process.env.SENTRY_ENABLED != "true") {
     console.log("Sentry is not enabled")
+    isSentryInitialized = false;
     return
   }
 
   // Only initialize if DSN is provided
   if (!process.env.SENTRY_DSN) {
     console.warn('⚠️ Sentry DSN not configured. Error tracking is disabled.');
+    isSentryInitialized = false;
     return;
   }
 
@@ -34,10 +33,6 @@ export const initSentry = (app) => {
     profilesSampleRate: 0.1,
 
     integrations: [
-      // Enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
-      // Enable Express.js middleware tracing
-      new Sentry.Integrations.Express({ app }),
       // Enable profiling
       nodeProfilingIntegration(),
     ],
@@ -66,48 +61,38 @@ export const initSentry = (app) => {
     },
   });
 
+  // Setup Express error handler (replaces old Handlers API)
+  Sentry.setupExpressErrorHandler(app);
+
+  isSentryInitialized = true;
   console.log('✅ Sentry initialized for error tracking');
 };
 
 /**
  * Get Sentry request handler middleware
- * Must be used before any other middleware
+ * In v10+, this is handled by setupExpressErrorHandler in initSentry
+ * Keeping this for backwards compatibility as a no-op
  */
 export const sentryRequestHandler = () => {
-  // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return (req, res, next) => next();
-  }
-  return Sentry.Handlers.requestHandler();
+  return (req, res, next) => next();
 };
 
 /**
  * Get Sentry tracing handler middleware
- * Must be used after request handler
+ * In v10+, this is handled by setupExpressErrorHandler in initSentry
+ * Keeping this for backwards compatibility as a no-op
  */
 export const sentryTracingHandler = () => {
-  // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return (req, res, next) => next();
-  }
-  return Sentry.Handlers.tracingHandler();
+  return (req, res, next) => next();
 };
 
 /**
  * Get Sentry error handler middleware
- * Must be used after all routes but before any other error middleware
+ * In v10+, this is handled by setupExpressErrorHandler in initSentry
+ * Keeping this for backwards compatibility as a no-op
  */
 export const sentryErrorHandler = () => {
-  // Return no-op middleware if not in production
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return (err, req, res, next) => next(err);
-  }
-  return Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Send all errors to Sentry
-      return true;
-    },
-  });
+  return (err, req, res, next) => next(err);
 };
 
 /**
@@ -116,8 +101,9 @@ export const sentryErrorHandler = () => {
  * @param {Object} context - Additional context
  */
 export const captureException = (error, context = {}) => {
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return; // No-op in development
+  if (!isSentryInitialized) {
+    console.error('Sentry not initialized, error not captured:', error);
+    return;
   }
   Sentry.captureException(error, {
     extra: context,
@@ -130,8 +116,9 @@ export const captureException = (error, context = {}) => {
  * @param {string} level - Severity level (fatal, error, warning, info, debug)
  */
 export const captureMessage = (message, level = 'info') => {
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return; // No-op in development
+  if (!isSentryInitialized) {
+    console.log(`Sentry not initialized, message not captured [${level}]:`, message);
+    return;
   }
   Sentry.captureMessage(message, level);
 };
@@ -141,8 +128,8 @@ export const captureMessage = (message, level = 'info') => {
  * @param {Object} user - User information
  */
 export const setUser = (user) => {
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return; // No-op in development
+  if (!isSentryInitialized) {
+    return;
   }
   Sentry.setUser(user);
 };
@@ -151,8 +138,8 @@ export const setUser = (user) => {
  * Clear user context
  */
 export const clearUser = () => {
-  if (process.env.NODE_ENV !== 'production' || process.env.SENTRY_ENABLED != "true") {
-    return; // No-op in development
+  if (!isSentryInitialized) {
+    return;
   }
   Sentry.setUser(null);
 };
