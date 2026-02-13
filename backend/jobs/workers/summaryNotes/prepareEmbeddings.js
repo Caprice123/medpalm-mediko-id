@@ -66,6 +66,7 @@ export async function prepareEmbeddingsHandler(job) {
       },
       metadata: {
         title: summaryNote.title,
+        unique_id: summaryNote.unique_id,
         description: summaryNote.description || '',
         created_at: summaryNote.created_at ? summaryNote.created_at.toISOString() : new Date().toISOString()
       }

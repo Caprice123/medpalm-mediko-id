@@ -66,6 +66,7 @@ export async function embedChunkHandler(job) {
     content: chunk.content,
     metadata: {
       note_id: summaryNoteId,
+      note_unique_id: metadata.unique_id,
       chunk_index: chunkIndex,
       title: metadata.title,
       section_heading: chunk.heading,
