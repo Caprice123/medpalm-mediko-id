@@ -18,7 +18,7 @@ export class CreatePricingPlanService extends BaseService {
     } = req.body
 
     // Convert allowed_payment_method array to comma-separated string
-    let paymentMethods = allowed_payment_method || 'xendit'
+    let paymentMethods = allowed_payment_method || 'midtrans'
 
     const plan = await prisma.pricing_plans.create({
       data: {

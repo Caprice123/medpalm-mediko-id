@@ -17,10 +17,10 @@ export class PurchasePricingPlanService extends BaseService {
       throw new ValidationError('Pricing plan is not active')
     }
 
-    // For Xendit payments, create purchase with pending status
+    // For Xendit or Midtrans payments, create purchase with pending status
     // Create subscription with 'not_active' status
     // Credits will be granted after webhook confirms payment
-    if (paymentMethod === 'xendit') {
+    if (paymentMethod === 'xendit' || paymentMethod === 'midtrans') {
       const result = await prisma.$transaction(async (tx) => {
         // 1. Create the purchase record with pending status
         const purchase = await tx.user_purchases.create({

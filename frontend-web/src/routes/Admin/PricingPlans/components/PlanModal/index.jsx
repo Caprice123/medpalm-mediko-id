@@ -20,9 +20,9 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
 
   // Payment method options for dropdown
   const paymentMethodOptions = [
+    { value: 'midtrans', label: 'Midtrans (Snap Payment)' },
     { value: 'xendit', label: 'Xendit (Online Payment)' },
     { value: 'manual', label: 'Manual Transfer' },
-    { value: 'xendit,manual', label: 'Both (Xendit & Manual)' }
   ]
 
   // Get current bundle type value as dropdown option
@@ -32,7 +32,7 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
 
   // Get current payment method value as dropdown option
   const paymentMethodValue = paymentMethodOptions.find(
-    option => option.value === (formData.allowed_payment_method || 'xendit')
+    option => option.value === (formData.allowed_payment_method || 'midtrans')
   )
 
   // Handle bundle type dropdown change
@@ -50,7 +50,7 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
     onChange({
       target: {
         name: 'allowed_payment_method',
-        value: selectedOption?.value || 'xendit'
+        value: selectedOption?.value || 'midtrans'
       }
     })
   }

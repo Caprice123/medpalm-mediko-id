@@ -31,7 +31,7 @@ export class UpdatePricingPlanService extends BaseService {
     if (is_popular !== undefined) updateData.is_popular = is_popular
     if (discount !== undefined) updateData.discount = Number(discount)
     if (order !== undefined) updateData.order = Number(order)
-    if (allowed_payment_method !== undefined) updateData.allowed_payment_methods = allowed_payment_method
+    if (allowed_payment_method !== undefined) updateData.allowed_payment_method = allowed_payment_method
 
     updateData.updated_at = new Date()
 

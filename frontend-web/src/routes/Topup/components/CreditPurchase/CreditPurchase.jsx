@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchPricingPlans, purchasePricingPlan } from '@store/pricing/action'
 import { CreditPurchaseSkeleton } from '@components/common/SkeletonCard'
@@ -34,6 +34,31 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
 
   const [activeFilter, setActiveFilter] = useState('all')
   const [purchasingPlanId, setPurchasingPlanId] = useState(null)
+  const snapScriptLoaded = useRef(false)
+
+  // Load Midtrans Snap script
+  useEffect(() => {
+    if (isOpen && !snapScriptLoaded.current) {
+      const script = document.createElement('script')
+      script.src = import.meta.env.VITE_MIDTRANS_SNAP_URL || 'https://app.sandbox.midtrans.com/snap/snap.js'
+      script.setAttribute('data-client-key', import.meta.env.VITE_MIDTRANS_CLIENT_KEY || '')
+      script.async = true
+      script.onload = () => {
+        snapScriptLoaded.current = true
+        console.log('Midtrans Snap script loaded')
+      }
+      document.body.appendChild(script)
+
+      return () => {
+        // Cleanup script on unmount
+        const existingScript = document.querySelector('script[src*="midtrans"]')
+        if (existingScript) {
+          document.body.removeChild(existingScript)
+        }
+        snapScriptLoaded.current = false
+      }
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -45,8 +70,13 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
     const allowedMethods = plan.allowedPaymentMethods || ['xendit']
 
     // Determine payment method
-    // If both methods allowed, default to xendit
-    const paymentMethod = allowedMethods.includes('xendit') ? 'xendit' : 'manual'
+    // Priority: midtrans > xendit > manual
+    let paymentMethod = 'manual'
+    if (allowedMethods.includes('midtrans')) {
+      paymentMethod = 'midtrans'
+    } else if (allowedMethods.includes('xendit')) {
+      paymentMethod = 'xendit'
+    }
 
     handlePurchase(plan, paymentMethod)
   }
@@ -60,7 +90,43 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
       const { paymentInfo, id: purchaseId } = result.data
 
       // Handle based on payment method
-      if (paymentMethod === 'xendit' && paymentInfo?.invoiceUrl) {
+      if (paymentMethod === 'midtrans' && paymentInfo?.snapToken) {
+        // For Midtrans: open Snap payment popup
+        if (onPurchaseSuccess) {
+          onPurchaseSuccess(result)
+        }
+
+        // Wait for Snap to be available
+        if (window.snap) {
+          window.snap.pay(paymentInfo.snapToken, {
+            onSuccess: function(result) {
+              console.log('Midtrans payment success:', result)
+              onClose()
+              // Refresh purchase history after successful payment
+              if (onPurchaseSuccess) {
+                onPurchaseSuccess()
+              }
+            },
+            onPending: function(result) {
+              console.log('Midtrans payment pending:', result)
+              onClose()
+              alert('Pembayaran sedang diproses. Silakan selesaikan pembayaran Anda.')
+            },
+            onError: function(result) {
+              console.error('Midtrans payment error:', result)
+              alert('Pembayaran gagal: ' + (result.status_message || 'Terjadi kesalahan'))
+            },
+            onClose: function() {
+              console.log('Midtrans popup closed')
+              setPurchasingPlanId(null)
+            }
+          })
+        } else {
+          console.error('Midtrans Snap not loaded')
+          alert('Payment system not ready. Please try again.')
+          setPurchasingPlanId(null)
+        }
+      } else if (paymentMethod === 'xendit' && paymentInfo?.invoiceUrl) {
         // For Xendit: redirect to invoice URL
         if (onPurchaseSuccess) {
           onPurchaseSuccess(result)
@@ -84,7 +150,6 @@ function CreditPurchase({ isOpen, onClose, onPurchaseSuccess, onOpenTransactionD
     } catch (err) {
       alert('Purchase failed: ' + (err.response?.data?.message || err.message))
       console.error('Purchase error:', err)
-    } finally {
       setPurchasingPlanId(null)
     }
   }

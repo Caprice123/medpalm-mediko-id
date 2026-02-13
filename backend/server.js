@@ -45,6 +45,7 @@ import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
 import webhookRoutes from '#routes/webhook/v1/xendit.routes';
+import midtransWebhookRoutes from '#routes/webhook/v1/midtrans.routes';
 import { injectRemainingQuota } from '#middleware/injectRemainingQuota.middleware';
 
 dotenv.config();
@@ -53,7 +54,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initialize Sentry (must be first)
-if (process.env.SENTRY_ENABLED != "true") {
+if (process.env.SENTRY_ENABLED == "true") {
     initSentry(app);
 }
 
@@ -79,16 +80,46 @@ app.use(injectRemainingQuota);
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to MedPalm API' });
+  res.json({ message: 'Welcome to MedPal API' });
 });
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Sentry test endpoint
+app.get('/api/test-sentry', async (req, res) => {
+  try {
+    const { captureMessage, captureException } = await import('#config/sentry');
+
+    // Send a test message to Sentry
+    captureMessage('Test message from MedPal API', 'info');
+
+    // Optionally trigger an error if ?error=true is passed
+    if (req.query.error === 'true') {
+      const testError = new Error('Test error from MedPal API');
+      captureException(testError);
+      throw testError;
+    }
+
+    res.json({
+      success: true,
+      message: 'Sentry test completed',
+      sentryEnabled: process.env.SENTRY_ENABLED === 'true',
+      sentryDsnConfigured: !!process.env.SENTRY_DSN
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // API Routes
 app.use('/api', authRoutes);
-app.use('/api/webhooks', webhookRoutes);
+app.use('/api/webhooks/xendit', webhookRoutes);
+app.use('/api/webhooks/midtrans', midtransWebhookRoutes);
 app.use('/api/v1/credit-plans', creditPlanRoutes);
 app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/flashcards', flashcardRoutes);
