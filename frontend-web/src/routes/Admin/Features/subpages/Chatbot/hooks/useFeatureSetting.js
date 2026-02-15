@@ -1,6 +1,7 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@store/constant/reducer"
 
@@ -79,6 +80,12 @@ export const useFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'chatbot' permission
+      if (!hasFeaturePermission('chatbot')) {
+        console.warn('User lacks permission to fetch chatbot constants')
+        return
+      }
+
       const keys = [
         'chatbot_feature_title',
         'chatbot_feature_description',

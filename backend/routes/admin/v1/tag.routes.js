@@ -1,18 +1,21 @@
 import express from 'express'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
+import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import tagsController from '#controllers/admin/v1/tags.controller'
 
 const router = express.Router()
 
-// All routes require authentication
+// All routes require authentication and admin role
 router.use(authenticateToken)
+router.use(requireAdmin)
 
-// Get all tags (available for all authenticated users)
+// All tags routes require 'tags' tab permission
+router.use(requireTabPermission('tags'))
+
+// Tags CRUD
 router.get('/', asyncHandler(tagsController.index.bind(tagsController)))
-
-// CRUD operations require admin role
-router.post('/', requireAdmin, asyncHandler(tagsController.create.bind(tagsController)))
-router.put('/:id', requireAdmin, asyncHandler(tagsController.update.bind(tagsController)))
+router.post('/', asyncHandler(tagsController.create.bind(tagsController)))
+router.put('/:id', asyncHandler(tagsController.update.bind(tagsController)))
 
 export default router

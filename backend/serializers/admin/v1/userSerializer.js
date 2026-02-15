@@ -19,6 +19,7 @@ export class UserSerializer {
             email: user.email,
             role: user.role,
             isActive: user.is_active,
+            permissions: user.permissions || null,
             userSubscriptions: UserSubscriptionSerializer.serialize(user.user_subscription || []),
             userCredits: UserCreditSerializer.serialize(user.user_credit),
         }

@@ -1,6 +1,7 @@
 import { useFormik } from 'formik'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@/store/constant/reducer"
 
@@ -29,6 +30,12 @@ export const useFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'mcq' permission
+      if (!hasFeaturePermission('mcq')) {
+        console.warn('User lacks permission to fetch mcq constants')
+        return
+      }
+
       const keys = [
         "mcq_feature_title",
         "mcq_feature_description",

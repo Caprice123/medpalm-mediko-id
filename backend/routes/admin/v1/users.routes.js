@@ -1,5 +1,6 @@
 import express from 'express'
 import { authenticateToken, requireAdmin, requireSuperAdmin } from '#middleware/auth.middleware'
+import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import usersController from '#controllers/admin/v1/users.controller'
 
@@ -9,15 +10,17 @@ const router = express.Router()
 router.use(authenticateToken)
 router.use(requireAdmin)
 
-// Get all users
+// All user routes require 'users' tab permission
+router.use(requireTabPermission('users'))
+
+// User management
 router.get('/', asyncHandler(usersController.index.bind(usersController)))
-// Get single user details
 router.get('/:id', asyncHandler(usersController.show.bind(usersController)))
-// Get user subscriptions with pagination (supports status filter: 'active', 'all', etc.)
 router.get('/:id/subscriptions', asyncHandler(usersController.getSubscriptions.bind(usersController)))
-// Adjust user credits
 router.put('/credits', asyncHandler(usersController.addCredit.bind(usersController)))
-// Update user role (superadmin only)
+
+// Superadmin only routes
 router.put('/:id/role', requireSuperAdmin, asyncHandler(usersController.updateRole.bind(usersController)))
+router.put('/:id/permissions', requireSuperAdmin, asyncHandler(usersController.updatePermissions.bind(usersController)))
 
 export default router

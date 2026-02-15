@@ -2,6 +2,7 @@ import express from 'express'
 import calculatorController from '#controllers/admin/v1/calculator.controller'
 import constantRoutes from './constant.routes.js'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
+import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 
 const router = express.Router()
@@ -9,6 +10,12 @@ const router = express.Router()
 // All routes require authentication and admin role
 router.use(authenticateToken)
 router.use(requireAdmin)
+
+// All routes require 'features' tab permission
+router.use(requireTabPermission('features'))
+
+// All calculator routes require 'calculator' feature permission
+router.use(requireFeaturePermission('calculator'))
 
 // Constants configuration for calculator feature
 router.use('/constants', constantRoutes)

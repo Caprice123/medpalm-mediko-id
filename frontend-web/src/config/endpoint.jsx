@@ -7,6 +7,7 @@ export default {
     creditPlans: `${API_BASE_URL}/api/v1/credit-plans`,
     admin: {
         constants: "/admin/v1/constants",
+        features: "/admin/v1/features",
         flashcards: "/admin/v1/flashcards",
         exercises: "/admin/v1/exercises",
         calculators: "/admin/v1/calculators",

@@ -1,5 +1,6 @@
 import express from 'express'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
+import { requireTabPermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import creditPlanController from '#controllers/admin/v1/creditPlan.controller'
 
@@ -7,6 +8,9 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
+
+// All routes require 'pricingPlans' tab permission
+router.use(requireTabPermission('pricingPlans'))
 
 // Admin routes (all require authentication and admin role)
 router.get('/', asyncHandler(creditPlanController.index.bind(creditPlanController)))

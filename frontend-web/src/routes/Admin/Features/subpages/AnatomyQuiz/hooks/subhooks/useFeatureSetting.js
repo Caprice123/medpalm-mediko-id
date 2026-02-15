@@ -1,6 +1,7 @@
 import { useFormik } from "formik"
 import { featureSettingSchema } from "../../validationSchema/featureSettingSchema"
 import { useDispatch } from "react-redux"
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@/store/constant/reducer"
 import { useEffect } from "react"
@@ -24,6 +25,12 @@ export const useFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'anatomy' permission
+      if (!hasFeaturePermission('anatomy')) {
+        console.warn('User lacks permission to fetch anatomy constants')
+        return
+      }
+
       const keys = [
         "anatomy_feature_title",
         "anatomy_feature_description",
@@ -38,7 +45,7 @@ export const useFeatureSetting = (onClose) => {
       // Convert string boolean to actual boolean for toggle switch
       const formattedConstants = {
         ...constants,
-        flashcard_is_active: constants.flashcard_is_active === 'true'
+        anatomy_is_active: constants.anatomy_is_active === 'true'
       }
 
       form.setValues(formattedConstants)

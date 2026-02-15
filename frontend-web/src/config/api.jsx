@@ -136,6 +136,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
             // If we get a 401 error, the token is invalid or expired
             if (error.response && error.response.status === 401) {
                 // Clear the token and redirect to login
+                handleApiError(error, dispatch);
                 setToken(null);
                 navigate(SIGN_IN_ROUTE);
             }
@@ -143,6 +144,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
             // If we get a 403 error, feature is disabled - redirect to dashboard with error message
             if (error.response && error.response.status === 403) {
                 // Redirect to dashboard
+                handleApiError(error, dispatch);
                 navigate('/dashboard');
             }
 

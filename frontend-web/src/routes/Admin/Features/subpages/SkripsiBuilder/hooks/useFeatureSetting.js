@@ -1,6 +1,7 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@store/constant/reducer"
 
@@ -67,6 +68,12 @@ export const useFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'skripsi' permission
+      if (!hasFeaturePermission('skripsi')) {
+        console.warn('User lacks permission to fetch skripsi constants')
+        return
+      }
+
       const keys = [
         'skripsi_feature_title',
         'skripsi_feature_description',

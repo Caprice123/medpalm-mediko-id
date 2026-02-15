@@ -1,6 +1,7 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { featureSettingSchema } from "../../validationSchema/featureSettingSchema"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@/store/constant/reducer"
@@ -37,6 +38,12 @@ export const useFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'flashcard' permission
+      if (!hasFeaturePermission('flashcard')) {
+        console.warn('User lacks permission to fetch flashcard constants')
+        return
+      }
+
       const keys = [
         "flashcard_feature_title",
         "flashcard_feature_description",

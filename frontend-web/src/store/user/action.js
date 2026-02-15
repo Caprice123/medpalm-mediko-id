@@ -145,3 +145,19 @@ export const updateUserRole = (userId, role, onSuccess) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUpdateUserRoleLoading', value: false }))
   }
 }
+
+export const updateUserPermissions = (userId, permissions, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateUserPermissionsLoading', value: true }))
+
+    const route = `${Endpoints.admin.users}/${userId}/permissions`
+    const requestBody = { permissions }
+    await putWithToken(route, requestBody)
+    if (onSuccess) onSuccess()
+    // Fetch updated user details and refresh users list
+    await dispatch(fetchUserDetail(userId))
+    await dispatch(fetchUsers())
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateUserPermissionsLoading', value: false }))
+  }
+}

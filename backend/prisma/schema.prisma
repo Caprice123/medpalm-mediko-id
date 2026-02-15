@@ -365,15 +365,16 @@ model user_sessions {
 }
 
 model users {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  name       String?
-  picture    String?
-  google_id  String?  @unique
-  role       String   @default("user")
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String?
+  picture     String?
+  google_id   String?  @unique
+  role        String   @default("user")
+  is_active   Boolean  @default(true)
+  permissions Json? // User-specific permissions for admin features
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 
   user_credit           user_credits?
   user_subscription     user_subscriptions[]

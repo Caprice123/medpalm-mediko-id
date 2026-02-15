@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { getUserData } from '@utils/authToken'
+import { hasTabPermission } from '@utils/permissionUtils'
 import FeaturesList from './components/FeaturesList'
 import FeatureConfig from './components/FeatureConfig'
 import Exercise from './subpages/Exercise'
@@ -9,7 +11,7 @@ import AnatomyQuiz from './subpages/AnatomyQuiz'
 import MultipleChoice from './subpages/MultipleChoice'
 import Chatbot from './subpages/Chatbot'
 import SkripsiBuilder from './subpages/SkripsiBuilder'
-import { fetchFeatures } from '@store/feature/action'
+import { fetchAdminFeatures } from '@store/feature/action'
 import {
   Container,
   HeaderSection,
@@ -22,11 +24,16 @@ import OscePracticeAdminPage from './subpages/OscePractice'
 
 function Features() {
   const { features, loading } = useSelector(state => state.feature)
+  const { error } = useSelector(state => state.common)
   const [selectedFeature, setSelectedFeature] = useState(null)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchFeatures())
+    // Fetch features filtered by admin user permissions from backend
+    const user = getUserData()
+    if (user && (user.role === 'superadmin' || user.role === 'admin')) {
+      dispatch(fetchAdminFeatures())
+    }
   }, [dispatch])
 
   const handleFeatureClick = (feature) => {
@@ -37,8 +44,29 @@ function Features() {
     setSelectedFeature(null)
   }
 
+  // Check if user has permission to access features tab
+  if (!hasTabPermission('features')) {
+    return (
+      <Container>
+        <ErrorMessage>
+          Anda tidak memiliki akses ke halaman ini. Hubungi administrator untuk mendapatkan izin akses.
+        </ErrorMessage>
+      </Container>
+    )
+  }
+
   if (loading.isLoadingFeatures) {
     return <LoadingState>Memuat fitur...</LoadingState>
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <ErrorMessage>
+          {error.message || 'Terjadi kesalahan saat memuat fitur'}
+        </ErrorMessage>
+      </Container>
+    )
   }
 
   const renderFeaturePage = () => {
@@ -70,7 +98,7 @@ function Features() {
     <Container>
       {!selectedFeature ? (
           <FeaturesList
-            features={features}
+            features={features || []}
             onFeatureClick={handleFeatureClick}
           />
       ) : (

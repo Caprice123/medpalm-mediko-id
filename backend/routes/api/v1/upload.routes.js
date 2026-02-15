@@ -7,6 +7,6 @@ import { asyncHandler } from '#utils/asyncHandler'
 const router = express.Router()
 
 // Upload image endpoint
-router.post('/upload/image', authenticateToken, uploadSingleImage, asyncHandler(uploadController.uploadImage))
+router.post('/image', authenticateToken, uploadSingleImage, asyncHandler(uploadController.uploadImage))
 
 export default router

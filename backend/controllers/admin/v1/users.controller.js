@@ -3,6 +3,7 @@ import { GetListUsersService } from "#services/users/getListUsersService";
 import { AddCreditService } from "#services/users/addCreditService";
 import { GetUserSubscriptionsService } from "#services/users/getUserSubscriptionsService";
 import { UpdateUserRoleService } from "#services/users/updateUserRoleService";
+import { UpdateUserPermissionsService } from "#services/users/updateUserPermissionsService";
 import { UserSerializer } from "#serializers/admin/v1/userSerializer";
 import { UserSubscriptionSerializer } from "#serializers/admin/v1/userSubscriptionSerializer";
 
@@ -112,6 +113,31 @@ class UsersController {
     res.status(200).json({
       data: UserSerializer.serialize(updatedUser),
       message: "User role updated successfully"
+    });
+  }
+
+  async updatePermissions(req, res) {
+    ValidationUtils.validate_fields({
+      request: req,
+      requiredFields: ["id"],
+      optionalFields: [],
+      source: "params"
+    });
+
+    ValidationUtils.validate_fields({
+      request: req,
+      requiredFields: ["permissions"],
+      optionalFields: [],
+    });
+
+    const userId = parseInt(req.params.id);
+    const { permissions } = req.body;
+    const requestingUserId = req.user.id;
+
+    const updatedUser = await UpdateUserPermissionsService.call(userId, permissions, requestingUserId);
+
+    res.status(200).json({
+      data: UserSerializer.serialize(updatedUser),
     });
   }
 

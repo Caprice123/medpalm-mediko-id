@@ -165,6 +165,7 @@ class AuthService {
         email: true,
         name: true,
         role: true,
+        permissions: true,
         is_active: true,
         created_at: true,
         updated_at: true

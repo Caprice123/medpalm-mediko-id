@@ -100,10 +100,46 @@ const EmptyState = styled.div`
   color: #6b7280;
 `
 
+// Helper function to check if user has permission to access a tab
+const hasTabPermission = (user, tab) => {
+  // Superadmin always has all permissions
+  if (user.role === 'superadmin') {
+    return true
+  }
+
+  // If user has custom permissions, check them
+  if (user.permissions && user.permissions.tabs) {
+    return user.permissions.tabs.includes(tab)
+  }
+
+  // Default permissions based on role
+  if (user.role === 'admin') {
+    // Admins by default have access to all tabs except 'users'
+    return ['features', 'tags', 'pricingPlans', 'transactions'].includes(tab)
+  }
+
+  // Other roles don't have admin panel access
+  return false
+}
+
+// Get available tabs for user
+const getAvailableTabs = (user) => {
+  const allTabs = [
+    { key: 'features', label: 'Kelola Fitur' },
+    { key: 'tags', label: 'Kelola Tag' },
+    { key: 'pricingPlans', label: 'Paket Harga' },
+    { key: 'transactions', label: 'Transaksi' },
+    { key: 'users', label: 'Kelola User' }
+  ]
+
+  return allTabs.filter(tab => hasTabPermission(user, tab.key))
+}
+
 function AdminPanel() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [activeTab, setActiveTab] = useState('features')
+  const [activeTab, setActiveTab] = useState(null)
+  const [availableTabs, setAvailableTabs] = useState([])
 
   useEffect(() => {
     const userData = getUserData()
@@ -115,9 +151,18 @@ function AdminPanel() {
     }
 
     setUser(userData)
+
+    // Get available tabs for this user
+    const tabs = getAvailableTabs(userData)
+    setAvailableTabs(tabs)
+
+    // Set first available tab as active
+    if (tabs.length > 0) {
+      setActiveTab(tabs[0].key)
+    }
   }, [navigate])
 
-  if (!user) {
+  if (!user || !activeTab) {
     return <div>Loading...</div>
   }
 
@@ -125,36 +170,15 @@ function AdminPanel() {
     <AdminContainer>
       <MainContent>
         <TabContainer>
-          <Tab
-            active={activeTab === 'features'}
-            onClick={() => setActiveTab('features')}
-          >
-            Kelola Fitur
-          </Tab>
-          <Tab
-            active={activeTab === 'tags'}
-            onClick={() => setActiveTab('tags')}
-          >
-            Kelola Tag
-          </Tab>
-          <Tab
-            active={activeTab === 'pricingPlans'}
-            onClick={() => setActiveTab('pricingPlans')}
-          >
-            Paket Harga
-          </Tab>
-          <Tab
-            active={activeTab === 'transactions'}
-            onClick={() => setActiveTab('transactions')}
-          >
-            Transaksi
-          </Tab>
-          <Tab
-            active={activeTab === 'users'}
-            onClick={() => setActiveTab('users')}
-          >
-            Kelola User
-          </Tab>
+          {availableTabs.map(tab => (
+            <Tab
+              key={tab.key}
+              active={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </Tab>
+          ))}
         </TabContainer>
 
         <ContentArea>

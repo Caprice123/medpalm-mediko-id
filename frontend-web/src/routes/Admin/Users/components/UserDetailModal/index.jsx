@@ -9,9 +9,10 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions, updateUserRole } from '@store/user/action'
+import { fetchUserSubscriptions, updateUserRole, updateUserPermissions } from '@store/user/action'
 import { actions } from '@store/user/reducer'
 import { getUserData } from '../../../../../utils/authToken'
+import PermissionManager from '../PermissionManager'
 import {
   UserSection,
   UserInfo,
@@ -49,6 +50,7 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const [showCreditForm, setShowCreditForm] = useState(false)
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false)
   const [showRoleForm, setShowRoleForm] = useState(false)
+  const [showPermissionForm, setShowPermissionForm] = useState(false)
   const [creditAmount, setCreditAmount] = useState('')
   const [creditError, setCreditError] = useState('')
   const [selectedRole, setSelectedRole] = useState(null)
@@ -76,6 +78,7 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setShowCreditForm(false)
     setShowSubscriptionForm(false)
     setShowRoleForm(false)
+    setShowPermissionForm(false)
     setCreditAmount('')
     setCreditError('')
     setSelectedRole(null)
@@ -148,6 +151,17 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
       setSelectedRole(null)
       setShowRoleForm(false)
     }))
+  }
+
+  // Permission form handlers
+  const handlePermissionSave = (permissions) => {
+    dispatch(updateUserPermissions(user.id, permissions, () => {
+      setShowPermissionForm(false)
+    }))
+  }
+
+  const handlePermissionCancel = () => {
+    setShowPermissionForm(false)
   }
 
   const roleOptions = [
@@ -244,6 +258,41 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
               </Button>
             </FormActions>
           </CreditForm>
+        )}
+
+        {/* Permission Management Section - Only for superadmin managing admin users */}
+        {isSuperAdmin && user.role === 'admin' && user.id !== currentUser?.id && (
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div>
+                <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151' }}>
+                  User Permissions
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                  {user.permissions ? 'Custom permissions configured' : 'Using default permissions based on role'}
+                </div>
+              </div>
+              {!showPermissionForm && (
+                <Button
+                  onClick={() => setShowPermissionForm(true)}
+                  variant="outline"
+                  size="small"
+                  style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
+                >
+                  Manage Permissions
+                </Button>
+              )}
+            </div>
+
+            {showPermissionForm && (
+              <PermissionManager
+                currentPermissions={user.permissions}
+                onSave={handlePermissionSave}
+                onCancel={handlePermissionCancel}
+                isLoading={loading.isUpdateUserPermissionsLoading}
+              />
+            )}
+          </div>
         )}
       </UserSection>
 

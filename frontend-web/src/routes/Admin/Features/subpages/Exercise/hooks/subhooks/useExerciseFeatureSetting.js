@@ -1,6 +1,7 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
+import { hasFeaturePermission } from "@utils/permissionUtils"
 import { exerciseFeatureSettingSchema } from "../../validationSchema/exerciseFeatureSettingSchema"
 import { fetchConstants, updateConstants } from "@/store/constant/action"
 import { actions } from "@/store/constant/reducer"
@@ -37,6 +38,12 @@ export const useExerciseFeatureSetting = (onClose) => {
 
   useEffect(() => {
     const onLoad = async () => {
+      // Only fetch constants if user has 'exercise' permission
+      if (!hasFeaturePermission('exercise')) {
+        console.warn('User lacks permission to fetch exercise constants')
+        return
+      }
+
       const keys = [
         "exercise_feature_title",
         "exercise_feature_description",
