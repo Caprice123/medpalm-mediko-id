@@ -41,6 +41,7 @@ import adminOscePracticeObservationRoutes from '#routes/admin/v1/oscePractice/ob
 import adminOscePracticeObservationGroupRoutes from '#routes/admin/v1/oscePractice/observationGroup.routes';
 import skripsiRoutes from '#routes/api/v1/skripsi.routes';
 import adminSkripsiRoutes from '#routes/admin/v1/skripsi.routes';
+import adminFeatureRoutes from '#routes/admin/v1/feature.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
@@ -134,9 +135,9 @@ app.use('/api/v1/mcq', mcqRoutes);
 app.use('/api/v1/chatbot', chatbotRoutes);
 app.use('/api/v1/oscePractice/topics', topicRoutes);
 app.use('/api/v1/oscePractice/sessions', sessionRoutes);
-app.use('/api/v1', uploadRoutes);
+app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/blobs', blobRoutes);
-app.use('/api/v1', skripsiRoutes);
+app.use('/api/v1/skripsi', skripsiRoutes);
 app.use('/api/v1/html-to-docx', htmlToDocxRoutes);
 
 // Admin Routes
@@ -159,7 +160,8 @@ app.use('/admin/v1/subscriptions', adminSubscriptionsRoutes);
 app.use('/admin/v1/anatomy', adminAnatomyRoutes);
 app.use('/admin/v1/mcq', adminMcqRoutes);
 app.use('/admin/v1/chatbot', adminChatbotRoutes);
-app.use('/admin/v1', adminSkripsiRoutes);
+app.use('/admin/v1/features', adminFeatureRoutes);
+app.use('/admin/v1/skripsi', adminSkripsiRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();
