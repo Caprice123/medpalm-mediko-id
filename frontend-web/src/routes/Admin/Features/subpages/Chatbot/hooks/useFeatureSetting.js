@@ -56,6 +56,8 @@ export const useFeatureSetting = (onClose) => {
       chatbot_research_published_before: '',
       chatbot_research_updated_after: '',
       chatbot_research_updated_before: '',
+      chatbot_research_reformulation_model: 'gemini-2.5-flash',
+      chatbot_research_reformulation_prompt: 'You are a medical query reformulation expert. Your task:\n\n1. UNDERSTAND the user\'s query in context of the conversation\n2. REFORMULATE it into a complete, standalone question\n3. TRANSLATE to an optimized English search query\n\nConversation History:\n{{conversation_history}}\n\nCurrent User Query (Indonesian): "{{user_query}}"\n\nRespond with ONLY the English search query.',
       chatbot_research_user_information: 'Pencarian mendalam dengan multiple sumber dan analisis komprehensif. Cocok untuk topik kompleks yang membutuhkan riset detail.'
     },
     onSubmit: async (values) => {
@@ -126,6 +128,8 @@ export const useFeatureSetting = (onClose) => {
         'chatbot_research_published_before',
         'chatbot_research_updated_after',
         'chatbot_research_updated_before',
+        'chatbot_research_reformulation_model',
+        'chatbot_research_reformulation_prompt',
         'chatbot_research_user_information'
       ]
 

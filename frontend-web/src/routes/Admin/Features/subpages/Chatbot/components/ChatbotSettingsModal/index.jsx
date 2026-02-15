@@ -149,7 +149,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model AI</Label>
           <ModelDropdown
             value={form.values.chatbot_normal_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_normal_model', option.value)}
@@ -230,7 +229,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Embedding Model AI</Label>
           <EmbeddingModelDropdown
             value={form.values.chatbot_validated_embedding_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_validated_embedding_model', option.value)}
@@ -239,7 +237,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model AI</Label>
           <ModelDropdown
             value={form.values.chatbot_validated_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_validated_model', option.value)}
@@ -373,7 +370,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         </FormGroup>
 
         <FormGroup>
-          <Label>Model Perplexity</Label>
           <ModelDropdown
             value={form.values.chatbot_research_model || 'sonar'}
             onChange={(option) => form.setFieldValue('chatbot_research_model', option.value)}
@@ -426,6 +422,28 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             onChange={(e) => form.setFieldValue('chatbot_research_max_sources', e.target.value)}
             hint="Jumlah sitasi/referensi yang diminta dari Perplexity"
           />
+        </FormGroup>
+
+        <FormGroup>
+          <ModelDropdown
+            label="Model Reformulation"
+            value={form.values.chatbot_research_reformulation_model || 'gemini-2.5-flash'}
+            onChange={(option) => form.setFieldValue('chatbot_research_reformulation_model', option.value)}
+          />
+          <HintText>Model AI untuk menerjemahkan dan mereformulasi pertanyaan dari Indonesia ke Inggris</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Reformulation Prompt</Label>
+          <Textarea
+            placeholder="Masukkan prompt untuk reformulation dan translation..."
+            value={form.values.chatbot_research_reformulation_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_research_reformulation_prompt', e.target.value)}
+            style={{ minHeight: '150px' }}
+          />
+          <HintText>
+            Prompt untuk AI dalam menerjemahkan pertanyaan ke bahasa Inggris. Gunakan placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
+          </HintText>
         </FormGroup>
 
         <FormGroup>

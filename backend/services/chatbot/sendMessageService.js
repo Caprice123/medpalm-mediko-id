@@ -4,6 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import { NormalModeAIService } from '#services/chatbot/ai/normalModeAIService'
 import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSearchModeAIService'
 import { ResearchModeAIService } from '#services/chatbot/ai/researchModeAIService'
+import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researchModeWithQueryReformulation'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 
@@ -86,7 +87,8 @@ export class SendMessageService extends BaseService {
       } else if (mode === 'validated') {
         result = await ValidatedSearchModeAIService.call({ userId, conversationId: internalConversationId, message })
       } else if (mode === 'research') {
-        result = await ResearchModeAIService.call({ userId, conversationId: internalConversationId, message })
+        // Use new query reformulation service for Indonesian queries with domain filter
+        result = await ResearchModeWithQueryReformulation.call({ userId, conversationId: internalConversationId, message })
       }
 
       if (onStream && result.stream) {

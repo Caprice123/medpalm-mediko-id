@@ -116,7 +116,7 @@ export class ResearchModeAIService extends BaseService {
 
       // Build API request parameters
       const requestParams = {
-        model: model || 'sonar-deep-research',
+        model: model || 'sonar-pro', // Changed from sonar-deep-research to sonar-pro for citation support
         messages: messages,
         // max_tokens: 2048,
         temperature: 0.7,
