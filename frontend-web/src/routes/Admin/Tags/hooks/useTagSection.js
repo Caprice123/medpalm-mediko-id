@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { fetchTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/action'
 import { useCreateTag } from "./subhooks/useCreateTag"
 import { useUpdateTag } from "./subhooks/useUpdateTag"
 
@@ -15,7 +15,7 @@ export const useTagSection = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(fetchTags())
+        dispatch(fetchAdminTags())
     }, [dispatch])
 
     const toggleGroup = (groupName) => {

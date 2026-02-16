@@ -37,6 +37,7 @@ export default {
         pricing: "/api/v1/pricing",
         skripsi: "/api/v1/skripsi",
         oscePractice: "/api/v1/oscePractice",
+        tags: "/api/v1/tags",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
         oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,

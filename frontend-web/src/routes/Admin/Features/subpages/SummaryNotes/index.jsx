@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchAdminSummaryNotes, fetchSummaryNoteDetail, deleteSummaryNote } from '@store/summaryNotes/action'
 import { actions } from '@store/summaryNotes/reducer'
-import { fetchTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/action'
 import CreateNoteModal from './components/CreateNoteModal'
 import UpdateNoteModal from './components/UpdateNoteModal'
 import SummaryNotesSettingsModal from './components/SummaryNotesSettingsModal'
@@ -33,7 +33,7 @@ function SummaryNotes({ onBack }) {
   useEffect(() => {
     dispatch(fetchAdminSummaryNotes({}, 1, 30))
     dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester", "topic", "department"]}))
-    dispatch(fetchTags())
+    dispatch(fetchAdminTags())
   }, [dispatch])
 
   const handlePageChange = (page) => {

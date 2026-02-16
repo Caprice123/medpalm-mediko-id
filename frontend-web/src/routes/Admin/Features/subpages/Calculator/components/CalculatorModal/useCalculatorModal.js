@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
-import { fetchTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/action'
 import { upload } from '@store/common/action'
 
 export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) => {
@@ -30,7 +30,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   // Fetch tags filtered by "kategori" tag group on mount
   useEffect(() => {
     if (isOpen) {
-      dispatch(fetchTags(['kategori']))
+      dispatch(fetchAdminTags(['kategori']))
     }
   }, [dispatch, isOpen])
 

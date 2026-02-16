@@ -1,7 +1,7 @@
 import { useFormik } from "formik"
 import { createTagSchema } from "../../validationSchema/createTagSchema"
 import { useDispatch } from "react-redux"
-import { createTag, fetchTags } from '@store/tags/action'
+import { createTag, fetchAdminTags } from '@store/tags/action'
 import { fetchTagGroups } from "../../../../../store/tagGroups/action"
 
 export const useCreateTag = (setUiState) => {
@@ -19,7 +19,7 @@ export const useCreateTag = (setUiState) => {
         validationSchema: createTagSchema,
         onSubmit: async (values) => {
             const onSuccess = async () => {
-                await dispatch(fetchTags())
+                await dispatch(fetchAdminTags())
                 onHide()
             }
             await dispatch(createTag(values, onSuccess))

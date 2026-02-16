@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { fetchTags, createTag, updateTagAction, deleteTag } from '@store/tags/action'
+import { fetchAdminTags, createTag, updateTagAction, deleteTag } from '@store/tags/action'
 
 export const useTagSection = () => {
     const [uiState, setUiState] = useState({
@@ -18,7 +18,7 @@ export const useTagSection = () => {
     const [selectedTag, setSelectedTag] = useState(null)
 
     useEffect(() => {
-        dispatch(fetchTags())
+        dispatch(fetchAdminTags())
     }, [dispatch])
 
     // Group tags by type
@@ -58,11 +58,11 @@ export const useTagSection = () => {
 
     const handleGroupModalSuccess = () => {
         setIsGroupModalOpen(false)
-        dispatch(fetchTags())
+        dispatch(fetchAdminTags())
     }
 
     const handleTagModalSuccess = () => {
         setIsTagModalOpen(false)
-        dispatch(fetchTags())
+        dispatch(fetchAdminTags())
     }
 }

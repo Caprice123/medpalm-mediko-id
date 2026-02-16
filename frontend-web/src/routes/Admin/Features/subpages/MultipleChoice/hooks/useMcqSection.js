@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchAdminMcqTopics } from '@store/mcq/action'
-import { fetchTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/action'
 import { actions } from "@store/tags/reducer"
 
 export const useMcqSection = () => {
@@ -18,7 +18,7 @@ export const useMcqSection = () => {
   useEffect(() => {
     dispatch(fetchAdminMcqTopics())
     dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["topic", "department", "university", "semester"]}))
-    dispatch(fetchTags())
+    dispatch(fetchAdminTags())
   }, [dispatch])
 
   return {

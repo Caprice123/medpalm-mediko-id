@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchAdminAnatomyQuizzes } from '@store/anatomy/adminAction'
-import { fetchTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/action'
 import { actions } from "@store/tags/reducer"
 
 export const useAnatomyQuizSection = () => {
@@ -18,7 +18,7 @@ export const useAnatomyQuizSection = () => {
   useEffect(() => {
     dispatch(fetchAdminAnatomyQuizzes())
     dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
-    dispatch(fetchTags())
+    dispatch(fetchAdminTags())
   }, [dispatch])
 
   return {
