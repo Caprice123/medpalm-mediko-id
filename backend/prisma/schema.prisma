@@ -1090,6 +1090,7 @@ model skripsi_messages {
   tab_id      Int
   sender_type String // 'user' or 'ai'
   content     String   @db.Text
+  mode_type   String   @default("research") // 'research', 'validated'
   status      String   @default("streaming") // 'streaming', 'completed', 'truncated'
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
@@ -1100,6 +1101,7 @@ model skripsi_messages {
   @@index([tab_id])
   @@index([sender_type])
   @@index([status])
+  @@index([mode_type])
 }
 
 model skripsi_message_sources {

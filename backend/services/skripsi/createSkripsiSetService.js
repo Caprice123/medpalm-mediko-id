@@ -39,7 +39,7 @@ export class CreateSkripsiSetService extends BaseService {
     // Build tabs array based on constants
     const tabsToCreate = []
 
-    // Add AI Researcher tabs
+    // Add AI Chat tabs
     const aiResearcherEnabled = constantsMap['skripsi_ai_researcher_enabled'] === 'true'
     const aiResearcherCount = parseInt(constantsMap['skripsi_ai_researcher_count'] || '3')
 
@@ -47,7 +47,7 @@ export class CreateSkripsiSetService extends BaseService {
       for (let i = 1; i <= aiResearcherCount; i++) {
         tabsToCreate.push({
           tab_type: `ai_researcher_${i}`,
-          title: `AI Researcher ${i}`
+          title: `AI Chat ${i}`
         })
       }
     }

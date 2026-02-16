@@ -13,6 +13,9 @@ const featureConstantKey = 'skripsi_is_active'
 router.use(authenticateToken)
 router.use(checkFeature(featureConstantKey))
 
+// Config endpoint
+router.get('/config', asyncHandler(SkripsiTabsController.getConfig))
+
 router.get('/sets', asyncHandler(SkripsiSetsController.getSets))
 router.post('/sets', asyncHandler(SkripsiSetsController.createSet))
 router.post('/export-word', asyncHandler(SkripsiSetsController.exportToWord))

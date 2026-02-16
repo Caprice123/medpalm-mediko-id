@@ -3,6 +3,7 @@ import { SendMessageService } from '#services/skripsi/sendMessageService'
 import { TruncateMessageService } from '#services/skripsi/truncateMessageService'
 import { FinalizeMessageService } from '#services/skripsi/finalizeMessageService'
 import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
+import { GetSkripsiConfigService } from '#services/skripsi/getSkripsiConfigService'
 import prisma from '#prisma/client'
 
 class SkripsiTabsController {
@@ -29,7 +30,7 @@ class SkripsiTabsController {
   async sendMessage(req, res) {
     const userId = req.user.id
     const tabId = parseInt(req.params.id)
-    const { message } = req.body
+    const { message, modeType = 'research' } = req.body
 
     // Set headers for Server-Sent Events (SSE)
     res.setHeader('Content-Type', 'text/event-stream')
@@ -65,6 +66,7 @@ class SkripsiTabsController {
         tabId,
         userId,
         message,
+        modeType,
         streamAbortSignal: streamAbortController.signal,
         checkClientConnected: () => !clientDisconnected,
         onStream: (chunk, onSend) => {
@@ -216,6 +218,15 @@ class SkripsiTabsController {
         message: error.message
       })
     }
+  }
+
+  // Get Skripsi configuration (available modes, costs, user information)
+  async getConfig(req, res) {
+    const config = await GetSkripsiConfigService.call()
+
+    return res.status(200).json({
+      data: config
+    })
   }
 }
 

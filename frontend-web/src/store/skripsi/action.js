@@ -25,6 +25,10 @@ const {
   setDiagramsForTab,
   setStreamingState,
   clearStreamingState,
+  setModeForTab,
+  setAvailableModes,
+  setCosts,
+  setUserInformation,
   setLoading,
   setTabLoading,
   setPagination,
@@ -169,6 +173,32 @@ export const deleteSet = (setId) => async (dispatch) => {
   }
 }
 
+// ============= Mode Configuration =============
+
+export const fetchModeConfiguration = () => async (dispatch) => {
+  try {
+    const route = Endpoints.api.skripsi + '/config'
+    const response = await getWithToken(route)
+    const config = response.data.data
+
+    console.log('📊 Skripsi Mode Configuration:', config)
+    console.log('💰 Costs:', config.costs)
+
+    dispatch(setAvailableModes(config.availableModes))
+    dispatch(setCosts(config.costs))
+    if (config.userInformation) {
+      dispatch(setUserInformation(config.userInformation))
+    }
+
+    return config
+  } catch (err) {
+    console.error('Error fetching mode configuration:', err)
+    // Use defaults on error
+    dispatch(setAvailableModes({ research: true, validated: true }))
+    dispatch(setCosts({ research: 0, validated: 0 }))
+  }
+}
+
 // ============= Tabs Management =============
 
 export const fetchTabMessages = ({ tabId, page = 1, perPage = 50, prepend = false }) => async (dispatch) => {
@@ -257,16 +287,26 @@ export const loadOlderMessages = (tabId, beforeMessageId) => async (dispatch) =>
 // Store abort controllers per tab for stream cancellation
 const abortControllersByTab = {}
 
-export const sendMessage = (tabId, message) => async (dispatch, getState) => {
+export const sendMessage = (tabId, message, modeType) => async (dispatch, getState) => {
   try {
     // Set loading state for THIS specific tab
     dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: true }))
+
+    // Get mode from state if not provided (fallback to tab's current mode or 'validated')
+    const state = getState()
+    const mode = modeType || state.skripsi.modeByTab[tabId] || 'validated'
+
+    // Persist the mode to Redux state for this tab
+    if (!state.skripsi.modeByTab[tabId]) {
+      dispatch(setModeForTab({ tabId, mode }))
+    }
 
     // Add user message immediately (optimistic UI)
     const tempUserMessage = {
       id: `temp-user-${Date.now()}`,
       senderType: 'user',
       content: message,
+      modeType: mode,
       createdAt: new Date().toISOString()
     }
     dispatch(addMessageToTab({ tabId, message: tempUserMessage }))
@@ -291,7 +331,7 @@ export const sendMessage = (tabId, message) => async (dispatch, getState) => {
     console.log(`🆕 Created new AbortController for tab ${tabId}`)
 
     // Use streaming for all messages (everything handled in Redux)
-    await sendMessageStreaming(tabId, message, dispatch, getState, abortControllersByTab[tabId], tempUserMessage.id)
+    await sendMessageStreaming(tabId, message, mode, dispatch, getState, abortControllersByTab[tabId], tempUserMessage.id)
     console.log('✅ sendMessageStreaming completed')
   } catch (err) {
     if (err.name === 'AbortError') {
@@ -380,6 +420,7 @@ export const stopStreaming = (tabId) => async (dispatch, getState) => {
               id: streamingState.realUserMessageId,
               senderType: 'user',
               content: streamingState.userMessage,
+              modeType: response.data?.modeType || state.skripsi.modeByTab[tabId] || 'validated',
               createdAt: new Date().toISOString()
             }
           }))
@@ -393,6 +434,7 @@ export const stopStreaming = (tabId) => async (dispatch, getState) => {
               id: response.data.id,
               senderType: 'ai',
               content: response.data.content,
+              modeType: response.data.modeType || state.skripsi.modeByTab[tabId] || 'validated',
               sources: response.data.sources || [],
               createdAt: response.data.updatedAt
             }
@@ -442,7 +484,7 @@ const ensureValidToken = async () => {
 }
 
 // Streaming message handler - typing animation with backend pacing (same as chatbot)
-const sendMessageStreaming = async (tabId, content, dispatch, getState, abortController, optimisticUserId) => {
+const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState, abortController, optimisticUserId) => {
   // Ensure token is valid and refreshed if needed
   const accessToken = await ensureValidToken()
   const route = API_BASE_URL + Endpoints.api.skripsi + `/tabs/${tabId}/messages`
@@ -458,6 +500,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
   let finalData = null
   const sources = [] // Collect citations as they come in
   let showSources = false // Only show after streaming completes
+  let finalized = false // Prevent double finalization
 
   const TYPING_SPEED_MS = 1 // 1ms per character (~1000 chars/sec) - fast but still smooth
 
@@ -474,6 +517,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
       id: streamingMessageId,
       senderType: 'ai',
       content: '',
+      modeType: modeType,
       sources: [],
       createdAt: messageCreatedAt
     }
@@ -495,8 +539,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
     if (displayedContent.length >= fullContent.length) {
       isTyping = false
 
-      // If backend is done and all characters displayed, finalize
-      if (backendSavedMessage && finalData) {
+      // If backend is done and all characters displayed, finalize (but only once!)
+      if (backendSavedMessage && finalData && !finalized) {
+        finalized = true // Prevent double finalization
         // Call finalize endpoint with complete content
         const finalizeAsync = async () => {
           try {
@@ -604,7 +649,7 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       },
-      body: JSON.stringify({ message: content }),
+      body: JSON.stringify({ message: content, modeType: modeType }),
       signal: abortController?.signal
     })
 
@@ -644,6 +689,13 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
                 realMessageId: aiMessage.id,
               }))
               console.log('🆔 Stored real message IDs:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+
+              // For validated mode, sources come immediately with started event
+              if (aiMessage.sources && aiMessage.sources.length > 0) {
+                sources.push(...aiMessage.sources)
+                showSources = true
+                console.log(`📚 Received ${aiMessage.sources.length} sources from validated mode`)
+              }
             } else if (data.type === 'chunk') {
               // Check if first chunk contains userQuota and update credit balance
               if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
@@ -688,8 +740,9 @@ const sendMessageStreaming = async (tabId, content, dispatch, getState, abortCon
               console.log('✅ Backend created streaming messages:', data.data)
               console.log('✅ Filtered citations ready to display:', sources.length)
 
-              // If typing animation already caught up, finalize immediately
-              if (!isTyping && displayedContent.length >= fullContent.length) {
+              // If typing animation already caught up, finalize immediately (but only once!)
+              if (!isTyping && displayedContent.length >= fullContent.length && !finalized) {
+                finalized = true // Prevent double finalization
                 // Call finalize endpoint with complete content
                 const finalizeAsync = async () => {
                   try {

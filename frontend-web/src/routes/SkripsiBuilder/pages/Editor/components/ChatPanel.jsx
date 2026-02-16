@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { useAppDispatch } from '@store/store'
-import { sendMessage, loadOlderMessages, stopStreaming } from '@store/skripsi/action'
-import { selectMessagesForActiveTab, selectLoadingForActiveTab } from '@store/skripsi/reducer'
+import { sendMessage, loadOlderMessages, stopStreaming, fetchModeConfiguration } from '@store/skripsi/action'
+import { selectMessagesForTab, selectLoadingForTab, selectModeForTab } from '@store/skripsi/reducer'
+import { actions as skripsiActions } from '@store/skripsi/reducer'
 import { FaPaperPlane, FaStop } from 'react-icons/fa'
 import { ChatbotLoadingIndicator, ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
+import ModeSelector from './ModeSelector'
 import {
   ChatPanel as StyledChatPanel,
   ChatHeader,
@@ -29,6 +31,20 @@ import { useSelector } from 'react-redux'
 const ChatMessage = memo(({ message, formatTime, processContentWithCitations }) => {
   // Check if this message is currently streaming (temp ID starting with 'streaming-')
   const isStreaming = message.id && message.id.toString().startsWith('streaming-')
+
+  // Get mode info for badge
+  const getModeInfo = (mode) => {
+    switch (mode) {
+      case 'research':
+        return { icon: '🔍', label: 'Research' }
+      case 'validated':
+        return { icon: '📚', label: 'Validated' }
+      default:
+        return { icon: '💬', label: 'Chat' }
+    }
+  }
+
+  const modeInfo = message.modeType ? getModeInfo(message.modeType) : null
 
   return (
     <Message $sender={message.senderType}>
@@ -55,11 +71,26 @@ const ChatMessage = memo(({ message, formatTime, processContentWithCitations }) 
           </SourcesSection>
         )}
       </MessageBubble>
-      <MessageTime>{formatTime(message.createdAt)}</MessageTime>
+      <MessageTime>
+        {modeInfo && message.senderType === 'ai' && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            fontSize: '0.75rem',
+            color: '#6b7280',
+            marginRight: '8px'
+          }}>
+            <span>{modeInfo.icon}</span>
+            <span>{modeInfo.label}</span>
+          </span>
+        )}
+        {formatTime(message.createdAt)}
+      </MessageTime>
     </Message>
   )
 }, (prevProps, nextProps) => {
-  // Only rerender if content, id, or sources change
+  // Only rerender if content, id, modeType, or sources change
   const prevSources = prevProps.message.sources || []
   const nextSources = nextProps.message.sources || []
 
@@ -68,6 +99,7 @@ const ChatMessage = memo(({ message, formatTime, processContentWithCitations }) 
 
   return prevProps.message.content === nextProps.message.content &&
          prevProps.message.id === nextProps.message.id &&
+         prevProps.message.modeType === nextProps.message.modeType &&
          !sourcesChanged
 })
 
@@ -138,15 +170,24 @@ const ChatPanel = memo(({ currentTab, style }) => {
   const previousMessageCountRef = useRef(0)
   const previousTabIdRef = useRef(null)
 
-  // Get messages from cache using selector
-  const messages = useSelector(selectMessagesForActiveTab)
-  // Get per-tab loading state
-  const tabLoading = useSelector(selectLoadingForActiveTab)
+  // Get messages for the current tab (use prop instead of Redux activeTabId to avoid timing issues)
+  const messages = useSelector(state => selectMessagesForTab(state, currentTab?.id))
+  // Get per-tab loading state (use prop instead of Redux activeTabId)
+  const tabLoading = useSelector(state => selectLoadingForTab(state, currentTab?.id))
   const isInitialLoading = tabLoading.isMessagesLoading || false
 
   // Get streaming state from Redux (same pattern as chatbot)
   const streamingStateByTab = useSelector(state => state.skripsi.streamingStateByTab)
   const tabStreamingState = currentTab?.id ? (streamingStateByTab[currentTab.id] || null) : null
+
+  // Mode selection (only for AI Chat tabs)
+  const currentMode = useSelector(state => selectModeForTab(state, currentTab?.id))
+  const isAIChatTab = currentTab?.tabType?.startsWith('ai_researcher')
+
+  // Fetch mode configuration on mount
+  useEffect(() => {
+    dispatch(fetchModeConfiguration())
+  }, [dispatch])
 
   // Check if currently streaming using Redux state
   const isStreaming = !!(tabStreamingState?.isSending || tabStreamingState?.isTyping)
@@ -241,6 +282,11 @@ const ChatPanel = memo(({ currentTab, style }) => {
     return processed
   }, [])
 
+  const handleModeChange = useCallback((newMode) => {
+    if (!currentTab) return
+    dispatch(skripsiActions.setModeForTab({ tabId: currentTab.id, mode: newMode }))
+  }, [currentTab, dispatch])
+
   const handleSendMessage = useCallback(async (userMessageText) => {
     if (!currentTab) return
     if (!userMessageText) return
@@ -248,6 +294,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
     try {
       // Wait for streaming to complete (everything handled in Redux)
       console.log('📨 Sending message...')
+      // Don't pass currentMode - let sendMessage read it fresh from Redux state to avoid stale closure values
       await dispatch(sendMessage(currentTab.id, userMessageText))
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -267,6 +314,14 @@ const ChatPanel = memo(({ currentTab, style }) => {
 
   return (
     <StyledChatPanel style={style}>
+      {/* Mode selector at top (only for AI Chat tabs) */}
+      {isAIChatTab && (
+        <ModeSelector
+          currentMode={currentMode}
+          onModeChange={handleModeChange}
+        />
+      )}
+
       <ChatMessages ref={chatMessagesRef} onScroll={handleScroll}>
         {isLoadingOlder && hasMore && (
           <ChatbotLoadingIndicator variant="spinner" />

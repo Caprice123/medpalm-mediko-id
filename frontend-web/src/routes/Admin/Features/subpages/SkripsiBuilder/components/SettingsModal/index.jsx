@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
 import Dropdown from '@components/common/Dropdown'
 import ModelDropdown from '@components/common/ModelDropdown'
+import EmbeddingModelDropdown from '@components/common/EmbeddingModelDropdown'
 import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
@@ -190,22 +191,68 @@ function SettingsModal({ isOpen, onClose }) {
           />
         </FormGroup>
 
-        <FormGroup>
-          <Label>System Prompt</Label>
-          <Textarea
-            placeholder="Masukkan system prompt untuk AI Researcher..."
-            value={form.values.skripsi_ai_researcher_prompt}
-            onChange={(e) => form.setFieldValue('skripsi_ai_researcher_prompt', e.target.value)}
-            style={{ minHeight: '120px' }}
-          />
-          <HintText>
-            Instruksi untuk AI tentang cara melakukan research dan memberikan jawaban
-          </HintText>
-        </FormGroup>
-
-        {/* Domain Filtering - Only show for Perplexity models */}
+        {/* Only show for Perplexity models */}
         {isPerplexityModel && (
           <>
+            <FormGroup>
+              <Label>System Prompt</Label>
+              <Textarea
+                placeholder="Masukkan system prompt untuk Perplexity..."
+                value={form.values.skripsi_ai_researcher_system_prompt}
+                onChange={(e) => form.setFieldValue('skripsi_ai_researcher_system_prompt', e.target.value)}
+                style={{ minHeight: '120px' }}
+              />
+              <HintText>
+                Instruksi untuk Perplexity tentang cara merespons (bahasa Indonesia, terminologi akademis, sitasi)
+              </HintText>
+            </FormGroup>
+
+            <FormGroup>
+              <TextInput
+                label="Jumlah Sitasi"
+                type="number"
+                placeholder="10"
+                value={form.values.skripsi_ai_researcher_max_sources}
+                onChange={(e) => form.setFieldValue('skripsi_ai_researcher_max_sources', e.target.value)}
+                hint="Jumlah sitasi/referensi yang diminta dari Perplexity"
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <ModelDropdown
+                label="Model Reformulation"
+                value={form.values.skripsi_ai_researcher_reformulation_model || 'gemini-2.0-flash-exp'}
+                onChange={(option) => form.setFieldValue('skripsi_ai_researcher_reformulation_model', option.value)}
+              />
+              <HintText>Model AI untuk menerjemahkan dan mereformulasi pertanyaan dari Indonesia ke Inggris</HintText>
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Reformulation Prompt</Label>
+              <Textarea
+                placeholder="Masukkan prompt untuk reformulation dan translation..."
+                value={form.values.skripsi_ai_researcher_reformulation_prompt}
+                onChange={(e) => form.setFieldValue('skripsi_ai_researcher_reformulation_prompt', e.target.value)}
+                style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
+              />
+              <HintText>
+                Prompt untuk AI dalam menerjemahkan pertanyaan ke bahasa Inggris. Gunakan placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
+              </HintText>
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Informasi untuk User</Label>
+              <Textarea
+                placeholder="Deskripsi mode untuk ditampilkan ke pengguna..."
+                value={form.values.skripsi_ai_researcher_user_information}
+                onChange={(e) => form.setFieldValue('skripsi_ai_researcher_user_information', e.target.value)}
+                style={{ minHeight: '80px' }}
+              />
+              <HintText>
+                Deskripsi singkat tentang AI Researcher Mode yang akan ditampilkan ke pengguna
+              </HintText>
+            </FormGroup>
+
             <FormGroup>
               <Label>Filter Domain Terpercaya</Label>
               <ToggleSwitch>
@@ -352,6 +399,162 @@ function SettingsModal({ isOpen, onClose }) {
             )}
           </>
         )}
+
+        {/* Show legacy prompt for non-Perplexity models */}
+        {!isPerplexityModel && (
+          <FormGroup>
+            <Label>System Prompt</Label>
+            <Textarea
+              placeholder="Masukkan system prompt untuk AI Researcher..."
+              value={form.values.skripsi_ai_researcher_prompt}
+              onChange={(e) => form.setFieldValue('skripsi_ai_researcher_prompt', e.target.value)}
+              style={{ minHeight: '120px' }}
+            />
+            <HintText>
+              Instruksi untuk AI tentang cara melakukan research dan memberikan jawaban
+            </HintText>
+          </FormGroup>
+        )}
+      </ModeSection>
+
+      <ModeSection>
+        <ModeHeader>
+          <ModeIcon>📚</ModeIcon>
+          <ModeTitle>Validated Search Mode</ModeTitle>
+        </ModeHeader>
+
+        <FormGroup>
+          <Label>Status</Label>
+          <ToggleSwitch>
+            <input
+              type="checkbox"
+              checked={form.values.skripsi_validated_enabled}
+              onChange={(e) => form.setFieldValue('skripsi_validated_enabled', e.target.checked)}
+            />
+            <ToggleSlider />
+          </ToggleSwitch>
+          <HintText>Aktifkan atau nonaktifkan Validated Search Mode (pencarian berbasis summary notes)</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <ModelDropdown
+            label="Model AI"
+            value={form.values.skripsi_validated_model}
+            onChange={(option) => form.setFieldValue('skripsi_validated_model', option.value)}
+          />
+          <HintText>Model AI untuk menghasilkan respons berdasarkan summary notes</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <EmbeddingModelDropdown
+            value={form.values.skripsi_validated_embedding_model}
+            onChange={(option) => form.setFieldValue('skripsi_validated_embedding_model', option.value)}
+          />
+          <HintText>Model embedding untuk mencari similarity dengan summary notes</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Biaya per Pesan (Kredit)"
+            type="number"
+            min="0"
+            placeholder="0"
+            value={form.values.skripsi_validated_cost}
+            onChange={(e) => form.setFieldValue('skripsi_validated_cost', e.target.value)}
+            hint="Jumlah kredit yang dikurangi setiap kali pengguna mengirim pesan"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Jumlah Pesan Konteks"
+            type="number"
+            min="0"
+            placeholder="10"
+            value={form.values.skripsi_validated_context_messages}
+            onChange={(e) => form.setFieldValue('skripsi_validated_context_messages', e.target.value)}
+            hint="Jumlah pesan terakhir yang akan digunakan sebagai konteks percakapan"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Jumlah Hasil Pencarian"
+            type="number"
+            min="1"
+            max="20"
+            placeholder="5"
+            value={form.values.skripsi_validated_search_count}
+            onChange={(e) => form.setFieldValue('skripsi_validated_search_count', e.target.value)}
+            hint="Jumlah summary notes yang akan diambil dari database (1-20)"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Similarity Threshold"
+            type="number"
+            min="0"
+            max="1"
+            step="0.1"
+            placeholder="0.3"
+            value={form.values.skripsi_validated_threshold}
+            onChange={(e) => form.setFieldValue('skripsi_validated_threshold', e.target.value)}
+            hint="Minimum similarity score (0-1). Semakin tinggi, semakin strict pencarian"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Query Rewrite (Reformulasi)</Label>
+          <ToggleSwitch>
+            <input
+              type="checkbox"
+              checked={form.values.skripsi_validated_rewrite_enabled}
+              onChange={(e) => form.setFieldValue('skripsi_validated_rewrite_enabled', e.target.checked)}
+            />
+            <ToggleSlider />
+          </ToggleSwitch>
+          <HintText>Aktifkan reformulasi query berdasarkan konteks percakapan</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Rewrite Prompt</Label>
+          <Textarea
+            placeholder="Masukkan prompt untuk query rewrite..."
+            value={form.values.skripsi_validated_rewrite_prompt}
+            onChange={(e) => form.setFieldValue('skripsi_validated_rewrite_prompt', e.target.value)}
+            style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
+          />
+          <HintText>
+            Prompt untuk mereformulasi pertanyaan agar lebih spesifik. Gunakan placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
+          </HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>System Prompt</Label>
+          <Textarea
+            placeholder="Masukkan system prompt untuk validated mode..."
+            value={form.values.skripsi_validated_system_prompt}
+            onChange={(e) => form.setFieldValue('skripsi_validated_system_prompt', e.target.value)}
+            style={{ minHeight: '150px' }}
+          />
+          <HintText>
+            Instruksi untuk AI tentang cara merespons (harus menggunakan konteks dari summary notes, sitasi inline)
+          </HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Informasi untuk User</Label>
+          <Textarea
+            placeholder="Deskripsi mode untuk ditampilkan ke pengguna..."
+            value={form.values.skripsi_validated_user_information}
+            onChange={(e) => form.setFieldValue('skripsi_validated_user_information', e.target.value)}
+            style={{ minHeight: '80px' }}
+          />
+          <HintText>
+            Deskripsi singkat tentang Validated Search Mode yang akan ditampilkan ke pengguna
+          </HintText>
+        </FormGroup>
       </ModeSection>
 
       <ModeSection>

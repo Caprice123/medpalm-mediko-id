@@ -10,6 +10,13 @@ const initialState = {
   streamingStateByTab: {}, // Store streaming state per tab: { [tabId]: { isSending, isTyping, displayedContent, etc. } }
   activeTabId: null, // Track which tab is currently active
   loadingByTab: {}, // Store loading states per tab: { [tabId]: { isSendingMessage: false } }
+  modeByTab: {}, // Store mode selection per tab: { [tabId]: 'research' | 'validated' }
+  availableModes: { research: true, validated: true }, // Available modes for AI Chat tabs
+  costs: { research: 0, validated: 0 }, // Cost per mode
+  userInformation: {
+    research: 'Mode penelitian dengan akses ke jurnal ilmiah dan sumber akademis terpercaya.',
+    validated: 'Menggunakan basis pengetahuan yang telah divalidasi dari summary notes Anda.'
+  },
   loading: {
     isSetsLoading: false,
     isSetLoading: false,
@@ -174,6 +181,20 @@ const skripsiSlice = createSlice({
       const tabId = action.payload
       delete state.streamingStateByTab[tabId]
     },
+    // Mode selection actions
+    setModeForTab: (state, action) => {
+      const { tabId, mode } = action.payload
+      state.modeByTab[tabId] = mode
+    },
+    setAvailableModes: (state, action) => {
+      state.availableModes = action.payload
+    },
+    setCosts: (state, action) => {
+      state.costs = action.payload
+    },
+    setUserInformation: (state, action) => {
+      state.userInformation = action.payload
+    },
     setLoading: (state, action) => {
       const { key, value } = action.payload
       state.loading[key] = value
@@ -237,4 +258,13 @@ export const selectLoadingForActiveTab = (state) => {
 
 export const selectLoadingForTab = (state, tabId) => {
   return state.skripsi.loadingByTab[tabId] || {}
+}
+
+export const selectModeForTab = (state, tabId) => {
+  return state.skripsi.modeByTab[tabId] || 'validated' // Default to validated mode
+}
+
+export const selectModeForActiveTab = (state) => {
+  const tabId = state.skripsi.activeTabId
+  return tabId ? (state.skripsi.modeByTab[tabId] || 'research') : 'research'
 }

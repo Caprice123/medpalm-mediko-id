@@ -3,16 +3,66 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { GetSkripsiTrustedDomainsService } from '#services/skripsi/getSkripsiTrustedDomainsService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
+import { SkripsiResearchModeWithQueryReformulation } from '#services/skripsi/ai/skripsiResearchModeWithQueryReformulation'
+import { SkripsiValidatedSearchModeAIService } from '#services/skripsi/ai/skripsiValidatedSearchModeAIService'
 
 export class SkripsiAIService extends BaseService {
   /**
-   * Generate AI response based on tab type with streaming support
+   * Generate AI response based on tab type and mode with streaming support
    * @param {number} tabId - The tab ID
    * @param {string} message - The user's message
    * @param {string} tabType - The tab type (ai_researcher_1, ai_researcher_2, ai_researcher_3, paraphraser, diagram_builder)
+   * @param {string} modeType - The mode type for AI Chat tabs (research, validated) - optional, defaults to validated
    * @returns {Promise<{stream: AsyncGenerator}>}
    */
-  static async call({ tabId, message, tabType }) {
+  static async call({ tabId, message, tabType, modeType = 'validated' }) {
+    // Map tab type to mode first
+    const mode = this.getMode(tabType)
+
+    // For AI Chat tabs (ai_researcher_1/2/3), route based on modeType
+    if (mode === 'ai_researcher') {
+      if (modeType === 'validated') {
+        console.log('📚 Using Validated Search mode for Skripsi AI Chat')
+        // Get tab info for userId
+        const tab = await prisma.skripsi_tabs.findUnique({
+          where: { id: tabId },
+          include: {
+            skripsi_set: {
+              select: { user_id: true }
+            }
+          }
+        })
+
+        if (!tab) {
+          throw new ValidationError('Tab not found')
+        }
+
+        return await SkripsiValidatedSearchModeAIService.call({
+          userId: tab.skripsi_set.user_id,
+          tabId,
+          message
+        })
+      } else if (modeType === 'research') {
+        console.log('🔍 Using Research mode for Skripsi AI Chat')
+        // Check if using Perplexity model for research mode
+        const modelCheck = await prisma.constants.findUnique({
+          where: { key: `skripsi_${mode}_model` }
+        })
+
+        const modelName = modelCheck?.value || 'gemini-2.0-flash-exp'
+        const isPerplexity = modelName.startsWith('sonar')
+
+        if (isPerplexity) {
+          console.log('🔄 Using query reformulation (Perplexity mode)')
+          return await SkripsiResearchModeWithQueryReformulation.call({ tabId, message, tabType })
+        }
+
+        console.log('⏭️  Using standard research mode (Gemini mode)')
+      }
+    }
+
+    // For non-AI Chat tabs (paraphraser, diagram_builder) or Gemini research mode, use original logic
+
     // Get tab conversation history (fetch more than needed, we'll slice based on config)
     const tab = await prisma.skripsi_tabs.findUnique({
       where: { id: tabId },
@@ -27,9 +77,6 @@ export class SkripsiAIService extends BaseService {
     if (!tab) {
       throw new ValidationError('Tab not found')
     }
-
-    // Map tab type to mode (ai_researcher_1/2/3 all use ai_researcher)
-    const mode = this.getMode(tabType)
 
     // Get constants for this mode and global settings
     const constantKeys = [
@@ -82,7 +129,6 @@ export class SkripsiAIService extends BaseService {
       }
     }
 
-    const modelName = constantsMap[`skripsi_${mode}_model`] || 'gemini-2.0-flash-exp'
     const contextMessages = parseInt(constantsMap[`skripsi_${mode}_context_messages`] || '20')
 
     // Get AI service from router
@@ -95,9 +141,6 @@ export class SkripsiAIService extends BaseService {
 
     // Get conversation history with configurable context length
     const conversationHistory = tab.messages.slice(-contextMessages)
-
-    // Check if using Perplexity model for domain filtering
-    const isPerplexity = modelName.startsWith('sonar')
 
     if (isPerplexity) {
       // Get trusted domains for filtering

@@ -6,7 +6,7 @@ import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 
 export class SendMessageService extends BaseService {
-  static async call({ tabId, userId, message, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async call({ tabId, userId, message, modeType = 'validated', onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     if (!message || message.trim() === '') {
       throw new ValidationError('Message cannot be empty')
     }
@@ -91,27 +91,21 @@ export class SendMessageService extends BaseService {
       const result = await SkripsiAIService.call({
         tabId,
         message: message.trim(),
-        tabType: tab.tab_type
+        tabType: tab.tab_type,
+        modeType: modeType // Pass mode type (research or validated)
       })
+      console.log(result)
 
       // Handle streaming response
       if (onStream && result.stream) {
-        // Determine if it's Perplexity or Gemini based on model
-        const mode = this.getMode(tab.tab_type)
-        const constants = await prisma.constants.findMany({
-          where: { key: { in: [`skripsi_${mode}_model`] } }
-        })
-        const constantsMap = {}
-        constants.forEach(c => { constantsMap[c.key] = c.value })
-        const modelName = constantsMap[`skripsi_${mode}_model`] || 'gemini-2.0-flash-exp'
-        const isPerplexity = modelName.startsWith('sonar')
-
-        if (isPerplexity) {
+        // Use provider from result to determine which handler to call
+        if (result.provider === "perplexity") {
           return await this.handlePerplexityStreamingResponse({
             tabId,
             setId: tab.set_id,
             userId,
             userMessageContent: message.trim(),
+            modeType,
             stream: result.stream,
             messageCost,
             onStream,
@@ -120,13 +114,15 @@ export class SendMessageService extends BaseService {
             checkClientConnected,
             streamAbortSignal
           })
-        } else {
+        } else if (result.provider === "gemini") {
           return await this.handleStreamingResponse({
             tabId,
             setId: tab.set_id,
             userId,
             userMessageContent: message.trim(),
+            modeType,
             stream: result.stream,
+            sources: result.sources, // For validated mode
             messageCost,
             onStream,
             onComplete,
@@ -161,7 +157,7 @@ export class SendMessageService extends BaseService {
   /**
    * Handle streaming response from Perplexity (Research mode)
    */
-  static async handlePerplexityStreamingResponse({ tabId, setId, userId, userMessageContent, stream, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async handlePerplexityStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     let fullResponseFromAI = ''
     let sentContentToClient = ''
     let streamAborted = false
@@ -186,6 +182,7 @@ export class SendMessageService extends BaseService {
           tab_id: tabId,
           sender_type: 'user',
           content: userMessageContent,
+          mode_type: modeType,
           status: 'completed',
           created_at: new Date()
         }
@@ -196,6 +193,7 @@ export class SendMessageService extends BaseService {
           tab_id: tabId,
           sender_type: 'ai',
           content: '', // Empty initially
+          mode_type: modeType,
           status: 'streaming', // Mark as streaming
           created_at: new Date()
         }
@@ -210,12 +208,14 @@ export class SendMessageService extends BaseService {
               id: userMessage.id,
               senderType: userMessage.sender_type,
               content: userMessage.content,
+              modeType: userMessage.mode_type,
               createdAt: userMessage.created_at.toISOString()
             },
             aiMessage: {
               id: aiMessage.id,
               senderType: aiMessage.sender_type,
               content: aiMessage.content,
+              modeType: aiMessage.mode_type,
               createdAt: aiMessage.created_at.toISOString()
             }
           }
@@ -244,7 +244,7 @@ export class SendMessageService extends BaseService {
           break
         }
 
-        const content = chunk.choices[0]?.delta?.content || ''
+        const content = chunk.choices?.[0]?.delta?.content || ''
 
         if (content) {
           // Don't add to fullResponseFromAI if client already disconnected
@@ -535,7 +535,7 @@ export class SendMessageService extends BaseService {
   /**
    * Handle streaming response from Gemini
    */
-  static async handleStreamingResponse({ tabId, setId, userId, userMessageContent, stream, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async handleStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, sources, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     let fullResponseFromAI = ''
     let sentContentToClient = ''
     let streamAborted = false
@@ -558,6 +558,7 @@ export class SendMessageService extends BaseService {
           tab_id: tabId,
           sender_type: 'user',
           content: userMessageContent,
+          mode_type: modeType,
           status: 'completed',
           created_at: new Date()
         }
@@ -568,10 +569,25 @@ export class SendMessageService extends BaseService {
           tab_id: tabId,
           sender_type: 'ai',
           content: '', // Empty initially
+          mode_type: modeType,
           status: 'streaming', // Mark as streaming
           created_at: new Date()
         }
       })
+
+      // Save sources if any (for validated mode)
+      if (sources && sources.length > 0) {
+        await prisma.skripsi_message_sources.createMany({
+          data: sources.map(src => ({
+            message_id: aiMessage.id,
+            source_type: src.sourceType || 'summary_note',
+            title: src.title,
+            content: src.content || '',
+            url: src.url,
+            score: src.score || 0
+          }))
+        })
+      }
 
       // SEND MESSAGE IDs IMMEDIATELY to frontend
       try {
@@ -582,13 +598,16 @@ export class SendMessageService extends BaseService {
               id: userMessage.id,
               senderType: userMessage.sender_type,
               content: userMessage.content,
+              modeType: userMessage.mode_type,
               createdAt: userMessage.created_at.toISOString()
             },
             aiMessage: {
               id: aiMessage.id,
               senderType: aiMessage.sender_type,
               content: aiMessage.content,
-              createdAt: aiMessage.created_at.toISOString()
+              modeType: aiMessage.mode_type,
+              createdAt: aiMessage.created_at.toISOString(),
+              sources: sources // Include sources for validated mode
             }
           }
         })

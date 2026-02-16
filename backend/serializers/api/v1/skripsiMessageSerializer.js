@@ -13,6 +13,7 @@ export class SkripsiMessageSerializer {
         id: msg.id,
         senderType: msg.sender_type || msg.senderType,
         content: msg.content,
+        modeType: msg.mode_type || msg.modeType, // Include mode type (research/validated)
         sources: (msg.skripsi_message_sources || msg.sources || []).map(src => ({
           url: src.url,
           title: src.title

@@ -32,9 +32,9 @@ import {
 } from './SetDetailModal.styles'
 
 const TAB_CONFIGS = [
-  { type: 'ai_researcher_1', title: 'AI Researcher 1' },
-  { type: 'ai_researcher_2', title: 'AI Researcher 2' },
-  { type: 'ai_researcher_3', title: 'AI Researcher 3' },
+  { type: 'ai_researcher_1', title: 'AI Chat 1' },
+  { type: 'ai_researcher_2', title: 'AI Chat 2' },
+  { type: 'ai_researcher_3', title: 'AI Chat 3' },
   { type: 'paraphraser', title: 'Paraphraser' },
   { type: 'diagram_builder', title: 'Diagram Builder' }
 ]
