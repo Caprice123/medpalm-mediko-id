@@ -9,6 +9,10 @@ export class GetExerciseTopicsService extends BaseService {
 
         const where = {}
 
+        if (filters.userRole === 'user') {
+            where.status = 'published'
+        }
+
         // Build filter conditions for tags
         const tagFilters = []
 

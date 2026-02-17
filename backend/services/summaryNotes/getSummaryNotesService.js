@@ -14,8 +14,10 @@ export class GetSummaryNotesService extends BaseService {
     // Fetch perPage + 1 to determine if there's a next page
     const take = perPage + 1
 
-    const where = {
-      status: 'published' // Only show published notes to users
+    const where = {}
+
+    if (filters.userRole === 'user') {
+      where.status = 'published'
     }
 
     // Build filter conditions for tags

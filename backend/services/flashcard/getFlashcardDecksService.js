@@ -15,8 +15,8 @@ export class GetFlashcardDecksService extends BaseService {
 
         const where = {}
 
-        if (filters.status) {
-            where.status = filters.status
+        if (filters.userRole === 'user') {
+            where.status = 'published'
         }
 
         // Build filter conditions for tags

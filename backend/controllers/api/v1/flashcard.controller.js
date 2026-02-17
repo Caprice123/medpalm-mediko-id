@@ -8,7 +8,7 @@ class FlashcardController {
   async getDecks(req, res) {
     const { university, semester, search, page, perPage } = req.query
 
-    const result = await GetFlashcardDecksService.call({ university, semester, search, status: "published", page, perPage })
+    const result = await GetFlashcardDecksService.call({ university, semester, search, page, perPage, userRole: req.user.role })
 
     return res.status(200).json({
       data: FlashcardDeckListSerializer.serialize(result.decks),

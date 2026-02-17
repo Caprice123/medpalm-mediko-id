@@ -11,7 +11,8 @@ class TopicsController {
         topicTag,
         batchTag,
         page,
-        perPage
+        perPage,
+        userRole: req.user.role,
       })
 
       return res.status(200).json({

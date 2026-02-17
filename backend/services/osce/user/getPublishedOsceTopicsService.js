@@ -8,8 +8,10 @@ export class GetPublishedOsceTopicsService extends BaseService {
     const perPage = parseInt(filters.perPage) || 20
     const skip = (page - 1) * perPage
 
-    const where = {
-      status: 'published'
+    const where = {}
+
+    if (filters.userRole === 'user') {
+      where.status = 'published'
     }
 
     // Search filter

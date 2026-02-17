@@ -8,7 +8,7 @@ import { SummaryNoteSerializer } from '#serializers/api/v1/summaryNoteSerializer
 class SummaryNoteController {
   // Get all available summary notes for users
   async index(req, res) {
-    const result = await GetSummaryNotesService.call(req.query)
+    const result = await GetSummaryNotesService.call({ ...req.query, userRole: req.user.role })
 
     return res.status(200).json({
       data: SummaryNoteListSerializer.serialize(result.data),

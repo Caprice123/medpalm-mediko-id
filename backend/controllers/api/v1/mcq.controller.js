@@ -35,7 +35,8 @@ class McqController {
     const result = await GetMcqTopicsService.call({
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 30,
-      filters
+      filters,
+      userRole: req.user.role,
     })
 
     return res.status(200).json({

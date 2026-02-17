@@ -12,8 +12,10 @@ export class GetCalculatorTopicsService extends BaseService {
         // Fetch perPage + 1 to determine if there's a next page
         const take = itemsPerPage + 1
 
-        const where = {
-            status: 'published'
+        const where = {}
+
+        if (filters.userRole === 'user') {
+            where.status = 'published'
         }
 
         // Search filter (title and description, using ILIKE with GIN trigram index)

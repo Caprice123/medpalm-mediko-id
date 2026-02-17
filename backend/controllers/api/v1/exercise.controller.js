@@ -9,7 +9,7 @@ class ExerciseController {
     const { university, semester, search, page, perPage } = req.query
 
     const result = await GetExerciseTopicsService.call(
-      { university, semester, search },
+      { university, semester, search, userRole: req.user.role },
       page ? parseInt(page) : undefined,
       perPage ? parseInt(perPage) : undefined
     )

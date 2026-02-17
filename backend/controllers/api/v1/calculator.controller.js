@@ -12,7 +12,7 @@ class CalculatorController {
   async getTopics(req, res) {
     const { search, tagName, page, perPage } = req.query
 
-    const result = await GetCalculatorTopicsService.call({ search, tagName, page, perPage })
+    const result = await GetCalculatorTopicsService.call({ search, tagName, page, perPage, userRole: req.user.role })
 
     return res.status(200).json({
       data: {

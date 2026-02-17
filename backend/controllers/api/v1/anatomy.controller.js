@@ -9,7 +9,7 @@ class AnatomyController {
   async index(req, res) {
     const { university, semester } = req.query
 
-    const result = await GetAnatomyQuizzesService.call({ university, semester })
+    const result = await GetAnatomyQuizzesService.call({ university, semester, userRole: req.user.role })
 
     return res.status(200).json({
       data: AnatomyQuizListSerializer.serialize(result.quizzes),

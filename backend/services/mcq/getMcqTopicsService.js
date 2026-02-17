@@ -2,12 +2,14 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetMcqTopicsService extends BaseService {
-  static async call({ page = 1, limit = 30, filters = {} }) {
+  static async call({ page = 1, limit = 30, filters = {}, userRole }) {
     const skip = (page - 1) * limit
 
-    // Build where clause - only show published and active topics
-    const where = {
-      status: 'published'
+    // Build where clause
+    const where = {}
+
+    if (userRole === 'user') {
+      where.status = 'published'
     }
 
     // Tag filtering - build AND conditions for each tag filter
