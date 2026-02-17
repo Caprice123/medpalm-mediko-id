@@ -2,12 +2,13 @@ import { memo, useRef, useEffect, useCallback } from 'react'
 import {
   MessageList,
   Message,
+  UserMessage,
+  AIMessage,
   MessageAuthor,
   MessageText,
   EmptyState,
   TypingIndicator,
   TypingDot,
-  StreamingCursor,
 } from '../../../../SessionPractice.styles'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -61,8 +62,8 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
   const isLoadingMoreRef = useRef(false)
   const hasMountedRef = useRef(false)
 
-  // Show typing indicator if sending but assistant hasn't started typing yet (waiting for AI to start)
-  const showTypingIndicator = isSendingMessage && !isAssistantTyping
+  // Show typing indicator throughout the entire sending + streaming process (same as chatbot)
+  const showTypingIndicator = isSendingMessage || isAssistantTyping
 
   // Instant scroll to bottom on initial mount (tab switch)
   useEffect(() => {
@@ -192,14 +193,13 @@ const MessageListComponent = ({ messages: messagesProp, mode = 'conversation' })
 
           {showTypingIndicator && (
             <Message isUser={false}>
-              <MessageAuthor>AI Pasien</MessageAuthor>
-              <MessageText>
+              <AIMessage>
                 <TypingIndicator>
                   <TypingDot delay="0s" />
                   <TypingDot delay="0.2s" />
                   <TypingDot delay="0.4s" />
                 </TypingIndicator>
-              </MessageText>
+              </AIMessage>
             </Message>
           )}
 
@@ -236,18 +236,27 @@ const MessageComponent = memo(function MessageComponent({ message, mode = 'conve
 
   return (
     <Message isUser={message.isUser}>
-      <MessageAuthor>
-        {message.isUser ? 'Anda' : aiAuthorName}
-      </MessageAuthor>
-      <MessageText>
-        <CustomMarkdownRenderer
-          item={message.content || message.text || ''}
-          isStreaming={isStreaming}
-        />
-        {isStreaming && (
-          <StreamingCursor>▊</StreamingCursor>
-        )}
-      </MessageText>
+      {message.isUser ? (
+        <UserMessage>
+          <MessageAuthor>Anda</MessageAuthor>
+          <MessageText>
+            <CustomMarkdownRenderer
+              item={message.content || message.text || ''}
+              isStreaming={false}
+            />
+          </MessageText>
+        </UserMessage>
+      ) : (
+        <AIMessage>
+          <MessageAuthor>{aiAuthorName}</MessageAuthor>
+          <MessageText>
+            <CustomMarkdownRenderer
+              item={message.content || message.text || ''}
+              isStreaming={isStreaming}
+            />
+          </MessageText>
+        </AIMessage>
+      )}
     </Message>
   )
 }, (prev, next) => {

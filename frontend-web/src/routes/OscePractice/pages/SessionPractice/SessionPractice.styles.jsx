@@ -452,15 +452,38 @@ export const MessageList = styled.div`
 `
 
 export const Message = styled.div`
-  background: ${props => props.isUser ? '#3b82f6' : 'white'};
-  color: ${props => props.isUser ? 'white' : colors.neutral.gray800};
+  display: flex;
+  justify-content: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+  max-width: 100%;
+`
+
+export const UserMessage = styled.div`
+  background: #3b82f6;
+  color: white;
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
-  border-bottom-right-radius: ${props => props.isUser ? '4px' : '12px'};
-  border-bottom-left-radius: ${props => props.isUser ? '12px' : '4px'};
-  max-width: 70%;
-  align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  border: ${props => props.isUser ? 'none' : '1px solid #e5e7eb'};
+  border-bottom-right-radius: 4px;
+  max-width: 95%;
+  word-wrap: break-word;
+
+  @media (max-width: 768px) {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 0.75rem;
+  }
+`
+
+export const AIMessage = styled.div`
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 0.875rem 1.125rem;
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  max-width: 95%;
   word-wrap: break-word;
 
   @media (max-width: 768px) {
@@ -477,9 +500,8 @@ export const Message = styled.div`
 export const MessageAuthor = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
-  color: inherit;
   margin-bottom: 0.375rem;
-  opacity: 0.9;
+  opacity: 0.7;
 `
 
 export const MessageText = styled.div`

@@ -16,6 +16,8 @@ import {
   TaskContent,
   MessageList,
   Message,
+  UserMessage,
+  AIMessage,
   MessageAuthor,
   MessageText,
   EmptyState,
@@ -217,12 +219,21 @@ const MessageComponent = memo(function MessageComponent({ message }) {
 
   return (
     <Message isUser={isUser}>
-      <MessageAuthor>
-        {isUser ? 'Anda' : 'AI Pasien'}
-      </MessageAuthor>
-      <MessageText>
-        <CustomMarkdownRenderer item={message.content || message.text || ''} />
-      </MessageText>
+      {isUser ? (
+        <UserMessage>
+          <MessageAuthor>Anda</MessageAuthor>
+          <MessageText>
+            <CustomMarkdownRenderer item={message.content || message.text || ''} />
+          </MessageText>
+        </UserMessage>
+      ) : (
+        <AIMessage>
+          <MessageAuthor>AI Pasien</MessageAuthor>
+          <MessageText>
+            <CustomMarkdownRenderer item={message.content || message.text || ''} />
+          </MessageText>
+        </AIMessage>
+      )}
     </Message>
   )
 }, (prev, next) => {
