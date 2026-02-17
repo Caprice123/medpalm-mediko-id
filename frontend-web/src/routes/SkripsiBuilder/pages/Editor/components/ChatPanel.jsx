@@ -13,8 +13,12 @@ import {
   ChatTitle,
   ChatMessages,
   Message,
-  MessageBubble,
-  MessageTime,
+  UserMessage,
+  AIMessage,
+  MessageContent,
+  MessageFooter,
+  Timestamp,
+  ModeBadge,
   ChatInputArea,
   ChatInputWrapper,
   ChatInput,
@@ -32,61 +36,69 @@ const ChatMessage = memo(({ message, formatTime, processContentWithCitations }) 
   // Check if this message is currently streaming (temp ID starting with 'streaming-')
   const isStreaming = message.id && message.id.toString().startsWith('streaming-')
 
-  // Get mode info for badge
   const getModeInfo = (mode) => {
     switch (mode) {
+      case 'normal':
+        return { icon: '🤖', label: 'Normal Mode' }
       case 'research':
-        return { icon: '🔍', label: 'Research' }
+        return { icon: '🔍', label: 'Research Mode' }
       case 'validated':
+      case 'validated_search':
         return { icon: '📚', label: 'Validated' }
       default:
-        return { icon: '💬', label: 'Chat' }
+        return { icon: '🤖', label: 'Normal Mode' }
     }
   }
 
-  const modeInfo = message.modeType ? getModeInfo(message.modeType) : null
+  if (!message.content) {
+    return null
+  }
 
   return (
     <Message $sender={message.senderType}>
-      <MessageBubble $sender={message.senderType}>
-        <CustomMarkdownRenderer
-          item={message.senderType === 'ai'
-            ? processContentWithCitations(message.content, message.sources)
-            : message.content
-          }
-          isStreaming={isStreaming}
-        />
+      {message.senderType === 'user' ? (
+        <UserMessage>
+          <MessageContent>
+            <CustomMarkdownRenderer item={message.content} isStreaming={false} />
+          </MessageContent>
+          <MessageFooter>
+            <Timestamp>{formatTime(message.createdAt)}</Timestamp>
+          </MessageFooter>
+        </UserMessage>
+      ) : (
+        <AIMessage>
+          <MessageContent>
+            <CustomMarkdownRenderer
+              item={isStreaming ? message.content : processContentWithCitations(message.content, message.sources)}
+              isStreaming={isStreaming}
+            />
+          </MessageContent>
 
-        {message.senderType === 'ai' && message.sources && message.sources.length > 0 && (
-          <SourcesSection>
-            <div className="sources-title">📚 Sumber:</div>
-            {message.sources.map((source, index) => (
-              <React.Fragment key={index}>
-                <SourceItem href={source.url} target='_blank' rel='noopener noreferrer'>
-                  [{index + 1}] {source.title || source.url}
-                </SourceItem>
-                <br />
-              </React.Fragment>
-            ))}
-          </SourcesSection>
-        )}
-      </MessageBubble>
-      <MessageTime>
-        {modeInfo && message.senderType === 'ai' && (
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontSize: '0.75rem',
-            color: '#6b7280',
-            marginRight: '8px'
-          }}>
-            <span>{modeInfo.icon}</span>
-            <span>{modeInfo.label}</span>
-          </span>
-        )}
-        {formatTime(message.createdAt)}
-      </MessageTime>
+          {!isStreaming && message.sources && message.sources.length > 0 && (
+            <SourcesSection>
+              <div className="sources-title">📚 Sumber:</div>
+              {message.sources.map((source, index) => (
+                <React.Fragment key={index}>
+                  <SourceItem href={source.url} target='_blank' rel='noopener noreferrer'>
+                    [{index + 1}] {source.title || source.url}
+                  </SourceItem>
+                  <br />
+                </React.Fragment>
+              ))}
+            </SourcesSection>
+          )}
+
+          {!isStreaming && (
+            <MessageFooter>
+              <ModeBadge mode={message.modeType}>
+                <span>{getModeInfo(message.modeType).icon}</span>
+                <span>{getModeInfo(message.modeType).label}</span>
+              </ModeBadge>
+              <Timestamp>{formatTime(message.createdAt)}</Timestamp>
+            </MessageFooter>
+          )}
+        </AIMessage>
+      )}
     </Message>
   )
 }, (prevProps, nextProps) => {
@@ -342,6 +354,18 @@ const ChatPanel = memo(({ currentTab, style }) => {
                 processContentWithCitations={processContentWithCitations}
               />
             ))}
+
+            {isStreaming && (
+              <Message $sender="ai">
+                <AIMessage>
+                  <TypingIndicator>
+                    <TypingDot delay="0s" />
+                    <TypingDot delay="0.2s" />
+                    <TypingDot delay="0.4s" />
+                  </TypingIndicator>
+                </AIMessage>
+              </Message>
+            )}
           </>
         )}
       </ChatMessages>

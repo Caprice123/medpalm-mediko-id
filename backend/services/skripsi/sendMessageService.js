@@ -506,12 +506,14 @@ export class SendMessageService extends BaseService {
             id: userMessage.id,
             senderType: userMessage.sender_type,
             content: userMessage.content,
+            modeType: modeType,
             createdAt: userMessage.created_at.toISOString()
           },
           aiMessage: {
             id: aiMessage.id,
             senderType: aiMessage.sender_type,
             content: aiMessage.content,
+            modeType: modeType,
             createdAt: aiMessage.created_at.toISOString()
           },
           sources: sources
@@ -774,12 +776,14 @@ export class SendMessageService extends BaseService {
             id: userMessage.id,
             senderType: userMessage.sender_type,
             content: userMessage.content,
+            modeType: modeType,
             createdAt: userMessage.created_at.toISOString()
           },
           aiMessage: {
             id: aiMessage.id,
             senderType: aiMessage.sender_type,
             content: aiMessage.content,
+            modeType: modeType,
             createdAt: aiMessage.created_at.toISOString()
           }
         })

@@ -558,7 +558,10 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
             // Add final messages
             if (finalData.userMessage) {
-              dispatch(addMessageToTab({ tabId, message: finalData.userMessage }))
+              dispatch(addMessageToTab({
+                tabId,
+                message: { ...finalData.userMessage, modeType: finalData.userMessage.modeType || modeType }
+              }))
             }
             console.log(response)
             if (finalData.aiMessage) {
@@ -568,6 +571,7 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
                   ...finalData.aiMessage,
                   content: fullContent, // Use full content
                   sources: response.data.sources || [],
+                  modeType: finalData.aiMessage.modeType || modeType,
                 }
               }))
             }
@@ -593,7 +597,6 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
       messageId: streamingMessageId,
       updates: {
         content: displayedContent,
-        sources: (showSources) ? sources : [] // Only show sources after typing completes
       }
     }))
 
@@ -759,7 +762,10 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
                     // Add final messages
                     if (data.data.userMessage) {
-                      dispatch(addMessageToTab({ tabId, message: data.data.userMessage }))
+                      dispatch(addMessageToTab({
+                        tabId,
+                        message: { ...data.data.userMessage, modeType: data.data.userMessage.modeType || modeType }
+                      }))
                     }
                     console.log("SOURCES", response.data.sources)
                     if (data.data.aiMessage) {
@@ -768,7 +774,8 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
                         message: {
                           ...data.data.aiMessage,
                           content: fullContent, // Use full content
-                          sources: response.data.sources // Include collected sources
+                          sources: response.data.sources, // Include collected sources
+                          modeType: data.data.aiMessage.modeType || modeType,
                         }
                       }))
                     }

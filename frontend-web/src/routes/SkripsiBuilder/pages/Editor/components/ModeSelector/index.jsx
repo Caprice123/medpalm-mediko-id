@@ -114,7 +114,7 @@ function ModeSelector({ currentMode, onModeChange }) {
           <InfoModalOverlay onClick={() => setShowInfoModal(false)} />
           <InfoModalContent>
             <InfoModalHeader>
-              <h3>Mode Skripsi</h3>
+              <h3>Mode</h3>
               <CloseButton onClick={() => setShowInfoModal(false)}>✕</CloseButton>
             </InfoModalHeader>
             <InfoModalBody>

@@ -387,145 +387,220 @@ export const ChatMessages = styled.div`
 
 export const Message = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: ${props => props.$sender === 'user' ? 'flex-end' : 'flex-start'};
+  justify-content: ${props => props.$sender === 'user' ? 'flex-end' : 'flex-start'};
+  max-width: 100%;
 `
 
-export const MessageBubble = styled.div`
-  background: ${props => props.$sender === 'user' ? '#3b82f6' : 'white'};
-  color: ${props => props.$sender === 'user' ? 'white' : '#1f2937'};
-  padding: 10px 14px;
+export const UserMessage = styled.div`
+  background: #3b82f6;
+  color: white;
+  padding: 0.875rem 1.125rem;
   border-radius: 12px;
-  border: ${props => props.$sender === 'user' ? 'none' : '1px solid #e5e7eb'};
-  max-width: 85%;
-  font-size: 14px;
-  line-height: 1.5;
+  border-bottom-right-radius: 4px;
+  max-width: 95%;
   word-wrap: break-word;
 
   @media (max-width: 768px) {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.8125rem;
-    max-width: 90%;
+    max-width: 85%;
+    padding: 0.75rem 1rem;
   }
 
-  /* Markdown styling */
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 0.75rem;
+  }
+`
+
+export const AIMessage = styled.div`
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 0.875rem 1.125rem;
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  max-width: 95%;
+  word-wrap: break-word;
+
+  @media (max-width: 768px) {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 0.75rem;
+  }
+`
+
+export const MessageContent = styled.div`
+  font-size: 0.9375rem;
+  line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
+
   p {
-    margin: 0.5em 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
+    margin: 0 0 0.75rem 0;
     &:last-child {
       margin-bottom: 0;
     }
   }
 
   h1, h2, h3, h4, h5, h6 {
-    margin: 0.75em 0 0.5em 0;
+    margin: 1rem 0 0.5rem 0;
     font-weight: 600;
-
     &:first-child {
       margin-top: 0;
     }
   }
 
-  h1 { font-size: 1.5em; }
-  h2 { font-size: 1.3em; }
-  h3 { font-size: 1.1em; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+
+  @media (max-width: 768px) {
+    h1 { font-size: 1.25rem; }
+    h2 { font-size: 1.125rem; }
+    h3 { font-size: 1rem; }
+  }
 
   ul, ol {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
   }
 
   li {
-    margin: 0.25em 0;
+    margin: 0.25rem 0;
   }
 
   code {
-    background: ${props => props.$sender === 'user' ? 'rgba(0, 0, 0, 0.2)' : '#f3f4f6'};
-    color: ${props => props.$sender === 'user' ? 'white' : '#ef4444'};
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875em;
   }
 
   pre {
-    background: ${props => props.$sender === 'user' ? 'rgba(0, 0, 0, 0.3)' : '#1f2937'};
-    color: ${props => props.$sender === 'user' ? 'white' : '#f9fafb'};
-    padding: 12px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
-    margin: 0.5em 0;
+    margin: 0.75rem 0;
 
     code {
-      background: none;
-      color: inherit;
+      background: transparent;
       padding: 0;
+      color: inherit;
+    }
+
+    @media (max-width: 768px) {
+      padding: 0.75rem;
+      font-size: 0.8125rem;
     }
   }
 
   blockquote {
-    border-left: 3px solid ${props => props.$sender === 'user' ? 'rgba(255, 255, 255, 0.5)' : '#06b6d4'};
-    padding-left: 12px;
-    margin: 0.5em 0;
-    color: ${props => props.$sender === 'user' ? 'rgba(255, 255, 255, 0.9)' : '#6b7280'};
+    border-left: 3px solid #e5e7eb;
+    padding-left: 1rem;
+    margin: 0.75rem 0;
+    color: #6b7280;
+
+    @media (max-width: 768px) {
+      padding-left: 0.75rem;
+    }
   }
 
   a {
-    color: ${props => props.$sender === 'user' ? 'white' : '#06b6d4'};
+    color: #3b82f6;
     text-decoration: underline;
-
     &:hover {
-      opacity: 0.8;
+      color: #2563eb;
     }
   }
 
   strong {
-    font-weight: 700;
+    font-weight: 600;
   }
 
   em {
     font-style: italic;
   }
 
-  hr {
-    border: none;
-    border-top: 1px solid ${props => props.$sender === 'user' ? 'rgba(255, 255, 255, 0.3)' : '#e5e7eb'};
-    margin: 0.75em 0;
-  }
-
   table {
     border-collapse: collapse;
     width: 100%;
-    margin: 0.5em 0;
-    font-size: 0.9em;
+    margin: 0.75rem 0;
+    display: block;
+    overflow-x: auto;
+
+    @media (max-width: 768px) {
+      font-size: 0.8125rem;
+    }
   }
 
   th, td {
-    border: 1px solid ${props => props.$sender === 'user' ? 'rgba(255, 255, 255, 0.3)' : '#e5e7eb'};
-    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
     text-align: left;
+
+    @media (max-width: 768px) {
+      padding: 0.375rem;
+    }
   }
 
   th {
-    background: ${props => props.$sender === 'user' ? 'rgba(0, 0, 0, 0.2)' : '#f9fafb'};
+    background: #f9fafb;
     font-weight: 600;
-  }
-
-  img {
-    max-width: 100%;
-    border-radius: 6px;
-    margin: 0.5em 0;
   }
 `
 
-export const MessageTime = styled.span`
-  font-size: 11px;
-  color: #9ca3af;
-  margin-top: 4px;
+export const MessageFooter = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+`
+
+export const Timestamp = styled.div`
+  font-size: 0.75rem;
+  opacity: 0.7;
+`
+
+export const ModeBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+
+  ${props => {
+    switch (props.mode) {
+      case 'normal':
+        return `
+          background: #dbeafe;
+          color: #1e40af;
+        `
+      case 'validated_search':
+        return `
+          background: #dcfce7;
+          color: #166534;
+        `
+      case 'research':
+        return `
+          background: #fae8ff;
+          color: #86198f;
+        `
+      default:
+        return `
+          background: #f3f4f6;
+          color: #374151;
+        `
+    }
+  }}
 `
 
 export const SourcesSection = styled.div`
