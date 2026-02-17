@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import { formatLocalDate } from '@utils/dateUtils'
 import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
@@ -65,13 +66,13 @@ function SetsList({ onView, onDelete }) {
             <StatItem>
               <StatLabel>Dibuat</StatLabel>
               <StatValue>
-                {new Date(set.createdAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(set.createdAt)}
               </StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Diupdate</StatLabel>
               <StatValue>
-                {new Date(set.updatedAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(set.updatedAt)}
               </StatValue>
             </StatItem>
           </SetStats>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
+import { formatLocalTime } from '@utils/dateUtils'
 import { useAppDispatch } from '@store/store'
 import { sendMessage, loadOlderMessages, stopStreaming, fetchModeConfiguration } from '@store/skripsi/action'
 import { selectMessagesForTab, selectLoadingForTab, selectModeForTab } from '@store/skripsi/reducer'
@@ -270,10 +271,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
     }
   }, [currentTab, messages, hasMore, isLoadingOlder, dispatch])
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-  }
+  const formatTime = (dateString) => formatLocalTime(dateString)
 
   // Process content to add inline citation links
   const processContentWithCitations = useCallback((content, sources) => {

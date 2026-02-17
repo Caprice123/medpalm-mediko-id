@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Modal from '@components/common/Modal'
+import { formatLocalDate } from '@utils/dateUtils'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserOsceTopics, createOsceSession } from '@store/oscePractice/userAction'
@@ -193,7 +194,7 @@ function TopicSelectionModal({ onClose }) {
                       <StatItem>
                         <StatLabel>Created</StatLabel>
                         <StatValue>
-                          {new Date(topic.createdAt).toLocaleDateString("id-ID")}
+                          {formatLocalDate(topic.createdAt)}
                         </StatValue>
                       </StatItem>
                       <StatItem>
@@ -205,7 +206,7 @@ function TopicSelectionModal({ onClose }) {
                       <StatItem>
                         <StatLabel>Updated</StatLabel>
                         <StatValue>
-                          {new Date(topic.updatedAt).toLocaleDateString("id-ID")}
+                          {formatLocalDate(topic.updatedAt)}
                         </StatValue>
                       </StatItem>
                     </CardStats>

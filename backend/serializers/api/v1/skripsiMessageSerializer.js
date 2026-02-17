@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class SkripsiMessageSerializer {
   static serialize(messages) {
     return messages.map(msg => {
@@ -18,7 +20,7 @@ export class SkripsiMessageSerializer {
           url: src.url,
           title: src.title
         })),
-        createdAt: msg.created_at || msg.createdAt
+        createdAt: (msg.created_at || msg.createdAt) ? moment(msg.created_at || msg.createdAt).tz('Asia/Jakarta').toISOString() : null
       }
 
       console.log('✅ Serialized message:', serialized)

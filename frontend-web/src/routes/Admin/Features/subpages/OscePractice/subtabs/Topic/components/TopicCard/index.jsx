@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { formatLocalDate } from '@utils/dateUtils'
 import {
   Card,
   CardHeader,
@@ -71,7 +72,7 @@ function TopicCard({ topic, onEdit, onDelete }) {
         <StatItem>
           <StatLabel>Created</StatLabel>
           <StatValue>
-            {new Date(topic.createdAt).toLocaleDateString("id-ID")}
+            {formatLocalDate(topic.createdAt)}
           </StatValue>
         </StatItem>
         <StatItem>
@@ -83,7 +84,7 @@ function TopicCard({ topic, onEdit, onDelete }) {
         <StatItem>
           <StatLabel>Updated</StatLabel>
           <StatValue>
-            {new Date(topic.updatedAt).toLocaleDateString("id-ID")}
+            {formatLocalDate(topic.updatedAt)}
           </StatValue>
         </StatItem>
       </CardStats>

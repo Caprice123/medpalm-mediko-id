@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class CalculatorTopicListSerializer {
   static serialize(topics) {
     return topics.map(topic => ({
@@ -15,7 +17,7 @@ export class CalculatorTopicListSerializer {
           name: tt.tags.tag_group?.name
         }
       })),
-      createdAt: topic.created_at
+      createdAt: topic.created_at ? moment(topic.created_at).tz('Asia/Jakarta').toISOString() : null
     }))
   }
 }

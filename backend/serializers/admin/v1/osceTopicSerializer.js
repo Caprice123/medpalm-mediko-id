@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class OsceTopicSerializer {
     static serialize(topic) {
         const topicTags = topic.osce_topic_tags || topic.tags || [];
@@ -18,8 +20,8 @@ export class OsceTopicSerializer {
             durationMinutes: topic.duration_minutes,
             status: topic.status,
             createdBy: topic.created_by,
-            createdAt: topic.created_at,
-            updatedAt: topic.updated_at,
+            createdAt: topic.created_at ? moment(topic.created_at).tz('Asia/Jakarta').toISOString() : null,
+            updatedAt: topic.updated_at ? moment(topic.updated_at).tz('Asia/Jakarta').toISOString() : null,
             tags: topicTags.map(tag => ({
                 id: tag.tags ? tag.tags.id : (tag.tag ? tag.tag.id : tag.id),
                 name: tag.tags ? tag.tags.name : (tag.tag ? tag.tag.name : tag.name),

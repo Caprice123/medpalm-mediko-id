@@ -1,3 +1,7 @@
+import moment from 'moment-timezone'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
+
 export class FlashcardDeckListSerializer {
   static serialize(decks) {
     return decks.map(deck => ({
@@ -14,7 +18,7 @@ export class FlashcardDeckListSerializer {
         } : null
       })),
       cardCount: deck.flashcard_count || 0,
-      updatedAt: deck.updated_at
+      updatedAt: deck.updated_at ? moment(deck.updated_at).tz(JAKARTA_TZ).toISOString() : null
     }))
   }
 }

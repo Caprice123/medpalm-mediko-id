@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class SkripsiSetSerializer {
   static serialize(set) {
     const tabs = set.skripsi_tabs || set.tabs || []
@@ -19,7 +21,7 @@ export class SkripsiSetSerializer {
         messages: (tab.skripsi_messages || tab.messages || []).map(msg => ({
           senderType: msg.senderType,
           content: msg.content,
-          createdAt: msg.createdAt
+          createdAt: msg.createdAt ? moment(msg.createdAt).tz('Asia/Jakarta').toISOString() : null
         }))
       }))
     }

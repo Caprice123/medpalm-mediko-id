@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class UserSubscriptionSerializer {
     static serialize(userSubscriptions) {
         // If single tag object, convert to array
@@ -12,11 +14,11 @@ export class UserSubscriptionSerializer {
     static serializeOne(userSubscription) {
         return {
             id: userSubscription.id,
-            startDate: userSubscription.start_date,
-            endDate: userSubscription.end_date,
+            startDate: userSubscription.start_date ? moment(userSubscription.start_date).tz('Asia/Jakarta').toISOString() : null,
+            endDate: userSubscription.end_date ? moment(userSubscription.end_date).tz('Asia/Jakarta').toISOString() : null,
             status: userSubscription.status,
             isCurrentlyActive: userSubscription.isCurrentlyActive || false,
-            createdAt: userSubscription.created_at,
+            createdAt: userSubscription.created_at ? moment(userSubscription.created_at).tz('Asia/Jakarta').toISOString() : null,
         }
     }
 }

@@ -1,6 +1,9 @@
+import moment from 'moment-timezone'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
 
 export class GetListAttemptsService extends BaseService {
   static async call({ userLearningSessionId, userId, page = 1, perPage = 30 }) {
@@ -71,8 +74,8 @@ export class GetListAttemptsService extends BaseService {
       return {
         id: attempt.id,
         attemptNumber: attempt.attempt_number,
-        started_at: attempt.started_at,
-        completed_at: attempt.completed_at,
+        started_at: attempt.started_at ? moment(attempt.started_at).tz(JAKARTA_TZ).toISOString() : null,
+        completed_at: attempt.completed_at ? moment(attempt.completed_at).tz(JAKARTA_TZ).toISOString() : null,
         status: attempt.status,
         score: attempt.score, // score is already a percentage (0-100)
         correctQuestion: attempt.correct_question,

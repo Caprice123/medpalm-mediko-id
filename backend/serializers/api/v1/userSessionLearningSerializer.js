@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class UserLearningSessionSerializer {
     static serialize(user_learning_sessions) {
         return user_learning_sessions.map(sessions => ({
@@ -5,7 +7,7 @@ export class UserLearningSessionSerializer {
             title: sessions.title,
             type: sessions.type,
             creditUsed: sessions.credit_used,
-            createdAt: sessions.created_at,
+            createdAt: sessions.created_at ? moment(sessions.created_at).tz('Asia/Jakarta').toISOString() : null,
         }))
     }
 }

@@ -1,6 +1,7 @@
 import attachmentService from '#services/attachment/attachmentService'
 import idriveService from '#services/idrive.service';
 import { DateTime } from "luxon";
+import moment from 'moment-timezone';
 
 // Serializer for user-facing OSCE session
 class OsceSessionSerializer {
@@ -94,7 +95,7 @@ class OsceSessionSerializer {
       userId: session.user_id,
       status: session.status,
       observationsLocked: session.observations_locked,
-      startedAt: session.started_at,
+      startedAt: session.started_at ? moment(session.started_at).tz('Asia/Jakarta').toISOString() : null,
       metadata: session.metadata || {},
       tags: session.osce_session_tag_snapshots?.map((snapshot) => ({
         id: snapshot.tag_id,
@@ -149,8 +150,8 @@ class OsceSessionSerializer {
       totalScore: session.total_score,
       maxScore: session.max_score,
       aiFeedback: session.ai_feedback ? JSON.parse(session.ai_feedback) : null,
-      createdAt: session.created_at,
-      scheduledEnd: session.scheduled_end_at,
+      createdAt: session.created_at ? moment(session.created_at).tz('Asia/Jakarta').toISOString() : null,
+      scheduledEnd: session.scheduled_end_at ? moment(session.scheduled_end_at).tz('Asia/Jakarta').toISOString() : null,
       tags: session.osce_session_tag_snapshots?.map((snapshot) => ({
         id: snapshot.tag_id,
         name: snapshot.tags.name,

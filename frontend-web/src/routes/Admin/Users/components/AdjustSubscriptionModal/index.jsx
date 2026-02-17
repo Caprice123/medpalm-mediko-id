@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
+import { formatLocalDateLong } from '@utils/dateUtils'
 import Button from '@components/common/Button'
 import {
   FormGroup,
@@ -33,15 +34,7 @@ function AdjustSubscriptionModal({ isOpen, onClose, formik, user }) {
   }
 
   // Helper function to format date
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (dateString) => formatLocalDateLong(dateString)
 
   const activeSub = user ? getActiveSubscription(user.userSubscriptions) : null
 

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { formatLocalTime } from '@utils/dateUtils'
 import { fetchAdminSet } from '@store/skripsi/action'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
@@ -70,10 +71,7 @@ function SetDetailModal({ set, isOpen, onClose }) {
     }
   }
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-  }
+  const formatTime = (dateString) => formatLocalTime(dateString)
 
   if (!isOpen) return null
 

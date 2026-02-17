@@ -1,6 +1,9 @@
+import moment from 'moment-timezone'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
 
 export class GetConversationsService extends BaseService {
   static async call({ userId, page = 1, perPage = 20, search }) {
@@ -51,8 +54,8 @@ export class GetConversationsService extends BaseService {
       uniqueId: conv.unique_id,
       topic: conv.topic,
       lastMessage: conv.last_message || null,
-      createdAt: conv.created_at,
-      updatedAt: conv.updated_at
+      createdAt: conv.created_at ? moment(conv.created_at).tz(JAKARTA_TZ).toISOString() : null,
+      updatedAt: conv.updated_at ? moment(conv.updated_at).tz(JAKARTA_TZ).toISOString() : null
     }))
 
     return {

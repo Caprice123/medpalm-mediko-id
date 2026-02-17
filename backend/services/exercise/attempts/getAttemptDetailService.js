@@ -1,6 +1,9 @@
+import moment from 'moment-timezone'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
 
 export class GetAttemptDetailService extends BaseService {
   static async call({ attemptId, userId }) {
@@ -70,8 +73,8 @@ export class GetAttemptDetailService extends BaseService {
       topic_title: exerciseSession.exercise_topic?.title,
       topic_description: exerciseSession.exercise_topic?.description,
       credits_used: exerciseSession.credits_used,
-      started_at: attempt.started_at,
-      completed_at: attempt.completed_at,
+      started_at: attempt.started_at ? moment(attempt.started_at).tz(JAKARTA_TZ).toISOString() : null,
+      completed_at: attempt.completed_at ? moment(attempt.completed_at).tz(JAKARTA_TZ).toISOString() : null,
       status: attempt.status,
       correctQuestion: attempt.correct_question,
       totalQuestion: exerciseSession.total_question,

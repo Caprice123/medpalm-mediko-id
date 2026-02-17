@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { formatLocalDate } from '@utils/dateUtils'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
@@ -79,7 +80,7 @@ function QuizList() {
               <StatItem>
                 <StatLabel>Terakhir Diperbaharui</StatLabel>
                 <StatValue>
-                  {new Date(quiz.updatedAt).toLocaleDateString("id-ID")}
+                  {formatLocalDate(quiz.updatedAt)}
                 </StatValue>
               </StatItem>
             </QuizStats>

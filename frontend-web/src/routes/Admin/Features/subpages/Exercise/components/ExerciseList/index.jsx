@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminExerciseTopics } from '@store/exercise/adminAction'
+import { formatLocalDate } from '@utils/dateUtils'
 import { actions } from '@store/exercise/reducer'
 import Pagination from '@components/common/Pagination'
 import EmptyState from '@components/common/EmptyState'
@@ -127,7 +128,7 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
                 <StatItem>
                   <StatLabel>Created</StatLabel>
                   <StatValue>
-                    {new Date(topic.createdAt).toLocaleDateString("id-ID")}
+                    {formatLocalDate(topic.createdAt)}
                   </StatValue>
                 </StatItem>
               </TopicStats>

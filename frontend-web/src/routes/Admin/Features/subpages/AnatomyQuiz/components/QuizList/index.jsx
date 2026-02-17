@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import EmptyState from '@components/common/EmptyState'
+import { formatLocalDate } from '@utils/dateUtils'
 import {
   LoadingOverlay,
   QuizzesGrid,
@@ -97,7 +98,7 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
             <StatItem>
               <StatLabel>Created</StatLabel>
               <StatValue>
-                {new Date(quiz.createdAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(quiz.createdAt)}
               </StatValue>
             </StatItem>
           </QuizStats>

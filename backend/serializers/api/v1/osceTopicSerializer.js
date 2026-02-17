@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 // Serializer for user-facing OSCE topic list
 class OsceTopicSerializer {
   static serialize(topic) {
@@ -20,8 +22,8 @@ class OsceTopicSerializer {
       aiModel: topic.ai_model,
       durationMinutes: topic.duration_minutes,
       tags,
-      createdAt: topic.created_at,
-      updatedAt: topic.updated_at,
+      createdAt: topic.created_at ? moment(topic.created_at).tz('Asia/Jakarta').toISOString() : null,
+      updatedAt: topic.updated_at ? moment(topic.updated_at).tz('Asia/Jakarta').toISOString() : null,
     };
   }
 

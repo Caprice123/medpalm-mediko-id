@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { formatLocalDate } from '@utils/dateUtils'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
@@ -521,7 +522,7 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
                     )}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {formatDate(sub.createdAt)}
+                    {formatLocalDate(sub.createdAt)}
                   </div>
                 </TableRow>
               ))}

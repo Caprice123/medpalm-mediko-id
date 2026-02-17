@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { formatLocalDate } from '@utils/dateUtils'
 import EmptyState from '@components/common/EmptyState'
 import { CalculatorSkeletonGrid } from '@components/common/SkeletonCard'
 import {
@@ -35,17 +36,6 @@ function CalculatorList() {
         title="Tidak ada kalkulator ditemukan"
       />
     )
-  }
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).format(date)
   }
 
   // Data state - render calculator grid
@@ -85,7 +75,7 @@ function CalculatorList() {
               </StatItem>
               <StatItem>
                 <StatLabel>Diperbarui</StatLabel>
-                <StatValue>{formatDate(calculator.updatedAt || calculator.updatedAt)}</StatValue>
+                <StatValue>{formatLocalDate(calculator.updatedAt)}</StatValue>
               </StatItem>
             </CalculatorStats>
 

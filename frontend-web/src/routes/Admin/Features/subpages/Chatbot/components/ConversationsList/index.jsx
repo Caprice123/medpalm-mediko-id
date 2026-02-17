@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import EmptyState from '@components/common/EmptyState'
+import { formatLocalDate } from '@utils/dateUtils'
 import {
   LoadingOverlay,
   ConversationsGrid,
@@ -60,13 +61,13 @@ function ConversationsList({ onView, onDelete }) {
             <StatItem>
               <StatLabel>Dibuat</StatLabel>
               <StatValue>
-                {new Date(conversation.createdAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(conversation.createdAt)}
               </StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Diupdate</StatLabel>
               <StatValue>
-                {new Date(conversation.updatedAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(conversation.updatedAt)}
               </StatValue>
             </StatItem>
           </ConversationStats>

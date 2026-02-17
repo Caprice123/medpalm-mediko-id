@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { formatLocalDate } from '@utils/dateUtils'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
@@ -212,7 +213,7 @@ const FlashcardSelectorModal = ({ isOpen, onClose, onSelect, initialSelected = [
                     <StatItem>
                       <StatLabel>Created</StatLabel>
                       <StatValue>
-                        {new Date(deck.createdAt).toLocaleDateString("id-ID")}
+                        {formatLocalDate(deck.createdAt)}
                       </StatValue>
                     </StatItem>
                   </CardStats>

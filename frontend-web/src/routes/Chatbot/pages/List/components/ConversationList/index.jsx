@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatRelativeTime } from '@utils/dateUtils'
 import EmptyState from '@components/common/EmptyState'
 import { ConversationListSkeleton } from '@components/common/SkeletonCard'
 import {
@@ -18,21 +19,6 @@ const ConversationList = ({
   onConversationSelect,
   isLoading = false
 }) => {
-  const formatTime = (dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInMs = now - date
-    const diffInMinutes = Math.floor(diffInMs / 60000)
-    const diffInHours = Math.floor(diffInMs / 3600000)
-    const diffInDays = Math.floor(diffInMs / 86400000)
-
-    if (diffInMinutes < 1) return 'Baru saja'
-    if (diffInMinutes < 60) return `${diffInMinutes}m yang lalu`
-    if (diffInHours < 24) return `${diffInHours}j yang lalu`
-    if (diffInDays < 7) return `${diffInDays}h yang lalu`
-
-    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
-  }
 
   if (isLoading) {
     return (
@@ -64,7 +50,7 @@ const ConversationList = ({
           <ConversationHeader>
             <ConversationTopic>{conversation.topic}</ConversationTopic>
             <ConversationTime>
-              {formatTime(conversation.updatedAt || conversation.createdAt)}
+              {formatRelativeTime(conversation.updatedAt || conversation.createdAt)}
             </ConversationTime>
           </ConversationHeader>
           {conversation.lastMessage && (

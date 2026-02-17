@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { formatLocalDateTime } from '@utils/dateUtils';
 import { useAppDispatch, useAppSelector } from '@store/store';
 import { generateDiagram, fetchDiagramHistory, fetchDiagramDetail, updateDiagram, createDiagram } from '@store/skripsi/action';
 import { selectDiagramsForActiveTab } from '@store/skripsi/reducer';
@@ -529,13 +530,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
 
                   <HistoryCardFooter>
                     <HistoryCardDate>
-                      🕐 {new Date(diagram.createdAt).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      🕐 {formatLocalDateTime(diagram.createdAt)}
                     </HistoryCardDate>
                     <HistoryCardActions>
                       <Button variant="primary" onClick={(e) => {

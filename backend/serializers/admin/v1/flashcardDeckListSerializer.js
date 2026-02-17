@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class FlashcardDeckListSerializer {
     /**
      * Serialize array of decks for list view (index endpoint)
@@ -30,7 +32,7 @@ export class FlashcardDeckListSerializer {
                 } : null
             })),
             cardCount: deckCards.length,
-            createdAt: deck.created_at
+            createdAt: deck.created_at ? moment(deck.created_at).tz('Asia/Jakarta').toISOString() : null
         }
     }
 }

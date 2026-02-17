@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class ChatbotMessageSerializer {
   static serialize(messages) {
     return messages.map(msg => ({
@@ -12,7 +14,7 @@ export class ChatbotMessageSerializer {
         title: src.title,
         url: src.url
       })),
-      createdAt: msg.created_at || msg.createdAt
+      createdAt: (msg.created_at || msg.createdAt) ? moment(msg.created_at || msg.createdAt).tz('Asia/Jakarta').toISOString() : null
     }))
   }
 }

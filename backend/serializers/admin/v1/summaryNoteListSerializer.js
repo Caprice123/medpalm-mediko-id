@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class SummaryNoteListSerializer {
   static serialize(notes) {
     return notes.map(note => {
@@ -20,7 +22,7 @@ export class SummaryNoteListSerializer {
         status: note.status,
         universityTags,
         semesterTags,
-        createdAt: note.created_at
+        createdAt: note.created_at ? moment(note.created_at).tz('Asia/Jakarta').toISOString() : null
       }
     })
   }

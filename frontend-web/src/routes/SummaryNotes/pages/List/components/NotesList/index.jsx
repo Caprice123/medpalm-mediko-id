@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { formatLocalDateLong } from '@utils/dateUtils'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
@@ -91,11 +92,7 @@ function NotesList() {
             <div style={{flex: 1}}></div>
 
             <UpdatedText>
-              Terakhir diperbarui: {new Date(note.updatedAt).toLocaleDateString("id-ID", {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })}
+              Terakhir diperbarui: {formatLocalDateLong(note.updatedAt)}
             </UpdatedText>
 
             <Button

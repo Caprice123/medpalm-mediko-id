@@ -15,6 +15,7 @@ import {
 } from './DeckList.styles'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { FlashcardRoute } from '../../../../routes'
+import { formatLocalDate } from '@utils/dateUtils'
 
 function DeckList() {
     const { decks, loading } = useSelector(state => state.flashcard)
@@ -33,17 +34,6 @@ function DeckList() {
         title="Tidak ada deck flashcard ditemukan"
       />
     )
-  }
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).format(date)
   }
 
   // Data state - render deck grid
@@ -116,7 +106,7 @@ function DeckList() {
                 </StatItem>
                 <StatItem>
                   <StatLabel>Diperbarui</StatLabel>
-                  <StatValue>{formatDate(deck.updatedAt || deck.updatedAt)}</StatValue>
+                  <StatValue>{formatLocalDate(deck.updatedAt)}</StatValue>
                 </StatItem>
               </DeckStats>
 

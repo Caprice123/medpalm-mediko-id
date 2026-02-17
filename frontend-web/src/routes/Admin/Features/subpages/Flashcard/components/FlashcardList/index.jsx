@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import { formatLocalDate } from '@utils/dateUtils'
 import EmptyState from '@components/common/EmptyState'
 import {
   LoadingOverlay,
@@ -126,7 +127,7 @@ function FlashcardList({ onEdit, onDelete, onCreateFirst }) {
             <StatItem>
               <StatLabel>Created</StatLabel>
               <StatValue>
-                {new Date(quiz.createdAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(quiz.createdAt)}
               </StatValue>
             </StatItem>
           </QuizStats>

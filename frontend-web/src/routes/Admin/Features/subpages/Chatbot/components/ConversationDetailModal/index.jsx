@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { formatLocalDateTime } from '@utils/dateUtils'
 import { fetchAdminConversationMessages } from '@store/chatbot/action'
 import { actions } from '@store/chatbot/reducer'
 import {
@@ -198,7 +199,7 @@ function ConversationDetailModal({ conversation, isOpen, onClose }) {
                     )}
 
                     <MessageMeta>
-                      {new Date(message.createdAt).toLocaleString('id-ID')}
+                      {formatLocalDateTime(message.createdAt)}
                       {!isUser && message.creditsUsed > 0 && (
                         <> • {message.creditsUsed} kredit</>
                       )}

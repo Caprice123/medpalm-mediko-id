@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class SkripsiSetListSerializer {
   static serialize(sets) {
     return sets.map(set => ({
@@ -11,8 +13,8 @@ export class SkripsiSetListSerializer {
         email: set.users.email
       } : null),
       tabCount: set._count?.skripsi_tabs || set.tabCount || 0,
-      createdAt: set.createdAt || set.created_at,
-      updatedAt: set.updatedAt || set.updated_at
+      createdAt: (set.createdAt || set.created_at) ? moment(set.createdAt || set.created_at).tz('Asia/Jakarta').toISOString() : null,
+      updatedAt: (set.updatedAt || set.updated_at) ? moment(set.updatedAt || set.updated_at).tz('Asia/Jakarta').toISOString() : null
     }))
   }
 }

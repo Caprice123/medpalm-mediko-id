@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import { formatLocalDate } from '@utils/dateUtils'
 import EmptyState from '@components/common/EmptyState'
 import StatusBadge from '@components/common/StatusBadge'
 import {
@@ -84,7 +85,7 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
             <StatItem>
               <StatLabel>Created</StatLabel>
               <StatValue>
-                {new Date(note.createdAt).toLocaleDateString("id-ID")}
+                {formatLocalDate(note.createdAt)}
               </StatValue>
             </StatItem>
           </NoteStats>

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { fetchUserOsceTopics, createOsceSession } from '@store/oscePractice/userAction'
+import { formatLocalDate } from '@utils/dateUtils'
 import { fetchTags } from '@store/tags/action'
 import { actions as tagActions } from '@store/tags/reducer'
 import Button from '@components/common/Button'
@@ -201,7 +202,7 @@ function TopicSelection() {
                             <StatItem>
                             <StatLabel>Created</StatLabel>
                             <StatValue>
-                                {new Date(topic.createdAt).toLocaleDateString("id-ID")}
+                                {formatLocalDate(topic.createdAt)}
                             </StatValue>
                             </StatItem>
                             <StatItem>
@@ -213,7 +214,7 @@ function TopicSelection() {
                             <StatItem>
                             <StatLabel>Updated</StatLabel>
                             <StatValue>
-                                {new Date(topic.updatedAt).toLocaleDateString("id-ID")}
+                                {formatLocalDate(topic.updatedAt)}
                             </StatValue>
                             </StatItem>
                         </CardStats>

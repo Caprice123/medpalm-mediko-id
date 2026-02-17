@@ -1,3 +1,7 @@
+import moment from 'moment-timezone'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
+
 export class AttemptSerializer {
     static serialize(exerciseSessionAttempts) {
         return exerciseSessionAttempts.map(attempt => ({
@@ -6,7 +10,7 @@ export class AttemptSerializer {
             status: attempt.status,
             score: attempt.score,
             totalQuestion: attempt.totalQuestion,
-            createdAt: attempt.created_at,
+            createdAt: attempt.created_at ? moment(attempt.created_at).tz(JAKARTA_TZ).toISOString() : null,
         }))
     }
 }

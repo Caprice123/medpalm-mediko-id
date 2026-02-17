@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminCalculatorTopics } from '@store/calculator/action'
+import { formatLocalDate } from '@utils/dateUtils'
 import { actions } from '@store/calculator/reducer'
 import CalculatorModal from './components/CalculatorModal/index'
 import CalculatorSettingsModal from './components/CalculatorSettingsModal'
@@ -131,13 +132,7 @@ function Calculator({ onBack }) {
                     <StatItem>
                       <StatLabel>Created</StatLabel>
                       <StatValue>
-                        {calculator.createdAt
-                          ? new Date(calculator.createdAt).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })
-                          : '-'}
+                        {formatLocalDate(calculator.createdAt)}
                       </StatValue>
                     </StatItem>
                   </TopicStats>

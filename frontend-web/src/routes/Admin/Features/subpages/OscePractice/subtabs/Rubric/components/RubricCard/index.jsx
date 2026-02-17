@@ -1,3 +1,4 @@
+import { formatLocalDateLong } from '@utils/dateUtils'
 import {
   Card,
   CardHeader,
@@ -12,15 +13,6 @@ import {
 import Button from '@components/common/Button'
 
 function RubricCard({ rubric, onEdit }) {
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -36,11 +28,11 @@ function RubricCard({ rubric, onEdit }) {
       <CardStats>
         <StatItem>
           <StatLabel>Created</StatLabel>
-          <StatValue>{formatDate(rubric.createdAt)}</StatValue>
+          <StatValue>{formatLocalDateLong(rubric.createdAt)}</StatValue>
         </StatItem>
         <StatItem>
           <StatLabel>Updated</StatLabel>
-          <StatValue>{formatDate(rubric.updatedAt)}</StatValue>
+          <StatValue>{formatLocalDateLong(rubric.updatedAt)}</StatValue>
         </StatItem>
         <StatItem>
           <StatLabel>ID</StatLabel>

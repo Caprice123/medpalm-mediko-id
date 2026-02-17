@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/credit/reducer'
+import { formatLocalDate, formatLocalTime } from '@utils/dateUtils'
 import Pagination from '@components/Pagination'
 import { confirmPayment, fetchAllTransactions } from '@store/credit/action'
 import Table from '@components/common/Table'
@@ -80,10 +81,10 @@ function TransactionList() {
           return (
             <div style={{ fontSize: '0.875rem' }}>
               <div style={{ fontWeight: '500', color: '#111827' }}>
-                {new Date(createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' })}
+                {formatLocalDate(createdAt)}
               </div>
               <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
-                {new Date(createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB
+                {formatLocalTime(createdAt)}
               </div>
             </div>
           )

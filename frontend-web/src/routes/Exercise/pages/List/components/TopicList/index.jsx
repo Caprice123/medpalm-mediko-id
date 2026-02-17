@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useMemo } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
+import { formatLocalDate } from '@utils/dateUtils'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
@@ -52,17 +53,6 @@ function TopicList() {
         title="Tidak ada topik latihan ditemukan"
       />
     )
-  }
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).format(date)
   }
 
   // Data state - render topic grid
@@ -135,7 +125,7 @@ function TopicList() {
                 </StatItem>
                 <StatItem>
                   <StatLabel>Diperbarui</StatLabel>
-                  <StatValue>{formatDate(topic.updatedAt || topic.updatedAt)}</StatValue>
+                  <StatValue>{formatLocalDate(topic.updatedAt)}</StatValue>
                 </StatItem>
               </TopicStats>
 

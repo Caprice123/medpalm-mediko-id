@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { formatLocalDateLong } from '@utils/dateUtils'
 import { useNavigate } from 'react-router-dom'
 import { FaTrash } from 'react-icons/fa'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
@@ -22,15 +23,6 @@ function SetsList() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [deleteId, setDeleteId] = useState(null)
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("id-ID", {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
 
   const handleDeleteSet = async (id) => {
     try {
@@ -71,7 +63,7 @@ function SetsList() {
               </SetDescription>
 
               <UpdatedText>
-                Terakhir diperbarui: {formatDate(set.updatedAt)}
+                Terakhir diperbarui: {formatLocalDateLong(set.updatedAt)}
               </UpdatedText>
 
               <CardActions>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { formatLocalDate } from '@utils/dateUtils'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import 'react-photo-view/dist/react-photo-view.css'
@@ -258,11 +259,7 @@ const SummaryNotesDetail = () => {
                             <StatItem>
                               <StatLabel>Diperbarui</StatLabel>
                               <StatValue>
-                                {deck.updatedAt ? new Date(deck.updatedAt).toLocaleDateString('id-ID', {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric'
-                                }) : '-'}
+                                {formatLocalDate(deck.updatedAt)}
                               </StatValue>
                             </StatItem>
                           </ResourceStats>

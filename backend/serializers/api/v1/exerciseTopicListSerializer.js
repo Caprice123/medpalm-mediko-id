@@ -1,3 +1,7 @@
+import moment from 'moment-timezone'
+
+const JAKARTA_TZ = 'Asia/Jakarta'
+
 export class ExerciseTopicListSerializer {
   static serialize(topics) {
     return topics.map(topic => ({
@@ -11,7 +15,7 @@ export class ExerciseTopicListSerializer {
         tagGroupId: t.tags.tag_group_id
       })),
       questionCount: topic.question_count || 0,
-      updatedAt: topic.updated_at
+      updatedAt: topic.updated_at ? moment(topic.updated_at).tz(JAKARTA_TZ).toISOString() : null
     }))
   }
 }

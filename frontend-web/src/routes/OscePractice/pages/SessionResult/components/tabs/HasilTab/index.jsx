@@ -1,4 +1,5 @@
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
+import { formatLocalDateTimeFull } from '@utils/dateUtils'
 import { EmptyState } from '../../../styles/shared'
 import {
   Container,
@@ -71,19 +72,6 @@ function HasilTab({ session }) {
   const percentage = totalScore && maxScore ? Math.round((totalScore / maxScore) * 100) : 0
   const isPassing = percentage >= 60
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('id-ID', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
-  }
-
   const formatTimeTaken = (seconds) => {
     if (!seconds && seconds !== 0) return '-'
 
@@ -126,7 +114,7 @@ function HasilTab({ session }) {
             <InfoIcon>📅</InfoIcon>
             <div>
               <InfoLabel>MULAI PADA</InfoLabel>
-              <InfoValue>{formatDate(startedAt)}</InfoValue>
+              <InfoValue>{formatLocalDateTimeFull(startedAt)}</InfoValue>
             </div>
           </InfoCard>
 

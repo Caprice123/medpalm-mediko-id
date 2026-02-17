@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class OsceTopicListSerializer {
     /**
      * Serialize array of topics for list view (index endpoint)
@@ -29,8 +31,8 @@ export class OsceTopicListSerializer {
                     name: tag.tags.tag_group.name
                 } : null
             })),
-            createdAt: topic.created_at,
-            updatedAt: topic.updated_at
+            createdAt: topic.created_at ? moment(topic.created_at).tz('Asia/Jakarta').toISOString() : null,
+            updatedAt: topic.updated_at ? moment(topic.updated_at).tz('Asia/Jakarta').toISOString() : null
         }
     }
 }

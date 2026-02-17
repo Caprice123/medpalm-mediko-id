@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export class AnatomyQuizListSerializer {
   static serialize(quizzes, attachmentMap = new Map()) {
     return quizzes.map(quiz => {
@@ -19,7 +21,7 @@ export class AnatomyQuizListSerializer {
         questionCount: quiz.question_count || 0,
         universityTags,
         semesterTags,
-        createdAt: quiz.created_at
+        createdAt: quiz.created_at ? moment(quiz.created_at).tz('Asia/Jakarta').toISOString() : null
       }
     })
   }

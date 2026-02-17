@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react'
+import { formatLocalTime } from '@utils/dateUtils'
 import { useSelector } from 'react-redux'
 import { selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
 import { ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
@@ -109,10 +110,7 @@ function MessageList({ isLoading, isStreaming, scrollTrigger }) {
   }, [scrollTrigger])
 
   // Memoize helper functions to prevent unnecessary re-renders
-  const formatTime = useCallback((dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-  }, [])
+  const formatTime = useCallback((dateString) => formatLocalTime(dateString), [])
 
   const getModeInfo = useCallback((mode) => {
     switch (mode) {
