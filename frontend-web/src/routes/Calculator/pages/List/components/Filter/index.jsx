@@ -4,7 +4,7 @@ import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from "@store/calculator/reducer"
-import { getCalculatorTopics } from '../../../../../../store/calculator/action'
+import { getCalculatorTopics } from '../../../../../../store/calculator/userAction'
 
 export const Filter = () => {
     const dispatch = useDispatch()

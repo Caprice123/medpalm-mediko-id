@@ -1,6 +1,5 @@
 import { actions } from '@store/calculator/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
@@ -127,15 +126,13 @@ export const getCalculatorTopicDetail = (id) => async (dispatch) => {
   }
 }
 
-export const calculateResult = (id, inputs) => async (dispatch) => {
+export const calculateResult = (id, inputs, onSuccess) => async (dispatch) => {
     try {
         dispatch(setLoading({ key: 'isCalculateResultLoading', value: true }))
 
         const route = Endpoints.api.calculators + `/${id}/calculate`
         const response = await postWithToken(route, inputs)
-        return response.data.data
-    } catch {
-        // no need to handle anything because already handled in api.jsx
+        if (onSuccess) onSuccess(response.data.data)
     } finally {
         dispatch(setLoading({ key: 'isCalculateResultLoading', value: false }))
     }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAdminCalculatorTopics } from '@store/calculator/action'
+import { fetchAdminCalculatorTopics } from '@store/calculator/adminAction'
 import { formatLocalDate } from '@utils/dateUtils'
 import { actions } from '@store/calculator/reducer'
 import CalculatorModal from './components/CalculatorModal/index'

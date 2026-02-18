@@ -4,7 +4,7 @@ import {
   fetchAdminCalculatorTopics,
   fetchAdminCalculatorTopic,
   deleteCalculatorTopic
-} from '@store/calculator/action'
+} from '@store/calculator/adminAction'
 import { fetchAdminTags } from '../../../../../../store/tags/action'
 import { actions } from "@store/tags/reducer"
 

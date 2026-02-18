@@ -4,7 +4,7 @@ import {
   fetchAdminCalculatorTopics,
   fetchAdminCalculatorTopic,
   deleteCalculatorTopic
-} from '@store/calculator/action'
+} from '@store/calculator/adminAction'
 
 export const useCalculator = () => {
   const dispatch = useDispatch()

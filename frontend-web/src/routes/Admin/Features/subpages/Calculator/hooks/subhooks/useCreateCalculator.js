@@ -1,8 +1,8 @@
 import { useDispatch } from 'react-redux'
-import { createCalculatorTopic } from '@store/calculator/action'
+import { createCalculatorTopic } from '@store/calculator/adminAction'
 import { fetchTagGroups } from '@store/tagGroups/action'
 import { useFormik } from 'formik'
-import { fetchAdminCalculatorTopics } from '../../../../../../../store/calculator/action'
+import { fetchAdminCalculatorTopics } from '../../../../../../../store/calculator/adminAction'
 import { createCalculatorTopicSchema } from '../../validationSchema/createCalculatorSchema'
 import { useState } from 'react'
 

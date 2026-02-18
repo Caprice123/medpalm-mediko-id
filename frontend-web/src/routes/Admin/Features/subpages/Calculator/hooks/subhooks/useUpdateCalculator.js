@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { updateCalculatorTopic, fetchAdminCalculatorTopic } from '@store/calculator/action'
+import { updateCalculatorTopic, fetchAdminCalculatorTopic } from '@store/calculator/adminAction'
 import { fetchTagGroups } from '@store/tagGroups/action'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'

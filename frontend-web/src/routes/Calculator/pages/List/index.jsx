@@ -3,7 +3,7 @@ import {
   Container,
   CalculatorSelectionContainer
 } from './Calculator.styles'
-import { getCalculatorTopics } from '../../../../store/calculator/action'
+import { getCalculatorTopics } from '../../../../store/calculator/userAction'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchTags } from '../../../../store/tags/action'
 import { actions as tagActions } from '@store/tags/reducer'

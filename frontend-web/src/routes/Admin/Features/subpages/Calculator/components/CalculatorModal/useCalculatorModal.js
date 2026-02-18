@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/action'
+import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/adminAction'
 import { fetchAdminTags } from '@store/tags/action'
 import { upload } from '@store/common/action'
 
