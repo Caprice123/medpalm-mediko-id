@@ -20,7 +20,6 @@ export class UpdateOsceObservationService extends BaseService {
 
         if (name !== undefined) updateData.name = name
         if (groupId !== undefined) updateData.group_id = parseInt(groupId)
-        if (order !== undefined) updateData.order = parseInt(order)
 
         // Validate group if provided
         if (groupId) {
@@ -32,6 +31,7 @@ export class UpdateOsceObservationService extends BaseService {
             }
         }
 
+        console.log(updateData)
         // Update observation
         const updatedObservation = await prisma.osce_observations.update({
             where: { id: parseInt(observationId) },
