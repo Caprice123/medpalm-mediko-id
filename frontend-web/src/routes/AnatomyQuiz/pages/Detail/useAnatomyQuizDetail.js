@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchDetailAnatomyQuiz, submitAnatomyQuizAnswers } from '@store/anatomy/action'
 import { fetchConstants } from '@store/constant/action'
+import { actions } from '../../../../store/constant/reducer'
 
 export const useAnatomyQuizDetail = () => {
   const dispatch = useDispatch()
@@ -23,7 +24,8 @@ export const useAnatomyQuizDetail = () => {
     const fetchCorrespondingConstant = async () => {
       try {
         const keys = ['anatomy_section_title']
-        const constants = await dispatch(fetchConstants(keys))
+        dispatch(actions.updateFilter({ key: 'keys', value: keys }))
+        const constants = await dispatch(fetchConstants())
         if (constants?.anatomy_section_title) {
           setSectionTitle(constants.anatomy_section_title)
         }
@@ -90,12 +92,9 @@ export const useAnatomyQuizDetail = () => {
       answer: answers[questionId]
     }))
 
-    try {
-      const result = await dispatch(submitAnatomyQuizAnswers(id, formattedAnswers))
-      setQuizResult(result)
-    } catch (error) {
-      console.error('Failed to submit quiz:', error)
-    }
+      await dispatch(submitAnatomyQuizAnswers(id, formattedAnswers, (result) => {
+          setQuizResult(result)
+      }))
   }
 
   // Handle back navigation

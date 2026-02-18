@@ -3,64 +3,28 @@ import { GetConstantsService } from '#services/constant/getConstantsService'
 import { checkFeaturePermission } from '#middleware/permission.middleware'
 
 // Map permission feature names to sessionType and constants
+// Order matches getActiveFeatures.js
 const PERMISSION_TO_FEATURE_CONFIG = {
-  'exercise': {
-    sessionType: 'exercise',
+  'summaryNotes': {
+    sessionType: 'summary_notes',
     constants: [
-      'exercise_feature_title',
-      'exercise_feature_description',
-      'exercise_credit_cost',
-      'exercise_session_type',
-      'exercise_access_type',
-      'exercise_is_active'
-    ],
-    icon: '🎓'
-  },
-  'flashcard': {
-    sessionType: 'flashcard',
-    constants: [
-      'flashcard_feature_title',
-      'flashcard_feature_description',
-      'flashcard_credit_cost',
-      'flashcard_session_type',
-      'flashcard_access_type',
-      'flashcard_is_active'
-    ],
-    icon: '🎴'
-  },
-  'calculator': {
-    sessionType: 'calculator',
-    constants: [
-      'calculator_feature_title',
-      'calculator_feature_description',
-      'calculator_credit_cost',
-      'calculator_access_type',
-      'calculator_is_active'
-    ],
-    icon: '🧮'
-  },
-  'anatomy': {
-    sessionType: 'anatomy',
-    constants: [
-      'anatomy_feature_title',
-      'anatomy_feature_description',
-      'anatomy_credit_cost',
-      'anatomy_access_type',
-      'anatomy_is_active'
-    ],
-    icon: '🫀'
-  },
-  'mcq': {
-    sessionType: 'mcq',
-    constants: [
-      'mcq_feature_title',
-      'mcq_feature_description',
-      'mcq_credit_cost',
-      'mcq_session_type',
-      'mcq_access_type',
-      'mcq_is_active'
+      'summary_notes_feature_title',
+      'summary_notes_feature_description',
+      'summary_notes_credit_cost',
+      'summary_notes_access_type',
+      'summary_notes_is_active'
     ],
     icon: '📝'
+  },
+  'oscePractice': {
+    sessionType: 'osce_practice',
+    constants: [
+      'osce_practice_feature_title',
+      'osce_practice_feature_description',
+      'osce_practice_access_type',
+      'osce_practice_is_active'
+    ],
+    icon: '🩺'
   },
   'chatbot': {
     sessionType: 'chatbot',
@@ -82,26 +46,63 @@ const PERMISSION_TO_FEATURE_CONFIG = {
     ],
     icon: '📚'
   },
-  'oscePractice': {
-    sessionType: 'osce_practice',
+  'mcq': {
+    sessionType: 'mcq',
     constants: [
-      'osce_practice_feature_title',
-      'osce_practice_feature_description',
-      'osce_practice_access_type',
-      'osce_practice_is_active'
-    ],
-    icon: '🩺'
-  },
-  'summaryNotes': {
-    sessionType: 'summary_notes',
-    constants: [
-      'summary_notes_feature_title',
-      'summary_notes_feature_description',
-      'summary_notes_credit_cost',
-      'summary_notes_access_type',
-      'summary_notes_is_active'
+      'mcq_feature_title',
+      'mcq_feature_description',
+      'mcq_credit_cost',
+      'mcq_session_type',
+      'mcq_access_type',
+      'mcq_is_active'
     ],
     icon: '📝'
+  },
+  'flashcard': {
+    sessionType: 'flashcard',
+    constants: [
+      'flashcard_feature_title',
+      'flashcard_feature_description',
+      'flashcard_credit_cost',
+      'flashcard_session_type',
+      'flashcard_access_type',
+      'flashcard_is_active'
+    ],
+    icon: '🎴'
+  },
+  'anatomy': {
+    sessionType: 'anatomy',
+    constants: [
+      'anatomy_feature_title',
+      'anatomy_feature_description',
+      'anatomy_credit_cost',
+      'anatomy_access_type',
+      'anatomy_is_active'
+    ],
+    icon: '🫀'
+  },
+  'exercise': {
+    sessionType: 'exercise',
+    constants: [
+      'exercise_feature_title',
+      'exercise_feature_description',
+      'exercise_credit_cost',
+      'exercise_session_type',
+      'exercise_access_type',
+      'exercise_is_active'
+    ],
+    icon: '🎓'
+  },
+  'calculator': {
+    sessionType: 'calculator',
+    constants: [
+      'calculator_feature_title',
+      'calculator_feature_description',
+      'calculator_credit_cost',
+      'calculator_access_type',
+      'calculator_is_active'
+    ],
+    icon: '🧮'
   }
 }
 

@@ -19,6 +19,7 @@ import {
   StatusToggle,
   StatusOption,
   AnswerTypeToggle,
+  AnswerTypeButton,
   OptionContainer,
   OptionRadio,
   OptionLabel,
@@ -197,16 +198,14 @@ const UpdateQuizModal = ({ onClose }) => {
               <FormSection>
                 <Label>Answer Type *</Label>
                 <AnswerTypeToggle>
-                  <Button
-                    variant="secondary"
+                  <AnswerTypeButton
                     type="button"
                     isActive={(question.answerType || 'text') === 'text'}
                     onClick={() => form.setFieldValue(`questions.${index}.answerType`, 'text')}
                   >
                     📝 Text Input
-                  </Button>
-                  <Button
-                    variant="secondary"
+                  </AnswerTypeButton>
+                  <AnswerTypeButton
                     type="button"
                     isActive={(question.answerType || 'text') === 'multiple_choice'}
                     onClick={() => {
@@ -218,7 +217,7 @@ const UpdateQuizModal = ({ onClose }) => {
                     }}
                   >
                     ☑️ Multiple Choice
-                  </Button>
+                  </AnswerTypeButton>
                 </AnswerTypeToggle>
               </FormSection>
 
@@ -307,7 +306,7 @@ const UpdateQuizModal = ({ onClose }) => {
         </QuestionsSection>
 
         <StatusToggle>
-          <StatusOption>
+          <StatusOption checked={form.values.status === 'draft'}>
             <input
               type="radio"
               name="status"
@@ -315,9 +314,9 @@ const UpdateQuizModal = ({ onClose }) => {
               checked={form.values.status === 'draft'}
               onChange={(e) => form.setFieldValue('status', e.target.value)}
             />
-            Save as Draft
+            Draft
           </StatusOption>
-          <StatusOption>
+          <StatusOption checked={form.values.status === 'published'}>
             <input
               type="radio"
               name="status"
@@ -325,7 +324,7 @@ const UpdateQuizModal = ({ onClose }) => {
               checked={form.values.status === 'published'}
               onChange={(e) => form.setFieldValue('status', e.target.value)}
             />
-            Publish Now
+            Published
           </StatusOption>
         </StatusToggle>
       </Modal>

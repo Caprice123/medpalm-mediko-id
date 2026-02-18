@@ -338,22 +338,34 @@ export const HelpText = styled.p`
 
 export const StatusToggle = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  margin-top: 0.5rem;
 `
 
 export const StatusOption = styled.label`
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.625rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: #374151;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s;
+  color: ${props => props.checked ? '#0ea5e9' : '#64748b'};
+  background: ${props => props.checked ? 'white' : 'transparent'};
+  box-shadow: ${props => props.checked ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'};
 
-  input {
-    cursor: pointer;
+  &:hover {
+    color: ${props => props.checked ? '#0ea5e9' : '#475569'};
+  }
+
+  input[type="radio"] {
+    display: none;
   }
 `
 

@@ -111,6 +111,7 @@ export const updateObservationGroup = (groupId, data, onSuccess) => async (dispa
     const route = Endpoints.admin.oscePractice + "/observation-groups" + `/${groupId}`
     await putWithToken(route, data)
 
+    await dispatch(fetchAdminOsceObservations())
     if (onSuccess) onSuccess()
   } finally {
     dispatch(setLoading({ key: 'isUpdatingObservationGroup', value: false }))
@@ -153,6 +154,7 @@ export const updateObservation = (observationId, data, onSuccess) => async (disp
     const route = Endpoints.admin.oscePractice + "/observations" + `/${observationId}`
     await putWithToken(route, data)
 
+    await dispatch(fetchAdminOsceObservations())
     if (onSuccess) onSuccess()
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))

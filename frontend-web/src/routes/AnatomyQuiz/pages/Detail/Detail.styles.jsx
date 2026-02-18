@@ -310,21 +310,7 @@ export const QuestionCard = styled.div`
   box-shadow: 0 2px 8px rgba(107, 185, 232, 0.05);
   position: relative;
 
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(180deg, #6BB9E8, #3b82f6);
-    border-radius: 16px 0 0 16px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
   &:hover {
-    border-color: rgba(107, 185, 232, 0.3);
     box-shadow: 0 8px 20px rgba(107, 185, 232, 0.15);
     transform: translateX(4px);
 
@@ -672,6 +658,54 @@ export const AnswerItemValue = styled.span`
     props.type === 'wrong' ? '#fee2e2' :
     '#e2e8f0'};
   word-break: break-word;
+`
+
+export const OptionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+`
+
+export const OptionButton = styled.button`
+  padding: 0.875rem 1rem;
+  border: 2px solid ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
+  background: ${props => props.selected ? '#F0F9FF' : 'white'};
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+
+  &:hover {
+    border-color: #6BB9E8;
+    background: #F0F9FF;
+    transform: translateY(-2px);
+  }
+`
+
+export const OptionLabel = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
+  color: ${props => props.selected ? 'white' : '#64748b'};
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+`
+
+export const OptionText = styled.span`
+  flex: 1;
 `
 
 export const ErrorText = styled.p`

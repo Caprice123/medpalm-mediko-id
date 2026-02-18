@@ -270,7 +270,7 @@ export const OptionButton = styled.button`
   &:hover:not(:disabled) {
     border-color: #3b82f6;
     background: #eff6ff;
-    transform: translateX(4px);
+    transform: translateY(-2px);
   }
 
   &:disabled {

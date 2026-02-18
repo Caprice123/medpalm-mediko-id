@@ -1,6 +1,5 @@
 import { actions } from '@store/anatomy/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
 const {
@@ -52,7 +51,7 @@ export const fetchDetailAnatomyQuiz = (quizId) => async (dispatch) => {
 }
 
 // Submit anatomy quiz answers
-export const submitAnatomyQuizAnswers = (quizId, answers) => async (dispatch) => {
+export const submitAnatomyQuizAnswers = (quizId, answers, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoading', value: true }))
 
@@ -60,7 +59,7 @@ export const submitAnatomyQuizAnswers = (quizId, answers) => async (dispatch) =>
     const response = await postWithToken(route, { answers })
 
     const result = response.data.data
-    return result
+    onSuccess(result)
   } finally {
     dispatch(setLoading({ key: 'isSubmitAnatomyQuizLoading', value: false }))
   }

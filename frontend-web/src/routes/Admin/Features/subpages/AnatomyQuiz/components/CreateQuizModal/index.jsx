@@ -19,10 +19,12 @@ import {
   StatusToggle,
   StatusOption,
   AnswerTypeToggle,
+  AnswerTypeButton,
   OptionContainer,
   OptionRadio,
   OptionLabel,
-  HelpText
+  HelpText,
+  OptionInput
 } from './CreateQuizModal.styles'
 import Button from "@components/common/Button"
 import { useSelector } from 'react-redux'
@@ -196,21 +198,20 @@ const CreateQuizModal = ({ onClose }) => {
               <FormSection>
                 <Label>Answer Type *</Label>
                 <AnswerTypeToggle>
-                  <Button
-                    variant="secondary"
+                  <AnswerTypeButton
                     type="button"
                     isActive={question.answerType === 'text'}
                     onClick={() => form.setFieldValue(`questions.${index}.answerType`, 'text')}
                   >
                     📝 Text Input
-                  </Button>
-                  <Button
+                  </AnswerTypeButton>
+                  <AnswerTypeButton
                     type="button"
                     isActive={question.answerType === 'multiple_choice'}
                     onClick={() => form.setFieldValue(`questions.${index}.answerType`, 'multiple_choice')}
                   >
                     ☑️ Multiple Choice
-                  </Button>
+                  </AnswerTypeButton>
                 </AnswerTypeToggle>
               </FormSection>
 
@@ -299,7 +300,7 @@ const CreateQuizModal = ({ onClose }) => {
         </QuestionsSection>
 
         <StatusToggle>
-          <StatusOption>
+          <StatusOption checked={form.values.status === 'draft'}>
             <input
               type="radio"
               name="status"
@@ -307,9 +308,9 @@ const CreateQuizModal = ({ onClose }) => {
               checked={form.values.status === 'draft'}
               onChange={(e) => form.setFieldValue('status', e.target.value)}
             />
-            Save as Draft
+            Draft
           </StatusOption>
-          <StatusOption>
+          <StatusOption checked={form.values.status === 'published'}>
             <input
               type="radio"
               name="status"
@@ -317,7 +318,7 @@ const CreateQuizModal = ({ onClose }) => {
               checked={form.values.status === 'published'}
               onChange={(e) => form.setFieldValue('status', e.target.value)}
             />
-            Publish Now
+            Published
           </StatusOption>
         </StatusToggle>
       </Modal>

@@ -119,6 +119,54 @@ export const QuestionLabel = styled.p`
   line-height: 1.6;
 `
 
+export const OptionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+`
+
+export const OptionButton = styled.button`
+  padding: 1rem 1.25rem;
+  border: 2px solid ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
+  background: ${props => props.selected ? '#F0F9FF' : 'white'};
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+
+  &:hover {
+    border-color: #6BB9E8;
+    background: #F0F9FF;
+    transform: translateY(-2px);
+  }
+`
+
+export const OptionLabel = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
+  color: ${props => props.selected ? 'white' : '#64748b'};
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+`
+
+export const OptionText = styled.span`
+  flex: 1;
+`
+
 export const AnswerInput = styled.input`
   width: 100%;
   padding: 0.875rem;
@@ -152,7 +200,6 @@ export const SubmitSection = styled.div`
   justify-content: space-between;
   align-items: center;
 `
-
 
 export const LoadingOverlay = styled.div`
   display: flex;
@@ -201,21 +248,4 @@ export const GateText = styled.p`
   font-size: 1.1rem;
   margin-bottom: 2rem;
   line-height: 1.6;
-`
-
-export const GateButton = styled.button`
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(107, 185, 232, 0.4);
-  }
 `
