@@ -19,6 +19,7 @@ export class updateCreditPlanService extends BaseService {
         if (isPopular !== undefined) updateData.is_popular = isPopular
         if (discount !== undefined) updateData.discount = parseInt(discount)
         if (order !== undefined) updateData.order = parseInt(order)
+        updateData.updated_at = new Date()
 
         const plan = await prisma.credit_plans.update({
             where: { id: parseInt(id) },

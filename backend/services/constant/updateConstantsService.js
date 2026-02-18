@@ -20,7 +20,7 @@ export class UpdateConstantsService extends BaseService {
       updates.push(
         prisma.constants.upsert({
           where: { key },
-          update: { value },
+          update: { value, updated_at: new Date() },
           create: { key, value }
         })
       )
