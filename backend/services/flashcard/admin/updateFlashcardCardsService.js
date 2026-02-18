@@ -37,6 +37,7 @@ export class UpdateFlashcardCardsService extends BaseService {
                 where: { unique_id: deckId },
                 data: {
                     flashcard_count: cards.length,
+                    updated_at: new Date(),
                 }
             })
 

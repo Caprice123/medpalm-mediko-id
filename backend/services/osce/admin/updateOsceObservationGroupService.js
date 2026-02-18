@@ -16,6 +16,7 @@ export class UpdateOsceObservationGroupService extends BaseService {
 
         const updateData = {}
         if (name !== undefined) updateData.name = name
+        updateData.updated_at = new Date()
 
         const updatedGroup = await prisma.osce_observation_groups.update({
             where: { id: parseInt(groupId) },

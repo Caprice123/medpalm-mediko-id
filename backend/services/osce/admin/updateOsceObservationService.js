@@ -19,7 +19,8 @@ export class UpdateOsceObservationService extends BaseService {
         const updateData = {}
 
         if (name !== undefined) updateData.name = name
-        if (groupId !== undefined) updateData.group_id = parseInt(groupId)
+        if (groupId !== undefined) updateData.osce_observation_group = { connect: { id: parseInt(groupId) } }
+        updateData.updated_at = new Date()
 
         // Validate group if provided
         if (groupId) {

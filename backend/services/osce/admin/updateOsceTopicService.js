@@ -32,6 +32,7 @@ export class UpdateOsceTopicService extends BaseService {
             if (rubricId !== undefined) updateData.osce_rubric_id = rubricId
             if (durationMinutes !== undefined) updateData.duration_minutes = parseInt(durationMinutes)
             if (status !== undefined) updateData.status = status
+            updateData.updated_at = new Date()
 
             // Update topic basic info
             await tx.osce_topics.update({

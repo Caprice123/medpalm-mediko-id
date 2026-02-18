@@ -42,6 +42,7 @@ export class UpdateAnatomyQuizService extends BaseService {
           title,
           description: description || '',
           ...(status && { status }),
+          updated_at: new Date(),
           anatomy_questions: {
             create: questions.map((q, index) => ({
               question: q.question,

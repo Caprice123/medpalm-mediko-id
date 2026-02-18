@@ -24,6 +24,7 @@ export class UpdateFlashcardDeckService extends BaseService {
                 description: description !== undefined ? description : deck.description,
                 status: status || deck.status,
                 flashcard_count: cards.length,
+                updated_at: new Date(),
             }
 
             // Update contentType and content together

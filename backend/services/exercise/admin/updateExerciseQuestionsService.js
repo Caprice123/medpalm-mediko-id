@@ -36,7 +36,7 @@ export class UpdateExerciseQuestionsService extends BaseService {
             // Update question_count
             await tx.exercise_topics.update({
                 where: { id: parseInt(topicId) },
-                data: { question_count: questions.length }
+                data: { question_count: questions.length, updated_at: new Date() }
             })
 
             // Fetch and return updated topic

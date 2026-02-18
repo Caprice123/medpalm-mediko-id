@@ -52,6 +52,7 @@ export class UpdateMcqTopicService extends BaseService {
       if (quizTimeLimit !== undefined) updateData.quiz_time_limit = quizTimeLimit
       if (passingScore !== undefined) updateData.passing_score = passingScore
       if (status !== undefined) updateData.status = status
+      updateData.updated_at = new Date()
 
       // Determine final contentType (use new if provided, otherwise keep existing)
       const finalContentType = contentType !== undefined ? contentType : existingTopic.content_type
@@ -104,7 +105,7 @@ export class UpdateMcqTopicService extends BaseService {
         // Update question count
         await tx.mcq_topics.update({
           where: { unique_id: id },
-          data: { question_count: questions.length }
+          data: { question_count: questions.length, updated_at: new Date() }
         })
 
         // Get existing questions to delete their attachments

@@ -32,6 +32,7 @@ export class UpdateCalculatorTopicService extends BaseService {
                     result_label,
                     result_unit,
                     status,
+                    updated_at: new Date(),
                 }
             })
 

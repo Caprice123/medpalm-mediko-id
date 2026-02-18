@@ -28,6 +28,7 @@ export class UpdateExerciseTopicService extends BaseService {
             const updateData = {
                 title: title || topic.title,
                 description: description !== undefined ? description : topic.description,
+                updated_at: new Date(),
             }
 
             // Update contentType and content together
@@ -194,7 +195,7 @@ export class UpdateExerciseTopicService extends BaseService {
 
                 await tx.exercise_topics.update({
                     where: { unique_id: topicId },
-                    data: { question_count: questionCount }
+                    data: { question_count: questionCount, updated_at: new Date() }
                 })
             }
 
