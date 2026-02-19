@@ -1,8 +1,14 @@
 import { lazy, Suspense } from 'react';
 import PageLoader from '@components/PageLoader';
 
-const CalculatorTopicList = lazy(() => import('../pages/List'));
-const CalculatorTopicDetail = lazy(() => import('../pages/Detail'));
+const CalculatorTopicList = lazy(() => import("../pages/List"));
+const CalculatorTopicDetail = lazy(() => import("../pages/Detail"));
+
+const withSuspense = (Component) => (
+    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Calculators..." />}>
+        {Component}
+    </Suspense>
+);
 
 export class CalculatorRoute {
     static moduleRoute = "/calculators"
@@ -11,6 +17,6 @@ export class CalculatorRoute {
 }
 
 export const calculatorRoutes = [
-    { path: CalculatorRoute.initialRoute, element: <CalculatorTopicList /> },
-    { path: CalculatorRoute.detailRoute, element: <CalculatorTopicDetail /> },
+    { path: CalculatorRoute.initialRoute, element: withSuspense(<CalculatorTopicList />) },
+    { path: CalculatorRoute.detailRoute, element: withSuspense(<CalculatorTopicDetail />) },
 ];

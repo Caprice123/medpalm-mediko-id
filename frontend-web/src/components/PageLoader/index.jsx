@@ -1,12 +1,13 @@
 import React from 'react';
 import { LoaderWrapper, LogoContainer, LogoImage, SpinnerRing, LoaderText } from './PageLoader.styles';
+import iconUrl from '@/assets/icon.svg';
 
 const PageLoader = ({ fullScreen = true, text = 'Loading...', size = 80 }) => {
   return (
     <LoaderWrapper fullScreen={fullScreen}>
       <LogoContainer>
         <LogoImage>
-            <img src="/icon.svg" alt="Logo" style={{ height: '80px' }} />
+            <img src={iconUrl} alt="Logo" style={{ height: '80px' }} />
         </LogoImage>
       </LogoContainer>
       {text && <LoaderText fullScreen={fullScreen}>{text}</LoaderText>}

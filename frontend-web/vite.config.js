@@ -2,10 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import path from 'path'
+import compression from 'vite-plugin-compression'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr()],
+  plugins: [
+    react(),
+    svgr(),
+    compression({ algorithm: 'gzip' }),
+    compression({ algorithm: 'brotliCompress', ext: '.br' }),
+    visualizer({ open: false, filename: 'dist/stats.html', gzipSize: true }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/'),
@@ -18,6 +26,21 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './src/hooks/'),
       '@services': path.resolve(__dirname, './src/services/'),
       '@mockups': path.resolve(__dirname, './src/mockups/'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-excalidraw': ['@excalidraw/excalidraw', '@excalidraw/mermaid-to-excalidraw'],
+          'vendor-blocknote': ['@blocknote/core', '@blocknote/react', '@blocknote/mantine', '@blocknote/xl-docx-exporter'],
+          'vendor-tiptap': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extensions'],
+          'vendor-mantine': ['@mantine/core', '@mantine/hooks', '@mantine/dates'],
+          'vendor-editor': ['reactflow', 'dagre', 'docx', 'katex'],
+          'vendor-misc': ['axios', 'redux', '@reduxjs/toolkit', 'react-redux', 'formik', 'yup'],
+        },
+      },
     },
   },
 })
