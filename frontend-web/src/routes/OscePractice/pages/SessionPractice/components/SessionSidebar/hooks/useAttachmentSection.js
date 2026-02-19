@@ -1,61 +1,52 @@
 import { useState } from 'react'
 
 export const useAttachmentSection = () => {
-  const [attachmentPreviewIndex, setAttachmentPreviewIndex] = useState(0)
   const [isShowAttachment, setIsShowAttachment] = useState(false)
-  const [isSlideshowMode, setIsSlideshowMode] = useState(false)
   const [currentSliderIndex, setCurrentSliderIndex] = useState(0)
-
-  const onOpenAttachment = (toggle) => {
-    setIsSlideshowMode(toggle)
-    if (!toggle) {
-      setCurrentSliderIndex(0)
-    }
-  }
-
-  const handleAttachmentPreviewIndex = (index) => {
-    setAttachmentPreviewIndex(index)
-    setCurrentSliderIndex(index)
-  }
+  const [isImageLoading, setIsImageLoading] = useState(true)
 
   const handleThumbnailClick = (index) => {
-    setAttachmentPreviewIndex(index)
     setCurrentSliderIndex(index)
     setIsShowAttachment(true)
   }
 
   const handleSliderNext = (totalImages) => {
     if (currentSliderIndex < totalImages - 1) {
-      const newIndex = currentSliderIndex + 1
-      setCurrentSliderIndex(newIndex)
-      setAttachmentPreviewIndex(newIndex)
+      setIsImageLoading(true)
+      setCurrentSliderIndex(prev => prev + 1)
     }
   }
 
   const handleSliderPrevious = () => {
     if (currentSliderIndex > 0) {
-      const newIndex = currentSliderIndex - 1
-      setCurrentSliderIndex(newIndex)
-      setAttachmentPreviewIndex(newIndex)
+      setIsImageLoading(true)
+      setCurrentSliderIndex(prev => prev - 1)
     }
   }
 
   const handleSliderGoTo = (index) => {
+    setIsImageLoading(true)
     setCurrentSliderIndex(index)
-    setAttachmentPreviewIndex(index)
+  }
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false)
+  }
+
+  const handleImageLoadStart = () => {
+    setIsImageLoading(true)
   }
 
   return {
-    attachmentPreviewIndex,
     isShowAttachment,
-    isSlideshowMode,
     currentSliderIndex,
-    onOpenAttachment,
-    handleAttachmentPreviewIndex,
+    isImageLoading,
     handleThumbnailClick,
     handleSliderNext,
     handleSliderPrevious,
     handleSliderGoTo,
+    handleImageLoad,
+    handleImageLoadStart,
     setIsShowAttachment,
   }
 }

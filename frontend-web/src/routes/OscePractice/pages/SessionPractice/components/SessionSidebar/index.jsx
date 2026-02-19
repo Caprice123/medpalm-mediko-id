@@ -73,7 +73,9 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
         </AutoSubmitToggle>
 
         {/* Attachments Section */}
-        <AttachmentSection />
+        <div style={{ marginTop: '0.75rem' }}>
+          <AttachmentSection />
+        </div>
       </TaskSection>
 
       <DesktopButtonWrapper>

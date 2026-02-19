@@ -153,7 +153,6 @@ export const TimerLabel = styled.div`
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
 
   @media (max-width: 768px) {

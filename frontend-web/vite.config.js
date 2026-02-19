@@ -33,11 +33,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-excalidraw': ['@excalidraw/excalidraw', '@excalidraw/mermaid-to-excalidraw'],
-          'vendor-blocknote': ['@blocknote/core', '@blocknote/react', '@blocknote/mantine', '@blocknote/xl-docx-exporter'],
-          'vendor-tiptap': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extensions'],
-          'vendor-mantine': ['@mantine/core', '@mantine/hooks', '@mantine/dates'],
-          'vendor-editor': ['reactflow', 'dagre', 'docx', 'katex'],
+          'vendor-blocknote': [
+            '@blocknote/core', '@blocknote/react', '@blocknote/mantine', '@blocknote/xl-docx-exporter',
+            '@tiptap/react', '@tiptap/starter-kit', '@tiptap/extensions',
+            '@mantine/core', '@mantine/hooks', '@mantine/dates',
+          ],
+          'vendor-editor': ['docx', 'katex'],
           'vendor-misc': ['axios', 'redux', '@reduxjs/toolkit', 'react-redux', 'formik', 'yup'],
         },
       },

@@ -1,42 +1,21 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
 
 export const AttachmentContainer = styled.div`
-  margin-top: 0.75rem;
+  padding: 0.75rem;
   background: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #e5e5e5;
 `
 
-export const ViewAttachmentsButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  justify-content: center;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`
-
 export const SliderContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 `
 
 export const MainImageContainer = styled.div`
@@ -50,14 +29,13 @@ export const MainImageContainer = styled.div`
 export const MainImageWrapper = styled.div`
   position: relative;
   width: 100%;
-  padding-bottom: 75%; /* 4:3 aspect ratio */
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
   cursor: pointer;
   overflow: hidden;
+  transition: box-shadow 0.2s ease;
 
   &:hover {
-    > div:last-child {
-      opacity: 1;
-    }
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
 `
 
@@ -71,13 +49,37 @@ export const MainImage = styled.img`
   background: #f5f5f5;
 `
 
+export const ImageLoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(248, 250, 252, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  gap: 0.625rem;
+  z-index: 2;
+  font-size: 0.8125rem;
+  font-weight: 500;
+`
+
+export const LoadingSpinnerIcon = styled.span`
+  display: flex;
+  animation: ${spin} 1s linear infinite;
+  color: #6BB9E8;
+`
+
 export const MainImageOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,6 +91,10 @@ export const MainImageOverlay = styled.div`
   pointer-events: none;
   font-size: 0.875rem;
   font-weight: 500;
+
+  ${MainImageWrapper}:hover & {
+    opacity: 1;
+  }
 `
 
 export const SliderControls = styled.div`
@@ -96,26 +102,26 @@ export const SliderControls = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0 0.5rem;
+  padding: 0 0.25rem;
 `
 
 export const SliderButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
   color: white;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 1rem;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   }
 
   &:active:not(:disabled) {
@@ -134,21 +140,25 @@ export const SliderInfo = styled.div`
 `
 
 export const SliderCounter = styled.span`
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: #666;
+  color: #555;
+  background: white;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 `
 
 export const SliderDots = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
 `
 
 export const Dot = styled.button`
-  width: ${props => props.active ? '24px' : '8px'};
+  width: ${props => props.active ? '22px' : '8px'};
   height: 8px;
   border-radius: 4px;
   border: none;

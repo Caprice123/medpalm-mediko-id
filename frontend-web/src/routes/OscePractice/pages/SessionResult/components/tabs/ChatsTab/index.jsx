@@ -1,10 +1,8 @@
 import { useEffect, useState, useRef, useCallback, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loadMoreMessages } from '@store/oscePractice/userAction'
-import { PhotoProvider, PhotoView } from 'react-photo-view'
-import 'react-photo-view/dist/react-photo-view.css'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
-import Button from '@components/common/Button'
+import { AttachmentSection } from '../../../../SessionPractice/components/SessionSidebar/components/AttachmentSection'
 import {
   Sidebar,
   MainContent,
@@ -24,7 +22,6 @@ import {
 } from '../../../../SessionPractice/SessionPractice.styles'
 import {
   Container,
-  AttachmentContainer,
   MessagesWrapper,
 } from './styles'
 
@@ -32,8 +29,6 @@ function ChatsTab({ sessionId }) {
   const dispatch = useDispatch()
   const { sessionMessages, sessionDetail, loading, messagesPagination } = useSelector(state => state.oscePractice)
   const [isGuideVisible, setIsGuideVisible] = useState(true)
-  const [isShowAttachment, setIsShowAttachment] = useState(false)
-  const [currentSliderIndex, setCurrentSliderIndex] = useState(0)
   const messageListRef = useRef(null)
   const messagesEndRef = useRef(null)
   const isLoadingMoreRef = useRef(false)
@@ -52,8 +47,6 @@ function ChatsTab({ sessionId }) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
     }
   }, [loading.isLoadingSessionMessages, sessionMessages.length])
-
-  const attachments = sessionDetail?.topic?.attachments || []
 
   // Infinite scroll: load more messages when scrolling near top
   const handleScroll = useCallback(async () => {
@@ -135,27 +128,9 @@ function ChatsTab({ sessionId }) {
         )}
 
         {/* Attachment Section */}
-        {attachments.length > 0 && (
-          <PhotoProvider
-            visible={isShowAttachment}
-            onVisibleChange={setIsShowAttachment}
-            index={currentSliderIndex}
-            onIndexChange={setCurrentSliderIndex}
-          >
-            <div style={{ padding: '0 1rem 1rem 1rem' }}>
-              <AttachmentContainer>
-                <Button variant="primary" onClick={() => setIsShowAttachment(true)}>
-                  👁️ Gambar Kasus ({attachments.length})
-                </Button>
-                {attachments.map((img, i) => (
-                  <PhotoView key={i} src={img.url}>
-                    <img src={img.url} alt="" style={{ display: 'none' }} />
-                  </PhotoView>
-                ))}
-              </AttachmentContainer>
-            </div>
-          </PhotoProvider>
-        )}
+        <div style={{ padding: '0 1rem 1rem 1rem' }}>
+          <AttachmentSection />
+        </div>
       </Sidebar>
 
       {/* Right Main Content - Messages */}

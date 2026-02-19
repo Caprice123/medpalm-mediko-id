@@ -153,12 +153,6 @@ export const LinkButton = styled(Link)`
     display: flex;
   `}
 
-  &.nav-cta {
-    @media (max-width: 768px) {
-      display: none;
-    }
-  }
-
   @media (max-width: 768px) {
     font-size: ${props => props.size === 'small' ? '0.8125rem' : '0.9375rem'};
   }
