@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import Button from '@components/common/Button'
+import { OscePracticeRoute } from '../../../../routes'
 import {
   Card,
   CardHeader,
@@ -37,12 +38,12 @@ function SessionCard({ session }) {
   }
 
   const onViewSession = (session) => {
-    if (session.status == "created") {
-        navigate(`/osce-practice/session/${session.uniqueId}/preparation`)
-    } else if (session.status == "completed") {
-        navigate(`/osce-practice/session/${session.uniqueId}/result`)
+    if (session.status == 'created') {
+      navigate(OscePracticeRoute.preparationRoute(session.uniqueId))
+    } else if (session.status == 'completed') {
+      navigate(OscePracticeRoute.resultRoute(session.uniqueId))
     } else {
-        navigate(`/osce-practice/session/${session.uniqueId}/practice`)
+      navigate(OscePracticeRoute.practiceRoute(session.uniqueId))
     }
   }
 

@@ -89,6 +89,10 @@ const initialState = {
     page: 1,
     perPage: 20,
     isLastPage: false
+  },
+  topicsPagination: {
+    page: 1,
+    isLastPage: false
   }
 }
 
@@ -227,7 +231,10 @@ const { reducer, actions } = createSlice({
     },
     updateSessionsPagination: (state, { payload }) => {
       state.sessionsPagination = { ...state.sessionsPagination, ...payload }
-    }
+    },
+    updateTopicsPagination: (state, { payload }) => {
+      state.topicsPagination = { ...state.topicsPagination, ...payload }
+    },
   },
 
   extraReducers: (builder) => {

@@ -4,7 +4,7 @@ import { useFlashcardList } from './hooks/useFlashcardList'
 import Pagination from '@components/Pagination'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/flashcard/reducer'
-import { fetchFlashcardDecks } from '@store/flashcard/action'
+import { fetchFlashcardDecks } from '@store/flashcard/userAction'
 import {
   Container,
   DeckSelectionContainer

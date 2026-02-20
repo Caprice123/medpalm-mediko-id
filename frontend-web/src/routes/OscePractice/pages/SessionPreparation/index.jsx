@@ -1,6 +1,3 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
 import {
   Container,
   Card,
@@ -23,121 +20,17 @@ import {
   Actions,
   Button,
   ErrorMessage,
-  HelpText,
 } from './SessionPreparation.styles'
-import { startOsceSession, fetchSessionDetail } from '@store/oscePractice/userAction'
-import { getAvailableSttProvider } from '@utils/testDeepgramConnection'
+import { useSessionPreparation } from './hooks/useSessionPreparation'
 
 function SessionPreparation() {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { sessionId } = useParams()
-  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
+  const {
+    sessionDetail, loading,
+    microphoneGranted, isRequesting, permissionError,
+    sttProvider, testingProvider,
+    requestMicrophonePermission, handleStart, handleCancel, handleBackToHome,
+  } = useSessionPreparation()
 
-  const [microphoneGranted, setMicrophoneGranted] = useState(false)
-  const [isRequesting, setIsRequesting] = useState(false)
-  const [isStarting, setIsStarting] = useState(false)
-  const [permissionError, setPermissionError] = useState(null)
-  const [sttProvider, setSttProvider] = useState(null)
-  const [testingProvider, setTestingProvider] = useState(false)
-
-  // Fetch session detail on mount
-  useEffect(() => {
-    if (sessionId) {
-      dispatch(fetchSessionDetail(sessionId))
-    }
-  }, [sessionId, dispatch])
-
-  // Check initial permission status
-  useEffect(() => {
-    checkPermissions()
-  }, [])
-
-  // Test STT provider connectivity on mount
-  useEffect(() => {
-    const testProvider = async () => {
-      setTestingProvider(true)
-      try {
-        const provider = await getAvailableSttProvider()
-        setSttProvider(provider)
-      } catch (err) {
-        console.error('Error testing STT provider:', err)
-        // Default to whisper on error
-        setSttProvider('whisper')
-      } finally {
-        setTestingProvider(false)
-      }
-    }
-
-    testProvider()
-  }, [])
-
-  const checkPermissions = async () => {
-    try {
-      // Check microphone permission
-      const micPermission = await navigator.permissions.query({ name: 'microphone' })
-      setMicrophoneGranted(micPermission.state === 'granted')
-    } catch (err) {
-      console.error('Error checking permissions:', err)
-    }
-  }
-
-  const requestMicrophonePermission = async () => {
-    setIsRequesting(true)
-    setPermissionError(null)
-
-    try {
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      })
-
-      // Stop the stream immediately - we just needed to request permission
-      stream.getTracks().forEach(track => track.stop())
-
-      setMicrophoneGranted(true)
-    } catch (err) {
-      console.error('Permission denied:', err)
-      setPermissionError('Akses mikrofon ditolak. Silakan aktifkan izin mikrofon di pengaturan browser Anda.')
-    } finally {
-      setIsRequesting(false)
-    }
-  }
-
-  const handleStart = async () => {
-    if (!microphoneGranted) {
-      setPermissionError('Harap berikan izin akses mikrofon terlebih dahulu.')
-      return
-    }
-
-    if (!sttProvider) {
-      setPermissionError('Sedang memeriksa konektivitas layanan. Mohon tunggu sebentar.')
-      return
-    }
-
-    setIsStarting(true)
-    try {
-      // Start the session with the determined STT provider
-      await dispatch(startOsceSession(sessionId, sttProvider))
-
-      // Navigate to practice page after successfully starting session
-      navigate(`/osce-practice/session/${sessionId}/practice`)
-    } catch (err) {
-      console.error('Failed to start session:', err)
-      // Error handling is done in the action creator
-    } finally {
-      setIsStarting(false)
-    }
-  }
-
-  console.log("SESSION PREPARATION")
-  console.log(sessionDetail)
-
-  const handleCancel = () => {
-    navigate(-1)
-  }
-
-  // Show loading state
   if (loading.isLoadingSessionDetail) {
     return (
       <Container>
@@ -152,7 +45,6 @@ function SessionPreparation() {
     )
   }
 
-  // Show error if session not found
   if (!sessionDetail) {
     return (
       <Container>
@@ -163,7 +55,7 @@ function SessionPreparation() {
             <Subtitle>Sesi yang Anda cari tidak tersedia.</Subtitle>
           </Header>
           <Actions>
-            <Button variant="primary" onClick={() => navigate('/osce-practice')}>
+            <Button variant="primary" onClick={handleBackToHome}>
               Kembali ke Beranda
             </Button>
           </Actions>
@@ -210,7 +102,6 @@ function SessionPreparation() {
           )}
         </PermissionCard>
 
-        {/* STT Provider Status */}
         <PermissionCard granted={!!sttProvider && !testingProvider}>
           <PermissionIconCircle>🌐</PermissionIconCircle>
           <PermissionContent>
@@ -259,9 +150,9 @@ function SessionPreparation() {
           <Button
             variant="primary"
             onClick={handleStart}
-            disabled={!microphoneGranted || isStarting || testingProvider || !sttProvider}
+            disabled={!microphoneGranted || loading.isStartingSession || testingProvider || !sttProvider}
           >
-            {isStarting ? 'Memulai Sesi...' : testingProvider ? 'Memeriksa Konektivitas...' : 'Mulai Latihan'}
+            {loading.isStartingSession ? 'Memulai Sesi...' : testingProvider ? 'Memeriksa Konektivitas...' : 'Mulai Latihan'}
           </Button>
         </Actions>
       </Card>

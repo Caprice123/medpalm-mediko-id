@@ -30,6 +30,7 @@ const {
   prependMessages,
   prependPhysicalExamMessages,
   updateSessionsPagination,
+  updateTopicsPagination,
 } = actions
 
 // Fetch available topics for user
@@ -51,6 +52,7 @@ export const fetchUserOsceTopics = (params = {}) => async (dispatch) => {
     const pagination = response.data.pagination || {}
 
     dispatch(setUserTopics(topics))
+    dispatch(updateTopicsPagination(pagination))
 
     return { topics, pagination }
   } finally {
@@ -100,7 +102,7 @@ export const createOsceSession = (topicId, onSuccess) => async (dispatch) => {
 }
 
 // Start an existing OSCE practice session (deducts credits)
-export const startOsceSession = (sessionId, sttProvider) => async (dispatch) => {
+export const startOsceSession = (sessionId, sttProvider, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isStartingSession', value: true }))
 
@@ -109,12 +111,12 @@ export const startOsceSession = (sessionId, sttProvider) => async (dispatch) => 
     const supportedMimeType = mimeTypeCheck.mimeType
 
     const route = `${Endpoints.api.oscePractice}/sessions/${sessionId}/start`
-    const response = await postWithToken(route, {
+    await postWithToken(route, {
       sttProvider,
       supportedMimeType
     })
 
-    return response.data
+    if (onSuccess) onSuccess()
   }finally {
     dispatch(setLoading({ key: 'isStartingSession', value: false }))
   }

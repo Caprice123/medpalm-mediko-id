@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/flashcard/reducer'
 import { useMemo } from 'react'
-import { fetchFlashcardDecks } from '@store/flashcard/action'
+import { fetchFlashcardDecks } from '@store/flashcard/userAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()

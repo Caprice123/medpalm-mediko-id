@@ -1,11 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  fetchSessionDetail,
-  fetchSessionMessages,
-  fetchPhysicalExamMessages
-} from '@store/oscePractice/userAction'
 import { SessionResultSkeleton } from '@components/common/SkeletonCard'
 import HasilTab from './components/tabs/HasilTab'
 import ChatsTab from './components/tabs/ChatsTab'
@@ -17,27 +9,14 @@ import Button from '@components/common/Button'
 import {
   Container,
   Header,
-  TitleRow,
-  TitleSection,
-  Title,
-  Subtitle,
-  ScoreCard,
-  ScoreLabel,
-  Score,
-  ScoreMax,
-  MetaInfo,
-  MetaItem,
-  MetaLabel,
-  MetaValue,
   Content,
   TabBar,
   Tab,
   TabContent,
-  LoadingContainer,
-  LoadingSpinner,
   ErrorMessage,
   Wrapper,
 } from './styles'
+import { useSessionResult } from './hooks/useSessionResult'
 
 const TABS = [
   { id: 'hasil', label: 'Hasil' },
@@ -49,40 +28,11 @@ const TABS = [
 ]
 
 function SessionResult() {
-  const { sessionId } = useParams()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-
-  const { sessionDetail, loading } = useSelector(state => state.oscePractice)
-  const [activeTab, setActiveTab] = useState('hasil')
-  const [error, setError] = useState(null)
-
-  // Fetch session detail and all messages on mount (only once)
-  useEffect(() => {
-    if (sessionId) {
-      // Fetch session detail and all messages in parallel
-      Promise.all([
-        dispatch(fetchSessionDetail(sessionId)),
-        dispatch(fetchSessionMessages(sessionId)),
-        dispatch(fetchPhysicalExamMessages(sessionId))
-      ]).catch(err => {
-        setError(err.message || 'Gagal memuat detail sesi')
-      })
-    }
-  }, [sessionId, dispatch])
-
-  // Redirect based on session status
-  useEffect(() => {
-    if (sessionDetail && sessionDetail.uniqueId === sessionId) {
-      if (sessionDetail.status === 'created') {
-        // Redirect to preparation page if session not started yet
-        navigate(`/osce-practice/session/${sessionId}/preparation`, { replace: true })
-      } else if (sessionDetail.status === 'started') {
-        // Redirect to practice page if session is still ongoing
-        navigate(`/osce-practice/session/${sessionId}/practice`, { replace: true })
-      }
-    }
-  }, [sessionDetail, sessionId, navigate])
+  const {
+    sessionId, sessionDetail, loading,
+    activeTab, setActiveTab,
+    error, handleBack,
+  } = useSessionResult()
 
   if (loading.isLoadingSessionDetail) {
     return (
@@ -96,15 +46,15 @@ function SessionResult() {
     return (
       <Container>
         <Wrapper>
-            <Header>
-            <Button variant="secondary" onClick={() => navigate(-1)}>
-                ← Kembali
+          <Header>
+            <Button variant="secondary" onClick={handleBack}>
+              ← Kembali
             </Button>
             <ErrorMessage>
-                <span>⚠️</span>
-                <span>{error || 'Sesi tidak ditemukan'}</span>
+              <span>⚠️</span>
+              <span>{error || 'Sesi tidak ditemukan'}</span>
             </ErrorMessage>
-            </Header>
+          </Header>
         </Wrapper>
       </Container>
     )
@@ -112,37 +62,36 @@ function SessionResult() {
 
   return (
     <Container>
-        <Wrapper>
-            <Header>
-            <Button variant="secondary" onClick={() => navigate("/osce-practice")}>
+      <Wrapper>
+        <Header>
+          <Button variant="secondary" onClick={handleBack}>
             ← Kembali
-            </Button>
-            </Header>
-            
+          </Button>
+        </Header>
 
-            <Content>
-                <TabBar>
-                {TABS.map(tab => (
-                    <Tab
-                    key={tab.id}
-                    active={activeTab === tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    >
-                    {tab.label}
-                    </Tab>
-                ))}
-                </TabBar>
+        <Content>
+          <TabBar>
+            {TABS.map(tab => (
+              <Tab
+                key={tab.id}
+                active={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </Tab>
+            ))}
+          </TabBar>
 
-                <TabContent>
-                {activeTab === 'hasil' && <HasilTab session={sessionDetail} />}
-                {activeTab === 'chats' && <ChatsTab sessionId={sessionDetail.uniqueId} />}
-                {activeTab === 'physical_exam' && <PhysicalExamTab sessionId={sessionDetail.uniqueId} />}
-                {activeTab === 'observation' && <ObservationTab sessionId={sessionDetail.uniqueId} />}
-                {activeTab === 'diagnosis' && <DiagnosisTab sessionId={sessionDetail.uniqueId} />}
-                {activeTab === 'therapy' && <TherapyTab sessionId={sessionDetail.uniqueId} />}
-                </TabContent>
-            </Content>
-        </Wrapper>
+          <TabContent>
+            {activeTab === 'hasil' && <HasilTab session={sessionDetail} />}
+            {activeTab === 'chats' && <ChatsTab sessionId={sessionDetail.uniqueId} />}
+            {activeTab === 'physical_exam' && <PhysicalExamTab sessionId={sessionDetail.uniqueId} />}
+            {activeTab === 'observation' && <ObservationTab sessionId={sessionDetail.uniqueId} />}
+            {activeTab === 'diagnosis' && <DiagnosisTab sessionId={sessionDetail.uniqueId} />}
+            {activeTab === 'therapy' && <TherapyTab sessionId={sessionDetail.uniqueId} />}
+          </TabContent>
+        </Content>
+      </Wrapper>
     </Container>
   )
 }

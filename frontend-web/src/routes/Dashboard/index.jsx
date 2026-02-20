@@ -33,6 +33,7 @@ import { SummaryNotesRoute } from '../SummaryNotes/routes'
 import { MultipleChoiceRoute } from '../MultipleChoice/routes'
 import { ChatbotRoute } from '../Chatbot/routes'
 import { SkripsiRoute } from '../SkripsiBuilder/routes'
+import { OscePracticeRoute } from '../OscePractice/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -64,7 +65,7 @@ function Dashboard() {
         'mcq': MultipleChoiceRoute.moduleRoute,
         'chatbot': ChatbotRoute.moduleRoute,
         'skripsi_builder': SkripsiRoute.moduleRoute,
-        'osce_practice': '/osce-practice',
+        'osce_practice': OscePracticeRoute.moduleRoute,
       }
       
       // Navigate to the mapped route if it exists
