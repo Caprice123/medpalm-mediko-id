@@ -5,7 +5,7 @@ const MultipleChoiceTopicList = lazy(() => import('../pages/List'));
 const MultipleChoiceTopicDetail = lazy(() => import('../pages/Detail'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Multiple Choice..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );

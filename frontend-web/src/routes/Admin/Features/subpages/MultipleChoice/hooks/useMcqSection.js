@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { fetchAdminMcqTopics } from '@store/mcq/action'
+import { fetchAdminMcqTopics } from '@store/mcq/adminAction'
 import { fetchAdminTags } from '@store/tags/action'
 import { actions } from "@store/tags/reducer"
 

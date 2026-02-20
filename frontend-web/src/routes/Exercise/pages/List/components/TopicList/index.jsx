@@ -74,46 +74,34 @@ function TopicList() {
                 {topic.description || 'Tidak ada deskripsi'}
               </TopicDescription>
 
-              {/* Topic Tags */}
-              {topicTags.length > 0 && (
-                <TagList>
-                  {topicTags.map((tag) => (
-                    <Tag key={tag.id} topic>
-                      🏥 {tag.name}
-                    </Tag>
-                  ))}
-                </TagList>
-              )}
-
-              {/* Department Tags */}
-              {departmentTags.length > 0 && (
-                <TagList>
-                  {departmentTags.map((tag) => (
-                    <Tag key={tag.id} department>
-                      🏨 {tag.name}
-                    </Tag>
-                  ))}
-                </TagList>
-              )}
-
-              {/* University Tags */}
               {universityTags.length > 0 && (
                 <TagList>
                   {universityTags.map((tag) => (
-                    <Tag key={tag.id} university>
-                      🏛️ {tag.name}
-                    </Tag>
+                    <Tag key={tag.id} university>🏛️ {tag.name}</Tag>
                   ))}
                 </TagList>
               )}
 
-              {/* Semester Tags */}
               {semesterTags.length > 0 && (
                 <TagList>
                   {semesterTags.map((tag) => (
-                    <Tag key={tag.id} semester>
-                      📚 {tag.name}
-                    </Tag>
+                    <Tag key={tag.id} semester>📚 {tag.name}</Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {topicTags.length > 0 && (
+                <TagList>
+                  {topicTags.map((tag) => (
+                    <Tag key={tag.id} topic>📖 {tag.name}</Tag>
+                  ))}
+                </TagList>
+              )}
+
+              {departmentTags.length > 0 && (
+                <TagList>
+                  {departmentTags.map((tag) => (
+                    <Tag key={tag.id} department>🏥 {tag.name}</Tag>
                   ))}
                 </TagList>
               )}

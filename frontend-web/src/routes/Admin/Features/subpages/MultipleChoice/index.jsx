@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { useMcqSection } from './hooks/useMcqSection'
 import { actions } from '@store/mcq/reducer'
-import { fetchAdminMcqTopics, fetchMcqTopicDetail, deleteMcqTopic } from '@store/mcq/action'
+import { fetchAdminMcqTopics, fetchMcqTopicDetail, deleteMcqTopic } from '@store/mcq/adminAction'
 import CreateTopicModal from './components/CreateTopicModal'
 import UpdateTopicModal from './components/UpdateTopicModal'
 import McqSettingsModal from './components/McqSettingsModal'

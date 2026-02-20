@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import { useState, useCallback, useRef } from 'react'
-import { createMcqTopic, generateMcqQuestions } from '@store/mcq/action'
+import { createMcqTopic, generateMcqQuestions } from '@store/mcq/adminAction'
 import { upload } from '@store/common/action'
 
 export const useCreateTopic = (closeCallback) => {

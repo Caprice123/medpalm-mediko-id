@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
 import Loading from '@components/common/Loading'
 import Pagination from '@components/Pagination'
-import { fetchAdminMcqTopics } from '@store/mcq/action'
+import { fetchAdminMcqTopics } from '@store/mcq/adminAction'
 import { actions } from '@store/mcq/reducer'
 import {
   FilterSection,

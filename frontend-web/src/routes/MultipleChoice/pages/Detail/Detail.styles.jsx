@@ -124,6 +124,18 @@ export const Tag = styled.span`
   font-size: 0.75rem;
   font-weight: 600;
 
+  ${props => props.department && `
+    background: #FFF7ED;
+    color: #92400E;
+    border: 1px solid #F59E0B;
+  `}
+
+  ${props => props.topic && `
+    background: #F5F3FF;
+    color: #5B21B6;
+    border: 1px solid #8B5CF6;
+  `}
+
   ${props => props.university && `
     background: #EFF6FF;
     color: ${colors.primary.dark};

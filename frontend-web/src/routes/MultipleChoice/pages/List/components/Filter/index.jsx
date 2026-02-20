@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/mcq/reducer'
 import { useMemo } from 'react'
-import { fetchMcqTopics } from '@store/mcq/action'
+import { fetchMcqTopics } from '@store/mcq/userAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()
