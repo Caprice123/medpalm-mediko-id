@@ -25,6 +25,7 @@ const initialState = {
     isUpdatingTopic: false,
     isDeletingTopic: false,
     isQuestionsLoading: false,
+    isStartingExercise: false,
   },
 }
 

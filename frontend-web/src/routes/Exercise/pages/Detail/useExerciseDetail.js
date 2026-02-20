@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { startExerciseTopic, submitExerciseProgress } from '@store/exercise/action'
+import { startExerciseTopic, submitExerciseProgress } from '@store/exercise/userAction'
 import { fetchTags } from '@store/tags/action'
 import { actions as tagActions } from '@store/tags/reducer'
 import { ExerciseRoute } from '../../routes'
@@ -11,56 +11,33 @@ export const useExerciseDetail = () => {
   const navigate = useNavigate()
   const { id } = useParams()
 
-  const [topicSnapshot, setTopicSnapshot] = useState(null)
-  const [isStarting, setIsStarting] = useState(false)
+  const detail = useSelector(state => state.exercise.detail)
+  const isStarting = useSelector(state => state.exercise.loading.isStartingExercise)
+
   const [result, setResult] = useState(null)
 
-  // Start the topic when component mounts
   useEffect(() => {
     const startTopic = async () => {
-      try {
-        setIsStarting(true)
-
-        // Load tags for displaying university and semester tags
-        dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+        // Load tags for displaying university, semester, department, topic tags
+        dispatch(tagActions.updateFilter({ key: 'tagGroupNames', value: ['university', 'semester', 'department', 'topic'] }))
         dispatch(fetchTags())
 
-        // Start exercise topic
-        const result = await dispatch(startExerciseTopic(id))
-        setTopicSnapshot(result.topic)
-      } catch (error) {
-        console.error('Error starting exercise:', error)
-        alert('Gagal memulai latihan soal: ' + (error.message || 'Terjadi kesalahan'))
-        // Navigate back to list on error
-        navigate(ExerciseRoute.initialRoute)
-      } finally {
-        setIsStarting(false)
-      }
+        await dispatch(startExerciseTopic(id))
     }
 
     startTopic()
   }, [dispatch, id, navigate])
 
   const handleSubmitAnswers = async (answers) => {
-    try {
-      // Submit answers to update spaced repetition data
-      const submitResult = await dispatch(submitExerciseProgress(id, answers))
-
-      // Store result to show result view
-      setResult(submitResult)
-    } catch (error) {
-      console.error('Failed to submit answers:', error)
-      alert('Gagal menyimpan progress: ' + (error.message || 'Terjadi kesalahan'))
-    }
+    await dispatch(submitExerciseProgress(id, answers, (result) => setResult(result)))
   }
 
   const handleBackToTopicList = () => {
-    // Navigate back to list
     navigate(ExerciseRoute.initialRoute)
   }
 
   return {
-    topicSnapshot,
+    topicSnapshot: detail,
     isStarting,
     result,
     handleSubmitAnswers,

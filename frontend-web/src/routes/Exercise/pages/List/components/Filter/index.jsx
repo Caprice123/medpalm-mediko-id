@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@/store/exercise/reducer'
-import { fetchExerciseTopics } from '@store/exercise/action'
+import { fetchExerciseTopics } from '@store/exercise/userAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()

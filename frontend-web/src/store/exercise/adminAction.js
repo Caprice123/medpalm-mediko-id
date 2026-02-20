@@ -1,6 +1,5 @@
 import { actions } from '@store/exercise/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
@@ -150,7 +149,6 @@ export const updateExerciseTopic = (topicId, topicData) => async (dispatch) => {
  * Add manual question to topic (admin only)
  */
 export const addManualQuestion = (topicId, questionData) => async (dispatch) => {
-  try {
     const route = Endpoints.admin.exercises + `/topics/${topicId}`
     const response = await postWithToken(
       route,
@@ -158,9 +156,6 @@ export const addManualQuestion = (topicId, questionData) => async (dispatch) => 
     )
 
     return response.data.question
-  } catch {
-    // no need to handle anything because already handled in api.jsx
-  }
 }
 
 /**

@@ -4,7 +4,7 @@ import { useExerciseList } from './hooks/useExerciseList'
 import Pagination from '@components/Pagination'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/exercise/reducer'
-import { fetchExerciseTopics } from '@store/exercise/action'
+import { fetchExerciseTopics } from '@store/exercise/userAction'
 import {
   Container,
   TopicSelectionContainer

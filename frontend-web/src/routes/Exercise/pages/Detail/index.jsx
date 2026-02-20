@@ -1,4 +1,5 @@
-import ExercisePlayer from '../../components/ExercisePlayer'
+import ExercisePlayer from './components/ExercisePlayer'
+import ExerciseResult from './components/ExerciseResult'
 import { useExerciseDetail } from './useExerciseDetail'
 import {
   PageContainer,
@@ -43,12 +44,22 @@ function ExerciseDetailPage() {
     )
   }
 
-  // Show exercise player with result if available
+  if (result) {
+    return (
+      <PageContainer>
+        <ExerciseResult
+          topic={topicSnapshot}
+          result={result}
+          onBack={handleBackToTopicList}
+        />
+      </PageContainer>
+    )
+  }
+
   return (
     <PageContainer>
       <ExercisePlayer
         topic={topicSnapshot}
-        result={result}
         onSubmit={handleSubmitAnswers}
         onBack={handleBackToTopicList}
       />

@@ -24,6 +24,15 @@ import {
   RequirementsList,
   RequirementItem
 } from './Dashboard.styles'
+import { TopupRoute } from '../Topup/routes'
+import { ExerciseRoute } from '../Exercise/routes'
+import { FlashcardRoute } from '../Flashcard/routes'
+import { CalculatorRoute } from '../Calculator/routes'
+import { AnatomyQuizRoute } from '../AnatomyQuiz/routes'
+import { SummaryNotesRoute } from '../SummaryNotes/routes'
+import { MultipleChoiceRoute } from '../MultipleChoice/routes'
+import { ChatbotRoute } from '../Chatbot/routes'
+import { SkripsiRoute } from '../SkripsiBuilder/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -46,56 +55,22 @@ function Dashboard() {
       // Determine session type based on feature
       const sessionType = feature.sessionType
 
-      // For flashcard, navigate to dedicated flashcard page
-      if (sessionType === 'flashcard') {
-        navigate('/flashcards')
-        return
+      const sessionTypeRouteMappings = {
+        'flashcard': FlashcardRoute.moduleRoute,
+        'exercise': ExerciseRoute.moduleRoute,
+        'calculator': CalculatorRoute.moduleRoute,
+        'anatomy': AnatomyQuizRoute.moduleRoute,
+        'summary_notes': SummaryNotesRoute.moduleRoute,
+        'mcq': MultipleChoiceRoute.moduleRoute,
+        'chatbot': ChatbotRoute.moduleRoute,
+        'skripsi_builder': SkripsiRoute.moduleRoute,
+        'osce_practice': '/osce-practice',
       }
-
-      // For exercise, navigate to dedicated exercise page
-      if (sessionType === 'exercise') {
-        navigate('/exercises')
-        return
-      }
-
-      if (sessionType === 'calculator') {
-        navigate('/calculators')
-        return
-      }
-
-      if (sessionType === 'anatomy') {
-        navigate('/anatomy-quiz')
-        return
-      }
-
-      if (sessionType === 'summary_notes') {
-        navigate('/summary-notes')
-        return
-      }
-
-      if (sessionType === 'mcq') {
-        navigate('/multiple-choice')
-        return
-      }
-
-      if (sessionType == "chatbot") {
-        navigate("/chat-assistant")
-        return
-      }
-
-      if (sessionType === "skripsi_builder") {
-        navigate("/sets")
-        return
-      }
-
-      if (sessionType == "osce_practice") {
-        navigate("/osce-practice")
-        return
-      }
-
-      // For calculator, navigate to dedicated calculator page
-      if (!sessionType) {
-        navigate('/calculators')
+      
+      // Navigate to the mapped route if it exists
+      const route = sessionTypeRouteMappings[sessionType]
+      if (route) {
+        navigate(route)
         return
       }
   }
@@ -167,13 +142,13 @@ function Dashboard() {
                               </span>
                             </RequirementItem>
                           )}
-                          {needsCredits && (
+                          {needsCredits && feature.cost > 0 && (
                             <RequirementItem $met={creditsMet}>
                               <span>{creditsMet ? '✓' : '✗'}</span>
                               <span>
                                 {creditsMet
-                                  ? `${feature.cost || 0} Credits (Tersedia: ${userCredits})`
-                                  : `${feature.cost || 0} Credits (Anda: ${userCredits})`}
+                                  ? `${feature.cost} Credits (Tersedia: ${userCredits})`
+                                  : `${feature.cost} Credits (Anda: ${userCredits})`}
                               </span>
                             </RequirementItem>
                           )}
@@ -185,7 +160,7 @@ function Dashboard() {
                           variant={buttonConfig.variant}
                           onClick={() => {
                             if (!canUse && !isFree) {
-                              navigate('/pricing')
+                              navigate(TopupRoute.moduleRoute)
                             } else {
                               handleUseFeature(feature)
                             }

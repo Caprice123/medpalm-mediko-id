@@ -5,7 +5,7 @@ const ExerciseListPage = lazy(() => import('../pages/List'));
 const ExerciseDetailPage = lazy(() => import('../pages/Detail'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Exercises..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );
