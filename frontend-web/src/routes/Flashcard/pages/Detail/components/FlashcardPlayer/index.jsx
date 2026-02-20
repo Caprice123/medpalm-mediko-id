@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
@@ -8,8 +8,6 @@ import {
   HeaderTop,
   ProgressBadge,
   TopicInfo,
-  TagList,
-  Tag,
   ProgressBarContainer,
   ProgressBarWrapper,
   ProgressBar,
@@ -36,6 +34,7 @@ import {
   ComparisonValue
 } from './FlashcardPlayer.styles'
 import Button from '@components/common/Button'
+import TopicTags from '../TopicTags'
 
 const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -47,25 +46,6 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const [startTime, setStartTime] = useState(Date.now())
 
   const { topicSnapshot } = useSelector(state => state.session)
-  const { tags } = useSelector(state => state.tags)
-
-  // Get tag group IDs
-  const universityGroupId = useMemo(() => {
-    return tags?.find(tag => tag.name === 'university')?.id
-  }, [tags])
-
-  const semesterGroupId = useMemo(() => {
-    return tags?.find(tag => tag.name === 'semester')?.id
-  }, [tags])
-
-  // Get tag groups using tagGroupId
-  const universityTags = useMemo(() => {
-    return topicSnapshot?.tags?.filter(tag => tag.tagGroupId === universityGroupId) || []
-  }, [topicSnapshot?.tags, universityGroupId])
-
-  const semesterTags = useMemo(() => {
-    return topicSnapshot?.tags?.filter(tag => tag.tagGroupId === semesterGroupId) || []
-  }, [topicSnapshot?.tags, semesterGroupId])
 
   useEffect(() => {
     // Reset when moving to next card
@@ -199,28 +179,7 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
         <TopicInfo>
           <h2>🎴 {topicSnapshot?.title || 'Flashcard Deck'}</h2>
           {topicSnapshot?.description && <p>{topicSnapshot.description}</p>}
-
-          {/* University Tags */}
-          {universityTags.length > 0 && (
-            <TagList>
-              {universityTags.map((tag) => (
-                <Tag key={tag.id} university>
-                  🏛️ {tag.name}
-                </Tag>
-              ))}
-            </TagList>
-          )}
-
-          {/* Semester Tags */}
-          {semesterTags.length > 0 && (
-            <TagList>
-              {semesterTags.map((tag) => (
-                <Tag key={tag.id} semester>
-                  📚 {tag.name}
-                </Tag>
-              ))}
-            </TagList>
-          )}
+          <TopicTags tags={topicSnapshot?.tags} />
         </TopicInfo>
 
         <ProgressBarContainer>
@@ -344,23 +303,9 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
                 Submit Jawaban
             </Button>
         )}
-        {isLastCard ? (
-          <Button
-            variant="primary"
-            onClick={() => handleNext()}
-            disabled={!showFeedback}
-          >
-            Selesai
-          </Button>
-        ) : (
-          <Button
-            variant="primary"
-            onClick={handleNext}
-            disabled={!showFeedback}
-          >
-            Selanjutnya →
-          </Button>
-        )}
+        <Button variant="primary" onClick={handleNext} disabled={!showFeedback}>
+          {isLastCard ? 'Selesai' : 'Selanjutnya →'}
+        </Button>
       </NavigationButtons>
       </PlayerContainer>
     </PhotoProvider>

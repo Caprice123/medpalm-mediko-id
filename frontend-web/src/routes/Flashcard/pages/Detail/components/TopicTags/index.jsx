@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { TagList, Tag } from '../ExercisePlayer/ExercisePlayer.styles'
+import { TagList, Tag } from '../FlashcardPlayer/FlashcardPlayer.styles'
 
 const TopicTags = ({ tags: topicTags }) => {
   const { tags: tagGroups } = useSelector(state => state.tags)

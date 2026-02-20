@@ -1,4 +1,4 @@
-import FlashcardPlayer from '../../components/FlashcardPlayer'
+import FlashcardPlayer from './components/FlashcardPlayer'
 import { useFlashcardDetail } from './useFlashcardDetail'
 import {
   PageContainer,

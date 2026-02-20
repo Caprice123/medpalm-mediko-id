@@ -5,7 +5,7 @@ const FlashcardListPage = lazy(() => import('../pages/List'));
 const FlashcardDetailPage = lazy(() => import('../pages/Detail'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Flashcards..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );

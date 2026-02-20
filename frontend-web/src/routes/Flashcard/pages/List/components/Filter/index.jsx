@@ -32,7 +32,6 @@ export const Filter = () => {
         dispatch(actions.setPage(1))
         dispatch(fetchFlashcardDecks())
     }
-    console.log(filters)
 
     return (
         <div style={{
