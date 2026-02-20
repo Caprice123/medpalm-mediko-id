@@ -57,19 +57,58 @@ export const TopicTitle = styled.h1`
   color: #111827;
   margin: 0;
   flex: 1;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #f3f4f6;
-  }
+  padding: 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 768px) {
     font-size: 1rem;
-    padding: 0.375rem;
   }
+`
+
+export const EditButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+  }
+`
+
+export const TitleActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  ${({ $variant }) => $variant === 'save' ? `
+    background: #10b981;
+    color: white;
+    &:hover { background: #059669; }
+  ` : `
+    background: #f3f4f6;
+    color: #6b7280;
+    &:hover { background: #e5e7eb; color: #374151; }
+  `}
 `
 
 export const TopicInput = styled.input`

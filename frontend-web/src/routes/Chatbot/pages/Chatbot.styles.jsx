@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  min-height: calc(100vh - 92px);
-  max-height: calc(100vh - 92px);
+  height: calc(100vh - 92px);
   background: #f0fdfa;
   display: flex;
   justify-content: center;
@@ -13,7 +12,7 @@ export const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
   max-width: 1280px;
-  /* height: 100%; */
+  height: 100%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 `
 

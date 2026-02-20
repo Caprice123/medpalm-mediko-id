@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchAdminConversations, deleteAdminConversation } from '@store/chatbot/action'
+import { fetchAdminConversations, deleteAdminConversation } from '@store/chatbot/adminAction'
 import { actions } from '@store/chatbot/reducer'
 import ChatbotSettingsModal from './components/ChatbotSettingsModal'
 import ConversationsList from './components/ConversationsList'

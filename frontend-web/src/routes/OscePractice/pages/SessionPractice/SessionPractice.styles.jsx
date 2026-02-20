@@ -175,7 +175,6 @@ export const TimerDisplay = styled.div`
 `
 
 export const TaskSection = styled.div`
-  flex: 1;
   overflow-y: auto;
   padding: 0 1rem 1rem 1rem;
 `

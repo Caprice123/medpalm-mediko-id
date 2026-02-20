@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatLocalDateTime } from '@utils/dateUtils'
-import { fetchAdminConversationMessages } from '@store/chatbot/action'
+import { fetchAdminConversationMessages } from '@store/chatbot/adminAction'
 import { actions } from '@store/chatbot/reducer'
 import {
   ModalOverlay,

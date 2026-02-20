@@ -1,77 +1,83 @@
-import { useEffect, useState, useRef, useCallback, useMemo, memo } from 'react'
+import { useEffect, useState, useRef, useCallback, memo } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
-import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/action'
+import { fetchConversation, fetchMessages, sendMessage, switchMode, renameConversation, stopChatbotStreaming } from '@store/chatbot/userAction'
 import { actions, selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
-import { ChatbotMessagesSkeleton, ChatbotLoadingIndicator } from '@components/common/SkeletonCard'
+import { ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
+import { LoadingContainer, LoadingSpinner } from '../ConversationList/ConversationList.styles'
 import MessageList from './components/MessageList'
 import MessageInput from './components/MessageInput'
 import ModeSelector from './components/ModeSelector'
+import { FaPen, FaCheck, FaXmark } from 'react-icons/fa6'
 import {
   Container,
   Header,
   HeaderContent,
   TopicTitle,
   TopicInput,
+  EditButton,
+  TitleActionButton,
   ChatArea,
   LoadingState,
   ErrorState
 } from './Conversation.styles'
-import Button from '@components/common/Button'
 
 // Memoized Header Component - only re-renders when title or editing state changes
 const ConversationHeader = memo(({
   currentConversation,
   isEditingTitle,
   editedTitle,
-  onBack,
   onTitleClick,
   onTitleChange,
-  onTitleBlur,
+  onTitleSave,
+  onTitleRevert,
   onTitleKeyDown,
   titleInputRef
 }) => {
-  // Debug: See when header re-renders
-  console.log('🔄 ConversationHeader rendered')
-
   return (
     <Header>
       <HeaderContent>
-        {onBack && (
-          <Button variant="secondary" onClick={onBack}>
-            ← Kembali
-          </Button>
-        )}
         {isEditingTitle ? (
-          <TopicInput
-            ref={titleInputRef}
-            value={editedTitle}
-            onChange={onTitleChange}
-            onBlur={onTitleBlur}
-            onKeyDown={onTitleKeyDown}
-          />
+          <>
+            <TopicInput
+              ref={titleInputRef}
+              value={editedTitle}
+              onChange={onTitleChange}
+              onKeyDown={onTitleKeyDown}
+              maxLength={256}
+            />
+            <TitleActionButton $variant="save" onClick={onTitleSave} title="Simpan">
+              <FaCheck size={13} />
+            </TitleActionButton>
+            <TitleActionButton $variant="revert" onClick={onTitleRevert} title="Batal">
+              <FaXmark size={13} />
+            </TitleActionButton>
+          </>
         ) : (
-          <TopicTitle onClick={onTitleClick}>
-            {currentConversation?.topic || 'Untitled'}
-          </TopicTitle>
+          <>
+            <TopicTitle>{currentConversation?.topic || 'Untitled'}</TopicTitle>
+            <EditButton onClick={onTitleClick} title="Ubah nama percakapan">
+              <FaPen size={13} />
+            </EditButton>
+          </>
         )}
       </HeaderContent>
     </Header>
   )
 }, (prevProps, nextProps) => {
-  // Custom comparison: only re-render if these specific props change
   return (
     prevProps.isEditingTitle === nextProps.isEditingTitle &&
     prevProps.editedTitle === nextProps.editedTitle &&
     prevProps.currentConversation?.topic === nextProps.currentConversation?.topic &&
-    prevProps.onBack === nextProps.onBack &&
     prevProps.onTitleClick === nextProps.onTitleClick &&
     prevProps.onTitleChange === nextProps.onTitleChange &&
-    prevProps.onTitleBlur === nextProps.onTitleBlur &&
+    prevProps.onTitleSave === nextProps.onTitleSave &&
+    prevProps.onTitleRevert === nextProps.onTitleRevert &&
     prevProps.onTitleKeyDown === nextProps.onTitleKeyDown
   )
 })
 
-function ChatbotConversationPanel({ conversationId, onBack }) {
+function ChatbotConversationPanel({ conversationId }) {
   const dispatch = useDispatch()
 
   // Optimize selectors - only select what's needed to prevent unnecessary re-renders
@@ -88,7 +94,10 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   const currentMode = useSelector(state => state.chatbot.currentMode)
   const availableModes = useSelector(state => state.chatbot.availableModes, shallowEqual)
   const loading = useSelector(state => state.chatbot.loading, shallowEqual)
-  const pagination = useSelector(state => state.chatbot.pagination, shallowEqual)
+  const messagePagination = useSelector(
+    state => state.chatbot.messagePaginationByConversation[conversationId] || { page: 1, perPage: 10, isLastPage: false },
+    shallowEqual
+  )
   const messagesByConversation = useSelector(state => state.chatbot.messagesByConversation, shallowEqual)
 
   // Get streaming state for this specific conversation only
@@ -100,7 +109,6 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
   // Get messages for the current conversation using selector
   const messages = useSelector(selectMessagesForCurrentConversation)
 
-  const [currentPage, setCurrentPage] = useState(1)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [editedTitle, setEditedTitle] = useState('')
   const [streamingMessage, setStreamingMessage] = useState(null)
@@ -127,8 +135,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
   useEffect(() => {
     if (conversationId) {
-      // Reset pagination and scroll state
-      setCurrentPage(1)
+      // Reset scroll state
       previousScrollHeight.current = 0
       isInitialScrollRef.current = true
 
@@ -152,7 +159,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         console.log(`📥 Fetching conversation detail and messages for ${conversationId}`)
         dispatch(fetchConversation(conversationId))
         setIsInitialLoad(true) // Mark as initial load to trigger scroll after fetch
-        dispatch(fetchMessages({ conversationId, page: 1, perPage: 50, prepend: false }))
+        dispatch(fetchMessages({ conversationId, perPage: 10, prepend: false }))
       } else {
         // Messages already cached - we've visited this conversation before
         // No need to fetch anything, just use cached data
@@ -183,61 +190,49 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
 
   useEffect(() => {
     // Allow scroll handling after initial load completes
-    if (currentPage === 1) {
+    if (messagePagination.page === 1) {
       setTimeout(() => {
         isInitialScrollRef.current = false
       }, 1000)
     }
-  }, [currentPage])
+  }, [messagePagination.page])
 
+  // Restore scroll position after older messages are rendered (page 2+)
   useEffect(() => {
-    // Restore scroll position after loading older messages (page 2+)
-    if (currentPage > 1 && chatAreaRef.current && previousScrollHeight.current > 0) {
+    if (messagePagination.page > 1 && chatAreaRef.current && previousScrollHeight.current > 0) {
       const newScrollHeight = chatAreaRef.current.scrollHeight
-      const scrollDiff = newScrollHeight - previousScrollHeight.current
-      chatAreaRef.current.scrollTop = scrollDiff
+      if (newScrollHeight > previousScrollHeight.current) {
+        const scrollDiff = newScrollHeight - previousScrollHeight.current
+        chatAreaRef.current.scrollTop = scrollDiff
+        previousScrollHeight.current = 0
+      }
     }
-  }, [currentPage])
+  }, [messages, messagePagination.page])
 
   const loadMoreMessages = useCallback(async () => {
+    // Guard: prevent loading during initial scroll-to-bottom or when already loading
+    if (isInitialScrollRef.current || loading.isMessagesLoading || messagePagination.isLastPage) return
+
     if (chatAreaRef.current) {
       previousScrollHeight.current = chatAreaRef.current.scrollHeight
     }
 
-    const nextPage = currentPage + 1
-    setCurrentPage(nextPage)
-
     await dispatch(fetchMessages({
       conversationId,
-      page: nextPage,
-      perPage: 50,
-      prepend: true // Signal to prepend instead of replace
+      perPage: 10,
+      prepend: true
     }))
-  }, [currentPage, conversationId, dispatch])
-
-  const handleScroll = useCallback((e) => {
-    const { scrollTop } = e.target
-
-    // Don't load more during initial scroll or if already loading
-    if (isInitialScrollRef.current || loading.isMessagesLoading || pagination.isLastPage) {
-      return
-    }
-
-    // Load more when scrolled near top
-    if (scrollTop < 100) {
-      loadMoreMessages()
-    }
-  }, [loading.isMessagesLoading, pagination.isLastPage, loadMoreMessages])
+  }, [conversationId, dispatch, loading.isMessagesLoading, messagePagination])
 
   // Scroll to bottom after initial message fetch completes (first page only)
   useEffect(() => {
-    if (isInitialLoad && !loading.isMessagesLoading && currentPage === 1 && messages.length > 0) {
+    if (isInitialLoad && !loading.isMessagesLoading && messagePagination.page === 1 && messages.length > 0) {
       console.log('📜 Initial messages loaded, scrolling to bottom')
       // Scroll to bottom instantly after first fetch
       setScrollTrigger({ should: true, behavior: 'auto' })
       setIsInitialLoad(false) // Reset flag
     }
-  }, [isInitialLoad, loading.isMessagesLoading, currentPage, messages.length])
+  }, [isInitialLoad, loading.isMessagesLoading, messagePagination.page, messages.length])
 
   // Track streaming message - check state.messages instead of currentConversation.messages
   useEffect(() => {
@@ -315,7 +310,7 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
     setEditedTitle(e.target.value)
   }, [])
 
-  const handleTitleBlur = useCallback(async () => {
+  const handleTitleSave = useCallback(async () => {
     const currentTitle = editedTitleRef.current
     const originalTopic = currentConversationRef.current?.topic
 
@@ -327,15 +322,19 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
       }
     }
     setIsEditingTitle(false)
-  }, [conversationId, dispatch]) // Removed editedTitle and currentConversation - uses refs
+  }, [conversationId, dispatch])
+
+  const handleTitleRevert = useCallback(() => {
+    setIsEditingTitle(false)
+  }, [])
 
   const handleTitleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
-      titleInputRef.current?.blur()
+      handleTitleSave()
     } else if (e.key === 'Escape') {
-      setIsEditingTitle(false)
+      handleTitleRevert()
     }
-  }, [])
+  }, [handleTitleSave, handleTitleRevert])
 
   if (loading.isCurrentConversationLoading && !currentConversation) {
     return (
@@ -362,10 +361,10 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         currentConversation={currentConversation}
         isEditingTitle={isEditingTitle}
         editedTitle={editedTitle}
-        onBack={onBack}
         onTitleClick={handleTitleClick}
         onTitleChange={handleTitleChange}
-        onTitleBlur={handleTitleBlur}
+        onTitleSave={handleTitleSave}
+        onTitleRevert={handleTitleRevert}
         onTitleKeyDown={handleTitleKeyDown}
         titleInputRef={titleInputRef}
       />
@@ -375,16 +374,27 @@ function ChatbotConversationPanel({ conversationId, onBack }) {
         onModeChange={handleModeChange}
       />
 
-      <ChatArea ref={chatAreaRef} onScroll={handleScroll}>
-        {!pagination.isLastPage && loading.isMessagesLoading && currentPage > 1 && (
-          <ChatbotLoadingIndicator variant="spinner" />
+      <ChatArea id="chat-messages-scroll" ref={chatAreaRef}>
+        {!messagePagination.isLastPage && loading.isMessagesLoading && messagePagination.page > 1 && (
+          <LoadingContainer>
+            <LoadingSpinner>⟳</LoadingSpinner>
+          </LoadingContainer>
         )}
-        <MessageList
-          key={conversationId}
-          isLoading={loading.isMessagesLoading && currentPage === 1}
-          isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
-          scrollTrigger={scrollTrigger}
-        />
+        <InfiniteScroll
+          inverse={true}
+          scrollableTarget="chat-messages-scroll"
+          dataLength={messages.length}
+          next={loadMoreMessages}
+          hasMore={!messagePagination.isLastPage}
+          loader={<span />}
+        >
+          <MessageList
+            key={conversationId}
+            isLoading={loading.isMessagesLoading && messagePagination.page === 1}
+            isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
+            scrollTrigger={scrollTrigger}
+          />
+        </InfiniteScroll>
       </ChatArea>
 
       <MessageInput

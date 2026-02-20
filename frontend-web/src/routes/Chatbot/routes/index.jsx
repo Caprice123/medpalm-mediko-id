@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
 import PageLoader from '@components/PageLoader';
 
-const Chatbot = lazy(() => import('../index'));
+const Chatbot = lazy(() => import('../pages'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Chatbot..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );

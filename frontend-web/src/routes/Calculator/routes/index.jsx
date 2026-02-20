@@ -5,7 +5,7 @@ const CalculatorTopicList = lazy(() => import("../pages/List"));
 const CalculatorTopicDetail = lazy(() => import("../pages/Detail"));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Calculators..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );

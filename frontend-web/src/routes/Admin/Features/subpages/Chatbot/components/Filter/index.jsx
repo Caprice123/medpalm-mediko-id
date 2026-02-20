@@ -3,7 +3,7 @@ import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/chatbot/reducer'
-import { fetchAdminConversations } from '@store/chatbot/action'
+import { fetchAdminConversations } from '@store/chatbot/adminAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()

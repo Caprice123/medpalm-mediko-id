@@ -32,8 +32,10 @@ const initialState = {
     perPage: 20,
     isLastPage: false
   },
+  messagePaginationByConversation: {}, // { [conversationId]: { page, perPage, isLastPage } }
   loading: {
     isConversationsLoading: false,
+    isLoadingMoreConversations: false,
     isCurrentConversationLoading: false,
     isMessagesLoading: false,
     isSendingMessage: false,
@@ -192,15 +194,18 @@ const chatbotSlice = createSlice({
         }
       }
     },
+    setMessagePaginationForConversation: (state, action) => {
+      const { conversationId, pagination } = action.payload
+      state.messagePaginationByConversation[conversationId] = pagination
+    },
     resetMessages: (state) => {
-      // Reset messages for active conversation
       if (state.activeConversationId) {
         state.messagesByConversation[state.activeConversationId] = []
-      }
-      state.pagination = {
-        page: 1,
-        perPage: 50,
-        isLastPage: false
+        state.messagePaginationByConversation[state.activeConversationId] = {
+          page: 1,
+          perPage: 50,
+          isLastPage: false
+        }
       }
     },
     setCurrentMode: (state, action) => {
@@ -238,6 +243,9 @@ const chatbotSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null
+    },
+    appendConversations: (state, action) => {
+      state.conversations = [...state.conversations, ...action.payload]
     },
     updateFilter: (state, action) => {
       const { key, value } = action.payload

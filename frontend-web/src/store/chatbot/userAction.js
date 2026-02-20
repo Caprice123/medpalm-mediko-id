@@ -10,6 +10,7 @@ import { setTimeout as setWorkerTimeout, clearTimeout as clearWorkerTimeout } fr
 const {
   setLoading,
   setConversations,
+  appendConversations,
   setCurrentConversation,
   setMessages,
   setMessagesForConversation,
@@ -22,6 +23,7 @@ const {
   setCosts,
   setUserInformation,
   setPagination,
+  setMessagePaginationForConversation,
   addConversation,
   updateConversation,
   removeConversation,
@@ -51,14 +53,14 @@ export const fetchChatbotConfig = () => async (dispatch) => {
 
 // ============= User Endpoints =============
 
-export const fetchConversations = (filters, page, perPage) => async (dispatch, getState) => {
+export const fetchConversations = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isConversationsLoading', value: true }))
 
-    // If no parameters provided, get from state
     const state = getState().chatbot
-    const currentPage = page || state.pagination.page
-    const currentPerPage = perPage || state.pagination.perPage
+    const currentPage = state.pagination.page
+    const currentPerPage = state.pagination.perPage
+    const { filters } = state
 
     const queryParams = {
       page: currentPage,
@@ -74,6 +76,35 @@ export const fetchConversations = (filters, page, perPage) => async (dispatch, g
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
   } finally {
     dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
+  }
+}
+
+export const loadMoreConversations = () => async (dispatch, getState) => {
+  const state = getState().chatbot
+  console.log(state)
+  if (state.pagination.isLastPage || state.loading.isLoadingMoreConversations) return
+
+  try {
+    dispatch(setLoading({ key: 'isLoadingMoreConversations', value: true }))
+
+    const { filters, pagination } = state
+    const nextPage = pagination.page + 1
+
+    const queryParams = {
+      page: nextPage,
+      perPage: pagination.perPage
+    }
+
+    if (filters?.search) queryParams.search = filters.search
+    if (filters?.mode) queryParams.mode = filters.mode
+
+    const route = Endpoints.api.chatbot + '/conversations'
+    const response = await getWithToken(route, queryParams)
+
+    dispatch(appendConversations(response.data.data || []))
+    dispatch(setPagination(response.data.pagination || { page: nextPage, perPage: pagination.perPage, isLastPage: true }))
+  } finally {
+    dispatch(setLoading({ key: 'isLoadingMoreConversations', value: false }))
   }
 }
 
@@ -138,27 +169,27 @@ export const deleteConversation = (conversationId) => async (dispatch) => {
   }
 }
 
-export const fetchMessages = ({ conversationId, page = 1, perPage = 50, prepend = false }) => async (dispatch) => {
+export const fetchMessages = ({ conversationId, perPage = 10, prepend = false }) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isMessagesLoading', value: true }))
 
+    const currentPagination = getState().chatbot.messagePaginationByConversation[conversationId]
+    const page = prepend ? (currentPagination?.page ?? 1) + 1 : 1
+
     const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages`
-    const queryParams = { page, perPage }
-    const response = await getWithToken(route, queryParams)
+    const response = await getWithToken(route, { page, perPage })
 
     // Backend returns DESC (newest first), so reverse it to show oldest→newest
     const messages = (response.data.data || []).reverse()
-    const pagination = response.data.pagination || { page: 1, perPage: 50, isLastPage: false }
+    const pagination = response.data.pagination || { page, perPage, isLastPage: false }
 
     if (prepend) {
-      // Prepend older messages at the beginning (for page 2, 3, etc.)
       dispatch(prependMessagesToConversation({ conversationId, messages }))
     } else {
-      // Replace messages (initial load page 1)
       dispatch(setMessagesForConversation({ conversationId, messages }))
     }
 
-    dispatch(setPagination(pagination))
+    dispatch(setMessagePaginationForConversation({ conversationId, pagination }))
   } finally {
     dispatch(setLoading({ key: 'isMessagesLoading', value: false }))
   }
@@ -738,81 +769,3 @@ export const submitFeedback = (messageId, feedbackType) => async () => {
   }
 }
 
-// ============= Admin Endpoints =============
-
-export const fetchAdminConversations = () => async (dispatch, getState) => {
-  try {
-    dispatch(setLoading({ key: 'isConversationsLoading', value: true }))
-
-    const { filters, pagination } = getState().chatbot
-
-    const queryParams = {
-      page: pagination.page,
-      perPage: pagination.perPage
-    }
-
-    if (filters?.search) queryParams.search = filters.search
-    if (filters?.mode) queryParams.mode = filters.mode
-    if (filters?.userId) queryParams.userId = filters.userId
-
-    const route = Endpoints.admin.chatbot + "/conversations"
-    const response = await getWithToken(route, queryParams)
-    dispatch(setConversations(response.data.data || []))
-    dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
-    console.log(response.data.pagination)
-  } finally {
-    dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
-  }
-}
-
-export const fetchAdminConversation = (conversationId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isCurrentConversationLoading', value: true }))
-    
-    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}`
-    const response = await getWithToken(route)
-    dispatch(setCurrentConversation(response.data.data))
-    return response.data.data
-  } finally {
-    dispatch(setLoading({ key: 'isCurrentConversationLoading', value: false }))
-  }
-}
-
-export const deleteAdminConversation = (conversationId) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isConversationsLoading', value: true }))
-    
-    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}`
-    await deleteWithToken(route)
-    dispatch(removeConversation(conversationId))
-  } finally {
-    dispatch(setLoading({ key: 'isConversationsLoading', value: false }))
-  }
-}
-
-export const fetchAdminConversationMessages = ({ conversationId, page = 1, perPage = 50, prepend = false }) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ key: 'isMessagesLoading', value: true }))
-    
-    const route = Endpoints.admin.chatbot + `/conversations/${conversationId}/messages`
-    const queryParams = { page, perPage }
-    const response = await getWithToken(route, queryParams)
-
-    // Backend returns DESC (newest first), so reverse it to show oldest→newest
-    const messages = (response.data.data || []).reverse()
-    const pagination = response.data.pagination || { page: 1, perPage: 50, isLastPage: false }
-
-    if (prepend) {
-      // Prepend older messages at the beginning (for page 2, 3, etc.)
-      dispatch(actions.prependMessages(messages))
-    } else {
-      // Replace messages (initial load page 1)
-      dispatch(setMessages(messages))
-    }
-
-    dispatch(setPagination(pagination))
-    return messages
-  } finally {
-    dispatch(setLoading({ key: 'isMessagesLoading', value: false }))
-  }
-}
