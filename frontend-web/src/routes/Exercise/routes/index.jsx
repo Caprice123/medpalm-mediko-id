@@ -11,7 +11,7 @@ const withSuspense = (Component) => (
 );
 
 export class ExerciseRoute {
-    static moduleRoute = "/exercises"
+    static moduleRoute = "/fill-in-the-blank"
     static initialRoute = ExerciseRoute.moduleRoute
     static detailRoute = ExerciseRoute.moduleRoute + "/:id"
 }
