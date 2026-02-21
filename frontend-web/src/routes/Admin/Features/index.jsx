@@ -11,7 +11,7 @@ import AnatomyQuiz from './subpages/AnatomyQuiz'
 import MultipleChoice from './subpages/MultipleChoice'
 import Chatbot from './subpages/Chatbot'
 import SkripsiBuilder from './subpages/SkripsiBuilder'
-import { fetchAdminFeatures } from '@store/feature/action'
+import { fetchAdminFeatures } from '@store/feature/adminAction'
 import {
   Container,
   HeaderSection,

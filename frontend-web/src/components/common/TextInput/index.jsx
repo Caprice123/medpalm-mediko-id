@@ -17,6 +17,7 @@ import { InputWrapper, Label, RequiredMark, StyledInput, HintText, ErrorText } f
  * @param {string} props.size - Input size: 'small', 'medium', 'large'
  * @param {string} props.name - Input name
  * @param {string} props.className - Additional CSS class
+ * @param {RegExp} props.allowed - Regex that the full input value must match to allow the change
  */
 const TextInput = memo(function TextInput({
   label,
@@ -33,8 +34,14 @@ const TextInput = memo(function TextInput({
   name,
   className = '',
   autoFocus = false,
+  allowed,
   ...rest
 }) {
+  const handleChange = (e) => {
+    if (allowed && !allowed.test(e.target.value)) return
+    onChange?.(e)
+  }
+
   return (
     <InputWrapper className={className}>
       {label && (
@@ -47,7 +54,7 @@ const TextInput = memo(function TextInput({
         type={type}
         name={name}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}
