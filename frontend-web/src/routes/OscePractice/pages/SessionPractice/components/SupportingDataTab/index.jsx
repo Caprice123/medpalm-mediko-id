@@ -27,6 +27,7 @@ import {
   EmptyState,
   FormSection,
 } from '../../SessionPractice.styles'
+import { actions as commonActions } from '@store/common/reducer'
 import { fetchSessionDetail } from '../../../../../../store/oscePractice/userAction'
 
 const MAX_SELECTIONS = 5
@@ -132,7 +133,7 @@ function SupportingDataTab({ observations, setObservations, interpretations, set
 
   const handleSaveSelection = async () => {
     if (selectedIds.length === 0) {
-      alert('Pilih minimal 1 pemeriksaan penunjang')
+      dispatch(commonActions.setError('Pilih minimal 1 pemeriksaan penunjang'))
       return
     }
 
@@ -146,7 +147,6 @@ function SupportingDataTab({ observations, setObservations, interpretations, set
         { snapshotIds: selectedIds },
         () => {
             dispatch(fetchSessionDetail(sessionId))
-            alert('Pemeriksaan penunjang berhasil dipilih! Silakan isi interpretasi jika diperlukan.')
         }
     ))
   }

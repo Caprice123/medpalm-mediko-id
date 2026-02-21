@@ -1,7 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAppSelector, useAppDispatch } from '@store/store'
-import { fetchSets, createSet } from '@store/skripsi/action'
 import { FaPlus } from 'react-icons/fa'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
@@ -12,50 +8,23 @@ import {
   Container,
   ContentWrapper,
   Header,
-  HeaderLeft,
-  Title,
-  Subtitle,
 } from './List.styles'
+import { useSkripsiList } from './hooks/useSkripsiList'
 
 const SkripsiList = () => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-
-  const { loading, pagination, sets } = useAppSelector((state) => state.skripsi)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [formData, setFormData] = useState({
-    title: '',
-    description: ''
-  })
-
-  // Fetch sets on mount
-  useEffect(() => {
-    dispatch(fetchSets())
-  }, [dispatch])
-
-  const handlePageChange = (page) => {
-    dispatch(fetchSets(page))
-  }
-
-  const hasMorePages = !pagination.isLastPage || pagination.page > 1
-
-  const handleCreateSet = async () => {
-    if (!formData.title.trim()) {
-      alert('Judul set tidak boleh kosong')
-      return
-    }
-
-    try {
-      const newSet = await dispatch(createSet(formData.title, formData.description))
-      setShowCreateModal(false)
-      setFormData({ title: '', description: '' })
-      // Navigate to the new set
-      navigate(`/sets/${newSet.uniqueId}`)
-    } catch (error) {
-      console.error('Failed to create set:', error)
-      alert('Gagal membuat set baru')
-    }
-  }
+  const {
+    sets,
+    loading,
+    pagination,
+    hasMorePages,
+    showCreateModal,
+    formData,
+    setFormData,
+    handlePageChange,
+    handleCreateSet,
+    handleOpenCreateModal,
+    handleCloseCreateModal,
+  } = useSkripsiList()
 
   return (
     <Container>
@@ -64,7 +33,7 @@ const SkripsiList = () => {
         <Filter />
         <Header>
           <div></div>
-          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+          <Button variant="primary" onClick={handleOpenCreateModal}>
             <FaPlus /> Buat Set Baru
           </Button>
         </Header>
@@ -86,26 +55,14 @@ const SkripsiList = () => {
       {/* Create Set Modal */}
       <Modal
         isOpen={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false)
-          setFormData({ title: '', description: '' })
-        }}
+        onClose={handleCloseCreateModal}
         title="Buat Set Baru"
         footer={
           <>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setShowCreateModal(false)
-                setFormData({ title: '', description: '' })
-              }}
-            >
+            <Button variant="secondary" onClick={handleCloseCreateModal}>
               Batal
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleCreateSet}
-            >
+            <Button variant="primary" onClick={handleCreateSet}>
               Buat Set
             </Button>
           </>

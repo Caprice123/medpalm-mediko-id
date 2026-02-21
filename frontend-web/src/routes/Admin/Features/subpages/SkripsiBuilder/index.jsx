@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchAdminSets, deleteAdminSet } from '@store/skripsi/action'
+import { fetchAdminSets, deleteAdminSet } from '@store/skripsi/adminAction'
 import SettingsModal from './components/SettingsModal'
 import SetsList from './components/SetsList'
 import SetDetailModal from './components/SetDetailModal'

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { formatLocalTime } from '@utils/dateUtils'
 import { useAppDispatch } from '@store/store'
-import { sendMessage, loadOlderMessages, stopStreaming, fetchModeConfiguration } from '@store/skripsi/action'
+import { sendMessage, loadOlderMessages, stopStreaming, fetchModeConfiguration } from '@store/skripsi/userAction'
 import { selectMessagesForTab, selectLoadingForTab, selectModeForTab } from '@store/skripsi/reducer'
 import { actions as skripsiActions } from '@store/skripsi/reducer'
 import { FaPaperPlane, FaStop } from 'react-icons/fa'

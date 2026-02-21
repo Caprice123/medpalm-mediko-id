@@ -9,7 +9,7 @@ import Modal from '@components/common/Modal'
 import EmptyState from '@components/common/EmptyState'
 import { SkripsiSetSkeletonGrid } from '@components/common/SkeletonCard'
 import { useAppDispatch } from '@store/store'
-import { deleteSet } from '@store/skripsi/action'
+import { deleteSet } from '@store/skripsi/userAction'
 import {
   LoadingOverlay,
   SetsGrid,
@@ -17,6 +17,7 @@ import {
   CardActions,
   UpdatedText
 } from './SetsList.styles'
+import { fetchSets } from '../../../../../../store/skripsi/userAction'
 
 function SetsList() {
   const { sets, loading } = useSelector((state) => state.skripsi)
@@ -25,13 +26,8 @@ function SetsList() {
   const [deleteId, setDeleteId] = useState(null)
 
   const handleDeleteSet = async (id) => {
-    try {
-      await dispatch(deleteSet(id))
-      setDeleteId(null)
-    } catch (error) {
-      console.error('Failed to delete set:', error)
-      alert('Gagal menghapus set')
-    }
+      await dispatch(deleteSet(id, () => setDeleteId(null)))
+      dispatch(fetchSets())
   }
 
   // Loading state

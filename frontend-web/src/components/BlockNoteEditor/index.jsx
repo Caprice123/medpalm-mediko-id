@@ -19,6 +19,7 @@ import ImageCropModal from './ImageCropModal'
 import { PhotoViewerToolbar } from './PhotoViewerToolbar'
 import { filterSuggestionItems } from "@blocknote/core/extensions"
 import { editorSchema } from './schema'
+import { actions as commonActions } from '@store/common/reducer'
 
 function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
@@ -89,7 +90,7 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
           setCropModalData(null)
         } catch (error) {
           console.error('Failed to upload cropped image:', error)
-          alert('Failed to upload cropped image. Please try again.')
+          dispatch(commonActions.setError('Failed to upload cropped image. Please try again.'))
         }
       },
       onCancel: () => {

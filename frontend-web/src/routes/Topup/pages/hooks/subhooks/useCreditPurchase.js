@@ -68,10 +68,10 @@ export const useCreditPurchase = ({ isOpen, onClose, onPurchaseSuccess, onOpenTr
                 },
                 onPending: () => {
                   onClose()
-                  alert('Pembayaran sedang diproses. Silakan selesaikan pembayaran Anda.')
+                  dispatch(commonActions.setError('Pembayaran sedang diproses. Silakan selesaikan pembayaran Anda.'))
                 },
                 onError: (res) => {
-                  alert('Pembayaran gagal: ' + (res.status_message || 'Terjadi kesalahan'))
+                  dispatch(commonActions.setError('Pembayaran gagal: ' + (res.status_message || 'Terjadi kesalahan')))
                 },
               })
             } else {

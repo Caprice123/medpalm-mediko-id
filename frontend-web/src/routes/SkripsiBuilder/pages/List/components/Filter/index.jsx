@@ -3,7 +3,7 @@ import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/skripsi/reducer'
-import { fetchSets } from '@store/skripsi/action'
+import { fetchSets } from '@store/skripsi/userAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()

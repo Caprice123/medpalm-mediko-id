@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react'
 import { useAppDispatch } from '@store/store'
-import { updateSetInfo } from '@store/skripsi/action'
+import { updateSetInfo } from '@store/skripsi/userAction'
 import { FaArrowLeft, FaEdit, FaCheck, FaTimes, FaSave, FaFileWord } from 'react-icons/fa'
 import {
   TopBar as StyledTopBar,
@@ -14,6 +14,7 @@ import {
   ExportButton
 } from '../Editor.styles'
 import Button from '@components/common/Button'
+import { actions as commonActions } from '@store/common/reducer'
 
 const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, onExportWord, onBackClick }) => {
   const dispatch = useAppDispatch()
@@ -32,18 +33,14 @@ const TopBar = memo(({ currentSet, hasUnsavedChanges, isSavingContent, onSave, o
 
   const handleSaveTitle = async () => {
     if (!editedTitle.trim()) {
-      alert('Judul tidak boleh kosong')
+      dispatch(commonActions.setError('Judul tidak boleh kosong'))
       return
     }
 
-    try {
-      await dispatch(updateSetInfo(currentSet.uniqueId, editedTitle.trim(), currentSet.description))
-      setIsEditingTitle(false)
-      setEditedTitle('')
-    } catch (error) {
-      console.error('Failed to update title:', error)
-      alert('Gagal mengubah judul')
-    }
+    await dispatch(updateSetInfo(currentSet.uniqueId, editedTitle.trim(), currentSet.description, () => {
+        setIsEditingTitle(false)
+        setEditedTitle('')
+    }))
   }
 
   const handleTitleKeyPress = (e) => {

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import styled from 'styled-components'
+import { actions as commonActions } from '@store/common/reducer'
 
 const Modal = styled.div`
   position: fixed;
@@ -284,7 +285,7 @@ export default function ImageCropModal({ imageUrl, onSave, onCancel }) {
       onSave(croppedFile)
     } catch (error) {
       console.error('Failed to crop image:', error)
-      alert('Failed to crop image. Please try again.')
+      dispatch(commonActions.setError('Failed to crop image. Please try again.'))
     }
   }
 

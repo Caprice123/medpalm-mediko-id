@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { formatLocalDateTime } from '@utils/dateUtils';
 import { useAppDispatch, useAppSelector } from '@store/store';
-import { generateDiagram, fetchDiagramHistory, fetchDiagramDetail, updateDiagram, createDiagram } from '@store/skripsi/action';
+import { generateDiagram, fetchDiagramHistory, fetchDiagramDetail, updateDiagram, createDiagram } from '@store/skripsi/userAction'
 import { selectDiagramsForActiveTab } from '@store/skripsi/reducer';
 import { convertToExcalidrawElements, Excalidraw, exportToBlob, exportToSvg, MainMenu } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
@@ -49,7 +49,8 @@ import {
   GenerateButtonWrapper,
 } from './DiagramBuilderPanel.styles';
 import Button from '@components/common/Button'
-import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
+import { actions as commonActions } from '@store/common/reducer'
+import { setTimeout, setInterval, clearInterval } from 'worker-timers'
 
 const DiagramBuilderPanel = ({ currentTab, style }) => {
   const dispatch = useAppDispatch();
@@ -98,7 +99,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
   // Generate diagram
   const handleGenerate = useCallback(async () => {
     if (!description.trim()) {
-      alert('Mohon isi deskripsi diagram terlebih dahulu');
+      dispatch(commonActions.setError('Mohon isi deskripsi diagram terlebih dahulu'));
       return;
     }
 
@@ -165,7 +166,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       }
     } catch (error) {
       console.error('Failed to generate diagram:', error);
-      alert('Gagal membuat diagram. Silakan coba lagi.');
+      dispatch(commonActions.setError('Gagal membuat diagram. Silakan coba lagi.'))
     } finally {
       setIsGenerating(false);
     }
@@ -216,7 +217,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       }
     } catch (error) {
       console.error('Failed to save diagram:', error);
-      alert('Gagal menyimpan diagram. Silakan coba lagi.');
+      dispatch(commonActions.setError('Gagal menyimpan diagram. Silakan coba lagi.'))
     }
   }, [excalidrawAPI, currentDiagramId, currentTab, dispatch]);
 
@@ -312,6 +313,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export PNG failed:', error);
+      dispatch(commonActions.setError('Gagal export PNG. Silakan coba lagi.'))
     }
   }, [excalidrawAPI]);
 
@@ -342,6 +344,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export SVG failed:', error);
+      dispatch(commonActions.setError('Gagal export SVG. Silakan coba lagi.'))
     }
   }, [excalidrawAPI]);
 
@@ -361,7 +364,7 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
       }
     } catch (error) {
       console.error('Failed to load diagram:', error);
-      alert('Gagal memuat diagram. Data mungkin rusak.');
+      dispatch(commonActions.setError('Gagal memuat diagram. Silakan buat kembali.'))
     }
   }, [dispatch, excalidrawAPI]);
 

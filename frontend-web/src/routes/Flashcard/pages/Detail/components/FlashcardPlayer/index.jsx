@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import {
@@ -35,9 +35,11 @@ import {
 } from './FlashcardPlayer.styles'
 import Button from '@components/common/Button'
 import TopicTags from '../TopicTags'
+import { actions as commonActions } from '@store/common/reducer'
 
 const FlashcardPlayer = ({ onSubmit, onBack }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
+  const dispatch = useDispatch()
   const [isFlipped, setIsFlipped] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
   const [currentFeedback, setCurrentFeedback] = useState(null)
@@ -136,7 +138,7 @@ const FlashcardPlayer = ({ onSubmit, onBack }) => {
 
   const handleNext = () => {
     if (!showFeedback) {
-      alert('Silakan klik "Submit Jawaban" terlebih dahulu')
+      dispatch(commonActions.setError('Silakan klik "Submit Jawaban" terlebih dahulu'))
       return
     }
 

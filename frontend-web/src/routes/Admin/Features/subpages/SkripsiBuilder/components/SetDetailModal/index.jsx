@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatLocalTime } from '@utils/dateUtils'
-import { fetchAdminSet } from '@store/skripsi/action'
+import { fetchAdminSet } from '@store/skripsi/adminAction'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import {
   ModalOverlay,

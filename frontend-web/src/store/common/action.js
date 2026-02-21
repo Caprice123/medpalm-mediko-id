@@ -7,7 +7,7 @@ const {
   setLoading,
 } = actions
 
-export const upload = (file, type) => async (dispatch) => {
+export const upload = (file, type, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUploading', value: true }))
     const formData = new FormData()
@@ -19,19 +19,19 @@ export const upload = (file, type) => async (dispatch) => {
         'Content-Type': 'multipart/form-data'
       }
     })
-    const result = response.data.data
+    const data = response.data.data
 
-    return {
-      blobId: result.blobId,
-      key: result.key,
-      filename: result.fileName,
-      contentType: result.contentType,
-      byteSize: result.byteSize,
-      url: result.url // Presigned URL for viewing
+    const result = {
+      blobId: data.blobId,
+      key: data.key,
+      filename: data.fileName,
+      contentType: data.contentType,
+      byteSize: data.byteSize,
+      url: data.url // Presigned URL for viewing
     }
-  } catch (err) {
-    // no need to handle anything because already handled in api.jsx
-    throw err
+    if (onSuccess) onSuccess(result)
+
+    return result
   } finally {
     dispatch(setLoading({ key: 'isUploading', value: false }))
   }

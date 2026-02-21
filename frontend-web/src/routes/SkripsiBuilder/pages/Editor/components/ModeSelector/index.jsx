@@ -50,6 +50,11 @@ function ModeSelector({ currentMode, onModeChange }) {
         cost: costs && costs[mode.id] ? costs[mode.id] : 0
       }))
   }, [availableModes, costs])
+  
+  const currentModeInfo = useMemo(() =>
+    modes.find(m => m.id === currentMode),
+    [modes, currentMode]
+  )
 
   // If no modes available, show message
   if (modes.length === 0) {
@@ -67,11 +72,6 @@ function ModeSelector({ currentMode, onModeChange }) {
       </Container>
     )
   }
-
-  const currentModeInfo = useMemo(() =>
-    modes.find(m => m.id === currentMode),
-    [modes, currentMode]
-  )
 
   return (
     <>
