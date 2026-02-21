@@ -5,7 +5,7 @@ import {
   updateSummaryNote,
   generateSummaryFromDocument,
   fetchAdminSummaryNotes
-} from '@store/summaryNotes/action'
+} from '@store/summaryNotes/adminAction'
 import { upload } from '@store/common/action'
 import { actions } from '@store/summaryNotes/reducer'
 import { markdownToBlocks } from '@utils/markdownToBlocks'

@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/summaryNotes/reducer'
 import { useMemo } from 'react'
-import { fetchAdminSummaryNotes } from '@store/summaryNotes/action'
+import { fetchAdminSummaryNotes } from '@store/summaryNotes/adminAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()
