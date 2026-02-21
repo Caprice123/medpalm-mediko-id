@@ -62,6 +62,9 @@ const { reducer, actions } = createSlice({
     setHistoryPagination: (state, { payload }) => {
       state.historyPagination = payload || initialState.historyPagination
     },
+    setHistoryPage: (state, { payload }) => {
+      state.historyPagination.page = payload
+    },
     setError: (state, { payload }) => {
       state.error = payload
     },

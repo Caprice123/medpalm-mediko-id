@@ -46,36 +46,6 @@ export const PageSubtitle = styled.p`
   line-height: 1.5;
 `
 
-export const TopupButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main});
-  color: ${colors.text.inverse};
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(107, 185, 232, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-  }
-`
-
 export const CreditBalanceCard = styled.div`
   background: linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main});
   border-radius: 16px;

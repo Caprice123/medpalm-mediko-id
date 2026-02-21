@@ -5,7 +5,7 @@ import {
   createPricingPlan,
   updatePricingPlan,
   togglePricingPlanStatus,
-} from '@store/pricing/action'
+} from '@store/pricing/adminAction'
 
 export const usePricingPlans = () => {
   const dispatch = useDispatch()

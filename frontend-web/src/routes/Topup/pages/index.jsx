@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchPurchaseHistory, fetchUserStatus } from '@store/pricing/action'
+import { useTopup } from './hooks/useTopup'
 import Table from '@components/common/Table'
 import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
 import { TopupTableSkeleton } from '@components/common/SkeletonCard'
-import CreditPurchase from './components/CreditPurchase/CreditPurchase'
-import TransactionDetail from './components/TransactionDetail/TransactionDetail'
+import CreditPurchase from './components/CreditPurchase'
+import TransactionDetail from './components/TransactionDetail'
 import {
   getStatusLabel,
   getTypeLabel,
@@ -27,54 +25,38 @@ import {
   SectionTitle,
   StatusBadge,
   TypeBadge,
-  AmountText
+  AmountText,
 } from './Topup.styles'
 
 function Topup() {
-  const dispatch = useDispatch()
-  const [showTopupModal, setShowTopupModal] = useState(false)
-  const [showDetailModal, setShowDetailModal] = useState(false)
-  const [selectedPurchaseId, setSelectedPurchaseId] = useState(null)
+  const {
+    purchaseHistory,
+    pagination,
+    userStatus,
+    loading,
+    showTopupModal,
+    showDetailModal,
+    selectedPurchaseId,
+    handlePageChange,
+    handleTopupClick,
+    handlePurchaseSuccess,
+    handleEvidenceUploaded,
+    handleShowDetail,
+    handleCloseTopupModal,
+    handleCloseDetailModal,
+  } = useTopup()
 
-  // Redux state
-  const purchaseHistory = useSelector(state => state.pricing.purchaseHistory)
-  const pagination = useSelector(state => state.pricing.historyPagination)
-  const userStatus = useSelector(state => state.pricing.userStatus)
-  const loading = useSelector(state => state.pricing.loading.isHistoryLoading)
+  const safeHistory = Array.isArray(purchaseHistory) ? purchaseHistory : []
 
-  // Fetch initial data
-  useEffect(() => {
-    dispatch(fetchPurchaseHistory(pagination.page, pagination.perPage))
-    dispatch(fetchUserStatus())
-  }, [dispatch])
-
-  const handlePageChange = (newPage) => {
-    dispatch(fetchPurchaseHistory(newPage, pagination.perPage))
+  const formatSubscriptionEndDate = (endDate) => {
+    if (!endDate) return null
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date(endDate))
   }
 
-  const handleTopupClick = () => {
-    setShowTopupModal(true)
-  }
-
-  const handlePurchaseSuccess = () => {
-    // Refresh data after successful purchase
-    dispatch(fetchPurchaseHistory(pagination.page, pagination.perPage))
-    dispatch(fetchUserStatus())
-  }
-
-  const handleEvidenceUploaded = () => {
-    // Refresh data after evidence upload
-    dispatch(fetchPurchaseHistory(pagination.page, pagination.perPage))
-    dispatch(fetchUserStatus())
-  }
-
-  // Handle showing transaction detail
-  const handleShowDetail = (purchaseId) => {
-    setSelectedPurchaseId(purchaseId)
-    setShowDetailModal(true)
-  }
-
-  // Table columns configuration
   const columns = [
     {
       key: 'purchaseDate',
@@ -146,29 +128,13 @@ function Topup() {
     }
   ]
 
-  // Ensure purchaseHistory is an array
-  const safeHistory = Array.isArray(purchaseHistory) ? purchaseHistory : []
-
-  // Format subscription end date
-  const formatSubscriptionEndDate = (endDate) => {
-    if (!endDate) return null
-    const date = new Date(endDate)
-    return new Intl.DateTimeFormat('id-ID', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }).format(date)
-  }
-
   return (
     <Container>
       <HeaderSection>
         <TitleRow>
           <div>
             <PageTitle>Top Up</PageTitle>
-            <PageSubtitle>
-              Kelola kredit dan langganan Anda
-            </PageSubtitle>
+            <PageSubtitle>Kelola kredit dan langganan Anda</PageSubtitle>
           </div>
           <Button variant="primary" onClick={handleTopupClick}>
             Top Up Sekarang
@@ -176,10 +142,8 @@ function Topup() {
         </TitleRow>
       </HeaderSection>
 
-      {/* Credit Balance Card */}
       <CreditBalanceCard>
         <BalanceGrid $hasSubscription={userStatus?.hasActiveSubscription}>
-          {/* Credit Balance */}
           <BalanceSection>
             <BalanceLabel>Saldo Kredit</BalanceLabel>
             <BalanceAmount>
@@ -188,7 +152,6 @@ function Topup() {
             </BalanceAmount>
           </BalanceSection>
 
-          {/* Subscription Status */}
           {userStatus?.hasActiveSubscription && userStatus?.subscription && (
             <BalanceSection $withBorder>
               <BalanceLabel>Status Langganan</BalanceLabel>
@@ -225,11 +188,8 @@ function Topup() {
         </BalanceGrid>
       </CreditBalanceCard>
 
-      {/* Transaction History Table */}
       <TableSection>
-        <SectionTitle>
-          📋 Riwayat Transaksi
-        </SectionTitle>
+        <SectionTitle>📋 Riwayat Transaksi</SectionTitle>
 
         {loading ? (
           <TopupTableSkeleton rowCount={5} />
@@ -259,21 +219,16 @@ function Topup() {
         )}
       </TableSection>
 
-      {/* Topup Modal */}
       <CreditPurchase
         isOpen={showTopupModal}
-        onClose={() => setShowTopupModal(false)}
+        onClose={handleCloseTopupModal}
         onPurchaseSuccess={handlePurchaseSuccess}
         onOpenTransactionDetail={handleShowDetail}
       />
 
-      {/* Transaction Detail Modal */}
       <TransactionDetail
         isOpen={showDetailModal}
-        onClose={() => {
-          setShowDetailModal(false)
-          setSelectedPurchaseId(null)
-        }}
+        onClose={handleCloseDetailModal}
         purchaseId={selectedPurchaseId}
         onEvidenceUploaded={handleEvidenceUploaded}
       />

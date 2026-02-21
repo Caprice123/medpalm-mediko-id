@@ -240,26 +240,11 @@ export const FileDate = styled.div`
   margin-top: 0.25rem;
 `
 
-export const LoadingState = styled.div`
-  text-align: center;
-  padding: 3rem 1rem;
-  color: ${colors.text.secondary};
-  font-size: 0.9375rem;
-`
-
 export const ErrorState = styled.div`
   text-align: center;
   padding: 2rem 1rem;
   color: ${colors.error.main};
   font-size: 0.9375rem;
-`
-
-export const EmptyState = styled.div`
-  text-align: center;
-  padding: 1rem;
-  color: ${colors.text.secondary};
-  font-size: 0.875rem;
-  font-style: italic;
 `
 
 export const ActionButtons = styled.div`
@@ -269,60 +254,4 @@ export const ActionButtons = styled.div`
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-`
-
-export const PayNowButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
-`
-
-export const UploadButton = styled.button`
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
 `

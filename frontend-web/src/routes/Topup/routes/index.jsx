@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import PageLoader from '@components/PageLoader'
 
-const TopupPage = lazy(() => import('../index'))
+const TopupPage = lazy(() => import('../pages'))
 
 const withSuspense = (Component) => (
   <Suspense fallback={<PageLoader fullScreen={false} text="Loading Top Up..." />}>

@@ -1,11 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { upload } from '@store/common/action'
-import {
-  fetchUserTransactionDetail,
-  attachPaymentEvidence,
-  clearTransactionDetail
-} from '@store/pricing/action'
+import { useTransactionDetail } from '../../hooks/subhooks/useTransactionDetail'
 import { TransactionDetailSkeleton } from '@components/common/SkeletonCard'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
@@ -15,7 +8,7 @@ import {
   getPaymentMethodLabel,
   formatCurrency,
   formatDate,
-  getFileIcon
+  getFileIcon,
 } from '@utils/transactionUtils'
 import {
   Modal,
@@ -39,102 +32,31 @@ import {
   FileInfo,
   FileName,
   FileDate,
-  LoadingState,
   ErrorState,
-  EmptyState,
   ActionButtons,
-  PayNowButton,
-  UploadButton
 } from './TransactionDetail.styles'
 
 function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) {
-  const dispatch = useDispatch()
-  const { transactionDetail: transaction, loading, error } = useSelector(state => state.pricing)
-  const [uploadedFile, setUploadedFile] = useState(null)
-  const [uploadedBlob, setUploadedBlob] = useState(null)
-  const isUploading = useSelector(state => state.common.loading.isUploading)
-
-  useEffect(() => {
-    if (isOpen && purchaseId) {
-      dispatch(fetchUserTransactionDetail(purchaseId))
-    }
-
-    // Cleanup on unmount or when modal closes
-    return () => {
-      if (!isOpen) {
-        dispatch(clearTransactionDetail())
-        setUploadedFile(null)
-        setUploadedBlob(null)
-      }
-    }
-  }, [isOpen, purchaseId, dispatch])
-
-  const handleModalClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
-
-  const handlePayNow = async () => {
-    if (transaction?.invoiceUrl) {
-      window.location.href = transaction.invoiceUrl
-    }
-  }
-
-  const handleFileSelect = async (file) => {
-    try {
-      setUploadedFile(file)
-      const result = await dispatch(upload(file, 'payment_evidence'))
-
-      if (result) {
-        setUploadedBlob(result)
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error)
-      alert('Failed to upload file. Please try again.')
-      setUploadedFile(null)
-    }
-  }
-
-  const handleRemoveFile = () => {
-    setUploadedFile(null)
-    setUploadedBlob(null)
-  }
-
-  const handleAttachEvidence = async () => {
-    if (!uploadedBlob?.blobId) {
-      alert('Please upload a file first')
-      return
-    }
-
-    try {
-      await dispatch(attachPaymentEvidence(purchaseId, uploadedBlob.blobId))
-
-      // Clear upload state
-      setUploadedFile(null)
-      setUploadedBlob(null)
-
-      // Notify parent to refresh purchase history list
-      if (onEvidenceUploaded) {
-        onEvidenceUploaded()
-      }
-
-      alert('Bukti pembayaran berhasil diunggah dan menunggu persetujuan!')
-    } catch (error) {
-      console.error('Error attaching evidence:', error)
-      alert(error.response?.data?.error || 'Failed to attach payment evidence. Please try again.')
-    }
-  }
+  const {
+    transaction,
+    loading,
+    error,
+    uploadedFile,
+    uploadedBlob,
+    isUploading,
+    handlePayNow,
+    handleFileSelect,
+    handleRemoveFile,
+    handleAttachEvidence,
+  } = useTransactionDetail({ isOpen, purchaseId, onClose, onEvidenceUploaded })
 
   if (!isOpen) return null
 
   return (
-    <Modal $isOpen={isOpen} onClick={handleModalClick}>
+    <Modal $isOpen={isOpen} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <ModalContent>
         <ModalHeader>
-          <ModalTitle>
-            📋 Detail Transaksi
-          </ModalTitle>
+          <ModalTitle>📋 Detail Transaksi</ModalTitle>
           <CloseButton onClick={onClose}>×</CloseButton>
         </ModalHeader>
 
@@ -142,9 +64,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
           {loading.isTransactionDetailLoading ? (
             <TransactionDetailSkeleton />
           ) : error ? (
-            <ErrorState>
-              {error}
-            </ErrorState>
+            <ErrorState>{error}</ErrorState>
           ) : transaction ? (
             <>
               <DetailSection>
@@ -276,11 +196,10 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                 </DetailSection>
               )}
 
-              {/* Action Buttons */}
               {transaction.paymentStatus === 'pending' && transaction.paymentMethod === 'xendit' && (
                 <ActionButtons>
                   <Button variant="primary" onClick={handlePayNow}>
-                    💳 Bayar Sekarang
+                    Bayar Sekarang
                   </Button>
                 </ActionButtons>
               )}

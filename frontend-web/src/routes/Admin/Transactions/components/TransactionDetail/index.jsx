@@ -4,8 +4,10 @@ import {
   fetchTransactionDetail,
   approveTransaction,
   rejectTransaction,
-  clearTransactionDetail
-} from '@store/pricing/action'
+} from '@store/pricing/adminAction'
+import { actions } from '@store/pricing/reducer'
+
+const { clearTransactionDetail } = actions
 import Button from '@components/common/Button'
 import {
   getStatusLabel,
