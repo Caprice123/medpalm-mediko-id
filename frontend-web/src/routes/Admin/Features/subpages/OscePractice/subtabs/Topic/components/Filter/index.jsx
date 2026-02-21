@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/oscePractice/reducer'
 import { fetchAdminOsceTopics } from '@store/oscePractice/adminAction'
 import { useEffect, useMemo } from 'react'
-import { fetchAdminTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/adminAction'
 import { actions as tagActions } from '@store/tags/reducer'
 
 function Filter() {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchFlashcardDecks } from '@store/flashcard/userAction'
-import { fetchTags } from '@store/tags/action'
+import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
 
 export const useFlashcardList = () => {

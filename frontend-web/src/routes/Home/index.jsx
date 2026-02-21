@@ -4,7 +4,7 @@ import 'aos/dist/aos.css'
 import { GlobalStyles, LandingContainer } from './Home.styles'
 import { ParallaxProvider } from 'react-scroll-parallax'
 import { useAppDispatch } from '@store/store'
-import { fetchFeatures } from '@store/feature/action'
+import { fetchFeatures } from '@store/feature/userAction'
 import { fetchPricingPlans } from '@store/pricing/action'
 
 // Import components

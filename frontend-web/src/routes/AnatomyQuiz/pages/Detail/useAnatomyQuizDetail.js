@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchDetailAnatomyQuiz, submitAnatomyQuizAnswers } from '@store/anatomy/action'
+import { fetchDetailAnatomyQuiz, submitAnatomyQuizAnswers } from '@store/anatomy/userAction'
 import { fetchConstants } from '@store/constant/action'
 import { actions } from '../../../../store/constant/reducer'
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAdminTags, deleteTag } from '@store/tags/action'
+import { fetchAdminTags, deleteTag } from '@store/tags/adminAction'
 import {
   Container,
   Header,

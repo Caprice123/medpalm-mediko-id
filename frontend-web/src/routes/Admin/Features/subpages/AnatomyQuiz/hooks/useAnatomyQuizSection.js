@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchAdminAnatomyQuizzes } from '@store/anatomy/adminAction'
-import { fetchAdminTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/adminAction'
 import { actions } from "@store/tags/reducer"
 
 export const useAnatomyQuizSection = () => {

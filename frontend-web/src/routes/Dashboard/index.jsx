@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import { FeatureCardSkeletonGrid } from '@components/common/SkeletonCard'
-import { fetchFeatures } from '@store/feature/action'
+import { fetchFeatures } from '@store/feature/userAction'
 import {
   DashboardContainer,
   MainContent,

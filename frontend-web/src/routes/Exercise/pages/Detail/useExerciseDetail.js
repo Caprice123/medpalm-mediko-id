@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { startExerciseTopic, submitExerciseProgress } from '@store/exercise/userAction'
-import { fetchTags } from '@store/tags/action'
+import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
 import { ExerciseRoute } from '../../routes'
 

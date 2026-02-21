@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { startFlashcardDeck, submitFlashcardProgress } from '@store/session/action'
-import { fetchTags } from '@store/tags/action'
+import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
 import { FlashcardRoute } from '../../routes'
 

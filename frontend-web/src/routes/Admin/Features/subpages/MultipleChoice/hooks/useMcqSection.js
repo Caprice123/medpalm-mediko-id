@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchAdminMcqTopics } from '@store/mcq/adminAction'
-import { fetchAdminTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/adminAction'
 import { actions } from "@store/tags/reducer"
 
 export const useMcqSection = () => {

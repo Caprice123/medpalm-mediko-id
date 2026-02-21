@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { fetchAdminTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/adminAction'
 import { useCreateTag } from "./subhooks/useCreateTag"
 import { useUpdateTag } from "./subhooks/useUpdateTag"
 

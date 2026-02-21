@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCalculatorTopic, updateCalculatorTopic } from '@store/calculator/adminAction'
-import { fetchAdminTags } from '@store/tags/action'
+import { fetchAdminTags } from '@store/tags/adminAction'
 import { upload } from '@store/common/action'
 
 export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) => {

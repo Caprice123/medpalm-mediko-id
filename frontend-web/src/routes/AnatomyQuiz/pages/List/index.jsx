@@ -3,9 +3,9 @@ import {
   Container,
   Content,
 } from './AnatomyQuiz.styles'
-import { fetchAnatomyQuizzes } from '@store/anatomy/action'
+import { fetchAnatomyQuizzes } from '@store/anatomy/userAction'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchTags } from '@store/tags/action'
+import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
 import { AnatomyQuizRoute } from '../../routes'
 import { Filter } from './components/Filter'

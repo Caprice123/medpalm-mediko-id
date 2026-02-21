@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMcqTopics } from '@store/mcq/userAction'
-import { fetchTags } from '@store/tags/action'
+import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
 import { actions } from '@store/mcq/reducer'
 

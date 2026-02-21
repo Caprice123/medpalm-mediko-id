@@ -1,7 +1,7 @@
 import { useFormik } from "formik"
 import { createTagSchema } from "../../validationSchema/createTagSchema"
 import { useDispatch } from "react-redux"
-import { createTag, fetchAdminTags } from '@store/tags/action'
+import { createTag, fetchAdminTags } from '@store/tags/adminAction'
 import { fetchTagGroups } from "../../../../../store/tagGroups/action"
 
 export const useCreateTag = (setUiState) => {

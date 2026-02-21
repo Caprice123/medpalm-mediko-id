@@ -1,6 +1,6 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
-import { updateTag, fetchAdminTags } from '@store/tags/action'
+import { updateTag, fetchAdminTags } from '@store/tags/adminAction'
 import { useParams } from "react-router-dom"
 import { updateTagSchema } from "../../validationSchema/updateTagSchema"
 import { fetchTagGroups } from "../../../../../store/tagGroups/action"

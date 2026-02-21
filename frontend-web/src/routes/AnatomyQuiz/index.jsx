@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchAnatomyQuizzes,
-} from '@store/anatomy/action'
-import { fetchTags } from '@store/tags/action'
+} from '@store/anatomy/userAction'
+import { fetchTags } from '@store/tags/userAction'
 import Button from '@components/common/Button'
 import {
   Container,

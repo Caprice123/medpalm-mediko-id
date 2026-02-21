@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { fetchAdminTags, createTag, updateTagAction, deleteTag } from '@store/tags/action'
+import { fetchAdminTags, createTag, updateTagAction, deleteTag } from '@store/tags/adminAction'
 
 export const useTagSection = () => {
     const [uiState, setUiState] = useState({

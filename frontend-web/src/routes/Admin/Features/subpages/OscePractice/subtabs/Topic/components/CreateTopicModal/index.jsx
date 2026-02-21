@@ -168,7 +168,6 @@ function CreateTopicModal({ onClose }) {
           <TextInput
             label="Duration (minutes)"
             required
-            type="number"
             name="durationMinutes"
             value={form.values.durationMinutes}
             onChange={form.handleChange}
@@ -176,6 +175,7 @@ function CreateTopicModal({ onClose }) {
             placeholder="15"
             error={form.touched.durationMinutes && form.errors.durationMinutes}
             hint="Recommended practice duration in minutes"
+            allowed={/^\d*$/}
           />
         </FormSection>
 
