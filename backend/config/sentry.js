@@ -1,70 +1,21 @@
 import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
-// Track if Sentry is initialized
-let isSentryInitialized = false;
+// Sentry.init() is called in instrument.js via --import before this module loads.
+// Here we only set up Express integration and export helper utilities.
+
+const isSentryEnabled = process.env.SENTRY_ENABLED === 'true' && !!process.env.SENTRY_DSN;
 
 /**
- * Initialize Sentry for error tracking and performance monitoring
- * @param {Express} app - Express application instance
+ * Register Sentry's Express error handler on the app.
+ * Call this after all routes are defined.
+ * @param {Express} app
  */
 export const initSentry = (app) => {
-  if (process.env.SENTRY_ENABLED != "true") {
-    console.log("Sentry is not enabled")
-    isSentryInitialized = false;
-    return
-  }
-
-  // Only initialize if DSN is provided
-  if (!process.env.SENTRY_DSN) {
-    console.warn('⚠️ Sentry DSN not configured. Error tracking is disabled.');
-    isSentryInitialized = false;
+  if (!isSentryEnabled) {
+    console.log('ℹ️ Sentry disabled (SENTRY_ENABLED != true or no DSN)');
     return;
   }
-
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV || 'production',
-
-    // Set tracesSampleRate to capture 10% of transactions for performance monitoring
-    tracesSampleRate: 0.1,
-
-    // Set profilesSampleRate to capture 10% profiles for performance monitoring
-    profilesSampleRate: 0.1,
-
-    integrations: [
-      // Enable profiling
-      nodeProfilingIntegration(),
-    ],
-
-    // Ignore certain errors
-    ignoreErrors: [
-      // Browser extensions errors
-      'Non-Error promise rejection captured',
-      // Network errors that aren't actionable
-      'NetworkError',
-      'Network request failed',
-    ],
-
-    // Filter sensitive data
-    beforeSend(event, hint) {
-      // Filter out sensitive request data
-      if (event.request) {
-        delete event.request.cookies;
-        if (event.request.headers) {
-          delete event.request.headers.authorization;
-          delete event.request.headers.cookie;
-        }
-      }
-
-      return event;
-    },
-  });
-
-  // Setup Express error handler (replaces old Handlers API)
   Sentry.setupExpressErrorHandler(app);
-
-  isSentryInitialized = true;
   console.log('✅ Sentry initialized for error tracking');
 };
 

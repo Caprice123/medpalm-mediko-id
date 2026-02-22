@@ -413,14 +413,26 @@ class SessionsController {
           },
           onError: (error) => {
             if (!clientDisconnected) {
-              res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+              res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+              captureException(error, {
+                url: req.originalUrl,
+                method: req.method,
+                userId: req.user?.id,
+                body: req.body,
+              })
               res.end()
             }
           },
         })
       } catch (error) {
         if (!clientDisconnected) {
-          res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+          res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+          captureException(error, {
+            url: req.originalUrl,
+            method: req.method,
+            userId: req.user?.id,
+            body: req.body,
+          })
           res.end()
         }
       }

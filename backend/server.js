@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from '#config/sentry';
+import prisma from '#prisma/client';
 import { startCronJobs } from '#jobs/cron';
 import { errorHandler } from '#middleware/errorHandler.middleware';
 import { setupBullBoard } from '#config/bullBoard';
@@ -96,6 +97,13 @@ app.get('/api/test-sentry', async (req, res) => {
     // Send a test message to Sentry
     captureMessage('Test message from MedPal API', 'info');
 
+    // Run a real Prisma query so the SQL span appears in Sentry Performance
+    // This will show the actual SQL + latency in the trace
+    const [userCount, featureCount] = await Promise.all([
+      prisma.user.count(),
+      prisma.feature.count(),
+    ]);
+
     // Optionally trigger an error if ?error=true is passed
     if (req.query.error === 'true') {
       const testError = new Error('Test error from MedPal API');
@@ -105,9 +113,10 @@ app.get('/api/test-sentry', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Sentry test completed',
+      message: 'Sentry test completed — check Sentry Performance tab for SQL spans',
       sentryEnabled: process.env.SENTRY_ENABLED === 'true',
-      sentryDsnConfigured: !!process.env.SENTRY_DSN
+      sentryDsnConfigured: !!process.env.SENTRY_DSN,
+      dbProbe: { userCount, featureCount },
     });
   } catch (error) {
     res.status(500).json({
