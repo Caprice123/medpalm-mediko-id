@@ -105,6 +105,15 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
       </FormGroup>
 
       <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.chatbot_youtube_url}
+          onChange={(e) => form.setFieldValue('chatbot_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <Dropdown
           label="Tipe Akses"
           options={[

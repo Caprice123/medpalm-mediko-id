@@ -109,6 +109,15 @@ function SettingsModal({ isOpen, onClose }) {
       </FormGroup>
 
       <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.skripsi_youtube_url}
+          onChange={(e) => form.setFieldValue('skripsi_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <Label>Tipe Akses</Label>
         <Select
           value={form.values.skripsi_access_type}

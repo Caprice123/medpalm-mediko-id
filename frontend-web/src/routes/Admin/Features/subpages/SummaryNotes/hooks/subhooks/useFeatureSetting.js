@@ -16,7 +16,8 @@ export const useFeatureSetting = (onClose) => {
       summary_notes_credit_cost: '0',
       summary_notes_is_active: true,
       summary_notes_generation_model: 'gemini-1.5-pro',
-      summary_notes_generation_prompt: ''
+      summary_notes_generation_prompt: '',
+      summary_notes_youtube_url: ''
     },
     onSubmit: async (values) => {
       try {
@@ -48,7 +49,8 @@ export const useFeatureSetting = (onClose) => {
         'summary_notes_credit_cost',
         'summary_notes_is_active',
         'summary_notes_generation_model',
-        'summary_notes_generation_prompt'
+        'summary_notes_generation_prompt',
+        'summary_notes_youtube_url'
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants(keys))

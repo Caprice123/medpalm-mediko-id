@@ -15,6 +15,7 @@ import HowItWorksSection from './components/HowItWorksSection'
 import PricingSection from './components/PricingSection'
 import TestimonialsSection from './components/TestimonialsSection'
 import CTASection from './components/CTASection'
+import FAQSection from './components/FAQSection'
 import FooterSection from './components/FooterSection'
 
 function Home() {
@@ -68,9 +69,11 @@ function Home() {
 
         <TestimonialsSection />
 
+        <FAQSection />
+
         <CTASection />
 
-        <FooterSection scrollToSection={scrollToSection} />
+        <FooterSection />
       </LandingContainer>
     </ParallaxProvider>
   )

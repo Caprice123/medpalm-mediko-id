@@ -66,7 +66,8 @@ export const useFeatureSetting = (onClose) => {
       skripsi_diagram_builder_cost: '0',
       skripsi_diagram_builder_context_messages: '10',
       skripsi_diagram_builder_content_prompt: 'You are a diagram content analyzer...',
-      skripsi_diagram_builder_format_prompt: 'Kamu adalah asisten chat untuk diagram builder...'
+      skripsi_diagram_builder_format_prompt: 'Kamu adalah asisten chat untuk diagram builder...',
+      skripsi_youtube_url: ''
     },
     onSubmit: async (values) => {
       try {
@@ -144,7 +145,8 @@ export const useFeatureSetting = (onClose) => {
         'skripsi_diagram_builder_cost',
         'skripsi_diagram_builder_context_messages',
         'skripsi_diagram_builder_content_prompt',
-        'skripsi_diagram_builder_format_prompt'
+        'skripsi_diagram_builder_format_prompt',
+        'skripsi_youtube_url'
       ]
 
       try {

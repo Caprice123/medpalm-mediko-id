@@ -18,7 +18,8 @@ export const useFeatureSetting = (onClose) => {
       flashcard_is_active: true,
       flashcard_generation_model: 'gemini-1.5-pro',
       flashcard_generation_prompt_text_based: '',
-      flashcard_generation_prompt_document_based: ''
+      flashcard_generation_prompt_document_based: '',
+      flashcard_youtube_url: ''
     },
     validationSchema: featureSettingSchema,
     onSubmit: async (values) => {
@@ -53,6 +54,7 @@ export const useFeatureSetting = (onClose) => {
         "flashcard_generation_model",
         "flashcard_generation_prompt_text_based",
         "flashcard_generation_prompt_document_based",
+        "flashcard_youtube_url",
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys}))
       const constants = await dispatch(fetchConstants())

@@ -62,6 +62,15 @@ function McqSettingsModal({ onClose }) {
       </FormGroup>
 
       <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.mcq_youtube_url}
+          onChange={(e) => form.setFieldValue('mcq_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <Dropdown
           label="Tipe Akses"
           options={[

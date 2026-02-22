@@ -18,7 +18,8 @@ export const useExerciseFeatureSetting = (onClose) => {
       exercise_is_active: true,
       exercise_generation_model: 'gemini-1.5-flash',
       exercise_generation_prompt_text_based: '',
-      exercise_generation_prompt_document_based: ''
+      exercise_generation_prompt_document_based: '',
+      exercise_youtube_url: ''
     },
     validationSchema: exerciseFeatureSettingSchema,
     onSubmit: async (values) => {
@@ -53,6 +54,7 @@ export const useExerciseFeatureSetting = (onClose) => {
         "exercise_generation_model",
         "exercise_generation_prompt_text_based",
         "exercise_generation_prompt_document_based",
+        "exercise_youtube_url",
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys}))
       const constants = await dispatch(fetchConstants())

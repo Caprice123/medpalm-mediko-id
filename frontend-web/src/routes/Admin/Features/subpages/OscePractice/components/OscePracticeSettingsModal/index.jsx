@@ -27,7 +27,8 @@ function OscePracticeSettingsModal({ onClose }) {
       osce_practice_chat_completion_prompt: '',
       osce_practice_physical_exam_prompt: '',
       osce_practice_flexible_chunk_analysis_prompt: '',
-      osce_practice_evaluation_prompt: ''
+      osce_practice_evaluation_prompt: '',
+      osce_practice_youtube_url: ''
     },
     onSubmit: async (values) => {
       const constantsToSave = {
@@ -51,7 +52,8 @@ function OscePracticeSettingsModal({ onClose }) {
         "osce_practice_chat_completion_prompt",
         "osce_practice_physical_exam_prompt",
         "osce_practice_flexible_chunk_analysis_prompt",
-        "osce_practice_evaluation_prompt"
+        "osce_practice_evaluation_prompt",
+        "osce_practice_youtube_url"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants())
@@ -115,6 +117,15 @@ function OscePracticeSettingsModal({ onClose }) {
           placeholder="Practice clinical scenarios with AI assessment"
           value={form.values.osce_practice_feature_description}
           onChange={(e) => form.setFieldValue('osce_practice_feature_description', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.osce_practice_youtube_url}
+          onChange={(e) => form.setFieldValue('osce_practice_youtube_url', e.target.value)}
         />
       </FormGroup>
 

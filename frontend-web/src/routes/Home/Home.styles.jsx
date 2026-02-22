@@ -1,8 +1,11 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { colors } from '@config/colors';
 
 export const GlobalStyles = createGlobalStyle`
+  html, body {
+    overflow-x: hidden;
+  }
   .mobile-menu-btn {
     @media (max-width: 768px) {
       display: block !important;
@@ -14,7 +17,7 @@ export const LandingContainer = styled.div`
   min-height: 100vh;
   background: #F8FAFC;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
 `;
 
 // Navigation
@@ -516,6 +519,432 @@ export const FeatureDescription = styled.p`
   line-height: 1.6;
 `;
 
+// Slideshow keyframes
+const slideInFromRight = keyframes`
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: translateX(0); }
+`;
+const slideInFromLeft = keyframes`
+  from { opacity: 0; transform: translateX(-36px); }
+  to   { opacity: 1; transform: translateX(0); }
+`;
+const fillProgress = keyframes`
+  from { width: 0%; }
+  to   { width: 100%; }
+`;
+
+export const SlideCard = styled.div`
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(107, 185, 232, 0.06);
+  overflow: hidden;
+`;
+
+export const SlideTopBar = styled.div`
+  height: 3px;
+  background: #f3f4f6;
+  overflow: hidden;
+`;
+
+export const SlideProgressFill = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, ${colors.gradient.start}, ${colors.gradient.end});
+  animation: ${fillProgress} ${props => (props.$duration || 5000) / 1000}s linear forwards;
+  animation-play-state: ${props => props.$paused ? 'paused' : 'running'};
+`;
+
+export const SlideInner = styled.div`
+  display: flex;
+  align-items: stretch;
+  animation: ${props => props.$dir === 'left' ? slideInFromLeft : slideInFromRight} 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+  @media (max-width: 968px) {
+    flex-direction: column;
+  }
+`;
+
+export const SlideLeft = styled.div`
+  flex: 1;
+  min-width: 0;
+  padding: 2.75rem 3rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid #f3f4f6;
+
+  @media (max-width: 968px) {
+    border-right: none;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem;
+  }
+`;
+
+export const SlideNumber = styled.div`
+  font-size: 8rem;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(107, 185, 232, 0.07);
+  position: absolute;
+  top: 1.25rem;
+  right: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+
+  @media (max-width: 480px) {
+    font-size: 5.5rem;
+    top: 0.75rem;
+    right: 1rem;
+  }
+`;
+
+export const SlideRight = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+
+  @media (max-width: 968px) {
+    width: 100%;
+    flex: none;
+    padding: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem;
+  }
+`;
+
+export const VideoWrapper = styled.div`
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+`;
+
+export const SlideDecoration = styled.div`
+  width: 100%;
+  min-height: 240px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(107, 185, 232, 0.06) 0%, rgba(141, 198, 63, 0.06) 100%);
+  border: 2px dashed rgba(107, 185, 232, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
+  @media (max-width: 968px) {
+    min-height: 160px;
+  }
+`;
+
+export const SlideDecorationIcon = styled.div`
+  font-size: 5.5rem;
+  filter: drop-shadow(0 4px 20px rgba(107, 185, 232, 0.25));
+
+  @media (max-width: 480px) {
+    font-size: 4rem;
+  }
+`;
+
+export const SlideFeatureIcon = styled.div`
+  width: 68px;
+  height: 68px;
+  background: linear-gradient(135deg, rgba(107, 185, 232, 0.15) 0%, rgba(141, 198, 63, 0.12) 100%);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.125rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(107, 185, 232, 0.18);
+  border: 1px solid rgba(107, 185, 232, 0.18);
+
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 56px;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    border-radius: 14px;
+  }
+`;
+
+export const SlideFeatureName = styled.h3`
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: ${colors.primary.dark};
+  margin-bottom: 0.875rem;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 1.375rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+`;
+
+export const SlideFeatureDescription = styled.p`
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: 480px;
+
+  @media (max-width: 480px) {
+    font-size: 0.9375rem;
+  }
+`;
+
+export const SlideAccessBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: rgba(107, 185, 232, 0.08);
+  color: ${colors.primary.dark};
+  padding: 0.375rem 0.875rem;
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid rgba(107, 185, 232, 0.2);
+`;
+
+export const SlideNavRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.125rem 2rem;
+  border-top: 1px solid #f3f4f6;
+
+  @media (max-width: 480px) {
+    padding: 0.875rem 1.5rem;
+  }
+`;
+
+export const SlideCounter = styled.div`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+`;
+
+export const NavArrow = styled.button`
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.125rem;
+  color: ${colors.primary.dark};
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: ${colors.primary.main};
+    color: white;
+    border-color: ${colors.primary.main};
+    box-shadow: 0 2px 12px rgba(107, 185, 232, 0.4);
+    transform: scale(1.06);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+`;
+
+/* Scroll container — plain block, not flex */
+export const FeatureTabsScroller = styled.div`
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 185, 232, 0.4) transparent;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(107, 185, 232, 0.4);
+    border-radius: 99px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 185, 232, 0.7);
+  }
+
+  @media (max-width: 480px) {
+    margin-top: 1rem;
+  }
+`;
+
+/* Inner flex row — sized by content so it overflows the scroller */
+export const FeatureTabsRow = styled.div`
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+
+  @media (max-width: 480px) {
+    gap: 0.375rem;
+  }
+`;
+
+export const FeatureTab = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 50px;
+  border: 1.5px solid ${props => props.$active ? colors.primary.main : '#e5e7eb'};
+  background: ${props => props.$active ? 'rgba(107, 185, 232, 0.1)' : 'white'};
+  color: ${props => props.$active ? colors.primary.dark : '#6b7280'};
+  font-size: 0.8125rem;
+  font-weight: ${props => props.$active ? '600' : '500'};
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: ${colors.primary.main};
+    color: ${colors.primary.dark};
+    background: rgba(107, 185, 232, 0.07);
+  }
+`;
+
+export const FeatureTabIcon = styled.span`
+  font-size: 1rem;
+  line-height: 1;
+`;
+
+export const FeatureTabName = styled.span`
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
+// FAQ Section
+export const FAQSection = styled.section`
+  padding: 6rem 2rem;
+  background: transparent;
+  position: relative;
+  will-change: transform;
+
+  @media (max-width: 768px) {
+    padding: 4rem 1.5rem;
+  }
+`;
+
+export const FAQList = styled.div`
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+export const FAQItem = styled.div`
+  background: white;
+  border: 1.5px solid ${props => props.$open ? colors.primary.main : '#e5e7eb'};
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: ${props => props.$open
+    ? '0 4px 20px rgba(107, 185, 232, 0.12)'
+    : '0 1px 3px rgba(0,0,0,0.04)'};
+`;
+
+export const FAQQuestion = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${colors.primary.dark};
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: ${colors.primary.main};
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+`;
+
+export const FAQIcon = styled.span`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${props => props.$open ? colors.primary.main : '#9ca3af'};
+  transition: color 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: ${props => props.$open ? 'rotate(180deg)' : 'rotate(0deg)'};
+
+  svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+`;
+
+export const FAQAnswer = styled.div`
+  max-height: ${props => props.$open ? '400px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+`;
+
+export const FAQAnswerInner = styled.div`
+  padding: 0 1.5rem 1.25rem;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  line-height: 1.75;
+
+  @media (max-width: 480px) {
+    padding: 0 1.25rem 1rem;
+  }
+`;
+
 // How It Works Section
 export const HowItWorksSection = styled.section`
   padding: 6rem 2rem;
@@ -706,30 +1135,23 @@ export const CTASubtitle = styled.p`
 
 // Footer
 export const Footer = styled.footer`
-  padding: 3rem 2rem 2rem;
+  padding: 1.5rem 2rem;
   background: ${colors.neutral.gray900};
   color: ${colors.neutral.gray300};
-
-  @media (max-width: 768px) {
-    padding: 2rem 1.5rem 1.5rem;
-  }
 `;
 
 export const FooterContent = styled.div`
   max-width: 1280px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 
-  @media (max-width: 968px) {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    text-align: center;
   }
 `;
 
@@ -787,6 +1209,102 @@ export const FooterLink = styled.a`
   &:hover {
     color: ${colors.primary.main};
   }
+`;
+
+// Connect / Social Section
+export const ConnectSection = styled.section`
+  padding: 5rem 2rem 6rem;
+  position: relative;
+`;
+
+
+export const ConnectGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+`;
+
+export const ConnectCard = styled.a`
+  background: white;
+  border-radius: 20px;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 20px 48px rgba(107, 185, 232, 0.22),
+      0 4px 12px rgba(107, 185, 232, 0.12);
+    border-color: ${colors.primary.main};
+  }
+`;
+
+export const ConnectCardIcon = styled.div`
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 24px rgba(107, 185, 232, 0.35);
+
+  svg {
+    width: 36px;
+    height: 36px;
+    color: white;
+    display: block;
+  }
+`;
+
+export const ConnectCardPlatform = styled.div`
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: ${colors.primary.main};
+  margin-bottom: 0.25rem;
+`;
+
+export const ConnectCardHandle = styled.div`
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+`;
+
+export const ConnectCardDesc = styled.div`
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+`;
+
+export const ConnectCardBtn = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  color: white;
+  padding: 0.5rem 1.375rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(107, 185, 232, 0.35);
 `;
 
 export const FooterBottom = styled.div`

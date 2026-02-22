@@ -94,6 +94,15 @@ function SummaryNotesSettingsModal({ isOpen, onClose }) {
       )}
 
       <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.summary_notes_youtube_url}
+          onChange={(e) => form.setFieldValue('summary_notes_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <ModelDropdown
           value={form.values.summary_notes_generation_model}
           onChange={(option) => form.setFieldValue('summary_notes_generation_model', option.value)}

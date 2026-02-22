@@ -15,7 +15,8 @@ export const useFeatureSetting = (onClose) => {
             anatomy_access_type: 'subscription',
             anatomy_credit_cost: '0',
             anatomy_is_active: true,
-            anatomy_section_title: 'Identifikasi Bagian Anatomi'
+            anatomy_section_title: 'Identifikasi Bagian Anatomi',
+            anatomy_youtube_url: ''
         },
         validationSchema: featureSettingSchema,
         onSubmit: (values) => {
@@ -37,7 +38,8 @@ export const useFeatureSetting = (onClose) => {
         "anatomy_access_type",
         "anatomy_credit_cost",
         "anatomy_is_active",
-        "anatomy_section_title"
+        "anatomy_section_title",
+        "anatomy_youtube_url"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants())

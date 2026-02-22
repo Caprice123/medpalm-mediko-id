@@ -12,7 +12,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'summary_notes_feature_description',
       'summary_notes_credit_cost',
       'summary_notes_access_type',
-      'summary_notes_is_active'
+      'summary_notes_is_active',
+      'summary_notes_youtube_url'
     ],
     icon: '📝'
   },
@@ -22,7 +23,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'osce_practice_feature_title',
       'osce_practice_feature_description',
       'osce_practice_access_type',
-      'osce_practice_is_active'
+      'osce_practice_is_active',
+      'osce_practice_youtube_url'
     ],
     icon: '🩺'
   },
@@ -32,7 +34,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'chatbot_feature_title',
       'chatbot_feature_description',
       'chatbot_access_type',
-      'chatbot_is_active'
+      'chatbot_is_active',
+      'chatbot_youtube_url'
     ],
     icon: '💬'
   },
@@ -42,7 +45,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'skripsi_feature_title',
       'skripsi_feature_description',
       'skripsi_access_type',
-      'skripsi_is_active'
+      'skripsi_is_active',
+      'skripsi_youtube_url'
     ],
     icon: '📚'
   },
@@ -54,7 +58,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'mcq_credit_cost',
       'mcq_session_type',
       'mcq_access_type',
-      'mcq_is_active'
+      'mcq_is_active',
+      'mcq_youtube_url'
     ],
     icon: '📝'
   },
@@ -66,7 +71,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'flashcard_credit_cost',
       'flashcard_session_type',
       'flashcard_access_type',
-      'flashcard_is_active'
+      'flashcard_is_active',
+      'flashcard_youtube_url'
     ],
     icon: '🎴'
   },
@@ -77,7 +83,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'anatomy_feature_description',
       'anatomy_credit_cost',
       'anatomy_access_type',
-      'anatomy_is_active'
+      'anatomy_is_active',
+      'anatomy_youtube_url'
     ],
     icon: '🫀'
   },
@@ -89,7 +96,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'exercise_credit_cost',
       'exercise_session_type',
       'exercise_access_type',
-      'exercise_is_active'
+      'exercise_is_active',
+      'exercise_youtube_url'
     ],
     icon: '🎓'
   },
@@ -100,7 +108,8 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'calculator_feature_description',
       'calculator_credit_cost',
       'calculator_access_type',
-      'calculator_is_active'
+      'calculator_is_active',
+      'calculator_youtube_url'
     ],
     icon: '🧮'
   }
@@ -170,6 +179,7 @@ export class GetAdminFeaturesService extends BaseService {
       const accessTypeKey = `${prefix}_access_type`
       const sessionTypeKey = `${prefix}_session_type`
       const isActiveKey = `${prefix}_is_active`
+      const youtubeUrlKey = `${prefix}_youtube_url`
 
       // Only include if feature has a title
       if (featureConstants[titleKey]) {
@@ -184,7 +194,8 @@ export class GetAdminFeaturesService extends BaseService {
           accessType,
           icon: config.icon,
           sessionType: featureConstants[sessionTypeKey] || config.sessionType,
-          isActive: featureConstants[isActiveKey]
+          isActive: featureConstants[isActiveKey],
+          youtubeUrl: featureConstants[youtubeUrlKey] || ''
         })
       }
     }

@@ -61,6 +61,15 @@ function AnatomySettingsModal({ onClose }) {
 
       <FormGroup>
         <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.anatomy_youtube_url}
+          onChange={(e) => form.setFieldValue('anatomy_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <TextInput
           label="Judul Bagian Soal"
           placeholder="Identifikasi Bagian Anatomi"
           value={form.values.anatomy_section_title}

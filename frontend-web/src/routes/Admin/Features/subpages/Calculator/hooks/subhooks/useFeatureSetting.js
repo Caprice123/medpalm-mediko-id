@@ -22,7 +22,8 @@ export const useFeatureSetting = (onClose) => {
       calculator_feature_description: '',
       calculator_access_type: 'free',
       calculator_credit_cost: '0',
-      calculator_is_active: true
+      calculator_is_active: true,
+      calculator_youtube_url: ''
     },
     validationSchema: featureSettingSchema,
     onSubmit: async (values) => {
@@ -53,7 +54,8 @@ export const useFeatureSetting = (onClose) => {
         "calculator_feature_description",
         "calculator_access_type",
         "calculator_credit_cost",
-        "calculator_is_active"
+        "calculator_is_active",
+        "calculator_youtube_url"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys}))
       const constants = await dispatch(fetchConstants())

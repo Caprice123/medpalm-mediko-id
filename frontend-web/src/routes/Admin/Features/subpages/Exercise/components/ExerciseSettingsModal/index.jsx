@@ -65,6 +65,15 @@ function ExerciseSettingsModal({ onClose }) {
       </FormGroup>
 
       <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={form.values.exercise_youtube_url}
+          onChange={(e) => form.setFieldValue('exercise_youtube_url', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
         <Dropdown
           label="Tipe Akses"
           options={[

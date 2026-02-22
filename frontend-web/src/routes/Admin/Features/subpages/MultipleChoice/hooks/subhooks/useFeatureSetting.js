@@ -16,7 +16,8 @@ export const useFeatureSetting = (onClose) => {
       mcq_credit_cost: '0',
       mcq_is_active: true,
       mcq_generation_model: 'gemini-1.5-flash',
-      mcq_generation_prompt: ''
+      mcq_generation_prompt: '',
+      mcq_youtube_url: ''
     },
     onSubmit: async (values) => {
       const constantsToSave = {
@@ -43,7 +44,8 @@ export const useFeatureSetting = (onClose) => {
         "mcq_credit_cost",
         "mcq_is_active",
         "mcq_generation_model",
-        "mcq_generation_prompt"
+        "mcq_generation_prompt",
+        "mcq_youtube_url"
       ]
       dispatch(actions.updateFilter({ key: "keys", value: keys }))
       const constants = await dispatch(fetchConstants())

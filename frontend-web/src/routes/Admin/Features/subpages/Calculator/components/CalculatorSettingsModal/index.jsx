@@ -18,7 +18,8 @@ function CalculatorSettingsModal({ isOpen, onClose }) {
     calculator_feature_description: '',
     calculator_access_type: 'free',
     calculator_credit_cost: '0',
-    calculator_is_active: true
+    calculator_is_active: true,
+    calculator_youtube_url: ''
   })
 
   useEffect(() => {
@@ -35,7 +36,8 @@ function CalculatorSettingsModal({ isOpen, onClose }) {
         'calculator_feature_description',
         'calculator_access_type',
         'calculator_credit_cost',
-        'calculator_is_active'
+        'calculator_is_active',
+        'calculator_youtube_url'
       ]
 
       // Set filter keys before fetching
@@ -148,6 +150,15 @@ function CalculatorSettingsModal({ isOpen, onClose }) {
           placeholder="Deskripsi singkat"
           value={settings.calculator_feature_description}
           onChange={(e) => handleChange('calculator_feature_description', e.target.value)}
+        />
+      </FormGroup>
+
+      <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/embed/..."
+          value={settings.calculator_youtube_url}
+          onChange={(e) => handleChange('calculator_youtube_url', e.target.value)}
         />
       </FormGroup>
 

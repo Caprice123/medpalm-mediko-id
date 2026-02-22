@@ -27,45 +27,54 @@ export class GetActiveFeaturesService extends BaseService {
         "exercise_session_type",
         "exercise_access_type",
         "exercise_is_active",
+        "exercise_youtube_url",
         "flashcard_feature_title",
         "flashcard_feature_description",
         "flashcard_credit_cost",
         "flashcard_session_type",
         "flashcard_access_type",
         "flashcard_is_active",
+        "flashcard_youtube_url",
         "summary_notes_feature_title",
         "summary_notes_feature_description",
         "summary_notes_credit_cost",
         "summary_notes_access_type",
         "summary_notes_is_active",
+        "summary_notes_youtube_url",
         "calculator_feature_title",
         "calculator_feature_description",
         "calculator_credit_cost",
         "calculator_access_type",
         "calculator_is_active",
+        "calculator_youtube_url",
         "anatomy_feature_title",
         "anatomy_feature_description",
         "anatomy_credit_cost",
         "anatomy_access_type",
         "anatomy_is_active",
+        "anatomy_youtube_url",
         "mcq_feature_title",
         "mcq_feature_description",
         "mcq_credit_cost",
         "mcq_session_type",
         "mcq_access_type",
         "mcq_is_active",
+        "mcq_youtube_url",
         "chatbot_feature_title",
         "chatbot_feature_description",
         "chatbot_access_type",
         "chatbot_is_active",
+        "chatbot_youtube_url",
         "skripsi_feature_title",
         "skripsi_feature_description",
         "skripsi_access_type",
         "skripsi_is_active",
+        "skripsi_youtube_url",
         "osce_practice_feature_title",
         "osce_practice_feature_description",
         "osce_practice_access_type",
         "osce_practice_is_active",
+        "osce_practice_youtube_url",
     ])
 
     const features = []
@@ -83,7 +92,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '📝',
         sessionType: 'summary_notes',
-        isActive: featureConstants.summary_notes_is_active
+        isActive: featureConstants.summary_notes_is_active,
+        youtubeUrl: featureConstants.summary_notes_youtube_url || ''
       })
     }
 
@@ -100,7 +110,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '🩺',
         sessionType: "osce_practice",
-        isActive: featureConstants.osce_practice_is_active
+        isActive: featureConstants.osce_practice_is_active,
+        youtubeUrl: featureConstants.osce_practice_youtube_url || ''
       })
     }
 
@@ -117,7 +128,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '💬',
         sessionType: "chatbot",
-        isActive: featureConstants.chatbot_is_active
+        isActive: featureConstants.chatbot_is_active,
+        youtubeUrl: featureConstants.chatbot_youtube_url || ''
       })
     }
 
@@ -133,7 +145,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '📚',
         sessionType: "skripsi_builder",
-        isActive: featureConstants.skripsi_is_active
+        isActive: featureConstants.skripsi_is_active,
+        youtubeUrl: featureConstants.skripsi_youtube_url || ''
       })
     }
     
@@ -149,7 +162,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '📝',
         sessionType: featureConstants.mcq_session_type,
-        isActive: featureConstants.mcq_is_active
+        isActive: featureConstants.mcq_is_active,
+        youtubeUrl: featureConstants.mcq_youtube_url || ''
       })
     }
 
@@ -165,7 +179,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '🎴',
         sessionType: featureConstants.flashcard_session_type,
-        isActive: featureConstants.flashcard_is_active
+        isActive: featureConstants.flashcard_is_active,
+        youtubeUrl: featureConstants.flashcard_youtube_url || ''
       })
     }
     // Anatomy Quiz feature
@@ -180,7 +195,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '🫀',
         sessionType: "anatomy",
-        isActive: featureConstants.anatomy_is_active
+        isActive: featureConstants.anatomy_is_active,
+        youtubeUrl: featureConstants.anatomy_youtube_url || ''
       })
     }
 
@@ -196,7 +212,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '🎓',
         sessionType: featureConstants.exercise_session_type,
-        isActive: featureConstants.exercise_is_active
+        isActive: featureConstants.exercise_is_active,
+        youtubeUrl: featureConstants.exercise_youtube_url || ''
       })
     }
 
@@ -212,7 +229,8 @@ export class GetActiveFeaturesService extends BaseService {
         accessType,
         icon: '🧮',
         sessionType: "calculator",
-        isActive: featureConstants.calculator_is_active
+        isActive: featureConstants.calculator_is_active,
+        youtubeUrl: featureConstants.calculator_youtube_url || ''
       })
     }
 
