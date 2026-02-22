@@ -27,6 +27,7 @@ export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSecti
             <NavLink onClick={() => scrollToSection('features')}>Fitur</NavLink>
             <NavLink onClick={() => scrollToSection('pricing')}>Harga</NavLink>
             <NavLink onClick={() => scrollToSection('how-it-works')}>Demo</NavLink>
+            <NavLink onClick={() => scrollToSection('faq')}>FAQ</NavLink>
             <LinkButton to="/sign-in" variant="primary" className="nav-cta">
               Masuk
             </LinkButton>
@@ -54,6 +55,7 @@ export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSecti
         <MobileNavLink onClick={() => scrollToSection('features')}>Fitur</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('pricing')}>Harga</MobileNavLink>
         <MobileNavLink onClick={() => scrollToSection('how-it-works')}>Demo</MobileNavLink>
+        <MobileNavLink onClick={() => scrollToSection('faq')}>FAQ</MobileNavLink>
         <Button
           variant="primary"
           size="large"

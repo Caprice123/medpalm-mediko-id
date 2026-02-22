@@ -278,9 +278,8 @@ export const Badge = styled.div`
 `;
 
 export const HeroTitle = styled.h1`
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  line-height: 1.1;
   margin-bottom: 1.5rem;
   animation: slideInLeft 0.8s ease-out 0.2s both;
   background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
@@ -347,13 +346,135 @@ export const HeroButtons = styled.div`
 `;
 
 export const HeroVisual = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
 
   @media (max-width: 968px) {
     display: none;
   }
+`;
+
+// Hero Browser Mockup
+export const HeroBrowserMockup = styled.div`
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 32px 72px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(107, 185, 232, 0.12);
+  overflow: hidden;
+  width: 100%;
+`;
+
+export const HeroBrowserBar = styled.div`
+  background: #f3f4f6;
+  padding: 0.625rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+`;
+
+export const HeroBrowserDots = styled.div`
+  display: flex;
+  gap: 0.375rem;
+`;
+
+export const HeroBrowserDot = styled.div`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: ${props => props.$color};
+`;
+
+export const HeroBrowserUrl = styled.div`
+  flex: 1;
+  background: white;
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+  font-family: monospace;
+`;
+
+export const HeroBrowserContent = styled.div`
+  height: 340px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f0f7ff 0%, #eef5fc 100%);
+`;
+
+export const HeroFeatureSlide = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: ${props => props.$active ? 1 : 0};
+  transform: ${props => props.$active ? 'translateY(0)' : 'translateY(16px)'};
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: ${props => props.$active ? 'auto' : 'none'};
+`;
+
+export const HeroSlideIcon = styled.div`
+  font-size: 4.5rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 16px rgba(107, 185, 232, 0.3));
+`;
+
+export const HeroSlideLabel = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: rgba(107, 185, 232, 0.1);
+  color: ${colors.primary.main};
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  border: 1px solid rgba(107, 185, 232, 0.2);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const HeroSlideTitle = styled.div`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: ${colors.primary.dark};
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+export const HeroSlideDesc = styled.div`
+  font-size: 0.9375rem;
+  color: #6b7280;
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.6;
+`;
+
+export const HeroSlideIndicators = styled.div`
+  display: flex;
+  gap: 0.375rem;
+  justify-content: center;
+  padding: 0.875rem;
+  background: white;
+  border-top: 1px solid #f3f4f6;
+`;
+
+export const HeroSlideIndicator = styled.div`
+  height: 6px;
+  width: ${props => props.$active ? '22px' : '6px'};
+  border-radius: 99px;
+  background: ${props => props.$active
+    ? `linear-gradient(90deg, ${colors.gradient.start}, ${colors.gradient.end})`
+    : '#e5e7eb'};
+  transition: all 0.35s ease;
+  cursor: pointer;
 `;
 
 export const FeaturePreviewCard = styled.div`
