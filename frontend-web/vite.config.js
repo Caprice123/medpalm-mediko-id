@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
@@ -13,6 +14,10 @@ export default defineConfig({
     compression({ algorithm: 'gzip' }),
     compression({ algorithm: 'brotliCompress', ext: '.br' }),
     visualizer({ open: false, filename: 'dist/stats.html', gzipSize: true }),
+    sentryVitePlugin({
+      org: "medpal-project",
+      project: "medpal"
+    })
   ],
   resolve: {
     alias: {
@@ -43,5 +48,7 @@ export default defineConfig({
         },
       },
     },
+
+    sourcemap: true
   },
 })

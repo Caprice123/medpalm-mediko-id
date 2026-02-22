@@ -6,6 +6,7 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../.
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 import { setTimeout, setInterval, clearTimeout, clearInterval } from 'worker-timers'
+import { captureException } from '@config/sentry'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -727,7 +728,6 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
               // Backend created messages with status='streaming'
               backendSavedMessage = true
               finalData = data.data
-              showSources = true // Now we can show sources since streaming is complete
 
               // Use filtered sources from backend (only citations actually used in the response)
               if (data.data.sources && data.data.sources.length > 0) {
@@ -809,6 +809,12 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
       return null
     } else {
       console.error('❌ Streaming error:', error)
+      captureException(error, {
+        feature: 'skripsi',
+        tabId,
+        hasPartialContent: !!(finalData?.aiMessage && fullContent.length > 0),
+        contentLength: fullContent?.length ?? 0,
+      })
 
       // If we have partial content and backend created the message, save it
       if (finalData && finalData.aiMessage && fullContent.length > 0) {

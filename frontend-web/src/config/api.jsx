@@ -4,6 +4,7 @@ import endpoints from '@config/endpoint';
 import { handleApiError } from '@utils/errorUtils';
 import { actions as creditActions } from '@store/credit/reducer';
 import { actions as pricingActions } from '@store/pricing/reducer';
+import { captureException } from '@config/sentry';
 
 // Define sign-in route directly to avoid circular dependency
 const SIGN_IN_ROUTE = '/sign-in';
@@ -149,11 +150,17 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
             }
 
             // Handle 500 errors (silent for finalize/truncate — caller handles those)
-            if (error.response && error.response.status === 500) {
+            if (error.response && error.response.status >= 500) {
                 console.error('Server error (500):', error.response.data);
                 const url = error.config?.url || ''
                 const isSilent = url.includes('/finalize') || url.includes('/truncate')
                 if (!isSilent) {
+                    captureException(error, {
+                        url,
+                        status: error.response.status,
+                        responseData: error.response?.data,
+                        method: error.config?.method,
+                    })
                     handleApiError(error, dispatch);
                 }
             }

@@ -7,6 +7,7 @@ import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 import { checkMimeTypeSupport } from '@utils/testDeepgramConnection'
 import { setTimeout } from 'worker-timers'
+import { captureException } from '@config/sentry'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -607,6 +608,10 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
       return null
     } else {
       console.error('Streaming error:', error)
+      captureException(error, {
+        feature: 'osce-conversation',
+        sessionId,
+      })
       dispatch(removeMessage({ sessionId, messageId: optimisticUserId }))
       dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
@@ -950,6 +955,10 @@ const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, ab
       return null
     } else {
       console.error('Physical exam streaming error:', error)
+      captureException(error, {
+        feature: 'osce-physical-exam',
+        sessionId,
+      })
       dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
       dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))

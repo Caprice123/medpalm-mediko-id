@@ -20,6 +20,7 @@ const Dashboard = lazy(() => import('@routes/Dashboard'));
 const AdminPanel = lazy(() => import('@routes/Admin/AdminPanel'));
 const UITest = lazy(() => import('@routes/UITest'));
 const EditorTest = lazy(() => import('@routes/EditorTest'));
+const SentryTest = lazy(() => import('@routes/SentryTest/SentryTest'));
 const HtmlToDocxExample = lazy(() => import('@components/HtmlToDocxExample'));
 const ExcalidrawBuilderMockup = lazy(() => import('@mockups/ExcalidrawBuilder/ExcalidrawBuilderMockup'));
 // Wrapper to add Suspense to each route
@@ -33,6 +34,7 @@ const appRoutes = [
     { path: '/', element: withSuspense(<Home />) },
     { path: AuthRoute.signInRoute, element: withSuspense(<Login />) },
     { path: '/ui-test', element: withSuspense(<UITest />) },
+    { path: '/sentry-test', element: withSuspense(<SentryTest />) },
     { path: '/editor-test', element: withSuspense(<EditorTest />) },
     { path: '/docx-test', element: withSuspense(<HtmlToDocxExample />) },
     { path: '/excalidraw-mockup', element: withSuspense(<ExcalidrawBuilderMockup />) },

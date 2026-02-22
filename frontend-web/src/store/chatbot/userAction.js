@@ -6,6 +6,7 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../.
 import { getToken } from '@utils/authToken'
 import { refreshAccessToken } from '../../config/api'
 import { setTimeout as setWorkerTimeout, clearTimeout as clearWorkerTimeout } from 'worker-timers'
+import { captureException } from '@config/sentry'
 
 const {
   setLoading,
@@ -573,6 +574,12 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}))
+      captureException(new Error(`Chatbot stream HTTP ${response.status}`), {
+        feature: 'chatbot',
+        status: response.status,
+        conversationId,
+        errorBody,
+      })
       dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
       dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
       dispatch(clearStreamingState(conversationId))
@@ -685,6 +692,12 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
       return null
     } else {
       console.error('❌ Streaming error:', error)
+      captureException(error, {
+        feature: 'chatbot',
+        conversationId,
+        hasPartialContent: !!finalData?.aiMessage,
+        contentLength: fullContent?.length ?? 0,
+      })
 
       if (finalData?.aiMessage) {
         // DB records were created — always finalize to avoid stuck 'streaming' status
