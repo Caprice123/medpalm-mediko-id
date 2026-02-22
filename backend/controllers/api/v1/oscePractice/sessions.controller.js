@@ -11,6 +11,7 @@ import { GetSessionMessagesService } from '#services/osce/user/getSessionMessage
 import { SendOsceMessageService } from '#services/osce/user/sendOsceMessageService'
 import { GetPhysicalExamMessagesService } from '#services/osce/user/getPhysicalExamMessagesService'
 import { SendPhysicalExamMessageService } from '#services/osce/user/sendPhysicalExamMessageService'
+import { captureException } from '#config/sentry'
 
 class SessionsController {
   // GET /api/v1/osce/sessions - Get user's session history
@@ -307,14 +308,26 @@ class SessionsController {
           },
           onError: (error) => {
             if (!clientDisconnected) {
-              res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+              res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message }})}\n\n`)
+              captureException(error, {
+                url: req.originalUrl,
+                method: req.method,
+                userId: req.user?.id,
+                body: req.body,
+            })
               res.end()
             }
           },
         })
       } catch (error) {
         if (!clientDisconnected) {
-          res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+          res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+          captureException(error, {
+            url: req.originalUrl,
+            method: req.method,
+            userId: req.user?.id,
+            body: req.body,
+          })
           res.end()
         }
       }

@@ -148,10 +148,14 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 navigate('/dashboard');
             }
 
-            // Handle 500 errors
+            // Handle 500 errors (silent for finalize/truncate — caller handles those)
             if (error.response && error.response.status === 500) {
                 console.error('Server error (500):', error.response.data);
-                handleApiError(error, dispatch);
+                const url = error.config?.url || ''
+                const isSilent = url.includes('/finalize') || url.includes('/truncate')
+                if (!isSilent) {
+                    handleApiError(error, dispatch);
+                }
             }
 
             return Promise.reject(error);

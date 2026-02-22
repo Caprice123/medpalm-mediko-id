@@ -5,7 +5,7 @@ const SkripsiList = lazy(() => import('../pages/List'));
 const SkripsiEditor = lazy(() => import('../pages/Editor'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Skripsi Builder..." />}>
+    <Suspense fallback={<PageLoader text="Loading..." />}>
         {Component}
     </Suspense>
 );

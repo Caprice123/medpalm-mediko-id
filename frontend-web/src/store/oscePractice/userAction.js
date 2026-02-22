@@ -1,4 +1,5 @@
 import { actions } from '@store/oscePractice/reducer'
+import { actions as commonActions } from '@store/common/reducer'
 import { actions as pricingActions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, patchWithToken } from '../../utils/requestUtils'
@@ -362,7 +363,7 @@ export const sendMessage = (sessionId, message) => async (dispatch) => {
       return
     }
     console.error('❌ sendMessage caught error:', err)
-    // no need to handle anything because already handled in api.jsx
+    dispatch(commonActions.setError({ message: err.message || 'Terjadi kesalahan saat streaming pesan' }))
   } finally {
     console.log('🧹 sendMessage finally block - clearing activeAbortController')
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
@@ -538,9 +539,13 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Response error:', response.status, errorText)
-      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+      const errorBody = await response.json().catch(() => ({}))
+      dispatch(removeMessage({ sessionId, messageId: optimisticUserId }))
+      dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
+      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
+      dispatch(commonActions.setError(errorBody?.error || 'Terjadi kesalahan pada sistem'))
+      return
     }
 
     const reader = response.body.getReader()
@@ -561,34 +566,36 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
+          let data
           try {
-            const data = JSON.parse(line.slice(6))
-
-            if (data.type === 'chunk') {
-              // Check if first chunk contains userQuota and update credit balance
-              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
-                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
-                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
-              }
-
-              // Only add chunk if user hasn't stopped the stream
-              if (!userStoppedStreamFlag) {
-                // Handle both formats: data.content (old) and data.data.content (new Skripsi-style)
-                const chunkContent = data.data?.content || data.content
-                addChunkToContent(chunkContent)
-              } else {
-                console.log('⏸️ Ignoring new chunk - user stopped stream')
-              }
-            } else if (data.type === 'done') {
-              // Backend saved to database (full or partial)
-              backendSavedMessage = true
-              finalData = data.data
-              // Don't finalize here - let the typing animation complete first
-            } else if (data.type === 'error') {
-              throw new Error(data.error)
-            }
+            data = JSON.parse(line.slice(6))
           } catch (parseError) {
             console.error('Error parsing SSE data:', parseError)
+            continue
+          }
+
+          if (data.type === 'chunk') {
+            if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+            }
+
+            if (!userStoppedStreamFlag) {
+              const chunkContent = data.data?.content || data.content
+              addChunkToContent(chunkContent)
+            } else {
+              console.log('⏸️ Ignoring new chunk - user stopped stream')
+            }
+          } else if (data.type === 'done') {
+            backendSavedMessage = true
+            finalData = data.data
+          } else if (data.type === 'error') {
+            dispatch(commonActions.setError(data.error))
+            dispatch(removeMessage({ sessionId, messageId: optimisticUserId }))
+            dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
+            dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+            dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
+            return null
           }
         }
       }
@@ -597,16 +604,14 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
   } catch (error) {
     if (error.name === 'AbortError') {
       console.log('✅ Stream aborted by user - typing animation will finish showing all received content')
-      // Keep typing animation going to finish displaying all received content
       return null
     } else {
       console.error('Streaming error:', error)
-      // Clean up on non-abort errors
       dispatch(removeMessage({ sessionId, messageId: optimisticUserId }))
       dispatch(removeMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingMessage', value: false }))
       dispatch(setLoading({ key: 'isAssistantTyping', value: false }))
-      throw error
+      dispatch(commonActions.setError({ message: error.message || 'Terjadi kesalahan saat streaming pesan' }))
     }
   }
 }
@@ -703,6 +708,7 @@ export const sendPhysicalExamMessage = (sessionId, message) => async (dispatch) 
       return
     }
     console.error('❌ sendPhysicalExamMessage caught error:', err)
+    dispatch(commonActions.setError({ message: err.message || 'Terjadi kesalahan saat streaming pesan' }))
   } finally {
     console.log('🧹 sendPhysicalExamMessage finally block - clearing activePhysicalExamAbortController')
     dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
@@ -876,9 +882,13 @@ const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, ab
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Response error:', response.status, errorText)
-      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+      const errorBody = await response.json().catch(() => ({}))
+      dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
+      dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
+      dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+      dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
+      dispatch(commonActions.setError(errorBody?.error || 'Terjadi kesalahan pada sistem'))
+      return
     }
 
     const reader = response.body.getReader()
@@ -899,32 +909,36 @@ const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, ab
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
+          let data
           try {
-            const data = JSON.parse(line.slice(6))
-
-            if (data.type === 'chunk') {
-              // Check if first chunk contains userQuota and update credit balance
-              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
-                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
-                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
-              }
-
-              // Only add chunk if user hasn't stopped the stream
-              if (!physicalExamUserStoppedStreamFlag) {
-                const chunkContent = data.data?.content || data.content
-                addChunkToContent(chunkContent)
-              } else {
-                console.log('⏸️ Ignoring new chunk - user stopped physical exam stream')
-              }
-            } else if (data.type === 'done') {
-              // Backend saved to database
-              backendSavedMessage = true
-              finalData = data.data
-            } else if (data.type === 'error') {
-              throw new Error(data.error)
-            }
+            data = JSON.parse(line.slice(6))
           } catch (parseError) {
             console.error('Error parsing SSE data:', parseError)
+            continue
+          }
+
+          if (data.type === 'chunk') {
+            if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+            }
+
+            if (!physicalExamUserStoppedStreamFlag) {
+              const chunkContent = data.data?.content || data.content
+              addChunkToContent(chunkContent)
+            } else {
+              console.log('⏸️ Ignoring new chunk - user stopped physical exam stream')
+            }
+          } else if (data.type === 'done') {
+            backendSavedMessage = true
+            finalData = data.data
+          } else if (data.type === 'error') {
+            dispatch(commonActions.setError(data.error))
+            dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
+            dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
+            dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
+            dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
+            return null
           }
         }
       }
@@ -936,12 +950,11 @@ const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, ab
       return null
     } else {
       console.error('Physical exam streaming error:', error)
-      // Clean up on non-abort errors
       dispatch(removePhysicalExamMessage({ sessionId, messageId: optimisticUserId }))
       dispatch(removePhysicalExamMessage({ sessionId, messageId: streamingMessageId }))
       dispatch(setLoading({ key: 'isSendingPhysicalExamMessage', value: false }))
       dispatch(setLoading({ key: 'isPhysicalExamAssistantTyping', value: false }))
-      throw error
+      dispatch(commonActions.setError({ message: error.message || 'Terjadi kesalahan saat streaming pesan' }))
     }
   }
 }

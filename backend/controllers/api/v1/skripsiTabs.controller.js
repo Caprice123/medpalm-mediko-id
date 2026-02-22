@@ -4,7 +4,7 @@ import { TruncateMessageService } from '#services/skripsi/truncateMessageService
 import { FinalizeMessageService } from '#services/skripsi/finalizeMessageService'
 import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
 import { GetSkripsiConfigService } from '#services/skripsi/getSkripsiConfigService'
-import prisma from '#prisma/client'
+import { captureException } from '#config/sentry'
 
 class SkripsiTabsController {
   // Get messages for a tab with pagination
@@ -84,14 +84,26 @@ class SkripsiTabsController {
         },
         onError: (error) => {
           if (!clientDisconnected) {
-            res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+            res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+            captureException(error, {
+                url: req.originalUrl,
+                method: req.method,
+                userId: req.user?.id,
+                body: req.body,
+            })
             res.end()
           }
         }
       })
     } catch (error) {
       if (!clientDisconnected) {
-        res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+        res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+        captureException(error, {
+            url: req.originalUrl,
+            method: req.method,
+            userId: req.user?.id,
+            body: req.body,
+        })
         res.end()
       }
     }
@@ -109,7 +121,6 @@ class SkripsiTabsController {
       })
     }
 
-    try {
       const result = await FinalizeMessageService.call({
         userId,
         tabId: parseInt(tabId),
@@ -147,12 +158,6 @@ class SkripsiTabsController {
           }))
         }
       })
-    } catch (error) {
-      console.error('Error finalizing message:', error)
-      return res.status(500).json({
-        message: error.message || 'Failed to finalize message'
-      })
-    }
   }
 
   // Truncate message content when user stops streaming (DEPRECATED - use finalize)

@@ -5,6 +5,7 @@ import { TruncateMessageService } from '#services/chatbot/truncateMessageService
 import { FinalizeMessageService } from '#services/chatbot/finalizeMessageService'
 import { ChatbotMessageSerializer } from '#serializers/api/v1/chatbotMessageSerializer'
 import prisma from '#prisma/client'
+import { captureException } from '#config/sentry'
 
 class MessageController {
   // Get messages for a conversation
@@ -76,7 +77,7 @@ class MessageController {
           // Only send if client still connected
           if (!clientDisconnected) {
             res.write(`data: ${JSON.stringify(chunk)}\n\n`)
-            onSend()
+            if (onSend) onSend()
           }
         },
         onComplete: (result) => {
@@ -88,14 +89,26 @@ class MessageController {
         },
         onError: (error) => {
           if (!clientDisconnected) {
-            res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+            res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+            captureException(error, {
+                url: req.originalUrl,
+                method: req.method,
+                userId: req.user?.id,
+                body: req.body,
+            })
             res.end()
           }
         }
       })
     } catch (error) {
       if (!clientDisconnected) {
-        res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`)
+        res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
+        captureException(error, {
+            url: req.originalUrl,
+            method: req.method,
+            userId: req.user?.id,
+            body: req.body,
+        })
         res.end()
       }
     }
@@ -219,42 +232,43 @@ class MessageController {
       })
     }
 
-    try {
-      const result = await FinalizeMessageService.call({
-        userId,
-        conversationId: conversationUniqueId,
-        messageId: parseInt(messageId),
-        content: content,
-        isComplete: isComplete === true
-      })
+    const result = await FinalizeMessageService.call({
+      userId,
+      conversationId: conversationUniqueId,
+      messageId: parseInt(messageId),
+      content: content,
+      isComplete: isComplete === true
+    })
 
-      if (!result.success) {
-        return res.status(409).json({
-          message: result.note || 'Message already finalized',
-          data: {
-            id: result.message.id,
-            content: result.message.content,
-            status: result.message.status,
-            createdAt: result.message.created_at.toISOString()
-          }
-        })
-      }
-
-      return res.status(200).json({
-        message: 'Message finalized successfully',
+    if (!result.success) {
+      return res.status(409).json({
+        message: result.note || 'Message already finalized',
         data: {
           id: result.message.id,
           content: result.message.content,
           status: result.message.status,
-          createdAt: result.message.created_at.toISOString()
+          createdAt: result.message.created_at.toISOString(),
+          sources: (result.message.chatbot_message_sources || []).map(src => ({
+            url: src.url,
+            title: src.title
+          }))
         }
       })
-    } catch (error) {
-      console.error('Error finalizing message:', error)
-      return res.status(500).json({
-        message: error.message || 'Failed to finalize message'
-      })
     }
+
+    return res.status(200).json({
+      message: 'Message finalized successfully',
+      data: {
+        id: result.message.id,
+        content: result.message.content,
+        status: result.message.status,
+        createdAt: result.message.created_at.toISOString(),
+        sources: (result.message.chatbot_message_sources || []).map(src => ({
+          url: src.url,
+          title: src.title
+        }))
+      }
+    })
   }
 
   // Truncate message content when user stops streaming (DEPRECATED - use finalize)

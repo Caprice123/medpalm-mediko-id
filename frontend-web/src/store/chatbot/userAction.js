@@ -271,7 +271,7 @@ export const sendMessage = (conversationId, content, mode) => async (dispatch, g
       return null
     }
     // Dispatch error to common reducer
-    dispatch(commonActions.setError(err.message || 'Terjadi kesalahan saat mengirim pesan'))
+    dispatch(commonActions.setError({ message: err.message || 'Terjadi kesalahan saat streaming pesan' }))
     dispatch(setLoading({ key: 'isSendingMessage', value: false }))
   } finally {
     // Clean up abort controller for this conversation
@@ -309,27 +309,23 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
 
       // Call finalize endpoint with the exact displayed content
       try {
-        const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${streamingState.realMessageId}/finalize`
-        const response = await postWithToken(route, {
-          content: streamingState.displayedContent,
-          isComplete: false // User stopped = truncated
-        })
-        console.log(streamingState)
-        console.log('✅ Message finalized successfully on backend')
+        const response = await dispatch(finalizeMessage(
+          conversationId,
+          streamingState.realMessageId,
+          streamingState.displayedContent,
+          false // User stopped = truncated
+        ))
 
         // Remove temporary messages (streaming and optimistic user message)
         if (streamingState.streamingMessageId) {
-            console.log("first")
           dispatch(removeMessageFromConversation({ conversationId, messageId: streamingState.streamingMessageId }))
         }
         if (streamingState.optimisticUserId) {
-            console.log("second")
           dispatch(removeMessageFromConversation({ conversationId, messageId: streamingState.optimisticUserId }))
         }
 
         // Add the user message with real ID and content
         if (streamingState.userMessage && streamingState.realUserMessageId) {
-            console.log("third")
           dispatch(addMessageToConversation({
             conversationId,
             message: {
@@ -342,24 +338,23 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
         }
 
         // Add the AI message with truncated content from backend response
-        if (response.data && response.data.data) {
-            console.log("fourth")
+        if (response.data) {
           dispatch(addMessageToConversation({
             conversationId,
             message: {
-              id: response.data.data.id,
+              id: response.data.id,
               senderType: 'ai',
               modeType: streamingState.mode,
-              content: response.data.data.content,
-              sources: [],
-              createdAt: response.data.data.createdAt
+              content: response.data.content,
+              sources: response.data.sources || [],
+              createdAt: response.data.createdAt
             }
           }))
 
           // Update conversation's lastMessage in the conversations list
           const conversation = state.chatbot.conversations.find(c => c.uniqueId === conversationId)
           if (conversation) {
-            const lastMessage = response.data.data.content.substring(0, 50)
+            const lastMessage = response.data.content.substring(0, 50)
             dispatch(updateConversation({
               ...conversation,
               lastMessage,
@@ -386,6 +381,14 @@ export const stopChatbotStreaming = (conversationId) => async (dispatch, getStat
   }
 }
 
+export const finalizeMessage = (conversationId, messageId, content, isComplete) => async () => {
+  console.log(`📝 Finalizing message ${messageId} as ${isComplete ? 'completed' : 'truncated'}`)
+  const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${messageId}/finalize`
+  const response = await postWithToken(route, { content, isComplete })
+  console.log('✅ Message finalized successfully')
+  return response.data
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 // Streaming message handler - typing animation with backend pacing
@@ -405,6 +408,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
   let isTyping = false
   let backendSavedMessage = false
   let finalData = null
+  let finalized = false
 
   const TYPING_SPEED_MS = 1 // 3ms per character (~333 chars/sec) - fast but still smooth
 
@@ -427,6 +431,46 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
     }
   }))
 
+  // Replaces optimistic/streaming placeholders with the finalized real messages
+  const applyFinalizedMessage = ({ userMessage, aiMessage, content: finalContent, sources: finalSources, status }) => {
+    dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+    dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+    if (userMessage) {
+      dispatch(addMessageToConversation({ conversationId, message: userMessage }))
+    }
+    if (aiMessage) {
+      dispatch(addMessageToConversation({
+        conversationId,
+        message: {
+          ...aiMessage,
+          content: finalContent,
+          sources: finalSources || [],
+          ...(status && { status })
+        }
+      }))
+    }
+    dispatch(clearStreamingState(conversationId))
+    dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+  }
+
+  // Calls the finalize API then swaps in the real messages — used by both the
+  // typing-complete path and the 'done' event path
+  const runFinalize = async () => {
+    try {
+      const response = await dispatch(finalizeMessage(conversationId, finalData.aiMessage.id, fullContent, true))
+      applyFinalizedMessage({
+        userMessage: finalData.userMessage,
+        aiMessage: finalData.aiMessage,
+        content: fullContent,
+        sources: response.data?.sources || sources
+      })
+    } catch (error) {
+      console.error('❌ Error finalizing completed message:', error)
+      dispatch(clearStreamingState(conversationId))
+      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+    }
+  }
+
   // Typing animation - type character by character
   const typeNextCharacter = () => {
     // Check if user stopped stream from Redux state
@@ -444,56 +488,9 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
     if (displayedContent.length >= fullContent.length) {
       isTyping = false
 
-      // If backend is done and all characters displayed, finalize
-      if (backendSavedMessage && finalData) {
-        // Call finalize endpoint with complete content
-        const finalizeMessageAsync = async () => {
-          try {
-            const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${finalData.aiMessage.id}/finalize`
-            await postWithToken(route, {
-              content: fullContent, // Full content
-              isComplete: true // Streaming completed naturally
-            })
-            console.log('✅ Message finalized as completed')
-
-            // Remove temporary messages
-            dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
-            dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
-
-            // Add final messages
-            if (finalData.userMessage) {
-              dispatch(addMessageToConversation({ conversationId, message: finalData.userMessage }))
-            }
-            if (finalData.aiMessage) {
-              dispatch(addMessageToConversation({
-                conversationId,
-                message: {
-                  ...finalData.aiMessage,
-                  content: fullContent // Use full content
-                }
-              }))
-            }
-
-            // Update conversation's lastMessage in the conversations list
-            const state = getState()
-            const conversation = state.chatbot.conversations.find(c => c.uniqueId === conversationId)
-            if (conversation) {
-              const lastMessage = fullContent.substring(0, 50)
-              dispatch(updateConversation({
-                ...conversation,
-                lastMessage,
-                updatedAt: new Date().toISOString()
-              }))
-            }
-
-            dispatch(clearStreamingState(conversationId))
-            dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-          } catch (error) {
-            console.error('❌ Error finalizing completed message:', error)
-          }
-        }
-
-        finalizeMessageAsync()
+      if (backendSavedMessage && finalData && !finalized) {
+        finalized = true
+        runFinalize()
       }
       return
     }
@@ -575,7 +572,13 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const errorBody = await response.json().catch(() => ({}))
+      dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+      dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+      dispatch(clearStreamingState(conversationId))
+      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(commonActions.setError(errorBody?.error || 'Terjadi kesalahan pada sistem'))
+      return
     }
 
     const reader = response.body.getReader()
@@ -597,100 +600,78 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
       
       for (const line of lines) {
         if (line.startsWith('data: ')) {
+          let data
           try {
-            const data = JSON.parse(line.slice(6))
-
-            if (data.type === 'chunk') {
-              // Check if first chunk contains userQuota and update credit balance
-              if (data.data.userQuota && data.data.userQuota.balance !== undefined) {
-                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
-                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
-              }
-              addChunkToContent(data.data.content)
-            } else if (data.type == "started") {
-                const { userMessage, aiMessage } = data.data
-                dispatch(setStreamingState({
-                    conversationId,
-                    realUserMessageId: userMessage.id,
-                    realMessageId: aiMessage.id,
-                    streamingMessageCreatedAt: aiMessage.createdAt,
-                }))
-            } else if (data.type === 'citation') {
-              // Collect citation but don't show yet (wait until streaming completes)
-              const newSource = {
-                url: data.data.url,
-                title: data.data.title
-              }
-              sources.push(newSource)
-            } else if (data.type === 'done') {
-              // Backend saved to database (full or partial)
-              backendSavedMessage = true
-              finalData = data.data
-              showSources = true // Now we can show sources since streaming is complete
-
-              // Use filtered sources from backend (only citations actually used in the response)
-              if (data.data.sources && data.data.sources.length > 0) {
-                sources.length = 0 // Clear all collected citations
-                sources.push(...data.data.sources) // Use only filtered sources from backend
-              }
-
-              console.log('✅ Backend saved messages:', data.data)
-              console.log('✅ Filtered citations ready to display:', sources.length)
-
-              // Store the real message IDs for potential truncation
-              if (data.data.aiMessage && data.data.aiMessage.id) {
-                dispatch(setStreamingState({
-                  conversationId,
-                  realMessageId: data.data.aiMessage.id,
-                  realUserMessageId: data.data.userMessage ? data.data.userMessage.id : null,
-                  displayedLength: displayedContent.length,
-                  displayedContent
-                }))
-              }
-
-              // If typing animation already caught up, finalize immediately
-              if (displayedContent.length >= fullContent.length) {
-                // Call finalize endpoint (async but don't wait)
-                const finalizeImmediately = async () => {
-                  try {
-                    const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${data.data.aiMessage.id}/finalize`
-                    await postWithToken(route, {
-                      content: fullContent, // Full content
-                      isComplete: true
-                    })
-                    console.log('✅ Message finalized immediately (typing caught up)')
-                  } catch (error) {
-                    console.error('❌ Error finalizing:', error)
-                  }
-                }
-                finalizeImmediately()
-
-                dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
-                dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
-
-                if (data.data.userMessage) {
-                  dispatch(addMessageToConversation({ conversationId, message: data.data.userMessage }))
-                }
-                if (data.data.aiMessage) {
-                  dispatch(addMessageToConversation({
-                    conversationId,
-                    message: {
-                      ...data.data.aiMessage,
-                      content: fullContent // Use full content
-                    }
-                  }))
-                }
-
-                dispatch(clearStreamingState(conversationId))
-                dispatch(setLoading({ key: 'isSendingMessage', value: false }))
-                return data.data
-              }
-              // Otherwise, let typing animation finish and it will finalize
-            } else if (data.type === 'error') {
-              throw new Error(data.error)
-            }
+            data = JSON.parse(line.slice(6))
           } catch (e) {
             console.error('❌ Error parsing SSE data:', e, line)
+            continue
+          }
+
+          if (data.type === 'chunk') {
+            // Check if first chunk contains userQuota and update credit balance
+            if (data.data.userQuota && data.data.userQuota.balance !== undefined) {
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+            }
+            addChunkToContent(data.data.content)
+          } else if (data.type === 'started') {
+            const { userMessage, aiMessage } = data.data
+            dispatch(setStreamingState({
+              conversationId,
+              realUserMessageId: userMessage.id,
+              realMessageId: aiMessage.id,
+              streamingMessageCreatedAt: aiMessage.createdAt,
+            }))
+            finalData = data.data
+          } else if (data.type === 'citation') {
+            sources.push({ url: data.data.url, title: data.data.title })
+          } else if (data.type === 'done') {
+            backendSavedMessage = true
+            finalData = data.data
+            showSources = true
+
+            if (data.data.sources && data.data.sources.length > 0) {
+              sources.length = 0
+              sources.push(...data.data.sources)
+            }
+
+            console.log('✅ Backend saved messages:', data.data)
+            console.log('✅ Filtered citations ready to display:', sources.length)
+
+            if (data.data.aiMessage && data.data.aiMessage.id) {
+              dispatch(setStreamingState({
+                conversationId,
+                realMessageId: data.data.aiMessage.id,
+                realUserMessageId: data.data.userMessage ? data.data.userMessage.id : null,
+                displayedLength: displayedContent.length,
+                displayedContent
+              }))
+            }
+
+            if (!isTyping && displayedContent.length >= fullContent.length && !finalized) {
+              finalized = true
+              runFinalize()
+              return data.data
+            }
+          } else if (data.type === 'error') {
+            dispatch(commonActions.setError(data.error))
+            if (finalData?.aiMessage) {
+              try {
+                const response = await dispatch(finalizeMessage(conversationId, finalData.aiMessage.id, fullContent, false))
+                applyFinalizedMessage({ userMessage: finalData.userMessage, aiMessage: finalData.aiMessage, content: '', sources: response.data?.sources || [], status: 'error' })
+              } catch (saveError) {
+                console.error('❌ Failed to finalize on error event:', saveError)
+                dispatch(clearStreamingState(conversationId))
+                dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+              }
+            } else {
+              dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+              dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+              dispatch(clearStreamingState(conversationId))
+              dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+            }
+            return null
           }
         }
       }
@@ -705,50 +686,32 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
     } else {
       console.error('❌ Streaming error:', error)
 
-      // If we have partial content and backend created the message, save it
-      if (finalData && finalData.aiMessage && fullContent.length > 0) {
+      if (finalData?.aiMessage) {
+        // DB records were created — always finalize to avoid stuck 'streaming' status
         try {
-          console.log(`💾 Saving partial message due to error: ${fullContent.length} characters`)
-
-          // Finalize with partial content
-          const route = Endpoints.api.chatbot + `/conversations/${conversationId}/messages/${finalData.aiMessage.id}/finalize`
-          await postWithToken(route, {
-            content: fullContent,
-            isComplete: false // Error during streaming = incomplete
+          console.log(`💾 Finalizing message on error: ${fullContent.length} characters`)
+          await dispatch(finalizeMessage(conversationId, finalData.aiMessage.id, fullContent, false))
+          applyFinalizedMessage({
+            userMessage: finalData.userMessage,
+            aiMessage: finalData.aiMessage,
+            content: '',
+            sources: [],
+            status: 'error'
           })
-
-          // Remove temporary messages
-          dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
-          dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
-
-          // Add final messages
-          if (finalData.userMessage) {
-            dispatch(addMessageToConversation({
-              conversationId,
-              message: finalData.userMessage
-            }))
-          }
-
-          dispatch(addMessageToConversation({
-            conversationId,
-            message: {
-              ...finalData.aiMessage,
-              content: '', // Empty as saved in backend
-              status: 'error' // Mark as error status
-            }
-          }))
-
-          console.log('✅ Partial message saved successfully')
+          console.log('✅ Message finalized on error')
         } catch (saveError) {
-          console.error('❌ Failed to save partial message:', saveError)
+          console.error('❌ Failed to finalize message on error:', saveError)
+          dispatch(clearStreamingState(conversationId))
+          dispatch(setLoading({ key: 'isSendingMessage', value: false }))
         }
+      } else {
+        dispatch(removeMessageFromConversation({ conversationId, messageId: optimisticUserId }))
+        dispatch(removeMessageFromConversation({ conversationId, messageId: streamingMessageId }))
+        dispatch(clearStreamingState(conversationId))
+        dispatch(setLoading({ key: 'isSendingMessage', value: false }))
       }
 
-      // Dispatch error to common reducer
-      dispatch(commonActions.setError(error.message || 'Terjadi kesalahan saat streaming pesan'))
-
-      dispatch(clearStreamingState(conversationId))
-      dispatch(setLoading({ key: 'isSendingMessage', value: false }))
+      dispatch(commonActions.setError({ message: error.message || 'Terjadi kesalahan saat streaming pesan' }))
       return null
     }
   }

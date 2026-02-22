@@ -272,7 +272,6 @@ export const sendMessage = (tabId, message, modeType) => async (dispatch, getSta
 }
 
 export const finalizeMessage = (tabId, messageId, content, isComplete) => async () => {
-  try {
     console.log(`📝 Finalizing message ${messageId} as ${isComplete ? 'completed' : 'truncated'}`)
 
     const route = Endpoints.api.skripsi + `/tabs/${tabId}/messages/${messageId}/finalize`
@@ -283,10 +282,6 @@ export const finalizeMessage = (tabId, messageId, content, isComplete) => async 
 
     console.log('✅ Message finalized successfully')
     return response.data
-  } catch (err) {
-    console.error('❌ Error finalizing message:', err)
-    throw err
-  }
 }
 
 export const stopStreaming = (tabId) => async (dispatch, getState) => {
@@ -413,10 +408,7 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
   const TYPING_SPEED_MS = 1
 
-  dispatch(setStreamingState({
-    tabId,
-    streamingMessageId
-  }))
+  dispatch(setStreamingState({ tabId, streamingMessageId }))
 
   dispatch(addMessageToTab({
     tabId,
@@ -429,6 +421,50 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
       createdAt: messageCreatedAt
     }
   }))
+
+  // Replaces optimistic/streaming placeholders with the finalized real messages
+  const applyFinalizedMessage = ({ userMessage, aiMessage, content: finalContent, sources: finalSources, status }) => {
+    dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+    dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+    if (userMessage) {
+      dispatch(addMessageToTab({
+        tabId,
+        message: { ...userMessage, modeType: userMessage.modeType || modeType }
+      }))
+    }
+    if (aiMessage) {
+      dispatch(addMessageToTab({
+        tabId,
+        message: {
+          ...aiMessage,
+          content: finalContent,
+          sources: finalSources || [],
+          modeType: aiMessage.modeType || modeType,
+          ...(status && { status })
+        }
+      }))
+    }
+    dispatch(clearStreamingState(tabId))
+    dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+  }
+
+  // Calls the finalize API then swaps in the real messages — used by both the
+  // typing-complete path and the 'done' event path
+  const runFinalize = async () => {
+    try {
+      const response = await dispatch(finalizeMessage(tabId, finalData.aiMessage.id, fullContent, true))
+      applyFinalizedMessage({
+        userMessage: finalData.userMessage,
+        aiMessage: finalData.aiMessage,
+        content: fullContent,
+        sources: response.data.sources,
+      })
+    } catch (error) {
+      console.error('❌ Error finalizing completed message:', error)
+      dispatch(clearStreamingState(tabId))
+      dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+    }
+  }
 
   const typeNextCharacter = () => {
     const state = getState()
@@ -445,45 +481,7 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
       if (backendSavedMessage && finalData && !finalized) {
         finalized = true
-        const finalizeAsync = async () => {
-          try {
-            const response = await dispatch(finalizeMessage(
-              tabId,
-              finalData.aiMessage.id,
-              fullContent,
-              true
-            ))
-
-            dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
-            dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
-
-            if (finalData.userMessage) {
-              dispatch(addMessageToTab({
-                tabId,
-                message: { ...finalData.userMessage, modeType: finalData.userMessage.modeType || modeType }
-              }))
-            }
-            console.log(response)
-            if (finalData.aiMessage) {
-              dispatch(addMessageToTab({
-                tabId,
-                message: {
-                  ...finalData.aiMessage,
-                  content: fullContent,
-                  sources: response.data.sources || [],
-                  modeType: finalData.aiMessage.modeType || modeType,
-                }
-              }))
-            }
-
-            dispatch(clearStreamingState(tabId))
-            dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
-          } catch (error) {
-            console.error('❌ Error finalizing completed message:', error)
-          }
-        }
-
-        finalizeAsync()
+        runFinalize()
       }
       return
     }
@@ -494,24 +492,22 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
     dispatch(updateMessageInTab({
       tabId,
       messageId: streamingMessageId,
-      updates: {
-        content: displayedContent,
-      }
+      updates: { content: displayedContent }
     }))
 
-    if (finalData && finalData.aiMessage && finalData.aiMessage.id) {
+    if (finalData?.aiMessage?.id) {
       dispatch(setStreamingState({
         tabId,
         realMessageId: finalData.aiMessage.id,
         realUserMessageId: finalData.userMessage ? finalData.userMessage.id : null,
-        displayedContent: displayedContent,
+        displayedContent,
         displayedLength: displayedContent.length,
         isTyping: true
       }))
     } else {
       dispatch(setStreamingState({
         tabId,
-        displayedContent: displayedContent,
+        displayedContent,
         displayedLength: displayedContent.length,
         isTyping: true
       }))
@@ -550,9 +546,13 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Response error:', response.status, errorText)
-      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+      const errorBody = await response.json().catch(() => ({}))
+      dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+      dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+      dispatch(clearStreamingState(tabId))
+      dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+      dispatch(commonActions.setError(errorBody?.error || 'Terjadi kesalahan pada sistem'))
+      return
     }
 
     const reader = response.body.getReader()
@@ -560,10 +560,7 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
     while (true) {
       const { value, done } = await reader.read()
-
-      if (done) {
-        break
-      }
+      if (done) break
 
       const chunk = decoder.decode(value, { stream: true })
       buffer += chunk
@@ -573,105 +570,81 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
+          let data
           try {
-            const data = JSON.parse(line.slice(6))
-
-            if (data.type === 'started') {
-              const { userMessage, aiMessage } = data.data
-              dispatch(setStreamingState({
-                tabId,
-                realUserMessageId: userMessage.id,
-                realMessageId: aiMessage.id,
-              }))
-              console.log('🆔 Stored real message IDs:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
-
-              if (aiMessage.sources && aiMessage.sources.length > 0) {
-                sources.push(...aiMessage.sources)
-                showSources = true
-                console.log(`📚 Received ${aiMessage.sources.length} sources from validated mode`)
-              }
-            } else if (data.type === 'chunk') {
-              if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
-                dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
-                console.log('💎 Credit balance updated:', data.data.userQuota.balance)
-              }
-
-              const state = getState()
-              const streamingState = state.skripsi.streamingStateByTab[tabId]
-
-              if (!streamingState?.userStopped) {
-                addChunkToContent(data.data.content)
-              } else {
-                console.log('⏸️ Ignoring new chunk - user stopped stream')
-              }
-            } else if (data.type === 'citation') {
-              const newSource = {
-                url: data.data.url,
-                title: data.data.title
-              }
-              sources.push(newSource)
-              console.log('📚 Citation received:', newSource)
-            } else if (data.type === 'done') {
-              backendSavedMessage = true
-              finalData = data.data
-              showSources = true
-
-              if (data.data.sources && data.data.sources.length > 0) {
-                sources.length = 0
-                sources.push(...data.data.sources)
-              }
-
-              console.log('✅ Backend created streaming messages:', data.data)
-              console.log('✅ Filtered citations ready to display:', sources.length)
-
-              if (!isTyping && displayedContent.length >= fullContent.length && !finalized) {
-                finalized = true
-                const finalizeAsync = async () => {
-                  try {
-                    const response = await dispatch(finalizeMessage(
-                      tabId,
-                      data.data.aiMessage.id,
-                      fullContent,
-                      true
-                    ))
-
-                    dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
-                    dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
-
-                    if (data.data.userMessage) {
-                      dispatch(addMessageToTab({
-                        tabId,
-                        message: { ...data.data.userMessage, modeType: data.data.userMessage.modeType || modeType }
-                      }))
-                    }
-                    console.log("SOURCES", response.data.sources)
-                    if (data.data.aiMessage) {
-                      dispatch(addMessageToTab({
-                        tabId,
-                        message: {
-                          ...data.data.aiMessage,
-                          content: fullContent,
-                          sources: response.data.sources,
-                          modeType: data.data.aiMessage.modeType || modeType,
-                        }
-                      }))
-                    }
-
-                    dispatch(clearStreamingState(tabId))
-                    dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
-                  } catch (error) {
-                    console.error('❌ Error finalizing completed message:', error)
-                  }
-                }
-
-                finalizeAsync()
-                return data.data
-              }
-            } else if (data.type === 'error') {
-              throw new Error(data.error)
-            }
+            data = JSON.parse(line.slice(6))
           } catch (parseError) {
             console.error('Error parsing SSE data:', parseError)
+            continue
+          }
+
+          if (data.type === 'started') {
+            const { userMessage, aiMessage } = data.data
+            dispatch(setStreamingState({
+              tabId,
+              realUserMessageId: userMessage.id,
+              realMessageId: aiMessage.id,
+            }))
+            // Set finalData early so error path can finalize if error arrives before 'done'
+            finalData = data.data
+            console.log('🆔 Stored real message IDs:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })
+
+            if (aiMessage.sources && aiMessage.sources.length > 0) {
+              sources.push(...aiMessage.sources)
+              showSources = true
+              console.log(`📚 Received ${aiMessage.sources.length} sources from validated mode`)
+            }
+          } else if (data.type === 'chunk') {
+            if (data.data?.userQuota?.balance !== undefined) {
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              console.log('💎 Credit balance updated:', data.data.userQuota.balance)
+            }
+
+            const state = getState()
+            const streamingState = state.skripsi.streamingStateByTab[tabId]
+
+            if (!streamingState?.userStopped) {
+              addChunkToContent(data.data.content)
+            }
+          } else if (data.type === 'citation') {
+            sources.push({ url: data.data.url, title: data.data.title })
+            console.log('📚 Citation received:', data.data.url)
+          } else if (data.type === 'done') {
+            backendSavedMessage = true
+            finalData = data.data
+            showSources = true
+
+            if (data.data.sources?.length > 0) {
+              sources.length = 0
+              sources.push(...data.data.sources)
+            }
+
+            console.log('✅ Backend created streaming messages:', data.data)
+            console.log('✅ Filtered citations ready to display:', sources.length)
+
+            if (!isTyping && displayedContent.length >= fullContent.length && !finalized) {
+              finalized = true
+              runFinalize()
+              return data.data
+            }
+          } else if (data.type === 'error') {
+            dispatch(commonActions.setError(data.error))
+            if (finalData?.aiMessage) {
+              try {
+                const response = await dispatch(finalizeMessage(tabId, finalData.aiMessage.id, fullContent, false))
+                applyFinalizedMessage({ userMessage: finalData.userMessage, aiMessage: finalData.aiMessage, content: '', sources: response.data.sources, status: 'error' })
+              } catch (saveError) {
+                console.error('❌ Failed to finalize on error event:', saveError)
+                dispatch(clearStreamingState(tabId))
+                dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+              }
+            } else {
+              dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+              dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+              dispatch(clearStreamingState(tabId))
+              dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
+            }
+            return null
           }
         }
       }
@@ -682,53 +655,37 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
       console.log('✅ Stream aborted by user')
       console.log('⏸️ User stopped - stopStreaming will handle finalization')
       return null
-    } else {
-      console.error('❌ Streaming error:', error)
+    }
 
-      if (finalData && finalData.aiMessage && fullContent.length > 0) {
-        try {
-          console.log(`💾 Saving partial message due to error: ${fullContent.length} characters`)
+    console.error('❌ Streaming error:', error)
 
-          const response = await dispatch(finalizeMessage(
-            tabId,
-            finalData.aiMessage.id,
-            fullContent,
-            false
-          ))
-
-          dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
-          dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
-
-          if (finalData.userMessage) {
-            dispatch(addMessageToTab({ tabId, message: finalData.userMessage }))
-          }
-
-          console.log("RESPONSE: ", response.data)
-          dispatch(addMessageToTab({
-            tabId,
-            message: {
-              ...finalData.aiMessage,
-              content: '',
-              sources: response.data.sources,
-              status: 'error'
-            }
-          }))
-
-          console.log('✅ Partial message saved successfully')
-        } catch (saveError) {
-          console.error('❌ Failed to save partial message:', saveError)
-        }
-      } else {
-        dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
-        dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
+    if (finalData?.aiMessage) {
+      // DB records were created — always finalize to avoid stuck 'streaming' status
+      try {
+        console.log(`💾 Finalizing message on error: ${fullContent.length} characters`)
+        const response = await dispatch(finalizeMessage(tabId, finalData.aiMessage.id, fullContent, false))
+        applyFinalizedMessage({
+          userMessage: finalData.userMessage,
+          aiMessage: finalData.aiMessage,
+          content: '',
+          sources: response.data.sources,
+          status: 'error'
+        })
+        console.log('✅ Message finalized on error')
+      } catch (saveError) {
+        console.error('❌ Failed to finalize message on error:', saveError)
+        dispatch(clearStreamingState(tabId))
+        dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
       }
-
-      dispatch(commonActions.setError(error.message || 'Terjadi kesalahan saat streaming pesan'))
-
+    } else {
+      dispatch(removeMessageFromTab({ tabId, messageId: optimisticUserId }))
+      dispatch(removeMessageFromTab({ tabId, messageId: streamingMessageId }))
       dispatch(clearStreamingState(tabId))
       dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
-      return null
     }
+
+    dispatch(commonActions.setError(error.message || 'Terjadi kesalahan saat streaming pesan'))
+    return null
   }
 
   // suppress unused variable warnings
