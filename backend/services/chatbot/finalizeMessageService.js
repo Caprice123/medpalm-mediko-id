@@ -26,6 +26,9 @@ export class FinalizeMessageService {
           id: messageId,
           conversation_id: internalConversationId,
           sender_type: 'ai'
+        },
+        include: {
+          chatbot_message_sources: true
         }
       })
 
@@ -49,6 +52,9 @@ export class FinalizeMessageService {
         data: {
           content: content, // Exact content from frontend
           status: isComplete ? 'completed' : 'truncated'
+        },
+        include: {
+          chatbot_message_sources: true
         }
       })
 
