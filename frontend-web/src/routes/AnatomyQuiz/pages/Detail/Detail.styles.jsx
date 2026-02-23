@@ -224,6 +224,24 @@ export const QuizImage = styled.img`
   }
 `
 
+export const EmbedFrame = styled.iframe`
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  border: none;
+  display: block;
+  border-radius: 18px;
+
+  @media (max-width: 1024px) {
+    min-height: 70vh;
+  }
+
+  @media (max-width: 768px) {
+    min-height: 65vh;
+    border-radius: 12px;
+  }
+`
+
 export const QuestionsContainer = styled.div`
   flex: 1;
   display: flex;

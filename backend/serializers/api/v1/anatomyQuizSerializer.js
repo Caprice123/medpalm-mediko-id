@@ -9,6 +9,8 @@ export class AnatomyQuizSerializer {
       title: quiz.title,
       description: quiz.description,
       imageUrl: quiz.image_url,
+      embedUrl: quiz.embed_url || null,
+      mediaType: quiz.media_type || '2d',
       tags: tags,
       anatomy_questions: questions.map(question => ({
         id: question.id,

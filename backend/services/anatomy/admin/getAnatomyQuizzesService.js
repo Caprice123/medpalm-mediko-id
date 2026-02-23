@@ -61,6 +61,11 @@ export class GetAnatomyQuizzesService extends BaseService {
       where.status = filters.status
     }
 
+    // Filter by media type if provided ('2d' | '3d')
+    if (filters.mediaType) {
+      where.media_type = filters.mediaType
+    }
+
     // Search filter (title or description)
     if (filters.search) {
       where.OR = [
@@ -147,6 +152,11 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Validate status filter if provided
     if (filters.status && !['draft', 'published'].includes(filters.status)) {
       throw new ValidationError('Invalid status filter. Must be "draft" or "published"')
+    }
+
+    // Validate mediaType filter if provided
+    if (filters.mediaType && !['2d', '3d'].includes(filters.mediaType)) {
+      throw new ValidationError('Invalid mediaType filter. Must be "2d" or "3d"')
     }
 
     // Validate pagination

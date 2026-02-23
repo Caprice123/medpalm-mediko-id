@@ -3,6 +3,7 @@ import { useFormik } from 'formik'
 import { useState, useCallback, useRef } from 'react'
 import {
   createAnatomyQuiz,
+  fetchAdminAnatomyQuizzes,
 } from '@store/anatomy/adminAction'
 import { useUploadAttachment } from './useUploadAttachment'
 
@@ -14,23 +15,28 @@ export const useCreateQuiz = (closeCallback) => {
     initialValues: {
       title: '',
       description: '',
+      mediaType: 'upload', // 'upload' | 'embed'
       blob: {
         id: null,
         url: '',
         filename: '',
         size: null
       },
+      embedUrl: '',
+      questionCount: '',
       universityTags: [],
       semesterTags: [],
       questions: [],
       status: 'draft'
     },
     onSubmit: (values, { resetForm }) => {
-      // Prepare quiz data with blobId
+      // Prepare quiz data with blobId or embedUrl
       const quizData = {
         title: values.title,
         description: values.description,
-        blobId: values.blob.id,
+        blobId: values.mediaType === 'upload' ? values.blob.id : null,
+        embedUrl: values.mediaType === 'embed' ? values.embedUrl : null,
+        questionCount: values.mediaType === 'embed' ? (parseInt(values.questionCount) || 0) : undefined,
         tags: [...values.universityTags, ...values.semesterTags].map(tag => tag.id),
         questions: values.questions,
         status: values.status
@@ -39,6 +45,7 @@ export const useCreateQuiz = (closeCallback) => {
       const onSuccess = () => {
         resetForm()
         if (closeCallback) closeCallback()
+        dispatch(fetchAdminAnatomyQuizzes())
       }
 
       dispatch(createAnatomyQuiz(quizData, onSuccess))

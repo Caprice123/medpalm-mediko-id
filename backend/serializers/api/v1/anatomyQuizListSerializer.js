@@ -29,6 +29,8 @@ export class AnatomyQuizListSerializer {
           name: tag.name
         })),
         questionCount: quiz.questionCount || quiz._count?.anatomy_questions || 0,
+        embedUrl: quiz.embed_url || null,
+        mediaType: quiz.media_type || '2d',
         updatedAt: (quiz.updatedAt || quiz.updated_at) ? moment(quiz.updatedAt || quiz.updated_at).tz('Asia/Jakarta').toISOString() : null
       }
     })

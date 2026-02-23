@@ -44,12 +44,15 @@ export const useUpdateQuiz = (closeCallback) => {
     initialValues: {
       title: selectedQuiz?.title || '',
       description: selectedQuiz?.description || '',
+      mediaType: selectedQuiz?.embedUrl ? 'embed' : 'upload',
       blob: selectedQuiz?.blob || {
         id: null,
         url: '',
         filename: '',
         size: null
       },
+      embedUrl: selectedQuiz?.embedUrl || '',
+      questionCount: selectedQuiz?.embedUrl ? (selectedQuiz?.questionCount || '') : '',
       universityTags: initialUniversityTags,
       semesterTags: initialSemesterTags,
       questions: (selectedQuiz?.questions || []).map(q => {
@@ -67,11 +70,13 @@ export const useUpdateQuiz = (closeCallback) => {
       status: selectedQuiz?.status || 'draft'
     },
     onSubmit: (values, { resetForm }) => {
-      // Prepare quiz data with blobId
+      // Prepare quiz data with blobId or embedUrl
       const quizData = {
         title: values.title,
         description: values.description,
-        blobId: values.blob.id,
+        blobId: values.mediaType === 'upload' ? values.blob.id : null,
+        embedUrl: values.mediaType === 'embed' ? values.embedUrl : null,
+        questionCount: values.mediaType === 'embed' ? (parseInt(values.questionCount) || 0) : undefined,
         tags: [...values.universityTags, ...values.semesterTags].map(tag => tag.id),
         questions: values.questions.map((q, index) => ({
           ...(q.id && { id: q.id }),

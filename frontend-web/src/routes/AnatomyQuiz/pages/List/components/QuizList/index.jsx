@@ -11,6 +11,8 @@ import {
   StatItem,
   StatLabel,
   StatValue,
+  EmbedBadge,
+  ImageBadge,
   TagList,
   Tag
 } from './QuizList.styles'
@@ -48,8 +50,6 @@ function QuizList() {
               {quiz.description || 'Tidak ada deskripsi'}
             </QuizDescription>
 
-            <div style={{ flex: 1}}></div>
-
             {/* University Tags */}
             {quiz.universityTags && quiz.universityTags.length > 0 && (
               <TagList>
@@ -71,6 +71,17 @@ function QuizList() {
                 ))}
               </TagList>
             )}
+
+            {/* Media type badge — own row */}
+            <TagList>
+              {quiz.mediaType === '3d'
+                ? <EmbedBadge>🔗 3D Interactive</EmbedBadge>
+                : <ImageBadge>🖼️ 2D Image</ImageBadge>
+              }
+            </TagList>
+            
+            <div style={{ flex: 1}}></div>
+
 
             <QuizStats>
               <StatItem>

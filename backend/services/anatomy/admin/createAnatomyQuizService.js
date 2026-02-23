@@ -8,13 +8,21 @@ export class CreateAnatomyQuizService extends BaseService {
     title,
     description,
     blobId,
+    embedUrl,
+    questionCount,
+    mediaType,
     tags,
     questions,
     createdBy,
     status = 'draft'
   }) {
+    const qs = questions || []
     // Validate inputs
-    await this.validate({ title, blobId, tags, questions })
+    await this.validate({ title, blobId, embedUrl, questionCount, tags, questions: qs })
+
+    // For embed quizzes: use the manually provided questionCount
+    // For upload quizzes: derive it from the actual questions array
+    const finalQuestionCount = embedUrl ? (questionCount || 0) : qs.length
 
     // Create quiz with questions and tags
     const quiz = await prisma.anatomy_quizzes.create({
@@ -22,9 +30,11 @@ export class CreateAnatomyQuizService extends BaseService {
         title,
         description: description || '',
         status,
+        embed_url: embedUrl || null,
+        media_type: mediaType || (embedUrl ? '3d' : '2d'),
         created_by: createdBy,
         anatomy_questions: {
-          create: questions.map((q, index) => ({
+          create: qs.map((q, index) => ({
             question: q.question,
             answer: q.answer,
             answer_type: q.answerType || q.answer_type || 'text',
@@ -32,7 +42,7 @@ export class CreateAnatomyQuizService extends BaseService {
             order: q.order !== undefined ? q.order : index
           }))
         },
-        question_count: questions.length,
+        question_count: finalQuestionCount,
         anatomy_quiz_tags: {
           create: tags.map(tag => ({
             tag_id: typeof tag === 'object' ? Number(tag.id) : tag
@@ -64,22 +74,27 @@ export class CreateAnatomyQuizService extends BaseService {
     return quiz
   }
 
-  static async validate({ title, blobId, tags, questions }) {
+  static async validate({ title, blobId, embedUrl, questionCount, tags, questions = [] }) {
     // Validate required fields
     if (!title) {
       throw new ValidationError('Title is required')
     }
 
-    if (!blobId) {
-      throw new ValidationError('Image is required')
+    if (!blobId && !embedUrl) {
+      throw new ValidationError('Either an image or an embed URL is required')
+    }
+
+    if (embedUrl && (!questionCount || questionCount < 1)) {
+      throw new ValidationError('Question count is required and must be at least 1 for 3D embed quizzes')
     }
 
     if (!tags || tags.length === 0) {
       throw new ValidationError('At least one tag is required')
     }
 
-    if (!questions || questions.length === 0) {
-      throw new ValidationError('At least one question is required')
+    // Questions are only required when there is no embed URL
+    if (!embedUrl && (!questions || questions.length === 0)) {
+      throw new ValidationError('At least one question is required when not using an embed URL')
     }
 
     // Validate each question

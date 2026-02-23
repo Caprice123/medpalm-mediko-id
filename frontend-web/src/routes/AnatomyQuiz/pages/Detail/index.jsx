@@ -10,6 +10,7 @@ import {
   QuizMainContent,
   QuizImageSection,
   QuizImage,
+  EmbedFrame,
   QuestionsContainer,
   QuestionsSection,
   SubmitButtonContainer,
@@ -71,14 +72,35 @@ const AnatomyQuizDetail = () => {
 
                 <QuizForm>
                     {!quizResult ? (
+                        currentQuiz.embedUrl && (!currentQuiz.anatomy_questions || currentQuiz.anatomy_questions.length === 0) ? (
+                            <QuizMainContent>
+                                <QuizImageSection style={{ flex: '1 1 100%' }}>
+                                    <EmbedFrame
+                                        src={currentQuiz.embedUrl}
+                                        title={currentQuiz.title}
+                                        allowFullScreen
+                                        allow="fullscreen"
+                                    />
+                                </QuizImageSection>
+                            </QuizMainContent>
+                        ) : (
                         <PhotoProvider>
                             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
                                 <QuizMainContent>
-                                    {currentQuiz.imageUrl && (
+                                    {(currentQuiz.embedUrl || currentQuiz.imageUrl) && (
                                         <QuizImageSection>
-                                            <PhotoView src={currentQuiz.imageUrl}>
-                                                <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
-                                            </PhotoView>
+                                            {currentQuiz.embedUrl ? (
+                                                <EmbedFrame
+                                                    src={currentQuiz.embedUrl}
+                                                    title={currentQuiz.title}
+                                                    allowFullScreen
+                                                    allow="fullscreen"
+                                                />
+                                            ) : (
+                                                <PhotoView src={currentQuiz.imageUrl}>
+                                                    <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
+                                                </PhotoView>
+                                            )}
                                         </QuizImageSection>
                                     )}
 
@@ -110,6 +132,7 @@ const AnatomyQuizDetail = () => {
                                 </QuizMainContent>
                             </form>
                         </PhotoProvider>
+                        )
                     ) : (
                         <PhotoProvider>
                             <>
@@ -150,11 +173,20 @@ const AnatomyQuizDetail = () => {
                                 </ResultHeader>
 
                                 <QuizMainContent>
-                                    {currentQuiz.imageUrl && (
+                                    {(currentQuiz.embedUrl || currentQuiz.imageUrl) && (
                                         <QuizImageSection>
-                                            <PhotoView src={currentQuiz.imageUrl}>
-                                                <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
-                                            </PhotoView>
+                                            {currentQuiz.embedUrl ? (
+                                                <EmbedFrame
+                                                    src={currentQuiz.embedUrl}
+                                                    title={currentQuiz.title}
+                                                    allowFullScreen
+                                                    allow="fullscreen"
+                                                />
+                                            ) : (
+                                                <PhotoView src={currentQuiz.imageUrl}>
+                                                    <QuizImage src={currentQuiz.imageUrl} alt={currentQuiz.title} />
+                                                </PhotoView>
+                                            )}
                                         </QuizImageSection>
                                     )}
 

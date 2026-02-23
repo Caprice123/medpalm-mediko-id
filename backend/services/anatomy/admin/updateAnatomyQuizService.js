@@ -9,11 +9,14 @@ export class UpdateAnatomyQuizService extends BaseService {
     title,
     description,
     blobId,
+    embedUrl,
+    questionCount,
+    mediaType,
     tags,
     questions,
     status
   }) {
-    this.validate({ quizId, title, tags, questions })
+    this.validate({ quizId, title, embedUrl, questionCount, tags, questions })
 
     // Check if quiz exists
     const existingQuiz = await prisma.anatomy_quizzes.findUnique({
@@ -42,6 +45,8 @@ export class UpdateAnatomyQuizService extends BaseService {
           title,
           description: description || '',
           ...(status && { status }),
+          embed_url: embedUrl || null,
+          media_type: mediaType || (embedUrl ? '3d' : '2d'),
           updated_at: new Date(),
           anatomy_questions: {
             create: questions.map((q, index) => ({
@@ -52,7 +57,7 @@ export class UpdateAnatomyQuizService extends BaseService {
               order: q.order !== undefined ? q.order : index
             }))
           },
-          question_count: questions.length,
+          question_count: embedUrl ? (questionCount || 0) : questions.length,
           anatomy_quiz_tags: {
             create: tags.map(tag => ({
               tag_id: typeof tag === 'object' ? tag.id : tag
@@ -101,7 +106,7 @@ export class UpdateAnatomyQuizService extends BaseService {
     return updatedQuiz
   }
 
-  static async validate({ quizId, title, tags, questions }) {
+  static async validate({ quizId, title, embedUrl, questionCount, tags, questions }) {
     if (!quizId || typeof quizId !== 'string') {
       throw new ValidationError('Quiz ID is required')
     }
@@ -118,8 +123,13 @@ export class UpdateAnatomyQuizService extends BaseService {
       throw new ValidationError('Questions array is required')
     }
 
-    if (questions.length === 0) {
-      throw new ValidationError('At least one question is required')
+    // Questions are only required when there is no embed URL
+    if (!embedUrl && questions.length === 0) {
+      throw new ValidationError('At least one question is required when not using an embed URL')
+    }
+
+    if (embedUrl && (!questionCount || questionCount < 1)) {
+      throw new ValidationError('Question count is required and must be at least 1 for 3D embed quizzes')
     }
 
     // Validate each question

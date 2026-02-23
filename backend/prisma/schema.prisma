@@ -746,6 +746,8 @@ model anatomy_quizzes {
   description    String?
   status         String   @default("draft")
   question_count Int      @default(0)
+  embed_url      String?
+  media_type     String   @default("2d") // '2d' | '3d'
   created_by     Int
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
@@ -756,6 +758,7 @@ model anatomy_quizzes {
 
   @@index([created_by])
   @@index([status])
+  @@index([media_type])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "anatomy_quizzes_search_gin_idx")
 }
 

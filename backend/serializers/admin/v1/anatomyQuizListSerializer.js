@@ -18,6 +18,7 @@ export class AnatomyQuizListSerializer {
         title: quiz.title,
         description: quiz.description,
         status: quiz.status,
+        mediaType: quiz.media_type || '2d',
         questionCount: quiz.question_count || 0,
         universityTags,
         semesterTags,

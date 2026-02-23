@@ -151,6 +151,32 @@ export const StatValue = styled.span`
   font-weight: 700;
 `
 
+export const EmbedBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.625rem;
+  background: #ede9fe;
+  color: #6d28d9;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+`
+
+export const ImageBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.625rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+`
+
 export const CardActions = styled.div`
   display: flex;
   gap: 0.5rem;

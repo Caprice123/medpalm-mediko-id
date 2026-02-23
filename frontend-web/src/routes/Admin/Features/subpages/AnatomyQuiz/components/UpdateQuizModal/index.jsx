@@ -102,43 +102,90 @@ const UpdateQuizModal = ({ onClose }) => {
         </FormSection>
 
         <FormSection>
-          <Label>Upload Image *</Label>
-          <PhotoProvider>
-            <FileUpload
-              file={form.values.blob.id ? {
-                name: form.values.blob.filename || 'File name',
-                type: 'image/*',
-                size: form.values.blob.size
-              } : null}
-              onFileSelect={handleImageSelect}
-              onRemove={() => {
-                form.setFieldValue('blob', {
-                  id: null,
-                  url: '',
-                  filename: '',
-                  size: null
-                })
-              }}
-              isUploading={loading.isUploadingImage}
-              acceptedTypes={['image/jpeg', 'image/jpg', 'image/png']}
-              acceptedTypesLabel="JPEG atau PNG"
-              maxSizeMB={5}
-              uploadText="Klik untuk upload gambar"
-              actions={
-                <>
-                  {form.values.blob.url && (
-                    <PhotoView src={form.values.blob.url}>
-                      <Button variant="primary" type="button">
-                        👁️ Preview
-                      </Button>
-                    </PhotoView>
-                  )}
-                </>
-              }
-            />
-          </PhotoProvider>
-          {form.errors.blob && <ErrorText>{form.errors.blob}</ErrorText>}
+          <Label>Media *</Label>
+          <AnswerTypeToggle>
+            <AnswerTypeButton
+              type="button"
+              isActive={form.values.mediaType === 'upload'}
+              onClick={() => form.setFieldValue('mediaType', 'upload')}
+            >
+              📁 Upload Image
+            </AnswerTypeButton>
+            <AnswerTypeButton
+              type="button"
+              isActive={form.values.mediaType === 'embed'}
+              onClick={() => form.setFieldValue('mediaType', 'embed')}
+            >
+              🔗 Embed URL
+            </AnswerTypeButton>
+          </AnswerTypeToggle>
+
+          {form.values.mediaType === 'upload' ? (
+            <PhotoProvider>
+              <FileUpload
+                file={form.values.blob.id ? {
+                  name: form.values.blob.filename || 'File name',
+                  type: 'image/*',
+                  size: form.values.blob.size
+                } : null}
+                onFileSelect={handleImageSelect}
+                onRemove={() => {
+                  form.setFieldValue('blob', {
+                    id: null,
+                    url: '',
+                    filename: '',
+                    size: null
+                  })
+                }}
+                isUploading={loading.isUploadingImage}
+                acceptedTypes={['image/jpeg', 'image/jpg', 'image/png']}
+                acceptedTypesLabel="JPEG atau PNG"
+                maxSizeMB={5}
+                uploadText="Klik untuk upload gambar"
+                actions={
+                  <>
+                    {form.values.blob.url && (
+                      <PhotoView src={form.values.blob.url}>
+                        <Button variant="primary" type="button">
+                          👁️ Preview
+                        </Button>
+                      </PhotoView>
+                    )}
+                  </>
+                }
+              />
+            </PhotoProvider>
+          ) : (
+            <>
+              <Input
+                type="url"
+                value={form.values.embedUrl}
+                onChange={(e) => form.setFieldValue('embedUrl', e.target.value)}
+                placeholder="https://human.biodigital.com/viewer/?id=..."
+                style={{ marginTop: '0.5rem' }}
+              />
+              <HelpText>Paste an embed URL from BioDigital Human, Sketchfab, or other 3D model platforms</HelpText>
+            </>
+          )}
+
+          {form.errors.blob && form.values.mediaType === 'upload' && <ErrorText>{form.errors.blob}</ErrorText>}
+          {form.errors.embedUrl && form.values.mediaType === 'embed' && <ErrorText>{form.errors.embedUrl}</ErrorText>}
         </FormSection>
+
+        {form.values.mediaType === 'embed' && (
+          <FormSection>
+            <Label>Question Count * (required)</Label>
+            <Input
+              type="number"
+              min="0"
+              value={form.values.questionCount}
+              onChange={(e) => form.setFieldValue('questionCount', e.target.value)}
+              placeholder="e.g., 10"
+            />
+            <HelpText>Number of questions students need to answer for this 3D model</HelpText>
+            {form.errors.questionCount && <ErrorText>{form.errors.questionCount}</ErrorText>}
+          </FormSection>
+        )}
 
         {/* University Tags Section */}
         <FormSection>
@@ -164,7 +211,7 @@ const UpdateQuizModal = ({ onClose }) => {
           />
         </FormSection>
 
-        <QuestionsSection>
+        {form.values.mediaType === 'upload' && <QuestionsSection>
           <QuestionsSectionHeader>
             <QuestionsSectionTitle>Input Fields for Students</QuestionsSectionTitle>
             <Button variant="primary" type="button" onClick={handleAddQuestion}>
@@ -303,7 +350,7 @@ const UpdateQuizModal = ({ onClose }) => {
               )}
             </QuestionCard>
           ))}
-        </QuestionsSection>
+        </QuestionsSection>}
 
         <StatusToggle>
           <StatusOption checked={form.values.status === 'draft'}>

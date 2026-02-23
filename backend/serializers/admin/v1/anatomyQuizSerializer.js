@@ -15,6 +15,9 @@ export class AnatomyQuizSerializer {
         filename: quiz.image_filename,
         size: quiz.image_size
       } : null,
+      embedUrl: quiz.embed_url || null,
+      mediaType: quiz.media_type || '2d',
+      questionCount: quiz.question_count || 0,
       status: quiz.status,
       tags: quizTags.map(tag => ({
         id: tag.tags ? tag.tags.id : tag.tag ? tag.tag.id : tag.id,
