@@ -12,12 +12,13 @@ import { ValidationError } from '#errors/validationError'
 
 class AnatomyController {
   async index(req, res) {
-    const { university, semester, status, page, perPage, search } = req.query
+    const { university, semester, status, mediaType, page, perPage, search } = req.query
 
     const result = await GetAnatomyQuizzesService.call({
       university,
       semester,
       status,
+      mediaType,
       page,
       perPage,
       search
@@ -34,6 +35,8 @@ class AnatomyController {
       title,
       description,
       blobId,
+      embedUrl,
+      questionCount,
       tags,
       questions,
       status
@@ -43,6 +46,9 @@ class AnatomyController {
       title,
       description,
       blobId: blobId ? parseInt(blobId) : null,
+      embedUrl: embedUrl || null,
+      questionCount: questionCount !== undefined ? parseInt(questionCount) : undefined,
+      mediaType: embedUrl ? '3d' : '2d',
       tags,
       questions,
       status: status || 'draft',
@@ -70,6 +76,8 @@ class AnatomyController {
       title,
       description,
       blobId,
+      embedUrl,
+      questionCount,
       tags,
       questions,
       status
@@ -80,6 +88,9 @@ class AnatomyController {
       title,
       description,
       blobId: blobId ? parseInt(blobId) : null,
+      embedUrl: embedUrl || null,
+      questionCount: questionCount !== undefined ? parseInt(questionCount) : undefined,
+      mediaType: embedUrl ? '3d' : '2d',
       tags,
       questions,
       status

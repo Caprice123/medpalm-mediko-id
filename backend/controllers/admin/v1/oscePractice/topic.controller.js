@@ -7,11 +7,12 @@ import { OsceTopicListSerializer } from '#serializers/admin/v1/osceTopicListSeri
 
 class TopicController {
   async index(req, res) {
-    const { university, semester, status, page, perPage } = req.query
+    const { search, topic, batch, status, page, perPage } = req.query
 
     const result = await GetOsceTopicsService.call({
-      university,
-      semester,
+      search,
+      topic,
+      batch,
       status,
       page,
       perPage

@@ -102,10 +102,10 @@ class ExerciseController {
    * GET /admin/v1/exercises/topics
    */
   async index(req, res) {
-    const { university, semester, page = 1, perPage = 20 } = req.query
+    const { search, topic, department, university, semester, page = 1, perPage = 20 } = req.query
 
     const result = await GetExerciseTopicsService.call(
-      { university, semester },
+      { search, topic, department, university, semester },
       parseInt(page),
       parseInt(perPage)
     )

@@ -471,7 +471,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         <FormGroup>
           <Label>Domain Terpercaya</Label>
           <HintText style={{ marginTop: '0', marginBottom: '0.5rem' }}>
-            Domain jurnal medis dan sumber kredibel yang akan diprioritaskan (max 20 domain).
+            Domain jurnal medis dan sumber kredibel yang akan diprioritaskan.
           </HintText>
 
           {getDomains().length > 0 && (
@@ -504,7 +504,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
               variant="primary"
               type="button"
               onClick={addDomain}
-              disabled={!newDomain.trim() || getDomains().length >= 20}
+              disabled={!newDomain.trim()}
             >
               Tambah
             </Button>

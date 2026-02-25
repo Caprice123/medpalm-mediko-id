@@ -53,13 +53,15 @@ class McqController {
    * GET /admin/v1/mcq/topics
    */
   async index(req, res) {
-    const { page, limit, status, search, university, semester } = req.query
+    const { page, limit, status, search, topic, department, university, semester } = req.query
 
     const filters = {}
     if (status) filters.status = status
     if (search) filters.search = search
-    if (university) filters.university = university
-    if (semester) filters.semester = semester
+    if (topic) filters.topicTagIds = topic.split(',')
+    if (department) filters.departmentTagIds = department.split(',')
+    if (university) filters.universityTagIds = university.split(',')
+    if (semester) filters.semesterTagIds = semester.split(',')
 
     const result = await GetMcqTopicsService.call({
       page: page ? parseInt(page) : 1,

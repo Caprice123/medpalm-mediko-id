@@ -69,7 +69,6 @@ function SummaryNotes({ onBack }) {
 
   const handleCloseModal = () => {
     setUiState(prev => ({ ...prev, isModalOpen: false, mode: null }))
-    dispatch(actions.setSelectedNote(null))
   }
 
   return (

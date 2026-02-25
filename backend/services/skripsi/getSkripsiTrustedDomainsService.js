@@ -35,13 +35,10 @@ export class GetSkripsiTrustedDomainsService extends BaseService {
       .map(d => d.trim())
       .filter(d => d.length > 0)
 
-    // Perplexity API allows max 20 domains
-    const limitedDomains = domains.slice(0, 20)
-
     return {
       enabled: enabled,
-      domains: limitedDomains,
-      count: limitedDomains.length,
+      domains: domains,
+      count: domains.length,
       timeFilterType: timeFilterType,
       recencyFilter: recencyFilter,
       publishedAfter: publishedAfter,

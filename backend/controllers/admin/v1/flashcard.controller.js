@@ -14,9 +14,9 @@ import { ValidationError } from '#errors/validationError'
 class FlashcardController {
     
   async index(req, res) {
-    const { university, semester, page, perPage } = req.query
+    const { search, topic, department, university, semester, page, perPage } = req.query
 
-    const result = await GetFlashcardDecksService.call({ university, semester, page, perPage })
+    const result = await GetFlashcardDecksService.call({ search, topic, department, university, semester, page, perPage })
 
     return res.status(200).json({
       data: FlashcardDeckListSerializer.serialize(result.decks),

@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '@store/flashcard/reducer'
 import { useMemo } from 'react'
-import { fetchFlashcardDecks } from '@store/flashcard/userAction'
+import { fetchAdminFlashcardDecks } from '@store/flashcard/adminAction'
 
 export const Filter = () => {
   const dispatch = useDispatch()
@@ -13,7 +13,7 @@ export const Filter = () => {
   const { tags } = useSelector(state => state.tags)
 
   const onSearch = () => {
-    dispatch(fetchFlashcardDecks())
+    dispatch(fetchAdminFlashcardDecks())
   }
 
   const topicTags = useMemo(() => {

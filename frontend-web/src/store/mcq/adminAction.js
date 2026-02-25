@@ -16,6 +16,10 @@ export const fetchAdminMcqTopics = () => async (dispatch, getState) => {
     const queryParams = {}
     if (filter.status) queryParams.status = filter.status
     if (filter.search) queryParams.search = filter.search
+    if (filter.topic) queryParams.topic = filter.topic
+    if (filter.department) queryParams.department = filter.department
+    if (filter.university) queryParams.university = filter.university
+    if (filter.semester) queryParams.semester = filter.semester
     queryParams.page = pagination.page
     queryParams.limit = pagination.limit
 

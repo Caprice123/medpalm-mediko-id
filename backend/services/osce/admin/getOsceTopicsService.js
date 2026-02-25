@@ -17,24 +17,31 @@ export class GetOsceTopicsService extends BaseService {
             where.status = filters.status
         }
 
+        if (filters.search) {
+            where.title = {
+                contains: filters.search,
+                mode: 'insensitive'
+            }
+        }
+
         // Build filter conditions for tags
         const tagFilters = []
 
-        if (filters.university) {
+        if (filters.topic) {
             tagFilters.push({
                 osce_topic_tags: {
                     some: {
-                        tag_id: parseInt(filters.university)
+                        tag_id: parseInt(filters.topic)
                     }
                 }
             })
         }
 
-        if (filters.semester) {
+        if (filters.batch) {
             tagFilters.push({
                 osce_topic_tags: {
                     some: {
-                        tag_id: parseInt(filters.semester)
+                        tag_id: parseInt(filters.batch)
                     }
                 }
             })
@@ -76,23 +83,20 @@ export class GetOsceTopicsService extends BaseService {
     }
 
     static validate(filters) {
-        // Validate university filter if provided
-        if (filters.university) {
-            const universityId = parseInt(filters.university)
-            if (isNaN(universityId) || universityId <= 0) {
-                throw new ValidationError('Invalid university filter')
+        if (filters.topic) {
+            const topicId = parseInt(filters.topic)
+            if (isNaN(topicId) || topicId <= 0) {
+                throw new ValidationError('Invalid topic filter')
             }
         }
 
-        // Validate semester filter if provided
-        if (filters.semester) {
-            const semesterId = parseInt(filters.semester)
-            if (isNaN(semesterId) || semesterId <= 0) {
-                throw new ValidationError('Invalid semester filter')
+        if (filters.batch) {
+            const batchId = parseInt(filters.batch)
+            if (isNaN(batchId) || batchId <= 0) {
+                throw new ValidationError('Invalid batch filter')
             }
         }
 
-        // Validate status filter if provided
         if (filters.status && !['draft', 'published'].includes(filters.status)) {
             throw new ValidationError('Status must be either "draft" or "published"')
         }

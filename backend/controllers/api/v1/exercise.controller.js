@@ -6,10 +6,10 @@ import { ExerciseTopicSerializer } from '#serializers/api/v1/exerciseTopicSerial
 
 class ExerciseController {
   async getTopics(req, res) {
-    const { university, semester, search, page, perPage } = req.query
+    const { search, topic, department, university, semester, page, perPage } = req.query
 
     const result = await GetExerciseTopicsService.call(
-      { university, semester, search, userRole: req.user.role },
+      { search, topic, department, university, semester, userRole: req.user.role },
       page ? parseInt(page) : undefined,
       perPage ? parseInt(perPage) : undefined
     )

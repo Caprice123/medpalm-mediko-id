@@ -20,6 +20,7 @@ import { PhotoViewerToolbar } from './PhotoViewerToolbar'
 import { filterSuggestionItems } from "@blocknote/core/extensions"
 import { editorSchema } from './schema'
 import { actions as commonActions } from '@store/common/reducer'
+import { useDispatch } from "react-redux";
 
 function BlockNoteEditor({ initialContent, onChange, editable = true, placeholder, showModeToggle = false, onImageUpload }) {
   const [viewMode, setViewMode] = useState('structured') // 'structured' or 'aesthetic'
@@ -27,6 +28,7 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
   const [photoIndex, setPhotoIndex] = useState(0)
   const [photoVisible, setPhotoVisible] = useState(false)
   const [images, setImages] = useState([])
+  const dispatch = useDispatch()
 
   // Use the shared schema instead of creating a new one
   const schema = editorSchema;
@@ -174,6 +176,17 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
     }
   }, [initialContent, editor])
 
+  // Prevent editor blur when clicking slash menu items (blur fires before click, closing the menu)
+  useEffect(() => {
+    const handleMouseDown = (e) => {
+      if (e.target.closest('.bn-suggestion-menu')) {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown, true)
+    return () => document.removeEventListener('mousedown', handleMouseDown, true)
+  }, [])
+
   // Listen to editor changes and call onChange
   useEffect(() => {
     if (!editor || !onChange) return
@@ -244,6 +257,7 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
                 theme={"black"}
                 editable={editable}
                 formattingToolbar={false}
+                slashMenu={false}
                 onKeyDown={(e) => {
                     if (e.key === 'Tab') {
                     e.stopPropagation()
