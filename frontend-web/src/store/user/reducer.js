@@ -30,6 +30,8 @@ const initialState = {
     isFetchUserSubscriptionsLoading: false,
     isUpdateUserRoleLoading: false,
     isUpdateUserPermissionsLoading: false,
+    isUpdateSubscriptionLoading: false,
+    isDeleteSubscriptionLoading: false,
   },
 }
 

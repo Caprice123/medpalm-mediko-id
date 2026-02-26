@@ -1,6 +1,6 @@
 import { actions } from '@store/user/reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, putWithToken } from '../../utils/requestUtils'
+import { getWithToken, putWithToken, patchWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -87,6 +87,33 @@ export const addSubscription = (userId, startDate, endDate, onSuccess) => async 
     await dispatch(fetchUserSubscriptions(userId))
   } finally {
     dispatch(setLoading({ key: 'isAddSubscriptionLoading', value: false }))
+  }
+}
+
+export const updateSubscription = (subscriptionId, userId, startDate, endDate, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateSubscriptionLoading', value: true }))
+
+    const route = `${Endpoints.admin.subscriptions}/${subscriptionId}`
+    await patchWithToken(route, { startDate, endDate })
+    if (onSuccess) onSuccess()
+    await dispatch(fetchUserSubscriptions(userId))
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateSubscriptionLoading', value: false }))
+  }
+}
+
+export const deleteSubscription = (subscriptionId, userId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isDeleteSubscriptionLoading', value: true }))
+
+    const route = `${Endpoints.admin.subscriptions}/${subscriptionId}`
+    await deleteWithToken(route)
+    if (onSuccess) onSuccess()
+    await dispatch(fetchUserDetail(userId))
+    await dispatch(fetchUserSubscriptions(userId))
+  } finally {
+    dispatch(setLoading({ key: 'isDeleteSubscriptionLoading', value: false }))
   }
 }
 

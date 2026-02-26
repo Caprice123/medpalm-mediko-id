@@ -98,7 +98,7 @@ export const SubscriptionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `
 
 export const SubscriptionTable = styled.div`
@@ -109,10 +109,18 @@ export const SubscriptionTable = styled.div`
 
 export const TableRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 100px;
+  grid-template-columns: ${props => props.$hasActions ? '1fr 1fr 1fr 100px 130px' : '1fr 1fr 1fr 100px'};
   gap: 1rem;
+  align-items: center;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
+
+  /* Right-align the Actions cell (5th column, superadmin only) */
+  ${props => props.$hasActions && `
+    > *:nth-child(5) {
+      justify-self: end;
+    }
+  `}
 
   ${props => props.header && `
     background-color: #f9fafb;

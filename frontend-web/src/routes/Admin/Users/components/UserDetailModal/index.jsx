@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions, updateUserRole, updateUserPermissions } from '@store/user/action'
+import { fetchUserSubscriptions, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription } from '@store/user/action'
 import { actions } from '@store/user/reducer'
 import { getUserData } from '../../../../../utils/authToken'
 import PermissionManager from '../PermissionManager'
@@ -61,6 +61,8 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     endDate: null
   })
   const [subscriptionError, setSubscriptionError] = useState('')
+  const [editingSubscription, setEditingSubscription] = useState(null) // { id, startDate, endDate }
+  const [editError, setEditError] = useState('')
 
   // Fetch subscriptions when modal opens, page changes, or filter changes
   useEffect(() => {
@@ -86,8 +88,46 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setRoleError('')
     setSubscriptionData({ startDate: null, endDate: null })
     setSubscriptionError('')
+    setEditingSubscription(null)
+    setEditError('')
     dispatch(actions.setSubscriptionPage(1))
     onClose()
+  }
+
+  const handleEditSubscription = (sub) => {
+    setEditingSubscription({
+      id: sub.id,
+      startDate: new Date(sub.startDate),
+      endDate: new Date(sub.endDate),
+    })
+    setEditError('')
+  }
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault()
+    setEditError('')
+
+    if (!editingSubscription.startDate || !editingSubscription.endDate) {
+      setEditError('Both dates are required')
+      return
+    }
+    if (editingSubscription.endDate <= editingSubscription.startDate) {
+      setEditError('End date must be after start date')
+      return
+    }
+
+    dispatch(updateSubscription(
+      editingSubscription.id,
+      user.id,
+      editingSubscription.startDate.toISOString(),
+      editingSubscription.endDate.toISOString(),
+      () => setEditingSubscription(null)
+    ))
+  }
+
+  const handleDeleteSubscription = (sub) => {
+    if (!window.confirm(`Delete subscription (${formatDate(sub.startDate)} – ${formatDate(sub.endDate)})?`)) return
+    dispatch(deleteSubscription(sub.id, user.id))
   }
 
   // Credit form handlers
@@ -492,39 +532,124 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
         ) : (
           <>
             <SubscriptionTable>
-              <TableRow header>
+              <TableRow header $hasActions={isSuperAdmin}>
                 <div>Start Date</div>
                 <div>End Date</div>
                 <div>Status</div>
                 <div>Created</div>
+                {isSuperAdmin && <div>Actions</div>}
               </TableRow>
               {subscriptions.map((sub, index) => (
-                <TableRow key={sub.id || index}>
-                  <div>{formatDate(sub.startDate)}</div>
-                  <div>{formatDate(sub.endDate)}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <StatusBadge status={sub.status}>
-                      {sub.status === 'active' ? 'Active' :
-                       sub.status === 'not_active' ? 'Pending' :
-                       'Expired'}
-                    </StatusBadge>
-                    {sub.isCurrentlyActive && (
-                      <span style={{
-                        fontSize: '0.75rem',
-                        color: '#059669',
-                        fontWeight: 600,
-                        backgroundColor: '#d1fae5',
-                        padding: '0.125rem 0.5rem',
-                        borderRadius: '9999px'
-                      }}>
-                        ● Current
-                      </span>
+                <>
+                  <TableRow key={sub.id || index} $hasActions={isSuperAdmin}>
+                    <div>{formatDate(sub.startDate)}</div>
+                    <div>{formatDate(sub.endDate)}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <StatusBadge status={sub.status}>
+                        {sub.status === 'active' ? 'Active' :
+                         sub.status === 'not_active' ? 'Pending' :
+                         'Expired'}
+                      </StatusBadge>
+                      {sub.isCurrentlyActive && (
+                        <span style={{
+                          fontSize: '0.75rem',
+                          color: '#059669',
+                          fontWeight: 600,
+                          backgroundColor: '#d1fae5',
+                          padding: '0.125rem 0.5rem',
+                          borderRadius: '9999px'
+                        }}>
+                          ● Current
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                      {formatLocalDate(sub.createdAt)}
+                    </div>
+                    {isSuperAdmin && (
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Button
+                          variant="outline"
+                          size="small"
+                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                          onClick={() => handleEditSubscription(sub)}
+                          disabled={loading.isDeleteSubscriptionLoading}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="small"
+                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                          onClick={() => handleDeleteSubscription(sub)}
+                          disabled={loading.isDeleteSubscriptionLoading}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     )}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {formatLocalDate(sub.createdAt)}
-                  </div>
-                </TableRow>
+                  </TableRow>
+
+                  {/* Inline edit form for this subscription */}
+                  {isSuperAdmin && editingSubscription?.id === sub.id && (
+                    <TableRow key={`edit-${sub.id}`} style={{ backgroundColor: '#f0f9ff' }}>
+                      <div style={{ gridColumn: '1 / -1', padding: '0.75rem 0' }}>
+                        <form onSubmit={handleEditSubmit}>
+                          <FormRow>
+                            <FormGroup style={{ flex: 1 }}>
+                              <Label>Start Date</Label>
+                              <div className="custom-datepicker-wrapper">
+                                <DatePicker
+                                  selected={editingSubscription.startDate}
+                                  onChange={(date) => setEditingSubscription({ ...editingSubscription, startDate: date })}
+                                  dateFormat="dd MMM yyyy"
+                                  placeholderText="Select start date"
+                                  dropdownMode="select"
+                                  popperPlacement="top"
+                                  className={`custom-datepicker-input ${editError ? 'error' : ''}`}
+                                />
+                              </div>
+                            </FormGroup>
+                            <FormGroup style={{ flex: 1 }}>
+                              <Label>End Date</Label>
+                              <div className="custom-datepicker-wrapper">
+                                <DatePicker
+                                  selected={editingSubscription.endDate}
+                                  onChange={(date) => setEditingSubscription({ ...editingSubscription, endDate: date })}
+                                  dateFormat="dd MMM yyyy"
+                                  placeholderText="Select end date"
+                                  minDate={editingSubscription.startDate}
+                                  dropdownMode="select"
+                                  popperPlacement="top"
+                                  className={`custom-datepicker-input ${editError ? 'error' : ''}`}
+                                />
+                              </div>
+                            </FormGroup>
+                          </FormRow>
+                          {editError && <ErrorText>{editError}</ErrorText>}
+                          <FormActions style={{ marginTop: '0.75rem' }}>
+                            <Button
+                              type="button"
+                              size="small"
+                              onClick={() => { setEditingSubscription(null); setEditError('') }}
+                              disabled={loading.isUpdateSubscriptionLoading}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              variant="primary"
+                              size="small"
+                              disabled={loading.isUpdateSubscriptionLoading}
+                            >
+                              {loading.isUpdateSubscriptionLoading ? 'Saving...' : 'Save'}
+                            </Button>
+                          </FormActions>
+                        </form>
+                      </div>
+                    </TableRow>
+                  )}
+                </>
               ))}
             </SubscriptionTable>
 
@@ -532,8 +657,9 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
               <div style={{ marginTop: '1rem' }}>
                 <Pagination
                   currentPage={subscriptionPagination.page}
-                  itemsPerPage={subscriptionPagination.perPage}
-                  onPageChange={actions.setSubscriptionPage}
+                  isLastPage={subscriptionPagination.isLastPage}
+                  onPageChange={(page) => dispatch(actions.setSubscriptionPage(page))}
+                  isLoading={loading.isFetchUserSubscriptionsLoading}
                 />
               </div>
             )}
