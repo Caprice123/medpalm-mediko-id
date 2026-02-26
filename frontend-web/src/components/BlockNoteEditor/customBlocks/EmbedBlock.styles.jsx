@@ -110,6 +110,12 @@ export const EmbedButton = styled.button`
   }
 `;
 
+/* Wrapper that controls the percentage width of the embed */
+export const EmbedWrapper = styled.div`
+  position: relative;
+  width: ${props => props.width || 100}%;
+`;
+
 export const IframeContainer = styled.div`
   width: 100%;
   border-radius: 4px;
@@ -152,4 +158,94 @@ export const EditButton = styled.button`
   .bn-block-content:hover & {
     opacity: 1;
   }
+`;
+
+/* Blocks iframe mouse events during resize */
+export const ResizeOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  cursor: ${props => props.cursor || 'ns-resize'};
+`;
+
+/* Left / right width drag handles — absolutely positioned on the edges */
+export const WidthHandle = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  ${props => props.side === 'left' ? 'left: -10px;' : 'right: -10px;'}
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ew-resize;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 5;
+
+  .bn-block-content:hover & {
+    opacity: 1;
+  }
+
+  &::after {
+    content: '';
+    width: 4px;
+    height: 32px;
+    border-radius: 2px;
+    background-color: rgba(107, 185, 232, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.15s;
+  }
+
+  &:hover::after {
+    background-color: #6BB9E8;
+  }
+`;
+
+/* Bottom height drag handle */
+export const HeightResizeHandle = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  .bn-block-content:hover & {
+    opacity: 1;
+  }
+
+  span {
+    width: 32px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.15s;
+  }
+
+  &:hover span {
+    background-color: #6BB9E8;
+  }
+`;
+
+/* Size label shown during any resize */
+export const SizeLabel = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
 `;

@@ -130,6 +130,7 @@ export const EditorWrapper = styled.div`
       color: #334155;
       font-size: 1.05rem;
       line-height: 1.8;
+      outline: none;
     }
 
     /* Green circular bullets for list items */

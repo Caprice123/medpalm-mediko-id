@@ -7,6 +7,10 @@ export const Container = styled.div`
   padding: 3rem 1.5rem;
   position: relative;
 
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -34,7 +38,9 @@ export const NoteContainer = styled.div`
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 
   @media (max-width: 768px) {
-    padding: 1rem;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0 1.5rem;
   }
 `
 
@@ -45,6 +51,13 @@ export const NoteHeader = styled.div`
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
   position: relative;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+    box-shadow: none;
+    margin-bottom: 0;
+    padding: 1.5rem 0;
+  }
 `
 
 export const HeaderTop = styled.div`
@@ -159,6 +172,16 @@ export const ContentSection = styled.div`
   .bn-container {
     border: none;
     padding: 0;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 1rem;
+
+    /* Remove BlockNote's internal horizontal padding so NoteContainer padding aligns with NoteHeader */
+    .ProseMirror {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
   }
 `
 
