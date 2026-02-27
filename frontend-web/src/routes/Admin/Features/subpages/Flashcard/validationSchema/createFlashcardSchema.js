@@ -2,32 +2,26 @@ import * as Yup from 'yup'
 
 export const createFlashcardSchema = Yup.object().shape({
   title: Yup.string()
-    .required('Title is required')
-    .min(3, 'Title must be at least 3 characters')
-    .max(200, 'Title must not exceed 200 characters'),
+    .required('Title is required'),
 
-  description: Yup.string()
-    .max(500, 'Description must not exceed 500 characters'),
+  description: Yup.string(),
 
   cards: Yup.array()
     .of(
       Yup.object().shape({
         front: Yup.string()
           .required('Front (question) is required')
-          .min(1, 'Front must not be empty')
-          .max(1000, 'Front must not exceed 1000 characters'),
+          .min(1, 'Front must not be empty'),
 
         back: Yup.string()
           .required('Back (answer) is required')
-          .min(1, 'Back must not be empty')
-          .max(1000, 'Back must not exceed 1000 characters'),
+          .min(1, 'Back must not be empty'),
 
         order: Yup.number()
           .min(0, 'Order must be a positive number')
       })
     )
-    .min(1, 'At least one card is required')
-    .max(100, 'Maximum 100 cards allowed'),
+    .min(1, 'At least one card is required'),
 
   universityTags: Yup.array()
     .of(
@@ -56,18 +50,15 @@ export const updateFlashcardSchema = Yup.object().shape({
       Yup.object().shape({
         front: Yup.string()
           .required('Front (question) is required')
-          .min(1, 'Front must not be empty')
-          .max(1000, 'Front must not exceed 1000 characters'),
+          .min(1, 'Front must not be empty'),
 
         back: Yup.string()
           .required('Back (answer) is required')
-          .min(1, 'Back must not be empty')
-          .max(1000, 'Back must not exceed 1000 characters'),
+          .min(1, 'Back must not be empty'),
 
         order: Yup.number()
           .min(0, 'Order must be a positive number')
       })
     )
     .min(1, 'At least one card is required')
-    .max(100, 'Maximum 100 cards allowed')
 })

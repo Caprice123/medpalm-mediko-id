@@ -357,9 +357,11 @@ const UpdateFlashcardModal = ({ onClose }) => {
       <CardsSection>
         <CardsSectionHeader>
           <CardsSectionTitle>Cards</CardsSectionTitle>
-          <Button variant="primary" size="small" onClick={handleAddCard}>
-            + Add Card
-          </Button>
+          {(form.values.cards || []).length === 0 && (
+            <Button variant="primary" size="small" onClick={handleAddCard}>
+              + Add Card
+            </Button>
+          )}
         </CardsSectionHeader>
         {typeof form.errors.cards === 'string' && <ErrorText>{form.errors.cards}</ErrorText>}
 
@@ -384,6 +386,12 @@ const UpdateFlashcardModal = ({ onClose }) => {
             ))}
           </SortableContext>
         </DndContext>
+
+        {(form.values.cards || []).length > 0 && (
+          <Button variant="primary" size="small" onClick={handleAddCard} style={{ marginTop: '0.75rem', width: '100%' }}>
+            + Add Card
+          </Button>
+        )}
       </CardsSection>
 
       <StatusToggle>

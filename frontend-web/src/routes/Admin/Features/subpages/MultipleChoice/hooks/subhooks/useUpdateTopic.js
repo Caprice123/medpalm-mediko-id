@@ -14,8 +14,8 @@ export const useUpdateTopic = (closeCallback) => {
     initialValues: {
       title: '',
       description: '',
-      quiz_time_limit: 0,
-      passing_score: 70,
+      quizTimeLimit: 0,
+      passingScore: 70,
       topicTags: [],
       departmentTags: [],
       universityTags: [],
@@ -46,8 +46,8 @@ export const useUpdateTopic = (closeCallback) => {
           title: values.title.trim(),
           description: values.description.trim(),
           contentType: values.contentType === 'document' ? 'pdf' : 'text',
-          quiz_time_limit: values.quiz_time_limit,
-          passing_score: values.passing_score,
+          quizTimeLimit: values.quizTimeLimit,
+          passingScore: values.passingScore,
           status: values.status,
           questions: questions,
           tags: [...values.topicTags, ...values.departmentTags, ...values.universityTags, ...values.semesterTags].map(t => t.id)
@@ -107,8 +107,8 @@ export const useUpdateTopic = (closeCallback) => {
       form.setValues({
         title: selectedTopic.title || '',
         description: selectedTopic.description || '',
-        quiz_time_limit: selectedTopic.quizTimeLimit || selectedTopic.quiz_time_limit || 0,
-        passing_score: selectedTopic.passingScore || selectedTopic.passing_score || 70,
+        quizTimeLimit: selectedTopic.quizTimeLimit || selectedTopic.quiz_time_limit || 0,
+        passingScore: selectedTopic.passingScore || selectedTopic.passing_score || 70,
         topicTags: selectedTopic.topicTags || [],
         departmentTags: selectedTopic.departmentTags || [],
         universityTags: selectedTopic.universityTags || [],

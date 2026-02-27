@@ -134,8 +134,8 @@ const UpdateTopicModal = ({ onClose }) => {
           <Input
             type="number"
             min="0"
-            value={form.values.quiz_time_limit}
-            onChange={(e) => form.setFieldValue('quiz_time_limit', parseInt(e.target.value) || 0)}
+            value={form.values.quizTimeLimit}
+            onChange={(e) => form.setFieldValue('quizTimeLimit', parseInt(e.target.value) || 0)}
             placeholder="0 = No limit"
           />
           <HelpText>Set to 0 for no time limit</HelpText>
@@ -147,8 +147,8 @@ const UpdateTopicModal = ({ onClose }) => {
             type="number"
             min="0"
             max="100"
-            value={form.values.passing_score}
-            onChange={(e) => form.setFieldValue('passing_score', parseInt(e.target.value) || 70)}
+            value={form.values.passingScore}
+            onChange={(e) => form.setFieldValue('passingScore', parseInt(e.target.value) || 70)}
             placeholder="70"
           />
           <HelpText>Minimum score to pass (default: 70%)</HelpText>
