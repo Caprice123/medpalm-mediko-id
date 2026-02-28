@@ -29,8 +29,8 @@ export class GenerateMcqQuestionsService extends BaseService {
       throw new ValidationError('PDF buffer is required for pdf type')
     }
 
-    if (questionCount && (questionCount < 1 || questionCount > 50)) {
-      throw new ValidationError('Question count must be between 1 and 50')
+    if (questionCount && (questionCount < 1)) {
+      throw new ValidationError('Question count should be more than 1')
     }
   }
 }

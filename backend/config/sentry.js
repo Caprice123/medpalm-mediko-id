@@ -52,7 +52,7 @@ export const sentryErrorHandler = () => {
  * @param {Object} context - Additional context
  */
 export const captureException = (error, context = {}) => {
-  if (!isSentryInitialized) {
+  if (!isSentryEnabled) {
     console.error('Sentry not initialized, error not captured:', error);
     return;
   }
@@ -67,7 +67,7 @@ export const captureException = (error, context = {}) => {
  * @param {string} level - Severity level (fatal, error, warning, info, debug)
  */
 export const captureMessage = (message, level = 'info') => {
-  if (!isSentryInitialized) {
+  if (!isSentryEnabled) {
     console.log(`Sentry not initialized, message not captured [${level}]:`, message);
     return;
   }
@@ -79,7 +79,7 @@ export const captureMessage = (message, level = 'info') => {
  * @param {Object} user - User information
  */
 export const setUser = (user) => {
-  if (!isSentryInitialized) {
+  if (!isSentryEnabled) {
     return;
   }
   Sentry.setUser(user);
@@ -89,7 +89,7 @@ export const setUser = (user) => {
  * Clear user context
  */
 export const clearUser = () => {
-  if (!isSentryInitialized) {
+  if (!isSentryEnabled) {
     return;
   }
   Sentry.setUser(null);
