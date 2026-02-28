@@ -47,6 +47,9 @@ const { reducer, actions } = createSlice({
     setUploadedImage: (state, { payload }) => {
       state.uploadedImage = payload
     },
+    setPage: (state, { payload }) => {
+      state.pagination.page = payload
+    },
     updateFilter: (state, { payload: { key, value } }) => {
       state.filter[key] = value
     }

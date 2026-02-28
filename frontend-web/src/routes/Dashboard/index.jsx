@@ -34,6 +34,7 @@ import { MultipleChoiceRoute } from '../MultipleChoice/routes'
 import { ChatbotRoute } from '../Chatbot/routes'
 import { SkripsiRoute } from '../SkripsiBuilder/routes'
 import { OscePracticeRoute } from '../OscePractice/routes'
+import { AtlasRoute } from '../Atlas/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -66,6 +67,7 @@ function Dashboard() {
         'chatbot': ChatbotRoute.moduleRoute,
         'skripsi_builder': SkripsiRoute.moduleRoute,
         'osce_practice': OscePracticeRoute.moduleRoute,
+        'atlas': AtlasRoute.moduleRoute,
       }
       
       // Navigate to the mapped route if it exists

@@ -21,6 +21,7 @@ import {
 } from './Features.styles'
 import { useDispatch, useSelector } from 'react-redux'
 import OscePracticeAdminPage from './subpages/OscePractice'
+import Atlas from './subpages/Atlas'
 
 function Features() {
   const { features, loading } = useSelector(state => state.feature)
@@ -89,6 +90,8 @@ function Features() {
             return <SkripsiBuilder onBack={handleBackToList} />
         case "osce_practice":
             return <OscePracticeAdminPage onBack={handleBackToList} />
+        case "atlas":
+            return <Atlas onBack={handleBackToList} />
         default:
             return null
     }

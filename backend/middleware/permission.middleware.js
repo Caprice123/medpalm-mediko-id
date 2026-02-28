@@ -2,7 +2,7 @@ import { AuthorizationError } from '#errors/authorizationError'
 
 // Define valid tabs and features (simplified - just access, no CRUD)
 const VALID_TABS = ['features', 'tags', 'pricingPlans', 'transactions', 'users']
-const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas']
 
 /**
  * Middleware to check if user has permission to access a specific tab
@@ -23,8 +23,6 @@ export const requireTabPermission = (requiredTab) => {
 
     // Check if user has custom permissions
     if (user.permissions && user.permissions.tabs) {
-        console.log(user.permissions.tabs)
-        console.log(requiredTab)
       if (user.permissions.tabs.includes(requiredTab)) {
         return next()
       }
@@ -95,7 +93,7 @@ function getDefaultPermissions(role) {
   if (role === 'admin') {
     return {
       tabs: ['features', 'tags', 'pricingPlans', 'transactions'],
-      features: ['exercise', 'flashcard', 'calculator', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+      features: ['exercise', 'flashcard', 'calculator', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas']
     }
   }
 

@@ -12,6 +12,7 @@ import { chatbotRoutes } from './routes/Chatbot/routes';
 import { skripsiRoutes } from './routes/SkripsiBuilder/routes';
 import { topupRoutes } from './routes/Topup/routes';
 import { oscePracticeRoutes } from './routes/OscePractice/routes';
+import { atlasRoutes } from './routes/Atlas/routes';
 
 // Lazy load components
 const Login = lazy(() => import('@routes/Auth/pages/Login'));
@@ -56,6 +57,7 @@ const appRoutes = [
             ...skripsiRoutes,
             ...topupRoutes,
             ...oscePracticeRoutes,
+            ...atlasRoutes,
             {
                 path: '/admin',
                 element: withSuspense(<AdminPanel />)

@@ -112,6 +112,18 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'calculator_youtube_url'
     ],
     icon: '🧮'
+  },
+  'atlas': {
+    sessionType: 'atlas',
+    constants: [
+      'atlas_feature_title',
+      'atlas_feature_description',
+      'atlas_credit_cost',
+      'atlas_access_type',
+      'atlas_is_active',
+      'atlas_youtube_url'
+    ],
+    icon: '🧬'
   }
 }
 

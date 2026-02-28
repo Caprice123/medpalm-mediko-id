@@ -192,6 +192,7 @@ model tags {
   summary_note_tags            summary_note_tags[]
   calculator_topic_tags        calculator_topic_tags[]
   anatomy_quiz_tags            anatomy_quiz_tags[]
+  atlas_model_tags             atlas_model_tags[]
   mcq_topic_tags               mcq_topic_tags[]
   osce_topic_tags              osce_topic_tags[]
   osce_session_topic_snapshots osce_session_tag_snapshots[]
@@ -847,6 +848,56 @@ model user_anatomy_progress {
   @@index([user_id])
   @@index([question_id])
   @@index([quiz_id])
+}
+
+// ============= Atlas Feature =============
+
+model atlas_models {
+  id          Int      @id @default(autoincrement())
+  unique_id   String   @unique @default(uuid())
+  title       String
+  description String?
+  embed_url   String
+  status      String   @default("draft")
+  created_by  Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  atlas_structures atlas_structures[]
+  atlas_model_tags atlas_model_tags[]
+
+  @@index([created_by])
+  @@index([status])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "atlas_models_search_gin_idx")
+}
+
+model atlas_structures {
+  id          Int      @id @default(autoincrement())
+  model_id    Int
+  name        String
+  description String?
+  system      String?
+  order       Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  atlas_model atlas_models @relation(fields: [model_id], references: [id], onDelete: Cascade)
+
+  @@index([model_id])
+}
+
+model atlas_model_tags {
+  id         Int      @id @default(autoincrement())
+  model_id   Int
+  tag_id     Int
+  created_at DateTime @default(now())
+
+  atlas_model atlas_models @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  tags        tags         @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@unique([model_id, tag_id])
+  @@index([model_id])
+  @@index([tag_id])
 }
 
 // ============= Multiple Choice Quiz (MCQ) Feature =============

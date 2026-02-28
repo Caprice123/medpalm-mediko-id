@@ -75,6 +75,12 @@ export class GetActiveFeaturesService extends BaseService {
         "osce_practice_access_type",
         "osce_practice_is_active",
         "osce_practice_youtube_url",
+        "atlas_feature_title",
+        "atlas_feature_description",
+        "atlas_credit_cost",
+        "atlas_access_type",
+        "atlas_is_active",
+        "atlas_youtube_url",
     ])
 
     const features = []
@@ -231,6 +237,23 @@ export class GetActiveFeaturesService extends BaseService {
         sessionType: "calculator",
         isActive: featureConstants.calculator_is_active,
         youtubeUrl: featureConstants.calculator_youtube_url || ''
+      })
+    }
+
+    // Atlas feature
+    if (featureConstants.atlas_feature_title) {
+      const cost = parseFloat(featureConstants.atlas_credit_cost) || 0
+      const accessType = featureConstants.atlas_access_type || 'subscription'
+      features.push({
+        name: featureConstants.atlas_feature_title,
+        description: featureConstants.atlas_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🧬',
+        sessionType: "atlas",
+        isActive: featureConstants.atlas_is_active,
+        youtubeUrl: featureConstants.atlas_youtube_url || ''
       })
     }
 

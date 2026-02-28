@@ -19,6 +19,7 @@ import constant from "./constant";
 import chatbot from "./chatbot/reducer";
 import skripsi from "./skripsi/reducer";
 import oscePractice from "./oscePractice";
+import atlas from "./atlas";
 
 export const rootReducer = combineReducers({
     auth,
@@ -40,6 +41,7 @@ export const rootReducer = combineReducers({
     chatbot,
     skripsi,
     oscePractice,
+    atlas,
 })
 
 export const store = configureStore({
