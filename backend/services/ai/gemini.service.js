@@ -29,9 +29,13 @@ export class GeminiService extends BaseAiService {
             config: {
                 systemInstruction: systemPrompt,
                 temperature: 0.7,
-                 topK: 40,
-                 topP: 0.95,
-                 ...options
+                topK: 40,
+                topP: 0.95,
+                thinkingConfig: {
+                    thinkingBudget: 0,
+                    includeThoughts: false
+                },
+                ...options
             }
         });
 
