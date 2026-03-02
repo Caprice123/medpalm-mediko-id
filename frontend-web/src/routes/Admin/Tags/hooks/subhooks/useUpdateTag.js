@@ -1,13 +1,11 @@
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux"
 import { updateTag, fetchAdminTags } from '@store/tags/adminAction'
-import { useParams } from "react-router-dom"
 import { updateTagSchema } from "../../validationSchema/updateTagSchema"
 import { fetchTagGroups } from "../../../../../store/tagGroups/action"
 
 export const useUpdateTag = (setUiState) => {
     const dispatch = useDispatch()
-    const { id } = useParams()
 
     const formik = useFormik({
         initialValues: {
@@ -20,7 +18,7 @@ export const useUpdateTag = (setUiState) => {
                 await dispatch(fetchAdminTags())
                 onHide()
             }
-            await dispatch(updateTag(id, values, onSuccess))
+            await dispatch(updateTag(values.id, values, onSuccess))
         }
     })
 

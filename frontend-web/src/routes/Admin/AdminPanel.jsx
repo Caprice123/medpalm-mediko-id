@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { getUserData } from '@utils/authToken'
+import { resetAllState } from '@store/globalAction'
 import styled from 'styled-components'
 import PricingPlans from './PricingPlans/index'
 import Features from './Features/index'
@@ -137,6 +139,7 @@ const getAvailableTabs = (user) => {
 
 function AdminPanel() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [user, setUser] = useState(null)
   const [activeTab, setActiveTab] = useState(null)
   const [availableTabs, setAvailableTabs] = useState([])
@@ -161,6 +164,10 @@ function AdminPanel() {
       setActiveTab(tabs[0].key)
     }
   }, [navigate])
+
+  useEffect(() => {
+    if (activeTab) dispatch(resetAllState())
+  }, [activeTab])
 
   if (!user || !activeTab) {
     return <div>Loading...</div>

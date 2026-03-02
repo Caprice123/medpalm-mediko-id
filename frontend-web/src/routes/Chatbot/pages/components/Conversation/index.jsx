@@ -197,6 +197,13 @@ function ChatbotConversationPanel({ conversationId }) {
     }
   }, [messagePagination.page])
 
+  // Scroll ChatArea to bottom when scrollTrigger fires
+  useEffect(() => {
+    if (scrollTrigger.should && chatAreaRef.current) {
+      chatAreaRef.current.scrollTo({ top: chatAreaRef.current.scrollHeight, behavior: scrollTrigger.behavior })
+    }
+  }, [scrollTrigger])
+
   // Restore scroll position after older messages are rendered (page 2+)
   useEffect(() => {
     if (messagePagination.page > 1 && chatAreaRef.current && previousScrollHeight.current > 0) {
@@ -392,7 +399,6 @@ function ChatbotConversationPanel({ conversationId }) {
             key={conversationId}
             isLoading={loading.isMessagesLoading && messagePagination.page === 1}
             isStreaming={!!(conversationStreamingState?.isSending || conversationStreamingState?.isTyping)}
-            scrollTrigger={scrollTrigger}
           />
         </InfiniteScroll>
       </ChatArea>

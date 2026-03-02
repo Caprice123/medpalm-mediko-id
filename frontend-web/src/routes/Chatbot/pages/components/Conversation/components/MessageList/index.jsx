@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback } from 'react'
 import { formatLocalTime } from '@utils/dateUtils'
 import { useSelector } from 'react-redux'
 import { selectMessagesForCurrentConversation } from '@store/chatbot/reducer'
@@ -97,17 +97,9 @@ const MessageItem = memo(({ message, formatTime, getModeInfo, processContentWith
   return true
 })
 
-function MessageList({ isLoading, isStreaming, scrollTrigger }) {
+function MessageList({ isLoading, isStreaming }) {
   // Subscribe to messages for current conversation only
   const messages = useSelector(selectMessagesForCurrentConversation)
-  const messagesEndRef = useRef(null)
-
-  // Scroll to bottom with specified behavior (instant for conversation switch, smooth for new message)
-  useEffect(() => {
-    if (scrollTrigger.should && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: scrollTrigger.behavior })
-    }
-  }, [scrollTrigger])
 
   // Memoize helper functions to prevent unnecessary re-renders
   const formatTime = useCallback((dateString) => formatLocalTime(dateString), [])
@@ -180,9 +172,6 @@ function MessageList({ isLoading, isStreaming, scrollTrigger }) {
           </AIMessage>
         </MessageBubble>
       )}
-
-      {/* Scroll anchor - moved inside MessageList */}
-      <div ref={messagesEndRef} />
     </Container>
   )
 }
