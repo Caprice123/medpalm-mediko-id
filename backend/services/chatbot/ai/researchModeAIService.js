@@ -15,7 +15,6 @@ export class ResearchModeAIService extends BaseService {
    * @returns {Promise<Object>} AI response with web sources and credits used
    */
   static async call({ userId, conversationId, message }) {
-    try {
       // Get chatbot constants for configuration
       const constants = await prisma.constants.findMany({
         where: {
@@ -63,6 +62,7 @@ export class ResearchModeAIService extends BaseService {
 
       const conversationHistory = messages.reverse()
 
+    try {
       // Call appropriate research API
       const result = await this.callPerplexityAPI(model, message, conversationHistory, systemPrompt, citationsCount, trustedDomains)
 
@@ -174,10 +174,9 @@ export class ResearchModeAIService extends BaseService {
       // Create streaming chat completion
       const stream = await perplexity.chat.completions.create(requestParams)
 
-      console.log("Stream:", stream)
       return {
         stream: stream,
-        sources: [], // Citations will be extracted from the stream
+        sources: [], // Citations are extracted from the stream in streamingHandler
         provider: RouterUtils.getProvider(model),
       }
     } catch (error) {

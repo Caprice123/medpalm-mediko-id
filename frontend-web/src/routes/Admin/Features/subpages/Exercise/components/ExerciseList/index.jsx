@@ -137,14 +137,14 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
                 <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
                   Edit
                 </Button>
-                {/* <Button
+                <Button
                   variant="danger"
                   fullWidth
-                  onClick={() => onDelete(topic.uniqueId)}
+                  onClick={() => onDelete(topic)}
                   disabled={loading?.isDeletingTopic}
                 >
                   Delete
-                </Button> */}
+                </Button>
               </CardActions>
             </TopicCard>
           )

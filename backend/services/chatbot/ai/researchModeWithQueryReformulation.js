@@ -28,7 +28,6 @@ export class ResearchModeWithQueryReformulation extends BaseService {
    * 3. Respond in Indonesian with English medical terms
    */
   static async call({ userId, conversationId, message }) {
-    try {
       // Get configuration
       const constants = await prisma.constants.findMany({
         where: {
@@ -80,6 +79,7 @@ export class ResearchModeWithQueryReformulation extends BaseService {
 
       const conversationHistory = messages.reverse()
 
+    try {
       // STAGE 1: Reformulate query with context + Translate to English
       const englishSearchQuery = await this.reformulateAndTranslateQuery(
         message,
@@ -200,7 +200,6 @@ export class ResearchModeWithQueryReformulation extends BaseService {
     citationsCount,
     trustedDomains
   ) {
-    try {
       // Use RouterUtils to get AI service (will be Perplexity for sonar models)
       const AIService = RouterUtils.call(model)
       if (!AIService) {
@@ -264,9 +263,5 @@ export class ResearchModeWithQueryReformulation extends BaseService {
         sources: [],
         provider: RouterUtils.getProvider(model),
       }
-    } catch (error) {
-      console.error('Error calling Perplexity API:', error)
-      throw error
-    }
   }
 }

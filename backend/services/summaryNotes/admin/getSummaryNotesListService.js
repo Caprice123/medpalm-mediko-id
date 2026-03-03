@@ -29,10 +29,7 @@ export class GetSummaryNotesListService extends BaseService {
       tagFilters.push({
         summary_note_tags: {
           some: {
-            tags: {
-              type: 'university',
-              name: { equals: university, mode: 'insensitive' }
-            }
+            tag_id: parseInt(university)
           }
         }
       })
@@ -43,10 +40,7 @@ export class GetSummaryNotesListService extends BaseService {
       tagFilters.push({
         summary_note_tags: {
           some: {
-            tags: {
-              type: 'semester',
-              name: { equals: semester, mode: 'insensitive' }
-            }
+            tag_id: parseInt(semester)
           }
         }
       })
@@ -57,10 +51,7 @@ export class GetSummaryNotesListService extends BaseService {
       tagFilters.push({
         summary_note_tags: {
           some: {
-            tags: {
-              type: 'topic',
-              name: { equals: topic, mode: 'insensitive' }
-            }
+            tag_id: parseInt(topic)
           }
         }
       })
@@ -71,10 +62,7 @@ export class GetSummaryNotesListService extends BaseService {
       tagFilters.push({
         summary_note_tags: {
           some: {
-            tags: {
-              type: 'department',
-              name: { equals: department, mode: 'insensitive' }
-            }
+            tag_id: parseInt(department)
           }
         }
       })

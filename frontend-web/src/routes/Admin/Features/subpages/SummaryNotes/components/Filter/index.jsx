@@ -18,19 +18,19 @@ export const Filter = () => {
   }
 
   const universityTags = useMemo(() => {
-    return tags?.find(tag => tag.name === "university")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+    return tags?.find(tag => tag.name === "university")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
 
   const semesterTags = useMemo(() => {
-    return tags?.find(tag => tag.name === "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+    return tags?.find(tag => tag.name === "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
 
   const topicTags = useMemo(() => {
-    return tags?.find(tag => tag.name === "topic")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+    return tags?.find(tag => tag.name === "topic")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
 
   const departmentTags = useMemo(() => {
-    return tags?.find(tag => tag.name === "department")?.tags?.map((tag) => ({ label: tag.name, value: tag.name })) || []
+    return tags?.find(tag => tag.name === "department")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
 
   const statusOptions = [

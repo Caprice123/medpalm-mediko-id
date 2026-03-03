@@ -29,9 +29,9 @@ export const useSkripsiList = () => {
       return
     }
 
-      await dispatch(createSet(formData.title, formData.description, (set) => {
-        navigate(generatePath(SkripsiRoute.editorRoute, { setId: set.uniqueId }))
-      }))
+    await dispatch(createSet(formData.title, formData.description, (set) => {
+        navigate(generatePath(SkripsiRoute.editorRoute, { setId: set.unique_id }))
+    }))
   }
 
   const handleOpenCreateModal = () => setShowCreateModal(true)

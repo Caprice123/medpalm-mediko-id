@@ -20,13 +20,6 @@ export const errorHandler = (err, req, res, next) => {
     })
   }
 
-  // Capture exception in Sentry (with context)
-  captureException(err, {
-    url: req.originalUrl,
-    method: req.method,
-    userId: req.user?.id,
-    body: req.body,
-  })
 
   // Handle ValidationError (400 Bad Request) - returns custom message
   if (err instanceof ValidationError) {
@@ -73,6 +66,14 @@ export const errorHandler = (err, req, res, next) => {
       }
     })
   }
+  
+  // Capture exception in Sentry (with context)
+  captureException(err, {
+    url: req.originalUrl,
+    method: req.method,
+    userId: req.user?.id,
+    body: req.body,
+  })
 
   // Default to 500 Internal Server Error
   // In production, hide error details for security

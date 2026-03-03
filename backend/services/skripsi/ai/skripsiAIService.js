@@ -18,6 +18,7 @@ export class SkripsiAIService extends BaseService {
   static async call({ tabId, message, tabType, modeType = 'validated' }) {
     // Map tab type to mode first
     const mode = this.getMode(tabType)
+    console.log(mode, modeType)
 
     // For AI Chat tabs (ai_researcher_1/2/3), route based on modeType
     if (mode === 'ai_researcher') {

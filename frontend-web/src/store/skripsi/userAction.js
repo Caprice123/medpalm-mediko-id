@@ -26,6 +26,7 @@ const {
   setStreamingState,
   clearStreamingState,
   setModeForTab,
+  setDefaultMode,
   setAvailableModes,
   setCosts,
   setUserInformation,
@@ -132,6 +133,10 @@ export const fetchModeConfiguration = () => async (dispatch) => {
       dispatch(setUserInformation(config.userInformation))
     }
 
+    const modes = config.availableModes || {}
+    const derivedDefault = modes.research ? 'research' : modes.validated ? 'validated' : 'validated'
+    dispatch(setDefaultMode(derivedDefault))
+
     return config
   } catch (err) {
     console.error('Error fetching mode configuration:', err)
@@ -223,7 +228,7 @@ export const sendMessage = (tabId, message, modeType) => async (dispatch, getSta
     dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: true }))
 
     const state = getState()
-    const mode = modeType || state.skripsi.modeByTab[tabId] || 'validated'
+    const mode = modeType || state.skripsi.modeByTab[tabId] || state.skripsi.defaultMode
 
     if (!state.skripsi.modeByTab[tabId]) {
       dispatch(setModeForTab({ tabId, mode }))
@@ -331,7 +336,7 @@ export const stopStreaming = (tabId) => async (dispatch, getState) => {
               id: streamingState.realUserMessageId,
               senderType: 'user',
               content: streamingState.userMessage,
-              modeType: response.data?.modeType || state.skripsi.modeByTab[tabId] || 'validated',
+              modeType: response.data?.modeType || state.skripsi.modeByTab[tabId] || state.skripsi.defaultMode,
               createdAt: new Date().toISOString()
             }
           }))
@@ -344,7 +349,7 @@ export const stopStreaming = (tabId) => async (dispatch, getState) => {
               id: response.data.id,
               senderType: 'ai',
               content: response.data.content,
-              modeType: response.data.modeType || state.skripsi.modeByTab[tabId] || 'validated',
+              modeType: response.data.modeType || state.skripsi.modeByTab[tabId] || state.skripsi.defaultMode,
               sources: response.data.sources || [],
               createdAt: response.data.updatedAt
             }

@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { useAnatomyQuizSection } from './hooks/useAnatomyQuizSection'
 import { actions } from '@store/anatomy/reducer'
-import { fetchAdminAnatomyQuizzes, fetchAdminAnatomyQuiz } from '@store/anatomy/adminAction'
+import { fetchAdminAnatomyQuizzes, fetchAdminAnatomyQuiz, deleteAnatomyQuiz } from '@store/anatomy/adminAction'
 import CreateQuizModal from './components/CreateQuizModal'
 import AnatomySettingsModal from './components/AnatomySettingsModal'
 import QuizList from './components/QuizList'
@@ -30,6 +30,16 @@ function AnatomyQuiz({ onBack }) {
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
     dispatch(fetchAdminAnatomyQuizzes())
+  }
+
+  const handleDeleteQuiz = async (quiz) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus "${quiz.title}"?`)) return
+    try {
+      await dispatch(deleteAnatomyQuiz(quiz.uniqueId))
+      await dispatch(fetchAdminAnatomyQuizzes())
+    } catch (error) {
+      console.error('Failed to delete quiz:', error)
+    }
   }
 
   const handleEditQuiz = async (quiz) => {
@@ -66,9 +76,7 @@ function AnatomyQuiz({ onBack }) {
 
       <QuizList
         onEdit={handleEditQuiz}
-        onDelete={(id) => {
-          // Handle delete
-        }}
+        onDelete={handleDeleteQuiz}
         onCreateFirst={() => setUiState({ ...uiState, isCalculatorModalOpen: true, mode: "create", selectedQuiz: null })}
       />
 

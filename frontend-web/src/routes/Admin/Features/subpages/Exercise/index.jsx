@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { useExerciseSection } from './hooks/useExerciseSection'
-import { fetchExerciseTopic, fetchAdminExerciseTopics } from '@store/exercise/adminAction'
+import { fetchExerciseTopic, fetchAdminExerciseTopics, deleteExerciseTopic } from '@store/exercise/adminAction'
 import CreateTopicModal from './components/CreateTopicModal'
 import UpdateTopicModal from './components/UpdateTopicModal'
 import ExerciseSettingsModal from './components/ExerciseSettingsModal'
@@ -36,6 +36,16 @@ function LatihanSoal({ onBack }) {
     } catch (error) {
       console.error('Failed to fetch topic details:', error)
       alert('Failed to load topic details')
+    }
+  }
+
+  const handleDeleteTopic = async (topic) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus "${topic.title}"?`)) return
+    try {
+      await dispatch(deleteExerciseTopic(topic.uniqueId))
+      await dispatch(fetchAdminExerciseTopics())
+    } catch (error) {
+      console.error('Failed to delete topic:', error)
     }
   }
 
@@ -83,9 +93,7 @@ function LatihanSoal({ onBack }) {
 
       <ExerciseList
         onEdit={handleEditTopic}
-        onDelete={(id) => {
-          // Handle delete
-        }}
+        onDelete={handleDeleteTopic}
         onCreateFirst={() => setUiState({
           ...uiState,
           isTopicModalOpen: true,

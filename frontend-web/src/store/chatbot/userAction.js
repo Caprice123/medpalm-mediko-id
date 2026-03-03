@@ -465,6 +465,17 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
         content: fullContent,
         sources: response.data?.sources || sources
       })
+
+      // Update conversation's lastMessage in the conversations list
+      const state = getState()
+      const conversation = state.chatbot.conversations.find(c => c.uniqueId === conversationId)
+      if (conversation) {
+        dispatch(updateConversation({
+          ...conversation,
+          lastMessage: fullContent.substring(0, 50),
+          updatedAt: new Date().toISOString()
+        }))
+      }
     } catch (error) {
       console.error('❌ Error finalizing completed message:', error)
       dispatch(clearStreamingState(conversationId))

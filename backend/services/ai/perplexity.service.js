@@ -128,6 +128,7 @@ export class PerplexityService extends BaseAiService {
         }
 
         // Create streaming chat completion
+        console.log(requestParams)
         const stream = await perplexity.chat.completions.create(requestParams)
 
         return stream

@@ -28,7 +28,6 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
    * 3. Respond in Indonesian with English academic/medical terms
    */
   static async call({ tabId, message, tabType }) {
-    try {
       // Map tab type to mode (ai_researcher_1/2/3 all use ai_researcher)
       const mode = this.getMode(tabType)
 
@@ -82,6 +81,7 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
 
       const conversationHistory = messages.reverse()
 
+    try {
       // Check if using Perplexity model
       const isPerplexity = model.startsWith('sonar')
 
@@ -214,7 +214,6 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
     citationsCount,
     trustedDomains
   ) {
-    try {
       // Use RouterUtils to get AI service (will be Perplexity for sonar models)
       const AIService = RouterUtils.call(model)
       if (!AIService) {
@@ -288,10 +287,6 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
         stream: stream,
         sources: [],
       }
-    } catch (error) {
-      console.error('Error calling Perplexity API:', error)
-      throw error
-    }
   }
 
   /**

@@ -489,34 +489,6 @@ export class SendMessageService extends BaseService {
         }
       })
 
-      // Deduct credits IMMEDIATELY at start of streaming
-      let newBalance = null
-      if (requiresCredits && creditsUsed > 0) {
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
-
-        newBalance = userCredit.balance - creditsUsed
-
-        await prisma.user_credits.update({
-          where: { user_id: userId },
-          data: { balance: newBalance }
-        })
-
-        await prisma.credit_transactions.create({
-          data: {
-            user_id: userId,
-            user_credit_id: userCredit.id,
-            type: 'deduction',
-            amount: -creditsUsed,
-            balance_before: userCredit.balance,
-            balance_after: newBalance,
-            description: `Chatbot ${mode} mode - 1 pesan`,
-            payment_status: 'completed'
-          }
-        })
-      }
-
       // SEND MESSAGE IDs IMMEDIATELY to frontend with updated quota
       try {
         onStream({
@@ -536,7 +508,6 @@ export class SendMessageService extends BaseService {
                 sources: [],
                 createdAt: aiMessage.created_at.toISOString()
             },
-            userQuota: newBalance !== null ? { balance: newBalance } : null
           }
         })
         console.log('✅ Sent message IDs to frontend:', { userMessageId: userMessage.id, aiMessageId: aiMessage.id })

@@ -14,7 +14,6 @@ export class NormalModeAIService extends BaseService {
    * @returns {Promise<Object>} AI response with credits used
    */
   static async call({ userId, conversationId, message }) {
-    try {
       // Get chatbot constants for configuration
       const constants = await prisma.constants.findMany({
         where: {
@@ -65,6 +64,7 @@ export class NormalModeAIService extends BaseService {
         throw new ValidationError(`No AI provider found for model: ${modelName}`)
       }
 
+    try {
       const stream = await AIService.generateStreamWithHistory(
         modelName,
         systemPrompt,

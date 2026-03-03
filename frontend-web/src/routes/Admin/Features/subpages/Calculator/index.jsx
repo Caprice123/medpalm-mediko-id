@@ -141,13 +141,13 @@ function Calculator({ onBack }) {
                     <Button variant="secondary" fullWidth onClick={() => handleCalculatorClick(calculator)}>
                       Edit
                     </Button>
-                    {/* <Button
+                    <Button
                       variant="danger"
                       fullWidth
                       onClick={(e) => handleDelete(e, calculator.uniqueId)}
                     >
                       Delete
-                    </Button> */}
+                    </Button>
                   </CardActions>
                 </TopicCard>
               )

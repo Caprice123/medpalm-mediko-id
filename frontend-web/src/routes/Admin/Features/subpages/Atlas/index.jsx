@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { useAtlasSection } from './hooks/useAtlasSection'
 import { actions } from '@store/atlas/reducer'
-import { fetchAdminAtlasModels, fetchAdminAtlasModel } from '@store/atlas/adminAction'
+import { fetchAdminAtlasModels, fetchAdminAtlasModel, deleteAtlasModel } from '@store/atlas/adminAction'
 import CreateAtlasModal from './components/CreateAtlasModal'
 import UpdateAtlasModal from './components/UpdateAtlasModal'
 import AtlasSettingsModal from './components/AtlasSettingsModal'
@@ -27,6 +27,16 @@ function Atlas({ onBack }) {
   const handlePageChange = (page) => {
     dispatch(actions.setPagination({ ...pagination, page }))
     dispatch(fetchAdminAtlasModels())
+  }
+
+  const handleDeleteModel = async (model) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus "${model.title}"?`)) return
+    try {
+      await dispatch(deleteAtlasModel(model.uniqueId))
+      await dispatch(fetchAdminAtlasModels())
+    } catch (error) {
+      console.error('Failed to delete atlas model:', error)
+    }
   }
 
   const handleEditModel = async (model) => {
@@ -64,6 +74,7 @@ function Atlas({ onBack }) {
 
       <AtlasList
         onEdit={handleEditModel}
+        onDelete={handleDeleteModel}
         onCreateFirst={() => setUiState({ ...uiState, isModalOpen: true, mode: 'create' })}
       />
 

@@ -11,6 +11,7 @@ const initialState = {
   activeTabId: null, // Track which tab is currently active
   loadingByTab: {}, // Store loading states per tab: { [tabId]: { isSendingMessage: false } }
   modeByTab: {}, // Store mode selection per tab: { [tabId]: 'research' | 'validated' }
+  defaultMode: 'validated', // Default mode from server config
   availableModes: { research: true, validated: true }, // Available modes for AI Chat tabs
   costs: { research: 0, validated: 0 }, // Cost per mode
   userInformation: {
@@ -186,6 +187,9 @@ const skripsiSlice = createSlice({
       const { tabId, mode } = action.payload
       state.modeByTab[tabId] = mode
     },
+    setDefaultMode: (state, action) => {
+      state.defaultMode = action.payload
+    },
     setAvailableModes: (state, action) => {
       state.availableModes = action.payload
     },
@@ -261,10 +265,10 @@ export const selectLoadingForTab = (state, tabId) => {
 }
 
 export const selectModeForTab = (state, tabId) => {
-  return state.skripsi.modeByTab[tabId] || 'validated' // Default to validated mode
+  return state.skripsi.modeByTab[tabId] || state.skripsi.defaultMode
 }
 
 export const selectModeForActiveTab = (state) => {
   const tabId = state.skripsi.activeTabId
-  return tabId ? (state.skripsi.modeByTab[tabId] || 'research') : 'research'
+  return tabId ? (state.skripsi.modeByTab[tabId] || state.skripsi.defaultMode) : state.skripsi.defaultMode
 }

@@ -19,7 +19,7 @@ import {
 } from './AtlasList.styles'
 import Button from '@components/common/Button'
 
-function AtlasList({ onEdit, onCreateFirst }) {
+function AtlasList({ onEdit, onDelete, onCreateFirst }) {
   const { models, loading } = useSelector(state => state.atlas)
 
   if (loading?.isGetListAtlasLoading) {
@@ -81,6 +81,9 @@ function AtlasList({ onEdit, onCreateFirst }) {
           <CardActions>
             <Button variant="secondary" fullWidth onClick={() => onEdit(model)}>
               Edit
+            </Button>
+            <Button variant="danger" fullWidth onClick={() => onDelete(model)}>
+              Delete
             </Button>
           </CardActions>
         </ModelCard>

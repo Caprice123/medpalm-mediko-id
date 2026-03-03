@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useFlashcardSection } from './hooks/useFlashcardSection'
 import { actions } from '@store/flashcard/reducer'
-import { fetchAdminFlashcardDecks, fetchFlashcardDeck } from '@store/flashcard/adminAction'
+import { fetchAdminFlashcardDecks, fetchFlashcardDeck, deleteFlashcardDeck } from '@store/flashcard/adminAction'
 import CreateFlashcardModal from './components/CreateFlashcardModal'
 import UpdateFlashcardModal from './components/UpdateFlashcardModal'
 import FlashcardSettingsModal from './components/FlashcardSettingsModal'
@@ -30,6 +30,16 @@ function FlashcardAdminPage({ onBack }) {
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
     dispatch(fetchAdminFlashcardDecks())
+  }
+
+  const handleDeleteDeck = async (deck) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus "${deck.title}"?`)) return
+    try {
+      await dispatch(deleteFlashcardDeck(deck.uniqueId))
+      await dispatch(fetchAdminFlashcardDecks())
+    } catch (error) {
+      console.error('Failed to delete deck:', error)
+    }
   }
 
   const handleEditFlashcard = async (deck) => {
@@ -65,9 +75,7 @@ function FlashcardAdminPage({ onBack }) {
 
       <FlashcardList
         onEdit={handleEditFlashcard}
-        onDelete={(id) => {
-          // Handle delete
-        }}
+        onDelete={handleDeleteDeck}
         onCreateFirst={() => setUiState({ ...uiState, isDeckModalOpen: true, mode: "create", selectedDeck: null })}
       />
 
