@@ -13,10 +13,7 @@ export class DeleteCalculatorTopicService extends BaseService {
             throw new NotFoundError('Calculator topic not found')
         }
 
-        // Delete the topic (cascade will delete fields)
-        await prisma.calculator_topics.delete({
-            where: { unique_id: topicId }
-        })
+        await prisma.$executeRaw`DELETE FROM calculator_topics WHERE id = ${existingTopic.id}`
 
         return {
             message: 'Calculator topic deleted successfully',

@@ -60,8 +60,8 @@ function SummaryNotes({ onBack }) {
     }
 
     try {
-      await dispatch(deleteSummaryNote(note.id))
-      await dispatch(fetchAdminSummaryNotes({}, pagination.page, 30))
+      await dispatch(deleteSummaryNote(note.uniqueId))
+      await dispatch(fetchAdminSummaryNotes())
     } catch (error) {
       console.error('Failed to delete note:', error)
     }

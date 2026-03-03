@@ -18,10 +18,8 @@ export class DeleteSummaryNoteService extends BaseService {
       throw new ValidationError('Summary note not found')
     }
 
-    // Delete the summary note (cascade will handle tags)
-    await prisma.summary_notes.delete({
-      where: { unique_id: id }
-    })
+    // Use raw SQL to bypass Prisma's application-level referential integrity check
+    await prisma.$executeRaw`DELETE FROM summary_notes WHERE id = ${existing.id}`
 
     // Delete embedding from ChromaDB if it was published
     if (existing.status === 'published') {

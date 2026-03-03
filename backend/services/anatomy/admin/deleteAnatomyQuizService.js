@@ -16,9 +16,7 @@ export class DeleteAnatomyQuizService extends BaseService {
       throw new ValidationError('Quiz not found')
     }
 
-    await prisma.anatomy_quizzes.delete({
-        where: { unique_id: quizId }
-    })
+    await prisma.$executeRaw`DELETE FROM anatomy_quizzes WHERE id = ${quiz.id}`
 
     // Delete image from iDrive E2 if exists
     if (quiz.image_key) {

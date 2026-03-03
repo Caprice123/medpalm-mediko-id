@@ -93,14 +93,14 @@ function TopicCard({ topic, onEdit, onDelete }) {
         <Button variant="secondary" fullWidth onClick={() => onEdit(topic)}>
           Edit
         </Button>
-        <Button
+        {/* <Button
           variant="danger"
           fullWidth
           onClick={() => onDelete(topic.id)}
           disabled={loading?.isDeletingTopic}
         >
           Delete
-        </Button>
+        </Button> */}
       </CardActions>
     </Card>
   )

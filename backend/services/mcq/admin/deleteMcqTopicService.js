@@ -13,10 +13,10 @@ export class DeleteMcqTopicService extends BaseService {
       throw new ValidationError('MCQ topic not found')
     }
 
-    // Delete topic (cascade will handle questions, tags, attempts)
-    await prisma.mcq_topics.delete({
-      where: { unique_id: id }
-    })
+    // Clean up summary note links first to avoid orphaned relations
+    await prisma.summary_note_mcq_topics.deleteMany({ where: { mcq_topic_id: existingTopic.id } })
+
+    await prisma.$executeRaw`DELETE FROM mcq_topics WHERE id = ${existingTopic.id}`
 
     return { success: true }
   }
