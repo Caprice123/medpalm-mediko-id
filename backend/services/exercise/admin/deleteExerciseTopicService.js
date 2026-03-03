@@ -16,13 +16,7 @@ export class DeleteExerciseTopicService extends BaseService {
       throw new ValidationError('Topic not found')
     }
 
-    // Delete in order: tags, questions, attachments, then topic
-    await prisma.exercise_topic_tags.deleteMany({ where: { topic_id: topic.id } })
-    await prisma.exercise_questions.deleteMany({ where: { topic_id: topic.id } })
-    await prisma.attachments.deleteMany({
-      where: { record_type: 'exercise_topic', record_id: topic.id }
-    })
-    await prisma.exercise_topics.delete({ where: { id: topic.id } })
+    await prisma.$executeRaw`DELETE FROM exercise_topics WHERE id = ${topic.id}`
 
     return { uniqueId }
   }

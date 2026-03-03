@@ -17,16 +17,6 @@ export class DeleteAnatomyQuizService extends BaseService {
     }
 
     await prisma.$executeRaw`DELETE FROM anatomy_quizzes WHERE id = ${quiz.id}`
-
-    // Delete image from iDrive E2 if exists
-    if (quiz.image_key) {
-        try {
-            await idriveService.deleteFile(quiz.image_key)
-        } catch (error) {
-            console.error('Error deleting image from cloud storage:', error)
-            // Continue even if image deletion fails
-        }
-    }
   }
 
   static validate(quizId) {
