@@ -5,6 +5,7 @@ import { FinalizeMessageService } from '#services/skripsi/finalizeMessageService
 import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
 import { GetSkripsiConfigService } from '#services/skripsi/getSkripsiConfigService'
 import { captureException } from '#config/sentry'
+import { ValidationError } from '#errors/validationError'
 
 class SkripsiTabsController {
   // Get messages for a tab with pagination
@@ -84,26 +85,34 @@ class SkripsiTabsController {
         },
         onError: (error) => {
           if (!clientDisconnected) {
-            res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
-            captureException(error, {
+            const isValidationError = error instanceof ValidationError
+            if (!isValidationError) {
+              captureException(error, {
                 url: req.originalUrl,
                 method: req.method,
                 userId: req.user?.id,
                 body: req.body,
-            })
+              })
+            }
+            const message = isValidationError ? error.message : 'Terjadi kesalahan pada sistem'
+            res.write(`data: ${JSON.stringify({ type: 'error', error: { message } })}\n\n`)
             res.end()
           }
         }
       })
     } catch (error) {
       if (!clientDisconnected) {
-        res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
-        captureException(error, {
+        const isValidationError = error instanceof ValidationError
+        if (!isValidationError) {
+          captureException(error, {
             url: req.originalUrl,
             method: req.method,
             userId: req.user?.id,
             body: req.body,
-        })
+          })
+        }
+        const message = isValidationError ? error.message : 'Terjadi kesalahan pada sistem'
+        res.write(`data: ${JSON.stringify({ type: 'error', error: { message } })}\n\n`)
         res.end()
       }
     }

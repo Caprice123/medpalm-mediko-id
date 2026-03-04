@@ -6,6 +6,7 @@ import { FinalizeMessageService } from '#services/chatbot/finalizeMessageService
 import { ChatbotMessageSerializer } from '#serializers/api/v1/chatbotMessageSerializer'
 import prisma from '#prisma/client'
 import { captureException } from '#config/sentry'
+import { ValidationError } from '#errors/validationError'
 
 class MessageController {
   // Get messages for a conversation
@@ -89,26 +90,34 @@ class MessageController {
         },
         onError: (error) => {
           if (!clientDisconnected) {
-            res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
-            captureException(error, {
+            const isValidationError = error instanceof ValidationError
+            if (!isValidationError) {
+              captureException(error, {
                 url: req.originalUrl,
                 method: req.method,
                 userId: req.user?.id,
                 body: req.body,
-            })
+              })
+            }
+            const message = isValidationError ? error.message : 'Terjadi kesalahan pada sistem'
+            res.write(`data: ${JSON.stringify({ type: 'error', error: { message } })}\n\n`)
             res.end()
           }
         }
       })
     } catch (error) {
       if (!clientDisconnected) {
-        res.write(`data: ${JSON.stringify({ type: 'error', error: { message: error.message } })}\n\n`)
-        captureException(error, {
+        const isValidationError = error instanceof ValidationError
+        if (!isValidationError) {
+          captureException(error, {
             url: req.originalUrl,
             method: req.method,
             userId: req.user?.id,
             body: req.body,
-        })
+          })
+        }
+        const message = isValidationError ? error.message : 'Terjadi kesalahan pada sistem'
+        res.write(`data: ${JSON.stringify({ type: 'error', error: { message } })}\n\n`)
         res.end()
       }
     }
