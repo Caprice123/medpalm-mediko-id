@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model constants {
@@ -65,7 +66,7 @@ model exercise_questions {
   order           Int             @default(0)
   created_at      DateTime        @default(now())
   updated_at      DateTime        @default(now())
-  exercise_topics exercise_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  exercise_topics exercise_topics @relation(fields: [topic_id], references: [id])
 
   @@index([order])
   @@index([topic_id])
@@ -82,7 +83,7 @@ model exercise_sessions {
   updated_at               DateTime @default(now())
 
   exercise_session_attempts  exercise_session_attempts[]
-  user_learning_session      user_learning_sessions       @relation(fields: [user_learning_session_id], references: [id], onDelete: Cascade)
+  user_learning_session      user_learning_sessions       @relation(fields: [user_learning_session_id], references: [id])
   exercise_session_questions exercise_session_questions[]
   exercise_topic             exercise_topics?             @relation(fields: [exercise_topic_id], references: [id])
 
@@ -99,7 +100,7 @@ model exercise_session_questions {
   order               Int
   created_at          DateTime @default(now())
 
-  exercise_session         exercise_sessions          @relation(fields: [exercise_session_id], references: [id], onDelete: Cascade)
+  exercise_session         exercise_sessions          @relation(fields: [exercise_session_id], references: [id])
   exercise_session_answers exercise_session_answers[]
 
   @@index([order])
@@ -119,7 +120,7 @@ model exercise_session_attempts {
   updated_at          DateTime  @default(now())
 
   exercise_session_answers exercise_session_answers[]
-  exercise_session         exercise_sessions          @relation(fields: [exercise_session_id], references: [id], onDelete: Cascade)
+  exercise_session         exercise_sessions          @relation(fields: [exercise_session_id], references: [id])
 
   @@index([exercise_session_id])
   @@index([started_at])
@@ -135,8 +136,8 @@ model exercise_session_answers {
   answered_at                  DateTime @default(now())
   time_taken_seconds           Int?
 
-  exercise_session_attempts  exercise_session_attempts  @relation(fields: [exercise_session_attempt_id], references: [id], onDelete: Cascade)
-  exercise_session_questions exercise_session_questions @relation(fields: [exercise_session_question_id], references: [id], onDelete: Cascade)
+  exercise_session_attempts  exercise_session_attempts  @relation(fields: [exercise_session_attempt_id], references: [id])
+  exercise_session_questions exercise_session_questions @relation(fields: [exercise_session_question_id], references: [id])
 
   @@index([answered_at])
   @@index([exercise_session_attempt_id])
@@ -148,8 +149,8 @@ model exercise_topic_tags {
   topic_id        Int
   tag_id          Int
   created_at      DateTime        @default(now())
-  tags            tags            @relation(fields: [tag_id], references: [id], onDelete: Cascade)
-  exercise_topics exercise_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tags            tags            @relation(fields: [tag_id], references: [id])
+  exercise_topics exercise_topics @relation(fields: [topic_id], references: [id])
 
   @@unique([topic_id, tag_id])
   @@index([tag_id])
@@ -185,7 +186,7 @@ model tags {
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
 
-  tag_group tag_groups? @relation(fields: [tag_group_id], references: [id], onDelete: Cascade)
+  tag_group tag_groups? @relation(fields: [tag_group_id], references: [id])
 
   exercise_topic_tags          exercise_topic_tags[]
   flashcard_deck_tags          flashcard_deck_tags[]
@@ -261,7 +262,7 @@ model flashcard_cards {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  flashcard_decks flashcard_decks @relation(fields: [deck_id], references: [id], onDelete: Cascade)
+  flashcard_decks flashcard_decks @relation(fields: [deck_id], references: [id])
 
   @@index([deck_id])
   @@index([order])
@@ -273,8 +274,8 @@ model flashcard_deck_tags {
   tag_id     Int
   created_at DateTime @default(now())
 
-  flashcard_decks flashcard_decks @relation(fields: [deck_id], references: [id], onDelete: Cascade)
-  tags            tags            @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  flashcard_decks flashcard_decks @relation(fields: [deck_id], references: [id])
+  tags            tags            @relation(fields: [tag_id], references: [id])
 
   @@unique([deck_id, tag_id])
   @@index([deck_id])
@@ -290,7 +291,7 @@ model flashcard_sessions {
   created_at               DateTime @default(now())
   updated_at               DateTime @default(now())
 
-  user_learning_session   user_learning_sessions    @relation(fields: [user_learning_session_id], references: [id], onDelete: Cascade)
+  user_learning_session   user_learning_sessions    @relation(fields: [user_learning_session_id], references: [id])
   flashcard_deck          flashcard_decks?          @relation(fields: [flashcard_deck_id], references: [id])
   flashcard_session_cards flashcard_session_cards[]
 
@@ -307,7 +308,7 @@ model flashcard_session_cards {
   order                Int
   created_at           DateTime @default(now())
 
-  flashcard_session flashcard_sessions @relation(fields: [flashcard_session_id], references: [id], onDelete: Cascade)
+  flashcard_session flashcard_sessions @relation(fields: [flashcard_session_id], references: [id])
 
   @@index([flashcard_session_id])
   @@index([order])
@@ -394,7 +395,7 @@ model user_subscriptions {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user users @relation(fields: [user_id], references: [id])
 
   @@index([user_id, start_date, end_date])
   @@index([status])
@@ -407,7 +408,7 @@ model user_credits {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user                users                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user                users                 @relation(fields: [user_id], references: [id])
   credit_transactions credit_transactions[]
 
   @@index([user_id])
@@ -444,8 +445,8 @@ model summary_note_tags {
   tag_id          Int
   created_at      DateTime @default(now())
 
-  summary_note summary_notes @relation(fields: [summary_note_id], references: [id], onDelete: Cascade)
-  tags         tags          @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  summary_note summary_notes @relation(fields: [summary_note_id], references: [id])
+  tags         tags          @relation(fields: [tag_id], references: [id])
 
   @@unique([summary_note_id, tag_id])
   @@index([summary_note_id])
@@ -460,7 +461,7 @@ model summary_note_sessions {
   viewed_at                DateTime @default(now())
   created_at               DateTime @default(now())
 
-  user_learning_session user_learning_sessions @relation(fields: [user_learning_session_id], references: [id], onDelete: Cascade)
+  user_learning_session user_learning_sessions @relation(fields: [user_learning_session_id], references: [id])
   summary_note          summary_notes          @relation(fields: [summary_note_id], references: [id])
 
   @@index([user_learning_session_id])
@@ -473,8 +474,8 @@ model summary_note_flashcard_decks {
   flashcard_deck_id  Int
   created_at         DateTime @default(now())
 
-  summary_note    summary_notes   @relation(fields: [summary_note_id], references: [id], onDelete: Cascade)
-  flashcard_deck  flashcard_decks @relation(fields: [flashcard_deck_id], references: [id], onDelete: Cascade)
+  summary_note    summary_notes   @relation(fields: [summary_note_id], references: [id])
+  flashcard_deck  flashcard_decks @relation(fields: [flashcard_deck_id], references: [id])
 
   @@unique([summary_note_id, flashcard_deck_id])
   @@index([summary_note_id])
@@ -487,8 +488,8 @@ model summary_note_mcq_topics {
   mcq_topic_id    Int
   created_at      DateTime @default(now())
 
-  summary_note summary_notes @relation(fields: [summary_note_id], references: [id], onDelete: Cascade)
-  mcq_topic    mcq_topics    @relation(fields: [mcq_topic_id], references: [id], onDelete: Cascade)
+  summary_note summary_notes @relation(fields: [summary_note_id], references: [id])
+  mcq_topic    mcq_topics    @relation(fields: [mcq_topic_id], references: [id])
 
   @@unique([summary_note_id, mcq_topic_id])
   @@index([summary_note_id])
@@ -552,7 +553,7 @@ model user_purchases {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user         users         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user         users         @relation(fields: [user_id], references: [id])
   pricing_plan pricing_plans @relation(fields: [pricing_plan_id], references: [id])
 
   @@index([user_id])
@@ -611,8 +612,8 @@ model calculator_topic_tags {
   tag_id              Int
   created_at          DateTime @default(now())
 
-  calculator_topic calculator_topics @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
-  tags             tags              @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  calculator_topic calculator_topics @relation(fields: [calculator_topic_id], references: [id])
+  tags             tags              @relation(fields: [tag_id], references: [id])
 
   @@unique([calculator_topic_id, tag_id])
   @@index([calculator_topic_id])
@@ -634,7 +635,7 @@ model calculator_fields {
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
 
-  calculator_topics calculator_topics          @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
+  calculator_topics calculator_topics          @relation(fields: [calculator_topic_id], references: [id])
   field_options     calculator_field_options[]
 
   @@unique([calculator_topic_id, key])
@@ -651,7 +652,7 @@ model calculator_field_options {
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
 
-  calculator_field calculator_fields @relation(fields: [calculator_field_id], references: [id], onDelete: Cascade)
+  calculator_field calculator_fields @relation(fields: [calculator_field_id], references: [id])
 
   @@index([calculator_field_id])
   @@index([order])
@@ -665,7 +666,7 @@ model calculator_classifications {
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
 
-  calculator_topics calculator_topics                   @relation(fields: [calculator_topic_id], references: [id], onDelete: Cascade)
+  calculator_topics calculator_topics                   @relation(fields: [calculator_topic_id], references: [id])
   options           calculator_classification_options[]
 
   @@index([calculator_topic_id])
@@ -681,7 +682,7 @@ model calculator_classification_options {
   created_at                   DateTime @default(now())
   updated_at                   DateTime @default(now())
 
-  calculator_classification calculator_classifications                    @relation(fields: [calculator_classification_id], references: [id], onDelete: Cascade)
+  calculator_classification calculator_classifications                    @relation(fields: [calculator_classification_id], references: [id])
   conditions                calculator_classification_option_conditions[]
 
   @@index([calculator_classification_id])
@@ -699,7 +700,7 @@ model calculator_classification_option_conditions {
   created_at                          DateTime @default(now())
   updated_at                          DateTime @default(now())
 
-  calculator_classification_option calculator_classification_options @relation(fields: [calculator_classification_option_id], references: [id], onDelete: Cascade)
+  calculator_classification_option calculator_classification_options @relation(fields: [calculator_classification_option_id], references: [id])
 
   @@index([calculator_classification_option_id])
   @@index([order])
@@ -714,7 +715,7 @@ model attachments {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  blob blobs @relation(fields: [blob_id], references: [id], onDelete: Cascade)
+  blob blobs @relation(fields: [blob_id], references: [id])
 
   @@index([record_type, record_id, name])
   @@index([blob_id])
@@ -774,7 +775,7 @@ model anatomy_questions {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id])
   anatomy_quiz_answers anatomy_quiz_answers[]
 
   @@index([quiz_id])
@@ -787,8 +788,8 @@ model anatomy_quiz_tags {
   tag_id     Int
   created_at DateTime @default(now())
 
-  anatomy_quiz anatomy_quizzes @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
-  tags         tags            @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  anatomy_quiz anatomy_quizzes @relation(fields: [quiz_id], references: [id])
+  tags         tags            @relation(fields: [tag_id], references: [id])
 
   @@unique([quiz_id, tag_id])
   @@index([quiz_id])
@@ -809,7 +810,7 @@ model anatomy_quiz_attempts {
   created_at      DateTime  @default(now())
   updated_at      DateTime  @default(now())
 
-  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id])
   anatomy_quiz_answers anatomy_quiz_answers[]
 
   @@index([user_id])
@@ -826,8 +827,8 @@ model anatomy_quiz_answers {
   similarity_score Float?
   answered_at      DateTime @default(now())
 
-  anatomy_quiz_attempt anatomy_quiz_attempts @relation(fields: [attempt_id], references: [id], onDelete: Cascade)
-  anatomy_question     anatomy_questions     @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  anatomy_quiz_attempt anatomy_quiz_attempts @relation(fields: [attempt_id], references: [id])
+  anatomy_question     anatomy_questions     @relation(fields: [question_id], references: [id])
 
   @@index([attempt_id])
   @@index([question_id])
@@ -881,7 +882,7 @@ model atlas_structures {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  atlas_model atlas_models @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  atlas_model atlas_models @relation(fields: [model_id], references: [id])
 
   @@index([model_id])
 }
@@ -892,8 +893,8 @@ model atlas_model_tags {
   tag_id     Int
   created_at DateTime @default(now())
 
-  atlas_model atlas_models @relation(fields: [model_id], references: [id], onDelete: Cascade)
-  tags        tags         @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  atlas_model atlas_models @relation(fields: [model_id], references: [id])
+  tags        tags         @relation(fields: [tag_id], references: [id])
 
   @@unique([model_id, tag_id])
   @@index([model_id])
@@ -944,7 +945,7 @@ model mcq_questions {
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
 
-  mcq_topic         mcq_topics          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  mcq_topic         mcq_topics          @relation(fields: [topic_id], references: [id])
   mcq_answers       mcq_answers[]
   user_mcq_progress user_mcq_progress[]
 
@@ -958,8 +959,8 @@ model mcq_topic_tags {
   tag_id     Int
   created_at DateTime @default(now())
 
-  mcq_topic mcq_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  tags      tags       @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  mcq_topic mcq_topics @relation(fields: [topic_id], references: [id])
+  tags      tags       @relation(fields: [tag_id], references: [id])
 
   @@unique([topic_id, tag_id])
   @@index([topic_id])
@@ -981,7 +982,7 @@ model mcq_attempts {
   created_at      DateTime  @default(now())
   updated_at      DateTime  @default(now())
 
-  mcq_topic   mcq_topics    @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  mcq_topic   mcq_topics    @relation(fields: [topic_id], references: [id])
   mcq_answers mcq_answers[]
 
   @@index([user_id])
@@ -998,8 +999,8 @@ model mcq_answers {
   answered_at DateTime @default(now())
   time_taken  Int? // in seconds
 
-  mcq_attempt  mcq_attempts  @relation(fields: [attempt_id], references: [id], onDelete: Cascade)
-  mcq_question mcq_questions @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  mcq_attempt  mcq_attempts  @relation(fields: [attempt_id], references: [id])
+  mcq_question mcq_questions @relation(fields: [question_id], references: [id])
 
   @@index([attempt_id])
   @@index([question_id])
@@ -1016,7 +1017,7 @@ model user_mcq_progress {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  mcq_question mcq_questions @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  mcq_question mcq_questions @relation(fields: [question_id], references: [id])
 
   @@unique([user_id, question_id])
   @@index([user_id])
@@ -1036,7 +1037,7 @@ model chatbot_conversations {
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
 
-  users            users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  users            users              @relation(fields: [user_id], references: [id])
   chatbot_messages chatbot_messages[]
 
   @@index([user_id])
@@ -1057,7 +1058,7 @@ model chatbot_messages {
   is_deleted      Boolean  @default(false)
   created_at      DateTime @default(now())
 
-  chatbot_conversation      chatbot_conversations       @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  chatbot_conversation      chatbot_conversations       @relation(fields: [conversation_id], references: [id])
   chatbot_message_sources   chatbot_message_sources[]
   chatbot_message_feedbacks chatbot_message_feedbacks[]
 
@@ -1080,7 +1081,7 @@ model chatbot_message_sources {
   score       Float? // Similarity/relevance score
   created_at  DateTime @default(now())
 
-  chatbot_message chatbot_messages @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  chatbot_message chatbot_messages @relation(fields: [message_id], references: [id])
 
   @@index([message_id])
   @@index([source_type])
@@ -1094,7 +1095,7 @@ model chatbot_message_feedbacks {
   feedback   String?  @db.Text
   created_at DateTime @default(now())
 
-  chatbot_message chatbot_messages @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  chatbot_message chatbot_messages @relation(fields: [message_id], references: [id])
 
   @@unique([message_id, user_id]) // One feedback per user per message
   @@index([message_id])
@@ -1114,7 +1115,7 @@ model skripsi_sets {
   updated_at     DateTime @default(now())
   is_deleted     Boolean  @default(false)
 
-  users users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  users users          @relation(fields: [user_id], references: [id])
   tabs  skripsi_tabs[]
 
   @@index([user_id])
@@ -1131,7 +1132,7 @@ model skripsi_tabs {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  skripsi_set skripsi_sets       @relation(fields: [set_id], references: [id], onDelete: Cascade)
+  skripsi_set skripsi_sets       @relation(fields: [set_id], references: [id])
   messages    skripsi_messages[]
   diagrams    skripsi_diagrams[]
 
@@ -1149,7 +1150,7 @@ model skripsi_messages {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  skripsi_tab             skripsi_tabs             @relation(fields: [tab_id], references: [id], onDelete: Cascade)
+  skripsi_tab             skripsi_tabs             @relation(fields: [tab_id], references: [id])
   skripsi_message_sources skripsi_message_sources[]
 
   @@index([tab_id])
@@ -1168,7 +1169,7 @@ model skripsi_message_sources {
   score       Float? // Similarity/relevance score
   created_at  DateTime @default(now())
 
-  skripsi_message skripsi_messages @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  skripsi_message skripsi_messages @relation(fields: [message_id], references: [id])
 
   @@index([message_id])
   @@index([source_type])
@@ -1187,7 +1188,7 @@ model skripsi_diagrams {
   credits_used    Decimal  @default(0) @db.Decimal(10, 2)
   created_at      DateTime @default(now())
 
-  skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id], onDelete: Cascade)
+  skripsi_tab skripsi_tabs @relation(fields: [tab_id], references: [id])
 
   @@index([tab_id])
   @@index([diagram_type])
@@ -1245,8 +1246,8 @@ model osce_topic_tags {
   tag_id     Int
   created_at DateTime @default(now())
 
-  osce_topic osce_topics @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  tags       tags        @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  osce_topic osce_topics @relation(fields: [topic_id], references: [id])
+  tags       tags        @relation(fields: [tag_id], references: [id])
 
   @@unique([topic_id, tag_id])
   @@index([topic_id])
@@ -1282,7 +1283,7 @@ model osce_observations {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  osce_observation_group  osce_observation_groups   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  osce_observation_group  osce_observation_groups   @relation(fields: [group_id], references: [id])
   osce_topic_observations osce_topic_observations[]
 
   @@index([group_id])
@@ -1298,8 +1299,8 @@ model osce_topic_observations {
   created_at              DateTime @default(now())
   updated_at              DateTime @default(now())
 
-  osce_topic       osce_topics       @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  osce_observation osce_observations @relation(fields: [observation_id], references: [id], onDelete: Cascade)
+  osce_topic       osce_topics       @relation(fields: [topic_id], references: [id])
+  osce_observation osce_observations @relation(fields: [observation_id], references: [id])
 
   @@unique([topic_id, observation_id])
   @@index([topic_id])
@@ -1358,7 +1359,7 @@ model osce_session_topic_snapshots {
   duration_minutes        Int
   created_at              DateTime @default(now())
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
 
   @@index([osce_session_id])
 }
@@ -1368,8 +1369,8 @@ model osce_session_tag_snapshots {
   osce_session_id Int
   tag_id          Int
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
-  tags         tags          @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
+  tags         tags          @relation(fields: [tag_id], references: [id])
 
   @@index([osce_session_id, tag_id])
   @@index([tag_id])
@@ -1385,7 +1386,7 @@ model osce_session_observation_group_snapshots {
   group_updated_at DateTime? // Snapshot of original updated_at
   created_at       DateTime  @default(now())
 
-  osce_session                       osce_sessions                        @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session                       osce_sessions                        @relation(fields: [osce_session_id], references: [id])
   osce_session_observation_snapshots osce_session_observation_snapshots[]
 
   @@index([osce_session_id, group_name])
@@ -1406,7 +1407,7 @@ model osce_session_observation_snapshots {
   topic_observation_order Int       @default(0) // Snapshot of order from topic
   created_at              DateTime  @default(now())
 
-  group_snapshot       osce_session_observation_group_snapshots @relation(fields: [group_snapshot_id], references: [id], onDelete: Cascade)
+  group_snapshot       osce_session_observation_group_snapshots @relation(fields: [group_snapshot_id], references: [id])
   session_observations osce_session_observations[]
 
   @@index([observation_id])
@@ -1424,8 +1425,8 @@ model osce_session_rubric_snapshots {
 
   osce_topics osce_topics[]
 
-  osce_rubric  osce_rubrics?  @relation(fields: [rubric_id], references: [id], onDelete: Cascade)
-  osce_session osce_sessions? @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_rubric  osce_rubrics?  @relation(fields: [rubric_id], references: [id])
+  osce_session osce_sessions? @relation(fields: [osce_session_id], references: [id])
 
   @@index([rubric_id])
   @@index([osce_session_id])
@@ -1439,8 +1440,8 @@ model osce_session_observations {
   interpretation          String?  @db.Text // Optional notes about this observation
   created_at              DateTime @default(now())
 
-  osce_session         osce_sessions                      @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
-  observation_snapshot osce_session_observation_snapshots @relation(fields: [observation_snapshot_id], references: [id], onDelete: Cascade)
+  osce_session         osce_sessions                      @relation(fields: [osce_session_id], references: [id])
+  observation_snapshot osce_session_observation_snapshots @relation(fields: [observation_snapshot_id], references: [id])
 
   @@unique([osce_session_id, observation_snapshot_id])
   @@index([osce_session_id])
@@ -1456,7 +1457,7 @@ model osce_session_messages {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
 
   @@index([osce_session_id])
   @@index([sender_type])
@@ -1472,7 +1473,7 @@ model osce_session_physical_interactions {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
 
   @@index([osce_session_id])
   @@index([sender_type])
@@ -1486,7 +1487,7 @@ model osce_session_diagnoses {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
 
   @@index([osce_session_id])
 }
@@ -1498,7 +1499,7 @@ model osce_session_therapies {
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id], onDelete: Cascade)
+  osce_session osce_sessions @relation(fields: [osce_session_id], references: [id])
 
   @@index([osce_session_id])
 }

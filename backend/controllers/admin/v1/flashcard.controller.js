@@ -4,6 +4,7 @@ import { GetFlashcardDecksService } from '#services/flashcard/getFlashcardDecksS
 import { GetFlashcardDeckDetailService } from '#services/flashcard/admin/getFlashcardDeckDetailService'
 import { UpdateFlashcardCardsService } from '#services/flashcard/admin/updateFlashcardCardsService'
 import { UpdateFlashcardDeckService } from '#services/flashcard/admin/updateFlashcardDeckService'
+import { DeleteFlashcardDeckService } from '#services/flashcard/admin/deleteFlashcardDeckService'
 import { FlashcardDeckSerializer } from '#serializers/admin/v1/flashcardDeckSerializer'
 import { FlashcardDeckListSerializer } from '#serializers/admin/v1/flashcardDeckListSerializer'
 import { FlashcardGenerationSerializer } from '#serializers/admin/v1/flashcardGenerationSerializer'
@@ -92,6 +93,14 @@ class FlashcardController {
         data: FlashcardDeckSerializer.serialize(updatedDeck),
       })
     }
+  }
+
+  async destroy(req, res) {
+    const { uniqueId } = req.params
+
+    await DeleteFlashcardDeckService.call(uniqueId)
+
+    return res.status(200).json({ message: 'Deck deleted successfully' })
   }
 
   async generateCards(req, res) {

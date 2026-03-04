@@ -6,6 +6,7 @@ import { ExerciseTopicListSerializer } from '#serializers/admin/v1/exerciseTopic
 import { GetExerciseTopicsService } from '#services/exercise/getExerciseTopicsService'
 import { GetExerciseTopicDetailService } from '#services/exercise/admin/getExerciseTopicDetailService'
 import { UpdateExerciseTopicService } from '#services/exercise/admin/updateExerciseTopicService'
+import { DeleteExerciseTopicService } from '#services/exercise/admin/deleteExerciseTopicService'
 import idriveService from '#services/idrive.service'
 import blobService from '#services/attachment/blobService'
 import { ValidationError } from '#errors/validationError'
@@ -148,6 +149,14 @@ class ExerciseController {
     return res.status(200).json({
       data: ExerciseTopicSerializer.serialize(updatedTopic)
     })
+  }
+
+  async destroy(req, res) {
+    const { uniqueId } = req.params
+
+    await DeleteExerciseTopicService.call(uniqueId)
+
+    return res.status(200).json({ message: 'Topic deleted successfully' })
   }
 }
 

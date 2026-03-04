@@ -29,5 +29,6 @@ router.get('/topics', asyncHandler(exerciseController.index.bind(exerciseControl
 router.post('/topics', asyncHandler(exerciseController.create.bind(exerciseController)))
 router.get('/topics/:uniqueId', asyncHandler(exerciseController.show.bind(exerciseController)))
 router.put('/topics/:uniqueId', asyncHandler(exerciseController.update.bind(exerciseController)))
+router.delete('/topics/:uniqueId', asyncHandler(exerciseController.destroy.bind(exerciseController)))
 
 export default router

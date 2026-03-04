@@ -26,5 +26,6 @@ router.get('/', asyncHandler(flashcardController.index.bind(flashcardController)
 router.post('/', asyncHandler(flashcardController.create.bind(flashcardController)))
 router.get('/:uniqueId', asyncHandler(flashcardController.show.bind(flashcardController)))
 router.put('/:uniqueId', asyncHandler(flashcardController.update.bind(flashcardController)))
+router.delete('/:uniqueId', asyncHandler(flashcardController.destroy.bind(flashcardController)))
 
 export default router
