@@ -28,11 +28,11 @@ ALTER INDEX IF EXISTS anatomy_quizzes_search_gin_idx RENAME TO diagnostic_quizze
 UPDATE attachments SET record_type = 'diagnostic_quiz' WHERE record_type = 'anatomy_quiz';
 
 -- Update constants keys
-UPDATE constants SET key = 'diagnostic_feature_title' WHERE key = 'anatomy_feature_title';
-UPDATE constants SET key = 'diagnostic_feature_description' WHERE key = 'anatomy_feature_description';
-UPDATE constants SET key = 'diagnostic_generation_model' WHERE key = 'anatomy_generation_model';
-UPDATE constants SET key = 'diagnostic_generation_prompt' WHERE key = 'anatomy_generation_prompt';
-UPDATE constants SET key = 'diagnostic_access_type' WHERE key = 'anatomy_access_type';
-UPDATE constants SET key = 'diagnostic_credit_cost' WHERE key = 'anatomy_credit_cost';
-UPDATE constants SET key = 'diagnostic_is_active' WHERE key = 'anatomy_is_active';
-UPDATE constants SET key = 'diagnostic_youtube_url' WHERE key = 'anatomy_youtube_url';
+-- UPDATE constants SET key = 'diagnostic_feature_title' WHERE key = 'anatomy_feature_title';
+-- UPDATE constants SET key = 'diagnostic_feature_description' WHERE key = 'anatomy_feature_description';
+-- UPDATE constants SET key = 'diagnostic_generation_model' WHERE key = 'anatomy_generation_model';
+-- UPDATE constants SET key = 'diagnostic_generation_prompt' WHERE key = 'anatomy_generation_prompt';
+-- UPDATE constants SET key = 'diagnostic_access_type' WHERE key = 'anatomy_access_type';
+-- UPDATE constants SET key = 'diagnostic_credit_cost' WHERE key = 'anatomy_credit_cost';
+-- UPDATE constants SET key = 'diagnostic_is_active' WHERE key = 'anatomy_is_active';
+-- UPDATE constants SET key = 'diagnostic_youtube_url' WHERE key = 'anatomy_youtube_url';
