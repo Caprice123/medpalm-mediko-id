@@ -13,15 +13,16 @@ export class UpdateConstantsService extends BaseService {
 
     // Prepare upsert operations for each constant
     for (const [key, value] of Object.entries(constants)) {
-      if (typeof value !== 'string') {
-        throw new ValidationError(`Value for key "${key}" must be a string`)
+      const parsedValue = String(value)
+      if (typeof parsedValue !== 'string') {
+        throw new ValidationError(`Value for key "${parsedValue}" must be a string`)
       }
 
       updates.push(
         prisma.constants.upsert({
           where: { key },
-          update: { value, updated_at: new Date() },
-          create: { key, value }
+          update: { value: parsedValue, updated_at: new Date() },
+          create: { key, value: parsedValue }
         })
       )
     }
