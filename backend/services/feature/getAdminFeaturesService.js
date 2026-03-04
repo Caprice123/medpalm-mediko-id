@@ -76,15 +76,15 @@ const PERMISSION_TO_FEATURE_CONFIG = {
     ],
     icon: '🎴'
   },
-  'anatomy': {
-    sessionType: 'anatomy',
+  'diagnostic': {
+    sessionType: 'diagnostic',
     constants: [
-      'anatomy_feature_title',
-      'anatomy_feature_description',
-      'anatomy_credit_cost',
-      'anatomy_access_type',
-      'anatomy_is_active',
-      'anatomy_youtube_url'
+      'diagnostic_feature_title',
+      'diagnostic_feature_description',
+      'diagnostic_credit_cost',
+      'diagnostic_access_type',
+      'diagnostic_is_active',
+      'diagnostic_youtube_url'
     ],
     icon: '🫀'
   },

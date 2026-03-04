@@ -29,7 +29,7 @@ const AVAILABLE_FEATURES = [
   { value: 'exercise', label: 'Exercise' },
   { value: 'flashcard', label: 'Flashcard' },
   { value: 'calculator', label: 'Calculator' },
-  { value: 'anatomy', label: 'Anatomy Quiz' },
+  { value: 'diagnostic', label: 'Diagnostic Quiz' },
   { value: 'mcq', label: 'Multiple Choice' },
   { value: 'chatbot', label: 'Chatbot' },
   { value: 'skripsi', label: 'Skripsi Builder' },

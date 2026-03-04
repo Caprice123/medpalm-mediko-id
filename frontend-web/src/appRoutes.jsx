@@ -3,7 +3,7 @@ import PrivateRoute from '@middleware/PrivateRoute';
 import PageLoader from '@components/PageLoader';
 import { AuthRoute } from './routes/Auth/routes';
 import { calculatorRoutes } from './routes/Calculator/routes';
-import { anatomyQuizRoutes } from './routes/AnatomyQuiz/routes';
+import { diagnosticQuizRoutes } from './routes/DiagnosticQuiz/routes';
 import { summaryNotesRoutes } from './routes/SummaryNotes/routes';
 import { multipleChoiceRoutes } from './routes/MultipleChoice/routes';
 import { flashcardRoutes } from './routes/Flashcard/routes';
@@ -48,7 +48,7 @@ const appRoutes = [
                 element: withSuspense(<Dashboard />)
             },
             ...exerciseRoutes,
-            ...anatomyQuizRoutes,
+            ...diagnosticQuizRoutes,
             ...calculatorRoutes,
             ...summaryNotesRoutes,
             ...multipleChoiceRoutes,

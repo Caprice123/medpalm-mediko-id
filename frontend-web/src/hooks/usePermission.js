@@ -51,7 +51,7 @@ export const usePermission = () => {
 
       // Default permissions for admin role
       if (user.role === 'admin') {
-        const defaultFeatures = ['exercise', 'flashcard', 'calculator', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice']
+        const defaultFeatures = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'mcq', 'chatbot', 'skripsi', 'oscePractice']
         return defaultFeatures.includes(feature)
       }
 

@@ -28,7 +28,7 @@ import { TopupRoute } from '../Topup/routes'
 import { ExerciseRoute } from '../Exercise/routes'
 import { FlashcardRoute } from '../Flashcard/routes'
 import { CalculatorRoute } from '../Calculator/routes'
-import { AnatomyQuizRoute } from '../AnatomyQuiz/routes'
+import { DiagnosticQuizRoute } from '../DiagnosticQuiz/routes'
 import { SummaryNotesRoute } from '../SummaryNotes/routes'
 import { MultipleChoiceRoute } from '../MultipleChoice/routes'
 import { ChatbotRoute } from '../Chatbot/routes'
@@ -61,7 +61,7 @@ function Dashboard() {
         'flashcard': FlashcardRoute.moduleRoute,
         'exercise': ExerciseRoute.moduleRoute,
         'calculator': CalculatorRoute.moduleRoute,
-        'anatomy': AnatomyQuizRoute.moduleRoute,
+        'diagnostic': DiagnosticQuizRoute.moduleRoute,
         'summary_notes': SummaryNotesRoute.moduleRoute,
         'mcq': MultipleChoiceRoute.moduleRoute,
         'chatbot': ChatbotRoute.moduleRoute,

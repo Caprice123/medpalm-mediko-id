@@ -7,7 +7,7 @@ class UploadController {
   /**
    * Upload image to S3 (iDrive) and create blob record
    * @route POST /api/v1/upload/image
-   * @param {string} type - Upload type (skripsi-editor, anatomy, flashcard, etc.)
+   * @param {string} type - Upload type (skripsi-editor, diagnostic, flashcard, etc.)
    */
   async uploadImage(req, res) {
     try {
@@ -30,7 +30,7 @@ class UploadController {
       // Determine folder based on type
       const folderMap = {
         'skripsi-editor': 'skripsi-images',
-        'anatomy': 'anatomy-images',
+        'diagnostic': 'diagnostic-images',
         'flashcard': 'flashcard-images',
         'exercise': 'exercise-images',
         'general': 'uploads'

@@ -88,18 +88,18 @@ class IDriveService {
   }
 
   /**
-   * Upload image file for anatomy quiz
+   * Upload image file for diagnostic quiz
    * @param {string} filePath - Local image file path
    * @param {string} quizName - Quiz name for organizing files
    * @returns {Promise<{key: string, url: string, fileName: string}>} Uploaded file info
    */
-  async uploadAnatomyImage(filePath, quizName) {
+  async uploadDiagnosticImage(filePath, quizName) {
     const sanitizedName = quizName.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const timestamp = Date.now();
     const ext = path.extname(filePath);
     const fileName = `${sanitizedName}-${timestamp}${ext}`;
 
-    return this.uploadFile(filePath, 'anatomy-images', fileName);
+    return this.uploadFile(filePath, 'diagnostic-images', fileName);
   }
 
   /**
