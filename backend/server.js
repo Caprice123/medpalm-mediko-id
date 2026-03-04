@@ -24,6 +24,7 @@ import adminSummaryNoteRoutes from '#routes/admin/v1/summaryNote.routes';
 import adminConstantRoutes from '#routes/admin/v1/constant.routes';
 import calculatorRoutes from '#routes/api/v1/calculator.routes';
 import diagnosticRoutes from '#routes/api/v1/diagnostic.routes'
+import anatomyRoutes from '#routes/api/v1/anatomy.routes'
 import atlasRoutes from '#routes/api/v1/atlas.routes';
 import sessionRoutes from '#routes/api/v1/oscePractice/sessions.routes';
 import topicRoutes from '#routes/api/v1/oscePractice/topics.routes';
@@ -34,6 +35,7 @@ import adminTagGroupsRoutes from '#routes/admin/v1/tagGroup.routes';
 import adminUsersRoutes from '#routes/admin/v1/users.routes';
 import adminSubscriptionsRoutes from '#routes/admin/v1/subscriptions.routes';
 import adminDiagnosticRoutes from '#routes/admin/v1/diagnostic.routes'
+import adminAnatomyRoutes from '#routes/admin/v1/anatomy.routes'
 import adminAtlasRoutes from '#routes/admin/v1/atlas.routes';
 import adminMcqRoutes from '#routes/admin/v1/mcq.routes';
 import chatbotRoutes from '#routes/api/v1/chatbot.routes';
@@ -142,6 +144,7 @@ app.use('/api/v1/features', featureRoutes);
 app.use('/api/v1/pricing', pricingRoutes);
 app.use('/api/v1/calculators', calculatorRoutes);
 app.use('/api/v1/diagnostic', diagnosticRoutes);
+app.use('/api/v1/anatomy', anatomyRoutes);
 app.use('/api/v1/atlas', atlasRoutes);
 app.use('/api/v1/mcq', mcqRoutes);
 app.use('/api/v1/chatbot', chatbotRoutes);
@@ -170,6 +173,7 @@ app.use('/admin/v1/oscePractice/observations', adminOscePracticeObservationRoute
 app.use('/admin/v1/oscePractice/observation-groups', adminOscePracticeObservationGroupRoutes);
 app.use('/admin/v1/subscriptions', adminSubscriptionsRoutes);
 app.use('/admin/v1/diagnostic', adminDiagnosticRoutes);
+app.use('/admin/v1/anatomy', adminAnatomyRoutes);
 app.use('/admin/v1/atlas', adminAtlasRoutes);
 app.use('/admin/v1/mcq', adminMcqRoutes);
 app.use('/admin/v1/chatbot', adminChatbotRoutes);

@@ -53,6 +53,12 @@ export class GetActiveFeaturesService extends BaseService {
         "diagnostic_access_type",
         "diagnostic_is_active",
         "diagnostic_youtube_url",
+        "anatomy_feature_title",
+        "anatomy_feature_description",
+        "anatomy_credit_cost",
+        "anatomy_access_type",
+        "anatomy_is_active",
+        "anatomy_youtube_url",
         "mcq_feature_title",
         "mcq_feature_description",
         "mcq_credit_cost",
@@ -203,6 +209,22 @@ export class GetActiveFeaturesService extends BaseService {
         sessionType: "diagnostic",
         isActive: featureConstants.diagnostic_is_active,
         youtubeUrl: featureConstants.diagnostic_youtube_url || ''
+      })
+    }
+    // Anatomy Quiz feature
+    if (featureConstants.anatomy_feature_title) {
+      const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
+      const accessType = featureConstants.anatomy_access_type || 'subscription'
+      features.push({
+        name: featureConstants.anatomy_feature_title,
+        description: featureConstants.anatomy_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🦴',
+        sessionType: "anatomy",
+        isActive: featureConstants.anatomy_is_active,
+        youtubeUrl: featureConstants.anatomy_youtube_url || ''
       })
     }
 

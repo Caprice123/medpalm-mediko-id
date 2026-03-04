@@ -8,6 +8,7 @@ import Flashcard from './subpages/Flashcard'
 import SummaryNotes from './subpages/SummaryNotes'
 import Calculator from './subpages/Calculator'
 import DiagnosticQuiz from './subpages/DiagnosticQuiz'
+import AnatomyQuiz from './subpages/AnatomyQuiz'
 import MultipleChoice from './subpages/MultipleChoice'
 import Chatbot from './subpages/Chatbot'
 import SkripsiBuilder from './subpages/SkripsiBuilder'
@@ -82,6 +83,8 @@ function Features() {
             return <Calculator onBack={handleBackToList} />
         case "diagnostic":
             return <DiagnosticQuiz onBack={handleBackToList} />
+        case "anatomy":
+            return <AnatomyQuiz onBack={handleBackToList} />
         case "mcq":
             return <MultipleChoice onBack={handleBackToList} />
         case "chatbot":

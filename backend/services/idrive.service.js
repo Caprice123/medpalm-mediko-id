@@ -102,6 +102,15 @@ class IDriveService {
     return this.uploadFile(filePath, 'diagnostic-images', fileName);
   }
 
+  async uploadAnatomyImage(filePath, quizName) {
+    const sanitizedName = quizName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const timestamp = Date.now();
+    const ext = path.extname(filePath);
+    const fileName = `${sanitizedName}-${timestamp}${ext}`;
+
+    return this.uploadFile(filePath, 'anatomy-images', fileName);
+  }
+
   /**
    * Upload a flashcard card image to iDrive E2
    * @param {string} filePath - Local file path

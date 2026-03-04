@@ -53,7 +53,7 @@ export const hasFeaturePermission = (feature) => {
 
   // Default permissions for admin role
   if (user.role === 'admin') {
-    const defaultFeatures = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+    const defaultFeatures = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
     return defaultFeatures.includes(feature)
   }
 
@@ -83,7 +83,7 @@ export const getUserFeatures = () => {
 
   if (!user) return []
 
-  const allFeatures = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+  const allFeatures = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
 
   // Superadmin has all features
   if (user.role === 'superadmin') {
@@ -106,7 +106,7 @@ export const getUserFeatures = () => {
 
   // Default permissions for admin role
   if (user.role === 'admin') {
-    return ['exercise', 'flashcard', 'calculator', 'diagnostic', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+    return ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
   }
 
   return []

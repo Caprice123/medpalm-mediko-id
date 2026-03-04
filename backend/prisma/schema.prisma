@@ -193,6 +193,7 @@ model tags {
   summary_note_tags            summary_note_tags[]
   calculator_topic_tags        calculator_topic_tags[]
   diagnostic_quiz_tags            diagnostic_quiz_tags[]
+  anatomy_quiz_tags               anatomy_quiz_tags[]
   atlas_model_tags             atlas_model_tags[]
   mcq_topic_tags               mcq_topic_tags[]
   osce_topic_tags              osce_topic_tags[]
@@ -835,6 +836,117 @@ model diagnostic_quiz_answers {
 }
 
 model user_diagnostic_progress {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  question_id     Int
+  quiz_id         Int
+  times_correct   Int      @default(0)
+  times_incorrect Int      @default(0)
+  last_reviewed   DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  @@unique([user_id, question_id])
+  @@index([user_id])
+  @@index([question_id])
+  @@index([quiz_id])
+}
+
+// ============= Anatomy Quiz Feature =============
+
+model anatomy_quizzes {
+  id             Int      @id @default(autoincrement())
+  unique_id      String   @unique @default(uuid())
+  title          String
+  description    String?
+  status         String   @default("draft")
+  question_count Int      @default(0)
+  embed_url      String?
+  media_type     String   @default("2d") // '2d' | '3d'
+  created_by     Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+
+  anatomy_questions     anatomy_questions[]
+  anatomy_quiz_tags     anatomy_quiz_tags[]
+  anatomy_quiz_attempts anatomy_quiz_attempts[]
+
+  @@index([created_by])
+  @@index([status])
+  @@index([media_type])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "anatomy_quizzes_search_gin_idx")
+}
+
+model anatomy_questions {
+  id          Int      @id @default(autoincrement())
+  quiz_id     Int
+  question    String
+  answer      String
+  answer_type String   @default("text") // 'text' or 'multiple_choice'
+  choices     Json? // Array of choice options for multiple_choice questions
+  order       Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id])
+  anatomy_quiz_answers anatomy_quiz_answers[]
+
+  @@index([quiz_id])
+  @@index([order])
+}
+
+model anatomy_quiz_tags {
+  id         Int      @id @default(autoincrement())
+  quiz_id    Int
+  tag_id     Int
+  created_at DateTime @default(now())
+
+  anatomy_quiz anatomy_quizzes @relation(fields: [quiz_id], references: [id])
+  tags         tags            @relation(fields: [tag_id], references: [id])
+
+  @@unique([quiz_id, tag_id])
+  @@index([quiz_id])
+  @@index([tag_id])
+}
+
+model anatomy_quiz_attempts {
+  id              Int       @id @default(autoincrement())
+  user_id         Int
+  quiz_id         Int
+  status          String    @default("in_progress") // in_progress, completed
+  correct_count   Int       @default(0)
+  total_questions Int
+  score           Int       @default(0)
+  started_at      DateTime  @default(now())
+  completed_at    DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+
+  anatomy_quiz         anatomy_quizzes        @relation(fields: [quiz_id], references: [id])
+  anatomy_quiz_answers anatomy_quiz_answers[]
+
+  @@index([user_id])
+  @@index([quiz_id])
+  @@index([status])
+}
+
+model anatomy_quiz_answers {
+  id               Int      @id @default(autoincrement())
+  attempt_id       Int
+  question_id      Int
+  user_answer      String
+  is_correct       Boolean
+  similarity_score Float?
+  answered_at      DateTime @default(now())
+
+  anatomy_quiz_attempt anatomy_quiz_attempts @relation(fields: [attempt_id], references: [id])
+  anatomy_question     anatomy_questions     @relation(fields: [question_id], references: [id])
+
+  @@index([attempt_id])
+  @@index([question_id])
+}
+
+model user_anatomy_progress {
   id              Int      @id @default(autoincrement())
   user_id         Int
   question_id     Int

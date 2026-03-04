@@ -30,6 +30,7 @@ const AVAILABLE_FEATURES = [
   { value: 'flashcard', label: 'Flashcard' },
   { value: 'calculator', label: 'Calculator' },
   { value: 'diagnostic', label: 'Diagnostic Quiz' },
+  { value: 'anatomy', label: 'Anatomy Quiz' },
   { value: 'mcq', label: 'Multiple Choice' },
   { value: 'chatbot', label: 'Chatbot' },
   { value: 'skripsi', label: 'Skripsi Builder' },

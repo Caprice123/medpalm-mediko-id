@@ -31,6 +31,7 @@ class UploadController {
       const folderMap = {
         'skripsi-editor': 'skripsi-images',
         'diagnostic': 'diagnostic-images',
+        'anatomy': 'anatomy-images',
         'flashcard': 'flashcard-images',
         'exercise': 'exercise-images',
         'general': 'uploads'

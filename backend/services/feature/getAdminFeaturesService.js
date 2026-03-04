@@ -88,6 +88,18 @@ const PERMISSION_TO_FEATURE_CONFIG = {
     ],
     icon: '🫀'
   },
+  'anatomy': {
+    sessionType: 'anatomy',
+    constants: [
+      'anatomy_feature_title',
+      'anatomy_feature_description',
+      'anatomy_credit_cost',
+      'anatomy_access_type',
+      'anatomy_is_active',
+      'anatomy_youtube_url'
+    ],
+    icon: '🦴'
+  },
   'exercise': {
     sessionType: 'exercise',
     constants: [

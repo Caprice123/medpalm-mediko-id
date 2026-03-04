@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 
 // Define valid tabs and features (simplified - just access, no CRUD)
 const VALID_TABS = ['features', 'tags', 'pricingPlans', 'transactions', 'users']
-const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
+const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes']
 
 export class UpdateUserPermissionsService extends BaseService {
   static async call(userId, permissions, requestingUserId) {
