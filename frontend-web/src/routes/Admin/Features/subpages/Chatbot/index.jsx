@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchAdminConversations, deleteAdminConversation } from '@store/chatbot/adminAction'
 import { actions } from '@store/chatbot/reducer'
@@ -16,10 +16,16 @@ import {
 } from './Chatbot.styles'
 import Button from "@components/common/Button"
 import { Filter } from './components/Filter'
+import { getUserData } from '@utils/authToken'
+import { useEffect } from 'react'
+
+const ALLOWED_EMAIL = 'kelvinpalem@gmail.com'
 
 function Chatbot({ onBack }) {
   const dispatch = useDispatch()
   const { pagination, loading } = useSelector(state => state.chatbot)
+  const currentUser = getUserData()
+  const isAllowed = currentUser?.email === ALLOWED_EMAIL
 
   const [uiState, setUiState] = useState({
     isSettingsModalOpen: false,
@@ -28,15 +34,15 @@ function Chatbot({ onBack }) {
   })
 
   useEffect(() => {
-    dispatch(fetchAdminConversations())
-  }, [dispatch])
+    if (isAllowed) {
+        dispatch(fetchAdminConversations())
+    }
+  }, [dispatch, isAllowed])
 
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
     dispatch(fetchAdminConversations())
   }
-
-  console.log(pagination)
 
   const handleViewConversation = (conversation) => {
     setUiState({
@@ -84,36 +90,40 @@ function Chatbot({ onBack }) {
         </HeaderContent>
       </Header>
 
-      <Filter />
+      {isAllowed && (
+        <>
+          <Filter />
 
-      <ConversationsList
-        onView={handleViewConversation}
-        onDelete={handleDeleteConversation}
-      />
+          <ConversationsList
+            onView={handleViewConversation}
+            onDelete={handleDeleteConversation}
+          />
 
-      {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isConversationsLoading}
-          variant="admin"
-          language="id"
-        />
+          {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+            <Pagination
+              currentPage={pagination.page}
+              isLastPage={pagination.isLastPage}
+              onPageChange={handlePageChange}
+              isLoading={loading.isConversationsLoading}
+              variant="admin"
+              language="id"
+            />
+          )}
+
+          {uiState.isDetailModalOpen && uiState.selectedConversation && (
+            <ConversationDetailModal
+              conversation={uiState.selectedConversation}
+              isOpen={uiState.isDetailModalOpen}
+              onClose={handleCloseDetailModal}
+            />
+          )}
+        </>
       )}
 
       {uiState.isSettingsModalOpen && (
         <ChatbotSettingsModal
           isOpen={uiState.isSettingsModalOpen}
           onClose={() => setUiState(prev => ({ ...prev, isSettingsModalOpen: false }))}
-        />
-      )}
-
-      {uiState.isDetailModalOpen && uiState.selectedConversation && (
-        <ConversationDetailModal
-          conversation={uiState.selectedConversation}
-          isOpen={uiState.isDetailModalOpen}
-          onClose={handleCloseDetailModal}
         />
       )}
     </Container>

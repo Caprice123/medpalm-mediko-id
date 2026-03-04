@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchAdminSets, deleteAdminSet } from '@store/skripsi/adminAction'
 import SettingsModal from './components/SettingsModal'
@@ -15,20 +15,28 @@ import {
 } from './SkripsiBuilder.styles'
 import Button from '@components/common/Button'
 import { Filter } from './components/Filter'
+import { getUserData } from '@utils/authToken'
+import { useEffect } from 'react'
+
+const ALLOWED_EMAIL = 'kelvinpalem@gmail.com'
 
 const SkripsiBuilderAdmin = ({ onBack }) => {
   const dispatch = useDispatch()
   const { pagination, loading } = useSelector(state => state.skripsi)
+  const currentUser = getUserData()
+  const isAllowed = currentUser?.email === ALLOWED_EMAIL
 
   const [uiState, setUiState] = useState({
     isSettingsModalOpen: false,
     isDetailModalOpen: false,
     selectedSet: null
   })
-
+  
   useEffect(() => {
-    dispatch(fetchAdminSets({}, 1, 20))
-  }, [dispatch])
+    if (isAllowed) {
+      dispatch(fetchAdminSets({}, 1, 20))
+    }
+  }, [dispatch, isAllowed])
 
   const handlePageChange = (page) => {
     dispatch(fetchAdminSets({}, page, 20))
@@ -79,36 +87,40 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
         </HeaderContent>
       </Header>
 
-      <Filter />
+      {isAllowed && (
+        <>
+          <Filter />
 
-      <SetsList
-        onView={handleViewSet}
-        onDelete={handleDeleteSet}
-      />
+          <SetsList
+            onView={handleViewSet}
+            onDelete={handleDeleteSet}
+          />
 
-      {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
-        <Pagination
-          currentPage={pagination.page}
-          isLastPage={pagination.isLastPage}
-          onPageChange={handlePageChange}
-          isLoading={loading.isSetsLoading}
-          variant="admin"
-          language="id"
-        />
+          {(pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
+            <Pagination
+              currentPage={pagination.page}
+              isLastPage={pagination.isLastPage}
+              onPageChange={handlePageChange}
+              isLoading={loading.isSetsLoading}
+              variant="admin"
+              language="id"
+            />
+          )}
+
+          {uiState.isDetailModalOpen && uiState.selectedSet && (
+            <SetDetailModal
+              set={uiState.selectedSet}
+              isOpen={uiState.isDetailModalOpen}
+              onClose={handleCloseDetailModal}
+            />
+          )}
+        </>
       )}
 
       {uiState.isSettingsModalOpen && (
         <SettingsModal
           isOpen={uiState.isSettingsModalOpen}
           onClose={() => setUiState(prev => ({ ...prev, isSettingsModalOpen: false }))}
-        />
-      )}
-
-      {uiState.isDetailModalOpen && uiState.selectedSet && (
-        <SetDetailModal
-          set={uiState.selectedSet}
-          isOpen={uiState.isDetailModalOpen}
-          onClose={handleCloseDetailModal}
         />
       )}
     </Container>
