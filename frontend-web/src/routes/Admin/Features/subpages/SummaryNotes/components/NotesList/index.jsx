@@ -55,6 +55,28 @@ function NotesList({ onEdit, onDelete, onCreateFirst }) {
 
             <div style={{flex: "1"}}></div>
 
+          {/* Topic Tags */}
+          {note.topicTags && note.topicTags.length > 0 && (
+            <TagList>
+              {note.topicTags.map((tag) => (
+                <Tag key={tag.id} topic>
+                  🏥 {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
+          {/* Department Tags */}
+          {note.departmentTags && note.departmentTags.length > 0 && (
+            <TagList>
+              {note.departmentTags.map((tag) => (
+                <Tag key={tag.id} department>
+                  🏨 {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
           {/* University Tags */}
           {note.universityTags && note.universityTags.length > 0 && (
             <TagList>

@@ -80,7 +80,7 @@ export class GetExerciseTopicsService extends BaseService {
             include: {
                 exercise_topic_tags: {
                     include: {
-                        tags: true
+                        tags: { include: { tag_group: true } }
                     }
                 }
             },

@@ -1,142 +1,86 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
-import { ValidationError } from '#errors/validationError'
 
 export class GetMcqTopicsService extends BaseService {
-  static async call({ page = 1, limit = 30, filters = {} }) {
-    this.validate(filters)
+  static async call({ page = 1, limit = 30, status, search, university, semester, topic, department }) {
+    const perPage = parseInt(limit)
+    const skip = (parseInt(page) - 1) * perPage
 
-    const skip = (page - 1) * limit
-
-    // Build where clause
     const where = {}
 
-    if (filters.status) {
-      where.status = filters.status
+    if (status) {
+      where.status = status
     }
 
-
-    if (filters.search) {
+    if (search) {
       where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } }
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
       ]
     }
 
-    // Build filter conditions for tags
     const tagFilters = []
 
-    if (filters.university) {
-      tagFilters.push({
-        mcq_topic_tags: {
-          some: {
-            tag_id: parseInt(filters.university)
-          }
-        }
-      })
+    if (university) {
+      tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(university) } } })
+    }
+    if (semester) {
+      tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(semester) } } })
+    }
+    if (topic) {
+      tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(topic) } } })
+    }
+    if (department) {
+      tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(department) } } })
     }
 
-    if (filters.semester) {
-      tagFilters.push({
-        mcq_topic_tags: {
-          some: {
-            tag_id: parseInt(filters.semester)
-          }
-        }
-      })
-    }
-
-    // Apply tag filters with AND logic
     if (tagFilters.length > 0) {
       where.AND = tagFilters
     }
 
-    // Get topics with pagination
     const topics = await prisma.mcq_topics.findMany({
       where,
       skip,
-      take: limit + 1, // Get one extra to check if there's a next page
+      take: perPage + 1,
       orderBy: { created_at: 'desc' },
       include: {
-        mcq_questions: {
-          select: {
-            id: true
-          }
-        },
+        mcq_questions: { select: { id: true } },
         mcq_topic_tags: {
           include: {
-            tags: {
-              include: {
-                tag_group: true
-              }
-            }
+            tags: { include: { tag_group: true } }
           }
         }
       }
     })
 
-    // Check if there's a next page
-    const hasMore = topics.length <= limit
-    const topicsToReturn = hasMore ? topics.slice(0, limit) : topics
+    const hasMore = topics.length > perPage
+    const topicsToReturn = hasMore ? topics.slice(0, perPage) : topics
 
-    // Format response
-    const formattedTopics = topicsToReturn.map(topic => {
-      // Separate tags by group
-      const allTags = topic.mcq_topic_tags.map(tt => ({
+    const data = topicsToReturn.map(topic => {
+      const allTags = topic.mcq_topic_tags.filter(tt => tt.tags).map(tt => ({
         id: tt.tags.id,
         name: tt.tags.name,
-        tagGroupName: tt.tags.tag_group?.name || null
+        tagGroupId: tt.tags.tag_group_id,
+        tagGroupName: tt.tags.tag_group?.name
       }))
 
-      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-
       return {
-        id: topic.id,
-        title: topic.title,
-        unique_id: topic.unique_id,
-        description: topic.description,
-        content_type: topic.content_type,
-        source_url: topic.source_url,
-        source_key: topic.source_key,
-        source_filename: topic.source_filename,
-        quiz_time_limit: topic.quiz_time_limit,
-        passing_score: topic.passing_score,
-        status: topic.status,
+        ...topic,
         question_count: topic.question_count || topic.mcq_questions.length,
-        created_by: topic.created_by,
-        created_at: topic.created_at,
-        updated_at: topic.updated_at,
         tags: allTags,
-        universityTags,
-        semesterTags
+        universityTags: allTags.filter(t => t.tagGroupName === 'university'),
+        semesterTags: allTags.filter(t => t.tagGroupName === 'semester'),
+        topicTags: allTags.filter(t => t.tagGroupName === 'topic'),
+        departmentTags: allTags.filter(t => t.tagGroupName === 'department')
       }
     })
 
     return {
-      topics: formattedTopics,
+      topics: data,
       pagination: {
-        page,
-        limit,
+        page: parseInt(page),
+        limit: perPage,
         isLastPage: !hasMore
-      }
-    }
-  }
-
-  static validate(filters) {
-    // Validate university filter if provided
-    if (filters.university) {
-      const universityId = parseInt(filters.university)
-      if (isNaN(universityId) || universityId <= 0) {
-        throw new ValidationError('Invalid university filter')
-      }
-    }
-
-    // Validate semester filter if provided
-    if (filters.semester) {
-      const semesterId = parseInt(filters.semester)
-      if (isNaN(semesterId) || semesterId <= 0) {
-        throw new ValidationError('Invalid semester filter')
       }
     }
   }

@@ -25,7 +25,6 @@ import Button from "@components/common/Button"
 function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
   const dispatch = useDispatch()
   const { topics, loading, pagination } = useSelector((state) => state.exercise)
-  console.log(topics)
 
   const handlePageChange = (newPage) => {
     dispatch(actions.setPage(newPage))
@@ -55,11 +54,10 @@ function ExerciseList({ onEdit, onDelete, onCreateFirst }) {
     <>
       <TopicsGrid>
         {topics.map(topic => {
-          // Filter tags by tag_group
-          const topicTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
-          const departmentTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
-          const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
-          const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
+          const topicTags = topic.topicTags || []
+          const departmentTags = topic.departmentTags || []
+          const universityTags = topic.universityTags || []
+          const semesterTags = topic.semesterTags || []
 
           return (
             <TopicCard key={topic.id}>

@@ -99,8 +99,8 @@ export const TagList = styled.div`
 export const Tag = styled.span`
   display: inline-block;
   padding: 0.125rem 0.5rem;
-  background: ${props => props.university ? '#dbeafe' : props.semester ? '#fef3c7' : '#ede9fe'};
-  color: ${props => props.university ? '#1e40af' : props.semester ? '#92400e' : '#5b21b6'};
+  background: ${props => props.university ? '#dbeafe' : props.semester ? '#fef3c7' : props.topic ? '#dcfce7' : props.department ? '#fce7f3' : '#ede9fe'};
+  color: ${props => props.university ? '#1e40af' : props.semester ? '#92400e' : props.topic ? '#166534' : props.department ? '#9d174d' : '#5b21b6'};
   border-radius: 4px;
   font-size: 0.75rem;
 `

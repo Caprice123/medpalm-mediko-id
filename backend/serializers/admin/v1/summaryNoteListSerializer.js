@@ -13,6 +13,8 @@ export class SummaryNoteListSerializer {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+      const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
+      const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
       return {
         id: note.id,
@@ -22,6 +24,8 @@ export class SummaryNoteListSerializer {
         status: note.status,
         universityTags,
         semesterTags,
+        topicTags,
+        departmentTags,
         createdAt: note.created_at ? moment(note.created_at).tz('Asia/Jakarta').toISOString() : null
       }
     })

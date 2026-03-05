@@ -43,11 +43,10 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
   return (
     <TopicsGrid>
       {topics.map(topic => {
-        // Filter tags by tag_group
-        const topicTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
-        const departmentTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
-        const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
-        const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
+        const topicTags = topic.topicTags || []
+        const departmentTags = topic.departmentTags || []
+        const universityTags = topic.universityTags || []
+        const semesterTags = topic.semesterTags || []
 
         return (
         <TopicCard key={topic.id}>

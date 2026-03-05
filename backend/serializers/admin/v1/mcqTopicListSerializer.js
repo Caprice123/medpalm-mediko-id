@@ -1,27 +1,17 @@
 export class McqTopicListSerializer {
   static serialize(topics) {
     return topics.map(topic => {
-      // If tags are already formatted by the service, use them directly
-      // Otherwise, parse from the raw relation data
-      let universityTags, semesterTags
+      const rawTags = topic.mcq_topic_tags || topic.tags || []
+      const allTags = rawTags.filter(tt => tt.tags).map(tt => ({
+        id: tt.tags.id,
+        name: tt.tags.name,
+        tagGroupName: tt.tags?.tag_group?.name || null
+      }))
 
-      if (topic.universityTags !== undefined || topic.semesterTags !== undefined) {
-        // Service already formatted the tags
-        universityTags = topic.universityTags || []
-        semesterTags = topic.semesterTags || []
-      } else {
-        // Parse from raw relation data
-        const topicTags = topic.mcq_topic_tags || topic.tags || []
-
-        const allTags = topicTags.map(tt => ({
-          id: tt.tags ? tt.tags.id : tt.id,
-          name: tt.tags ? tt.tags.name : tt.name,
-          tagGroupName: tt.tags?.tag_group?.name || null
-        }))
-
-        universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
-        semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-      }
+      const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
+      const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+      const topicTagsList = allTags.filter(tag => tag.tagGroupName === 'topic')
+      const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
       return {
         id: topic.id,
@@ -33,7 +23,9 @@ export class McqTopicListSerializer {
         passingScore: topic.passing_score || topic.passingScore,
         questionCount: topic.question_count || topic._count?.mcq_questions || topic.questionCount || 0,
         universityTags,
-        semesterTags
+        semesterTags,
+        topicTags: topicTagsList,
+        departmentTags
       }
     })
   }

@@ -29,7 +29,7 @@ import EmbeddingModelDropdown from '../../../../../../../components/common/Embed
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
   const { form } = useFeatureSetting(onClose)
-  const { domains, addDomain: saveDomain, toggleDomain, removeDomain } = useResearchDomains()
+  const { domains, addDomain: saveDomain, removeDomain } = useResearchDomains()
   const [newDomain, setNewDomain] = useState('')
 
   const handleAddDomain = async () => {
@@ -464,15 +464,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             <DomainsList>
               {domains.map((item) => (
                 <DomainItem key={item.id}>
-                  <ToggleSwitch style={{ transform: 'scale(0.75)', marginRight: '0.25rem' }}>
-                    <input
-                      type="checkbox"
-                      checked={item.is_active}
-                      onChange={(e) => toggleDomain(item.id, e.target.checked)}
-                    />
-                    <ToggleSlider />
-                  </ToggleSwitch>
-                  <DomainText style={{ opacity: item.is_active ? 1 : 0.45 }}>{item.domain}</DomainText>
+                  <DomainText>{item.domain}</DomainText>
                   <Button
                     variant="danger"
                     size="small"

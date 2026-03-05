@@ -1,17 +1,19 @@
 export class McqTopicSerializer {
   static serialize(topic) {
-    const topicTags = topic.mcq_topic_tags || topic.tags || []
+    const rawTags = topic.mcq_topic_tags || topic.tags || []
     const questions = topic.mcq_questions || topic.questions || []
 
     // Separate tags by group
-    const allTags = topicTags.map(tt => ({
-      id: tt.tags ? tt.tags.id : tt.id,
-      name: tt.tags ? tt.tags.name : tt.name,
-      tagGroupName: tt.tags?.tag_group?.name || tt.tagGroupName || null
+    const allTags = rawTags.filter(tt => tt.tags).map(tt => ({
+      id: tt.tags.id,
+      name: tt.tags.name,
+      tagGroupName: tt.tags?.tag_group?.name || null
     }))
 
     const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
     const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+    const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
+    const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
     return {
       id: topic.id,
@@ -34,7 +36,9 @@ export class McqTopicSerializer {
         order: q.order !== undefined ? q.order : index
       })),
       universityTags,
-      semesterTags
+      semesterTags,
+      topicTags,
+      departmentTags
     }
   }
 }

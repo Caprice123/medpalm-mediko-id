@@ -6,7 +6,10 @@ export class McqTopicSerializer {
       .map(tt => ({
         id: tt.tags.id,
         name: tt.tags.name,
-        tagGroupId: tt.tags.tag_group_id
+        tagGroupId: tt.tags.tag_group_id,
+        tagGroup: {
+          name: tt.tags.tag_group?.name || null
+        }
       }))
 
     return {
