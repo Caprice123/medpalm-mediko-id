@@ -8,6 +8,7 @@ import { FaPaperPlane, FaStop } from 'react-icons/fa'
 import { ChatbotLoadingIndicator, ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import ModeSelector from './ModeSelector'
+import ResearchSettingsModal from './ResearchSettingsModal'
 import {
   ChatPanel as StyledChatPanel,
   ChatHeader,
@@ -196,6 +197,8 @@ const ChatPanel = memo(({ currentTab, style }) => {
   // Mode selection (only for AI Chat tabs)
   const currentMode = useSelector(state => selectModeForTab(state, currentTab?.id))
   const isAIChatTab = currentTab?.tabType?.startsWith('ai_researcher')
+  const currentSet = useSelector(state => state.skripsi.currentSet)
+  const [showResearchSettings, setShowResearchSettings] = useState(false)
 
   // Fetch mode configuration on mount
   useEffect(() => {
@@ -326,10 +329,20 @@ const ChatPanel = memo(({ currentTab, style }) => {
     <StyledChatPanel style={style}>
       {/* Mode selector at top (only for AI Chat tabs) */}
       {isAIChatTab && (
-        <ModeSelector
-          currentMode={currentMode}
-          onModeChange={handleModeChange}
-        />
+        <>
+          <ModeSelector
+            currentMode={currentMode}
+            onModeChange={handleModeChange}
+            onResearchSettings={currentMode === 'research' ? () => setShowResearchSettings(true) : undefined}
+          />
+          {currentSet && (
+            <ResearchSettingsModal
+              isOpen={showResearchSettings}
+              onClose={() => setShowResearchSettings(false)}
+              setUniqueId={currentSet.uniqueId}
+            />
+          )}
+        </>
       )}
 
       <ChatMessages ref={chatMessagesRef} onScroll={handleScroll}>

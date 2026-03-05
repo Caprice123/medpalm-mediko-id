@@ -1,6 +1,6 @@
 import { actions } from '@store/chatbot/reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, deleteWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -10,7 +10,35 @@ const {
   setPagination,
   setMessagePaginationForConversation,
   removeConversation,
+  setUserSettings,
 } = actions
+
+// ============= Research Domain Management =============
+
+export const fetchResearchDomains = () => async (dispatch) => {
+  const route = Endpoints.admin.chatbot + '/research-domains'
+  const response = await getWithToken(route)
+  // Store available domains in userSettings.availableDomains for reuse
+  dispatch(setUserSettings({ availableDomains: response.data.data || [] }))
+  return response.data.data
+}
+
+export const createResearchDomain = (domain) => async (dispatch) => {
+  const route = Endpoints.admin.chatbot + '/research-domains'
+  const response = await postWithToken(route, { domain })
+  return response.data.data
+}
+
+export const updateResearchDomain = (id, is_active) => async () => {
+  const route = Endpoints.admin.chatbot + `/research-domains/${id}`
+  const response = await putWithToken(route, { is_active })
+  return response.data.data
+}
+
+export const deleteResearchDomain = (id) => async () => {
+  const route = Endpoints.admin.chatbot + `/research-domains/${id}`
+  await deleteWithToken(route)
+}
 
 export const fetchAdminConversations = () => async (dispatch, getState) => {
   try {

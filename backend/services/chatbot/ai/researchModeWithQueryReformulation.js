@@ -60,8 +60,8 @@ export class ResearchModeWithQueryReformulation extends BaseService {
       const systemPrompt = constantsMap.chatbot_research_system_prompt // Already includes response instructions
       const citationsCount = parseInt(constantsMap.chatbot_research_citations_count) || 5
 
-      // Get trusted domains
-      const trustedDomains = await GetTrustedDomainsService.call()
+      // Get trusted domains (with user-specific overrides if available)
+      const trustedDomains = await GetTrustedDomainsService.call(userId)
 
       // Get conversation history
       const messages = await prisma.chatbot_messages.findMany({

@@ -2,6 +2,10 @@ import { GetAdminSkripsiSetsService } from '#services/skripsi/admin/getAdminSkri
 import getAdminSkripsiSetService from '#services/skripsi/admin/getAdminSkripsiSetService'
 import getAdminSkripsiSetTabsService from '#services/skripsi/admin/getAdminSkripsiSetTabsService'
 import deleteAdminSkripsiSetService from '#services/skripsi/admin/deleteAdminSkripsiSetService'
+import { GetSkripsiResearchDomainsService } from '#services/skripsi/admin/getResearchDomainsService'
+import { CreateSkripsiResearchDomainService } from '#services/skripsi/admin/createResearchDomainService'
+import { UpdateSkripsiResearchDomainService } from '#services/skripsi/admin/updateResearchDomainService'
+import { DeleteSkripsiResearchDomainService } from '#services/skripsi/admin/deleteResearchDomainService'
 import { SkripsiSetSerializer } from '#serializers/admin/v1/skripsiSetSerializer'
 import { SkripsiSetListSerializer } from '#serializers/admin/v1/skripsiSetListSerializer'
 
@@ -52,6 +56,32 @@ class SkripsiController {
         success: true
       }
     })
+  }
+
+  // ---- Research Domains ----
+
+  async getResearchDomains(req, res) {
+    const domains = await GetSkripsiResearchDomainsService.call()
+    return res.status(200).json({ data: domains })
+  }
+
+  async createResearchDomain(req, res) {
+    const { domain } = req.body
+    const created = await CreateSkripsiResearchDomainService.call({ domain })
+    return res.status(201).json({ data: created })
+  }
+
+  async updateResearchDomain(req, res) {
+    const { id } = req.params
+    const { is_active } = req.body
+    const updated = await UpdateSkripsiResearchDomainService.call({ id, is_active })
+    return res.status(200).json({ data: updated })
+  }
+
+  async deleteResearchDomain(req, res) {
+    const { id } = req.params
+    await DeleteSkripsiResearchDomainService.call({ id })
+    return res.status(200).json({ data: { success: true } })
   }
 }
 

@@ -16,6 +16,12 @@ router.use(requireTabPermission('features'))
 // All skripsi routes require 'skripsi' feature permission
 router.use(requireFeaturePermission('skripsi'))
 
+// Research domain management
+router.get('/research-domains', asyncHandler(SkripsiAdminController.getResearchDomains.bind(SkripsiAdminController)))
+router.post('/research-domains', asyncHandler(SkripsiAdminController.createResearchDomain.bind(SkripsiAdminController)))
+router.put('/research-domains/:id', asyncHandler(SkripsiAdminController.updateResearchDomain.bind(SkripsiAdminController)))
+router.delete('/research-domains/:id', asyncHandler(SkripsiAdminController.deleteResearchDomain.bind(SkripsiAdminController)))
+
 // Skripsi Sets management
 router.get('/sets', asyncHandler(SkripsiAdminController.index.bind(SkripsiAdminController)))
 router.get('/sets/:uniqueId', asyncHandler(SkripsiAdminController.show.bind(SkripsiAdminController)))

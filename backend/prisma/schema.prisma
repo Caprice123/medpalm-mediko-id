@@ -375,16 +375,17 @@ model users {
   google_id   String?  @unique
   role        String   @default("user")
   is_active   Boolean  @default(true)
-  permissions Json? // User-specific permissions for admin features
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  permissions           Json? // User-specific permissions for admin features
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now())
 
-  user_credit           user_credits?
-  user_subscription     user_subscriptions[]
-  user_purchases        user_purchases[]
-  chatbot_conversations chatbot_conversations[]
-  skripsi_sets          skripsi_sets[]
-  osce_sessions         osce_sessions[]
+  user_credit            user_credits?
+  user_subscription      user_subscriptions[]
+  user_purchases         user_purchases[]
+  chatbot_conversations  chatbot_conversations[]
+  user_chatbot_settings  user_chatbot_settings?
+  skripsi_sets           skripsi_sets[]
+  osce_sessions          osce_sessions[]
 }
 
 model user_subscriptions {
@@ -411,6 +412,31 @@ model user_credits {
 
   user                users                 @relation(fields: [user_id], references: [id])
   credit_transactions credit_transactions[]
+
+  @@index([user_id])
+}
+
+// ============= Chatbot Settings =============
+
+model chatbot_research_domains {
+  id         Int      @id @default(autoincrement())
+  domain     String   @unique
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@index([is_active])
+}
+
+model user_chatbot_settings {
+  id                    Int      @id @default(autoincrement())
+  user_id               Int      @unique
+  selected_domains      Json     @default("[]") // Array of domain strings selected from admin list
+  domain_filter_enabled Boolean  @default(true)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
 
   @@index([user_id])
 }
@@ -1216,6 +1242,16 @@ model chatbot_message_feedbacks {
 }
 
 // Skripsi Builder Tables
+model skripsi_research_domains {
+  id         Int      @id @default(autoincrement())
+  domain     String   @unique
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@index([is_active])
+}
+
 model skripsi_sets {
   id             Int      @id @default(autoincrement())
   unique_id      String   @unique @default(uuid())
@@ -1223,6 +1259,8 @@ model skripsi_sets {
   title          String
   description    String?  @db.Text
   editor_content String?  @db.Text
+  selected_domains      Json    @default("[]") // Per-set domain filter selection
+  domain_filter_enabled Boolean @default(true)
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
   is_deleted     Boolean  @default(false)

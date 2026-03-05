@@ -9,6 +9,22 @@ import { setTimeout } from 'worker-timers'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
+// ============= Set Research Settings =============
+
+export const fetchSetResearchSettings = (setUniqueId) => async () => {
+  const route = Endpoints.api.skripsi + `/sets/${setUniqueId}/research-settings`
+  const response = await getWithToken(route)
+  return response.data.data
+}
+
+export const updateSetResearchSettings = (setUniqueId, settings) => async (dispatch) => {
+  const route = Endpoints.api.skripsi + `/sets/${setUniqueId}/research-settings`
+  const response = await putWithToken(route, settings)
+  // Update currentSet in store to reflect new domain settings
+  dispatch(actions.updateCurrentSetResearchSettings(response.data.data))
+  return response.data.data
+}
+
 const {
   setSets,
   setCurrentSet,

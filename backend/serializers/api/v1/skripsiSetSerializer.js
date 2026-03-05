@@ -9,6 +9,8 @@ export class SkripsiSetSerializer {
       uniqueId: set.unique_id,
       title: set.title,
       editorContent: set.editor_content,
+      selectedDomains: set.selected_domains ?? [],
+      domainFilterEnabled: set.domain_filter_enabled ?? true,
       tabs: tabs.map(tab => ({
         id: tab.id,
         tabType: tab.tab_type,

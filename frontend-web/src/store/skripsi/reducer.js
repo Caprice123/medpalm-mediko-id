@@ -49,6 +49,12 @@ const skripsiSlice = createSlice({
     setCurrentSet: (state, action) => {
       state.currentSet = action.payload
     },
+    updateCurrentSetResearchSettings: (state, action) => {
+      if (state.currentSet) {
+        state.currentSet.selectedDomains = action.payload.selectedDomains
+        state.currentSet.domainFilterEnabled = action.payload.domainFilterEnabled
+      }
+    },
     setCurrentTab: (state, action) => {
       state.currentTab = action.payload
       // Also set as active tab

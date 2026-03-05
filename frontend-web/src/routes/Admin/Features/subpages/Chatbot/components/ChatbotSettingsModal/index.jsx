@@ -7,6 +7,7 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
+import { useResearchDomains } from '../../hooks/useResearchDomains'
 import {
   FormGroup,
   Label,
@@ -28,29 +29,14 @@ import EmbeddingModelDropdown from '../../../../../../../components/common/Embed
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
   const { form } = useFeatureSetting(onClose)
+  const { domains, addDomain: saveDomain, toggleDomain, removeDomain } = useResearchDomains()
   const [newDomain, setNewDomain] = useState('')
 
-  // Parse domains from comma-separated string to array
-  const getDomains = () => {
-    const domainsString = form.values.chatbot_research_trusted_domains || ''
-    return domainsString.split(',').map(d => d.trim()).filter(d => d.length > 0)
-  }
-
-  // Add domain to the list
-  const addDomain = () => {
+  const handleAddDomain = async () => {
     if (newDomain.trim()) {
-      const currentDomains = getDomains()
-      const updatedDomains = [...currentDomains, newDomain.trim()]
-      form.setFieldValue('chatbot_research_trusted_domains', updatedDomains.join(','))
+      await saveDomain(newDomain.trim())
       setNewDomain('')
     }
-  }
-
-  // Remove domain from the list
-  const removeDomain = (index) => {
-    const currentDomains = getDomains()
-    const updatedDomains = currentDomains.filter((_, i) => i !== index)
-    form.setFieldValue('chatbot_research_trusted_domains', updatedDomains.join(','))
   }
 
   return (
@@ -471,19 +457,27 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         <FormGroup>
           <Label>Domain Terpercaya</Label>
           <HintText style={{ marginTop: '0', marginBottom: '0.5rem' }}>
-            Domain jurnal medis dan sumber kredibel yang akan diprioritaskan.
+            Domain jurnal medis dan sumber kredibel. Pengguna dapat memilih subset dari daftar ini.
           </HintText>
 
-          {getDomains().length > 0 && (
+          {domains.length > 0 && (
             <DomainsList>
-              {getDomains().map((domain, index) => (
-                <DomainItem key={index}>
-                  <DomainText>{domain}</DomainText>
+              {domains.map((item) => (
+                <DomainItem key={item.id}>
+                  <ToggleSwitch style={{ transform: 'scale(0.75)', marginRight: '0.25rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={item.is_active}
+                      onChange={(e) => toggleDomain(item.id, e.target.checked)}
+                    />
+                    <ToggleSlider />
+                  </ToggleSwitch>
+                  <DomainText style={{ opacity: item.is_active ? 1 : 0.45 }}>{item.domain}</DomainText>
                   <Button
                     variant="danger"
                     size="small"
                     type="button"
-                    onClick={() => removeDomain(index)}
+                    onClick={() => removeDomain(item.id)}
                   >
                     ✕
                   </Button>
@@ -497,13 +491,13 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
               value={newDomain}
               onChange={(e) => setNewDomain(e.target.value)}
               placeholder="pubmed.ncbi.nlm.nih.gov"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addDomain())}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDomain())}
               style={{ fontFamily: 'monospace', fontSize: '13px' }}
             />
             <Button
               variant="primary"
               type="button"
-              onClick={addDomain}
+              onClick={handleAddDomain}
               disabled={!newDomain.trim()}
             >
               Tambah

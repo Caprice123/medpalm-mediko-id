@@ -1,14 +1,16 @@
+import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 
 export class GetTrustedDomainsService extends BaseService {
   /**
-   * Get trusted domains configuration for research mode
-   * @returns {Promise<{enabled: boolean, domains: string[]}>}
+   * Get trusted domains configuration for research mode.
+   * If userId is provided, merges user's selected domains on top of admin settings.
+   * @param {number|null} userId
    */
-  static async call() {
+  static async call(userId = null) {
+    // Time filter config still comes from constants
     const constants = await GetConstantsService.call([
-      'chatbot_research_trusted_domains',
       'chatbot_research_domain_filter_enabled',
       'chatbot_research_recency_filter',
       'chatbot_research_time_filter_type',
@@ -18,33 +20,53 @@ export class GetTrustedDomainsService extends BaseService {
       'chatbot_research_updated_before'
     ])
 
-    const enabled = constants.chatbot_research_domain_filter_enabled === 'true'
-    const domainsString = constants.chatbot_research_trusted_domains || ''
+    const adminFilterEnabled = constants.chatbot_research_domain_filter_enabled === 'true'
     const timeFilterType = constants.chatbot_research_time_filter_type || 'recency'
     const recencyFilter = constants.chatbot_research_recency_filter || 'month'
-
-    // Date range filters
     const publishedAfter = constants.chatbot_research_published_after || ''
     const publishedBefore = constants.chatbot_research_published_before || ''
     const updatedAfter = constants.chatbot_research_updated_after || ''
     const updatedBefore = constants.chatbot_research_updated_before || ''
 
-    // Parse comma-separated domains
-    const domains = domainsString
-      .split(',')
-      .map(d => d.trim())
-      .filter(d => d.length > 0)
+    // Domain list comes from the chatbot_research_domains table
+    const adminDomains = await prisma.chatbot_research_domains.findMany({
+      where: { is_active: true },
+      orderBy: { created_at: 'asc' },
+      select: { domain: true }
+    })
+    const adminDomainList = adminDomains.map(d => d.domain)
+
+    let domains = adminDomainList
+    let filterEnabled = adminFilterEnabled
+
+    // If a user is specified, apply their preferences
+    if (userId) {
+      const userSettings = await prisma.user_chatbot_settings.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (userSettings) {
+        filterEnabled = userSettings.domain_filter_enabled
+        const userSelected = Array.isArray(userSettings.selected_domains) ? userSettings.selected_domains : []
+
+        // If user has selected specific domains, use those (must be subset of admin list)
+        if (userSelected.length > 0) {
+          domains = userSelected.filter(d => adminDomainList.includes(d))
+        }
+        // else: user selected none = use all admin domains
+      }
+    }
 
     return {
-      enabled: enabled,
-      domains: domains,
+      enabled: filterEnabled,
+      domains,
       count: domains.length,
-      timeFilterType: timeFilterType,
-      recencyFilter: recencyFilter,
-      publishedAfter: publishedAfter,
-      publishedBefore: publishedBefore,
-      updatedAfter: updatedAfter,
-      updatedBefore: updatedBefore
+      timeFilterType,
+      recencyFilter,
+      publishedAfter,
+      publishedBefore,
+      updatedAfter,
+      updatedBefore
     }
   }
 }

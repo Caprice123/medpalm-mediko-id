@@ -23,6 +23,7 @@ const {
   setAvailableModes,
   setCosts,
   setUserInformation,
+  setUserSettings,
   setPagination,
   setMessagePaginationForConversation,
   addConversation,
@@ -31,6 +32,32 @@ const {
   setStreamingState,
   clearStreamingState,
 } = actions
+
+// ============= User Chatbot Settings =============
+
+export const fetchUserChatbotSettings = () => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isSettingsLoading', value: true }))
+    const route = Endpoints.api.chatbot + '/settings'
+    const response = await getWithToken(route)
+    dispatch(setUserSettings(response.data.data))
+    return response.data.data
+  } finally {
+    dispatch(setLoading({ key: 'isSettingsLoading', value: false }))
+  }
+}
+
+export const updateUserChatbotSettings = (settings) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdatingSettings', value: true }))
+    const route = Endpoints.api.chatbot + '/settings'
+    const response = await putWithToken(route, settings)
+    dispatch(setUserSettings(response.data.data))
+    return response.data.data
+  } finally {
+    dispatch(setLoading({ key: 'isUpdatingSettings', value: false }))
+  }
+}
 
 // ============= Configuration =============
 

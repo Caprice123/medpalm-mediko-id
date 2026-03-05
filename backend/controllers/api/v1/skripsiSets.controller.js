@@ -4,9 +4,21 @@ import { GetSkripsiSetService } from '#services/skripsi/getSkripsiSetService'
 import { UpdateSkripsiSetService } from '#services/skripsi/updateSkripsiSetService'
 import { UpdateSetContentService } from '#services/skripsi/updateSetContentService'
 import { DeleteSkripsiSetService } from '#services/skripsi/deleteSkripsiSetService'
+import { GetSetResearchSettingsService } from '#services/skripsi/getSetResearchSettingsService'
+import { UpdateSetResearchSettingsService } from '#services/skripsi/updateSetResearchSettingsService'
 import { SkripsiSetListSerializer } from '#serializers/api/v1/skripsiSetListSerializer'
 import { SkripsiSetSerializer } from '#serializers/api/v1/skripsiSetSerializer'
 import { convertHtmlToDocxWithImages } from './htmlToDocx.controller.js'
+
+async function resolveSet(req) {
+  const prisma = (await import('#prisma/client')).default
+  const set = await prisma.skripsi_sets.findFirst({
+    where: { unique_id: req.params.uniqueId, is_deleted: false },
+    select: { id: true }
+  })
+  if (!set) throw new Error('Set not found')
+  return set
+}
 
 class SkripsiSetsController {
   // Get all skripsi sets for a user
@@ -94,6 +106,25 @@ class SkripsiSetsController {
       data: set,
       message: 'Content saved successfully'
     })
+  }
+
+  // Get research domain settings for a set
+  async getResearchSettings(req, res) {
+    const set = await resolveSet(req)
+    const settings = await GetSetResearchSettingsService.call(set.id)
+    return res.status(200).json({ data: settings })
+  }
+
+  // Update research domain settings for a set
+  async updateResearchSettings(req, res) {
+    const userId = req.user.id
+    const set = await resolveSet(req)
+    const { selectedDomains, domainFilterEnabled } = req.body
+    const settings = await UpdateSetResearchSettingsService.call(set.id, userId, {
+      selectedDomains,
+      domainFilterEnabled
+    })
+    return res.status(200).json({ data: settings })
   }
 
   // Delete a skripsi set

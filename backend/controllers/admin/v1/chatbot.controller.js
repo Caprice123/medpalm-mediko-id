@@ -2,6 +2,10 @@ import { GetAdminConversationsService } from '#services/chatbot/admin/getAdminCo
 import { GetAdminConversationService } from '#services/chatbot/admin/getAdminConversationService'
 import { GetAdminConversationMessagesService } from '#services/chatbot/admin/getAdminConversationMessagesService'
 import { DeleteAdminConversationService } from '#services/chatbot/admin/deleteAdminConversationService'
+import { GetResearchDomainsService } from '#services/chatbot/admin/getResearchDomainsService'
+import { CreateResearchDomainService } from '#services/chatbot/admin/createResearchDomainService'
+import { UpdateResearchDomainService } from '#services/chatbot/admin/updateResearchDomainService'
+import { DeleteResearchDomainService } from '#services/chatbot/admin/deleteResearchDomainService'
 import { ChatbotConversationSerializer } from '#serializers/admin/v1/chatbotConversationSerializer'
 import { ChatbotConversationListSerializer } from '#serializers/admin/v1/chatbotConversationListSerializer'
 import { ChatbotMessageSerializer } from '#serializers/admin/v1/chatbotMessageSerializer'
@@ -52,6 +56,32 @@ class ChatbotAdminController {
       data: ChatbotMessageSerializer.serialize(result.messages),
       pagination: result.pagination
     })
+  }
+
+  // ---- Research Domains ----
+
+  async getResearchDomains(req, res) {
+    const domains = await GetResearchDomainsService.call()
+    return res.status(200).json({ data: domains })
+  }
+
+  async createResearchDomain(req, res) {
+    const { domain } = req.body
+    const created = await CreateResearchDomainService.call({ domain })
+    return res.status(201).json({ data: created })
+  }
+
+  async updateResearchDomain(req, res) {
+    const { id } = req.params
+    const { is_active } = req.body
+    const updated = await UpdateResearchDomainService.call({ id, is_active })
+    return res.status(200).json({ data: updated })
+  }
+
+  async deleteResearchDomain(req, res) {
+    const { id } = req.params
+    await DeleteResearchDomainService.call({ id })
+    return res.status(200).json({ data: { success: true } })
   }
 
   // Delete conversation (hard delete for admin)

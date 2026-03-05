@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ConversationList from './components/ConversationList'
 import ConversationPanel from './components/Conversation'
-import { fetchChatbotConfig } from '@/store/chatbot/userAction'
+import { fetchChatbotConfig, fetchUserChatbotSettings } from '@/store/chatbot/userAction'
 import {
   Container,
   ContentWrapper,
@@ -30,6 +30,7 @@ const Chatbot = () => {
 
   useEffect(() => {
     dispatch(fetchChatbotConfig())
+    dispatch(fetchUserChatbotSettings())
   }, [dispatch])
 
   return (

@@ -1,6 +1,6 @@
 import { actions } from '@store/skripsi/reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, deleteWithToken } from '../../utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
 const {
   setSets,
@@ -8,6 +8,31 @@ const {
   setLoading,
   setPagination,
 } = actions
+
+// ============= Research Domain Management =============
+
+export const fetchSkripsiResearchDomains = () => async () => {
+  const route = Endpoints.admin.skripsi + '/research-domains'
+  const response = await getWithToken(route)
+  return response.data.data
+}
+
+export const createSkripsiResearchDomain = (domain) => async () => {
+  const route = Endpoints.admin.skripsi + '/research-domains'
+  const response = await postWithToken(route, { domain })
+  return response.data.data
+}
+
+export const updateSkripsiResearchDomain = (id, is_active) => async () => {
+  const route = Endpoints.admin.skripsi + `/research-domains/${id}`
+  const response = await putWithToken(route, { is_active })
+  return response.data.data
+}
+
+export const deleteSkripsiResearchDomain = (id) => async () => {
+  const route = Endpoints.admin.skripsi + `/research-domains/${id}`
+  await deleteWithToken(route)
+}
 
 // ============= Admin Sets Management =============
 

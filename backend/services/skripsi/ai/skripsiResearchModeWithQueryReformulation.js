@@ -63,8 +63,12 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
       const systemPrompt = constantsMap[`skripsi_${mode}_system_prompt`]
       const citationsCount = parseInt(constantsMap[`skripsi_${mode}_citations_count`] || '10')
 
-      // Get trusted domains
-      const trustedDomains = await GetSkripsiTrustedDomainsService.call()
+      // Resolve setId from tab for per-set domain preferences
+      const tab = await prisma.skripsi_tabs.findUnique({
+        where: { id: tabId },
+        select: { set_id: true }
+      })
+      const trustedDomains = await GetSkripsiTrustedDomainsService.call(tab?.set_id ?? null)
 
       // Get tab conversation history - fetch based on constant
       const messages = await prisma.skripsi_messages.findMany({

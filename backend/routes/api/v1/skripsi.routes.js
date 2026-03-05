@@ -22,6 +22,8 @@ router.post('/export-word', asyncHandler(SkripsiSetsController.exportToWord))
 router.get('/sets/:uniqueId', asyncHandler(SkripsiSetsController.getSet))
 router.put('/sets/:uniqueId', asyncHandler(SkripsiSetsController.updateSet))
 router.put('/sets/:uniqueId/content', asyncHandler(SkripsiSetsController.updateContent))
+router.get('/sets/:uniqueId/research-settings', asyncHandler(SkripsiSetsController.getResearchSettings))
+router.put('/sets/:uniqueId/research-settings', asyncHandler(SkripsiSetsController.updateResearchSettings))
 router.delete('/sets/:uniqueId', asyncHandler(SkripsiSetsController.deleteSet))
 
 // Skripsi Tabs - under /skripsi/tabs

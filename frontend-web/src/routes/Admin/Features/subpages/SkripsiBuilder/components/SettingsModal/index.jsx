@@ -8,6 +8,7 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
+import { useSkripsiResearchDomains } from '../../hooks/useResearchDomains'
 import {
   FormGroup,
   Label,
@@ -29,32 +30,17 @@ import { ToggleSlider, ToggleSwitch } from '../../../SummaryNotes/components/Sum
 function SettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.constant || { loading: {} })
   const { form } = useFeatureSetting(onClose)
+  const { domains, addDomain: saveDomain, toggleDomain, removeDomain } = useSkripsiResearchDomains()
   const [newDomain, setNewDomain] = useState('')
 
   // Check if AI Researcher model is Perplexity
   const isPerplexityModel = form.values.skripsi_ai_researcher_model?.startsWith('sonar')
 
-  // Parse domains from comma-separated string to array
-  const getDomains = () => {
-    const domainsString = form.values.skripsi_ai_researcher_trusted_domains || ''
-    return domainsString.split(',').map(d => d.trim()).filter(d => d.length > 0)
-  }
-
-  // Add domain to the list
-  const addDomain = () => {
+  const handleAddDomain = async () => {
     if (newDomain.trim()) {
-      const currentDomains = getDomains()
-      const updatedDomains = [...currentDomains, newDomain.trim()]
-      form.setFieldValue('skripsi_ai_researcher_trusted_domains', updatedDomains.join(','))
+      await saveDomain(newDomain.trim())
       setNewDomain('')
     }
-  }
-
-  // Remove domain from the list
-  const removeDomain = (index) => {
-    const currentDomains = getDomains()
-    const updatedDomains = currentDomains.filter((_, i) => i !== index)
-    form.setFieldValue('skripsi_ai_researcher_trusted_domains', updatedDomains.join(','))
   }
 
   return (
@@ -278,19 +264,27 @@ function SettingsModal({ isOpen, onClose }) {
             <FormGroup>
               <Label>Domain Terpercaya</Label>
               <HintText style={{ marginTop: '0', marginBottom: '0.5rem' }}>
-                Domain jurnal medis dan sumber kredibel yang akan diprioritaskan.
+                Domain jurnal medis dan sumber kredibel. Pengguna dapat memilih subset per set riset.
               </HintText>
 
-              {getDomains().length > 0 && (
+              {domains.length > 0 && (
                 <DomainsList>
-                  {getDomains().map((domain, index) => (
-                    <DomainItem key={index}>
-                      <DomainText>{domain}</DomainText>
+                  {domains.map((item) => (
+                    <DomainItem key={item.id}>
+                      <ToggleSwitch style={{ transform: 'scale(0.75)', marginRight: '0.25rem' }}>
+                        <input
+                          type="checkbox"
+                          checked={item.is_active}
+                          onChange={(e) => toggleDomain(item.id, e.target.checked)}
+                        />
+                        <ToggleSlider />
+                      </ToggleSwitch>
+                      <DomainText style={{ opacity: item.is_active ? 1 : 0.45 }}>{item.domain}</DomainText>
                       <Button
                         variant="danger"
                         size="small"
                         type="button"
-                        onClick={() => removeDomain(index)}
+                        onClick={() => removeDomain(item.id)}
                       >
                         ✕
                       </Button>
@@ -304,13 +298,13 @@ function SettingsModal({ isOpen, onClose }) {
                   value={newDomain}
                   onChange={(e) => setNewDomain(e.target.value)}
                   placeholder="pubmed.ncbi.nlm.nih.gov"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addDomain())}
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDomain())}
                   style={{ fontFamily: 'monospace', fontSize: '13px' }}
                 />
                 <Button
                   variant="primary"
                   type="button"
-                  onClick={addDomain}
+                  onClick={handleAddDomain}
                   disabled={!newDomain.trim()}
                 >
                   Tambah

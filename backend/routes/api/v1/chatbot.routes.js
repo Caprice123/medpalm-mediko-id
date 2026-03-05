@@ -2,6 +2,7 @@ import express from 'express'
 import ChatbotController from '#controllers/api/v1/chatbot.controller'
 import ConversationController from '#controllers/api/v1/chatbot/conversations.controller'
 import MessageController from '#controllers/api/v1/chatbot/messages.controller'
+import SettingsController from '#controllers/api/v1/chatbot/settings.controller'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import { checkFeature } from '#middleware/checkFeature.middleware'
@@ -16,6 +17,10 @@ router.use(checkFeature(featureConstantKey))
 
 // Configuration
 router.get('/config', asyncHandler(ChatbotController.getConfig))
+
+// User chatbot settings
+router.get('/settings', asyncHandler(SettingsController.getSettings))
+router.put('/settings', asyncHandler(SettingsController.updateSettings))
 
 // Conversation management
 router.get('/conversations', asyncHandler(ConversationController.index))

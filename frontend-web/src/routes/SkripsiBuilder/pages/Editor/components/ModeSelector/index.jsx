@@ -14,7 +14,7 @@ import {
   ModesWrapper
 } from './ModeSelector.styles'
 
-function ModeSelector({ currentMode, onModeChange }) {
+function ModeSelector({ currentMode, onModeChange, onResearchSettings }) {
   // Debug: See when ModeSelector re-renders
   console.log('🔄 ModeSelector rendered')
 
@@ -103,6 +103,11 @@ function ModeSelector({ currentMode, onModeChange }) {
           <span style={{ marginLeft: 'auto' }}>▼</span>
         </ModeButton>
 
+        {onResearchSettings && (
+          <InfoButton className="desktop-only" onClick={onResearchSettings}>
+            ⚙ Research
+          </InfoButton>
+        )}
         <InfoButton className="desktop-only" onClick={() => setShowInfoModal(true)}>
           ⓘ Info
         </InfoButton>
@@ -174,6 +179,7 @@ export default memo(ModeSelector, (prevProps, nextProps) => {
   // Custom comparison: only re-render if these specific props change
   return (
     prevProps.currentMode === nextProps.currentMode &&
-    prevProps.onModeChange === nextProps.onModeChange
+    prevProps.onModeChange === nextProps.onModeChange &&
+    prevProps.onResearchSettings === nextProps.onResearchSettings
   )
 })

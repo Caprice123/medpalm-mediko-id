@@ -33,6 +33,11 @@ const initialState = {
     isLastPage: false
   },
   messagePaginationByConversation: {}, // { [conversationId]: { page, perPage, isLastPage } }
+  userSettings: {
+    selectedDomains: [],       // domains the user has selected (empty = all admin domains)
+    domainFilterEnabled: true,
+    availableDomains: []       // admin-managed list shown as checkboxes
+  },
   loading: {
     isConversationsLoading: false,
     isLoadingMoreConversations: false,
@@ -40,7 +45,9 @@ const initialState = {
     isMessagesLoading: false,
     isSendingMessage: false,
     isConstantsLoading: false,
-    isUpdatingConstants: false
+    isUpdatingConstants: false,
+    isSettingsLoading: false,
+    isUpdatingSettings: false
   },
   error: null
 }
@@ -250,6 +257,9 @@ const chatbotSlice = createSlice({
     updateFilter: (state, action) => {
       const { key, value } = action.payload
       state.filters[key] = value
+    },
+    setUserSettings: (state, action) => {
+      state.userSettings = { ...state.userSettings, ...action.payload }
     },
     resetState: () => initialState,
   },

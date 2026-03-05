@@ -48,7 +48,6 @@ export const useFeatureSetting = (onClose) => {
       chatbot_research_system_prompt: 'Berikan jawaban berbasis riset medis dengan sitasi dari sumber terpercaya. Prioritaskan jurnal ilmiah dan guidelines medis terbaru.',
       chatbot_research_max_sources: '5',
       chatbot_research_message_count: '0',
-      chatbot_research_trusted_domains: 'pubmed.ncbi.nlm.nih.gov,sciencedirect.com,thelancet.com,nejm.org,bmj.com,who.int,cdc.gov,nih.gov,nature.com,science.org',
       chatbot_research_domain_filter_enabled: true,
       chatbot_research_recency_filter: 'month',
       chatbot_research_time_filter_type: 'recency',
@@ -72,6 +71,7 @@ export const useFeatureSetting = (onClose) => {
           chatbot_validated_rewrite_enabled: String(values.chatbot_validated_rewrite_enabled),
           chatbot_research_enabled: String(values.chatbot_research_enabled),
           chatbot_research_domain_filter_enabled: String(values.chatbot_research_domain_filter_enabled)
+          // Note: trusted domains are now managed via /admin/v1/chatbot/research-domains
         }
         await dispatch(updateConstants(constantsToSave))
         onClose()
@@ -121,7 +121,6 @@ export const useFeatureSetting = (onClose) => {
         'chatbot_research_system_prompt',
         'chatbot_research_max_sources',
         'chatbot_research_message_count',
-        'chatbot_research_trusted_domains',
         'chatbot_research_domain_filter_enabled',
         'chatbot_research_recency_filter',
         'chatbot_research_time_filter_type',

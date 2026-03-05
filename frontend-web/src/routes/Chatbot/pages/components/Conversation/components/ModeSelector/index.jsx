@@ -1,5 +1,6 @@
 import { useSelector, shallowEqual } from 'react-redux'
 import { useState, memo, useMemo } from 'react'
+import ChatbotUserSettingsModal from '../ChatbotUserSettingsModal'
 import {
   Container,
   ModeButton,
@@ -24,6 +25,7 @@ function ModeSelector({ currentMode, onModeChange }) {
   const userInformation = useSelector(state => state.chatbot.userInformation, shallowEqual)
   const [showInfoModal, setShowInfoModal] = useState(false)
   const [showModeModal, setShowModeModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
 
   // All possible modes with their metadata
   const allModes = [
@@ -112,6 +114,11 @@ function ModeSelector({ currentMode, onModeChange }) {
         <InfoButton className="desktop-only" onClick={() => setShowInfoModal(true)}>
           ⓘ Info
         </InfoButton>
+        {availableModes.research && (
+          <InfoButton className="desktop-only" onClick={() => setShowSettingsModal(true)}>
+            ⚙ Research
+          </InfoButton>
+        )}
       </Container>
 
       {/* Info Modal */}
@@ -172,6 +179,10 @@ function ModeSelector({ currentMode, onModeChange }) {
           </InfoModalContent>
         </InfoModal>
       )}
+      <ChatbotUserSettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
     </>
   )
 }

@@ -15,6 +15,12 @@ router.use(requireTabPermission('features'))
 // All chatbot routes require 'chatbot' feature permission
 router.use(requireFeaturePermission('chatbot'))
 
+// Research domain management
+router.get('/research-domains', asyncHandler(ChatbotAdminController.getResearchDomains))
+router.post('/research-domains', asyncHandler(ChatbotAdminController.createResearchDomain))
+router.put('/research-domains/:id', asyncHandler(ChatbotAdminController.updateResearchDomain))
+router.delete('/research-domains/:id', asyncHandler(ChatbotAdminController.deleteResearchDomain))
+
 // Conversation management
 router.get('/conversations', asyncHandler(ChatbotAdminController.getConversations))
 router.get('/conversations/:uniqueId', asyncHandler(ChatbotAdminController.getConversation))
