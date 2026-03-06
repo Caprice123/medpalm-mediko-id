@@ -67,10 +67,27 @@ export class UpdateCalculatorTopicService extends BaseService {
                 where: { calculator_topic_id: existingTopic.id }
             })
 
-            // Delete existing classifications (cascade will delete conditions and options)
-            await tx.calculator_classifications.deleteMany({
-                where: { calculator_topic_id: existingTopic.id }
+            // Delete existing classifications bottom-up (no onDelete: Cascade in schema)
+            const existingClassifications = await tx.calculator_classifications.findMany({
+                where: { calculator_topic_id: existingTopic.id },
+                include: { options: { select: { id: true } } }
             })
+            const classificationIds = existingClassifications.map(c => c.id)
+            const classificationOptionIds = existingClassifications.flatMap(c => c.options.map(o => o.id))
+
+            if (classificationOptionIds.length > 0) {
+                await tx.calculator_classification_option_conditions.deleteMany({
+                    where: { calculator_classification_option_id: { in: classificationOptionIds } }
+                })
+                await tx.calculator_classification_options.deleteMany({
+                    where: { id: { in: classificationOptionIds } }
+                })
+            }
+            if (classificationIds.length > 0) {
+                await tx.calculator_classifications.deleteMany({
+                    where: { id: { in: classificationIds } }
+                })
+            }
 
             // Delete existing tags
             await tx.calculator_topic_tags.deleteMany({
