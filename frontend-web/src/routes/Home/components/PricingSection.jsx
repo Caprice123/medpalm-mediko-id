@@ -11,15 +11,9 @@ import {
   SectionSubtitle,
   PricingFilterContainer,
   PricingGrid,
-  PricingCard,
-  PopularBadge,
-  PricingName,
-  PricingCredits,
-  PricingPrice,
-  PricingDescription,
-  DiscountBadge,
 } from '../Home.styles'
 import { useSelector } from 'react-redux'
+import PricingPlanCard from '@components/common/PricingPlanCard'
 
 export default function PricingSection() {
   const [pricingFilter, setPricingFilter] = useState('all')
@@ -72,52 +66,24 @@ export default function PricingSection() {
             </Button>
           </PricingFilterContainer>
 
-          <Parallax speed={-1}>
             <PricingGrid>
-              {filteredPricingPlans.length > 0 && (
-                filteredPricingPlans.map((plan, index) => (
-                  <PricingCard
-                    key={new Date().getTime() + index}
-                    $isPopular={plan.isPopular}
-                    data-aos="zoom-in"
-                    data-aos-delay={index * 100}
-                  >
-                    {plan.isPopular && <PopularBadge>Paling Populer</PopularBadge>}
-                    <PricingName>{plan.name}</PricingName>
-                    <PricingCredits>
-                      {plan.bundleType === 'subscription' ? (
-                        `${plan.durationDays} Hari Akses`
-                      ) : plan.bundleType === 'hybrid' ? (
-                        <>
-                          {plan.creditsIncluded.toLocaleString()} Kredit
-                          <br />
-                          {plan.durationDays} Hari
-                        </>
-                      ) : (
-                        `${plan.creditsIncluded.toLocaleString()} Kredit`
-                      )}
-                    </PricingCredits>
-                    <PricingPrice>
-                      Rp {Number(plan.price).toLocaleString('id-ID')}
-                      {plan.discount > 0 && (
-                        <DiscountBadge>Hemat {plan.discount}%</DiscountBadge>
-                      )}
-                    </PricingPrice>
-                    <PricingDescription>
-                      {plan.description || 'Akses semua fitur pembelajaran premium'}
-                    </PricingDescription>
-                    <LinkButton
-                      to="/sign-in"
-                      variant={plan.isPopular ? 'primary' : 'outline'}
-                      fullWidth
-                    >
-                      Pilih Paket
-                    </LinkButton>
-                  </PricingCard>
-                ))
-              )}
+                {filteredPricingPlans.map((plan, index) => (
+                    <PricingPlanCard
+                        key={pricingFilter + plan.id}
+                        plan={plan}
+                        index={index}
+                        renderButton={(p) => (
+                            <LinkButton
+                                to="/topup"
+                                variant={p.isPopular ? 'primary' : 'outline'}
+                                fullWidth
+                            >
+                                Pilih Paket
+                            </LinkButton>
+                        )}
+                    />
+                ))}
             </PricingGrid>
-          </Parallax>
         </SectionContent>
       </StyledPricingSection>
     </Parallax>

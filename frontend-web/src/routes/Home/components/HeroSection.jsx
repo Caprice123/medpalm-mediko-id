@@ -107,7 +107,7 @@ export default function HeroSection({ scrollToSection }) {
                   <HeroBrowserDot $color="#febc2e" />
                   <HeroBrowserDot $color="#28c840" />
                 </HeroBrowserDots>
-                <HeroBrowserUrl>app.medpal.id</HeroBrowserUrl>
+                <HeroBrowserUrl>medpal.id</HeroBrowserUrl>
               </HeroBrowserBar>
 
               <HeroBrowserContent>

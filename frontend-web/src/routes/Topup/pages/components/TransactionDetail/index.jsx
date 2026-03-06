@@ -34,6 +34,10 @@ import {
   FileDate,
   ErrorState,
   ActionButtons,
+  BankInfoCard,
+  BankInfoRow,
+  BankInfoLabel,
+  BankInfoValue,
 } from './TransactionDetail.styles'
 
 function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) {
@@ -162,6 +166,27 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                       ))}
                     </EvidenceList>
                   </EvidenceSection>
+                </DetailSection>
+              )}
+
+              {transaction.paymentMethod === 'manual' &&
+               transaction.paymentStatus === 'pending' && (
+                <DetailSection>
+                  <SectionTitle>Rekening Tujuan</SectionTitle>
+                  <BankInfoCard>
+                    <BankInfoRow>
+                      <BankInfoLabel>Nama</BankInfoLabel>
+                      <BankInfoValue>PUJA CHRISDIANTO MANAPA</BankInfoValue>
+                    </BankInfoRow>
+                    <BankInfoRow>
+                      <BankInfoLabel>Bank</BankInfoLabel>
+                      <BankInfoValue>Bank Mandiri</BankInfoValue>
+                    </BankInfoRow>
+                    <BankInfoRow>
+                      <BankInfoLabel>No. Rekening</BankInfoLabel>
+                      <BankInfoValue $mono>1410025906058</BankInfoValue>
+                    </BankInfoRow>
+                  </BankInfoCard>
                 </DetailSection>
               )}
 

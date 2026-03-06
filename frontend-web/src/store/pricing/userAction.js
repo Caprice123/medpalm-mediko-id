@@ -4,7 +4,6 @@ import { getWithToken, postWithToken } from '../../utils/requestUtils'
 import axios from 'axios'
 import { captureException } from '../../config/sentry'
 import { handleApiError } from '@utils/errorUtils'
-
 const {
   setLoading,
   setPlans,
@@ -14,6 +13,33 @@ const {
   setTransactionDetail,
   clearTransactionDetail,
 } = actions
+
+export const fetchInitialTopupData = () => async (dispatch, getState) => {
+  dispatch(setLoading({ key: 'isHistoryLoading', value: true }))
+  dispatch(setLoading({ key: 'isStatusLoading', value: true }))
+  dispatch(setLoading({ key: 'isPlansLoading', value: true }))
+
+  try {
+    const { page, perPage } = getState().pricing.historyPagination
+    const [historyRes, statusRes, plansRes] = await Promise.all([
+      getWithToken(`${Endpoints.pricing.history}?page=${page}&perPage=${perPage}`),
+      getWithToken(Endpoints.pricing.status),
+      axios.get(import.meta.env.VITE_API_BASE_URL + Endpoints.pricing.plans),
+    ])
+
+    dispatch(setPurchaseHistory({ data: historyRes.data.data, pagination: historyRes.data.pagination }))
+    dispatch(setUserStatus(statusRes.data.data))
+    dispatch(setPlans(plansRes.data.data))
+    dispatch(setLoading({ key: 'isHistoryLoading', value: false }))
+    dispatch(setLoading({ key: 'isStatusLoading', value: false }))
+    dispatch(setLoading({ key: 'isPlansLoading', value: false }))
+  } catch (err) {
+    handleApiError(err, dispatch)
+    dispatch(setLoading({ key: 'isHistoryLoading', value: false }))
+    dispatch(setLoading({ key: 'isStatusLoading', value: false }))
+    dispatch(setLoading({ key: 'isPlansLoading', value: false }))
+  }
+}
 
 export const fetchPricingPlans = (bundleType = null) => async (dispatch) => {
   try {

@@ -247,6 +247,38 @@ export const ErrorState = styled.div`
   font-size: 0.9375rem;
 `
 
+export const BankInfoCard = styled.div`
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`
+
+export const BankInfoRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+`
+
+export const BankInfoLabel = styled.div`
+  font-size: 0.8125rem;
+  color: #1E40AF;
+  font-weight: 500;
+`
+
+export const BankInfoValue = styled.div`
+  font-size: 0.9375rem;
+  color: #1e3a8a;
+  font-weight: 700;
+  text-align: right;
+  font-family: ${props => props.$mono ? 'monospace' : 'inherit'};
+  letter-spacing: ${props => props.$mono ? '0.05em' : 'inherit'};
+`
+
 export const ActionButtons = styled.div`
   margin-top: 1.5rem;
   padding-top: 1.5rem;

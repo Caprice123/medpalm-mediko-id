@@ -1553,11 +1553,12 @@ export const PricingFilterContainer = styled.div`
 
 export const PricingGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 320px));
+  gap: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   justify-content: center;
+  align-items: stretch;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -1569,30 +1570,18 @@ export const PricingCard = styled.div`
   background: white;
   border-radius: 16px;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
   border: 2px solid ${props => props.$isPopular ? colors.primary.main : '#e5e7eb'};
   position: relative;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   box-shadow: ${props => props.$isPopular ? '0 10px 40px rgba(107, 185, 232, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
   width: 100%;
-  max-width: 350px;
-  margin: 0 auto;
-
-  ${props => props.$isPopular && `
-    transform: scale(1.05);
-
-    @media (max-width: 768px) {
-      transform: scale(1);
-    }
-  `}
 
   &:hover {
-    transform: ${props => props.$isPopular ? 'scale(1.08)' : 'translateY(-4px)'};
+    transform: translateY(-4px);
     box-shadow: 0 15px 40px rgba(107, 185, 232, 0.25);
     border-color: ${colors.primary.main};
-
-    @media (max-width: 768px) {
-      transform: translateY(-4px);
-    }
   }
 `;
 
@@ -1632,6 +1621,11 @@ export const PricingCredits = styled.div`
 `;
 
 export const PricingPrice = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
   font-size: 1.5rem;
   font-weight: 700;
   color: #374151;
@@ -1645,12 +1639,17 @@ export const PricingPrice = styled.div`
   }
 `;
 
-export const PricingDescription = styled.p`
+export const PricingDescription = styled.div`
   font-size: 0.875rem;
   color: #6b7280;
   text-align: center;
   margin-bottom: 1.5rem;
   line-height: 1.5;
+
+  p { margin: 0; }
+  ul, ol { text-align: left; margin: 0.25rem 0; padding-left: 1.25rem; }
+  li { margin: 0.125rem 0; }
+  strong { font-weight: 600; color: #374151; }
 `;
 
 export const DiscountBadge = styled.span`
@@ -1660,5 +1659,5 @@ export const DiscountBadge = styled.span`
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  margin-left: 0.5rem;
+  white-space: nowrap;
 `;

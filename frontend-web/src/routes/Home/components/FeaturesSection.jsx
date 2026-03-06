@@ -55,6 +55,27 @@ const DEFAULT_FEATURES = [
 
 const SLIDE_DURATION = 5000
 
+function toEmbedUrl(url) {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    let videoId = null
+    if (u.hostname === 'youtu.be') {
+      videoId = u.pathname.slice(1)
+    } else if (u.hostname.includes('youtube.com')) {
+      if (u.pathname === '/watch') {
+        videoId = u.searchParams.get('v')
+      } else if (u.pathname.startsWith('/embed/')) {
+        videoId = u.pathname.split('/embed/')[1]
+      }
+    }
+    if (!videoId) return null
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`
+  } catch {
+    return null
+  }
+}
+
 export default function FeaturesSection() {
   const features = useSelector((state) => state.feature.features)
   const activeFeatures = features.filter(f => f.isActive === true || f.isActive === 'true')
@@ -137,10 +158,10 @@ export default function FeaturesSection() {
                 </SlideLeft>
 
                 <SlideRight>
-                  {feature.youtubeUrl ? (
+                  {toEmbedUrl(feature.youtubeUrl) ? (
                     <VideoWrapper>
                       <iframe
-                        src={feature.youtubeUrl}
+                        src={toEmbedUrl(feature.youtubeUrl)}
                         title={feature.name}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
