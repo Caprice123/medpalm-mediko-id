@@ -13,7 +13,13 @@ export class DeleteCalculatorTopicService extends BaseService {
             throw new NotFoundError('Calculator topic not found')
         }
 
-        await prisma.$executeRaw`DELETE FROM calculator_topics WHERE id = ${existingTopic.id}`
+        await prisma.calculator_topics.update({
+            where: { id: existingTopic.id },
+            data: {
+                is_deleted: true,
+                deleted_at: new Date()
+            }
+        })
 
         return {
             message: 'Calculator topic deleted successfully',

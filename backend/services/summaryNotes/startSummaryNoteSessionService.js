@@ -44,7 +44,7 @@ export class StartSummaryNoteSessionService extends BaseService {
         }
       })
 
-      if (!summaryNote) {
+      if (!summaryNote || summaryNote.is_deleted) {
         throw new ValidationError('Summary note not found')
       }
 

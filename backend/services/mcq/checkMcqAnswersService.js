@@ -15,7 +15,7 @@ export class CheckMcqAnswersService extends BaseService {
       }
     })
 
-    if (!topic) {
+    if (!topic || topic.is_deleted) {
       throw new ValidationError('MCQ topic not found or not available')
     }
 

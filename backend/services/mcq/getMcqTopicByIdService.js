@@ -28,7 +28,7 @@ export class GetMcqTopicByIdService extends BaseService {
         }
       })
 
-      if (!topic) {
+      if (!topic || topic.is_deleted) {
         throw new NotFoundError('MCQ topic not found or not published')
       }
 

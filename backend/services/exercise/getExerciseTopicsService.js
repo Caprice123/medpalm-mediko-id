@@ -7,7 +7,7 @@ export class GetExerciseTopicsService extends BaseService {
     static async call(filters = {}, page = 1, perPage = 20) {
         this.validate(filters)
 
-        const where = {}
+        const where = { is_deleted: false }
 
         if (filters.userRole === 'user') {
             where.status = 'published'

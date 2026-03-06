@@ -25,7 +25,7 @@ export class GetFlashcardDeckDetailService extends BaseService {
             }
         })
 
-        if (!deck) {
+        if (!deck || deck.is_deleted) {
             throw new ValidationError('Deck not found')
         }
 

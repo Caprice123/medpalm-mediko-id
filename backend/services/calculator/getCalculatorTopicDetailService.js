@@ -46,7 +46,7 @@ export class GetCalculatorTopicDetailService extends BaseService {
             }
         })
 
-        if (!topic) {
+        if (!topic || topic.is_deleted) {
             throw new NotFoundError('Calculator topic not found')
         }
 

@@ -8,7 +8,7 @@ export class GetSummaryNotesListService extends BaseService {
     const offset = (parseInt(page) - 1) * limit
 
     // Build where clause
-    const where = {}
+    const where = { is_deleted: false }
 
     if (status) {
       where.status = status

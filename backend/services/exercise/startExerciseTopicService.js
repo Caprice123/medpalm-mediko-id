@@ -24,7 +24,7 @@ export class StartExerciseTopicService extends BaseService {
         }
       })
 
-      if (!topic) {
+      if (!topic || topic.is_deleted) {
         throw new ValidationError('Topic not found')
       }
 

@@ -12,7 +12,7 @@ export class GetCalculatorTopicsService extends BaseService {
         // Fetch perPage + 1 to determine if there's a next page
         const take = itemsPerPage + 1
 
-        const where = {}
+        const where = { is_deleted: false }
 
         if (filters.userRole === 'user') {
             where.status = 'published'

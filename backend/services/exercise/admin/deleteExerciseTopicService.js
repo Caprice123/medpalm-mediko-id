@@ -16,7 +16,13 @@ export class DeleteExerciseTopicService extends BaseService {
       throw new ValidationError('Topic not found')
     }
 
-    await prisma.$executeRaw`DELETE FROM exercise_topics WHERE id = ${topic.id}`
+    await prisma.exercise_topics.update({
+      where: { id: topic.id },
+      data: {
+        is_deleted: true,
+        deleted_at: new Date()
+      }
+    })
 
     return { uniqueId }
   }

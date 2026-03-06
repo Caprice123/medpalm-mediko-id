@@ -22,17 +22,31 @@ export class GetSummaryNoteDetailService extends BaseService {
           }
         },
         summary_note_flashcard_decks: {
+          where: {
+            flashcard_deck: {
+              is_deleted: false
+            }
+          },
           include: {
             flashcard_deck: true
           }
         },
         summary_note_mcq_topics: {
+          where: {
+            mcq_topic: {
+              is_deleted: false
+            }
+          },
           include: {
             mcq_topic: true
           }
         }
       }
     })
+
+    if (!summaryNote || summaryNote.is_deleted) {
+      throw new ValidationError('Summary note not found')
+    }
 
     // Get source document attachment if exists
     const sourceAttachment = await prisma.attachments.findFirst({
@@ -54,10 +68,6 @@ export class GetSummaryNoteDetailService extends BaseService {
 
     // Attach source document to summary note
     summaryNote.sourceAttachment = sourceAttachment
-
-    if (!summaryNote) {
-      throw new ValidationError('Summary note not found')
-    }
 
     return summaryNote
   }

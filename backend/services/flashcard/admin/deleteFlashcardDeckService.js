@@ -16,12 +16,13 @@ export class DeleteFlashcardDeckService extends BaseService {
       throw new ValidationError('Deck not found')
     }
 
-    // Clean up junction/link rows that reference this deck to avoid orphaned relations
-    await prisma.summary_note_flashcard_decks.deleteMany({ where: { flashcard_deck_id: deck.id } })
-
-    // Use raw SQL to bypass Prisma's application-level referential integrity check.
-    // No actual FK constraints exist in the DB (relationMode = "prisma"), so this is safe.
-    await prisma.$executeRaw`DELETE FROM flashcard_decks WHERE id = ${deck.id}`
+    await prisma.flashcard_decks.update({
+      where: { id: deck.id },
+      data: {
+        is_deleted: true,
+        deleted_at: new Date()
+      }
+    })
 
     return { uniqueId }
   }

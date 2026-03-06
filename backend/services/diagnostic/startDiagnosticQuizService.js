@@ -26,7 +26,7 @@ export class StartDiagnosticQuizService extends BaseService {
         }
       })
 
-      if (!quiz) {
+      if (!quiz || quiz.is_deleted) {
         throw new ValidationError('Quiz not found')
       }
 

@@ -13,7 +13,7 @@ export class GetFlashcardDecksService extends BaseService {
         // Fetch perPage + 1 to determine if there's a next page
         const take = perPage + 1
 
-        const where = {}
+        const where = { is_deleted: false }
 
         if (filters.userRole === 'user') {
             where.status = 'published'

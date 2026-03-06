@@ -6,7 +6,7 @@ export class GetMcqTopicsService extends BaseService {
     const perPage = parseInt(limit)
     const skip = (parseInt(page) - 1) * perPage
 
-    const where = {}
+    const where = { is_deleted: false }
 
     if (status) {
       where.status = status

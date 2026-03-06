@@ -166,6 +166,8 @@ model exercise_topics {
   content        String?
   question_count Int?
   status         String   @default("draft")
+  is_deleted     Boolean  @default(false)
+  deleted_at     DateTime?
   created_by     Int
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
@@ -176,6 +178,7 @@ model exercise_topics {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "exercise_topics_search_gin_idx")
 }
 
@@ -239,6 +242,8 @@ model flashcard_decks {
   content         String?
   flashcard_count Int?
   status          String   @default("draft")
+  is_deleted      Boolean  @default(false)
+  deleted_at      DateTime?
   created_by      Int
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
@@ -250,6 +255,7 @@ model flashcard_decks {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "flashcard_decks_search_gin_idx")
 }
 
@@ -452,6 +458,8 @@ model summary_notes {
   markdown_content String? @db.Text // Markdown format for testing/export
 
   status     String   @default("draft")
+  is_deleted Boolean  @default(false)
+  deleted_at DateTime?
   created_by Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -463,6 +471,7 @@ model summary_notes {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "summary_notes_search_gin_idx")
 }
 
@@ -620,6 +629,8 @@ model calculator_topics {
   result_label        String // Label for the result, e.g., "Total"
   result_unit         String? // Unit for result, e.g., "kg", "cm"
   status              String   @default("draft") // draft, published
+  is_deleted          Boolean  @default(false)
+  deleted_at          DateTime?
   created_by          Int
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
@@ -630,6 +641,7 @@ model calculator_topics {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "calculator_topics_search_gin_idx")
 }
 
@@ -774,6 +786,8 @@ model diagnostic_quizzes {
   title          String
   description    String?
   status         String   @default("draft")
+  is_deleted     Boolean  @default(false)
+  deleted_at     DateTime?
   question_count Int      @default(0)
   embed_url      String?
   media_type     String   @default("2d") // '2d' | '3d'
@@ -787,6 +801,7 @@ model diagnostic_quizzes {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([media_type])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "diagnostic_quizzes_search_gin_idx")
 }
@@ -886,6 +901,8 @@ model anatomy_quizzes {
   title          String
   description    String?
   status         String   @default("draft")
+  is_deleted     Boolean  @default(false)
+  deleted_at     DateTime?
   question_count Int      @default(0)
   embed_url      String?
   media_type     String   @default("2d") // '2d' | '3d'
@@ -899,6 +916,7 @@ model anatomy_quizzes {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([media_type])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "anatomy_quizzes_search_gin_idx")
 }
@@ -1055,6 +1073,8 @@ model mcq_topics {
   quiz_time_limit Int      @default(0) // in minutes, 0 = no limit
   passing_score   Int      @default(70) // percentage
   status          String   @default("draft") // draft, published
+  is_deleted      Boolean  @default(false)
+  deleted_at      DateTime?
   created_by      Int
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
@@ -1066,6 +1086,7 @@ model mcq_topics {
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "mcq_topics_search_gin_idx")
 }
 

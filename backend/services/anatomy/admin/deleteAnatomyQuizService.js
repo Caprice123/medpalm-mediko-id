@@ -16,7 +16,13 @@ export class DeleteAnatomyQuizService extends BaseService {
       throw new ValidationError('Quiz not found')
     }
 
-    await prisma.$executeRaw`DELETE FROM anatomy_quizzes WHERE id = ${quiz.id}`
+    await prisma.anatomy_quizzes.update({
+      where: { id: quiz.id },
+      data: {
+        is_deleted: true,
+        deleted_at: new Date()
+      }
+    })
   }
 
   static validate(quizId) {

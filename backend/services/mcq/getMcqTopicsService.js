@@ -6,7 +6,7 @@ export class GetMcqTopicsService extends BaseService {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where = {}
+    const where = { is_deleted: false }
 
     if (userRole === 'user') {
       where.status = 'published'

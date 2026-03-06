@@ -28,7 +28,8 @@ export class GetSummaryNoteByIdService extends BaseService {
         summary_note_flashcard_decks: {
           where: {
             flashcard_deck: {
-              status: 'published'
+              status: 'published',
+              is_deleted: false
             }
           },
           include: {
@@ -38,7 +39,8 @@ export class GetSummaryNoteByIdService extends BaseService {
         summary_note_mcq_topics: {
           where: {
             mcq_topic: {
-              status: 'published'
+              status: 'published',
+              is_deleted: false
             }
           },
           include: {
@@ -48,7 +50,7 @@ export class GetSummaryNoteByIdService extends BaseService {
       }
     })
 
-    if (!note) {
+    if (!note || note.is_deleted) {
       throw new ValidationError('Summary note not found')
     }
 

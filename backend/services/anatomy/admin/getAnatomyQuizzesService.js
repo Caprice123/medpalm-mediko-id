@@ -16,7 +16,7 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Fetch perPage + 1 to determine if there's a next page
     const take = perPage + 1
 
-    const where = {}
+    const where = { is_deleted: false }
 
     // Build filter conditions for tags
     const tagFilters = []
