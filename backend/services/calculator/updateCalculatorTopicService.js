@@ -54,7 +54,15 @@ export class UpdateCalculatorTopicService extends BaseService {
                 }
             }
 
-            // Delete existing fields (cascade will delete field_options)
+            // Delete existing field options first (no onDelete: Cascade in schema)
+            const fieldIds = existingFields.map(f => f.id)
+            if (fieldIds.length > 0) {
+                await tx.calculator_field_options.deleteMany({
+                    where: { calculator_field_id: { in: fieldIds } }
+                })
+            }
+
+            // Delete existing fields
             await tx.calculator_fields.deleteMany({
                 where: { calculator_topic_id: existingTopic.id }
             })
