@@ -271,29 +271,91 @@ export const ModeTitle = styled.h5`
   margin: 0;
 `
 
-// Domain List Components
-export const DomainsList = styled.div`
+// Domain Management Components
+export const DomainSearchInput = styled.input`
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 0.75rem;
+
+  &::placeholder { color: #9ca3af; }
+  &:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+`
+
+export const DomainCardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+  min-height: 120px;
+  margin-bottom: 0.75rem;
+`
+
+export const DomainCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid ${({ $active }) => $active ? '#bbf7d0' : '#fee2e2'};
+  background: ${({ $active }) => $active ? '#f0fdf4' : '#fff5f5'};
 `
 
-export const DomainItem = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.5rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-`
-
-export const DomainText = styled.div`
-  flex: 1;
-  font-size: 0.813rem;
-  color: #374151;
+export const DomainCardName = styled.div`
+  font-size: 0.8125rem;
   font-family: monospace;
+  color: #1f2937;
+  word-break: break-all;
+  flex: 1;
+`
+
+export const DomainCardActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+`
+
+export const DomainActiveBadge = styled.span`
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 99px;
+  background: ${({ $active }) => $active ? '#dcfce7' : '#fee2e2'};
+  color: ${({ $active }) => $active ? '#16a34a' : '#dc2626'};
+`
+
+export const DomainPaginationRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+`
+
+export const DomainPageInfo = styled.span`
+  font-size: 0.8125rem;
+  color: #6b7280;
+`
+
+export const DomainPageBtn = styled.button`
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover:not(:disabled) { background: #f3f4f6; }
 `
 
 export const AddDomainWrapper = styled.div`
@@ -301,3 +363,8 @@ export const AddDomainWrapper = styled.div`
   gap: 0.5rem;
   align-items: center;
 `
+
+// Keep for any backward compat usage
+export const DomainsList = styled.div`display: none;`
+export const DomainItem = styled.div``
+export const DomainText = styled.div``

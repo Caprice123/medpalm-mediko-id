@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
 import Dropdown from '@components/common/Dropdown'
@@ -7,7 +6,6 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
-import { useResearchDomains } from '../../hooks/useResearchDomains'
 import {
   FormGroup,
   Label,
@@ -18,10 +16,6 @@ import {
   ModeTitle,
   ModeIcon,
   Divider,
-  DomainsList,
-  DomainItem,
-  DomainText,
-  AddDomainWrapper
 } from './ChatbotSettingsModal.styles'
 import { ToggleSlider, ToggleSwitch } from '../../../SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
 import EmbeddingModelDropdown from '../../../../../../../components/common/EmbeddingModelDropdown'
@@ -29,15 +23,6 @@ import EmbeddingModelDropdown from '../../../../../../../components/common/Embed
 function ChatbotSettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.chatbot || { loading: {} })
   const { form } = useFeatureSetting(onClose)
-  const { domains, addDomain: saveDomain, removeDomain } = useResearchDomains()
-  const [newDomain, setNewDomain] = useState('')
-
-  const handleAddDomain = async () => {
-    if (newDomain.trim()) {
-      await saveDomain(newDomain.trim())
-      setNewDomain('')
-    }
-  }
 
   return (
     <Modal
@@ -439,62 +424,6 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
           <HintText>
             Prompt untuk AI dalam menerjemahkan pertanyaan ke bahasa Inggris. Gunakan placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
           </HintText>
-        </FormGroup>
-
-        <FormGroup>
-          <Label>Filter Domain Terpercaya</Label>
-          <ToggleSwitch>
-            <input
-              type="checkbox"
-              checked={form.values.chatbot_research_domain_filter_enabled}
-              onChange={(e) => form.setFieldValue('chatbot_research_domain_filter_enabled', e.target.checked)}
-            />
-            <ToggleSlider />
-          </ToggleSwitch>
-          <HintText>Aktifkan filter untuk memprioritaskan domain kredibel</HintText>
-        </FormGroup>
-
-        <FormGroup>
-          <Label>Domain Terpercaya</Label>
-          <HintText style={{ marginTop: '0', marginBottom: '0.5rem' }}>
-            Domain jurnal medis dan sumber kredibel. Pengguna dapat memilih subset dari daftar ini.
-          </HintText>
-
-          {domains.length > 0 && (
-            <DomainsList>
-              {domains.map((item) => (
-                <DomainItem key={item.id}>
-                  <DomainText>{item.domain}</DomainText>
-                  <Button
-                    variant="danger"
-                    size="small"
-                    type="button"
-                    onClick={() => removeDomain(item.id)}
-                  >
-                    ✕
-                  </Button>
-                </DomainItem>
-              ))}
-            </DomainsList>
-          )}
-
-          <AddDomainWrapper>
-            <TextInput
-              value={newDomain}
-              onChange={(e) => setNewDomain(e.target.value)}
-              placeholder="pubmed.ncbi.nlm.nih.gov"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDomain())}
-              style={{ fontFamily: 'monospace', fontSize: '13px' }}
-            />
-            <Button
-              variant="primary"
-              type="button"
-              onClick={handleAddDomain}
-              disabled={!newDomain.trim()}
-            >
-              Tambah
-            </Button>
-          </AddDomainWrapper>
         </FormGroup>
 
         <FormGroup>

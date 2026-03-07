@@ -11,10 +11,11 @@ const {
 
 // ============= Research Domain Management =============
 
-export const fetchSkripsiResearchDomains = () => async () => {
-  const route = Endpoints.admin.skripsi + '/research-domains'
+export const fetchSkripsiResearchDomains = ({ page = 1, perPage = 12, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.admin.skripsi + `/research-domains?${params}`
   const response = await getWithToken(route)
-  return response.data.data
+  return response.data.data // { domains, pagination }
 }
 
 export const createSkripsiResearchDomain = (domain) => async () => {

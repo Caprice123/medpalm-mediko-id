@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchAdminSets, deleteAdminSet } from '@store/skripsi/adminAction'
 import SettingsModal from './components/SettingsModal'
 import SetsList from './components/SetsList'
 import SetDetailModal from './components/SetDetailModal'
+import DomainsTab from './subtabs/Domains'
 import Pagination from '@components/Pagination'
 import {
   Container,
@@ -12,11 +13,12 @@ import {
   TitleSection,
   Title,
   Actions,
+  TabsContainer,
+  Tab,
 } from './SkripsiBuilder.styles'
 import Button from '@components/common/Button'
 import { Filter } from './components/Filter'
 import { getUserData } from '@utils/authToken'
-import { useEffect } from 'react'
 
 const ALLOWED_EMAIL = 'kelvinpalem@gmail.com'
 
@@ -26,6 +28,7 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
   const currentUser = getUserData()
   const isAllowed = currentUser?.email === ALLOWED_EMAIL
 
+  const [activeTab, setActiveTab] = useState('sets')
   const [uiState, setUiState] = useState({
     isSettingsModalOpen: false,
     isDetailModalOpen: false,
@@ -87,7 +90,16 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
         </HeaderContent>
       </Header>
 
-      {isAllowed && (
+      <TabsContainer>
+        <Tab active={activeTab === 'sets'} onClick={() => setActiveTab('sets')}>
+          Set Riset
+        </Tab>
+        <Tab active={activeTab === 'domains'} onClick={() => setActiveTab('domains')}>
+          Domain
+        </Tab>
+      </TabsContainer>
+
+      {activeTab === 'sets' && isAllowed && (
         <>
           <Filter />
 
@@ -116,6 +128,8 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
           )}
         </>
       )}
+
+      {activeTab === 'domains' && <DomainsTab />}
 
       {uiState.isSettingsModalOpen && (
         <SettingsModal

@@ -15,12 +15,11 @@ const {
 
 // ============= Research Domain Management =============
 
-export const fetchResearchDomains = () => async (dispatch) => {
-  const route = Endpoints.admin.chatbot + '/research-domains'
+export const fetchResearchDomains = ({ page = 1, perPage = 12, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.admin.chatbot + `/research-domains?${params}`
   const response = await getWithToken(route)
-  // Store available domains in userSettings.availableDomains for reuse
-  dispatch(setUserSettings({ availableDomains: response.data.data || [] }))
-  return response.data.data
+  return response.data.data // { domains, pagination }
 }
 
 export const createResearchDomain = (domain) => async (dispatch) => {

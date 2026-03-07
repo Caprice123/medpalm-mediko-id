@@ -41,17 +41,17 @@ export class GetSkripsiTrustedDomainsService extends BaseService {
 
     // If a set is specified, apply its preferences
     if (setId) {
-      const set = await prisma.skripsi_sets.findUnique({
-        where: { id: setId },
-        select: { selected_domains: true, domain_filter_enabled: true }
+      const setSettings = await prisma.skripsi_set_settings.findUnique({
+        where: { set_id: setId }
       })
 
-      if (set) {
-        filterEnabled = set.domain_filter_enabled
-        const setSelected = Array.isArray(set.selected_domains) ? set.selected_domains : []
+      if (setSettings) {
+        filterEnabled = setSettings.domain_filter_enabled
+        const setSelected = Array.isArray(setSettings.selected_domains) ? setSettings.selected_domains : []
 
+        // Use all selected domains including user-typed custom ones
         if (setSelected.length > 0) {
-          domains = setSelected.filter(d => adminDomainList.includes(d))
+          domains = setSelected
         }
       }
     }

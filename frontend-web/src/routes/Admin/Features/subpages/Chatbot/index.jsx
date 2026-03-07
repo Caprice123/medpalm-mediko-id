@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchAdminConversations, deleteAdminConversation } from '@store/chatbot/adminAction'
 import { actions } from '@store/chatbot/reducer'
 import ChatbotSettingsModal from './components/ChatbotSettingsModal'
 import ConversationsList from './components/ConversationsList'
 import ConversationDetailModal from './components/ConversationDetailModal'
+import DomainsTab from './subtabs/Domains'
 import Pagination from '@components/Pagination'
 import {
   Container,
@@ -13,11 +14,12 @@ import {
   TitleSection,
   Title,
   Actions,
+  TabsContainer,
+  Tab,
 } from './Chatbot.styles'
 import Button from "@components/common/Button"
 import { Filter } from './components/Filter'
 import { getUserData } from '@utils/authToken'
-import { useEffect } from 'react'
 
 const ALLOWED_EMAIL = 'kelvinpalem@gmail.com'
 
@@ -27,6 +29,7 @@ function Chatbot({ onBack }) {
   const currentUser = getUserData()
   const isAllowed = currentUser?.email === ALLOWED_EMAIL
 
+  const [activeTab, setActiveTab] = useState('conversations')
   const [uiState, setUiState] = useState({
     isSettingsModalOpen: false,
     isDetailModalOpen: false,
@@ -90,7 +93,16 @@ function Chatbot({ onBack }) {
         </HeaderContent>
       </Header>
 
-      {isAllowed && (
+      <TabsContainer>
+        <Tab active={activeTab === 'conversations'} onClick={() => setActiveTab('conversations')}>
+          Percakapan
+        </Tab>
+        <Tab active={activeTab === 'domains'} onClick={() => setActiveTab('domains')}>
+          Domain
+        </Tab>
+      </TabsContainer>
+
+      {activeTab === 'conversations' && isAllowed && (
         <>
           <Filter />
 
@@ -119,6 +131,8 @@ function Chatbot({ onBack }) {
           )}
         </>
       )}
+
+      {activeTab === 'domains' && <DomainsTab />}
 
       {uiState.isSettingsModalOpen && (
         <ChatbotSettingsModal

@@ -49,9 +49,9 @@ export class GetTrustedDomainsService extends BaseService {
         filterEnabled = userSettings.domain_filter_enabled
         const userSelected = Array.isArray(userSettings.selected_domains) ? userSettings.selected_domains : []
 
-        // If user has selected specific domains, use those (must be subset of admin list)
+        // If user has selected specific domains, use those (includes custom user-typed domains)
         if (userSelected.length > 0) {
-          domains = userSelected.filter(d => adminDomainList.includes(d))
+          domains = userSelected
         }
         // else: user selected none = use all admin domains
       }

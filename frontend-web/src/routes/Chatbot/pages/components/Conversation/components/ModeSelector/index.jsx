@@ -115,7 +115,7 @@ function ModeSelector({ currentMode, onModeChange }) {
           ⓘ Info
         </InfoButton>
         {availableModes.research && (
-          <InfoButton className="desktop-only" onClick={() => setShowSettingsModal(true)}>
+          <InfoButton onClick={() => setShowSettingsModal(true)}>
             ⚙ Research
           </InfoButton>
         )}

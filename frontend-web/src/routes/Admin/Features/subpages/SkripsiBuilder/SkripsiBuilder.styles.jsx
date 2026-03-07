@@ -233,6 +233,28 @@ export const Toggle = styled.label`
   }
 `
 
+export const TabsContainer = styled.div`
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+`
+
+export const Tab = styled.button`
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-bottom: 2px solid ${({ active }) => active ? '#3b82f6' : 'transparent'};
+  margin-bottom: -2px;
+  background: none;
+  color: ${({ active }) => active ? '#3b82f6' : '#6b7280'};
+  font-weight: ${({ active }) => active ? '600' : '500'};
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { color: #3b82f6; }
+`
+
 export const ActionButtons = styled.div`
   display: flex;
   gap: 12px;

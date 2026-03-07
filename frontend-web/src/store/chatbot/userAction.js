@@ -47,6 +47,13 @@ export const fetchUserChatbotSettings = () => async (dispatch) => {
   }
 }
 
+export const fetchChatbotDomains = ({ page = 1, perPage = 12, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.api.chatbot + `/domains?${params}`
+  const response = await getWithToken(route)
+  return response.data.data
+}
+
 export const updateUserChatbotSettings = (settings) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUpdatingSettings', value: true }))

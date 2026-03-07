@@ -6,6 +6,7 @@ import { UpdateSetContentService } from '#services/skripsi/updateSetContentServi
 import { DeleteSkripsiSetService } from '#services/skripsi/deleteSkripsiSetService'
 import { GetSetResearchSettingsService } from '#services/skripsi/getSetResearchSettingsService'
 import { UpdateSetResearchSettingsService } from '#services/skripsi/updateSetResearchSettingsService'
+import { GetSkripsiDomainsService } from '#services/skripsi/getSkripsiDomainsService'
 import { SkripsiSetListSerializer } from '#serializers/api/v1/skripsiSetListSerializer'
 import { SkripsiSetSerializer } from '#serializers/api/v1/skripsiSetSerializer'
 import { convertHtmlToDocxWithImages } from './htmlToDocx.controller.js'
@@ -108,6 +109,17 @@ class SkripsiSetsController {
     })
   }
 
+  // Get paginated domain list for set research settings modal
+  async getDomains(req, res) {
+    const { page = 1, perPage = 12, search = '' } = req.query
+    const result = await GetSkripsiDomainsService.call({
+      page: parseInt(page),
+      perPage: parseInt(perPage),
+      search
+    })
+    return res.status(200).json({ data: result })
+  }
+
   // Get research domain settings for a set
   async getResearchSettings(req, res) {
     const set = await resolveSet(req)
@@ -119,9 +131,10 @@ class SkripsiSetsController {
   async updateResearchSettings(req, res) {
     const userId = req.user.id
     const set = await resolveSet(req)
-    const { selectedDomains, domainFilterEnabled } = req.body
+    const { selectedDomains, customDomains, domainFilterEnabled } = req.body
     const settings = await UpdateSetResearchSettingsService.call(set.id, userId, {
       selectedDomains,
+      customDomains,
       domainFilterEnabled
     })
     return res.status(200).json({ data: settings })

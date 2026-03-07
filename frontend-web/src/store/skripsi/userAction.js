@@ -11,6 +11,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 // ============= Set Research Settings =============
 
+export const fetchSkripsiDomains = ({ page = 1, perPage = 12, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.api.skripsi + `/domains?${params}`
+  const response = await getWithToken(route)
+  return response.data.data
+}
+
 export const fetchSetResearchSettings = (setUniqueId) => async () => {
   const route = Endpoints.api.skripsi + `/sets/${setUniqueId}/research-settings`
   const response = await getWithToken(route)

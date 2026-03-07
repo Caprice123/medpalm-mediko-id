@@ -7,21 +7,25 @@ export class GetSetResearchSettingsService extends BaseService {
    * Returns admin's available domains + the set's current selection.
    */
   static async call(setId) {
-    const adminDomains = await prisma.skripsi_research_domains.findMany({
-      where: { is_active: true },
-      orderBy: { created_at: 'asc' },
-      select: { id: true, domain: true }
+    const settings = await prisma.skripsi_set_settings.findUnique({
+      where: { set_id: setId }
     })
 
-    const set = await prisma.skripsi_sets.findUnique({
-      where: { id: setId },
-      select: { selected_domains: true, domain_filter_enabled: true }
-    })
+    const allSelected = settings?.selected_domains ?? []
+    const domainFilterEnabled = settings?.domain_filter_enabled ?? true
+
+    const adminMatches = allSelected.length > 0
+      ? await prisma.skripsi_research_domains.findMany({
+          where: { domain: { in: allSelected } },
+          select: { domain: true }
+        })
+      : []
+    const adminSet = new Set(adminMatches.map(d => d.domain))
 
     return {
-      selectedDomains: set?.selected_domains ?? [],
-      domainFilterEnabled: set?.domain_filter_enabled ?? true,
-      availableDomains: adminDomains
+      selectedDomains: allSelected.filter(d => adminSet.has(d)),
+      customDomains: allSelected.filter(d => !adminSet.has(d)),
+      domainFilterEnabled
     }
   }
 }

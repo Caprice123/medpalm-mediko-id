@@ -103,14 +103,14 @@ function ModeSelector({ currentMode, onModeChange, onResearchSettings }) {
           <span style={{ marginLeft: 'auto' }}>▼</span>
         </ModeButton>
 
-        {onResearchSettings && (
-          <InfoButton className="desktop-only" onClick={onResearchSettings}>
-            ⚙ Research
-          </InfoButton>
-        )}
         <InfoButton className="desktop-only" onClick={() => setShowInfoModal(true)}>
           ⓘ Info
         </InfoButton>
+        {onResearchSettings && (
+          <InfoButton onClick={onResearchSettings}>
+            ⚙ Research
+          </InfoButton>
+        )}
       </Container>
 
       {/* Info Modal */}

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
 import Dropdown from '@components/common/Dropdown'
@@ -8,7 +7,6 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import Button from '@components/common/Button'
 import { useFeatureSetting } from '../../hooks/useFeatureSetting'
-import { useSkripsiResearchDomains } from '../../hooks/useResearchDomains'
 import {
   FormGroup,
   Label,
@@ -20,28 +18,15 @@ import {
   ModeTitle,
   ModeIcon,
   Divider,
-  DomainsList,
-  DomainItem,
-  DomainText,
-  AddDomainWrapper
 } from './SettingsModal.styles'
 import { ToggleSlider, ToggleSwitch } from '../../../SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
 
 function SettingsModal({ isOpen, onClose }) {
   const { loading } = useSelector(state => state.constant || { loading: {} })
   const { form } = useFeatureSetting(onClose)
-  const { domains, addDomain: saveDomain, removeDomain } = useSkripsiResearchDomains()
-  const [newDomain, setNewDomain] = useState('')
 
   // Check if AI Researcher model is Perplexity
   const isPerplexityModel = form.values.skripsi_ai_researcher_model?.startsWith('sonar')
-
-  const handleAddDomain = async () => {
-    if (newDomain.trim()) {
-      await saveDomain(newDomain.trim())
-      setNewDomain('')
-    }
-  }
 
   return (
     <Modal
@@ -246,62 +231,6 @@ function SettingsModal({ isOpen, onClose }) {
               <HintText>
                 Deskripsi singkat tentang AI Researcher Mode yang akan ditampilkan ke pengguna
               </HintText>
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Filter Domain Terpercaya</Label>
-              <ToggleSwitch>
-                <input
-                  type="checkbox"
-                  checked={form.values.skripsi_ai_researcher_domain_filter_enabled}
-                  onChange={(e) => form.setFieldValue('skripsi_ai_researcher_domain_filter_enabled', e.target.checked)}
-                />
-                <ToggleSlider />
-              </ToggleSwitch>
-              <HintText>Aktifkan filter untuk memprioritaskan domain kredibel</HintText>
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Domain Terpercaya</Label>
-              <HintText style={{ marginTop: '0', marginBottom: '0.5rem' }}>
-                Domain jurnal medis dan sumber kredibel. Pengguna dapat memilih subset per set riset.
-              </HintText>
-
-              {domains.length > 0 && (
-                <DomainsList>
-                  {domains.map((item) => (
-                    <DomainItem key={item.id}>
-                      <DomainText>{item.domain}</DomainText>
-                      <Button
-                        variant="danger"
-                        size="small"
-                        type="button"
-                        onClick={() => removeDomain(item.id)}
-                      >
-                        ✕
-                      </Button>
-                    </DomainItem>
-                  ))}
-                </DomainsList>
-              )}
-
-              <AddDomainWrapper>
-                <TextInput
-                  value={newDomain}
-                  onChange={(e) => setNewDomain(e.target.value)}
-                  placeholder="pubmed.ncbi.nlm.nih.gov"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDomain())}
-                  style={{ fontFamily: 'monospace', fontSize: '13px' }}
-                />
-                <Button
-                  variant="primary"
-                  type="button"
-                  onClick={handleAddDomain}
-                  disabled={!newDomain.trim()}
-                >
-                  Tambah
-                </Button>
-              </AddDomainWrapper>
             </FormGroup>
 
             <FormGroup>

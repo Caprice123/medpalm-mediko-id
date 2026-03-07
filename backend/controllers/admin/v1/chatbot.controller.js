@@ -61,8 +61,13 @@ class ChatbotAdminController {
   // ---- Research Domains ----
 
   async getResearchDomains(req, res) {
-    const domains = await GetResearchDomainsService.call()
-    return res.status(200).json({ data: domains })
+    const { page = 1, perPage = 12, search = '' } = req.query
+    const result = await GetResearchDomainsService.call({
+      page: parseInt(page),
+      perPage: parseInt(perPage),
+      search
+    })
+    return res.status(200).json({ data: result })
   }
 
   async createResearchDomain(req, res) {

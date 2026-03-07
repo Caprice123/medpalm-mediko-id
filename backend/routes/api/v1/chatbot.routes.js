@@ -21,6 +21,7 @@ router.get('/config', asyncHandler(ChatbotController.getConfig))
 // User chatbot settings
 router.get('/settings', asyncHandler(SettingsController.getSettings))
 router.put('/settings', asyncHandler(SettingsController.updateSettings))
+router.get('/domains', asyncHandler(SettingsController.getDomains))
 
 // Conversation management
 router.get('/conversations', asyncHandler(ConversationController.index))
