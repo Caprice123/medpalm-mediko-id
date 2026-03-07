@@ -61,7 +61,8 @@ export class CalculatorTopicSerializer {
       key: result.key,
       formula: result.formula,
       result_label: result.result_label,
-      result_unit: result.result_unit
+      result_unit: result.result_unit,
+      conditional_formulas: result.conditional_formulas || []
     }))
 
     const classifications = (topic.calculator_classifications || []).map(classification => ({

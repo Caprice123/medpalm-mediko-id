@@ -118,7 +118,8 @@ export class UpdateCalculatorTopicService extends BaseService {
                         key: result.key || `result_${resultIndex}`,
                         formula: result.formula,
                         result_label: result.result_label,
-                        result_unit: result.result_unit || null
+                        result_unit: result.result_unit || null,
+                        conditional_formulas: result.conditional_formulas?.length ? result.conditional_formulas : undefined
                     }
                 })
 

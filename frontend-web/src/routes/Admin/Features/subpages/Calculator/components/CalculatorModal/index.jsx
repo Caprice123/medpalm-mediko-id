@@ -125,6 +125,12 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     addResult,
     removeResult,
     handleResultChange,
+    addConditionalFormula,
+    removeConditionalFormula,
+    handleConditionalFormulaChange,
+    addCFCondition,
+    removeCFCondition,
+    handleCFConditionChange,
     addClassification,
     removeClassification,
     handleClassificationChange,
@@ -257,6 +263,12 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                       onAddResult={addResult}
                       onRemoveResult={removeResult}
                       onResultChange={handleResultChange}
+                      onAddConditionalFormula={addConditionalFormula}
+                      onRemoveConditionalFormula={removeConditionalFormula}
+                      onConditionalFormulaChange={handleConditionalFormulaChange}
+                      onAddCFCondition={addCFCondition}
+                      onRemoveCFCondition={removeCFCondition}
+                      onCFConditionChange={handleCFConditionChange}
                     />
                   </AccordionBody>
                 )}

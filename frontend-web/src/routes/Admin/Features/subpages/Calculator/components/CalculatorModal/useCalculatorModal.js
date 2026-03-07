@@ -52,7 +52,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         })),
         results: (calculator.results || []).map(result => ({
           ...result,
-          _id: result._id || `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+          _id: result._id || `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          conditional_formulas: result.conditional_formulas || []
         })),
         classifications: calculator.classifications || [],
         status: calculator.status || 'draft'
@@ -379,7 +380,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           formula: '',
           result_label: '',
           result_unit: '',
-          classifications: []
+          conditional_formulas: []
         }
       ]
     }))
@@ -397,6 +398,94 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
       ...prev,
       results: prev.results.map((r, i) =>
         i === resultIndex ? { ...r, [fieldName]: value } : r
+      )
+    }))
+  }, [])
+
+  // Conditional formula management (per result)
+  const addConditionalFormula = useCallback((resultIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? { ...r, conditional_formulas: [...(r.conditional_formulas || []), { formula: '', conditions: [{ field_key: '', operator: '==', value: '', logical_operator: null }] }] }
+          : r
+      )
+    }))
+  }, [])
+
+  const removeConditionalFormula = useCallback((resultIndex, cfIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? { ...r, conditional_formulas: (r.conditional_formulas || []).filter((_, j) => j !== cfIndex) }
+          : r
+      )
+    }))
+  }, [])
+
+  const handleConditionalFormulaChange = useCallback((resultIndex, cfIndex, value) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? { ...r, conditional_formulas: (r.conditional_formulas || []).map((cf, j) => j === cfIndex ? { ...cf, formula: value } : cf) }
+          : r
+      )
+    }))
+  }, [])
+
+  const addCFCondition = useCallback((resultIndex, cfIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? {
+              ...r,
+              conditional_formulas: (r.conditional_formulas || []).map((cf, j) =>
+                j === cfIndex
+                  ? { ...cf, conditions: [...(cf.conditions || []), { field_key: '', operator: '==', value: '', logical_operator: 'AND' }] }
+                  : cf
+              )
+            }
+          : r
+      )
+    }))
+  }, [])
+
+  const removeCFCondition = useCallback((resultIndex, cfIndex, condIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? {
+              ...r,
+              conditional_formulas: (r.conditional_formulas || []).map((cf, j) =>
+                j === cfIndex
+                  ? { ...cf, conditions: (cf.conditions || []).filter((_, k) => k !== condIndex) }
+                  : cf
+              )
+            }
+          : r
+      )
+    }))
+  }, [])
+
+  const handleCFConditionChange = useCallback((resultIndex, cfIndex, condIndex, fieldName, value) => {
+    setFormData(prev => ({
+      ...prev,
+      results: prev.results.map((r, i) =>
+        i === resultIndex
+          ? {
+              ...r,
+              conditional_formulas: (r.conditional_formulas || []).map((cf, j) =>
+                j === cfIndex
+                  ? { ...cf, conditions: (cf.conditions || []).map((cond, k) => k === condIndex ? { ...cond, [fieldName]: value } : cond) }
+                  : cf
+              )
+            }
+          : r
       )
     }))
   }, [])
@@ -603,6 +692,13 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     addResult,
     removeResult,
     handleResultChange,
+    // Conditional formulas (per result)
+    addConditionalFormula,
+    removeConditionalFormula,
+    handleConditionalFormulaChange,
+    addCFCondition,
+    removeCFCondition,
+    handleCFConditionChange,
     // Classifications (topic-level)
     addClassification,
     removeClassification,

@@ -61,14 +61,29 @@ export class CalculateResultService extends BaseService {
         })
 
         // Evaluate each result formula and build a resultValues map
+        // Each result can reference previously computed results by their key
         const resultValues = {}
-        const contextKeys = Object.keys(context)
-        const contextValues = Object.values(context)
 
         for (const resultDef of (topic.calculator_results || [])) {
             try {
-                const mathFunc = new Function(...contextKeys, 'Math', `return ${resultDef.formula}`)
-                const value = mathFunc(...contextValues, Math)
+                // Merge input fields + already-computed results so each result can depend on prior ones
+                const evalContext = { ...context, ...resultValues }
+                const evalKeys = Object.keys(evalContext)
+                const evalValues = Object.values(evalContext)
+
+                // Pick first matching conditional formula, fallback to default
+                let formulaToUse = resultDef.formula
+                if (Array.isArray(resultDef.conditional_formulas) && resultDef.conditional_formulas.length > 0) {
+                    for (const cf of resultDef.conditional_formulas) {
+                        if (this.evaluateFieldConditions(cf.conditions || [], evalContext)) {
+                            formulaToUse = cf.formula
+                            break
+                        }
+                    }
+                }
+
+                const mathFunc = new Function(...evalKeys, 'Math', `return ${formulaToUse}`)
+                const value = mathFunc(...evalValues, Math)
                 if (typeof value !== 'number' || isNaN(value)) {
                     throw new Error(`Result '${resultDef.key}' formula produced an invalid number`)
                 }
@@ -163,6 +178,35 @@ export class CalculateResultService extends BaseService {
             default:
                 return false
         }
+    }
+
+    // Evaluate conditions against input field values (for conditional formula selection)
+    static evaluateFieldConditions(conditions, context) {
+        if (!conditions || conditions.length === 0) return false
+
+        let result = true
+        let logicalOp = 'AND'
+
+        for (const condition of conditions) {
+            const fieldValue = context[condition.field_key]
+            const met = this.evaluateCondition(
+                typeof fieldValue === 'number' ? fieldValue : String(fieldValue ?? ''),
+                condition.operator,
+                condition.value
+            )
+
+            if (logicalOp === 'OR') {
+                result = result || met
+            } else {
+                result = result && met
+            }
+
+            if (condition.logical_operator) {
+                logicalOp = condition.logical_operator.toUpperCase()
+            }
+        }
+
+        return result
     }
 
     static shouldDisplayField(field, inputs) {
