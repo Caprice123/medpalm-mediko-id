@@ -51,20 +51,35 @@ export class CreateCalculatorTopicService extends BaseService {
             }
         })
 
-        // Create field options for dropdown and radio types
+        // Create field options and field images
         for (const field of fields) {
-            if ((field.type === 'dropdown' || field.type === 'radio') && field.options && Array.isArray(field.options)) {
-                const dbField = await prisma.calculator_fields.findUnique({
-                    where: {
-                        calculator_topic_id_key: {
-                            calculator_topic_id: topic.id,
-                            key: field.key
-                        }
+            const dbField = await prisma.calculator_fields.findUnique({
+                where: {
+                    calculator_topic_id_key: {
+                        calculator_topic_id: topic.id,
+                        key: field.key
                     }
-                })
+                }
+            })
 
-                if (dbField) {
-                    // Create options one by one to handle attachments
+            if (dbField) {
+                // Attach field-level image if provided
+                if (field.blobId) {
+                    const blobExists = await prisma.blobs.findUnique({
+                        where: { id: parseInt(field.blobId) }
+                    })
+                    if (blobExists) {
+                        await AttachmentService.attach({
+                            blobId: parseInt(field.blobId),
+                            recordType: 'calculator_field',
+                            recordId: dbField.id,
+                            name: 'image'
+                        })
+                    }
+                }
+
+                // Create options for dropdown/radio types
+                if ((field.type === 'dropdown' || field.type === 'radio') && field.options && Array.isArray(field.options)) {
                     for (const [optIndex, option] of field.options.entries()) {
                         const createdOption = await prisma.calculator_field_options.create({
                             data: {
@@ -75,13 +90,10 @@ export class CreateCalculatorTopicService extends BaseService {
                             }
                         })
 
-                        // Create attachment if blobId is provided and valid
                         if (option.blobId) {
-                            // Verify blob exists before creating attachment
                             const blobExists = await prisma.blobs.findUnique({
                                 where: { id: parseInt(option.blobId) }
                             })
-
                             if (blobExists) {
                                 await AttachmentService.attach({
                                     blobId: parseInt(option.blobId),

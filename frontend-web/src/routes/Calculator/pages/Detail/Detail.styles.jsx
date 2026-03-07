@@ -706,3 +706,17 @@ export const OptionImage = styled.img`
   display: block;
   object-fit: cover;
 `
+
+export const FieldImageContainer = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: zoom-in;
+  transition: all 0.2s;
+  margin-bottom: 0.75rem;
+
+  &:hover {
+    border-color: #8b5cf6;
+    transform: scale(1.01);
+  }
+`

@@ -117,6 +117,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     handleFieldOptionChange,
     handleOptionImageUpload,
     handleOptionImageRemove,
+    handleFieldImageUpload,
+    handleFieldImageRemove,
     addDisplayCondition,
     removeDisplayCondition,
     handleDisplayConditionChange,
@@ -225,6 +227,8 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                           onFieldOptionChange={handleFieldOptionChange}
                           onOptionImageUpload={handleOptionImageUpload}
                           onOptionImageRemove={handleOptionImageRemove}
+                          onFieldImageUpload={handleFieldImageUpload}
+                          onFieldImageRemove={handleFieldImageRemove}
                           onAddDisplayCondition={addDisplayCondition}
                           onRemoveDisplayCondition={removeDisplayCondition}
                           onDisplayConditionChange={handleDisplayConditionChange}

@@ -4,6 +4,14 @@ export class CalculatorTopicSerializer {
   static async serialize(topic) {
     // Process fields with their options
     const fields = await Promise.all((topic.calculator_fields || []).map(async field => {
+      // Get field-level image attachment
+      const fieldAttachments = await AttachmentService.getAttachmentsWithUrls({
+        recordType: 'calculator_field',
+        recordId: field.id,
+        name: 'image'
+      })
+      const fieldImage = fieldAttachments.length > 0 ? fieldAttachments[0] : null
+
       // Get attachments for each option
       const optionsWithImages = await Promise.all((field.field_options || []).map(async opt => {
         const attachments = await AttachmentService.getAttachmentsWithUrls({
@@ -37,6 +45,14 @@ export class CalculatorTopicSerializer {
         unit: field.unit,
         display_conditions: field.display_conditions || null,
         is_required: field.is_required,
+        image: fieldImage ? {
+          id: fieldImage.blob_id,
+          url: fieldImage.url,
+          key: fieldImage.blob?.key,
+          filename: fieldImage.blob?.filename,
+          contentType: fieldImage.blob?.content_type,
+          byteSize: fieldImage.blob?.byte_size
+        } : null,
         options: optionsWithImages
       }
     }))

@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
+import FileUpload from '@components/common/FileUpload'
 import { OptionItem } from './OptionItem'
 import { DisplayConditionItem } from './DisplayConditionItem'
 import {
@@ -29,6 +30,8 @@ const FieldItem = memo(({
   onFieldOptionChange,
   onOptionImageUpload,
   onOptionImageRemove,
+  onFieldImageUpload,
+  onFieldImageRemove,
   onAddDisplayCondition,
   onRemoveDisplayCondition,
   onDisplayConditionChange
@@ -132,6 +135,38 @@ const FieldItem = memo(({
             />
           </FieldInputWrapper>
         )}
+
+        {/* Field Image */}
+        <FieldInputWrapper fullWidth>
+          <SmallLabel>Gambar Field (Opsional)</SmallLabel>
+          <FileUpload
+            file={field.image?.key ? {
+              name: field.image?.filename || 'Image',
+              type: 'image/*',
+              size: field.image?.byteSize
+            } : null}
+            onFileSelect={(e) => {
+              const file = e.target?.files?.[0] || e
+              if (file) {
+                if (file.type.startsWith('image/')) {
+                  onFieldImageUpload(index, file)
+                } else {
+                  alert('Mohon pilih file gambar')
+                }
+              }
+            }}
+            onRemove={() => onFieldImageRemove(index)}
+            acceptedTypes={['image/*']}
+            acceptedTypesLabel="PNG, JPG, GIF"
+            maxSizeMB={5}
+            uploadText="Upload gambar"
+            actions={field.image?.url ? (
+              <Button variant="primary" size="small" type="button" onClick={() => window.open(field.image.url, '_blank')}>
+                Lihat
+              </Button>
+            ) : <></>}
+          />
+        </FieldInputWrapper>
 
         {/* Display Conditions */}
         <FieldInputWrapper fullWidth>

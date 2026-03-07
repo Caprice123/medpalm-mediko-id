@@ -177,7 +177,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           unit: '',
           display_conditions: [],
           is_required: true,
-          options: []
+          options: [],
+          image: null
         }
       ]
     }))
@@ -300,6 +301,42 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
               )
             }
           : f
+      )
+    }))
+  }, [])
+
+  const handleFieldImageUpload = useCallback(async (fieldIndex, file) => {
+    try {
+      const result = await dispatch(upload(file, 'calculator'))
+      setFormData(prev => ({
+        ...prev,
+        fields: prev.fields.map((f, i) =>
+          i === fieldIndex
+            ? {
+                ...f,
+                image: {
+                  id: result.blobId,
+                  url: result.url,
+                  key: result.key,
+                  filename: result.filename,
+                  contentType: result.contentType,
+                  byteSize: result.byteSize,
+                }
+              }
+            : f
+        )
+      }))
+    } catch (error) {
+      console.error('Failed to upload field image:', error)
+      alert('Failed to upload image. Please try again.')
+    }
+  }, [dispatch])
+
+  const handleFieldImageRemove = useCallback((fieldIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) =>
+        i === fieldIndex ? { ...f, image: null } : f
       )
     }))
   }, [])
@@ -570,6 +607,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         const { _id, ...fieldWithoutId } = field
         return {
           ...fieldWithoutId,
+          blobId: field.image?.id || null,
           options: field.options?.map(option => ({
             value: option.value,
             label: option.label,
@@ -613,6 +651,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     handleFieldOptionChange,
     handleOptionImageUpload,
     handleOptionImageRemove,
+    handleFieldImageUpload,
+    handleFieldImageRemove,
     addDisplayCondition,
     removeDisplayCondition,
     handleDisplayConditionChange,

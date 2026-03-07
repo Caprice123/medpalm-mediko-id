@@ -1,9 +1,12 @@
 import Dropdown from '@components/common/Dropdown'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
 import {
     FormGroup,
     FormLabel,
     LabelWithDescription,
-    ErrorMessage
+    ErrorMessage,
+    FieldImageContainer,
+    OptionImage
 } from './Detail.styles'
 import FieldInput from './FieldInput'
 import RadioField from './RadioField'
@@ -11,6 +14,15 @@ import RadioField from './RadioField'
 function CalculatorField({ field, value, onChange, error }) {
     return (
         <FormGroup>
+            {field.image?.url && (
+                <PhotoProvider>
+                    <PhotoView src={field.image.url}>
+                        <FieldImageContainer>
+                            <OptionImage src={field.image.url} alt={field.label} />
+                        </FieldImageContainer>
+                    </PhotoView>
+                </PhotoProvider>
+            )}
             <LabelWithDescription>
                 <FormLabel>
                     {field.label}

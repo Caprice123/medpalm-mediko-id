@@ -71,7 +71,11 @@ const OptionItem = memo(({
             acceptedTypesLabel="PNG, JPG, GIF"
             maxSizeMB={5}
             uploadText="Upload gambar"
-            actions={<></>}
+            actions={option.image?.url ? (
+              <Button variant="primary" size="small" type="button" onClick={() => window.open(option.image.url, '_blank')}>
+                Lihat
+              </Button>
+            ) : <></>}
           />
         </div>
       </div>
