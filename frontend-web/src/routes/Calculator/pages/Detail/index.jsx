@@ -132,6 +132,14 @@ const CalculatorDetail = () => {
         // Only validate visible fields
         detail.calculator_fields.filter(shouldDisplayField).forEach(field => {
           const input = inputs[field.key]
+
+          if (field.type === 'multiselect') {
+            if (field.is_required && (!Array.isArray(input) || input.length === 0)) {
+              errors[field.key] = `${field.label} is required`
+            }
+            return
+          }
+
           // Extract value from object or use raw value
           const value = typeof input === 'object' && input !== null ? input.value : input
 
@@ -162,7 +170,15 @@ const CalculatorDetail = () => {
 
         visibleFields.forEach(field => {
           const input = inputs[field.key]
-          if (input !== undefined && input !== null && input !== '') {
+          if (input === undefined || input === null || input === '') return
+
+          if (field.type === 'multiselect') {
+            // Sum numeric values of all selected multiselectes
+            const sum = Array.isArray(input)
+              ? input.reduce((acc, opt) => acc + (parseFloat(opt.value) || 0), 0)
+              : 0
+            calculationInputs[field.key] = sum
+          } else {
             calculationInputs[field.key] = typeof input === 'object' && input !== null ? input.value : input
           }
         })

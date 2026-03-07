@@ -92,7 +92,8 @@ const FieldItem = memo(({
               { value: 'number', label: 'Number' },
               { value: 'text', label: 'Text' },
               { value: 'dropdown', label: 'Dropdown' },
-              { value: 'radio', label: 'Radio Button' }
+              { value: 'radio', label: 'Radio Button' },
+              { value: 'multiselect', label: 'Checkbox (multi-select, sum)' }
             ]}
             value={{ value: field.type, label: field.type.charAt(0).toUpperCase() + field.type.slice(1) }}
             onChange={(option) => onFieldItemChange(index, 'type', option.value)}
@@ -201,7 +202,7 @@ const FieldItem = memo(({
           </Button>
         </FieldInputWrapper>
 
-        {(field.type === 'dropdown' || field.type === 'radio') && (
+        {(field.type === 'dropdown' || field.type === 'radio' || field.type === 'multiselect') && (
           <FieldInputWrapper fullWidth>
             <SmallLabel>Options (pilihan untuk user)</SmallLabel>
             <OptionsList>

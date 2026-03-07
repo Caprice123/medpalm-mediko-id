@@ -10,6 +10,7 @@ import {
 } from './Detail.styles'
 import FieldInput from './FieldInput'
 import RadioField from './RadioField'
+import CheckboxField from './CheckboxField'
 
 function CalculatorField({ field, value, onChange, error }) {
     return (
@@ -36,7 +37,9 @@ function CalculatorField({ field, value, onChange, error }) {
                 )}
             </LabelWithDescription>
 
-            {field.type === 'dropdown' ? (
+            {field.type === 'multiselect' ? (
+                <CheckboxField field={field} value={value} onChange={onChange} />
+            ) : field.type === 'dropdown' ? (
                 <Dropdown
                     options={field.field_options?.map((opt, idx) => ({
                         value: `${opt.id || idx}_${opt.value}`,

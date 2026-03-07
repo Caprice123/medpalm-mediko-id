@@ -324,7 +324,7 @@ export class CalculateResultService extends BaseService {
             }
 
             if (field.key in inputs && inputs[field.key] !== '' && inputs[field.key] !== null) {
-                if (field.type === 'number') {
+                if (field.type === 'number' || field.type === 'multiselect') {
                     const numValue = parseFloat(inputs[field.key])
                     if (isNaN(numValue)) {
                         throw new ValidationError(`Field '${field.label}' must be a valid number`)

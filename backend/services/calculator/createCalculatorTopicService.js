@@ -51,7 +51,7 @@ export class CreateCalculatorTopicService extends BaseService {
                     }
                 }
 
-                if ((field.type === 'dropdown' || field.type === 'radio') && field.options?.length) {
+                if ((field.type === 'dropdown' || field.type === 'radio' || field.type === 'multiselect') && field.options?.length) {
                     for (const [optIndex, option] of field.options.entries()) {
                         const createdOption = await prisma.calculator_field_options.create({
                             data: { calculator_field_id: dbField.id, value: option.value, label: option.label, order: optIndex }
@@ -182,7 +182,7 @@ export class CreateCalculatorTopicService extends BaseService {
 
         data.fields.forEach((field, index) => {
             if (!field.key?.trim()) throw new ValidationError(`Field ${index + 1}: key is required`)
-            if (!['number', 'text', 'dropdown', 'radio'].includes(field.type)) throw new ValidationError(`Field ${index + 1}: invalid type`)
+            if (!['number', 'text', 'dropdown', 'radio', 'multiselect'].includes(field.type)) throw new ValidationError(`Field ${index + 1}: invalid type`)
             if (!field.label?.trim()) throw new ValidationError(`Field ${index + 1}: label is required`)
             if (!field.placeholder?.trim()) throw new ValidationError(`Field ${index + 1}: placeholder is required`)
         })
