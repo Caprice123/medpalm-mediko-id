@@ -625,9 +625,9 @@ model calculator_topics {
   title               String
   description         String?
   clinical_references String[] @default([])
-  formula             String // JavaScript expression, e.g., "weight * 2" or "(height + weight) / 2"
-  result_label        String // Label for the result, e.g., "Total"
-  result_unit         String? // Unit for result, e.g., "kg", "cm"
+  formula             String? // Deprecated: use calculator_results instead
+  result_label        String? // Deprecated: use calculator_results instead
+  result_unit         String? // Deprecated: use calculator_results instead
   status              String   @default("draft") // draft, published
   is_deleted          Boolean  @default(false)
   deleted_at          DateTime?
@@ -636,6 +636,7 @@ model calculator_topics {
   updated_at          DateTime @default(now())
 
   calculator_fields          calculator_fields[]
+  calculator_results         calculator_results[]
   calculator_classifications calculator_classifications[]
   calculator_topic_tags      calculator_topic_tags[]
 
@@ -697,16 +698,32 @@ model calculator_field_options {
   @@index([order])
 }
 
+model calculator_results {
+  id                  Int      @id @default(autoincrement())
+  calculator_topic_id Int
+  key                 String   // Result key used in conditions, e.g., "bmi", "ibw"
+  formula             String   // JavaScript expression
+  result_label        String   // Display label, e.g., "BMI Anda"
+  result_unit         String?  // Unit, e.g., "kg/m²"
+  created_at          DateTime @default(now())
+  updated_at          DateTime @default(now())
+
+  calculator_topic    calculator_topics @relation(fields: [calculator_topic_id], references: [id])
+
+  @@unique([calculator_topic_id, key])
+  @@index([calculator_topic_id])
+}
+
 model calculator_classifications {
   id                  Int      @id @default(autoincrement())
   calculator_topic_id Int
-  name                String   @default("Classification Group") // Classification group name, e.g., "Kategori BMI"
+  name                String   @default("Classification Group")
   order               Int      @default(0)
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
 
-  calculator_topics calculator_topics                   @relation(fields: [calculator_topic_id], references: [id])
-  options           calculator_classification_options[]
+  calculator_topics   calculator_topics                   @relation(fields: [calculator_topic_id], references: [id])
+  options             calculator_classification_options[]
 
   @@index([calculator_topic_id])
   @@index([order])

@@ -165,6 +165,11 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 }
             }
 
+            if (error.response && error.response.status >= 400) {
+                // Redirect to dashboard
+                handleApiError(error, dispatch);
+            }
+
             return Promise.reject(error);
         }
     );

@@ -707,6 +707,113 @@ export const OptionImage = styled.img`
   object-fit: cover;
 `
 
+// Result Tabs
+export const ResultTabsWrapper = styled.div`
+  margin-top: 2rem;
+`
+
+export const ResultTabBar = styled.div`
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e5e7eb;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+`
+
+export const ResultTab = styled.button`
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
+  margin-bottom: -2px;
+  font-size: 0.875rem;
+  font-weight: ${props => props.$active ? '700' : '500'};
+  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #06b6d4;
+  }
+`
+
+export const ResultTabContent = styled.div`
+  background: ${props => props.theme?.colors?.background?.paper || 'white'};
+  border-radius: 0 0 16px 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+`
+
+export const ResultValueBox = styled.div`
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(6,182,212,0.07), rgba(8,145,178,0.04));
+  border-radius: 12px;
+  border: 1px solid rgba(6,182,212,0.15);
+  margin-bottom: 1.75rem;
+`
+
+export const ClassificationTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+`
+
+export const ClassificationThead = styled.thead`
+  background: #f0fdfa;
+`
+
+export const ClassificationTh = styled.th`
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0891b2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+`
+
+export const ClassificationTr = styled.tr`
+  &:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+  }
+  &:hover {
+    background: #f9fafb;
+  }
+`
+
+export const ClassificationTd = styled.td`
+  padding: 0.875rem 1rem;
+  color: #374151;
+  vertical-align: middle;
+
+  &:first-child {
+    font-weight: 600;
+    color: #111827;
+    width: 40%;
+  }
+`
+
+export const ClassificationBadge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(8,145,178,0.08));
+  color: #0891b2;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid rgba(6,182,212,0.2);
+`
+
+export const ClassificationEmptyBadge = styled.span`
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.8rem;
+`
+
 export const FieldImageContainer = styled.div`
   border-radius: 8px;
   overflow: hidden;

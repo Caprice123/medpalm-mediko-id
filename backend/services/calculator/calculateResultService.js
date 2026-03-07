@@ -5,38 +5,23 @@ import { BaseService } from "../baseService.js"
 
 export class CalculateResultService extends BaseService {
     static async call(topicId, inputs) {
-        // Fetch the calculator topic with fields and classifications
+        // Fetch the calculator topic with fields, results and their classifications
         const topic = await prisma.calculator_topics.findUnique({
             where: { unique_id: topicId },
             include: {
                 calculator_fields: {
-                    orderBy: {
-                        order: 'asc'
-                    },
-                    include: {
-                        field_options: {
-                            orderBy: {
-                                order: 'asc'
-                            }
-                        }
-                    }
+                    orderBy: { order: 'asc' },
+                    include: { field_options: { orderBy: { order: 'asc' } } }
+                },
+                calculator_results: {
+                    orderBy: { id: 'asc' }
                 },
                 calculator_classifications: {
-                    orderBy: {
-                        order: 'asc'
-                    },
+                    orderBy: { order: 'asc' },
                     include: {
                         options: {
-                            orderBy: {
-                                order: 'asc'
-                            },
-                            include: {
-                                conditions: {
-                                    orderBy: {
-                                        order: 'asc'
-                                    }
-                                }
-                            }
+                            orderBy: { order: 'asc' },
+                            include: { conditions: { orderBy: { order: 'asc' } } }
                         }
                     }
                 }
@@ -75,81 +60,59 @@ export class CalculateResultService extends BaseService {
             }
         })
 
-        // Evaluate the formula safely
-        let result
-        try {
-            // Create a safe function that only has access to the context variables
-            const formula = topic.formula
+        // Evaluate each result formula and build a resultValues map
+        const resultValues = {}
+        const contextKeys = Object.keys(context)
+        const contextValues = Object.values(context)
 
-            // Use Function constructor with only the context variables as parameters
-            const keys = Object.keys(context)
-            const values = Object.values(context)
-
-            // Add Math object for mathematical operations
-            const mathFunc = new Function(...keys, 'Math', `return ${formula}`)
-            result = mathFunc(...values, Math)
-
-            // Validate result is a number
-            if (typeof result !== 'number' || isNaN(result)) {
-                console.error('Formula evaluation error:', {
-                    formula,
-                    context,
-                    result,
-                    resultType: typeof result
-                })
-                throw new ValidationError(`Formula calculation resulted in an invalid number. Result: ${result}, Type: ${typeof result}`)
+        for (const resultDef of (topic.calculator_results || [])) {
+            try {
+                const mathFunc = new Function(...contextKeys, 'Math', `return ${resultDef.formula}`)
+                const value = mathFunc(...contextValues, Math)
+                if (typeof value !== 'number' || isNaN(value)) {
+                    throw new Error(`Result '${resultDef.key}' formula produced an invalid number`)
+                }
+                resultValues[resultDef.key] = value
+            } catch (error) {
+                if (error instanceof ValidationError) throw error
+                throw new Error(`Result '${resultDef.key}' formula error: ${error.message}`)
             }
-        } catch (error) {
-            if (error instanceof ValidationError) {
-                throw error
-            }
-            console.error('Formula calculation error:', {
-                formula: topic.formula,
-                context,
-                error: error.message
-            })
-            throw new ValidationError(`Formula calculation error: ${error.message}`)
         }
 
-        // Evaluate classifications - return ALL matching options
+        // Build results array
+        const evaluatedResults = (topic.calculator_results || []).map(resultDef => ({
+            key: resultDef.key,
+            result: resultValues[resultDef.key],
+            result_label: resultDef.result_label,
+            result_unit: resultDef.result_unit
+        }))
+
+        // Evaluate topic-level classifications against all resultValues
         const evaluatedClassifications = []
-        if (topic.calculator_classifications && topic.calculator_classifications.length > 0) {
-            for (const classification of topic.calculator_classifications) {
-                const matchedOptions = []
-
-                // Evaluate each option in this classification
-                if (classification.options && classification.options.length > 0) {
-                    for (const option of classification.options) {
-                        if (this.evaluateOption(option, result)) {
-                            matchedOptions.push(option.value)
-                        }
-                    }
-                }
-
-                // Only include classification if at least one option matched
-                if (matchedOptions.length > 0) {
-                    evaluatedClassifications.push({
-                        name: classification.name,
-                        matched_options: matchedOptions
-                    })
+        for (const classification of (topic.calculator_classifications || [])) {
+            const matchedOptions = []
+            for (const option of (classification.options || [])) {
+                if (this.evaluateOption(option, resultValues)) {
+                    matchedOptions.push(option.value)
                 }
             }
+            evaluatedClassifications.push({
+                name: classification.name,
+                matched_options: matchedOptions
+            })
         }
 
         return {
             calculator_topic_id: topic.id,
             topic_title: topic.title,
-            formula: topic.formula,
             inputs: context,
-            result: result,
-            result_label: topic.result_label,
-            result_unit: topic.result_unit,
+            results: evaluatedResults,
             classifications: evaluatedClassifications,
             calculated_at: new Date()
         }
     }
 
-    static evaluateOption(option, resultValue) {
+    static evaluateOption(option, resultValues) {
         if (!option.conditions || option.conditions.length === 0) {
             return false
         }
@@ -159,6 +122,10 @@ export class CalculateResultService extends BaseService {
         let logicalOp = 'AND'
 
         for (const condition of option.conditions) {
+            // Look up the specific result value for this condition's result_key
+            const resultValue = typeof resultValues === 'object' && !Array.isArray(resultValues)
+                ? (resultValues[condition.result_key] ?? resultValues['result'] ?? 0)
+                : resultValues
             const met = this.evaluateCondition(resultValue, condition.operator, condition.value)
 
             if (logicalOp === 'OR') {

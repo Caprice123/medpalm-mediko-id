@@ -7,16 +7,13 @@ export class CreateCalculatorTopicService extends BaseService {
     static async call(data) {
         this.validate(data)
 
-        const { title, description, clinical_references, formula, result_label, result_unit, fields, classifications, tags, status, created_by } = data
+        const { title, description, clinical_references, results, classifications, fields, tags, status, created_by } = data
 
         const topic = await prisma.calculator_topics.create({
             data: {
                 title,
                 description,
                 clinical_references: clinical_references || [],
-                formula,
-                result_label,
-                result_unit,
                 status,
                 created_by: parseInt(created_by),
                 calculator_fields: {
@@ -36,71 +33,33 @@ export class CreateCalculatorTopicService extends BaseService {
                 }
             },
             include: {
-                calculator_fields: {
-                    orderBy: {
-                        order: 'asc'
-                    },
-                    include: {
-                        field_options: {
-                            orderBy: {
-                                order: 'asc'
-                            }
-                        }
-                    }
-                }
+                calculator_fields: { orderBy: { order: 'asc' }, include: { field_options: { orderBy: { order: 'asc' } } } }
             }
         })
 
         // Create field options and field images
         for (const field of fields) {
             const dbField = await prisma.calculator_fields.findUnique({
-                where: {
-                    calculator_topic_id_key: {
-                        calculator_topic_id: topic.id,
-                        key: field.key
-                    }
-                }
+                where: { calculator_topic_id_key: { calculator_topic_id: topic.id, key: field.key } }
             })
 
             if (dbField) {
-                // Attach field-level image if provided
                 if (field.blobId) {
-                    const blobExists = await prisma.blobs.findUnique({
-                        where: { id: parseInt(field.blobId) }
-                    })
+                    const blobExists = await prisma.blobs.findUnique({ where: { id: parseInt(field.blobId) } })
                     if (blobExists) {
-                        await AttachmentService.attach({
-                            blobId: parseInt(field.blobId),
-                            recordType: 'calculator_field',
-                            recordId: dbField.id,
-                            name: 'image'
-                        })
+                        await AttachmentService.attach({ blobId: parseInt(field.blobId), recordType: 'calculator_field', recordId: dbField.id, name: 'image' })
                     }
                 }
 
-                // Create options for dropdown/radio types
-                if ((field.type === 'dropdown' || field.type === 'radio') && field.options && Array.isArray(field.options)) {
+                if ((field.type === 'dropdown' || field.type === 'radio') && field.options?.length) {
                     for (const [optIndex, option] of field.options.entries()) {
                         const createdOption = await prisma.calculator_field_options.create({
-                            data: {
-                                calculator_field_id: dbField.id,
-                                value: option.value,
-                                label: option.label,
-                                order: optIndex
-                            }
+                            data: { calculator_field_id: dbField.id, value: option.value, label: option.label, order: optIndex }
                         })
-
                         if (option.blobId) {
-                            const blobExists = await prisma.blobs.findUnique({
-                                where: { id: parseInt(option.blobId) }
-                            })
+                            const blobExists = await prisma.blobs.findUnique({ where: { id: parseInt(option.blobId) } })
                             if (blobExists) {
-                                await AttachmentService.attach({
-                                    blobId: parseInt(option.blobId),
-                                    recordType: 'calculator_field_option',
-                                    recordId: createdOption.id,
-                                    name: 'image'
-                                })
+                                await AttachmentService.attach({ blobId: parseInt(option.blobId), recordType: 'calculator_field_option', recordId: createdOption.id, name: 'image' })
                             }
                         }
                     }
@@ -108,22 +67,34 @@ export class CreateCalculatorTopicService extends BaseService {
             }
         }
 
-        // Create classifications with options and conditions
+        // Create results
+        if (results && Array.isArray(results)) {
+            for (const [resultIndex, result] of results.entries()) {
+                await prisma.calculator_results.create({
+                    data: {
+                        calculator_topic_id: topic.id,
+                        key: result.key || `result_${resultIndex}`,
+                        formula: result.formula,
+                        result_label: result.result_label,
+                        result_unit: result.result_unit || null
+                    }
+                })
+            }
+        }
+
+        // Create topic-level classifications
         if (classifications && Array.isArray(classifications)) {
             for (const [classIndex, classification] of classifications.entries()) {
-                // Create classification
                 const classifRecord = await prisma.calculator_classifications.create({
                     data: {
                         calculator_topic_id: topic.id,
-                        name: classification.name || classification.label || 'Classification Group',
+                        name: classification.name || 'Classification Group',
                         order: classIndex
                     }
                 })
 
-                // Create options for this classification
                 if (classification.options && Array.isArray(classification.options)) {
                     for (const [optIndex, option] of classification.options.entries()) {
-                        // Create the option
                         const optionRecord = await prisma.calculator_classification_options.create({
                             data: {
                                 calculator_classification_id: classifRecord.id,
@@ -133,23 +104,16 @@ export class CreateCalculatorTopicService extends BaseService {
                             }
                         })
 
-                        // Create conditions for this option
                         if (option.conditions && Array.isArray(option.conditions)) {
-                            // Auto-set last condition's logical_operator to null
-                            const conditionsData = option.conditions.map((condition, condIndex) => {
-                                const isLastCondition = condIndex === option.conditions.length - 1
-                                return {
+                            await prisma.calculator_classification_option_conditions.createMany({
+                                data: option.conditions.map((condition, condIndex) => ({
                                     calculator_classification_option_id: optionRecord.id,
                                     result_key: condition.result_key || 'result',
                                     operator: condition.operator,
                                     value: String(condition.value),
-                                    logical_operator: isLastCondition ? null : (condition.logical_operator || 'AND'),
+                                    logical_operator: condIndex === option.conditions.length - 1 ? null : (condition.logical_operator || 'AND'),
                                     order: condIndex
-                                }
-                            })
-
-                            await prisma.calculator_classification_option_conditions.createMany({
-                                data: conditionsData
+                                }))
                             })
                         }
                     }
@@ -157,123 +121,74 @@ export class CreateCalculatorTopicService extends BaseService {
             }
         }
 
-        // Create calculator topic tags
+        // Create tags
         if (tags && Array.isArray(tags) && tags.length > 0) {
-            const tagData = tags.map(tag => ({
-                calculator_topic_id: topic.id,
-                tag_id: typeof tag === 'object' ? tag.id : tag
-            }))
-
             await prisma.calculator_topic_tags.createMany({
-                data: tagData
+                data: tags.map(tag => ({
+                    calculator_topic_id: topic.id,
+                    tag_id: typeof tag === 'object' ? tag.id : tag
+                }))
             })
         }
 
-        // Refetch with all relations
-        const finalTopic = await prisma.calculator_topics.findUnique({
-            where: { id: topic.id },
+        return this.refetch(topic.id)
+    }
+
+    static async refetch(topicId) {
+        const topic = await prisma.calculator_topics.findUnique({
+            where: { id: topicId },
             include: {
                 calculator_fields: {
-                    orderBy: {
-                        order: 'asc'
-                    },
-                    include: {
-                        field_options: {
-                            orderBy: {
-                                order: 'asc'
-                            }
-                        }
-                    }
+                    orderBy: { order: 'asc' },
+                    include: { field_options: { orderBy: { order: 'asc' } } }
+                },
+                calculator_results: {
+                    orderBy: { id: 'asc' }
                 },
                 calculator_classifications: {
-                    orderBy: {
-                        order: 'asc'
-                    },
+                    orderBy: { order: 'asc' },
                     include: {
                         options: {
-                            orderBy: {
-                                order: 'asc'
-                            },
-                            include: {
-                                conditions: {
-                                    orderBy: {
-                                        order: 'asc'
-                                    }
-                                }
-                            }
+                            orderBy: { order: 'asc' },
+                            include: { conditions: { orderBy: { order: 'asc' } } }
                         }
                     }
                 },
-                calculator_topic_tags: {
-                    include: {
-                        tags: true
-                    }
-                }
+                calculator_topic_tags: { include: { tags: true } }
             }
         })
 
         return {
-            id: finalTopic.id,
-            title: finalTopic.title,
-            description: finalTopic.description,
-            clinical_references: finalTopic.clinical_references,
-            formula: finalTopic.formula,
-            result_label: finalTopic.result_label,
-            result_unit: finalTopic.result_unit,
-            status: finalTopic.status,
-            fields: finalTopic.calculator_fields,
-            classifications: finalTopic.calculator_classifications,
-            tags: finalTopic.calculator_topic_tags.map(tt => tt.tags),
-            created_by: finalTopic.created_by,
-            created_at: finalTopic.created_at,
-            updated_at: finalTopic.updated_at
+            id: topic.id,
+            title: topic.title,
+            description: topic.description,
+            clinical_references: topic.clinical_references,
+            status: topic.status,
+            fields: topic.calculator_fields,
+            results: topic.calculator_results,
+            classifications: topic.calculator_classifications,
+            tags: topic.calculator_topic_tags.map(tt => tt.tags),
+            created_by: topic.created_by,
+            created_at: topic.created_at,
+            updated_at: topic.updated_at
         }
     }
 
     static validate(data) {
-        if (!data.title || typeof data.title !== 'string' || data.title.trim() === '') {
-            throw new ValidationError('Title is required and must be a non-empty string')
-        }
+        if (!data.title?.trim()) throw new ValidationError('Title is required')
+        if (!Array.isArray(data.fields) || data.fields.length === 0) throw new ValidationError('At least one field is required')
+        if (!Array.isArray(data.results) || data.results.length === 0) throw new ValidationError('At least one result is required')
 
-        if (!data.formula || typeof data.formula !== 'string' || data.formula.trim() === '') {
-            throw new ValidationError('Formula is required and must be a non-empty string')
-        }
-
-        if (!data.result_label || typeof data.result_label !== 'string' || data.result_label.trim() === '') {
-            throw new ValidationError('Result label is required and must be a non-empty string')
-        }
-
-        if (!Array.isArray(data.fields) || data.fields.length === 0) {
-            throw new ValidationError('At least one field is required')
-        }
-
-        // Validate each field
         data.fields.forEach((field, index) => {
-            if (!field.key || typeof field.key !== 'string' || field.key.trim() === '') {
-                throw new ValidationError(`Field ${index + 1}: key is required and must be a non-empty string`)
-            }
-
-            if (!field.type || !['number', 'text', 'dropdown', 'radio'].includes(field.type)) {
-                throw new ValidationError(`Field ${index + 1}: type must be 'number', 'text', 'dropdown', or 'radio'`)
-            }
-
-            if (!field.label || typeof field.label !== 'string' || field.label.trim() === '') {
-                throw new ValidationError(`Field ${index + 1}: label is required and must be a non-empty string`)
-            }
-
-            if (!field.placeholder || typeof field.placeholder !== 'string' || field.placeholder.trim() === '') {
-                throw new ValidationError(`Field ${index + 1}: placeholder is required and must be a non-empty string`)
-            }
+            if (!field.key?.trim()) throw new ValidationError(`Field ${index + 1}: key is required`)
+            if (!['number', 'text', 'dropdown', 'radio'].includes(field.type)) throw new ValidationError(`Field ${index + 1}: invalid type`)
+            if (!field.label?.trim()) throw new ValidationError(`Field ${index + 1}: label is required`)
+            if (!field.placeholder?.trim()) throw new ValidationError(`Field ${index + 1}: placeholder is required`)
         })
 
-        // Validate that formula contains all field keys
-        const formulaStr = data.formula
-        data.fields.forEach(field => {
-            // Check if the field key is referenced in the formula
-            const fieldRegex = new RegExp(`\\b${field.key}\\b`)
-            if (!fieldRegex.test(formulaStr)) {
-                throw new ValidationError(`Formula must reference field key '${field.key}'`)
-            }
+        data.results.forEach((result, index) => {
+            if (!result.formula?.trim()) throw new ValidationError(`Result ${index + 1}: formula is required`)
+            if (!result.result_label?.trim()) throw new ValidationError(`Result ${index + 1}: label is required`)
         })
     }
 }

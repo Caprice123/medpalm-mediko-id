@@ -160,17 +160,42 @@ export const ErrorMessage = styled.div`
 // Field Builder Styles
 export const FieldsSection = styled.div`
   margin: 1.5rem 0;
-  padding: 1.25rem;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+  overflow: hidden;
+`
+
+export const AccordionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+`
+
+export const AccordionBody = styled.div`
+  padding: 0 1.25rem 1.25rem;
+`
+
+export const AccordionChevron = styled.span`
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: transform 0.2s;
+  transform: ${({ $isOpen }) => $isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'};
+  display: inline-block;
 `
 
 export const SectionTitle = styled.h4`
   font-size: 0.875rem;
   font-weight: 600;
   color: #374151;
-  margin: 0 0 1rem 0;
+  margin: 0;
 `
 
 export const FieldsList = styled.div`

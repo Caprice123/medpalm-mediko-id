@@ -57,6 +57,13 @@ export class CalculatorTopicSerializer {
       }
     }))
 
+    const results = (topic.calculator_results || []).map(result => ({
+      key: result.key,
+      formula: result.formula,
+      result_label: result.result_label,
+      result_unit: result.result_unit
+    }))
+
     const classifications = (topic.calculator_classifications || []).map(classification => ({
       name: classification.name,
       options: (classification.options || []).map(opt => ({
@@ -79,11 +86,9 @@ export class CalculatorTopicSerializer {
       title: topic.title,
       description: topic.description,
       clinical_references: topic.clinical_references,
-      formula: topic.formula,
-      result_label: topic.result_label,
-      result_unit: topic.result_unit,
       status: topic.status,
       fields,
+      results,
       classifications,
       tags
     }

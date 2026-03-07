@@ -11,7 +11,7 @@ if (import.meta.env.DEV) {
 }
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+//   <StrictMode>
     <ErrorBoundary
       fallback={({ error, resetError }) => (
         <div style={{
@@ -62,5 +62,5 @@ createRoot(document.getElementById('root')).render(
     >
       <App />
     </ErrorBoundary>
-  </StrictMode>,
+//   </StrictMode>,
 )

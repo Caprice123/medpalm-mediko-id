@@ -16,6 +16,9 @@ router.use(checkFeature(featureConstantKey))
 // Config endpoint
 router.get('/config', asyncHandler(SkripsiTabsController.getConfig))
 
+// Domain list (paginated, for research settings modal)
+router.get('/domains', asyncHandler(SkripsiSetsController.getDomains))
+
 router.get('/sets', asyncHandler(SkripsiSetsController.getSets))
 router.post('/sets', asyncHandler(SkripsiSetsController.createSet))
 router.post('/export-word', asyncHandler(SkripsiSetsController.exportToWord))

@@ -3,8 +3,6 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import {
-  ClassificationsSection,
-  SectionTitle,
   ClassificationsList,
   ClassificationItem as StyledClassificationItem,
   ClassificationOptionsList,
@@ -362,9 +360,7 @@ const ClassificationSection = memo(({
   onConditionChange
 }) => {
   return (
-    <ClassificationsSection>
-      <SectionTitle>Classifications</SectionTitle>
-
+    <div>
       {classifications && classifications.length > 0 && (
         <ClassificationsList>
           {classifications.map((classification, classIndex) => {
@@ -395,7 +391,7 @@ const ClassificationSection = memo(({
       <Button variant="outline" fullWidth type="button" onClick={onAddClassification}>
         + Tambah Grup Klasifikasi
       </Button>
-    </ClassificationsSection>
+    </div>
   )
 })
 

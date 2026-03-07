@@ -19,22 +19,15 @@ export class GetCalculatorTopicDetailService extends BaseService {
                         }
                     }
                 },
+                calculator_results: {
+                    orderBy: { id: 'asc' }
+                },
                 calculator_classifications: {
-                    orderBy: {
-                        order: 'asc'
-                    },
+                    orderBy: { order: 'asc' },
                     include: {
                         options: {
-                            orderBy: {
-                                order: 'asc'
-                            },
-                            include: {
-                                conditions: {
-                                    orderBy: {
-                                        order: 'asc'
-                                    }
-                                }
-                            }
+                            orderBy: { order: 'asc' },
+                            include: { conditions: { orderBy: { order: 'asc' } } }
                         }
                     }
                 },

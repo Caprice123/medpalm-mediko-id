@@ -66,16 +66,21 @@ export class CalculatorTopicSerializer {
       }
     }))
 
+    const results = (topic.calculator_results || []).map(result => ({
+      key: result.key,
+      result_label: result.result_label,
+      result_unit: result.result_unit
+    }))
+
     return {
       id: topic.id,
       title: topic.title,
       uniqueId: topic.unique_id,
       description: topic.description,
-      result_label: topic.result_label,
-      result_unit: topic.result_unit,
       clinical_references: topic.clinical_references || [],
       tags: topicTags,
-      calculator_fields: fieldsWithImages
+      calculator_fields: fieldsWithImages,
+      results
     }
   }
 }

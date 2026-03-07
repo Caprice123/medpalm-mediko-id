@@ -53,7 +53,7 @@ const CalculatorDetail = () => {
             })
             return newInputs
         })
-    }, [detail?.calculator_fields, inputs])
+    }, [detail?.calculator_fields])
 
     // Evaluate display conditions for a field
     const shouldDisplayField = (field) => {
@@ -212,9 +212,10 @@ const CalculatorDetail = () => {
                     </Button>
                     </form>
 
-                    {result && (
+                    {result && result.results && result.results.length > 0 && (
                         <CalculatorResult
-                            result={result}
+                            results={result.results}
+                            classifications={result.classifications}
                             clinicalReferences={detail.clinical_references}
                         />
                     )}

@@ -9,9 +9,9 @@ import Textarea from '@components/common/Textarea'
 import Button from '@components/common/Button'
 import FileUpload from '@components/common/FileUpload'
 import { FieldItem } from './components/FieldItem'
+import { ResultsSection } from './components/ResultsSection'
 import { ClassificationSection } from './components/ClassificationSection'
 import { BasicInfoSection } from './components/BasicInfoSection'
-import { FormulaSection } from './components/FormulaSection'
 import { StatusSection } from './components/StatusSection'
 import { ClinicalReferencesSection } from './components/ClinicalReferencesSection'
 import {
@@ -27,6 +27,9 @@ import {
   HelpText,
   ErrorMessage,
   FieldsSection,
+  AccordionHeader,
+  AccordionBody,
+  AccordionChevron,
   SectionTitle,
   FieldsList,
   FieldItem as StyledFieldItem,
@@ -69,6 +72,9 @@ import {
 function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [expandedOptions, setExpandedOptions] = useState({})
   const [expandedClassifications, setExpandedClassifications] = useState({})
+  const [fieldsOpen, setFieldsOpen] = useState(true)
+  const [resultsOpen, setResultsOpen] = useState(true)
+  const [classificationsOpen, setClassificationsOpen] = useState(true)
 
   // Setup drag and drop sensors
   const sensors = useSensors(
@@ -81,17 +87,11 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
 
   const toggleOption = (classIndex, optIndex) => {
     const key = `${classIndex}-${optIndex}`
-    setExpandedOptions(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }))
+    setExpandedOptions(prev => ({ ...prev, [key]: !prev[key] }))
   }
 
   const toggleClassification = (classIndex) => {
-    setExpandedClassifications(prev => ({
-      ...prev,
-      [classIndex]: !prev[classIndex]
-    }))
+    setExpandedClassifications(prev => ({ ...prev, [classIndex]: !prev[classIndex] }))
   }
 
   const {
@@ -122,6 +122,9 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     addDisplayCondition,
     removeDisplayCondition,
     handleDisplayConditionChange,
+    addResult,
+    removeResult,
+    handleResultChange,
     addClassification,
     removeClassification,
     handleClassificationChange,
@@ -132,6 +135,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     removeCondition,
     handleConditionChange,
     handleSubmit,
+
     handleClose,
     handleConfirmClose,
     handleCancelClose
@@ -189,79 +193,104 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                 onTagsChange={handleTagsChange}
               />
 
-              {/* Step 2: Result Configuration & Formula */}
-              <FormulaSection
-                formula={formData.formula}
-                resultLabel={formData.result_label}
-                resultUnit={formData.result_unit}
-                errors={errors}
-                onFieldChange={handleFieldChange}
-              />
-
-              {/* Step 3: Input Fields */}
+              {/* Step 2: Input Fields */}
               <FieldsSection>
-                <SectionTitle>Input Fields *</SectionTitle>
-                {errors.fields && <ErrorMessage>{errors.fields}</ErrorMessage>}
-
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={fieldIds}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <FieldsList>
-                      {formData.fields.map((field, index) => (
-                        <FieldItem
-                          key={field._id || index}
-                          field={field}
-                          index={index}
-                          errors={errors}
-                          fields={field.display_conditions?.length > 0 ? formData.fields : []}
-                          onFieldItemChange={handleFieldItemChange}
-                          onRemoveField={removeField}
-                          onAddFieldOption={addFieldOption}
-                          onRemoveFieldOption={removeFieldOption}
-                          onFieldOptionChange={handleFieldOptionChange}
-                          onOptionImageUpload={handleOptionImageUpload}
-                          onOptionImageRemove={handleOptionImageRemove}
-                          onFieldImageUpload={handleFieldImageUpload}
-                          onFieldImageRemove={handleFieldImageRemove}
-                          onAddDisplayCondition={addDisplayCondition}
-                          onRemoveDisplayCondition={removeDisplayCondition}
-                          onDisplayConditionChange={handleDisplayConditionChange}
-                        />
-                      ))}
-                    </FieldsList>
-                  </SortableContext>
-                </DndContext>
-
-                <Button variant="outline" fullWidth type="button" onClick={addField}>
-                  + Tambah Field Baru
-                </Button>
+                <AccordionHeader onClick={() => setFieldsOpen(o => !o)}>
+                  <SectionTitle>Input Fields * {formData.fields.length > 0 && `(${formData.fields.length})`}</SectionTitle>
+                  <AccordionChevron $isOpen={fieldsOpen}>▼</AccordionChevron>
+                </AccordionHeader>
+                {fieldsOpen && (
+                  <AccordionBody>
+                    {errors.fields && <ErrorMessage>{errors.fields}</ErrorMessage>}
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={fieldIds}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <FieldsList>
+                          {formData.fields.map((field, index) => (
+                            <FieldItem
+                              key={field._id || index}
+                              field={field}
+                              index={index}
+                              errors={errors}
+                              fields={field.display_conditions?.length > 0 ? formData.fields : []}
+                              onFieldItemChange={handleFieldItemChange}
+                              onRemoveField={removeField}
+                              onAddFieldOption={addFieldOption}
+                              onRemoveFieldOption={removeFieldOption}
+                              onFieldOptionChange={handleFieldOptionChange}
+                              onOptionImageUpload={handleOptionImageUpload}
+                              onOptionImageRemove={handleOptionImageRemove}
+                              onFieldImageUpload={handleFieldImageUpload}
+                              onFieldImageRemove={handleFieldImageRemove}
+                              onAddDisplayCondition={addDisplayCondition}
+                              onRemoveDisplayCondition={removeDisplayCondition}
+                              onDisplayConditionChange={handleDisplayConditionChange}
+                            />
+                          ))}
+                        </FieldsList>
+                      </SortableContext>
+                    </DndContext>
+                    <Button variant="outline" fullWidth type="button" onClick={addField} style={{ marginTop: formData.fields.length > 0 ? '1rem' : '0' }}>
+                      + Tambah Field Baru
+                    </Button>
+                  </AccordionBody>
+                )}
               </FieldsSection>
 
-              {/* Step 5: Classifications (Optional) */}
-              <ClassificationSection
-                classifications={formData.classifications}
-                expandedOptions={expandedOptions}
-                expandedClassifications={expandedClassifications}
-                onToggleOption={toggleOption}
-                onToggleClassification={toggleClassification}
-                onAddClassification={addClassification}
-                onRemoveClassification={removeClassification}
-                onClassificationChange={handleClassificationChange}
-                onAddClassificationOption={addClassificationOption}
-                onRemoveClassificationOption={removeClassificationOption}
-                onClassificationOptionChange={handleClassificationOptionChange}
-                onAddCondition={addCondition}
-                onRemoveCondition={removeCondition}
-                onConditionChange={handleConditionChange}
-              />
+              {/* Step 3: Results */}
+              <FieldsSection>
+                <AccordionHeader onClick={() => setResultsOpen(o => !o)}>
+                  <SectionTitle>Hasil * {formData.results.length > 0 && `(${formData.results.length})`}</SectionTitle>
+                  <AccordionChevron $isOpen={resultsOpen}>▼</AccordionChevron>
+                </AccordionHeader>
+                {resultsOpen && (
+                  <AccordionBody>
+                    <ResultsSection
+                      results={formData.results}
+                      errors={errors}
+                      onAddResult={addResult}
+                      onRemoveResult={removeResult}
+                      onResultChange={handleResultChange}
+                    />
+                  </AccordionBody>
+                )}
+              </FieldsSection>
 
-              {/* Step 6: Status */}
+              {/* Step 4: Classifications */}
+              <FieldsSection>
+                <AccordionHeader onClick={() => setClassificationsOpen(o => !o)}>
+                  <SectionTitle>Klasifikasi {formData.classifications.length > 0 && `(${formData.classifications.length})`}</SectionTitle>
+                  <AccordionChevron $isOpen={classificationsOpen}>▼</AccordionChevron>
+                </AccordionHeader>
+                {classificationsOpen && (
+                  <AccordionBody>
+                    <ClassificationSection
+                      classifications={formData.classifications}
+                      expandedOptions={expandedOptions}
+                      expandedClassifications={expandedClassifications}
+                      onToggleOption={toggleOption}
+                      onToggleClassification={toggleClassification}
+                      onAddClassification={addClassification}
+                      onRemoveClassification={removeClassification}
+                      onClassificationChange={handleClassificationChange}
+                      onAddClassificationOption={addClassificationOption}
+                      onRemoveClassificationOption={removeClassificationOption}
+                      onClassificationOptionChange={handleClassificationOptionChange}
+                      onAddCondition={addCondition}
+                      onRemoveCondition={removeCondition}
+                      onConditionChange={handleConditionChange}
+                    />
+                  </AccordionBody>
+                )}
+              </FieldsSection>
+
+              {/* Step 5: Status */}
               <StatusSection
                 status={formData.status}
                 onFieldChange={handleFieldChange}
