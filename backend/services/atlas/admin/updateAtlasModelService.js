@@ -9,7 +9,8 @@ export class UpdateAtlasModelService extends BaseService {
     description,
     embedUrl,
     tags,
-    status
+    status,
+    editorContent
   }) {
     await this.validate({ modelId, title, embedUrl, tags })
 
@@ -32,6 +33,7 @@ export class UpdateAtlasModelService extends BaseService {
           title,
           description: description || null,
           embed_url: embedUrl,
+          editor_content: editorContent !== undefined ? (editorContent ? JSON.stringify(editorContent) : null) : undefined,
           ...(status && { status }),
           updated_at: new Date(),
           atlas_model_tags: {

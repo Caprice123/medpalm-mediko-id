@@ -26,7 +26,7 @@ class AtlasController {
   }
 
   async create(req, res) {
-    const { title, description, embedUrl, tags, status } = req.body
+    const { title, description, embedUrl, tags, status, editorContent } = req.body
 
     const model = await CreateAtlasModelService.call({
       title,
@@ -34,7 +34,8 @@ class AtlasController {
       embedUrl,
       tags,
       status: status || 'draft',
-      createdBy: req.user.id
+      createdBy: req.user.id,
+      editorContent
     })
 
     return res.status(201).json({
@@ -54,7 +55,7 @@ class AtlasController {
 
   async update(req, res) {
     const { uniqueId } = req.params
-    const { title, description, embedUrl, tags, status } = req.body
+    const { title, description, embedUrl, tags, status, editorContent } = req.body
 
     const updatedModel = await UpdateAtlasModelService.call({
       modelId: uniqueId,
@@ -62,7 +63,8 @@ class AtlasController {
       description,
       embedUrl,
       tags,
-      status
+      status,
+      editorContent
     })
 
     return res.status(200).json({

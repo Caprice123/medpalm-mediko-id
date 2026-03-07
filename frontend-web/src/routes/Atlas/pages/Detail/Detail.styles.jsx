@@ -121,6 +121,22 @@ export const EmbedFrame = styled.iframe`
   }
 `
 
+export const EditorSection = styled.div`
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+  overflow: hidden;
+
+  .bn-container {
+    min-height: 100vh;
+  }
+
+@media (max-width: 768px) {
+    margin-top: 1rem;
+  }
+`
+
 export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 40px;

@@ -13,5 +13,7 @@ export {
   StructuresSectionTitle,
   StructureCard,
   StructureCardHeader,
-  StructureNumber
+  StructureNumber,
+  EditorContainer,
+  EditorHint
 } from '../CreateAtlasModal/CreateAtlasModal.styles'

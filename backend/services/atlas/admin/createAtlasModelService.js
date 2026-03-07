@@ -9,7 +9,8 @@ export class CreateAtlasModelService extends BaseService {
     embedUrl,
     tags,
     createdBy,
-    status = 'draft'
+    status = 'draft',
+    editorContent
   }) {
     await this.validate({ title, embedUrl, tags })
 
@@ -18,6 +19,7 @@ export class CreateAtlasModelService extends BaseService {
         title,
         description: description || null,
         embed_url: embedUrl,
+        editor_content: editorContent ? JSON.stringify(editorContent) : null,
         status,
         created_by: createdBy,
         atlas_model_tags: {

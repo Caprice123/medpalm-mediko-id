@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { fetchAtlasModel } from '@store/atlas/userAction'
 import Button from '@components/common/Button'
+import BlockNoteEditor from '@components/BlockNoteEditor'
 import {
   Container,
   Content,
@@ -13,6 +14,7 @@ import {
   Tag,
   EmbedWrapper,
   EmbedFrame,
+  EditorSection,
   LoadingSpinner
 } from './Detail.styles'
 
@@ -82,6 +84,15 @@ function AtlasDetailPage() {
             allow="fullscreen"
           />
         </EmbedWrapper>
+
+        {model.editorContent && (
+          <EditorSection>
+            <BlockNoteEditor
+              initialContent={model.editorContent}
+              editable={false}
+            />
+          </EditorSection>
+        )}
       </Content>
     </Container>
   )

@@ -1032,8 +1032,9 @@ model atlas_models {
   unique_id   String   @unique @default(uuid())
   title       String
   description String?
-  embed_url   String
-  status      String   @default("draft")
+  embed_url      String
+  editor_content String?  @db.Text
+  status         String   @default("draft")
   created_by  Int
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())

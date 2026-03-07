@@ -8,6 +8,7 @@ export class AtlasModelSerializer {
       title: model.title,
       description: model.description,
       embedUrl: model.embed_url,
+      editorContent: model.editor_content ? JSON.parse(model.editor_content) : null,
       tags: modelTags.map(tag => ({
         id: tag.tags.id,
         name: tag.tags.name,

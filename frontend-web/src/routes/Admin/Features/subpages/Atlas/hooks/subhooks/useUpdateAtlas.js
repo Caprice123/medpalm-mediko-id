@@ -2,6 +2,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import { useMemo } from 'react'
 import { updateAtlasModel, fetchAdminAtlasModels } from '@store/atlas/adminAction'
+import { upload } from '@store/common/action'
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 export const useUpdateAtlas = (closeCallback) => {
   const dispatch = useDispatch()
@@ -35,7 +38,8 @@ export const useUpdateAtlas = (closeCallback) => {
       embedUrl: selectedModel?.embedUrl || '',
       topicTags: initialTopicTags,
       subtopicTags: initialSubtopicTags,
-      status: selectedModel?.status || 'draft'
+      status: selectedModel?.status || 'draft',
+      editorContent: selectedModel?.editorContent || null
     },
     onSubmit: (values, { resetForm }) => {
       const modelData = {
@@ -43,7 +47,8 @@ export const useUpdateAtlas = (closeCallback) => {
         description: values.description,
         embedUrl: values.embedUrl,
         tags: [...values.topicTags, ...values.subtopicTags].map(tag => tag.id),
-        status: values.status
+        status: values.status,
+        editorContent: values.editorContent
       }
 
       const onSuccess = () => {
@@ -56,5 +61,10 @@ export const useUpdateAtlas = (closeCallback) => {
     }
   })
 
-  return { form }
+  const handleImageUpload = async (file) => {
+    const result = await dispatch(upload(file, 'atlas'))
+    return `${API_BASE_URL}/api/v1/blobs/${result.blobId}`
+  }
+
+  return { form, handleImageUpload }
 }

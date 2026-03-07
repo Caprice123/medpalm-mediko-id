@@ -144,3 +144,25 @@ export const StructureNumber = styled.div`
   color: #6BB9E8;
   font-size: 0.875rem;
 `
+
+export const EditorContainer = styled.div`
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 400px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #6BB9E8;
+  }
+
+  .bn-container {
+    min-height: 400px;
+  }
+`
+
+export const EditorHint = styled.p`
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+`

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import Modal from '@components/common/Modal'
 import TagSelector from '@components/common/TagSelector'
 import Button from '@components/common/Button'
+import BlockNoteEditor from '@components/BlockNoteEditor'
 import { useSelector } from 'react-redux'
 import { useUpdateAtlas } from '../../hooks/subhooks/useUpdateAtlas'
 import {
@@ -13,13 +14,15 @@ import {
   ErrorText,
   StatusToggle,
   StatusOption,
+  EditorContainer,
+  EditorHint,
 } from './UpdateAtlasModal.styles'
 
 function UpdateAtlasModal({ onClose }) {
   const { loading } = useSelector(state => state.atlas)
   const { tags } = useSelector(state => state.tags)
 
-  const { form } = useUpdateAtlas(onClose)
+  const { form, handleImageUpload } = useUpdateAtlas(onClose)
 
   const topicTags = useMemo(
     () => tags.find(t => t.name === 'atlas_topic')?.tags || [],
@@ -79,6 +82,19 @@ function UpdateAtlasModal({ onClose }) {
         />
         <HelpText>Paste URL embed dari BioDigital Human, Sketchfab, atau platform 3D lainnya</HelpText>
         {form.errors.embedUrl && <ErrorText>{form.errors.embedUrl}</ErrorText>}
+      </FormSection>
+
+      <FormSection>
+        <Label>Konten Editor</Label>
+        <EditorHint>Type <strong>/</strong> untuk pilihan format • Konten ini ditampilkan di bawah embed viewer</EditorHint>
+        <EditorContainer>
+          <BlockNoteEditor
+            initialContent={form.values.editorContent}
+            onChange={blocks => form.setFieldValue('editorContent', blocks)}
+            editable={true}
+            onImageUpload={handleImageUpload}
+          />
+        </EditorContainer>
       </FormSection>
 
       <FormSection>
