@@ -140,6 +140,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 handleApiError(error, dispatch);
                 setToken(null);
                 navigate(SIGN_IN_ROUTE);
+                return Promise.reject(error)
             }
 
             // If we get a 403 error, feature is disabled - redirect to dashboard with error message
@@ -147,6 +148,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 // Redirect to dashboard
                 handleApiError(error, dispatch);
                 navigate('/dashboard');
+                return Promise.reject(error)
             }
 
             // Handle 500 errors (silent for finalize/truncate — caller handles those)
@@ -163,6 +165,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                     })
                     handleApiError(error, dispatch);
                 }
+                return
             }
 
             if (error.response && error.response.status >= 400) {

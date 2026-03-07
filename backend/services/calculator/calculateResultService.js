@@ -60,11 +60,14 @@ export class CalculateResultService extends BaseService {
             }
         })
 
+        // Topologically sort results so dependencies are evaluated first
+        const sortedResults = this.sortResultsByDependency(topic.calculator_results || [])
+
         // Evaluate each result formula and build a resultValues map
         // Each result can reference previously computed results by their key
         const resultValues = {}
 
-        for (const resultDef of (topic.calculator_results || [])) {
+        for (const resultDef of sortedResults) {
             try {
                 // Merge input fields + already-computed results so each result can depend on prior ones
                 const evalContext = { ...context, ...resultValues }
@@ -178,6 +181,47 @@ export class CalculateResultService extends BaseService {
             default:
                 return false
         }
+    }
+
+    // Topological sort — results that others depend on come first
+    static sortResultsByDependency(results) {
+        const allKeys = new Set(results.map(r => r.key))
+        const resultByKey = Object.fromEntries(results.map(r => [r.key, r]))
+
+        // Find which result keys appear in a formula string (word-boundary match)
+        const getDeps = (formula) => {
+            const deps = new Set()
+            for (const key of allKeys) {
+                if (new RegExp(`\\b${key}\\b`).test(formula)) deps.add(key)
+            }
+            return deps
+        }
+
+        // Build full dep set per result (including conditional formulas)
+        const deps = {}
+        for (const r of results) {
+            const d = getDeps(r.formula)
+            for (const cf of (r.conditional_formulas || [])) {
+                for (const k of getDeps(cf.formula || '')) d.add(k)
+            }
+            d.delete(r.key) // no self-reference
+            deps[r.key] = d
+        }
+
+        // DFS topological sort
+        const sorted = []
+        const visited = new Set()
+        const visit = (key) => {
+            if (visited.has(key)) return
+            visited.add(key)
+            for (const dep of (deps[key] || [])) {
+                if (resultByKey[dep]) visit(dep)
+            }
+            sorted.push(resultByKey[key])
+        }
+        for (const r of results) visit(r.key)
+
+        return sorted
     }
 
     // Evaluate conditions against input field values (for conditional formula selection)

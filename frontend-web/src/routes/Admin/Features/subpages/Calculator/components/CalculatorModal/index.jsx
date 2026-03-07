@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useCalculatorModal } from './useCalculatorModal'
@@ -66,8 +66,69 @@ import {
   ReferencesList,
   ReferenceItem,
   ReferenceText,
-  AddReferenceWrapper
+  AddReferenceWrapper,
+  EditorModeTabs,
+  EditorModeTab,
+  JsonEditorWrapper,
+  JsonTextarea,
+  JsonError,
+  JsonHint
 } from './CalculatorModal.styles'
+
+// Serialize formData → clean JSON (all structural fields, no internal IDs/blobs)
+function formDataToJson(data) {
+  return JSON.stringify({
+    title: data.title || '',
+    description: data.description || '',
+    status: data.status || 'draft',
+    clinical_references: data.clinical_references || [],
+    tags: (data.tags || []).map(t => typeof t === 'object' ? { id: t.id, name: t.name } : t),
+    fields: (data.fields || []).map(({ _id, image, ...rest }) => ({
+      ...rest,
+      options: (rest.options || []).map(({ image: _img, ...o }) => o),
+      display_conditions: rest.display_conditions || []
+    })),
+    results: (data.results || []).map(({ _id, ...rest }) => ({
+      ...rest,
+      conditional_formulas: rest.conditional_formulas || []
+    })),
+    classifications: data.classifications || []
+  }, null, 2)
+}
+
+// Parse JSON → partial formData (adds internal _id, ensures required shape)
+function jsonToFormData(text) {
+  const p = JSON.parse(text)
+  return {
+    title: p.title ?? '',
+    description: p.description ?? '',
+    status: p.status ?? 'draft',
+    clinical_references: p.clinical_references ?? [],
+    tags: p.tags ?? [],
+    fields: (p.fields || []).map(f => ({
+      _id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      key: f.key ?? '',
+      type: f.type ?? 'number',
+      label: f.label ?? '',
+      placeholder: f.placeholder ?? '',
+      description: f.description ?? '',
+      unit: f.unit ?? '',
+      display_conditions: f.display_conditions ?? [],
+      is_required: f.is_required !== undefined ? f.is_required : true,
+      options: f.options ?? [],
+      image: null
+    })),
+    results: (p.results || []).map(r => ({
+      _id: `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      key: r.key ?? '',
+      formula: r.formula ?? '',
+      result_label: r.result_label ?? '',
+      result_unit: r.result_unit ?? '',
+      conditional_formulas: r.conditional_formulas ?? []
+    })),
+    classifications: p.classifications ?? []
+  }
+}
 
 function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [expandedOptions, setExpandedOptions] = useState({})
@@ -75,6 +136,12 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [fieldsOpen, setFieldsOpen] = useState(true)
   const [resultsOpen, setResultsOpen] = useState(true)
   const [classificationsOpen, setClassificationsOpen] = useState(true)
+
+  // JSON editor state
+  const [editorMode, setEditorMode] = useState('visual')
+  const [jsonText, setJsonText] = useState('')
+  const [jsonError, setJsonError] = useState('')
+  const pendingJsonSync = useRef(0)
 
   // Setup drag and drop sensors
   const sensors = useSensors(
@@ -147,6 +214,28 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
     handleCancelClose
   } = useCalculatorModal({ isOpen, calculator, onSuccess, onClose })
 
+  // Sync formData → jsonText (when visual edits happen, not when JSON caused the change)
+  useEffect(() => {
+    if (pendingJsonSync.current > 0) {
+      pendingJsonSync.current--
+      return
+    }
+    setJsonText(formDataToJson(formData))
+    setJsonError('')
+  }, [formData])
+
+  const handleJsonChange = useCallback((value) => {
+    setJsonText(value)
+    try {
+      const update = jsonToFormData(value)
+      pendingJsonSync.current++
+      setFormData(() => update)
+      setJsonError('')
+    } catch (e) {
+      setJsonError(e.message)
+    }
+  }, [setFormData])
+
   // Memoize field IDs to prevent recreating array on every render
   const fieldIds = useMemo(() => formData.fields.map(f => f._id), [formData.fields])
 
@@ -187,7 +276,29 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
           </ModalHeader>
 
           <ModalBody>
-            <form onSubmit={handleSubmit}>
+            <EditorModeTabs>
+              <EditorModeTab $active={editorMode === 'visual'} type="button" onClick={() => setEditorMode('visual')}>
+                Visual
+              </EditorModeTab>
+              <EditorModeTab $active={editorMode === 'json'} type="button" onClick={() => setEditorMode('json')}>
+                JSON
+              </EditorModeTab>
+            </EditorModeTabs>
+
+            {editorMode === 'json' && (
+              <JsonEditorWrapper>
+                <JsonHint>Edit langsung dalam format JSON. Perubahan otomatis tersinkron ke form Visual.</JsonHint>
+                <JsonTextarea
+                  value={jsonText}
+                  onChange={(e) => handleJsonChange(e.target.value)}
+                  $hasError={!!jsonError}
+                  spellCheck={false}
+                />
+                {jsonError && <JsonError>⚠ {jsonError}</JsonError>}
+              </JsonEditorWrapper>
+            )}
+
+            <form onSubmit={handleSubmit} style={{ display: editorMode === 'json' ? 'none' : 'block' }}>
               {/* Step 1: Basic Information */}
               <BasicInfoSection
                 title={formData.title}

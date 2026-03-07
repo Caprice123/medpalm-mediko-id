@@ -669,6 +669,72 @@ export const AddReferenceWrapper = styled.div`
   gap: 0.5rem;
 `
 
+// Editor Mode Toggle
+export const EditorModeTabs = styled.div`
+  display: flex;
+  gap: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  width: fit-content;
+`
+
+export const EditorModeTab = styled.button`
+  background: ${({ $active }) => $active ? '#111827' : '#f9fafb'};
+  color: ${({ $active }) => $active ? '#fff' : '#6b7280'};
+  border: none;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: ${({ $active }) => $active ? '#111827' : '#f3f4f6'};
+  }
+`
+
+export const JsonEditorWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`
+
+export const JsonTextarea = styled.textarea`
+  width: 100%;
+  min-height: 420px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 1rem;
+  border: 2px solid ${({ $hasError }) => $hasError ? '#ef4444' : '#e5e7eb'};
+  border-radius: 8px;
+  resize: vertical;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  outline: none;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: ${({ $hasError }) => $hasError ? '#ef4444' : '#6366f1'};
+  }
+`
+
+export const JsonError = styled.div`
+  color: #ef4444;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+`
+
+export const JsonHint = styled.div`
+  font-size: 0.78rem;
+  color: #9ca3af;
+`
+
 // Tags Styles
 export const TagsContainer = styled.div`
   display: flex;
