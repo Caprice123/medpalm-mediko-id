@@ -11,7 +11,6 @@ export class GetTrustedDomainsService extends BaseService {
   static async call(userId = null) {
     // Time filter config still comes from constants
     const constants = await GetConstantsService.call([
-      'chatbot_research_domain_filter_enabled',
       'chatbot_research_recency_filter',
       'chatbot_research_time_filter_type',
       'chatbot_research_published_after',
@@ -20,7 +19,6 @@ export class GetTrustedDomainsService extends BaseService {
       'chatbot_research_updated_before'
     ])
 
-    const adminFilterEnabled = constants.chatbot_research_domain_filter_enabled === 'true'
     const timeFilterType = constants.chatbot_research_time_filter_type || 'recency'
     const recencyFilter = constants.chatbot_research_recency_filter || 'month'
     const publishedAfter = constants.chatbot_research_published_after || ''
@@ -28,16 +26,8 @@ export class GetTrustedDomainsService extends BaseService {
     const updatedAfter = constants.chatbot_research_updated_after || ''
     const updatedBefore = constants.chatbot_research_updated_before || ''
 
-    // Domain list comes from the chatbot_research_domains table
-    const adminDomains = await prisma.chatbot_research_domains.findMany({
-      where: { is_active: true },
-      orderBy: { created_at: 'asc' },
-      select: { domain: true }
-    })
-    const adminDomainList = adminDomains.map(d => d.domain)
-
-    let domains = adminDomainList
-    let filterEnabled = adminFilterEnabled
+    let domains = []
+    let filterEnabled = true
 
     // If a user is specified, apply their preferences
     if (userId) {

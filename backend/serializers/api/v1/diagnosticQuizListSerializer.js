@@ -14,6 +14,7 @@ export class DiagnosticQuizListSerializer {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+      const diagnosticTopicTags = allTags.filter(tag => tag.tagGroupName === 'diagnostic_topic')
 
       return {
         id: quiz.id,
@@ -25,6 +26,10 @@ export class DiagnosticQuizListSerializer {
           name: tag.name
         })),
         semesterTags: semesterTags.map(tag => ({
+          id: tag.id,
+          name: tag.name
+        })),
+        diagnosticTopicTags: diagnosticTopicTags.map(tag => ({
           id: tag.id,
           name: tag.name
         })),

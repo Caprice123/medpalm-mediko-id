@@ -19,6 +19,7 @@ export const fetchAdminDiagnosticQuizzes = () => async (dispatch, getState) => {
     const queryParams = {}
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester
+    if (filter.topic) queryParams.topic = filter.topic
     if (filter.status) queryParams.status = filter.status
     if (filter.name) queryParams.search = filter.name
 

@@ -11,8 +11,6 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  EmbedBadge,
-  ImageBadge,
   TagList,
   Tag
 } from './QuizList.styles'
@@ -72,14 +70,17 @@ function QuizList() {
               </TagList>
             )}
 
-            {/* Media type badge — own row */}
-            <TagList>
-              {quiz.mediaType === '3d'
-                ? <EmbedBadge>🔗 3D Interactive</EmbedBadge>
-                : <ImageBadge>🖼️ 2D Image</ImageBadge>
-              }
-            </TagList>
-            
+            {/* Diagnostic Topic Tags */}
+            {quiz.diagnosticTopicTags && quiz.diagnosticTopicTags.length > 0 && (
+              <TagList>
+                {quiz.diagnosticTopicTags.map((tag) => (
+                  <Tag key={tag.id} topic>
+                    🏷️ {tag.name}
+                  </Tag>
+                ))}
+              </TagList>
+            )}
+
             <div style={{ flex: 1}}></div>
 
 

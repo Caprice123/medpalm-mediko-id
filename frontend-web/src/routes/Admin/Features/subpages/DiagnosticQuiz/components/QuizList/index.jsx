@@ -90,6 +90,17 @@ function QuizList({ onEdit, onDelete, onCreateFirst }) {
             </TagList>
           )}
 
+          {/* Diagnostic Topic Tags */}
+          {quiz.diagnosticTopicTags && quiz.diagnosticTopicTags.length > 0 && (
+            <TagList>
+              {quiz.diagnosticTopicTags.map((tag) => (
+                <Tag key={tag.id} topic>
+                  🏷️ {tag.name}
+                </Tag>
+              ))}
+            </TagList>
+          )}
+
           <QuizStats>
             <StatItem>
               <StatLabel>Questions</StatLabel>

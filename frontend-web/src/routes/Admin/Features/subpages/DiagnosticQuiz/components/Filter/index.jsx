@@ -24,6 +24,10 @@ export const Filter = () => {
         return tags?.find(tag => tag.name == "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
     }, [tags])
 
+    const diagnosticTopicTags = useMemo(() => {
+        return tags?.find(tag => tag.name == "diagnostic_topic")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
+    }, [tags])
+
     return (
         <div style={{
             background: 'white',
@@ -69,6 +73,16 @@ export const Filter = () => {
                             value={filter.semester ? semesterTags.find(t => t.value === filter.semester) : null}
                             onChange={(option) => dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan semester..."
+                        />
+                    </FilterComponent.Group>
+
+                    <FilterComponent.Group>
+                        <FilterComponent.Label>Topik</FilterComponent.Label>
+                        <Dropdown
+                            options={diagnosticTopicTags}
+                            value={filter.topic ? diagnosticTopicTags.find(t => t.value === filter.topic) : null}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "topic", value: option?.value || "" }))}
+                            placeholder="Filter berdasarkan topik..."
                         />
                     </FilterComponent.Group>
                 </FilterComponent>

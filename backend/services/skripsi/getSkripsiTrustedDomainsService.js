@@ -11,7 +11,6 @@ export class GetSkripsiTrustedDomainsService extends BaseService {
   static async call(setId = null) {
     // Time filter config still comes from constants
     const constants = await GetConstantsService.call([
-      'skripsi_ai_researcher_domain_filter_enabled',
       'skripsi_ai_researcher_recency_filter',
       'skripsi_ai_researcher_time_filter_type',
       'skripsi_ai_researcher_published_after',
@@ -20,24 +19,15 @@ export class GetSkripsiTrustedDomainsService extends BaseService {
       'skripsi_ai_researcher_updated_before'
     ])
 
-    const adminFilterEnabled = constants.skripsi_ai_researcher_domain_filter_enabled === 'true'
     const timeFilterType = constants.skripsi_ai_researcher_time_filter_type || 'recency'
     const recencyFilter = constants.skripsi_ai_researcher_recency_filter || 'month'
     const publishedAfter = constants.skripsi_ai_researcher_published_after || ''
     const publishedBefore = constants.skripsi_ai_researcher_published_before || ''
     const updatedAfter = constants.skripsi_ai_researcher_updated_after || ''
     const updatedBefore = constants.skripsi_ai_researcher_updated_before || ''
-
-    // Domain list comes from the skripsi_research_domains table
-    const adminDomains = await prisma.skripsi_research_domains.findMany({
-      where: { is_active: true },
-      orderBy: { created_at: 'asc' },
-      select: { domain: true }
-    })
-    const adminDomainList = adminDomains.map(d => d.domain)
-
-    let domains = adminDomainList
-    let filterEnabled = adminFilterEnabled
+    
+    let domains = []
+    let filterEnabled = true
 
     // If a set is specified, apply its preferences
     if (setId) {

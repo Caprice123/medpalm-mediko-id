@@ -7,6 +7,7 @@ const initialState = {
     search: undefined,
     university: undefined,
     semester: undefined,
+    topic: undefined,
     status: undefined
   },
   detail: undefined,

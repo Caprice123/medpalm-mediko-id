@@ -10,7 +10,6 @@ import { actions as tagActions } from '@store/tags/reducer'
 import { DiagnosticQuizRoute } from '../../routes'
 import { Filter } from './components/Filter'
 import { actions } from "@store/diagnostic/reducer"
-import { fetchAdminDiagnosticQuizzes } from '@store/diagnostic/adminAction'
 import QuizList from './components/QuizList'
 import Pagination from '@components/Pagination'
 
@@ -21,14 +20,14 @@ function DiagnosticQuizPage() {
   // Fetch quizzes on mount
   useEffect(() => {
     dispatch(fetchDiagnosticQuizzes())
-    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(tagActions.updateFilter({ key: "tagGroupNames", value: ["university", "semester", "diagnostic_topic"]}))
     dispatch(fetchTags())
   }, [dispatch])
 
 
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
-    dispatch(fetchAdminDiagnosticQuizzes())
+    dispatch(fetchDiagnosticQuizzes())
   }
 
     return (
@@ -38,6 +37,7 @@ function DiagnosticQuizPage() {
 
           <QuizList />
 
+{}
           {!loading.isGetListDiagnosticQuizLoading && quizzes.length > 0 && (pagination.page > 1 || (pagination.page === 1 && !pagination.isLastPage)) && (
             <Pagination
               currentPage={pagination.page}

@@ -55,6 +55,21 @@ export class GetDiagnosticQuizzesService extends BaseService {
       })
     }
 
+    // Topic filter: ?topic=1,2
+    if (filters.topic) {
+      const topicIds = Array.isArray(filters.topic)
+        ? filters.topic.map(id => parseInt(id))
+        : filters.topic.split(',').map(id => parseInt(id))
+
+      tagFilters.push({
+        diagnostic_quiz_tags: {
+          some: {
+            tag_id: { in: topicIds }
+          }
+        }
+      })
+    }
+
     // Apply tag filters with AND logic
     if (tagFilters.length > 0) {
       where.AND = tagFilters

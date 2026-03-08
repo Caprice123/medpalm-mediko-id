@@ -218,11 +218,13 @@ export const Tag = styled.span`
   background: ${props => {
     if (props.university) return '#dbeafe'; // Blue for university
     if (props.semester) return '#d1fae5'; // Green for semester
+    if (props.topic) return '#fef3c7'; // Amber for topic
     return '#ede9fe'; // Purple default
   }};
   color: ${props => {
     if (props.university) return '#1e40af'; // Blue for university
     if (props.semester) return '#065f46'; // Green for semester
+    if (props.topic) return '#92400e'; // Amber for topic
     return '#5b21b6'; // Purple default
   }};
   border-radius: 4px;

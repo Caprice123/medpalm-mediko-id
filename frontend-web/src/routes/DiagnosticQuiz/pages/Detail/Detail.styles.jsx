@@ -180,10 +180,8 @@ export const QuizImageSection = styled.div`
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(107, 185, 232, 0.12);
-  border: 2px solid rgba(107, 185, 232, 0.1);
   background: #f8fafc;
   height: fit-content;
-  max-height: calc(100vh - 28rem);
   position: sticky;
   top: 0;
   transition: all 0.3s ease;
@@ -193,15 +191,6 @@ export const QuizImageSection = styled.div`
     border-color: rgba(107, 185, 232, 0.2);
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #6BB9E8, #3b82f6);
-  }
 
   @media (max-width: 1024px) {
     flex: none;
@@ -245,7 +234,7 @@ export const EmbedFrame = styled.iframe`
 export const QuestionsContainer = styled.div`
   flex: 1;
   display: flex;
-  max-height: calc(100vh - 28rem);
+  max-height: 100vh;
   flex-direction: column;
   min-width: 0;
 

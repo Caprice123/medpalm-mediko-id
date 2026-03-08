@@ -7,9 +7,9 @@ import prisma from '#prisma/client'
 
 class DiagnosticController {
   async index(req, res) {
-    const { university, semester } = req.query
+    const { university, semester, page, perPage } = req.query
 
-    const result = await GetDiagnosticQuizzesService.call({ university, semester, userRole: req.user.role })
+    const result = await GetDiagnosticQuizzesService.call({ university, semester, page, perPage, userRole: req.user.role })
 
     return res.status(200).json({
       data: DiagnosticQuizListSerializer.serialize(result.quizzes),

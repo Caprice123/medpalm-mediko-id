@@ -97,6 +97,7 @@ export const QuestionCard = styled.div`
   border-radius: 12px;
   border: 2px solid ${props => props.hasError ? '#fecaca' : '#e2e8f0'};
   transition: all 0.2s;
+  margin: 1rem 0;
 
   &:focus-within {
     border-color: #6BB9E8;

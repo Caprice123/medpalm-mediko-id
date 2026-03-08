@@ -19,6 +19,7 @@ export const fetchDiagnosticQuizzes = () => async (dispatch, getState) => {
     const queryParams = {}
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester
+    if (filter.topic) queryParams.topic = filter.topic
     if (filter.search) queryParams.search = filter.search
 
     queryParams.page = filter.page || pagination.page

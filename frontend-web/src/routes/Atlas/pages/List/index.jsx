@@ -148,6 +148,7 @@ function AtlasListPage() {
 
         {!loading.isGetListAtlasLoading && models.length > 0 && (pagination.page > 1 || !pagination.isLastPage) && (
           <Pagination
+            variant="admin"
             currentPage={pagination.page}
             isLastPage={pagination.isLastPage}
             onPageChange={handlePageChange}

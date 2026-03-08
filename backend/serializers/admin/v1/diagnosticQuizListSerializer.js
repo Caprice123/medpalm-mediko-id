@@ -11,6 +11,7 @@ export class DiagnosticQuizListSerializer {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
+      const diagnosticTopicTags = allTags.filter(tag => tag.tagGroupName === 'diagnostic_topic')
 
       return {
         id: quiz.id,
@@ -22,6 +23,7 @@ export class DiagnosticQuizListSerializer {
         questionCount: quiz.question_count || 0,
         universityTags,
         semesterTags,
+        diagnosticTopicTags,
         createdAt: quiz.created_at ? moment(quiz.created_at).tz('Asia/Jakarta').toISOString() : null
       }
     })

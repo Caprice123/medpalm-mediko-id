@@ -10,7 +10,6 @@ import { actions as tagActions } from '@store/tags/reducer'
 import { AnatomyQuizRoute } from '../../routes'
 import { Filter } from './components/Filter'
 import { actions } from "@store/anatomy/reducer"
-import { fetchAdminAnatomyQuizzes } from '@store/anatomy/adminAction'
 import QuizList from './components/QuizList'
 import Pagination from '@components/Pagination'
 
@@ -28,7 +27,7 @@ function AnatomyQuizPage() {
 
   const handlePageChange = (page) => {
     dispatch(actions.setPage(page))
-    dispatch(fetchAdminAnatomyQuizzes())
+    dispatch(fetchAnatomyQuizzes())
   }
 
     return (

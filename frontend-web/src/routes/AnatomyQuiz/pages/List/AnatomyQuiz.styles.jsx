@@ -100,15 +100,6 @@ export const QuizImageContainer = styled.div`
   overflow: hidden;
   position: relative;
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #6BB9E8, #3b82f6);
-  }
 `
 
 export const QuizImage = styled.img`

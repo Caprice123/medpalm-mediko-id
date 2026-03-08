@@ -17,7 +17,7 @@ export const useDiagnosticQuizSection = () => {
   // Fetch quizzes and tags on mount
   useEffect(() => {
     dispatch(fetchAdminDiagnosticQuizzes())
-    dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester"]}))
+    dispatch(actions.updateFilter({ key: "tagGroupNames", value: ["university", "semester", "diagnostic_topic"]}))
     dispatch(fetchAdminTags())
   }, [dispatch])
 
