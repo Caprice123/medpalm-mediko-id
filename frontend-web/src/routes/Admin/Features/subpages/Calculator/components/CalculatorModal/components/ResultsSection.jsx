@@ -127,6 +127,7 @@ ConditionalFormulaItem.displayName = 'ConditionalFormulaItem'
 // ── Result Item ───────────────────────────────────────────────────────────────
 const ResultItem = memo(({
   result, resultIndex, errors,
+  isProcessedValueSection,
   onResultChange, onRemoveResult,
   onAddConditionalFormula, onRemoveConditionalFormula,
   onConditionalFormulaChange, onAddCFCondition, onRemoveCFCondition, onCFConditionChange
@@ -147,9 +148,11 @@ const ResultItem = memo(({
   const conditionalFormulas = result.conditional_formulas || []
 
   return (
-    <div style={{ border: '2px solid #e5e7eb', borderRadius: '10px', padding: '1.25rem', marginBottom: '1rem', background: '#fafafa' }}>
+    <div style={{ border: `2px solid ${isProcessedValueSection ? '#c4b5fd' : '#e5e7eb'}`, borderRadius: '10px', padding: '1.25rem', marginBottom: '1rem', background: isProcessedValueSection ? '#faf5ff' : '#fafafa' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <SmallLabel style={{ fontSize: '0.9rem', fontWeight: 700 }}>Hasil {resultIndex + 1}</SmallLabel>
+        <SmallLabel style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+          {isProcessedValueSection ? `Nilai Proses ${resultIndex + 1}` : `Hasil ${resultIndex + 1}`}
+        </SmallLabel>
         <Button variant="danger" size="small" type="button" onClick={() => onRemoveResult(resultIndex)}>Hapus</Button>
       </div>
 
@@ -161,35 +164,39 @@ const ResultItem = memo(({
             value={localKey}
             onChange={(e) => setLocalKey(e.target.value)}
             onBlur={(e) => onResultChange(resultIndex, 'key', e.target.value)}
-            placeholder="bmi"
-            hint="Identifier unik, digunakan di kondisi klasifikasi"
+            placeholder={isProcessedValueSection ? 'ibw' : 'bmi'}
+            hint={isProcessedValueSection ? 'Digunakan sebagai referensi di formula Hasil' : 'Identifier unik, digunakan di kondisi klasifikasi'}
             style={{ fontFamily: 'monospace' }}
           />
         </FormGroup>
-        <FormGroup>
-          <TextInput
-            label="Satuan Hasil"
-            type="text"
-            value={localUnit}
-            onChange={(e) => setLocalUnit(e.target.value)}
-            onBlur={(e) => onResultChange(resultIndex, 'result_unit', e.target.value)}
-            placeholder="kg/m²"
-            hint="Opsional"
-          />
-        </FormGroup>
+        {!isProcessedValueSection && (
+          <FormGroup>
+            <TextInput
+              label="Satuan Hasil"
+              type="text"
+              value={localUnit}
+              onChange={(e) => setLocalUnit(e.target.value)}
+              onBlur={(e) => onResultChange(resultIndex, 'result_unit', e.target.value)}
+              placeholder="kg/m²"
+              hint="Opsional"
+            />
+          </FormGroup>
+        )}
       </FormRow>
 
-      <FormGroup>
-        <TextInput
-          label="Label Hasil *"
-          type="text"
-          value={localLabel}
-          onChange={(e) => setLocalLabel(e.target.value)}
-          onBlur={(e) => onResultChange(resultIndex, 'result_label', e.target.value)}
-          placeholder="BMI Anda"
-          error={errors[`result_${resultIndex}_result_label`]}
-        />
-      </FormGroup>
+      {!isProcessedValueSection && (
+        <FormGroup>
+          <TextInput
+            label="Label Hasil *"
+            type="text"
+            value={localLabel}
+            onChange={(e) => setLocalLabel(e.target.value)}
+            onBlur={(e) => onResultChange(resultIndex, 'result_label', e.target.value)}
+            placeholder="BMI Anda"
+            error={errors[`result_${resultIndex}_result_label`]}
+          />
+        </FormGroup>
+      )}
 
       <FormGroup>
         <Textarea
@@ -261,17 +268,18 @@ const ResultsSection = memo(({
   results, errors,
   onAddResult, onRemoveResult, onResultChange,
   onAddConditionalFormula, onRemoveConditionalFormula,
-  onConditionalFormulaChange, onAddCFCondition, onRemoveCFCondition, onCFConditionChange
+  onConditionalFormulaChange, onAddCFCondition, onRemoveCFCondition, onCFConditionChange,
+  isProcessedValueSection
 }) => {
   return (
     <div>
-      {errors.results && <div style={{ color: '#ef4444', fontSize: '0.8rem', marginBottom: '0.5rem' }}>{errors.results}</div>}
       {results.map((result, resultIndex) => (
         <ResultItem
           key={result._id || resultIndex}
           result={result}
           resultIndex={resultIndex}
           errors={errors}
+          isProcessedValueSection={isProcessedValueSection}
           onResultChange={onResultChange}
           onRemoveResult={onRemoveResult}
           onAddConditionalFormula={onAddConditionalFormula}
@@ -283,7 +291,7 @@ const ResultsSection = memo(({
         />
       ))}
       <Button variant="outline" fullWidth type="button" onClick={onAddResult}>
-        + Tambah Hasil Baru
+        {isProcessedValueSection ? '+ Tambah Nilai Proses Baru' : '+ Tambah Hasil Baru'}
       </Button>
     </div>
   )

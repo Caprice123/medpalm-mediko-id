@@ -114,7 +114,7 @@ const FieldItem = memo(({
 
         <FieldInputWrapper fullWidth>
           <TextInput
-            label="Placeholder * (petunjuk untuk user)"
+            label="Placeholder / Instruksi (opsional)"
             type="text"
             value={localPlaceholder}
             onChange={(e) => setLocalPlaceholder(e.target.value)}
@@ -166,6 +166,22 @@ const FieldItem = memo(({
                 Lihat
               </Button>
             ) : <></>}
+          />
+        </FieldInputWrapper>
+
+        {/* Required toggle */}
+        <FieldInputWrapper fullWidth>
+          <Dropdown
+            label="Wajib diisi"
+            options={[
+              { value: true, label: 'Ya (required)' },
+              { value: false, label: 'Tidak (opsional)' }
+            ]}
+            value={field.is_required !== false
+              ? { value: true, label: 'Ya (required)' }
+              : { value: false, label: 'Tidak (opsional)' }
+            }
+            onChange={(option) => onFieldItemChange(index, 'is_required', option.value)}
           />
         </FieldInputWrapper>
 

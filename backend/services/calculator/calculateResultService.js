@@ -97,13 +97,15 @@ export class CalculateResultService extends BaseService {
             }
         }
 
-        // Build results array
-        const evaluatedResults = (topic.calculator_results || []).map(resultDef => ({
-            key: resultDef.key,
-            result: resultValues[resultDef.key],
-            result_label: resultDef.result_label,
-            result_unit: resultDef.result_unit
-        }))
+        // Build results array — exclude processed values (they are intermediate computations)
+        const evaluatedResults = (topic.calculator_results || [])
+            .filter(resultDef => !resultDef.is_processed_value)
+            .map(resultDef => ({
+                key: resultDef.key,
+                result: resultValues[resultDef.key],
+                result_label: resultDef.result_label,
+                result_unit: resultDef.result_unit
+            }))
 
         // Evaluate topic-level classifications against all resultValues
         const evaluatedClassifications = []

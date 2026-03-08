@@ -11,7 +11,7 @@ function FieldInput({ field, value, onChange }) {
             value={localValue}
             onChange={(e) => setLocalValue(e.target.value)}
             onBlur={() => onChange(field.key, localValue)}
-            placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+            placeholder=""
             step={field.type === 'number' ? 'any' : undefined}
         />
     )

@@ -336,28 +336,39 @@ export const SectionTitle = styled.h3`
 export const InputsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 1rem;
 `
 
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  padding: 1.25rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  margin: 8px 0;
+  background: white;
+  gap: 0.75rem;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #06b6d4;
+  }
 `
 
 export const FormLabel = styled.label`
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 4px;
+  line-height: 1.3;
 `
 
 export const LabelWithDescription = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 `
 
 export const FieldDescription = styled.p`
@@ -680,7 +691,7 @@ export const OptionContent = styled.div`
 `
 
 export const OptionTextContent = styled.div`
-  font-size: 1rem;
+  font-size: 15px;
   color: #374151;
   line-height: 1.5;
   font-weight: 500;

@@ -37,6 +37,12 @@ function CalculatorField({ field, value, onChange, error }) {
                 )}
             </LabelWithDescription>
 
+            {field.placeholder && (
+                <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0', lineHeight: '1.5' }}>
+                    {field.placeholder}
+                </p>
+            )}
+
             {field.type === 'multiselect' ? (
                 <CheckboxField field={field} value={value} onChange={onChange} />
             ) : field.type === 'dropdown' ? (
@@ -58,7 +64,7 @@ function CalculatorField({ field, value, onChange, error }) {
                             onChange(field.key, '')
                         }
                     }}
-                    placeholder={field.placeholder || `Select ${field.label}`}
+                    placeholder="Pilih jawaban..."
                 />
             ) : field.type === 'radio' ? (
                 <RadioField field={field} value={value} onChange={onChange} />

@@ -703,9 +703,10 @@ model calculator_results {
   calculator_topic_id Int
   key                 String   // Result key used in conditions, e.g., "bmi", "ibw"
   formula             String   // JavaScript expression
-  result_label        String   // Display label, e.g., "BMI Anda"
+  result_label        String?  // Display label, e.g., "BMI Anda" (null for processed values)
   result_unit           String?  // Unit, e.g., "kg/m²"
   conditional_formulas  Json?    // Array of {formula, conditions:[{field_key, operator, value, logical_operator}]}
+  is_processed_value    Boolean  @default(false) // If true, computed but not shown to user
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 

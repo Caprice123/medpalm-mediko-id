@@ -90,7 +90,8 @@ function formDataToJson(data) {
     })),
     results: (data.results || []).map(({ _id, ...rest }) => ({
       ...rest,
-      conditional_formulas: rest.conditional_formulas || []
+      conditional_formulas: rest.conditional_formulas || [],
+      is_processed_value: rest.is_processed_value || false
     })),
     classifications: data.classifications || []
   }, null, 2)
@@ -124,7 +125,8 @@ function jsonToFormData(text) {
       formula: r.formula ?? '',
       result_label: r.result_label ?? '',
       result_unit: r.result_unit ?? '',
-      conditional_formulas: r.conditional_formulas ?? []
+      conditional_formulas: r.conditional_formulas ?? [],
+      is_processed_value: r.is_processed_value || false
     })),
     classifications: p.classifications ?? []
   }
@@ -135,6 +137,7 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
   const [expandedClassifications, setExpandedClassifications] = useState({})
   const [fieldsOpen, setFieldsOpen] = useState(true)
   const [resultsOpen, setResultsOpen] = useState(true)
+  const [processedValuesOpen, setProcessedValuesOpen] = useState(true)
   const [classificationsOpen, setClassificationsOpen] = useState(true)
 
   // JSON editor state
@@ -360,26 +363,110 @@ function CalculatorModal({ isOpen, onClose, calculator, onSuccess }) {
                 )}
               </FieldsSection>
 
-              {/* Step 3: Results */}
+              {/* Step 3: Processed Values */}
+              {(() => {
+                const processedResults = formData.results.filter(r => r.is_processed_value)
+                return (
+                  <FieldsSection>
+                    <AccordionHeader onClick={() => setProcessedValuesOpen(o => !o)}>
+                      <SectionTitle>Nilai Proses (Processed Values) {processedResults.length > 0 && `(${processedResults.length})`}</SectionTitle>
+                      <AccordionChevron $isOpen={processedValuesOpen}>▼</AccordionChevron>
+                    </AccordionHeader>
+                    {processedValuesOpen && (
+                      <AccordionBody>
+                        <InfoBox style={{ marginBottom: '1rem' }}>
+                          <InfoIcon>ℹ️</InfoIcon>
+                          <InfoText>Nilai proses dihitung secara internal dan tidak ditampilkan kepada pengguna. Gunakan key-nya sebagai referensi dalam formula Hasil lain.</InfoText>
+                        </InfoBox>
+                        <ResultsSection
+                          results={formData.results.filter(r => r.is_processed_value).map((r, i) => ({ ...r, _origIndex: formData.results.indexOf(r) }))}
+                          errors={errors}
+                          onAddResult={() => addResult(true)}
+                          onRemoveResult={(localIndex) => {
+                            const origIndex = formData.results.filter(r => r.is_processed_value)[localIndex]
+                            removeResult(formData.results.indexOf(origIndex))
+                          }}
+                          onResultChange={(localIndex, fieldName, value) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            handleResultChange(origIndex, fieldName, value)
+                          }}
+                          onAddConditionalFormula={(localIndex) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            addConditionalFormula(origIndex)
+                          }}
+                          onRemoveConditionalFormula={(localIndex, cfIndex) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            removeConditionalFormula(origIndex, cfIndex)
+                          }}
+                          onConditionalFormulaChange={(localIndex, cfIndex, value) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            handleConditionalFormulaChange(origIndex, cfIndex, value)
+                          }}
+                          onAddCFCondition={(localIndex, cfIndex) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            addCFCondition(origIndex, cfIndex)
+                          }}
+                          onRemoveCFCondition={(localIndex, cfIndex, condIndex) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            removeCFCondition(origIndex, cfIndex, condIndex)
+                          }}
+                          onCFConditionChange={(localIndex, cfIndex, condIndex, fieldName, value) => {
+                            const origIndex = formData.results.indexOf(formData.results.filter(r => r.is_processed_value)[localIndex])
+                            handleCFConditionChange(origIndex, cfIndex, condIndex, fieldName, value)
+                          }}
+                          isProcessedValueSection
+                        />
+                      </AccordionBody>
+                    )}
+                  </FieldsSection>
+                )
+              })()}
+
+              {/* Step 3b: Results */}
               <FieldsSection>
                 <AccordionHeader onClick={() => setResultsOpen(o => !o)}>
-                  <SectionTitle>Hasil * {formData.results.length > 0 && `(${formData.results.length})`}</SectionTitle>
+                  <SectionTitle>Hasil * {formData.results.filter(r => !r.is_processed_value).length > 0 && `(${formData.results.filter(r => !r.is_processed_value).length})`}</SectionTitle>
                   <AccordionChevron $isOpen={resultsOpen}>▼</AccordionChevron>
                 </AccordionHeader>
                 {resultsOpen && (
                   <AccordionBody>
+                    {errors.results && <div style={{ color: '#ef4444', fontSize: '0.8rem', marginBottom: '0.5rem' }}>{errors.results}</div>}
                     <ResultsSection
-                      results={formData.results}
+                      results={formData.results.filter(r => !r.is_processed_value)}
                       errors={errors}
-                      onAddResult={addResult}
-                      onRemoveResult={removeResult}
-                      onResultChange={handleResultChange}
-                      onAddConditionalFormula={addConditionalFormula}
-                      onRemoveConditionalFormula={removeConditionalFormula}
-                      onConditionalFormulaChange={handleConditionalFormulaChange}
-                      onAddCFCondition={addCFCondition}
-                      onRemoveCFCondition={removeCFCondition}
-                      onCFConditionChange={handleCFConditionChange}
+                      onAddResult={() => addResult(false)}
+                      onRemoveResult={(localIndex) => {
+                        const origItem = formData.results.filter(r => !r.is_processed_value)[localIndex]
+                        removeResult(formData.results.indexOf(origItem))
+                      }}
+                      onResultChange={(localIndex, fieldName, value) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        handleResultChange(origIndex, fieldName, value)
+                      }}
+                      onAddConditionalFormula={(localIndex) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        addConditionalFormula(origIndex)
+                      }}
+                      onRemoveConditionalFormula={(localIndex, cfIndex) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        removeConditionalFormula(origIndex, cfIndex)
+                      }}
+                      onConditionalFormulaChange={(localIndex, cfIndex, value) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        handleConditionalFormulaChange(origIndex, cfIndex, value)
+                      }}
+                      onAddCFCondition={(localIndex, cfIndex) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        addCFCondition(origIndex, cfIndex)
+                      }}
+                      onRemoveCFCondition={(localIndex, cfIndex, condIndex) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        removeCFCondition(origIndex, cfIndex, condIndex)
+                      }}
+                      onCFConditionChange={(localIndex, cfIndex, condIndex, fieldName, value) => {
+                        const origIndex = formData.results.indexOf(formData.results.filter(r => !r.is_processed_value)[localIndex])
+                        handleCFConditionChange(origIndex, cfIndex, condIndex, fieldName, value)
+                      }}
                     />
                   </AccordionBody>
                 )}

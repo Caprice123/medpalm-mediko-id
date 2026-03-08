@@ -53,7 +53,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
         results: (calculator.results || []).map(result => ({
           ...result,
           _id: result._id || `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          conditional_formulas: result.conditional_formulas || []
+          conditional_formulas: result.conditional_formulas || [],
+          is_processed_value: result.is_processed_value || false
         })),
         classifications: calculator.classifications || [],
         status: calculator.status || 'draft'
@@ -111,12 +112,11 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
     formData.fields.forEach((field, index) => {
       if (!field.key?.trim()) newErrors[`field_${index}_key`] = 'Key is required'
       if (!field.label?.trim()) newErrors[`field_${index}_label`] = 'Label is required'
-      if (!field.placeholder?.trim()) newErrors[`field_${index}_placeholder`] = 'Placeholder is required'
     })
 
     formData.results.forEach((result, index) => {
       if (!result.formula?.trim()) newErrors[`result_${index}_formula`] = 'Formula is required'
-      if (!result.result_label?.trim()) newErrors[`result_${index}_result_label`] = 'Label is required'
+      if (!result.is_processed_value && !result.result_label?.trim()) newErrors[`result_${index}_result_label`] = 'Label is required'
     })
 
     setErrors(newErrors)
@@ -369,7 +369,7 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
   }, [])
 
   // Result management
-  const addResult = useCallback(() => {
+  const addResult = useCallback((isProcessedValue = false) => {
     setFormData(prev => ({
       ...prev,
       results: [
@@ -380,7 +380,8 @@ export const useCalculatorModal = ({ isOpen, calculator, onSuccess, onClose }) =
           formula: '',
           result_label: '',
           result_unit: '',
-          conditional_formulas: []
+          conditional_formulas: [],
+          is_processed_value: isProcessedValue
         }
       ]
     }))

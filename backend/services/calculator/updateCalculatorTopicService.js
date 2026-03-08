@@ -117,9 +117,10 @@ export class UpdateCalculatorTopicService extends BaseService {
                         calculator_topic_id: existingTopic.id,
                         key: result.key || `result_${resultIndex}`,
                         formula: result.formula,
-                        result_label: result.result_label,
+                        result_label: result.is_processed_value ? null : result.result_label,
                         result_unit: result.result_unit || null,
-                        conditional_formulas: result.conditional_formulas?.length ? result.conditional_formulas : undefined
+                        conditional_formulas: result.conditional_formulas?.length ? result.conditional_formulas : undefined,
+                        is_processed_value: result.is_processed_value === true
                     }
                 })
 
@@ -226,7 +227,6 @@ export class UpdateCalculatorTopicService extends BaseService {
                 if (!field.key?.trim()) throw new ValidationError(`Field ${index + 1}: key is required`)
                 if (!['number', 'text', 'dropdown', 'radio', 'multiselect'].includes(field.type)) throw new ValidationError(`Field ${index + 1}: invalid type`)
                 if (!field.label?.trim()) throw new ValidationError(`Field ${index + 1}: label is required`)
-                if (!field.placeholder?.trim()) throw new ValidationError(`Field ${index + 1}: placeholder is required`)
             })
         }
 
@@ -234,7 +234,7 @@ export class UpdateCalculatorTopicService extends BaseService {
             if (!Array.isArray(data.results) || data.results.length === 0) throw new ValidationError('At least one result is required')
             data.results.forEach((result, index) => {
                 if (!result.formula?.trim()) throw new ValidationError(`Result ${index + 1}: formula is required`)
-                if (!result.result_label?.trim()) throw new ValidationError(`Result ${index + 1}: label is required`)
+                if (!result.is_processed_value && !result.result_label?.trim()) throw new ValidationError(`Result ${index + 1}: label is required`)
             })
         }
     }
