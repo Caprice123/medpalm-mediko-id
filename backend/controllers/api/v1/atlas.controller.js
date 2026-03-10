@@ -1,5 +1,5 @@
 import { GetAtlasModelsService } from '#services/atlas/getAtlasModelsService'
-import { GetAtlasModelDetailService } from '#services/atlas/admin/getAtlasModelDetailService'
+import { GetAtlasModelDetailService } from '#services/atlas/getAtlasModelDetailService'
 import { AtlasModelListSerializer } from '#serializers/api/v1/atlasModelListSerializer'
 import { AtlasModelSerializer } from '#serializers/api/v1/atlasModelSerializer'
 
@@ -12,7 +12,8 @@ class AtlasController {
       subtopic,
       search,
       page,
-      perPage
+      perPage,
+      userRole: req.user.role
     })
 
     return res.status(200).json({
@@ -24,11 +25,7 @@ class AtlasController {
   async show(req, res) {
     const { uniqueId } = req.params
 
-    const model = await GetAtlasModelDetailService.call(uniqueId)
-
-    if (model.status !== 'published') {
-      return res.status(403).json({ message: 'This atlas model is not available' })
-    }
+    const model = await GetAtlasModelDetailService.call(uniqueId, { userId: req.user.id, userRole: req.user.role })
 
     return res.status(200).json({
       data: AtlasModelSerializer.serialize(model)

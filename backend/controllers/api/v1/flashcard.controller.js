@@ -22,7 +22,8 @@ class FlashcardController {
 
     const result = await StartFlashcardDeckService.call({
       flashcardDeckId: deckId,
-      userId
+      userId,
+      userRole: req.user.role
     })
 
     return res.status(200).json({

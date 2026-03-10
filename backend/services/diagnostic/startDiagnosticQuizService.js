@@ -1,18 +1,13 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class StartDiagnosticQuizService extends BaseService {
-  static async call({ quizId, userId }) {
+  static async call({ quizId, userId, userRole = 'user' }) {
+    const isUser = userRole === 'user'
+
     const result = await prisma.$transaction(async tx => {
-      // Check if user has active subscription (REQUIRED)
-      const hasSubscription = await HasActiveSubscriptionService.call(parseInt(userId))
-
-      if (!hasSubscription) {
-        throw new ValidationError('Active subscription required to access diagnostic quizzes')
-      }
-
       // Get the quiz with questions
       const quiz = await tx.diagnostic_quizzes.findUnique({
         where: { unique_id: quizId },
@@ -30,7 +25,7 @@ export class StartDiagnosticQuizService extends BaseService {
         throw new ValidationError('Quiz not found')
       }
 
-      if (quiz.status !== 'published') {
+      if (isUser && quiz.status !== 'published') {
         throw new ValidationError('Quiz is not available')
       }
 
@@ -104,6 +99,15 @@ export class StartDiagnosticQuizService extends BaseService {
         sortedQuestions.push(remainingQuestions[selectedIndex].question)
         remainingQuestions.splice(selectedIndex, 1)
       }
+
+      // Check subscription + deduct credits (user role only)
+      await checkAccessAndDeductCredit(tx, {
+        userId,
+        userRole,
+        accessTypeKey: 'diagnostic_access_type',
+        creditCostKey: 'diagnostic_quiz_cost',
+        description: `Started diagnostic quiz: ${quiz.id} - ${quiz.title}`
+      })
 
       // Create quiz attempt directly (no sessions)
       const attempt = await tx.diagnostic_quiz_attempts.create({

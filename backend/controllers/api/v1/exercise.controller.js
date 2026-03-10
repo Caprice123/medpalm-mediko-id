@@ -28,7 +28,8 @@ class ExerciseController {
 
     const result = await StartExerciseTopicService.call({
       exerciseTopicId: topicId,
-      userId
+      userId,
+      userRole: req.user.role
     })
 
     return res.status(200).json({

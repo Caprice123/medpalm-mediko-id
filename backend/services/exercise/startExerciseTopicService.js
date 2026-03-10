@@ -1,18 +1,12 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import idriveService from '#services/idrive.service'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class StartExerciseTopicService extends BaseService {
-  static async call({ exerciseTopicId, userId }) {
+  static async call({ exerciseTopicId, userId, userRole = 'user' }) {
     const result = await prisma.$transaction(async (tx) => {
-      // Check if user has active subscription
-      const hasSubscription = await HasActiveSubscriptionService.call(parseInt(userId))
-
-      if (!hasSubscription) {
-        throw new ValidationError('Active subscription required to access exercises')
-      }
       // Get the topic with questions
       const topic = await tx.exercise_topics.findUnique({
         where: { unique_id: exerciseTopicId },
@@ -96,6 +90,15 @@ export class StartExerciseTopicService extends BaseService {
         shuffledQuestions.push(remainingQuestions[selectedIndex].question)
         remainingQuestions.splice(selectedIndex, 1)
       }
+
+      // Check access and deduct credits
+      await checkAccessAndDeductCredit(tx, {
+        userId,
+        userRole,
+        accessTypeKey: 'exercise_access_type',
+        creditCostKey: 'exercise_credit_cost',
+        description: `Started exercise topic: ${topic.id} - ${topic.title}`
+      })
 
       // Fetch image attachments for all questions
       const ids = shuffledQuestions.map(q => q.id)

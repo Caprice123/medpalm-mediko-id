@@ -1,8 +1,7 @@
 import { GetAnatomyQuizzesService } from '#services/anatomy/getAnatomyQuizzesService'
-import { GetAnatomyQuizDetailService } from '#services/anatomy/admin/getAnatomyQuizDetailService'
+import { GetAnatomyQuizDetailService } from '#services/anatomy/getAnatomyQuizDetailService'
 import { AnatomyQuizListSerializer } from '#serializers/api/v1/anatomyQuizListSerializer'
 import { AnatomyQuizSerializer } from '#serializers/api/v1/anatomyQuizSerializer'
-import attachmentService from '#services/attachment/attachmentService'
 import prisma from '#prisma/client'
 
 class AnatomyController {
@@ -19,20 +18,9 @@ class AnatomyController {
 
   async show(req, res) {
     const { uniqueId } = req.params
-    const userId = req.user.id
 
-    // Fetch quiz with questions
-    const quiz = await GetAnatomyQuizDetailService.call(uniqueId)
-
-    // Check if quiz is published
-    if (quiz.status !== 'published') {
-      return res.status(403).json({
-        message: 'This quiz is not available'
-      })
-    }
-
-    // TODO: Add subscription check here if needed
-    // For now, return the quiz
+    // Fetch quiz with questions (service enforces published-only for user role)
+    const quiz = await GetAnatomyQuizDetailService.call(uniqueId, { userId: req.user.id, userRole: req.user.role })
 
     return res.status(200).json({
       data: AnatomyQuizSerializer.serialize(quiz)
@@ -55,6 +43,12 @@ class AnatomyController {
     if (!quiz) {
       return res.status(404).json({
         message: 'Quiz not found'
+      })
+    }
+
+    if (req.user.role === 'user' && quiz.status !== 'published') {
+      return res.status(403).json({
+        message: 'This quiz is not available'
       })
     }
 

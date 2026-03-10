@@ -59,7 +59,8 @@ class McqController {
 
     const topic = await GetMcqTopicByIdService.call({
       topicId: req.params.id,
-      userId // Pass userId for spaced repetition question ordering
+      userId,
+      userRole: req.user.role
     })
 
     // TEMPORARY: Include answers for backward compatibility with current frontend

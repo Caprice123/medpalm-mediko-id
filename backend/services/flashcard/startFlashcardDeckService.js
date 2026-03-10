@@ -1,19 +1,12 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import idriveService from '#services/idrive.service'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class StartFlashcardDeckService extends BaseService {
-  static async call({ flashcardDeckId, userId }) {
+  static async call({ flashcardDeckId, userId, userRole = 'user' }) {
     const result = await prisma.$transaction(async (tx) => {
-      // Check if user has active subscription
-      const hasSubscription = await HasActiveSubscriptionService.call(parseInt(userId))
-
-      if (!hasSubscription) {
-        throw new ValidationError('Active subscription required to access flashcards')
-      }
-
       // Get the deck with cards
       const deck = await tx.flashcard_decks.findUnique({
         where: { unique_id: flashcardDeckId },
@@ -103,6 +96,15 @@ export class StartFlashcardDeckService extends BaseService {
         sortedCards.push(remainingCards[selectedIndex].card)
         remainingCards.splice(selectedIndex, 1)
       }
+
+      // Check access and deduct credits
+      await checkAccessAndDeductCredit(tx, {
+        userId,
+        userRole,
+        accessTypeKey: 'flashcard_access_type',
+        creditCostKey: 'flashcard_credit_cost',
+        description: `Started flashcard deck: ${deck.id} - ${deck.title}`
+      })
 
       // Get attachments for all cards
       const attachments = await tx.attachments.findMany({

@@ -6,11 +6,10 @@ import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 const router = express.Router()
 
 router.use(authenticateToken)
-router.use(requireAdmin)
-
 // Get constants (optionally filtered by keys)
 router.get('/', asyncHandler(constantController.index.bind(constantController)))
 
+router.use(requireAdmin)
 // Update constants
 router.put('/', asyncHandler(constantController.update.bind(constantController)))
 

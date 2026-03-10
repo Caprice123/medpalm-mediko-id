@@ -1,8 +1,7 @@
 import { GetDiagnosticQuizzesService } from '#services/diagnostic/getDiagnosticQuizzesService'
-import { GetDiagnosticQuizDetailService } from '#services/diagnostic/admin/getDiagnosticQuizDetailService'
+import { GetDiagnosticQuizDetailService } from '#services/diagnostic/getDiagnosticQuizDetailService'
 import { DiagnosticQuizListSerializer } from '#serializers/api/v1/diagnosticQuizListSerializer'
 import { DiagnosticQuizSerializer } from '#serializers/api/v1/diagnosticQuizSerializer'
-import attachmentService from '#services/attachment/attachmentService'
 import prisma from '#prisma/client'
 
 class DiagnosticController {
@@ -19,20 +18,7 @@ class DiagnosticController {
 
   async show(req, res) {
     const { uniqueId } = req.params
-    const userId = req.user.id
-
-    // Fetch quiz with questions
-    const quiz = await GetDiagnosticQuizDetailService.call(uniqueId)
-
-    // Check if quiz is published
-    if (quiz.status !== 'published') {
-      return res.status(403).json({
-        message: 'This quiz is not available'
-      })
-    }
-
-    // TODO: Add subscription check here if needed
-    // For now, return the quiz
+    const quiz = await GetDiagnosticQuizDetailService.call(uniqueId, { userId: req.user.id, userRole: req.user.role })
 
     return res.status(200).json({
       data: DiagnosticQuizSerializer.serialize(quiz)
@@ -55,6 +41,12 @@ class DiagnosticController {
     if (!quiz) {
       return res.status(404).json({
         message: 'Quiz not found'
+      })
+    }
+
+    if (req.user.role === 'user' && quiz.status !== 'published') {
+      return res.status(403).json({
+        message: 'This quiz is not available'
       })
     }
 

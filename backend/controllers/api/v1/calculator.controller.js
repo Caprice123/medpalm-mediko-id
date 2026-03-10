@@ -1,8 +1,8 @@
 import { GetCalculatorTopicsService } from '#services/calculator/getCalculatorTopicsService'
+import { GetUserCalculatorTopicDetailService } from '#services/calculator/getUserCalculatorTopicDetailService'
 import { CalculateResultService } from '#services/calculator/calculateResultService'
 import { CalculatorTopicListSerializer } from '#serializers/api/v1/calculatorTopicListSerializer'
 import { CalculatorTopicSerializer } from '#serializers/api/v1/calculatorTopicSerializer'
-import prisma from '#prisma/client'
 
 class CalculatorController {
   /**
@@ -29,34 +29,7 @@ class CalculatorController {
   async getTopicDetail(req, res) {
     const { topicId } = req.params
 
-    const topic = await prisma.calculator_topics.findUnique({
-      where: { unique_id: topicId },
-      include: {
-        calculator_fields: {
-          orderBy: {
-            order: 'asc'
-          },
-          include: {
-            field_options: {
-              orderBy: {
-                order: 'asc'
-              }
-            }
-          }
-        },
-        calculator_topic_tags: {
-          include: {
-            tags: true
-          }
-        }
-      }
-    })
-
-    if (!topic || topic.status !== 'published') {
-      return res.status(404).json({
-        message: 'Calculator topic not found or not available'
-      })
-    }
+    const topic = await GetUserCalculatorTopicDetailService.call(topicId, { userId: req.user.id, userRole: req.user.role })
 
     return res.status(200).json({
       data: await CalculatorTopicSerializer.serialize(topic),

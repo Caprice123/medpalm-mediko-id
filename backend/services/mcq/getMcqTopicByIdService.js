@@ -1,14 +1,15 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { NotFoundError } from '#errors/notFoundError'
+import { AuthorizationError } from '#errors/authorizationError'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class GetMcqTopicByIdService extends BaseService {
-  static async call({ topicId, userId }) {
+  static async call({ topicId, userId, userRole = 'user' }) {
     return await prisma.$transaction(async (tx) => {
       const topic = await tx.mcq_topics.findFirst({
         where: {
           unique_id: topicId,
-          status: 'published'
         },
         include: {
           mcq_questions: {
@@ -29,8 +30,20 @@ export class GetMcqTopicByIdService extends BaseService {
       })
 
       if (!topic || topic.is_deleted) {
-        throw new NotFoundError('MCQ topic not found or not published')
+        throw new NotFoundError('MCQ topic not found')
       }
+
+      if (userRole === 'user' && topic.status !== 'published') {
+        throw new AuthorizationError('This MCQ topic is not available')
+      }
+
+      await checkAccessAndDeductCredit(tx, {
+        userId,
+        userRole,
+        accessTypeKey: 'mcq_access_type',
+        creditCostKey: 'mcq_credit_cost',
+        description: `Viewed MCQ topic: ${topic.id} - ${topic.title}`
+      })
 
       // If userId is provided, implement spaced repetition
       if (userId) {
