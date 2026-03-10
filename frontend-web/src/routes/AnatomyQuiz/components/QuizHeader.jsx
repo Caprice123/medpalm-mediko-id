@@ -3,9 +3,8 @@ import {
   FormHeader,
   HeaderTop,
   TopicInfo,
-  TagList,
-  Tag,
 } from '../pages/Detail/Detail.styles'
+import QuizTagList from './QuizTagList'
 
 function QuizHeader({ quiz, onBack }) {
   const anatomyTopicTags = (quiz?.tags || []).filter(tag => tag.tagGroupName === 'anatomy_topic')
@@ -19,14 +18,7 @@ function QuizHeader({ quiz, onBack }) {
       <TopicInfo>
         <h2>{quiz.title}</h2>
         {quiz.description && <p>{quiz.description}</p>}
-
-        {anatomyTopicTags.length > 0 && (
-          <TagList>
-            {anatomyTopicTags.map(tag => (
-              <Tag key={tag.id}>🫀 {tag.name}</Tag>
-            ))}
-          </TagList>
-        )}
+        <QuizTagList tags={anatomyTopicTags} type="anatomy_topic" />
       </TopicInfo>
     </FormHeader>
   )

@@ -120,10 +120,12 @@ export const Tag = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 12px;
+  padding: 0.25rem 0.625rem;
+  background: #ede9fe;
+  color: #5b21b6;
+  border-radius: 4px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
 
   ${props => props.university && `
     background: #EFF6FF;

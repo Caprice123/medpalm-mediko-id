@@ -11,11 +11,8 @@ import {
   StatItem,
   StatLabel,
   StatValue,
-  EmbedBadge,
-  ImageBadge,
-  TagList,
-  Tag
 } from './QuizList.styles'
+import QuizTagList from '../../../../components/QuizTagList'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { AnatomyQuizRoute } from '../../../../routes'
 
@@ -50,24 +47,8 @@ function QuizList() {
               {quiz.description || 'Tidak ada deskripsi'}
             </QuizDescription>
 
-            {/* Anatomy Topic Tags */}
-            {quiz.anatomyTopicTags && quiz.anatomyTopicTags.length > 0 && (
-              <TagList>
-                {quiz.anatomyTopicTags.map((tag) => (
-                  <Tag key={tag.id}>
-                    🫀 {tag.name}
-                  </Tag>
-                ))}
-              </TagList>
-            )}
-
-            {/* Media type badge — own row */}
-            <TagList>
-              {quiz.mediaType === '3d'
-                ? <EmbedBadge>🔗 3D Interactive</EmbedBadge>
-                : <ImageBadge>🖼️ 2D Image</ImageBadge>
-              }
-            </TagList>
+            <QuizTagList tags={quiz.anatomyTopicTags} type="anatomy_topic" />
+            <QuizTagList type={quiz.mediaType === '3d' ? 'media_3d' : 'media_2d'} />
             
             <div style={{ flex: 1}}></div>
 

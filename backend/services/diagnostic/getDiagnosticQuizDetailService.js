@@ -18,7 +18,9 @@ export class GetDiagnosticQuizDetailService extends BaseService {
           },
           diagnostic_quiz_tags: {
             include: {
-              tags: true
+              tags: {
+                include: { tag_group: true }
+              }
             }
           }
         }
@@ -56,7 +58,8 @@ export class GetDiagnosticQuizDetailService extends BaseService {
       tags: quiz.diagnostic_quiz_tags.map(t => ({
         id: t.tags.id,
         name: t.tags.name,
-        tagGroupId: t.tags.tag_group_id
+        tagGroupId: t.tags.tag_group_id,
+        tagGroupName: t.tags.tag_group?.name || null
       }))
     }
   }

@@ -135,6 +135,12 @@ export const Tag = styled.span`
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
+
+  ${props => props.topic && `
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+  `}
 `
 
 export const FormTitle = styled.h2`
