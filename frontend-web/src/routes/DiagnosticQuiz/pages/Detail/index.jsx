@@ -37,6 +37,7 @@ import {
 import Button from '@components/common/Button'
 import QuizHeader from '../../components/QuizHeader'
 import QuestionItem from '../../components/QuestionItem'
+import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
 import { useDiagnosticQuizDetail } from './useDiagnosticQuizDetail'
 
 const DiagnosticQuizDetail = () => {
@@ -70,19 +71,21 @@ const DiagnosticQuizDetail = () => {
             <Content>
                 <QuizHeader quiz={currentQuiz} onBack={handleBack} />
 
+                {currentQuiz.embedUrl && !quizResult && <EmbedLoadingBanner />}
+
                 <QuizForm>
                     {!quizResult ? (
                         currentQuiz.embedUrl && (!currentQuiz.diagnostic_questions || currentQuiz.diagnostic_questions.length === 0) ? (
                             <QuizMainContent>
-                                <QuizImageSection style={{ flex: '1 1 100%' }}>
-                                    <EmbedFrame
-                                        src={currentQuiz.embedUrl}
-                                        title={currentQuiz.title}
-                                        allowFullScreen
-                                        allow="fullscreen"
-                                    />
-                                </QuizImageSection>
-                            </QuizMainContent>
+                                    <QuizImageSection style={{ flex: '1 1 100%' }}>
+                                        <EmbedFrame
+                                            src={currentQuiz.embedUrl}
+                                            title={currentQuiz.title}
+                                            allowFullScreen
+                                            allow="fullscreen"
+                                        />
+                                    </QuizImageSection>
+                                </QuizMainContent>
                         ) : (
                         <PhotoProvider>
                             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>

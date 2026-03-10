@@ -23,6 +23,7 @@ import {
   ResourceGrid,
 } from './Detail.styles'
 import { useSummaryNotesDetail } from './hooks/useSummaryNotesDetail'
+import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
 
 const SummaryNotesDetail = () => {
   const {
@@ -92,6 +93,7 @@ const SummaryNotesDetail = () => {
           </TopicInfo>
         </NoteHeader>
 
+        {parsedContent?.some(block => block.type === 'embed') && <EmbedLoadingBanner />}
         <NoteContainer>
           <ContentSection>
             <BlockNoteEditor

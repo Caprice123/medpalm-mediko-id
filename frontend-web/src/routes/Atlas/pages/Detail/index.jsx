@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { fetchAtlasModel } from '@store/atlas/userAction'
 import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
 import {
   Container,
   Content,
@@ -49,6 +50,7 @@ function AtlasDetailPage() {
   return (
     <Container>
       <Content>
+        <EmbedLoadingBanner />
         <FormHeader>
           <HeaderTop>
             <Button onClick={() => navigate(-1)}>← Kembali</Button>
