@@ -34,7 +34,7 @@ const SLIDES = [
     desc: 'Latihan UKMPPD & ujian blok dengan pembahasan lengkap dari dokter.',
   },
   {
-    icon: '🫀',
+    icon: '🩻',
     label: 'Anatomi 3D',
     title: 'Model Anatomi Interaktif',
     desc: 'Eksplorasi struktur tubuh manusia secara visual dan detail.',

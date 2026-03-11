@@ -17,16 +17,29 @@ const PERMISSION_TO_FEATURE_CONFIG = {
     ],
     icon: '📝'
   },
-  'oscePractice': {
-    sessionType: 'osce_practice',
+  'anatomy': {
+    sessionType: 'anatomy',
     constants: [
-      'osce_practice_feature_title',
-      'osce_practice_feature_description',
-      'osce_practice_access_type',
-      'osce_practice_is_active',
-      'osce_practice_youtube_url'
+      'anatomy_feature_title',
+      'anatomy_feature_description',
+      'anatomy_credit_cost',
+      'anatomy_access_type',
+      'anatomy_is_active',
+      'anatomy_youtube_url'
     ],
-    icon: '🩺'
+    icon: '🦴'
+  },
+  'atlas': {
+    sessionType: 'atlas',
+    constants: [
+      'atlas_feature_title',
+      'atlas_feature_description',
+      'atlas_credit_cost',
+      'atlas_access_type',
+      'atlas_is_active',
+      'atlas_youtube_url'
+    ],
+    icon: '🧬'
   },
   'chatbot': {
     sessionType: 'chatbot',
@@ -38,6 +51,17 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'chatbot_youtube_url'
     ],
     icon: '💬'
+  },
+  'oscePractice': {
+    sessionType: 'osce_practice',
+    constants: [
+      'osce_practice_feature_title',
+      'osce_practice_feature_description',
+      'osce_practice_access_type',
+      'osce_practice_is_active',
+      'osce_practice_youtube_url'
+    ],
+    icon: '🩺'
   },
   'skripsi': {
     sessionType: 'skripsi_builder',
@@ -86,19 +110,7 @@ const PERMISSION_TO_FEATURE_CONFIG = {
       'diagnostic_is_active',
       'diagnostic_youtube_url'
     ],
-    icon: '🫀'
-  },
-  'anatomy': {
-    sessionType: 'anatomy',
-    constants: [
-      'anatomy_feature_title',
-      'anatomy_feature_description',
-      'anatomy_credit_cost',
-      'anatomy_access_type',
-      'anatomy_is_active',
-      'anatomy_youtube_url'
-    ],
-    icon: '🦴'
+    icon: '🩻'
   },
   'exercise': {
     sessionType: 'exercise',
@@ -125,18 +137,6 @@ const PERMISSION_TO_FEATURE_CONFIG = {
     ],
     icon: '🧮'
   },
-  'atlas': {
-    sessionType: 'atlas',
-    constants: [
-      'atlas_feature_title',
-      'atlas_feature_description',
-      'atlas_credit_cost',
-      'atlas_access_type',
-      'atlas_is_active',
-      'atlas_youtube_url'
-    ],
-    icon: '🧬'
-  }
 }
 
 export class GetAdminFeaturesService extends BaseService {

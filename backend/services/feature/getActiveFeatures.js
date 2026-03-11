@@ -109,24 +109,40 @@ export class GetActiveFeaturesService extends BaseService {
       })
     }
 
-    
-    // OSCE Practice feature
-    if (featureConstants.osce_practice_feature_title) {
-      const cost = 0 // Cost is per-session
-      const accessType = featureConstants.osce_practice_access_type || 'subscription'
+    // Anatomy Quiz feature
+    if (featureConstants.anatomy_feature_title) {
+      const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
+      const accessType = featureConstants.anatomy_access_type || 'subscription'
       features.push({
-        name: featureConstants.osce_practice_feature_title,
-        description: featureConstants.osce_practice_feature_description,
+        name: featureConstants.anatomy_feature_title,
+        description: featureConstants.anatomy_feature_description,
         accessDescription: getAccessDescription(accessType, cost),
         cost,
         accessType,
-        icon: '🩺',
-        sessionType: "osce_practice",
-        isActive: featureConstants.osce_practice_is_active,
-        youtubeUrl: featureConstants.osce_practice_youtube_url || ''
+        icon: '🦴',
+        sessionType: "anatomy",
+        isActive: featureConstants.anatomy_is_active,
+        youtubeUrl: featureConstants.anatomy_youtube_url || ''
       })
     }
 
+    
+    // Atlas feature
+    if (featureConstants.atlas_feature_title) {
+      const cost = parseFloat(featureConstants.atlas_credit_cost) || 0
+      const accessType = featureConstants.atlas_access_type || 'subscription'
+      features.push({
+        name: featureConstants.atlas_feature_title,
+        description: featureConstants.atlas_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🧬',
+        sessionType: "atlas",
+        isActive: featureConstants.atlas_is_active,
+        youtubeUrl: featureConstants.atlas_youtube_url || ''
+      })
+    }
     
     // Chatbot feature
     if (featureConstants.chatbot_feature_title) {
@@ -142,6 +158,23 @@ export class GetActiveFeaturesService extends BaseService {
         sessionType: "chatbot",
         isActive: featureConstants.chatbot_is_active,
         youtubeUrl: featureConstants.chatbot_youtube_url || ''
+      })
+    }
+    
+    // OSCE Practice feature
+    if (featureConstants.osce_practice_feature_title) {
+      const cost = 0 // Cost is per-session
+      const accessType = featureConstants.osce_practice_access_type || 'subscription'
+      features.push({
+        name: featureConstants.osce_practice_feature_title,
+        description: featureConstants.osce_practice_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🩺',
+        sessionType: "osce_practice",
+        isActive: featureConstants.osce_practice_is_active,
+        youtubeUrl: featureConstants.osce_practice_youtube_url || ''
       })
     }
 
@@ -178,6 +211,23 @@ export class GetActiveFeaturesService extends BaseService {
         youtubeUrl: featureConstants.mcq_youtube_url || ''
       })
     }
+    
+    // Diagnostic Quiz feature
+    if (featureConstants.diagnostic_feature_title) {
+      const cost = parseFloat(featureConstants.diagnostic_credit_cost) || 0
+      const accessType = featureConstants.diagnostic_access_type || 'subscription'
+      features.push({
+        name: featureConstants.diagnostic_feature_title,
+        description: featureConstants.diagnostic_feature_description,
+        accessDescription: getAccessDescription(accessType, cost),
+        cost,
+        accessType,
+        icon: '🩻',
+        sessionType: "diagnostic",
+        isActive: featureConstants.diagnostic_is_active,
+        youtubeUrl: featureConstants.diagnostic_youtube_url || ''
+      })
+    }
 
     // Flashcard feature
     if (featureConstants.flashcard_feature_title) {
@@ -195,39 +245,6 @@ export class GetActiveFeaturesService extends BaseService {
         youtubeUrl: featureConstants.flashcard_youtube_url || ''
       })
     }
-    // Diagnostic Quiz feature
-    if (featureConstants.diagnostic_feature_title) {
-      const cost = parseFloat(featureConstants.diagnostic_credit_cost) || 0
-      const accessType = featureConstants.diagnostic_access_type || 'subscription'
-      features.push({
-        name: featureConstants.diagnostic_feature_title,
-        description: featureConstants.diagnostic_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🫀',
-        sessionType: "diagnostic",
-        isActive: featureConstants.diagnostic_is_active,
-        youtubeUrl: featureConstants.diagnostic_youtube_url || ''
-      })
-    }
-    // Anatomy Quiz feature
-    if (featureConstants.anatomy_feature_title) {
-      const cost = parseFloat(featureConstants.anatomy_credit_cost) || 0
-      const accessType = featureConstants.anatomy_access_type || 'subscription'
-      features.push({
-        name: featureConstants.anatomy_feature_title,
-        description: featureConstants.anatomy_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🦴',
-        sessionType: "anatomy",
-        isActive: featureConstants.anatomy_is_active,
-        youtubeUrl: featureConstants.anatomy_youtube_url || ''
-      })
-    }
-
     // Exercise feature
     if (featureConstants.exercise_feature_title) {
       const cost = parseFloat(featureConstants.exercise_credit_cost) || 0
@@ -259,23 +276,6 @@ export class GetActiveFeaturesService extends BaseService {
         sessionType: "calculator",
         isActive: featureConstants.calculator_is_active,
         youtubeUrl: featureConstants.calculator_youtube_url || ''
-      })
-    }
-
-    // Atlas feature
-    if (featureConstants.atlas_feature_title) {
-      const cost = parseFloat(featureConstants.atlas_credit_cost) || 0
-      const accessType = featureConstants.atlas_access_type || 'subscription'
-      features.push({
-        name: featureConstants.atlas_feature_title,
-        description: featureConstants.atlas_feature_description,
-        accessDescription: getAccessDescription(accessType, cost),
-        cost,
-        accessType,
-        icon: '🧬',
-        sessionType: "atlas",
-        isActive: featureConstants.atlas_is_active,
-        youtubeUrl: featureConstants.atlas_youtube_url || ''
       })
     }
 

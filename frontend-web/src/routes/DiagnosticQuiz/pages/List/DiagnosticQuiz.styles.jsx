@@ -166,7 +166,7 @@ export const QuestionCount = styled.div`
   border: 1px solid rgba(107, 185, 232, 0.2);
 
   &::before {
-    content: '🫀';
+    content: '🩻';
     font-size: 1rem;
   }
 `
