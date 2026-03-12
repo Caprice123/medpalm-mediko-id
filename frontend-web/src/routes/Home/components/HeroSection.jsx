@@ -78,12 +78,10 @@ export default function HeroSection({ scrollToSection }) {
           <HeroText>
             <Badge data-aos="fade-up">✨ Platform Medis Berbasis AI</Badge>
             <HeroTitle data-aos="fade-up" data-aos-delay="100">
-              The way top medical students succeed — now in your palm, powered by AI.
+              Better Learning. Better Doctors. Better Lives.
             </HeroTitle>
             <HeroSubtitle data-aos="fade-up" data-aos-delay="200">
-              Akses integrasi model anatomi 3D, AI OSCE, AI Assistant, 45.000+ flashcards,
-              40.000+ Quiz MCQ, dan catatan kedokteran lebih dari 600 subtopik dari
-              semester awal sampai akhir.
+              1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Mahasiswa Kedokteran, Simulasi AI OSCE dengan Pasien Virtual, 25.000+ Kuis & Flashcards, 255+ Kuis Interpretasi Klinis, dan 400+ Artikel Kedokteran
             </HeroSubtitle>
             <HeroButtons data-aos="fade-up" data-aos-delay="300">
               <LinkButton to="/sign-in" variant="primary" size="large">

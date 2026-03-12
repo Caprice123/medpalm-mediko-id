@@ -17,39 +17,29 @@ import {
 
 const FAQS = [
   {
-    question: 'Apa itu MedPal?',
+    question: 'Apa itu kredit dan bagaimana cara menggunakannya?',
     answer:
-      'MedPal adalah platform pembelajaran digital yang dirancang khusus untuk mahasiswa kedokteran Indonesia. Kami menyediakan berbagai fitur seperti Bank Soal, Flashcard, Summary Notes, Chat Assistant bertenaga AI, OSCE Practice, dan banyak lagi — semuanya dalam satu platform terintegrasi.',
+      'Kredit adalah biaya untuk setiap penggunaan fitur yang berhubungan dengan AI, setiap paket langganan kami berikan credits, namun jika untuk pengguna yang menggunakan AI secara intensif dapat melakukan top up. Biaya credits untuk AI research sekitar 0,1 dan untuk OSCE AI sekitar 5 credits.',
   },
   {
-    question: 'Bagaimana sistem kredit bekerja?',
+    question: 'Apakah ada masa percobaan gratis? ',
     answer:
-      'Kredit adalah mata uang digital di MedPal yang digunakan untuk mengakses fitur-fitur tertentu. Setiap paket berisi sejumlah kredit yang dapat digunakan secara fleksibel sesuai kebutuhan belajar Anda. Kredit tidak memiliki masa kadaluarsa selama akun Anda aktif.',
+      'Ada, namun biasanya dalam bentuk event khusus dengan waktu terbatas, users bisa mendapatkan free credits untuk AI ataupun free trial untuk mengakse fitur premium tertentu.',
   },
   {
-    question: 'Apakah ada masa percobaan gratis?',
+    question: 'Bisakah saya mengakses Medpal dari smartphone?',
     answer:
-      'Beberapa fitur dasar tersedia secara gratis tanpa perlu membeli kredit. Untuk fitur premium seperti Chat Assistant AI, OSCE Practice, dan generasi soal otomatis, Anda membutuhkan kredit. Anda bisa mulai dengan paket kredit terkecil untuk mencoba seluruh fitur premium.',
-  },
-  {
-    question: 'Materi apa saja yang tersedia?',
-    answer:
-      'MedPal mencakup seluruh spektrum materi kedokteran meliputi ilmu dasar (Anatomi, Fisiologi, Biokimia, dll.), ilmu klinik (Penyakit Dalam, Bedah, Obstetri-Ginekologi, Anak, Psikiatri, dll.), hingga materi persiapan UKMPPD. Konten terus diperbarui sesuai kurikulum terbaru.',
-  },
-  {
-    question: 'Bisakah saya mengakses MedPal dari smartphone?',
-    answer:
-      'Ya! MedPal dirancang responsif dan dapat diakses dari perangkat apa pun — laptop, tablet, maupun smartphone. Tidak perlu menginstal aplikasi; cukup buka browser favorit Anda dan mulai belajar kapan saja, di mana saja.',
+      'Ya bisa, anda bisa mengaksesnya lewat website, namun untuk versi Play Store ataupun App Store akan tersedia sekitar Agustus 2026.',
   },
   {
     question: 'Bagaimana cara membeli kredit?',
     answer:
-      'Pilih paket kredit yang sesuai di halaman Harga, lalu lanjutkan ke pembayaran. Kami mendukung berbagai metode pembayaran termasuk transfer bank, dompet digital (GoPay, OVO, Dana), dan kartu kredit/debit. Kredit akan langsung masuk ke akun Anda setelah pembayaran dikonfirmasi.',
+      'Bisa dilakukan dengan mengklik “top up” di pojok sebelah kanan dashboard pengguna.',
   },
   {
-    question: 'Apakah soal-soal di Bank Soal terus diperbarui?',
+    question: 'Apakah bahan belajar terus diperbarui?',
     answer:
-      'Ya, tim kami secara rutin menambah dan memperbarui soal-soal di Bank Soal agar relevan dengan pola soal UKMPPD terkini. Setiap soal disertai pembahasan lengkap yang ditulis oleh dokter dan tenaga pengajar berpengalaman.',
+      'Benar, akan terus kami perbarui sesuai dengan kurikulum pendidikan kedokteran Indonesia.',
   },
 ]
 

@@ -67,7 +67,7 @@ function Home() {
 
         <PricingSection />
 
-        <TestimonialsSection />
+        {/* <TestimonialsSection /> */}
 
         <FAQSection />
 

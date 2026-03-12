@@ -13,11 +13,11 @@ export default function CTASection() {
       <StyledCTASection>
         <CTAContent>
           <CTATitle data-aos="fade-up">
-            Siap Meningkatkan Pembelajaran Anda?
+            Siap menjadi #topmedstud?
           </CTATitle>
           <CTASubtitle data-aos="fade-up" data-aos-delay="100">
-            Bergabunglah dengan ribuan mahasiswa kedokteran yang telah meningkatkan
-            pembelajaran mereka dengan MedPal. Mulai gratis hari ini!
+            Bergabung dengan ribuan mahasiswa kedokteran lainnya.
+            Ayo belajar efektif bersama Medpal!
           </CTASubtitle>
           <div data-aos="zoom-in" data-aos-delay="200">
             <LinkButton
