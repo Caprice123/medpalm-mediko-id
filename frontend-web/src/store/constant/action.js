@@ -27,11 +27,12 @@ export const fetchConstants = () => async (dispatch, getState) => {
   }
 }
 
-export const updateConstants = (constants) => async (dispatch) => {
+export const updateConstants = (constants, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUpdateConstantLoading', value: true }))
     
     await putWithToken(Endpoints.admin.constants, constants)
+    onSuccess()
   } finally {
     dispatch(setLoading({ key: 'isUpdateConstantLoading', value: false }))
   }
