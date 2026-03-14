@@ -529,6 +529,8 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let updatedBalance = null
+    let firstContentChunkReceived = false
+    const NO_CITATIONS_FALLBACK = 'Maaf, tidak ada informasi yang tersedia karena tidak ditemukan referensi dari trusted domain filter yang dikonfigurasi dalam pengaturan.'
 
     try {
       // Process stream chunks with pacing
@@ -552,6 +554,17 @@ export class SendMessageService extends BaseService {
         const content = chunk.choices[0]?.delta?.content || ''
 
         if (content) {
+          // First content chunk — decide whether to proceed or use fallback
+          if (!firstContentChunkReceived) {
+            firstContentChunkReceived = true
+            if (citations.length === 0) {
+              console.log('⚠️  No citations before first content chunk — aborting and using fallback message')
+              fullResponseFromAI = NO_CITATIONS_FALLBACK
+              accumulatedChunk = NO_CITATIONS_FALLBACK
+              break
+            }
+          }
+
           fullResponseFromAI += content
 
           // Filter out <think> tags before accumulating
