@@ -92,6 +92,15 @@ function AtlasSettingsModal({ onClose }) {
           />
         </FormGroup>
       )}
+
+      <FormGroup>
+        <TextInput
+          label="YouTube URL"
+          placeholder="https://www.youtube.com/watch?v=..."
+          value={form.values.atlas_youtube_url}
+          onChange={e => form.setFieldValue('atlas_youtube_url', e.target.value)}
+        />
+      </FormGroup>
     </Modal>
   )
 }

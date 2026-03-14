@@ -78,7 +78,11 @@ export default function HeroSection({ scrollToSection }) {
           <HeroText>
             <Badge data-aos="fade-up">✨ Platform Medis Berbasis AI</Badge>
             <HeroTitle data-aos="fade-up" data-aos-delay="100">
-              Better Learning. Better Doctors. Better Lives.
+              Better Learning.
+              <br />
+              Better Doctors.
+              <br />
+              Better Lives.
             </HeroTitle>
             <HeroSubtitle data-aos="fade-up" data-aos-delay="200">
               1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Mahasiswa Kedokteran, Simulasi AI OSCE dengan Pasien Virtual, 25.000+ Kuis & Flashcards, 255+ Kuis Interpretasi Klinis, dan 400+ Artikel Kedokteran

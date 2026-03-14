@@ -21,6 +21,10 @@ const atlasConstants = [
     key: 'atlas_credit_cost',
     value: '0',
   },
+  {
+    key: 'atlas_youtube_url',
+    value: '',
+  },
 ]
 
 async function main() {

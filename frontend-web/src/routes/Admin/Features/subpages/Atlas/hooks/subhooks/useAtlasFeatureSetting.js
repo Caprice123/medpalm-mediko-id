@@ -15,6 +15,7 @@ export const useAtlasFeatureSetting = (onClose) => {
       atlas_access_type: 'subscription',
       atlas_credit_cost: '0',
       atlas_is_active: true,
+      atlas_youtube_url: '',
     },
     onSubmit: (values) => {
       dispatch(updateConstants(values, onClose))
@@ -34,6 +35,7 @@ export const useAtlasFeatureSetting = (onClose) => {
         'atlas_access_type',
         'atlas_credit_cost',
         'atlas_is_active',
+        'atlas_youtube_url',
       ]
       dispatch(actions.updateFilter({ key: 'keys', value: keys }))
       const constants = await dispatch(fetchConstants())
