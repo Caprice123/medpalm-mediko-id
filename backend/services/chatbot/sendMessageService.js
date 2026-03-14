@@ -225,7 +225,7 @@ export class SendMessageService extends BaseService {
 
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
-    let newBalance = null
+    let updatedBalance = null
 
     try {
       // Process Gemini stream chunks with pacing
@@ -263,12 +263,15 @@ export class SendMessageService extends BaseService {
                 where: { user_id: userId }
               })
 
-              newBalance = userCredit.balance - creditsUsed
-
               await prisma.user_credits.update({
                 where: { user_id: userId },
-                data: { balance: newBalance }
+                data: { balance: { decrement: creditsUsed } }
               })
+
+              const updatedUserCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+              updatedBalance = updatedUserCredit.balance
 
               await prisma.credit_transactions.create({
                 data: {
@@ -277,7 +280,7 @@ export class SendMessageService extends BaseService {
                   type: 'deduction',
                   amount: -creditsUsed,
                   balance_before: userCredit.balance,
-                  balance_after: newBalance,
+                  balance_after: updatedBalance,
                   description: `Chatbot ${mode} mode - 1 pesan`,
                   payment_status: 'completed'
                 }
@@ -295,8 +298,8 @@ export class SendMessageService extends BaseService {
                 }
 
                 // Include userQuota in first chunk
-                if (isFirstChunk && newBalance !== null) {
-                  chunkData.data.userQuota = { balance: newBalance }
+                if (isFirstChunk && updatedBalance !== null) {
+                  chunkData.data.userQuota = { balance: updatedBalance }
                   isFirstChunk = false // Mark first chunk as sent
                 }
 
@@ -525,7 +528,7 @@ export class SendMessageService extends BaseService {
 
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
-    let newBalance = null
+    let updatedBalance = null
 
     try {
       // Process stream chunks with pacing
@@ -565,12 +568,15 @@ export class SendMessageService extends BaseService {
                 where: { user_id: userId }
               })
 
-              newBalance = userCredit.balance - creditsUsed
-
               await prisma.user_credits.update({
                 where: { user_id: userId },
-                data: { balance: newBalance }
+                data: { balance: { decrement: creditsUsed } }
               })
+
+              const updatedUserCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+              updatedBalance = updatedUserCredit.balance
 
               await prisma.credit_transactions.create({
                 data: {
@@ -579,7 +585,7 @@ export class SendMessageService extends BaseService {
                   type: 'deduction',
                   amount: -creditsUsed,
                   balance_before: userCredit.balance,
-                  balance_after: newBalance,
+                  balance_after: updatedBalance,
                   description: `Chatbot ${mode} mode - 1 pesan`,
                   payment_status: 'completed'
                 }
@@ -596,8 +602,8 @@ export class SendMessageService extends BaseService {
               }
 
               // Include userQuota in first chunk
-              if (isFirstChunk && newBalance !== null) {
-                chunkData.data.userQuota = { balance: newBalance }
+              if (isFirstChunk && updatedBalance !== null) {
+                chunkData.data.userQuota = { balance: updatedBalance }
                 isFirstChunk = false // Mark first chunk as sent
               }
 
