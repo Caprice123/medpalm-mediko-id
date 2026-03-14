@@ -45,7 +45,7 @@ export class StartOsceSessionService extends BaseService {
       const constants = await prisma.constants.findMany({
         where: {
           key: {
-            in: ['osce_session_start_cost'],
+            in: ['osce_practice_credit_cost'],
           },
         },
       })
@@ -55,7 +55,7 @@ export class StartOsceSessionService extends BaseService {
         constantsMap[c.key] = c.value
       })
 
-      const sessionStartCost = parseInt(constantsMap.osce_session_start_cost) || 10
+      const sessionStartCost = parseInt(constantsMap.osce_practice_credit_cost) || 10
 
       // Check user credits
       const userCredit = await prisma.user_credits.findUnique({
