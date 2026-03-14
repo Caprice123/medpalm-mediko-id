@@ -53,6 +53,7 @@ export class SendMessageService extends BaseService {
     const accessType = constantsMap.skripsi_access_type || 'subscription'
     const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
     const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
+    console.log('[Skripsi Credit] accessType:', accessType, '| requiresCredits:', requiresCredits, '| requiresSubscription:', requiresSubscription)
 
     // For subscription_and_credits: subscribers get free access, non-subscribers need credits
     let messageCost = 0
@@ -71,7 +72,7 @@ export class SendMessageService extends BaseService {
     }
 
     // Check credits if required (and not bypassed by subscription)
-    if (requiresCredits && (!hasSubscription || accessType === 'credits')) {
+    if (requiresCredits) {
       messageCost = parseFloat(constantsMap[`skripsi_${mode}_cost`]) || 0
 
       if (messageCost > 0) {
@@ -108,6 +109,7 @@ export class SendMessageService extends BaseService {
             modeType,
             stream: result.stream,
             messageCost,
+            requiresCredits,
             onStream,
             onComplete,
             onError,
@@ -124,6 +126,7 @@ export class SendMessageService extends BaseService {
             stream: result.stream,
             sources: result.sources, // For validated mode
             messageCost,
+            requiresCredits,
             onStream,
             onComplete,
             onError,
@@ -157,7 +160,7 @@ export class SendMessageService extends BaseService {
   /**
    * Handle streaming response from Perplexity (Research mode)
    */
-  static async handlePerplexityStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async handlePerplexityStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, messageCost, requiresCredits, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     let fullResponseFromAI = ''
     let sentContentToClient = ''
     let streamAborted = false
@@ -174,6 +177,8 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let newBalance = null
+    let firstContentChunkReceived = false
+    const NO_CITATIONS_FALLBACK = 'Maaf, tidak ada informasi yang tersedia karena tidak ditemukan referensi dari trusted domain filter yang dikonfigurasi dalam pengaturan.'
 
     try {
       // CREATE MESSAGE RECORDS FIRST (before streaming)
@@ -227,7 +232,6 @@ export class SendMessageService extends BaseService {
 
       // Process Perplexity stream chunks with pacing
       for await (const chunk of stream) {
-        console.log(chunk)
         // Check if stream was aborted BEFORE processing chunk (client disconnected)
         if (streamAbortSignal && streamAbortSignal.aborted) {
           console.log('Stream aborted - client disconnected')
@@ -244,13 +248,51 @@ export class SendMessageService extends BaseService {
           break
         }
 
+        // Extract citations FIRST before processing content
+        let foundCitations = null
+
+        if (chunk.search_results && chunk.search_results.length > 0) {
+          foundCitations = chunk.search_results
+        } else if (chunk.citations && chunk.citations.length > 0) {
+          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        } else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
+          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        } else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
+          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        }
+
+        if (foundCitations && Array.isArray(foundCitations)) {
+          foundCitations.forEach(citation => {
+            const citationUrl = typeof citation === 'string' ? citation : citation.url
+            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
+            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
+
+            if (!sentCitations.has(citationUrl)) {
+              sentCitations.add(citationUrl)
+              citations.push({ url: citationUrl, title: citationTitle, date: citationDate })
+
+              try {
+                onStream({ type: 'citation', data: { url: citationUrl, title: citationTitle, date: citationDate } })
+                console.log('📤 Sent citation to client:', citationUrl)
+              } catch (e) {
+                console.log('❌ Failed to send citation:', e)
+              }
+            }
+          })
+        }
+
         const content = chunk.choices?.[0]?.delta?.content || ''
 
         if (content) {
-          // Don't add to fullResponseFromAI if client already disconnected
-          if (streamAborted || (streamAbortSignal && streamAbortSignal.aborted)) {
-            console.log('Skipping chunk - client disconnected')
-            break
+          // First content chunk — check citations before proceeding
+          if (!firstContentChunkReceived) {
+            firstContentChunkReceived = true
+            if (citations.length === 0) {
+              console.log('⚠️  No citations before first content chunk — aborting and using fallback message')
+              fullResponseFromAI = NO_CITATIONS_FALLBACK
+              accumulatedChunk = NO_CITATIONS_FALLBACK
+              break
+            }
           }
 
           fullResponseFromAI += content
@@ -269,17 +311,23 @@ export class SendMessageService extends BaseService {
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
             // Deduct credits on FIRST chunk
-            if (isFirstChunk && messageCost > 0) {
+            console.log(isFirstChunk)
+            console.log(requiresCredits)
+            console.log(messageCost)
+            if (isFirstChunk && requiresCredits && messageCost > 0) {
               const userCredit = await prisma.user_credits.findUnique({
                 where: { user_id: userId }
               })
 
-              newBalance = userCredit.balance - messageCost
-
               await prisma.user_credits.update({
                 where: { user_id: userId },
-                data: { balance: newBalance }
+                data: { balance: { decrement: messageCost } }
               })
+
+              const updatedUserCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+              newBalance = updatedUserCredit.balance
 
               await prisma.credit_transactions.create({
                 data: {
@@ -305,9 +353,11 @@ export class SendMessageService extends BaseService {
               }
 
               // Include userQuota in first chunk
-              if (isFirstChunk && newBalance !== null) {
-                chunkData.data.userQuota = { balance: newBalance }
-                isFirstChunk = false // Mark first chunk as sent
+              if (isFirstChunk) {
+                if (newBalance !== null) {
+                  chunkData.data.userQuota = { balance: newBalance }
+                }
+                isFirstChunk = false // Always mark first chunk as sent
               }
 
               onStream(chunkData, () => {
@@ -336,76 +386,6 @@ export class SendMessageService extends BaseService {
         }
 
         if (streamAborted) break
-
-        // Extract and send citations if available
-        // Try both 'citations' (old format - array of URLs) and 'search_results' (new format - array of objects)
-        console.log('=== CHUNK DEBUG ===')
-        console.log('Chunk keys:', Object.keys(chunk))
-        console.log('Chunk.choices[0]:', chunk.choices?.[0])
-        console.log('Citations (top level):', chunk.citations)
-        console.log('Search results (top level):', chunk.search_results)
-        console.log('Message citations:', chunk.choices?.[0]?.message?.citations)
-        console.log('Delta citations:', chunk.choices?.[0]?.delta?.citations)
-        console.log('Finish reason:', chunk.choices?.[0]?.finish_reason)
-        console.log('==================')
-
-        // Check for citations in multiple possible locations
-        let foundCitations = null
-
-        // Location 1: Top-level search_results (new format)
-        if (chunk.search_results && chunk.search_results.length > 0) {
-          foundCitations = chunk.search_results
-          console.log('✅ Found search_results at top level:', foundCitations.length)
-        }
-        // Location 2: Top-level citations (old format)
-        else if (chunk.citations && chunk.citations.length > 0) {
-          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations at top level:', foundCitations.length)
-        }
-        // Location 3: Message-level citations
-        else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
-          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations in message:', foundCitations.length)
-        }
-        // Location 4: Delta-level citations
-        else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
-          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations in delta:', foundCitations.length)
-        }
-
-        // Process found citations
-        if (foundCitations && Array.isArray(foundCitations)) {
-          foundCitations.forEach(citation => {
-            // Handle both object format {url, title, date} and string format (URL)
-            const citationUrl = typeof citation === 'string' ? citation : citation.url
-            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
-            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
-
-            if (!sentCitations.has(citationUrl)) {
-              sentCitations.add(citationUrl)
-              citations.push({
-                url: citationUrl,
-                title: citationTitle,
-                date: citationDate
-              })
-
-              // Send citation to client immediately
-              try {
-                onStream({
-                  type: 'citation',
-                  data: {
-                    url: citationUrl,
-                    title: citationTitle,
-                    date: citationDate
-                  }
-                })
-                console.log('📤 Sent citation to client:', citationUrl)
-              } catch (e) {
-                console.log('❌ Failed to send citation:', e)
-              }
-            }
-          })
-        }
       }
 
       // Send any remaining accumulated characters
@@ -537,7 +517,7 @@ export class SendMessageService extends BaseService {
   /**
    * Handle streaming response from Gemini
    */
-  static async handleStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, sources, messageCost, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async handleStreamingResponse({ tabId, setId, userId, userMessageContent, modeType, stream, sources, messageCost, requiresCredits, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     let fullResponseFromAI = ''
     let sentContentToClient = ''
     let streamAborted = false
@@ -545,6 +525,8 @@ export class SendMessageService extends BaseService {
     let accumulatedChunk = '' // Buffer to accumulate 20 characters
     let userMessage = null
     let aiMessage = null
+    let firstContentChunkReceived = false
+    const NO_CITATIONS_FALLBACK = 'Maaf, tidak ada referensi yang ditemukan untuk pertanyaan ini. Silakan coba dengan pertanyaan yang berbeda.'
 
     const CHARS_PER_CHUNK = 20
     const TYPING_SPEED_MS = 1
@@ -648,17 +630,20 @@ export class SendMessageService extends BaseService {
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
             // Deduct credits on FIRST chunk
-            if (isFirstChunk && messageCost > 0) {
+            if (isFirstChunk && requiresCredits && messageCost > 0) {
               const userCredit = await prisma.user_credits.findUnique({
                 where: { user_id: userId }
               })
 
-              newBalance = userCredit.balance - messageCost
-
               await prisma.user_credits.update({
                 where: { user_id: userId },
-                data: { balance: newBalance }
+                data: { balance: { decrement: messageCost } }
               })
+
+              const updatedUserCredit = await prisma.user_credits.findUnique({
+                where: { user_id: userId }
+              })
+              newBalance = updatedUserCredit.balance
 
               await prisma.credit_transactions.create({
                 data: {
@@ -684,9 +669,11 @@ export class SendMessageService extends BaseService {
               }
 
               // Include userQuota in first chunk
-              if (isFirstChunk && newBalance !== null) {
-                chunkData.data.userQuota = { balance: newBalance }
-                isFirstChunk = false // Mark first chunk as sent
+              if (isFirstChunk) {
+                if (newBalance !== null) {
+                  chunkData.data.userQuota = { balance: newBalance }
+                }
+                isFirstChunk = false // Always mark first chunk as sent
               }
 
               onStream(chunkData, () => {

@@ -255,7 +255,6 @@ export class ValidatedSearchModeAIService extends BaseService {
       return {
         stream: stream,
         sources: sourcesWithUrls,
-        creditsUsed: creditsPerMessage,
         provider: RouterUtils.getProvider(modelName),
       }
   }

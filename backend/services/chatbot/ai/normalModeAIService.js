@@ -74,7 +74,6 @@ export class NormalModeAIService extends BaseService {
 
       return {
         stream: stream,
-        creditsUsed: 0, // Credits calculated by provider
         sources: [],
         provider: RouterUtils.getProvider(modelName),
       }

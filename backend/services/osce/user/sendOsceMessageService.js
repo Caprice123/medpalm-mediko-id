@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { ValidationError } from '#errors/validationError'
+import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 
 export class SendOsceMessageService extends BaseService {
   static async call({
@@ -25,6 +26,7 @@ export class SendOsceMessageService extends BaseService {
         where: {
           key: {
             in: [
+              'osce_practice_access_type',
               'osce_practice_credit_cost',
               'osce_practice_chat_completion_prompt',
               'osce_practice_context_message_count'
@@ -70,16 +72,31 @@ export class SendOsceMessageService extends BaseService {
         throw new ValidationError('Session not found or access denied')
       }
 
-    //   const messageCost = parseInt(constantsMap.osce_practice_credit_cost) || 5
-      const messageCost = 0
+      // Check user access based on access type
+      const accessType = constantsMap.osce_practice_access_type || 'subscription'
+      const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
+      const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
 
-      // Check user credits
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId },
-      })
+      if (requiresSubscription) {
+        const hasSubscription = await HasActiveSubscriptionService.call(userId)
+        if (!hasSubscription) {
+          throw new ValidationError('Anda memerlukan langganan aktif untuk menggunakan fitur OSCE Practice')
+        }
+      }
 
-      if (!userCredit || userCredit.balance < messageCost) {
-        throw new ValidationError(`Insufficient credits. You need ${messageCost} credits to send a message`)
+      let messageCost = 0
+      if (requiresCredits) {
+        messageCost = parseFloat(constantsMap.osce_practice_credit_cost) || 0
+
+        if (messageCost > 0) {
+          const userCredit = await prisma.user_credits.findUnique({
+            where: { user_id: userId },
+          })
+
+          if (!userCredit || userCredit.balance < messageCost) {
+            throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk mengirim pesan`)
+          }
+        }
       }
 
       // Build system prompt with context, knowledge base, and scenario
@@ -109,6 +126,7 @@ export class SendOsceMessageService extends BaseService {
         sessionId: session.id,
         userId,
         messageCost,
+        requiresCredits,
         onStream,
         onComplete,
         onError,
@@ -134,6 +152,7 @@ export class SendOsceMessageService extends BaseService {
     sessionId,
     userId,
     messageCost,
+    requiresCredits,
     onStream,
     onComplete,
     onError,
@@ -202,31 +221,29 @@ export class SendOsceMessageService extends BaseService {
               accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
               // Deduct credits on FIRST chunk
-              if (isFirstChunk && messageCost > 0) {
+              if (isFirstChunk && requiresCredits && messageCost > 0) {
                 const userCredit = await prisma.user_credits.findUnique({
                   where: { user_id: userId }
                 })
 
-                newBalance = userCredit.balance - messageCost
-
                 await prisma.user_credits.update({
                   where: { user_id: userId },
-                  data: { balance: newBalance }
+                  data: { balance: { decrement: messageCost } }
                 })
 
-                const creditAfter = await prisma.user_credits.findUnique({
-                  where: { user_id: userId },
-                  select: { balance: true }
+                const updatedUserCredit = await prisma.user_credits.findUnique({
+                  where: { user_id: userId }
                 })
+                newBalance = updatedUserCredit.balance
 
                 await prisma.credit_transactions.create({
                   data: {
                     user_id: userId,
                     user_credit_id: userCredit.id,
                     type: 'deduction',
-                    amount: messageCost,
+                    amount: -messageCost,
                     balance_before: userCredit.balance,
-                    balance_after: creditAfter.balance,
+                    balance_after: newBalance,
                     description: `OSCE Practice - Message in session`,
                     payment_status: 'completed'
                   }
@@ -242,9 +259,11 @@ export class SendOsceMessageService extends BaseService {
                 }
 
                 // Include userQuota in first chunk
-                if (isFirstChunk && newBalance !== null) {
-                  chunkData.data.userQuota = { balance: newBalance }
-                  isFirstChunk = false // Mark first chunk as sent
+                if (isFirstChunk) {
+                  if (newBalance !== null) {
+                    chunkData.data.userQuota = { balance: newBalance }
+                  }
+                  isFirstChunk = false // Always mark first chunk as sent
                 }
 
                 onStream(chunkData, () => {
@@ -299,31 +318,29 @@ export class SendOsceMessageService extends BaseService {
               accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
               // Deduct credits on FIRST chunk
-              if (isFirstChunk && messageCost > 0) {
+              if (isFirstChunk && requiresCredits && messageCost > 0) {
                 const userCredit = await prisma.user_credits.findUnique({
                   where: { user_id: userId }
                 })
 
-                newBalance = userCredit.balance - messageCost
-
                 await prisma.user_credits.update({
                   where: { user_id: userId },
-                  data: { balance: newBalance }
+                  data: { balance: { decrement: messageCost } }
                 })
 
-                const creditAfter = await prisma.user_credits.findUnique({
-                  where: { user_id: userId },
-                  select: { balance: true }
+                const updatedUserCredit = await prisma.user_credits.findUnique({
+                  where: { user_id: userId }
                 })
+                newBalance = updatedUserCredit.balance
 
                 await prisma.credit_transactions.create({
                   data: {
                     user_id: userId,
                     user_credit_id: userCredit.id,
                     type: 'deduction',
-                    amount: messageCost,
+                    amount: -messageCost,
                     balance_before: userCredit.balance,
-                    balance_after: creditAfter.balance,
+                    balance_after: newBalance,
                     description: `OSCE Practice - Message in session`,
                     payment_status: 'completed'
                   }
@@ -339,9 +356,11 @@ export class SendOsceMessageService extends BaseService {
                 }
 
                 // Include userQuota in first chunk
-                if (isFirstChunk && newBalance !== null) {
-                  chunkData.data.userQuota = { balance: newBalance }
-                  isFirstChunk = false // Mark first chunk as sent
+                if (isFirstChunk) {
+                  if (newBalance !== null) {
+                    chunkData.data.userQuota = { balance: newBalance }
+                  }
+                  isFirstChunk = false // Always mark first chunk as sent
                 }
 
                 onStream(chunkData, () => {

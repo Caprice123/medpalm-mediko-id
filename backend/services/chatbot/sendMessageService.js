@@ -3,7 +3,6 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { NormalModeAIService } from '#services/chatbot/ai/normalModeAIService'
 import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSearchModeAIService'
-import { ResearchModeAIService } from '#services/chatbot/ai/researchModeAIService'
 import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researchModeWithQueryReformulation'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
@@ -258,7 +257,7 @@ export class SendMessageService extends BaseService {
             accumulatedChunk = accumulatedChunk.substring(CHARS_PER_CHUNK)
 
             // Deduct credits on FIRST chunk
-            if (isFirstChunk && requiresCredits && creditsUsed > 0) {
+            if (isFirstChunk && requiresCredits && creditsUsed > 0 && (sources.length !== 0 && mode !== "normal")) {
               const userCredit = await prisma.user_credits.findUnique({
                 where: { user_id: userId }
               })
