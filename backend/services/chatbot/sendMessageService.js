@@ -551,10 +551,43 @@ export class SendMessageService extends BaseService {
           break
         }
 
+        // Extract citations FIRST before processing content
+        let foundCitations = null
+
+        if (chunk.search_results && chunk.search_results.length > 0) {
+          foundCitations = chunk.search_results
+        } else if (chunk.citations && chunk.citations.length > 0) {
+          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        } else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
+          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        } else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
+          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
+        }
+
+        if (foundCitations && Array.isArray(foundCitations)) {
+          foundCitations.forEach(citation => {
+            const citationUrl = typeof citation === 'string' ? citation : citation.url
+            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
+            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
+
+            if (!sentCitations.has(citationUrl)) {
+              sentCitations.add(citationUrl)
+              citations.push({ url: citationUrl, title: citationTitle, date: citationDate })
+
+              try {
+                onStream({ type: 'citation', data: { url: citationUrl, title: citationTitle, date: citationDate } })
+                console.log('📤 Sent citation to client:', citationUrl)
+              } catch (e) {
+                console.log('❌ Failed to send citation:', e)
+              }
+            }
+          })
+        }
+
         const content = chunk.choices[0]?.delta?.content || ''
 
         if (content) {
-          // First content chunk — decide whether to proceed or use fallback
+          // First content chunk — citations already extracted above, now decide
           if (!firstContentChunkReceived) {
             firstContentChunkReceived = true
             if (citations.length === 0) {
@@ -566,8 +599,6 @@ export class SendMessageService extends BaseService {
           }
 
           fullResponseFromAI += content
-
-          // Filter out <think> tags before accumulating
           accumulatedChunk += content
 
           // Send chunk when we have 20+ characters
@@ -609,115 +640,36 @@ export class SendMessageService extends BaseService {
             try {
               const chunkData = {
                 type: 'chunk',
-                data: {
-                  content: chunkToSend
-                }
+                data: { content: chunkToSend }
               }
 
-              // Include userQuota in first chunk
               if (isFirstChunk && updatedBalance !== null) {
                 chunkData.data.userQuota = { balance: updatedBalance }
-                isFirstChunk = false // Mark first chunk as sent
+                isFirstChunk = false
               }
 
               onStream(chunkData, () => {
-                  sentContentToClient += chunkToSend
+                sentContentToClient += chunkToSend
               })
-
-              // Only add to sentContentToClient AFTER successfully sending
             } catch (e) {
-                console.log(e)
-              // Client disconnected mid-chunk - don't add to sentContentToClient
               console.log('Client disconnected during chunk send - chunk not sent')
               streamAborted = true
               clientStillConnected = false
               break
             }
 
-            // Check abort status before delay
             if (streamAbortSignal && streamAbortSignal.aborted) {
               console.log('Stream aborted during pacing delay')
               streamAborted = true
               break
             }
 
-            // Delay for 20 chars: 20 * 10ms * 2 = 400ms
             const delay = CHARS_PER_CHUNK * TYPING_SPEED_MS
             await new Promise(resolve => setTimeout(resolve, delay))
           }
         }
 
         if (streamAborted) break
-
-        // Extract and send citations if available
-        // Try both 'citations' (old format - array of URLs) and 'search_results' (new format - array of objects)
-        console.log('=== CHUNK DEBUG ===')
-        console.log('Chunk keys:', Object.keys(chunk))
-        console.log('Chunk.choices[0]:', chunk.choices?.[0])
-        console.log('Citations (top level):', chunk.citations)
-        console.log('Search results (top level):', chunk.search_results)
-        console.log('Message citations:', chunk.choices?.[0]?.message?.citations)
-        console.log('Delta citations:', chunk.choices?.[0]?.delta?.citations)
-        console.log('Finish reason:', chunk.choices?.[0]?.finish_reason)
-        console.log('==================')
-
-        // Check for citations in multiple possible locations
-        let foundCitations = null
-
-        // Location 1: Top-level search_results (new format)
-        if (chunk.search_results && chunk.search_results.length > 0) {
-          foundCitations = chunk.search_results
-          console.log('✅ Found search_results at top level:', foundCitations.length)
-        }
-        // Location 2: Top-level citations (old format)
-        else if (chunk.citations && chunk.citations.length > 0) {
-          foundCitations = chunk.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations at top level:', foundCitations.length)
-        }
-        // Location 3: Message-level citations
-        else if (chunk.choices?.[0]?.message?.citations && chunk.choices[0].message.citations.length > 0) {
-          foundCitations = chunk.choices[0].message.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations in message:', foundCitations.length)
-        }
-        // Location 4: Delta-level citations
-        else if (chunk.choices?.[0]?.delta?.citations && chunk.choices[0].delta.citations.length > 0) {
-          foundCitations = chunk.choices[0].delta.citations.map(url => ({ url, title: url.substring(0, 200), date: null }))
-          console.log('✅ Found citations in delta:', foundCitations.length)
-        }
-
-        // Process found citations
-        if (foundCitations && Array.isArray(foundCitations)) {
-          foundCitations.forEach(citation => {
-            // Handle both object format {url, title, date} and string format (URL)
-            const citationUrl = typeof citation === 'string' ? citation : citation.url
-            const citationTitle = typeof citation === 'string' ? citation.substring(0, 200) : (citation.title || citation.url.substring(0, 200))
-            const citationDate = typeof citation === 'string' ? null : (citation.date || null)
-
-            if (!sentCitations.has(citationUrl)) {
-              sentCitations.add(citationUrl)
-              citations.push({
-                url: citationUrl,
-                title: citationTitle,
-                date: citationDate
-              })
-
-              // Send citation to client immediately
-              try {
-                onStream({
-                  type: 'citation',
-                  data: {
-                    url: citationUrl,
-                    title: citationTitle,
-                    date: citationDate
-                  }
-                })
-                console.log('📤 Sent citation to client:', citationUrl)
-              } catch (e) {
-                console.log('❌ Failed to send citation:', e)
-              }
-            }
-          })
-        }
       }
 
       // Flush any remaining buffer content (excluding incomplete tags)
