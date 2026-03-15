@@ -4,6 +4,8 @@ import { NotFoundError } from '#errors/notFoundError'
 import { ValidationError } from '#errors/validationError'
 import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import { SkripsiResearchModeV2 } from '#services/skripsi/ai/skripsiResearchModeV2'
+import { SkripsiResearchV2Handler } from '#services/skripsi/handlers/skripsiResearchV2Handler'
 
 export class SendMessageService extends BaseService {
   static async call({ tabId, userId, message, modeType = 'validated', onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -89,6 +91,34 @@ export class SendMessageService extends BaseService {
 
     // Get AI response with streaming
     try {
+      // Research mode for ai_researcher tabs → 3-stage V2 pipeline
+      if (modeType === 'research' && mode === 'ai_researcher' && onStream) {
+        const result = await SkripsiResearchModeV2.call({
+          tabId,
+          userId,
+          message: message.trim(),
+          tabType: tab.tab_type
+        })
+
+        return await SkripsiResearchV2Handler.handle({
+          tabId,
+          setId: tab.set_id,
+          userId,
+          userMessageContent: message.trim(),
+          stream: result.stream,
+          sources: result.sources,
+          noResults: result.noResults,
+          modeType,
+          messageCost,
+          requiresCredits,
+          onStream,
+          onComplete,
+          onError,
+          checkClientConnected,
+          streamAbortSignal
+        })
+      }
+
       const result = await SkripsiAIService.call({
         tabId,
         message: message.trim(),

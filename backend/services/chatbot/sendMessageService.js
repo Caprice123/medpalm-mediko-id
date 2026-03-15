@@ -4,6 +4,8 @@ import { ValidationError } from '#errors/validationError'
 import { NormalModeAIService } from '#services/chatbot/ai/normalModeAIService'
 import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSearchModeAIService'
 import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researchModeWithQueryReformulation'
+import { ResearchModeV2 } from '#services/chatbot/ai/researchModeV2'
+import { ResearchV2Handler } from '#services/chatbot/handlers/researchV2Handler'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 
@@ -86,8 +88,27 @@ export class SendMessageService extends BaseService {
       } else if (mode === 'validated') {
         result = await ValidatedSearchModeAIService.call({ userId, conversationId: internalConversationId, message })
       } else if (mode === 'research') {
-        // Use new query reformulation service for Indonesian queries with domain filter
-        result = await ResearchModeWithQueryReformulation.call({ userId, conversationId: internalConversationId, message })
+        result = await ResearchModeV2.call({ userId, conversationId: internalConversationId, message })
+      }
+
+      // Research V2 has its own dedicated handler
+      if (mode === 'research' && onStream) {
+        return await ResearchV2Handler.handle({
+          userId,
+          conversationId: internalConversationId,
+          userMessageContent: message,
+          stream: result.stream,
+          sources: result.sources,
+          noResults: result.noResults,
+          creditsUsed,
+          mode,
+          requiresCredits,
+          onStream,
+          onComplete,
+          onError,
+          checkClientConnected,
+          streamAbortSignal
+        })
       }
 
       if (onStream && result.stream) {

@@ -39,6 +39,13 @@ export const useFeatureSetting = (onClose) => {
       skripsi_ai_researcher_max_sources: '10',
       skripsi_ai_researcher_user_information: '',
 
+      // AI Researcher - V2 (3-stage pipeline)
+      skripsi_ai_researcher_v2_reformulation_prompt: '',
+      skripsi_ai_researcher_v2_retrieval_system_prompt: '',
+      skripsi_ai_researcher_v2_user_message_template: '',
+      skripsi_ai_researcher_v2_generation_model: 'gemini-2.5-flash',
+      skripsi_ai_researcher_v2_generation_prompt: '',
+
       // Validated Search Mode
       skripsi_validated_enabled: true,
       skripsi_validated_model: 'gemini-2.5-flash',
@@ -123,6 +130,11 @@ export const useFeatureSetting = (onClose) => {
         'skripsi_ai_researcher_citations_count',
         'skripsi_ai_researcher_max_sources',
         'skripsi_ai_researcher_user_information',
+        'skripsi_ai_researcher_v2_reformulation_prompt',
+        'skripsi_ai_researcher_v2_retrieval_system_prompt',
+        'skripsi_ai_researcher_v2_user_message_template',
+        'skripsi_ai_researcher_v2_generation_model',
+        'skripsi_ai_researcher_v2_generation_prompt',
         'skripsi_validated_enabled',
         'skripsi_validated_model',
         'skripsi_validated_embedding_model',

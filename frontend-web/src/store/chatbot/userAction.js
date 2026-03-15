@@ -676,6 +676,13 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
               streamingMessageCreatedAt: aiMessage.createdAt,
             }))
             finalData = data.data
+          } else if (data.type === 'content_replace') {
+            // Re-numbered content from backend (e.g. [3] → [1] after citation filtering)
+            fullContent = data.data.content
+            // Also patch the already-displayed portion so it shows correct numbers
+            if (displayedContent.length > 0) {
+              displayedContent = fullContent.substring(0, displayedContent.length)
+            }
           } else if (data.type === 'citation') {
             sources.push({ url: data.data.url, title: data.data.title })
           } else if (data.type === 'done') {

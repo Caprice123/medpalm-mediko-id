@@ -637,6 +637,12 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
           } else if (data.type === 'citation') {
             sources.push({ url: data.data.url, title: data.data.title })
             console.log('📚 Citation received:', data.data.url)
+          } else if (data.type === 'content_replace') {
+            // V2 research mode: citation numbers were remapped after streaming
+            fullContent = data.data.content
+            if (displayedContent.length > 0) {
+              displayedContent = fullContent.substring(0, displayedContent.length)
+            }
           } else if (data.type === 'done') {
             backendSavedMessage = true
             finalData = data.data

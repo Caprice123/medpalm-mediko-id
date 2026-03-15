@@ -134,6 +134,39 @@ export class PerplexityService extends BaseAiService {
         return stream
     }
 
+    /**
+     * Non-streaming search — returns search_results with snippets for RAG use.
+     * Use this when you want Perplexity as a retriever only (not for answer generation).
+     * @returns {{ searchResults: Array, citations: string[] }}
+     */
+    static async fetchSearchResults(model, systemPrompt, conversationHistory, userMessage, options = {}) {
+        const messages = await this.buildConversationHistory(conversationHistory, userMessage)
+
+        const mergedOptions = {
+            temperature: 0.2,
+            return_citations: true,
+            return_images: false,
+            ...options,
+            stream: false
+        }
+
+        const response = await perplexity.chat.completions.create({
+            model,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                ...messages
+            ],
+            ...mergedOptions
+        })
+
+        const searchResults = response.search_results || []
+        const citations = response.citations || []
+
+        console.log(`[Perplexity] fetchSearchResults: ${searchResults.length} results, ${citations.length} citations`)
+
+        return { searchResults, citations }
+    }
+
     static async buildConversationHistory(conversationHistory, userMessage) {
         const messages = conversationHistory.map(msg => ({
             role: msg.sender_type === 'user' ? 'user' : 'assistant',
