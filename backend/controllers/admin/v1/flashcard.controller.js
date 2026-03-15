@@ -13,7 +13,6 @@ import blobService from '#services/attachment/blobService'
 import { ValidationError } from '#errors/validationError'
 
 class FlashcardController {
-    
   async index(req, res) {
     const { search, topic, department, university, semester, page, perPage } = req.query
 

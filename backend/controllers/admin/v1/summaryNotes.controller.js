@@ -70,8 +70,7 @@ class SummaryNotesAdminController {
     const { uniqueId } = req.params
     const { title, description, content, markdownContent, blobId, status, isActive, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
 
-    console.log(flashcardDeckIds)
-    const summaryNote = await UpdateSummaryNoteService.call({
+    await UpdateSummaryNoteService.call({
       id: uniqueId,
       title,
       description,
@@ -86,7 +85,9 @@ class SummaryNotesAdminController {
     })
 
     return res.status(200).json({
-      data: SummaryNoteSerializer.serialize(summaryNote),
+      data: {
+        success: "ok",
+      },
     })
   }
 

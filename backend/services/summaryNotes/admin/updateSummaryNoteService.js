@@ -128,16 +128,16 @@ export class UpdateSummaryNoteService extends BaseService {
       // Fetch the complete summary note with tags
       const completeSummaryNote = await tx.summary_notes.findUnique({
         where: { id: summaryNote.id },
-        include: {
-          summary_note_tags: {
-            include: {
-              tags: true
-            }
-          }
+        select: {
+            status: true,
+            id: true,
+            unique_id: true
         }
       })
 
       return completeSummaryNote
+    }, {
+        timeout: 30_000
     })
 
     // Handle embedding updates (queue jobs instead of processing immediately)
