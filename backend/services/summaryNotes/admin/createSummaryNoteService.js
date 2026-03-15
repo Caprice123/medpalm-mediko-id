@@ -96,6 +96,8 @@ export class CreateSummaryNoteService extends BaseService {
       })
 
       return completeSummaryNote
+    }, {
+        timeout: 30000 // 20 seconds
     })
 
     // Queue embedding job if status is 'published'

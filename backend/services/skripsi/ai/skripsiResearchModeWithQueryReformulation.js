@@ -165,10 +165,14 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
       }
 
       // Call AI service to reformulate query
+      const options = {
+        temperature: 0.1,
+      }
       const result = await AIService.generateFromText(
         reformulationModel,
         prompt,
         [] // No conversation history needed for the reformulation itself
+        , options
       )
 
       // Extract reformulated query (handle different response formats)
@@ -225,11 +229,11 @@ export class SkripsiResearchModeWithQueryReformulation extends BaseService {
       }
 
       // Build enhanced user message with search context
-      const userMessage = `Search: "${englishSearchQuery}"\n\nQuestion: ${originalQuery}\n\nProvide detailed academic answer with citations.`
+      const userMessage = `Search: "${englishSearchQuery}"\n\nQuestion: ${originalQuery}.`
 
       // Build options for search
       const options = {
-        temperature: 0.7,
+        temperature: 0.1,
         return_citations: true,
         return_images: false,
       }
