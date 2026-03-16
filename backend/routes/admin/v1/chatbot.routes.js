@@ -21,6 +21,12 @@ router.post('/research-domains', asyncHandler(ChatbotAdminController.createResea
 router.put('/research-domains/:id', asyncHandler(ChatbotAdminController.updateResearchDomain))
 router.delete('/research-domains/:id', asyncHandler(ChatbotAdminController.deleteResearchDomain))
 
+// Journal name management
+router.get('/journals', asyncHandler(ChatbotAdminController.getJournals.bind(ChatbotAdminController)))
+router.post('/journals', asyncHandler(ChatbotAdminController.createJournal.bind(ChatbotAdminController)))
+router.put('/journals/:id', asyncHandler(ChatbotAdminController.updateJournal.bind(ChatbotAdminController)))
+router.delete('/journals/:id', asyncHandler(ChatbotAdminController.deleteJournal.bind(ChatbotAdminController)))
+
 // Conversation management
 router.get('/conversations', asyncHandler(ChatbotAdminController.getConversations))
 router.get('/conversations/:uniqueId', asyncHandler(ChatbotAdminController.getConversation))

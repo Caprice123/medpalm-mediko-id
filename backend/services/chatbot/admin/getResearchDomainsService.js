@@ -9,7 +9,8 @@ export class GetResearchDomainsService extends BaseService {
       where,
       orderBy: { domain: 'asc' },
       skip: (page - 1) * perPage,
-      take: perPage + 1
+      take: perPage + 1,
+      select: { id: true, domain: true, journal_name: true, is_active: true, created_at: true }
     })
 
     const isLastPage = rows.length <= perPage

@@ -458,6 +458,79 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
 
         <Divider />
 
+        {/* Research Mode V3 — OpenAlex (Tutor Role) */}
+        <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>Research Mode V3 — OpenAlex Pipeline (Tutor Role)</SectionTitle>
+
+        <FormGroup>
+          <ModelDropdown
+            label="Reformulation Model (Stage 1 — Gemini)"
+            value={form.values.chatbot_research_v3_reformulation_model || 'gemini-2.5-flash'}
+            onChange={(option) => form.setFieldValue('chatbot_research_v3_reformulation_model', option.value)}
+          />
+          <HintText>Model Gemini untuk reformulasi query Indonesia → English + generate related queries</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <ModelDropdown
+            label="Generation Model (Stage 3 — Gemini)"
+            value={form.values.chatbot_research_v3_generation_model || 'gemini-2.5-flash'}
+            onChange={(option) => form.setFieldValue('chatbot_research_v3_generation_model', option.value)}
+          />
+          <HintText>Model Gemini untuk generate jawaban dari paper OpenAlex</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Max Results (OpenAlex)"
+            type="number"
+            min="1"
+            max="20"
+            placeholder="8"
+            value={form.values.chatbot_research_v3_max_results}
+            onChange={(e) => form.setFieldValue('chatbot_research_v3_max_results', e.target.value)}
+            hint="Jumlah maksimal paper dari OpenAlex yang diambil per pencarian"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <TextInput
+            label="Fields of Study"
+            placeholder="Medicine"
+            value={form.values.chatbot_research_v3_fields_of_study}
+            onChange={(e) => form.setFieldValue('chatbot_research_v3_fields_of_study', e.target.value)}
+            hint="Filter bidang studi OpenAlex (opsional, kosongkan untuk semua bidang)"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Label>V3 Reformulation Prompt (Stage 1)</Label>
+          <Textarea
+            placeholder="Prompt untuk reformulasi query. Output JSON: {main_query, related_queries[]}. Placeholder: {{conversation_history}}, {{user_query}}"
+            value={form.values.chatbot_research_v3_reformulation_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_research_v3_reformulation_prompt', e.target.value)}
+            style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
+          />
+          <HintText>
+            Prompt Gemini Stage 1. Harus return JSON: {'{"main_query": "...", "related_queries": ["...", "..."]}'}.
+            Placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
+          </HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>V3 Generation Prompt (Stage 3)</Label>
+          <Textarea
+            placeholder="Prompt Gemini untuk generate jawaban dari paper OpenAlex. Gunakan {{context}}"
+            value={form.values.chatbot_research_v3_generation_prompt}
+            onChange={(e) => form.setFieldValue('chatbot_research_v3_generation_prompt', e.target.value)}
+            style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
+          />
+          <HintText>
+            Prompt untuk Stage 3 (Gemini). Paper dari OpenAlex diinjeksikan via {'{{context}}'} placeholder. Instruksikan sitasi [1] [2] (pisah).
+          </HintText>
+        </FormGroup>
+
+        <Divider />
+
         <FormGroup>
           <Dropdown
             label="Tipe Filter Waktu"

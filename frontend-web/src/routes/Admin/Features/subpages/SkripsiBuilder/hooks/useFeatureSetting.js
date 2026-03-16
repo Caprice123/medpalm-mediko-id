@@ -39,12 +39,19 @@ export const useFeatureSetting = (onClose) => {
       skripsi_ai_researcher_max_sources: '10',
       skripsi_ai_researcher_user_information: '',
 
-      // AI Researcher - V2 (3-stage pipeline)
+      // AI Researcher - V2 (3-stage pipeline — Perplexity)
       skripsi_ai_researcher_v2_reformulation_prompt: '',
       skripsi_ai_researcher_v2_retrieval_system_prompt: '',
       skripsi_ai_researcher_v2_user_message_template: '',
       skripsi_ai_researcher_v2_generation_model: 'gemini-2.5-flash',
       skripsi_ai_researcher_v2_generation_prompt: '',
+
+      // AI Researcher - V3 (3-stage pipeline — OpenAlex, for tutor role)
+      skripsi_ai_researcher_v3_reformulation_model: 'gemini-2.5-flash',
+      skripsi_ai_researcher_v3_reformulation_prompt: '',
+      skripsi_ai_researcher_v3_generation_model: 'gemini-2.5-flash',
+      skripsi_ai_researcher_v3_generation_prompt: '',
+      skripsi_ai_researcher_v3_max_results: '8',
 
       // Validated Search Mode
       skripsi_validated_enabled: true,
@@ -135,6 +142,11 @@ export const useFeatureSetting = (onClose) => {
         'skripsi_ai_researcher_v2_user_message_template',
         'skripsi_ai_researcher_v2_generation_model',
         'skripsi_ai_researcher_v2_generation_prompt',
+        'skripsi_ai_researcher_v3_reformulation_model',
+        'skripsi_ai_researcher_v3_reformulation_prompt',
+        'skripsi_ai_researcher_v3_generation_model',
+        'skripsi_ai_researcher_v3_generation_prompt',
+        'skripsi_ai_researcher_v3_max_results',
         'skripsi_validated_enabled',
         'skripsi_validated_model',
         'skripsi_validated_embedding_model',

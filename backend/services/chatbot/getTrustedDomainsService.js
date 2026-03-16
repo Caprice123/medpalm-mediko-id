@@ -26,7 +26,7 @@ export class GetTrustedDomainsService extends BaseService {
     const updatedAfter = constants.chatbot_research_updated_after || ''
     const updatedBefore = constants.chatbot_research_updated_before || ''
 
-    let domains = []
+    let domainObjects = [] // [{ domain, journal_name }]
     let filterEnabled = true
 
     // If a user is specified, apply their preferences
@@ -37,19 +37,28 @@ export class GetTrustedDomainsService extends BaseService {
 
       if (userSettings) {
         filterEnabled = userSettings.domain_filter_enabled
-        const userSelected = Array.isArray(userSettings.selected_domains) ? userSettings.selected_domains : []
+        const raw = Array.isArray(userSettings.selected_domains) ? userSettings.selected_domains : []
 
-        // If user has selected specific domains, use those (includes custom user-typed domains)
-        if (userSelected.length > 0) {
-          domains = userSelected
+        // Normalize: handle legacy string array or new { domain, journal_name } array
+        const normalized = raw.map(d =>
+          typeof d === 'string' ? { domain: d, journal_name: '' } : d
+        )
+
+        // If user has selected specific domains, use those
+        if (normalized.length > 0) {
+          domainObjects = normalized
         }
-        // else: user selected none = use all admin domains
+        // else: user selected none = use all admin domains (domainObjects stays [])
       }
     }
+
+    // domains: plain string array (used by Perplexity filter)
+    const domains = domainObjects.map(d => d.domain)
 
     return {
       enabled: filterEnabled,
       domains,
+      domainObjects,
       count: domains.length,
       timeFilterType,
       recencyFilter,

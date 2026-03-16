@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateUserChatbotSettings, fetchChatbotDomains } from '@store/chatbot/userAction'
+import { updateUserChatbotSettings, fetchChatbotDomains, fetchChatbotJournals } from '@store/chatbot/userAction'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { ToggleSlider, ToggleSwitch } from '@routes/Admin/Features/subpages/SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
@@ -36,11 +36,13 @@ const MAX_DOMAINS = 20
 function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const dispatch = useDispatch()
   const { userSettings, loading } = useSelector(state => state.chatbot)
+  const isTutor = userSettings.isTutor
 
   const [domainFilterEnabled, setDomainFilterEnabled] = useState(true)
-  const [selectedDomains, setSelectedDomains] = useState([])
-  const [customDomains, setCustomDomains] = useState([])
+  const [selectedDomains, setSelectedDomains] = useState([]) // [{ domain, journal_name }]
+  const [customDomains, setCustomDomains] = useState([])    // plain strings
   const [newCustomDomain, setNewCustomDomain] = useState('')
+  const [selectedJournals, setSelectedJournals] = useState([]) // plain strings for tutor
 
   const [domains, setDomains] = useState([])
   const [pagination, setPagination] = useState({ page: 1, isLastPage: true })
@@ -48,16 +50,27 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const [domainsLoading, setDomainsLoading] = useState(false)
   const searchTimeoutRef = useRef(null)
 
+  const [journals, setJournals] = useState([])
+  const [journalPagination, setJournalPagination] = useState({ page: 1, isLastPage: true })
+  const [journalSearch, setJournalSearch] = useState('')
+  const [journalsLoading, setJournalsLoading] = useState(false)
+  const journalSearchTimeoutRef = useRef(null)
+
   useEffect(() => {
-    if (isOpen) {
-      setDomainFilterEnabled(userSettings.domainFilterEnabled)
-      setSelectedDomains(userSettings.selectedDomains ?? [])
-      setCustomDomains(userSettings.customDomains ?? [])
-      setNewCustomDomain('')
-      setSearch('')
+    if (!isOpen) return
+    setDomainFilterEnabled(userSettings.domainFilterEnabled)
+    setSelectedDomains(userSettings.selectedDomains ?? [])
+    setCustomDomains(userSettings.customDomains ?? [])
+    setSelectedJournals(userSettings.selectedJournals ?? [])
+    setNewCustomDomain('')
+    setSearch('')
+    setJournalSearch('')
+    if (isTutor) {
+      loadJournals(1, '')
+    } else {
       loadDomains(1, '')
     }
-  }, [isOpen])
+  }, [isOpen, isTutor])
 
   const loadDomains = useCallback(async (page, searchTerm) => {
     setDomainsLoading(true)
@@ -72,6 +85,19 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
     }
   }, [dispatch])
 
+  const loadJournals = useCallback(async (page, searchTerm) => {
+    setJournalsLoading(true)
+    try {
+      const result = await dispatch(fetchChatbotJournals({ page, perPage: PER_PAGE, search: searchTerm }))
+      if (result) {
+        setJournals(result.journals)
+        setJournalPagination(result.pagination)
+      }
+    } finally {
+      setJournalsLoading(false)
+    }
+  }, [dispatch])
+
   const handleSearchChange = (e) => {
     const value = e.target.value
     setSearch(value)
@@ -81,23 +107,48 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
 
   const handlePageChange = (page) => loadDomains(page, search)
 
-  const totalSelected = selectedDomains.length + customDomains.length
-  const atLimit = totalSelected >= MAX_DOMAINS
+  const handleJournalSearchChange = (e) => {
+    const value = e.target.value
+    setJournalSearch(value)
+    clearTimeout(journalSearchTimeoutRef.current)
+    journalSearchTimeoutRef.current = setTimeout(() => loadJournals(1, value), 350)
+  }
 
-  const toggleDomain = (domain) => {
-    setSelectedDomains(prev => {
-      if (prev.includes(domain)) return prev.filter(d => d !== domain)
-      if (totalSelected >= MAX_DOMAINS) return prev
-      return [...prev, domain]
+  const handleJournalPageChange = (page) => loadJournals(page, journalSearch)
+
+  const toggleJournal = (journalName) => {
+    setSelectedJournals(prev => {
+      const exists = prev.includes(journalName)
+      if (exists) return prev.filter(j => j !== journalName)
+      return [...prev, journalName]
     })
   }
 
-  const selectAll = async () => {
-    const pageDomains = domains.map(d => d.domain)
+  const clearAllJournals = () => setSelectedJournals([])
+
+  const totalSelected = selectedDomains.length + customDomains.length
+  const atLimit = totalSelected >= MAX_DOMAINS
+
+  const toggleDomain = (item) => {
+    // item is { domain, journal_name } from the admin list
     setSelectedDomains(prev => {
-      const merged = Array.from(new Set([...prev, ...pageDomains]))
+      const exists = prev.some(d => d.domain === item.domain)
+      if (exists) return prev.filter(d => d.domain !== item.domain)
+      if (totalSelected >= MAX_DOMAINS) return prev
+      return [...prev, { domain: item.domain, journal_name: item.journal_name ?? '' }]
+    })
+  }
+
+  const selectAll = () => {
+    setSelectedDomains(prev => {
+      const existing = new Map(prev.map(d => [d.domain, d]))
+      for (const item of domains) {
+        if (!existing.has(item.domain)) {
+          existing.set(item.domain, { domain: item.domain, journal_name: item.journal_name ?? '' })
+        }
+      }
       const remaining = MAX_DOMAINS - customDomains.length
-      return merged.slice(0, remaining)
+      return Array.from(existing.values()).slice(0, remaining)
     })
   }
 
@@ -105,7 +156,8 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
 
   const addCustomDomain = () => {
     const d = newCustomDomain.trim().toLowerCase()
-    if (d && !customDomains.includes(d) && !selectedDomains.includes(d) && !atLimit) {
+    const alreadyInSelected = selectedDomains.some(s => s.domain === d)
+    if (d && !customDomains.includes(d) && !alreadyInSelected && !atLimit) {
       setCustomDomains(prev => [...prev, d])
     }
     setNewCustomDomain('')
@@ -114,7 +166,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const removeCustomDomain = (domain) => setCustomDomains(prev => prev.filter(d => d !== domain))
 
   const handleSave = async () => {
-    await dispatch(updateUserChatbotSettings({ selectedDomains, customDomains, domainFilterEnabled }))
+    await dispatch(updateUserChatbotSettings({ selectedDomains, customDomains, domainFilterEnabled, selectedJournals }))
     onClose()
   }
 
@@ -155,7 +207,85 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
         </ToggleSwitch>
       </FilterToggleRow>
 
-      {domainFilterEnabled && (
+      {domainFilterEnabled && isTutor && (
+        <>
+          <SelectAllRow>
+            <span>
+              {selectedJournals.length === 0
+                ? 'Semua jurnal aktif (default)'
+                : <>{selectedJournals.length} jurnal dipilih</>}
+            </span>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <Button variant="secondary" size="small" onClick={clearAllJournals} type="button">
+                Reset
+              </Button>
+            </div>
+          </SelectAllRow>
+
+          <HintText>
+            Reset untuk menggunakan semua jurnal. Pilih jurnal tertentu untuk membatasi hasil pencarian OpenAlex.
+          </HintText>
+
+          {selectedJournals.length > 0 && (
+            <SelectedSummarySection>
+              <SelectedSummaryLabel>Jurnal dipilih</SelectedSummaryLabel>
+              <SelectedChipsRow>
+                {selectedJournals.map(name => (
+                  <AdminDomainChip key={name}>
+                    {name}
+                    <button type="button" onClick={() => toggleJournal(name)}>✕</button>
+                  </AdminDomainChip>
+                ))}
+              </SelectedChipsRow>
+            </SelectedSummarySection>
+          )}
+
+          <SearchInput
+            type="text"
+            placeholder="Cari jurnal..."
+            value={journalSearch}
+            onChange={handleJournalSearchChange}
+          />
+
+          {journalsLoading ? (
+            <EmptyDomains>Memuat jurnal...</EmptyDomains>
+          ) : journals.length === 0 ? (
+            <EmptyDomains>
+              {journalSearch ? `Tidak ada jurnal yang cocok dengan "${journalSearch}"` : 'Belum ada jurnal yang dikonfigurasi oleh admin.'}
+            </EmptyDomains>
+          ) : (
+            <>
+              <DomainCardGrid>
+                {journals.map((item) => {
+                  const checked = selectedJournals.includes(item.name)
+                  return (
+                    <DomainCard key={item.name} $checked={checked} $disabled={false} onClick={() => toggleJournal(item.name)} type="button">
+                      <DomainCardCheck $checked={checked}>{checked ? '✓' : ''}</DomainCardCheck>
+                      <span style={{ fontWeight: 500, fontSize: '0.8rem' }}>{item.name}</span>
+                    </DomainCard>
+                  )
+                })}
+              </DomainCardGrid>
+
+              {(journalPagination.page > 1 || !journalPagination.isLastPage) && (
+                <PaginationRow>
+                  <PageInfo>Halaman {journalPagination.page}</PageInfo>
+                  <PageButtons>
+                    <PageBtn onClick={() => handleJournalPageChange(journalPagination.page - 1)} disabled={journalPagination.page <= 1}>
+                      ‹ Sebelumnya
+                    </PageBtn>
+                    <PageBtn onClick={() => handleJournalPageChange(journalPagination.page + 1)} disabled={journalPagination.isLastPage}>
+                      Berikutnya ›
+                    </PageBtn>
+                  </PageButtons>
+                </PaginationRow>
+              )}
+            </>
+          )}
+        </>
+      )}
+
+      {domainFilterEnabled && !isTutor && (
         <>
           <SelectAllRow>
             <span>
@@ -183,10 +313,10 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
                 <>
                   <SelectedSummaryLabel>Dipilih dari daftar admin</SelectedSummaryLabel>
                   <SelectedChipsRow>
-                    {selectedDomains.map(d => (
-                      <AdminDomainChip key={d}>
-                        {d}
-                        <button type="button" onClick={() => toggleDomain(d)}>✕</button>
+                    {selectedDomains.map(item => (
+                      <AdminDomainChip key={item.domain}>
+                        {item.domain}
+                        <button type="button" onClick={() => toggleDomain(item)}>✕</button>
                       </AdminDomainChip>
                     ))}
                   </SelectedChipsRow>
@@ -224,20 +354,19 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
           ) : (
             <>
               <DomainCardGrid>
-                {domains.map(({ domain }) => {
-                  const checked = selectedDomains.includes(domain)
+                {domains.map((item) => {
+                  const checked = selectedDomains.some(d => d.domain === item.domain)
                   const disabled = !checked && atLimit
                   return (
-                    <DomainCard key={domain} $checked={checked} $disabled={disabled} onClick={() => !disabled && toggleDomain(domain)} type="button">
+                    <DomainCard key={item.domain} $checked={checked} $disabled={disabled} onClick={() => !disabled && toggleDomain(item)} type="button">
                       <DomainCardCheck $checked={checked}>{checked ? '✓' : ''}</DomainCardCheck>
-                      {domain}
+                      <span style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{item.domain}</span>
                     </DomainCard>
                   )
                 })}
               </DomainCardGrid>
 
               {(currentPage > 1 || !isLastPage) && (
-
                 <PaginationRow>
                   <PageInfo>Halaman {currentPage}</PageInfo>
                   <PageButtons>

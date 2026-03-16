@@ -35,8 +35,10 @@ const initialState = {
   messagePaginationByConversation: {}, // { [conversationId]: { page, perPage, isLastPage } }
   userSettings: {
     selectedDomains: [],       // domains the user has selected (empty = all admin domains)
+    customDomains: [],
     domainFilterEnabled: true,
-    availableDomains: []       // admin-managed list shown as checkboxes
+    isTutor: false,
+    selectedJournals: []       // journal names selected by tutor users
   },
   loading: {
     isConversationsLoading: false,

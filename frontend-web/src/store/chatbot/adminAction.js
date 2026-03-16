@@ -22,20 +22,46 @@ export const fetchResearchDomains = ({ page = 1, perPage = 12, search = '' } = {
   return response.data.data // { domains, pagination }
 }
 
-export const createResearchDomain = (domain) => async (dispatch) => {
+export const createResearchDomain = (domain, journal_name = '') => async (dispatch) => {
   const route = Endpoints.admin.chatbot + '/research-domains'
-  const response = await postWithToken(route, { domain })
+  const response = await postWithToken(route, { domain, journal_name })
   return response.data.data
 }
 
-export const updateResearchDomain = (id, is_active) => async () => {
+export const updateResearchDomain = (id, payload) => async () => {
   const route = Endpoints.admin.chatbot + `/research-domains/${id}`
-  const response = await putWithToken(route, { is_active })
+  const response = await putWithToken(route, payload)
   return response.data.data
 }
 
 export const deleteResearchDomain = (id) => async () => {
   const route = Endpoints.admin.chatbot + `/research-domains/${id}`
+  await deleteWithToken(route)
+}
+
+// ============= Journal Name Management =============
+
+export const fetchAdminJournals = ({ page = 1, perPage = 20, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.admin.chatbotJournals + `?${params}`
+  const response = await getWithToken(route)
+  return response.data.data // { journals, pagination }
+}
+
+export const createAdminJournal = (name) => async () => {
+  const route = Endpoints.admin.chatbotJournals
+  const response = await postWithToken(route, { name })
+  return response.data.data
+}
+
+export const updateAdminJournal = (id, payload) => async () => {
+  const route = Endpoints.admin.chatbotJournals + `/${id}`
+  const response = await putWithToken(route, payload)
+  return response.data.data
+}
+
+export const deleteAdminJournal = (id) => async () => {
+  const route = Endpoints.admin.chatbotJournals + `/${id}`
   await deleteWithToken(route)
 }
 

@@ -280,13 +280,12 @@ function SettingsModal({ isOpen, onClose }) {
           </>
         )}
 
-        {/* V2 — 3-stage pipeline (only for Perplexity retrieval model) */}
-        {isPerplexityModel && (
-          <>
-            <Divider />
-            <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>
-              AI Researcher V2 — 3-Stage Pipeline
-            </SectionTitle>
+        {/* V2 — 3-stage pipeline (Perplexity retrieval) */}
+        <>
+          <Divider />
+          <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>
+            AI Researcher V2 — Perplexity Pipeline (User Biasa)
+          </SectionTitle>
 
             <FormGroup>
               <ModelDropdown
@@ -357,24 +356,73 @@ function SettingsModal({ isOpen, onClose }) {
                 Prompt untuk Gemini menghasilkan jawaban dari sumber Perplexity. Placeholder: {'{{context}}'}. Instruksikan sitasi [1] [2] (pisah), bukan [1,2].
               </HintText>
             </FormGroup>
-          </>
-        )}
+        </>
 
-        {/* Show legacy prompt for non-Perplexity models */}
-        {!isPerplexityModel && (
+        {/* V3 — 3-stage pipeline using OpenAlex (for tutor role) */}
+        <>
+          <Divider />
+          <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>
+            AI Researcher V3 — OpenAlex Pipeline (Tutor Role)
+          </SectionTitle>
+
           <FormGroup>
-            <Label>System Prompt</Label>
+            <ModelDropdown
+              label="Stage 1 — Reformulation Model"
+              value={form.values.skripsi_ai_researcher_v3_reformulation_model || 'gemini-2.5-flash'}
+              onChange={(option) => form.setFieldValue('skripsi_ai_researcher_v3_reformulation_model', option.value)}
+            />
+            <HintText>Model Gemini untuk reformulasi query Indonesia → English + generate related queries</HintText>
+          </FormGroup>
+
+          <FormGroup>
+            <ModelDropdown
+              label="Stage 3 — Generation Model"
+              value={form.values.skripsi_ai_researcher_v3_generation_model || 'gemini-2.5-flash'}
+              onChange={(option) => form.setFieldValue('skripsi_ai_researcher_v3_generation_model', option.value)}
+            />
+            <HintText>Model Gemini untuk generate jawaban berdasarkan paper dari OpenAlex</HintText>
+          </FormGroup>
+
+          <FormGroup>
+            <TextInput
+              label="Max Results (OpenAlex)"
+              type="number"
+              min="1"
+              max="20"
+              placeholder="8"
+              value={form.values.skripsi_ai_researcher_v3_max_results}
+              onChange={(e) => form.setFieldValue('skripsi_ai_researcher_v3_max_results', e.target.value)}
+              hint="Jumlah maksimal paper dari OpenAlex yang diambil per pencarian"
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label>V3 Reformulation Prompt (Stage 1)</Label>
             <Textarea
-              placeholder="Masukkan system prompt untuk AI Researcher..."
-              value={form.values.skripsi_ai_researcher_prompt}
-              onChange={(e) => form.setFieldValue('skripsi_ai_researcher_prompt', e.target.value)}
-              style={{ minHeight: '120px' }}
+              placeholder="Prompt untuk reformulasi query ke format OpenAlex..."
+              value={form.values.skripsi_ai_researcher_v3_reformulation_prompt}
+              onChange={(e) => form.setFieldValue('skripsi_ai_researcher_v3_reformulation_prompt', e.target.value)}
+              style={{ minHeight: '180px', fontFamily: 'monospace', fontSize: '13px' }}
             />
             <HintText>
-              Instruksi untuk AI tentang cara melakukan research dan memberikan jawaban
+              Prompt untuk Gemini mereformulasi query. Output JSON: {'{ "main_query": "...", "related_queries": [...] }'}. Placeholder: {'{{conversation_history}}'}, {'{{user_query}}'}
             </HintText>
           </FormGroup>
-        )}
+
+          <FormGroup>
+            <Label>V3 Generation Prompt (Stage 3)</Label>
+            <Textarea
+              placeholder="System prompt untuk Gemini generator dengan sumber OpenAlex..."
+              value={form.values.skripsi_ai_researcher_v3_generation_prompt}
+              onChange={(e) => form.setFieldValue('skripsi_ai_researcher_v3_generation_prompt', e.target.value)}
+              style={{ minHeight: '200px', fontFamily: 'monospace', fontSize: '13px' }}
+            />
+            <HintText>
+              Prompt untuk Gemini menghasilkan jawaban dari paper OpenAlex. Placeholder: {'{{context}}'}. Instruksikan sitasi [1] [2] (pisah), bukan [1,2].
+            </HintText>
+          </FormGroup>
+        </>
+
       </ModeSection>
 
       <ModeSection>

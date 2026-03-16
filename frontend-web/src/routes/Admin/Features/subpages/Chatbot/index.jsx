@@ -6,6 +6,7 @@ import ChatbotSettingsModal from './components/ChatbotSettingsModal'
 import ConversationsList from './components/ConversationsList'
 import ConversationDetailModal from './components/ConversationDetailModal'
 import DomainsTab from './subtabs/Domains'
+import JournalsTab from './subtabs/Journals'
 import Pagination from '@components/Pagination'
 import {
   Container,
@@ -100,6 +101,9 @@ function Chatbot({ onBack }) {
         <Tab active={activeTab === 'domains'} onClick={() => setActiveTab('domains')}>
           Domain
         </Tab>
+        <Tab active={activeTab === 'journals'} onClick={() => setActiveTab('journals')}>
+          Jurnal
+        </Tab>
       </TabsContainer>
 
       {activeTab === 'conversations' && isAllowed && (
@@ -133,6 +137,7 @@ function Chatbot({ onBack }) {
       )}
 
       {activeTab === 'domains' && <DomainsTab />}
+      {activeTab === 'journals' && <JournalsTab />}
 
       {uiState.isSettingsModalOpen && (
         <ChatbotSettingsModal

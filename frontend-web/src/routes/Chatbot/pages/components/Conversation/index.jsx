@@ -117,7 +117,6 @@ function ChatbotConversationPanel({ conversationId }) {
   const chatAreaRef = useRef(null)
   const previousScrollHeight = useRef(0)
   const titleInputRef = useRef(null)
-  console.log(conversationStreamingState)
   const isInitialScrollRef = useRef(false)
 
   // Use refs to avoid recreating callbacks

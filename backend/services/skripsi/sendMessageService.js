@@ -5,6 +5,7 @@ import { ValidationError } from '#errors/validationError'
 import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { SkripsiResearchModeV2 } from '#services/skripsi/ai/skripsiResearchModeV2'
+import { SkripsiResearchModeV3 } from '#services/skripsi/ai/skripsiResearchModeV3'
 import { SkripsiResearchV2Handler } from '#services/skripsi/handlers/skripsiResearchV2Handler'
 
 export class SendMessageService extends BaseService {
@@ -91,9 +92,14 @@ export class SendMessageService extends BaseService {
 
     // Get AI response with streaming
     try {
-      // Research mode for ai_researcher tabs → 3-stage V2 pipeline
+      // Research mode for ai_researcher tabs → V3 (tutor) or V2 (others)
       if (modeType === 'research' && mode === 'ai_researcher' && onStream) {
-        const result = await SkripsiResearchModeV2.call({
+        const userRecord = await prisma.users.findUnique({
+          where: { id: userId },
+          select: { role: true }
+        })
+        const ResearchMode = userRecord?.role === 'tutor' ? SkripsiResearchModeV3 : SkripsiResearchModeV2
+        const result = await ResearchMode.call({
           tabId,
           userId,
           message: message.trim(),

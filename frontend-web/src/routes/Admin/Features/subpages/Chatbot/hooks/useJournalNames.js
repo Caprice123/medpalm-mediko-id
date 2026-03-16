@@ -1,17 +1,17 @@
 import { useState, useCallback, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import {
-  fetchResearchDomains,
-  createResearchDomain,
-  updateResearchDomain,
-  deleteResearchDomain
+  fetchAdminJournals,
+  createAdminJournal,
+  updateAdminJournal,
+  deleteAdminJournal
 } from '@store/chatbot/adminAction'
 
-const PER_PAGE = 12
+const PER_PAGE = 20
 
-export const useResearchDomains = () => {
+export const useJournalNames = () => {
   const dispatch = useDispatch()
-  const [domains, setDomains] = useState([])
+  const [journals, setJournals] = useState([])
   const [pagination, setPagination] = useState({ page: 1, isLastPage: true })
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,9 +20,9 @@ export const useResearchDomains = () => {
   const load = useCallback(async (page, searchTerm) => {
     setLoading(true)
     try {
-      const data = await dispatch(fetchResearchDomains({ page, perPage: PER_PAGE, search: searchTerm }))
+      const data = await dispatch(fetchAdminJournals({ page, perPage: PER_PAGE, search: searchTerm }))
       if (data) {
-        setDomains(data.domains || [])
+        setJournals(data.journals || [])
         setPagination(data.pagination || { page: 1, isLastPage: true })
       }
     } finally {
@@ -43,41 +43,34 @@ export const useResearchDomains = () => {
 
   const handlePageChange = (page) => load(page, search)
 
-  const addDomain = useCallback(async (domain, journal_name = '') => {
-    await dispatch(createResearchDomain(domain, journal_name))
+  const addJournal = useCallback(async (name) => {
+    await dispatch(createAdminJournal(name))
     await load(1, search)
   }, [dispatch, load, search])
 
-  const toggleDomain = useCallback(async (id, is_active) => {
-    await dispatch(updateResearchDomain(id, { is_active }))
+  const toggleJournal = useCallback(async (id, is_active) => {
+    await dispatch(updateAdminJournal(id, { is_active }))
     await load(pagination.page, search)
   }, [dispatch, load, pagination.page, search])
 
-  const updateJournalName = useCallback(async (id, journal_name) => {
-    await dispatch(updateResearchDomain(id, { journal_name }))
-    await load(pagination.page, search)
-  }, [dispatch, load, pagination.page, search])
-
-  const removeDomain = useCallback(async (id) => {
-    await dispatch(deleteResearchDomain(id))
-    // If last item on page > 1, go back one page
-    const newPage = domains.length === 1 && pagination.page > 1
+  const removeJournal = useCallback(async (id) => {
+    await dispatch(deleteAdminJournal(id))
+    const newPage = journals.length === 1 && pagination.page > 1
       ? pagination.page - 1
       : pagination.page
     await load(newPage, search)
-  }, [dispatch, load, domains.length, pagination.page, search])
+  }, [dispatch, load, journals.length, pagination.page, search])
 
   return {
-    domains,
+    journals,
     pagination,
     search,
     loading,
     initialize,
     handleSearchChange,
     handlePageChange,
-    addDomain,
-    toggleDomain,
-    updateJournalName,
-    removeDomain
+    addJournal,
+    toggleJournal,
+    removeJournal
   }
 }

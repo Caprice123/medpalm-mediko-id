@@ -3,9 +3,12 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 
 export class CreateResearchDomainService extends BaseService {
-  static async call({ domain }) {
+  static async call({ domain, journal_name }) {
     if (!domain || typeof domain !== 'string' || !domain.trim()) {
       throw new ValidationError('Domain is required')
+    }
+    if (!journal_name || typeof journal_name !== 'string' || !journal_name.trim()) {
+      throw new ValidationError('Journal name is required')
     }
 
     const normalized = domain.trim().toLowerCase()
@@ -19,7 +22,7 @@ export class CreateResearchDomainService extends BaseService {
     }
 
     const created = await prisma.chatbot_research_domains.create({
-      data: { domain: normalized }
+      data: { domain: normalized, journal_name: journal_name?.trim() || '' }
     })
 
     return created

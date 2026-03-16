@@ -3,27 +3,32 @@ import { BaseService } from '#services/baseService'
 
 export class GetUserChatbotSettingsService extends BaseService {
   static async call(userId) {
-    // Get user's saved preferences
-    const userSettings = await prisma.user_chatbot_settings.findUnique({
-      where: { user_id: userId }
-    })
+    const [userSettings, userRecord] = await Promise.all([
+      prisma.user_chatbot_settings.findUnique({ where: { user_id: userId } }),
+      prisma.users.findUnique({ where: { id: userId }, select: { role: true } })
+    ])
 
-    const allSelected = userSettings?.selected_domains ?? []
+    const isTutor = userRecord?.role === 'tutor'
     const domainFilterEnabled = userSettings?.domain_filter_enabled ?? true
 
-    // Split: domains that exist in the admin list vs user-typed custom ones
-    const adminMatches = allSelected.length > 0
+    // Non-tutor: selected_domains is a plain string array
+    const rawDomains = Array.isArray(userSettings?.selected_domains) ? userSettings.selected_domains : []
+    const domainStrings = rawDomains.map(d => typeof d === 'string' ? d : d.domain).filter(Boolean)
+
+    const adminMatches = domainStrings.length > 0
       ? await prisma.chatbot_research_domains.findMany({
-          where: { domain: { in: allSelected } },
+          where: { domain: { in: domainStrings } },
           select: { domain: true }
         })
       : []
     const adminSet = new Set(adminMatches.map(d => d.domain))
 
     return {
-      selectedDomains: allSelected.filter(d => adminSet.has(d)),
-      customDomains: allSelected.filter(d => !adminSet.has(d)),
-      domainFilterEnabled
+      selectedDomains: domainStrings.filter(d => adminSet.has(d)).map(d => ({ domain: d, journal_name: '' })),
+      customDomains: domainStrings.filter(d => !adminSet.has(d)),
+      domainFilterEnabled,
+      isTutor,
+      selectedJournals: userSettings?.selected_journals ?? []
     }
   }
 }

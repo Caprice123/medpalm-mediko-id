@@ -425,19 +425,29 @@ model user_credits {
 // ============= Chatbot Settings =============
 
 model chatbot_research_domains {
+  id           Int      @id @default(autoincrement())
+  domain       String   @unique
+  journal_name String   @default("")
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  @@index([is_active])
+}
+
+model chatbot_journal_names {
   id         Int      @id @default(autoincrement())
-  domain     String   @unique
+  name       String   @unique
   is_active  Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-
-  @@index([is_active])
 }
 
 model user_chatbot_settings {
   id                    Int      @id @default(autoincrement())
   user_id               Int      @unique
   selected_domains      Json     @default("[]") // Array of domain strings selected from admin list
+  selected_journals     Json     @default("[]") // Array of journal name strings for tutor users
   domain_filter_enabled Boolean  @default(true)
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
@@ -1284,11 +1294,12 @@ model chatbot_message_feedbacks {
 
 // Skripsi Builder Tables
 model skripsi_research_domains {
-  id         Int      @id @default(autoincrement())
-  domain     String   @unique
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  domain       String   @unique
+  journal_name String   @default("")
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
 
   @@index([is_active])
 }
