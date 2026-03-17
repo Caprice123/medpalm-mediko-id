@@ -74,6 +74,34 @@ export class ResearchV2Handler {
 
     // ── Handle no-results case immediately ───────────────────────────────────
     if (noResults || !stream) {
+      // Deduct credits even when no sources found
+      let updatedBalance = null
+      if (requiresCredits && creditsUsed > 0) {
+        try {
+          const userCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
+          await prisma.user_credits.update({
+            where: { user_id: userId },
+            data: { balance: { decrement: creditsUsed } }
+          })
+          const updatedUserCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
+          updatedBalance = updatedUserCredit.balance
+          await prisma.credit_transactions.create({
+            data: {
+              user_id: userId,
+              user_credit_id: userCredit.id,
+              type: 'deduction',
+              amount: -creditsUsed,
+              balance_before: userCredit.balance,
+              balance_after: updatedBalance,
+              description: `Chatbot ${mode} mode - 1 pesan (no results)`,
+              payment_status: 'completed'
+            }
+          })
+        } catch (creditError) {
+          console.error('[ResearchV2Handler] Credit deduction error on no-results:', creditError)
+        }
+      }
+
       try {
         onStream({
           type: 'started',
@@ -95,7 +123,9 @@ export class ResearchV2Handler {
           }
         })
 
-        onStream({ type: 'chunk', data: { content: NO_RESULTS_FALLBACK } })
+        const chunkData = { type: 'chunk', data: { content: NO_RESULTS_FALLBACK } }
+        if (updatedBalance !== null) chunkData.data.userQuota = { balance: updatedBalance }
+        onStream(chunkData)
       } catch (_) {}
 
       const responseData = this.buildResponseData(userMessage, aiMessage, [])
