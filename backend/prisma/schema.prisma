@@ -1329,12 +1329,21 @@ model skripsi_set_settings {
   set_id                Int      @unique
   selected_domains      Json     @default("[]")
   domain_filter_enabled Boolean  @default(true)
+  selected_journals     Json     @default("[]") // Array of journal name strings for tutor users
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 
   skripsi_set skripsi_sets @relation(fields: [set_id], references: [id])
 
   @@index([set_id])
+}
+
+model skripsi_journal_names {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 model skripsi_tabs {

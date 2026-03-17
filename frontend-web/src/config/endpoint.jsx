@@ -25,6 +25,7 @@ export default {
         chatbotJournals: "/admin/v1/chatbot/journals",
         pricing: "/admin/v1/pricing",
         skripsi: "/admin/v1/skripsi",
+        skripsiJournals: "/admin/v1/skripsi/journals",
         oscePractice: "/admin/v1/oscePractice",
     },
     api: {
@@ -42,6 +43,7 @@ export default {
         chatbotJournals: "/api/v1/chatbot/journals",
         pricing: "/api/v1/pricing",
         skripsi: "/api/v1/skripsi",
+        skripsiJournals: "/api/v1/skripsi/journals",
         oscePractice: "/api/v1/oscePractice",
         tags: "/api/v1/tags",
         // OSCE Practice session endpoints

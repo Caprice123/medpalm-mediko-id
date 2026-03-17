@@ -2,13 +2,20 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class UpdateUserChatbotSettingsService extends BaseService {
-  static async call(userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals }) {
+  static async call(userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals }) {
     const MAX_DOMAINS = 20
 
     const userRecord = await prisma.users.findUnique({ where: { id: userId }, select: { role: true } })
     const isTutor = userRecord?.role === 'tutor'
 
-    const journalsData = Array.isArray(selectedJournals) ? selectedJournals.slice(0, 20) : undefined
+    // Merge admin-list journals + custom journals, dedup, cap at 20
+    const allJournals = [
+      ...(Array.isArray(selectedJournals) ? selectedJournals : []),
+      ...(Array.isArray(customJournals) ? customJournals : [])
+    ]
+    const journalsData = allJournals.length > 0
+      ? [...new Set(allJournals.map(j => j.trim()).filter(Boolean))].slice(0, 20)
+      : (selectedJournals !== undefined || customJournals !== undefined ? [] : undefined)
 
     let domainsToSave
     if (isTutor) {
@@ -58,11 +65,18 @@ export class UpdateUserChatbotSettingsService extends BaseService {
       : []
     const adminSet = new Set(adminMatches.map(d => d.domain))
 
+    const savedJournals = Array.isArray(settings.selected_journals) ? settings.selected_journals : []
+    const adminJournalMatches = savedJournals.length > 0
+      ? await prisma.$queryRaw`SELECT name FROM chatbot_journal_names WHERE name = ANY(${savedJournals})`
+      : []
+    const adminJournalSet = new Set(adminJournalMatches.map(r => r.name))
+
     return {
       selectedDomains: savedDomains.filter(d => adminSet.has(d)).map(d => ({ domain: d, journal_name: '' })),
       customDomains: savedDomains.filter(d => !adminSet.has(d)),
       domainFilterEnabled: settings.domain_filter_enabled,
-      selectedJournals: settings.selected_journals ?? []
+      selectedJournals: savedJournals.filter(j => adminJournalSet.has(j)),
+      customJournals: savedJournals.filter(j => !adminJournalSet.has(j))
     }
   }
 }

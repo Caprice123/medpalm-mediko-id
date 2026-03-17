@@ -38,7 +38,8 @@ const initialState = {
     customDomains: [],
     domainFilterEnabled: true,
     isTutor: false,
-    selectedJournals: []       // journal names selected by tutor users
+    selectedJournals: [],      // journal names selected by tutor users (from admin list)
+    customJournals: []         // journal names manually typed by tutor users
   },
   loading: {
     isConversationsLoading: false,

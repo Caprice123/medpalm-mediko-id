@@ -22,6 +22,12 @@ router.post('/research-domains', asyncHandler(SkripsiAdminController.createResea
 router.put('/research-domains/:id', asyncHandler(SkripsiAdminController.updateResearchDomain.bind(SkripsiAdminController)))
 router.delete('/research-domains/:id', asyncHandler(SkripsiAdminController.deleteResearchDomain.bind(SkripsiAdminController)))
 
+// Journal name management
+router.get('/journals', asyncHandler(SkripsiAdminController.getJournals.bind(SkripsiAdminController)))
+router.post('/journals', asyncHandler(SkripsiAdminController.createJournal.bind(SkripsiAdminController)))
+router.put('/journals/:id', asyncHandler(SkripsiAdminController.updateJournal.bind(SkripsiAdminController)))
+router.delete('/journals/:id', asyncHandler(SkripsiAdminController.deleteJournal.bind(SkripsiAdminController)))
+
 // Skripsi Sets management
 router.get('/sets', asyncHandler(SkripsiAdminController.index.bind(SkripsiAdminController)))
 router.get('/sets/:uniqueId', asyncHandler(SkripsiAdminController.show.bind(SkripsiAdminController)))

@@ -23,12 +23,20 @@ export class GetUserChatbotSettingsService extends BaseService {
       : []
     const adminSet = new Set(adminMatches.map(d => d.domain))
 
+    // Split journals into admin-list vs custom
+    const allJournals = Array.isArray(userSettings?.selected_journals) ? userSettings.selected_journals : []
+    const adminJournalMatches = allJournals.length > 0
+      ? await prisma.$queryRaw`SELECT name FROM chatbot_journal_names WHERE name = ANY(${allJournals})`
+      : []
+    const adminJournalSet = new Set(adminJournalMatches.map(r => r.name))
+
     return {
       selectedDomains: domainStrings.filter(d => adminSet.has(d)).map(d => ({ domain: d, journal_name: '' })),
       customDomains: domainStrings.filter(d => !adminSet.has(d)),
       domainFilterEnabled,
       isTutor,
-      selectedJournals: userSettings?.selected_journals ?? []
+      selectedJournals: allJournals.filter(j => adminJournalSet.has(j)),
+      customJournals: allJournals.filter(j => !adminJournalSet.has(j))
     }
   }
 }

@@ -2,6 +2,32 @@ import { actions } from '@store/skripsi/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
 
+// ============= Journal Name Management =============
+
+export const fetchAdminSkripsiJournals = ({ page = 1, perPage = 20, search = '' } = {}) => async () => {
+  const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
+  const route = Endpoints.admin.skripsiJournals + `?${params}`
+  const response = await getWithToken(route)
+  return response.data.data // { journals, pagination }
+}
+
+export const createAdminSkripsiJournal = (name) => async () => {
+  const route = Endpoints.admin.skripsiJournals
+  const response = await postWithToken(route, { name })
+  return response.data.data
+}
+
+export const updateAdminSkripsiJournal = (id, payload) => async () => {
+  const route = Endpoints.admin.skripsiJournals + `/${id}`
+  const response = await putWithToken(route, payload)
+  return response.data.data
+}
+
+export const deleteAdminSkripsiJournal = (id) => async () => {
+  const route = Endpoints.admin.skripsiJournals + `/${id}`
+  await deleteWithToken(route)
+}
+
 const {
   setSets,
   removeSet,

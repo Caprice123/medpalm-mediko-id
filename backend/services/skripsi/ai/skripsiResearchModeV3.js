@@ -108,39 +108,26 @@ export class SkripsiResearchModeV3 extends BaseService {
     }
   }
 
-  // ── Resolve journal names from the set's selected domains ──────────────────
-  // Set selects domain URLs → look up journal_name in skripsi_research_domains
-  // If no selection → use all active admin skripsi domains with a journal_name
+  // ── Resolve journal names from the set's selected_journals ────────────────
+  // For tutor users: reads selected_journals directly from skripsi_set_settings
+  // If domain_filter_enabled is false → return [] (no filter)
+  // If selected_journals is empty → return [] (search all journals)
 
   static async resolveJournalNames(setId) {
     try {
-      let selectedDomains = []
-
-      if (setId) {
-        const setSettings = await prisma.skripsi_set_settings.findUnique({
-          where: { set_id: setId }
-        })
-
-        if (setSettings && !setSettings.domain_filter_enabled) return []
-
-        const raw = Array.isArray(setSettings?.selected_domains) ? setSettings.selected_domains : []
-        selectedDomains = raw.map(d => typeof d === 'string' ? d : d.domain).filter(Boolean)
-      }
-
-      const where = {
-        is_active: true,
-        journal_name: { not: '' },
-        ...(selectedDomains.length > 0 ? { domain: { in: selectedDomains } } : {})
-      }
-
-      const rows = await prisma.skripsi_research_domains.findMany({
-        where,
-        select: { journal_name: true }
+      if (!setId) return []
+      const setSettings = await prisma.skripsi_set_settings.findUnique({
+        where: { set_id: setId },
+        select: { domain_filter_enabled: true, selected_journals: true }
       })
-
-      const journals = rows.map(r => r.journal_name).filter(Boolean)
-      console.log(`[SkripsiResearchV3] Journal filter: ${journals.length} journals`)
-      return journals
+      if (!setSettings?.domain_filter_enabled) return []
+      const journals = Array.isArray(setSettings.selected_journals) ? setSettings.selected_journals : []
+      if (journals.length > 0) {
+        console.log(`[SkripsiResearchV3] Journal filter: ${journals.length} journals from set selection`)
+        return journals
+      }
+      console.log('[SkripsiResearchV3] No journal selected — searching all journals')
+      return []
     } catch (err) {
       console.warn('[SkripsiResearchV3] Could not resolve journal names:', err.message)
       return []

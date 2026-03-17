@@ -5,6 +5,7 @@ import SettingsModal from './components/SettingsModal'
 import SetsList from './components/SetsList'
 import SetDetailModal from './components/SetDetailModal'
 import DomainsTab from './subtabs/Domains'
+import JournalsTab from './subtabs/Journals'
 import Pagination from '@components/Pagination'
 import {
   Container,
@@ -97,6 +98,9 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
         <Tab active={activeTab === 'domains'} onClick={() => setActiveTab('domains')}>
           Domain
         </Tab>
+        <Tab active={activeTab === 'journals'} onClick={() => setActiveTab('journals')}>
+          Jurnal
+        </Tab>
       </TabsContainer>
 
       {activeTab === 'sets' && isAllowed && (
@@ -130,6 +134,8 @@ const SkripsiBuilderAdmin = ({ onBack }) => {
       )}
 
       {activeTab === 'domains' && <DomainsTab />}
+
+      {activeTab === 'journals' && <JournalsTab />}
 
       {uiState.isSettingsModalOpen && (
         <SettingsModal

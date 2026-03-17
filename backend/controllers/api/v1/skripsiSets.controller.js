@@ -7,6 +7,7 @@ import { DeleteSkripsiSetService } from '#services/skripsi/deleteSkripsiSetServi
 import { GetSetResearchSettingsService } from '#services/skripsi/getSetResearchSettingsService'
 import { UpdateSetResearchSettingsService } from '#services/skripsi/updateSetResearchSettingsService'
 import { GetSkripsiDomainsService } from '#services/skripsi/getSkripsiDomainsService'
+import { GetSkripsiJournalsService } from '#services/skripsi/user/getSkripsiJournalsService'
 import { SkripsiSetListSerializer } from '#serializers/api/v1/skripsiSetListSerializer'
 import { SkripsiSetSerializer } from '#serializers/api/v1/skripsiSetSerializer'
 import { convertHtmlToDocxWithImages } from './htmlToDocx.controller.js'
@@ -120,10 +121,22 @@ class SkripsiSetsController {
     return res.status(200).json({ data: result })
   }
 
+  // Get paginated active journal list for research settings modal (tutor users)
+  async getJournals(req, res) {
+    const { page = 1, perPage = 20, search = '' } = req.query
+    const result = await GetSkripsiJournalsService.call({
+      page: parseInt(page),
+      perPage: parseInt(perPage),
+      search
+    })
+    return res.status(200).json({ data: result })
+  }
+
   // Get research domain settings for a set
   async getResearchSettings(req, res) {
+    const userId = req.user.id
     const set = await resolveSet(req)
-    const settings = await GetSetResearchSettingsService.call(set.id)
+    const settings = await GetSetResearchSettingsService.call(set.id, userId)
     return res.status(200).json({ data: settings })
   }
 
@@ -131,11 +144,13 @@ class SkripsiSetsController {
   async updateResearchSettings(req, res) {
     const userId = req.user.id
     const set = await resolveSet(req)
-    const { selectedDomains, customDomains, domainFilterEnabled } = req.body
+    const { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals } = req.body
     const settings = await UpdateSetResearchSettingsService.call(set.id, userId, {
       selectedDomains,
       customDomains,
-      domainFilterEnabled
+      domainFilterEnabled,
+      selectedJournals,
+      customJournals
     })
     return res.status(200).json({ data: settings })
   }

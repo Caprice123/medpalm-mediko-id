@@ -42,7 +42,9 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const [selectedDomains, setSelectedDomains] = useState([]) // [{ domain, journal_name }]
   const [customDomains, setCustomDomains] = useState([])    // plain strings
   const [newCustomDomain, setNewCustomDomain] = useState('')
-  const [selectedJournals, setSelectedJournals] = useState([]) // plain strings for tutor
+  const [selectedJournals, setSelectedJournals] = useState([]) // from admin list
+  const [customJournals, setCustomJournals] = useState([])     // manually typed
+  const [newCustomJournal, setNewCustomJournal] = useState('')
 
   const [domains, setDomains] = useState([])
   const [pagination, setPagination] = useState({ page: 1, isLastPage: true })
@@ -62,6 +64,8 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
     setSelectedDomains(userSettings.selectedDomains ?? [])
     setCustomDomains(userSettings.customDomains ?? [])
     setSelectedJournals(userSettings.selectedJournals ?? [])
+    setCustomJournals(userSettings.customJournals ?? [])
+    setNewCustomJournal('')
     setNewCustomDomain('')
     setSearch('')
     setJournalSearch('')
@@ -124,7 +128,21 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
     })
   }
 
-  const clearAllJournals = () => setSelectedJournals([])
+  const selectAllJournals = () => {
+    setSelectedJournals(prev => [...new Set([...prev, ...journals.map(j => j.name)])])
+  }
+
+  const clearAllJournals = () => { setSelectedJournals([]); setCustomJournals([]) }
+
+  const addCustomJournal = () => {
+    const j = newCustomJournal.trim()
+    if (j && !customJournals.includes(j) && !selectedJournals.includes(j)) {
+      setCustomJournals(prev => [...prev, j])
+    }
+    setNewCustomJournal('')
+  }
+
+  const removeCustomJournal = (name) => setCustomJournals(prev => prev.filter(j => j !== name))
 
   const totalSelected = selectedDomains.length + customDomains.length
   const atLimit = totalSelected >= MAX_DOMAINS
@@ -166,7 +184,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const removeCustomDomain = (domain) => setCustomDomains(prev => prev.filter(d => d !== domain))
 
   const handleSave = async () => {
-    await dispatch(updateUserChatbotSettings({ selectedDomains, customDomains, domainFilterEnabled, selectedJournals }))
+    await dispatch(updateUserChatbotSettings({ selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals }))
     onClose()
   }
 
@@ -211,11 +229,14 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
         <>
           <SelectAllRow>
             <span>
-              {selectedJournals.length === 0
+              {selectedJournals.length === 0 && customJournals.length === 0
                 ? 'Semua jurnal aktif (default)'
-                : <>{selectedJournals.length} jurnal dipilih</>}
+                : <>{selectedJournals.length + customJournals.length} jurnal dipilih</>}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <Button variant="secondary" size="small" onClick={selectAllJournals} type="button">
+                Pilih Halaman Ini
+              </Button>
               <Button variant="secondary" size="small" onClick={clearAllJournals} type="button">
                 Reset
               </Button>
@@ -225,20 +246,6 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
           <HintText>
             Reset untuk menggunakan semua jurnal. Pilih jurnal tertentu untuk membatasi hasil pencarian OpenAlex.
           </HintText>
-
-          {selectedJournals.length > 0 && (
-            <SelectedSummarySection>
-              <SelectedSummaryLabel>Jurnal dipilih</SelectedSummaryLabel>
-              <SelectedChipsRow>
-                {selectedJournals.map(name => (
-                  <AdminDomainChip key={name}>
-                    {name}
-                    <button type="button" onClick={() => toggleJournal(name)}>✕</button>
-                  </AdminDomainChip>
-                ))}
-              </SelectedChipsRow>
-            </SelectedSummarySection>
-          )}
 
           <SearchInput
             type="text"
@@ -282,6 +289,56 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
               )}
             </>
           )}
+
+          <CustomDomainSection>
+            <CustomDomainTitle>Tambah Jurnal Kustom</CustomDomainTitle>
+            <HintText style={{ marginTop: 0 }}>
+              Nama jurnal yang tidak ada di daftar admin. Hanya berlaku untuk akun Anda.
+            </HintText>
+            <CustomDomainAddRow>
+              <CustomDomainInput
+                type="text"
+                placeholder="contoh: Nature Medicine"
+                value={newCustomJournal}
+                onChange={e => setNewCustomJournal(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addCustomJournal())}
+              />
+              <Button variant="secondary" size="small" type="button" onClick={addCustomJournal} disabled={!newCustomJournal.trim()}>
+                Tambah
+              </Button>
+            </CustomDomainAddRow>
+          </CustomDomainSection>
+
+          {(selectedJournals.length > 0 || customJournals.length > 0) && (
+            <SelectedSummarySection>
+              {selectedJournals.length > 0 && (
+                <>
+                  <SelectedSummaryLabel>Dipilih dari daftar admin</SelectedSummaryLabel>
+                  <SelectedChipsRow>
+                    {selectedJournals.map(name => (
+                      <AdminDomainChip key={name}>
+                        {name}
+                        <button type="button" onClick={() => toggleJournal(name)}>✕</button>
+                      </AdminDomainChip>
+                    ))}
+                  </SelectedChipsRow>
+                </>
+              )}
+              {customJournals.length > 0 && (
+                <>
+                  <SelectedSummaryLabel>Jurnal kustom saya</SelectedSummaryLabel>
+                  <SelectedChipsRow>
+                    {customJournals.map(name => (
+                      <CustomDomainChip key={name}>
+                        {name}
+                        <button type="button" onClick={() => removeCustomJournal(name)}>✕</button>
+                      </CustomDomainChip>
+                    ))}
+                  </SelectedChipsRow>
+                </>
+              )}
+            </SelectedSummarySection>
+          )}
         </>
       )}
 
@@ -306,37 +363,6 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
           <HintText>
             Reset untuk menggunakan semua domain. Pilih domain tertentu untuk membatasi hasil pencarian.
           </HintText>
-
-          {(selectedDomains.length > 0 || customDomains.length > 0) && (
-            <SelectedSummarySection>
-              {selectedDomains.length > 0 && (
-                <>
-                  <SelectedSummaryLabel>Dipilih dari daftar admin</SelectedSummaryLabel>
-                  <SelectedChipsRow>
-                    {selectedDomains.map(item => (
-                      <AdminDomainChip key={item.domain}>
-                        {item.domain}
-                        <button type="button" onClick={() => toggleDomain(item)}>✕</button>
-                      </AdminDomainChip>
-                    ))}
-                  </SelectedChipsRow>
-                </>
-              )}
-              {customDomains.length > 0 && (
-                <>
-                  <SelectedSummaryLabel>Domain kustom saya</SelectedSummaryLabel>
-                  <SelectedChipsRow>
-                    {customDomains.map(d => (
-                      <CustomDomainChip key={d}>
-                        {d}
-                        <button type="button" onClick={() => removeCustomDomain(d)}>✕</button>
-                      </CustomDomainChip>
-                    ))}
-                  </SelectedChipsRow>
-                </>
-              )}
-            </SelectedSummarySection>
-          )}
 
           <SearchInput
             type="text"
@@ -400,6 +426,37 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
               </Button>
             </CustomDomainAddRow>
           </CustomDomainSection>
+
+          {(selectedDomains.length > 0 || customDomains.length > 0) && (
+            <SelectedSummarySection>
+              {selectedDomains.length > 0 && (
+                <>
+                  <SelectedSummaryLabel>Dipilih dari daftar admin</SelectedSummaryLabel>
+                  <SelectedChipsRow>
+                    {selectedDomains.map(item => (
+                      <AdminDomainChip key={item.domain}>
+                        {item.domain}
+                        <button type="button" onClick={() => toggleDomain(item)}>✕</button>
+                      </AdminDomainChip>
+                    ))}
+                  </SelectedChipsRow>
+                </>
+              )}
+              {customDomains.length > 0 && (
+                <>
+                  <SelectedSummaryLabel>Domain kustom saya</SelectedSummaryLabel>
+                  <SelectedChipsRow>
+                    {customDomains.map(d => (
+                      <CustomDomainChip key={d}>
+                        {d}
+                        <button type="button" onClick={() => removeCustomDomain(d)}>✕</button>
+                      </CustomDomainChip>
+                    ))}
+                  </SelectedChipsRow>
+                </>
+              )}
+            </SelectedSummarySection>
+          )}
         </>
       )}
     </Modal>
