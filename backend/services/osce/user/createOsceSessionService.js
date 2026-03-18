@@ -5,7 +5,7 @@ import attachmentService from '#services/attachment/attachmentService'
 import { ValidationError } from '#errors/validationError'
 
 export class CreateOsceSessionService extends BaseService {
-  static async call(userId, topicId) {
+  static async call(userId, topicId, userRole) {
     if (!userId) {
       throw new ValidationError('User ID is required')
     }
@@ -18,7 +18,7 @@ export class CreateOsceSessionService extends BaseService {
       const topic = await prisma.osce_topics.findFirst({
         where: {
           unique_id: topicId,
-          status: 'published',
+          ...(userRole === 'user' && { status: 'published' }),
         },
       })
 
