@@ -127,7 +127,7 @@ function JournalsTab() {
     <Wrapper>
       <SectionTitle>Nama Jurnal</SectionTitle>
       <HintText>
-        Daftar nama jurnal ilmiah yang digunakan untuk filter OpenAlex pada Research Mode V3.
+        Daftar nama jurnal ilmiah yang digunakan untuk filter pada Research Mode V3.
         Pengguna tutor dapat memilih jurnal tertentu dari daftar ini.
       </HintText>
 

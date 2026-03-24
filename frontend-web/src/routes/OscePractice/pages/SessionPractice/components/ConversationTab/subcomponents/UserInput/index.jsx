@@ -159,7 +159,7 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, p
 
   const determineRecordingText = () => {
     if (recording.isTranscribing) {
-      return "Mengirim ke Whisper..."
+      return "Memproses audio..."
     }
     const isActive = recording.isRecording
     return isActive ? "Merekam..." : "Mulai Rekam"
@@ -190,7 +190,7 @@ function UserInput({ onSendMessage, disabled, sttProvider: initialSttProvider, p
           recording={recording.isRecording || recording.isTranscribing}
           disabled={recording.isTranscribing || disabled}
           title={
-            recording.isTranscribing ? 'Mengirim ke Whisper...' :
+            recording.isTranscribing ? 'Memproses audio...' :
             recording.isRecording ? 'Hentikan rekaman' :
             'Mulai rekam'
           }

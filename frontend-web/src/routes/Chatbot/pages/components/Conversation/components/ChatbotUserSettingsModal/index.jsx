@@ -244,7 +244,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
           </SelectAllRow>
 
           <HintText>
-            Reset untuk menggunakan semua jurnal. Pilih jurnal tertentu untuk membatasi hasil pencarian OpenAlex.
+            Reset untuk menggunakan semua jurnal. Pilih jurnal tertentu untuk membatasi hasil pencarian.
           </HintText>
 
           <SearchInput

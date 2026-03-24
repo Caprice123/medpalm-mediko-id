@@ -113,9 +113,9 @@ function SessionPreparation() {
               {testingProvider
                 ? 'Memeriksa konektivitas layanan transkripsi suara...'
                 : sttProvider === 'deepgram'
-                ? 'Menggunakan Deepgram (Real-time) untuk transkripsi suara berkualitas tinggi'
+                ? 'Transkripsi suara real-time berkualitas tinggi siap digunakan'
                 : sttProvider === 'whisper'
-                ? 'Menggunakan Whisper sebagai layanan transkripsi cadangan'
+                ? 'Layanan transkripsi suara siap digunakan'
                 : 'Menentukan layanan transkripsi terbaik yang tersedia...'}
             </PermissionDescription>
           </PermissionContent>

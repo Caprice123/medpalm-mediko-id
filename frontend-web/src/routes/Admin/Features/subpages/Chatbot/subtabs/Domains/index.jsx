@@ -186,8 +186,8 @@ function DomainsTab() {
     <Wrapper>
       <SectionTitle>Domain Terpercaya</SectionTitle>
       <HintText>
-        Masukkan domain URL dan nama jurnal. Domain digunakan untuk filter Perplexity,
-        nama jurnal digunakan untuk filter OpenAlex (Research Mode V3).
+        Masukkan domain URL dan nama jurnal. Domain digunakan untuk filter pencarian,
+        nama jurnal digunakan untuk filter Research Mode V3.
       </HintText>
 
       <AddRow>

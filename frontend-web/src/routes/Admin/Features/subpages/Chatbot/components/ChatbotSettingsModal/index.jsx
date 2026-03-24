@@ -125,7 +125,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             />
             <ToggleSlider />
           </ToggleSwitch>
-          <HintText>Mode percakapan umum menggunakan Gemini</HintText>
+          <HintText>Mode percakapan umum</HintText>
         </FormGroup>
 
         <FormGroup>
@@ -346,7 +346,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             />
             <ToggleSlider />
           </ToggleSwitch>
-          <HintText>Mode research menggunakan Perplexity AI</HintText>
+          <HintText>Mode research dengan pencarian sumber online</HintText>
         </FormGroup>
 
         <FormGroup>
@@ -385,36 +385,36 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         <Divider />
 
         {/* Research Mode V2 */}
-        <SectionTitle style={{ fontSize: '13px', marginBottom: '12px' }}>Research Mode V2 (3-Stage: Gemini → Perplexity → Gemini)</SectionTitle>
+        <SectionTitle style={{ fontSize: '13px', marginBottom: '12px' }}>Research Mode V2 (3-Stage Pipeline)</SectionTitle>
 
         <FormGroup>
           <ModelDropdown
-            label="Reformulation Model (Stage 1 — Gemini)"
+            label="Reformulation Model (Stage 1)"
             value={form.values.chatbot_research_reformulation_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_research_reformulation_model', option.value)}
           />
-          <HintText>Model Gemini untuk reformulasi query Indonesia → English + generate related queries</HintText>
+          <HintText>Model untuk reformulasi query Indonesia → English + generate related queries</HintText>
         </FormGroup>
 
         <FormGroup>
           <ModelDropdown
-            label="Generation Model (Stage 3 — Gemini)"
+            label="Generation Model (Stage 3)"
             value={form.values.chatbot_research_v2_generation_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_research_v2_generation_model', option.value)}
           />
-          <HintText>Model Gemini untuk generate jawaban dari hasil pencarian Perplexity</HintText>
+          <HintText>Model untuk generate jawaban dari hasil pencarian</HintText>
         </FormGroup>
 
         <FormGroup>
           <Label>V2 Reformulation Prompt (Stage 1)</Label>
           <Textarea
-            placeholder="Prompt Gemini untuk reformulasi query. Gunakan {{conversation_history}} dan {{user_query}}. Harus return JSON: {main_query, related_queries[]}"
+            placeholder="Prompt untuk reformulasi query. Gunakan {{conversation_history}} dan {{user_query}}. Harus return JSON: {main_query, related_queries[]}"
             value={form.values.chatbot_research_v2_reformulation_prompt}
             onChange={(e) => form.setFieldValue('chatbot_research_v2_reformulation_prompt', e.target.value)}
             style={{ minHeight: '150px' }}
           />
           <HintText>
-            Prompt untuk Stage 1 (Gemini). Harus return JSON: {'{"main_query": "...", "related_queries": ["...", "..."]}'}.
+            Prompt untuk Stage 1. Harus return JSON: {'{"main_query": "...", "related_queries": ["...", "..."]}'}.
             Placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
           </HintText>
         </FormGroup>
@@ -422,73 +422,73 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         <FormGroup>
           <Label>V2 Retrieval System Prompt (Stage 2)</Label>
           <Textarea
-            placeholder="System prompt untuk Perplexity (retrieval only, non-streaming)..."
+            placeholder="System prompt untuk retriever (retrieval only, non-streaming)..."
             value={form.values.chatbot_research_v2_retrieval_system_prompt}
             onChange={(e) => form.setFieldValue('chatbot_research_v2_retrieval_system_prompt', e.target.value)}
             style={{ minHeight: '80px' }}
           />
-          <HintText>System prompt untuk Perplexity Stage 2. Hanya untuk retrieval — tidak perlu detail.</HintText>
+          <HintText>System prompt untuk retriever Stage 2. Hanya untuk retrieval — tidak perlu detail.</HintText>
         </FormGroup>
 
         <FormGroup>
           <Label>V2 User Message Template (Stage 2)</Label>
           <Textarea
-            placeholder="Template pesan user ke Perplexity. Gunakan {{main_query}} dan {{related_queries}}"
+            placeholder="Template pesan user ke retriever. Gunakan {{main_query}} dan {{related_queries}}"
             value={form.values.chatbot_research_v2_user_message_template}
             onChange={(e) => form.setFieldValue('chatbot_research_v2_user_message_template', e.target.value)}
             style={{ minHeight: '80px' }}
           />
           <HintText>
-            Template format pesan ke Perplexity. Placeholder: {'{{main_query}}'} dan {'{{related_queries}}'}
+            Template format pesan ke retriever. Placeholder: {'{{main_query}}'} dan {'{{related_queries}}'}
           </HintText>
         </FormGroup>
 
         <FormGroup>
           <Label>V2 Generation Prompt (Stage 3)</Label>
           <Textarea
-            placeholder="Prompt Gemini untuk generate jawaban dari search results. Gunakan {{context}}"
+            placeholder="Prompt untuk generate jawaban dari search results. Gunakan {{context}}"
             value={form.values.chatbot_research_v2_generation_prompt}
             onChange={(e) => form.setFieldValue('chatbot_research_v2_generation_prompt', e.target.value)}
             style={{ minHeight: '150px' }}
           />
           <HintText>
-            Prompt untuk Stage 3 (Gemini). Search results dari Perplexity diinjeksikan via {'{{context}}'} placeholder.
+            Prompt untuk Stage 3. Search results diinjeksikan via {'{{context}}'} placeholder.
           </HintText>
         </FormGroup>
 
         <Divider />
 
         {/* Research Mode V3 — OpenAlex (Tutor Role) */}
-        <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>Research Mode V3 — OpenAlex Pipeline (Tutor Role)</SectionTitle>
+        <SectionTitle style={{ fontSize: '13px', color: '#6c757d', marginBottom: '12px' }}>Research Mode V3 (Tutor Role)</SectionTitle>
 
         <FormGroup>
           <ModelDropdown
-            label="Reformulation Model (Stage 1 — Gemini)"
+            label="Reformulation Model (Stage 1)"
             value={form.values.chatbot_research_v3_reformulation_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_research_v3_reformulation_model', option.value)}
           />
-          <HintText>Model Gemini untuk reformulasi query Indonesia → English + generate related queries</HintText>
+          <HintText>Model untuk reformulasi query Indonesia → English + generate related queries</HintText>
         </FormGroup>
 
         <FormGroup>
           <ModelDropdown
-            label="Generation Model (Stage 3 — Gemini)"
+            label="Generation Model (Stage 3)"
             value={form.values.chatbot_research_v3_generation_model || 'gemini-2.5-flash'}
             onChange={(option) => form.setFieldValue('chatbot_research_v3_generation_model', option.value)}
           />
-          <HintText>Model Gemini untuk generate jawaban dari paper OpenAlex</HintText>
+          <HintText>Model untuk generate jawaban dari paper yang ditemukan</HintText>
         </FormGroup>
 
         <FormGroup>
           <TextInput
-            label="Max Results (OpenAlex)"
+            label="Max Results"
             type="number"
             min="1"
             max="20"
             placeholder="8"
             value={form.values.chatbot_research_v3_max_results}
             onChange={(e) => form.setFieldValue('chatbot_research_v3_max_results', e.target.value)}
-            hint="Jumlah maksimal paper dari OpenAlex yang diambil per pencarian"
+            hint="Jumlah maksimal paper yang diambil per pencarian"
           />
         </FormGroup>
 
@@ -498,7 +498,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             placeholder="Medicine"
             value={form.values.chatbot_research_v3_fields_of_study}
             onChange={(e) => form.setFieldValue('chatbot_research_v3_fields_of_study', e.target.value)}
-            hint="Filter bidang studi OpenAlex (opsional, kosongkan untuk semua bidang)"
+            hint="Filter bidang studi (opsional, kosongkan untuk semua bidang)"
           />
         </FormGroup>
 
@@ -511,7 +511,7 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
             style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
           />
           <HintText>
-            Prompt Gemini Stage 1. Harus return JSON: {'{"main_query": "...", "related_queries": ["...", "..."]}'}.
+            Prompt Stage 1. Harus return JSON: {'{"main_query": "...", "related_queries": ["...", "..."]}'}.
             Placeholder: {'{{conversation_history}}'} dan {'{{user_query}}'}
           </HintText>
         </FormGroup>
@@ -519,13 +519,13 @@ function ChatbotSettingsModal({ isOpen, onClose }) {
         <FormGroup>
           <Label>V3 Generation Prompt (Stage 3)</Label>
           <Textarea
-            placeholder="Prompt Gemini untuk generate jawaban dari paper OpenAlex. Gunakan {{context}}"
+            placeholder="Prompt untuk generate jawaban dari paper yang ditemukan. Gunakan {{context}}"
             value={form.values.chatbot_research_v3_generation_prompt}
             onChange={(e) => form.setFieldValue('chatbot_research_v3_generation_prompt', e.target.value)}
             style={{ minHeight: '150px', fontFamily: 'monospace', fontSize: '13px' }}
           />
           <HintText>
-            Prompt untuk Stage 3 (Gemini). Paper dari OpenAlex diinjeksikan via {'{{context}}'} placeholder. Instruksikan sitasi [1] [2] (pisah).
+            Prompt untuk Stage 3. Paper diinjeksikan via {'{{context}}'} placeholder. Instruksikan sitasi [1] [2] (pisah).
           </HintText>
         </FormGroup>
 
