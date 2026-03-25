@@ -29,9 +29,10 @@ class SessionsController {
   // POST /api/v1/osce/sessions - Create new OSCE session (no credit deduction)
   async create(req, res) {
     const userId = req.user?.id
+    const userRole = req.user?.role
     const { topicId } = req.body
 
-    const session = await CreateOsceSessionService.call(userId, topicId)
+    const session = await CreateOsceSessionService.call(userId, topicId, userRole)
 
     return res.status(201).json({
         data: await OsceSessionSerializer.serialize(session),

@@ -4,7 +4,6 @@ import { ValidationError } from '#errors/validationError'
 import { NormalModeAIService } from '#services/chatbot/ai/normalModeAIService'
 import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSearchModeAIService'
 import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researchModeWithQueryReformulation'
-import { ResearchModeV2 } from '#services/chatbot/ai/researchModeV2'
 import { ResearchModeV3 } from '#services/chatbot/ai/researchModeV3'
 import { ResearchV2Handler } from '#services/chatbot/handlers/researchV2Handler'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
@@ -21,12 +20,6 @@ export class SendMessageService extends BaseService {
         is_deleted: false
       },
       select: { id: true, user_id: true }
-    })
-
-    // Fetch user role for research mode routing
-    const userRecord = await prisma.users.findUnique({
-      where: { id: userId },
-      select: { role: true }
     })
 
     if (!conversation) {
@@ -95,12 +88,7 @@ export class SendMessageService extends BaseService {
       } else if (mode === 'validated') {
         result = await ValidatedSearchModeAIService.call({ userId, conversationId: internalConversationId, message })
       } else if (mode === 'research') {
-        const isTutor = userRecord?.role === 'tutor'
-        if (isTutor) {
-          result = await ResearchModeV3.call({ userId, conversationId: internalConversationId, message })
-        } else {
-          result = await ResearchModeV2.call({ userId, conversationId: internalConversationId, message })
-        }
+        result = await ResearchModeV3.call({ userId, conversationId: internalConversationId, message })
       }
 
       // Research V3 has its own dedicated handler (reuses ResearchV2Handler)
