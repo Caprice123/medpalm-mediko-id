@@ -66,7 +66,7 @@ export async function getCreditBreakdown(userId, prismaClient = prisma) {
  */
 export async function getEffectiveCreditBalance(userId, prismaClient = prisma) {
   const buckets = await getActiveBuckets(userId, prismaClient)
-  return parseFloat(buckets.reduce((sum, b) => sum + parseFloat(b.balance), 0).toFixed(2))
+  return buckets.reduce((sum, b) => sum + parseFloat(b.balance), 0).toFixed(2)
 }
 
 /**

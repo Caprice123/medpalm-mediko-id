@@ -6,9 +6,9 @@ import { ValidatedSearchModeAIService } from '#services/chatbot/ai/validatedSear
 import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researchModeWithQueryReformulation'
 import { ResearchModeV3 } from '#services/chatbot/ai/researchModeV3'
 import { ResearchV2Handler } from '#services/chatbot/handlers/researchV2Handler'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
-import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
+import { deductUserCredits, getCreditBreakdown } from '#utils/creditUtils'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class SendMessageService extends BaseService {
   static async call({ userId, conversationId, message, mode, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -46,31 +46,22 @@ export class SendMessageService extends BaseService {
       throw new ValidationError(`Mode ${mode} sedang tidak aktif. Silakan pilih mode lain`)
     }
 
-    // Check user access based on access type
-    const accessType = constants.chatbot_access_type || 'subscription'
-    const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
+    // Check access (subscription and/or credits) without deducting
+    await checkAccessAndDeductCredit(prisma, {
+      userId,
+      userRole: 'user',
+      accessTypeKey: 'chatbot_access_type',
+      creditCostKey: `chatbot_${mode}_cost`,
+      deductCredit: false,
+      description: ''
+    })
+
+    // Still need messageCost for deduction on first chunk
+    const accessType = constants.chatbot_access_type || 'free'
     const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
-
-    // Check subscription if required
-    if (requiresSubscription) {
-      const hasSubscription = await HasActiveSubscriptionService.call(userId)
-
-      if (!hasSubscription) {
-        throw new ValidationError('Anda memerlukan langganan aktif untuk menggunakan fitur chatbot')
-      }
-    }
-
-    // Check credits if required
     let messageCost = 0
     if (requiresCredits) {
       messageCost = parseFloat(constants[`chatbot_${mode}_cost`]) || 5
-
-      // Get user's credit balance
-      const balance = await getEffectiveCreditBalance(userId)
-
-      if (balance < messageCost) {
-        throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk menggunakan mode ${mode}`)
-      }
     }
 
     // Don't save user message yet - will be saved after streaming completes
