@@ -577,7 +577,7 @@ const sendMessageStreaming = async (sessionId, content, dispatch, abortControlle
 
           if (data.type === 'chunk') {
             if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
-              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota))
               console.log('💎 Credit balance updated:', data.data.userQuota.balance)
             }
 
@@ -924,7 +924,7 @@ const sendPhysicalExamMessageStreaming = async (sessionId, content, dispatch, ab
 
           if (data.type === 'chunk') {
             if (data.data?.userQuota && data.data.userQuota.balance !== undefined) {
-              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota))
               console.log('💎 Credit balance updated:', data.data.userQuota.balance)
             }
 

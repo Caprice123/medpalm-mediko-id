@@ -6,6 +6,7 @@ import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { SkripsiResearchModeV3 } from '#services/skripsi/ai/skripsiResearchModeV3'
 import { SkripsiResearchV2Handler } from '#services/skripsi/handlers/skripsiResearchV2Handler'
+import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
 
 export class SendMessageService extends BaseService {
   static async call({ tabId, userId, message, modeType = 'validated', onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -79,11 +80,9 @@ export class SendMessageService extends BaseService {
 
       if (messageCost > 0) {
         // Get user's credit balance
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
+        const balance = await getEffectiveCreditBalance(userId)
 
-        if (!userCredit || userCredit.balance < messageCost) {
+        if (balance < messageCost) {
           throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk menggunakan ${mode}`)
         }
       }
@@ -207,6 +206,7 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let newBalance = null
+    let creditBreakdown = null
     let firstContentChunkReceived = false
     const NO_CITATIONS_FALLBACK = 'Maaf, tidak ada informasi yang tersedia karena tidak ditemukan referensi dari trusted domain filter yang dikonfigurasi dalam pengaturan.'
 
@@ -345,32 +345,9 @@ export class SendMessageService extends BaseService {
             console.log(requiresCredits)
             console.log(messageCost)
             if (isFirstChunk && requiresCredits && messageCost > 0) {
-              const userCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-
-              await prisma.user_credits.update({
-                where: { user_id: userId },
-                data: { balance: { decrement: messageCost } }
-              })
-
-              const updatedUserCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-              newBalance = updatedUserCredit.balance
-
-              await prisma.credit_transactions.create({
-                data: {
-                  user_id: userId,
-                  user_credit_id: userCredit.id,
-                  type: 'deduction',
-                  amount: -messageCost,
-                  balance_before: userCredit.balance,
-                  balance_after: newBalance,
-                  description: `Skripsi Builder - 1 pesan`,
-                  payment_status: 'completed'
-                }
-              })
+              const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `Skripsi Builder - 1 pesan`))
+              newBalance = result.newBalance
+              creditBreakdown = await getCreditBreakdown(userId)
             }
 
             // Try to send chunk to client
@@ -385,7 +362,11 @@ export class SendMessageService extends BaseService {
               // Include userQuota in first chunk
               if (isFirstChunk) {
                 if (newBalance !== null) {
-                  chunkData.data.userQuota = { balance: newBalance }
+                  chunkData.data.userQuota = {
+                    balance: newBalance,
+                    permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+                    expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                  }
                 }
                 isFirstChunk = false // Always mark first chunk as sent
               }
@@ -564,6 +545,7 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let newBalance = null
+    let creditBreakdown = null
 
     try {
       // CREATE MESSAGE RECORDS FIRST (before streaming)
@@ -661,32 +643,9 @@ export class SendMessageService extends BaseService {
 
             // Deduct credits on FIRST chunk
             if (isFirstChunk && requiresCredits && messageCost > 0) {
-              const userCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-
-              await prisma.user_credits.update({
-                where: { user_id: userId },
-                data: { balance: { decrement: messageCost } }
-              })
-
-              const updatedUserCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-              newBalance = updatedUserCredit.balance
-
-              await prisma.credit_transactions.create({
-                data: {
-                  user_id: userId,
-                  user_credit_id: userCredit.id,
-                  type: 'deduction',
-                  amount: -messageCost,
-                  balance_before: userCredit.balance,
-                  balance_after: newBalance,
-                  description: `Skripsi Builder - 1 pesan`,
-                  payment_status: 'completed'
-                }
-              })
+              const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `Skripsi Builder - 1 pesan`))
+              newBalance = result.newBalance
+              creditBreakdown = await getCreditBreakdown(userId)
             }
 
             // Try to send chunk to client
@@ -701,7 +660,11 @@ export class SendMessageService extends BaseService {
               // Include userQuota in first chunk
               if (isFirstChunk) {
                 if (newBalance !== null) {
-                  chunkData.data.userQuota = { balance: newBalance }
+                  chunkData.data.userQuota = {
+                    balance: newBalance,
+                    permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+                    expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                  }
                 }
                 isFirstChunk = false // Always mark first chunk as sent
               }

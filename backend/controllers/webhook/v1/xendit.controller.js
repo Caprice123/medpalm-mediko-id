@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { verifyWebhookToken } from '#services/xendit.service'
 import { ValidationError } from '#errors/validationError'
+import { addUserCredits } from '#utils/creditUtils'
 
 const prisma = new PrismaClient()
 
@@ -268,46 +269,21 @@ async function handlePaidPurchase(purchase, paymentDetails) {
 
       // 3. Add credits to user's balance if plan includes credits (user_credits table)
       if (creditsIncluded > 0) {
-        // Find or create user credits
-        let userCredit = await tx.user_credits.findUnique({
-          where: { user_id: purchase.user_id }
-        })
-
-        if (!userCredit) {
-          userCredit = await tx.user_credits.create({
-            data: {
-              user_id: purchase.user_id,
-              balance: 0
-            }
-          })
+        const plan = purchase.pricing_plan
+        const creditType = plan.credit_type || 'permanent'
+        let expiresAt = null
+        if (creditType === 'expiring' && plan.credit_expiry_days) {
+          expiresAt = new Date()
+          expiresAt.setDate(expiresAt.getDate() + plan.credit_expiry_days)
         }
 
-        const balanceBefore = userCredit.balance
-        const balanceAfter = Number(balanceBefore) + Number(creditsIncluded)
-
-        // Update balance
-        await tx.user_credits.update({
-          where: { user_id: purchase.user_id },
-          data: {
-            balance: balanceAfter,
-            updated_at: new Date()
-          }
-        })
-
-        // 4. Create credit transaction ledger record (credit_transactions table)
-        await tx.credit_transactions.create({
-          data: {
-            user_id: purchase.user_id,
-            user_credit_id: userCredit.id,
-            type: purchase.bundle_type === 'credits' ? 'purchase' : 'subscription_bonus',
-            amount: creditsIncluded,
-            balance_before: balanceBefore,
-            balance_after: balanceAfter,
-            description: `Credits from ${purchase.pricing_plan.name} (Paid via ${paymentChannel})`,
-            payment_status: 'completed',
-            payment_method: `${paymentMethod} - ${paymentChannel}`,
-            payment_reference: invoiceId
-          }
+        await addUserCredits(tx, purchase.user_id, creditsIncluded, {
+          creditType,
+          expiresAt,
+          description: `Credits from ${plan.name} (Paid via ${paymentChannel})`,
+          transactionType: purchase.bundle_type === 'credits' ? 'purchase' : 'subscription_bonus',
+          paymentMethod: `${paymentMethod} - ${paymentChannel}`,
+          paymentReference: invoiceId
         })
       }
     })

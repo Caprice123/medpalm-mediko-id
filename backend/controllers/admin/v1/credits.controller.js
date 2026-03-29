@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { UserPurchaseSerializer } from '../../../serializers/userPurchaseSerializer.js'
 import { ValidationError } from '#errors/validationError'
+import { getEffectiveCreditBalance, deductUserCredits, addUserCredits } from '#utils/creditUtils'
 
 class CreditsController {
   /**
@@ -8,25 +9,8 @@ class CreditsController {
    */
   async getBalance(req, res) {
     const userId = req.user.id
-
-    let userCredit = await prisma.user_credits.findUnique({
-      where: { user_id: userId }
-    })
-
-    if (!userCredit) {
-      userCredit = await prisma.user_credits.create({
-        data: {
-          user_id: userId,
-          balance: 0
-        }
-      })
-    }
-
-    res.status(200).json({
-      data: {
-        balance: userCredit.balance
-      }
-    })
+    const balance = await getEffectiveCreditBalance(userId)
+    res.status(200).json({ data: { balance } })
   }
 
   /**
@@ -120,51 +104,12 @@ class CreditsController {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Get user credit
-      const userCredit = await tx.user_credits.findUnique({
-        where: { user_id: userId }
-      })
-
-      if (!userCredit || userCredit.balance < amount) {
-        throw new ValidationError('Insufficient credits')
-      }
-
-      const balanceBefore = userCredit.balance
-      const balanceAfter = balanceBefore - amount
-
-      // Update balance
-      await tx.user_credits.update({
-        where: { user_id: userId },
-        data: { balance: balanceAfter }
-      })
-
-      // Create transaction record
-      const transaction = await tx.credit_transactions.create({
-        data: {
-          user_id: userId,
-          user_credit_id: userCredit.id,
-          type: 'deduction',
-          amount: -amount,
-          balance_before: balanceBefore,
-          balance_after: balanceAfter,
-          description: description || 'Credit deduction',
-          payment_status: 'completed',
-          session_id: sessionId
-        }
-      })
-
-      return { transaction, newBalance: balanceAfter }
+      return deductUserCredits(tx, userId, amount, description || 'Credit deduction', sessionId)
     })
 
     res.status(200).json({
       data: {
-        newBalance: result.newBalance,
-        transaction: {
-          id: result.transaction.id,
-          amount: result.transaction.amount,
-          balanceAfter: result.transaction.balance_after,
-          description: result.transaction.description
-        }
+        newBalance: result.newBalance
       }
     })
   }
@@ -199,45 +144,37 @@ class CreditsController {
     }
 
     if (status === 'completed') {
-      // Grant credits
       await prisma.$transaction(async (tx) => {
-        const userCredit = await tx.user_credits.findUnique({
+        // Add credits back to the bucket this transaction belongs to
+        const bucket = await tx.user_credits.findUnique({
           where: { id: transaction.user_credit_id }
         })
-
-        const newBalance = userCredit.balance + transaction.amount
-
+        const newBalance = parseFloat(bucket.balance) + parseFloat(transaction.amount)
         await tx.user_credits.update({
           where: { id: transaction.user_credit_id },
-          data: { balance: newBalance }
+          data: { balance: newBalance, updated_at: new Date() }
         })
-
         await tx.credit_transactions.update({
           where: { id: parseInt(transactionId) },
-          data: {
-            payment_status: 'completed',
-            balance_after: newBalance
-          }
+          data: { payment_status: 'completed', balance_after: newBalance }
         })
       })
     } else {
-      // Mark as failed
       await prisma.credit_transactions.update({
         where: { id: parseInt(transactionId) },
         data: { payment_status: 'failed' }
       })
     }
 
-    res.status(200).json({
-      message: `Payment ${status} successfully`
-    })
+    res.status(200).json({ message: `Payment ${status} successfully` })
   }
 
   /**
    * Add bonus credits (admin only)
+   * Supports credit_type ('permanent'/'expiring') and expiry_days
    */
   async addBonus(req, res) {
-    const { userId, amount, description } = req.body
+    const { userId, amount, description, credit_type, expiry_days } = req.body
 
     if (!userId || !amount || amount <= 0) {
       return res.status(400).json({
@@ -245,56 +182,24 @@ class CreditsController {
       })
     }
 
+    const creditType = credit_type || 'permanent'
+    let expiresAt = null
+    if (creditType === 'expiring' && expiry_days) {
+      expiresAt = new Date()
+      expiresAt.setDate(expiresAt.getDate() + Number(expiry_days))
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      // Find or create user credits
-      let userCredit = await tx.user_credits.findUnique({
-        where: { user_id: userId }
+      return addUserCredits(tx, parseInt(userId), amount, {
+        creditType,
+        expiresAt,
+        description: description || 'Bonus credits from admin',
+        transactionType: 'bonus'
       })
-
-      if (!userCredit) {
-        userCredit = await tx.user_credits.create({
-          data: {
-            user_id: userId,
-            balance: 0
-          }
-        })
-      }
-
-      const balanceBefore = userCredit.balance
-      const balanceAfter = balanceBefore + amount
-
-      // Update balance
-      await tx.user_credits.update({
-        where: { user_id: userId },
-        data: { balance: balanceAfter }
-      })
-
-      // Create transaction record
-      const transaction = await tx.credit_transactions.create({
-        data: {
-          user_id: userId,
-          user_credit_id: userCredit.id,
-          type: 'bonus',
-          amount: amount,
-          balance_before: balanceBefore,
-          balance_after: balanceAfter,
-          description: description || 'Bonus credits from admin',
-          payment_status: 'completed'
-        }
-      })
-
-      return { transaction, newBalance: balanceAfter }
     })
 
     res.status(200).json({
-      data: {
-        newBalance: result.newBalance,
-        transaction: {
-          id: result.transaction.id,
-          amount: result.transaction.amount,
-          description: result.transaction.description
-        }
-      }
+      data: { newBalance: result.newBalance }
     })
   }
 }

@@ -139,6 +139,56 @@ export const StatusItem = styled.div`
   }
 `
 
+export const CreditWrapper = styled.div`
+  position: relative;
+  cursor: default;
+`
+
+export const CreditTooltip = styled.div`
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: white;
+  border: 1px solid ${colors.neutral.gray200};
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  min-width: 190px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  white-space: nowrap;
+
+  ${CreditWrapper}:hover & {
+    display: block;
+  }
+`
+
+export const TooltipRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  padding: 0.2rem 0;
+  color: ${colors.text.primary};
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${colors.neutral.gray100};
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.35rem;
+  }
+`
+
+export const TooltipLabel = styled.span`
+  color: ${colors.text.secondary};
+  font-weight: 500;
+`
+
+export const TooltipValue = styled.span`
+  font-weight: 700;
+  color: ${props => props.$warn ? '#dc2626' : colors.text.primary};
+`
+
 export const StatusDivider = styled.div`
   width: 1px;
   height: 20px;
@@ -221,15 +271,7 @@ export const MobileMenuItem = styled.div`
   &.status-wrapper {
     flex-direction: column;
     gap: 0.75rem;
-
-    ${StatusItem} {
-      justify-content: center;
-    }
-
-    @media (min-width: 520px) {
-      flex-direction: row;
-      gap: 1rem;
-    }
+    align-items: center;
   }
 `
 
@@ -238,5 +280,37 @@ export const MobileMenuDivider = styled.div`
   height: 1px;
   background: ${colors.neutral.gray200};
   margin: 0.5rem 0;
+`
+
+export const MobileStatusRow = styled.div`
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+`
+
+export const MobileCreditBreakdown = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 260px;
+  align-self: center;
+`
+
+export const MobileCreditBreakdownRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+
+  span:last-child {
+    font-weight: 600;
+    color: ${props => props.$warn ? '#dc2626' : '#374151'};
+  }
 `
 

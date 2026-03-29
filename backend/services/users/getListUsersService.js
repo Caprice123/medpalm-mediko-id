@@ -58,9 +58,11 @@ export class GetListUsersService extends BaseService {
                         created_at: true,
                     }
                 },
-                user_credit: {
+                user_credits: {
                     select: {
                         balance: true,
+                        credit_type: true,
+                        expires_at: true,
                     }
                 }
             },

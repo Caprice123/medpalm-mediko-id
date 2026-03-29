@@ -75,11 +75,5 @@ export const formatToJakarta = (date) => {
 };
 
 export const formatDate = (dateString) => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+    return formatLocalDate(dateString)
 }

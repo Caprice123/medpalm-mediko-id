@@ -6,6 +6,7 @@ import { UpdateUserRoleService } from "#services/users/updateUserRoleService";
 import { UpdateUserPermissionsService } from "#services/users/updateUserPermissionsService";
 import { UserSerializer } from "#serializers/admin/v1/userSerializer";
 import { UserSubscriptionSerializer } from "#serializers/admin/v1/userSubscriptionSerializer";
+import prisma from '#prisma/client';
 
 class UsersController {
   async index(req, res) {
@@ -52,15 +53,87 @@ class UsersController {
     ValidationUtils.validate_fields({
       request: req,
       requiredFields: ["userId", "credit"],
-      optionalFields: [],
+      optionalFields: ["credit_type", "credit_expiry_days"],
     });
-    await AddCreditService.call(req.body.userId, req.body.credit);
+    const { userId, credit, credit_type, credit_expiry_days } = req.body
+    await AddCreditService.call(parseInt(userId), credit, {
+      creditType: credit_type || 'permanent',
+      creditExpiryDays: credit_expiry_days ? parseInt(credit_expiry_days) : null
+    });
+
+    res.status(200).json({ data: { success: true } });
+  }
+
+  async getCreditBuckets(req, res) {
+    const userId = parseInt(req.params.id)
+    const now = new Date()
+
+    const buckets = await prisma.user_credits.findMany({
+      where: { user_id: userId },
+      orderBy: { created_at: 'desc' }
+    })
+
+    const permanentBalance = buckets
+      .filter(b => b.credit_type === 'permanent')
+      .reduce((sum, b) => sum + parseFloat(b.balance), 0)
+
+    const expiringBuckets = buckets
+      .filter(b => b.credit_type === 'expiring')
+      .map(b => {
+        const isExpired = b.expires_at && new Date(b.expires_at) <= now
+        const daysRemaining = b.expires_at
+          ? Math.max(0, Math.ceil((new Date(b.expires_at) - now) / (1000 * 60 * 60 * 24)))
+          : null
+        return {
+          id: b.id,
+          balance: parseFloat(b.balance),
+          expiresAt: b.expires_at,
+          daysRemaining,
+          isExpired,
+          createdAt: b.created_at
+        }
+      })
+
+    const totalBalance = permanentBalance + expiringBuckets
+      .filter(b => !b.isExpired)
+      .reduce((sum, b) => sum + b.balance, 0)
 
     res.status(200).json({
-      data: {
-        success: true,
-      },
-    });
+      data: { permanentBalance, expiringBuckets, totalBalance }
+    })
+  }
+
+  async updateCreditBucket(req, res) {
+    const userId = parseInt(req.params.id)
+    const bucketId = parseInt(req.params.bucketId)
+    const { balance, expires_at } = req.body
+
+    const bucket = await prisma.user_credits.findFirst({
+      where: { id: bucketId, user_id: userId }
+    })
+    if (!bucket) return res.status(404).json({ error: 'Credit bucket not found' })
+
+    const updateData = { updated_at: new Date() }
+    if (balance !== undefined) updateData.balance = parseFloat(parseFloat(balance).toFixed(2))
+    if (expires_at !== undefined) updateData.expires_at = expires_at ? new Date(expires_at) : null
+
+    await prisma.user_credits.update({ where: { id: bucketId }, data: updateData })
+
+    res.status(200).json({ data: { success: true } })
+  }
+
+  async deleteCreditBucket(req, res) {
+    const userId = parseInt(req.params.id)
+    const bucketId = parseInt(req.params.bucketId)
+
+    const bucket = await prisma.user_credits.findFirst({
+      where: { id: bucketId, user_id: userId }
+    })
+    if (!bucket) return res.status(404).json({ error: 'Credit bucket not found' })
+
+    await prisma.user_credits.delete({ where: { id: bucketId } })
+
+    res.status(200).json({ data: { success: true } })
   }
 
   async getSubscriptions(req, res) {

@@ -22,8 +22,8 @@ export const useUserDetail = (setUiState) => {
     }))
   }
 
-  const handleAdjustCredit = async (userId, creditAmount) => {
-    dispatch(adjustCredit(userId, creditAmount))
+  const handleAdjustCredit = async (userId, creditAmount, options = {}) => {
+    dispatch(adjustCredit(userId, creditAmount, options))
   }
 
   const handleAddSubscription = async (userId, startDate, endDate) => {

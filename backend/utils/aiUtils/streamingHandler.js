@@ -33,6 +33,7 @@
  */
 
 import prisma from '#prisma/client'
+import { deductUserCredits, getEffectiveCreditBalance } from '#utils/creditUtils'
 
 export class StreamingHandler {
   static CHARS_PER_CHUNK = 20
@@ -205,6 +206,8 @@ export class StreamingHandler {
     let streamAborted = state.streamAborted
     let isFirstChunk = state.isFirstChunk
     let newBalance = state.newBalance
+    let creditBreakdown = null
+    let quotaSent = false
     let messageRecords = state.messageRecords
 
     for await (const chunk of stream) {
@@ -237,16 +240,19 @@ export class StreamingHandler {
               onStream
             })
             newBalance = result.newBalance
+            creditBreakdown = result.creditBreakdown
             isFirstChunk = false
           }
 
           // Send chunk to client
           const sent = await this._sendChunk({
             chunkToSend,
-            isFirstChunk: false, // Already handled above
+            sendQuota: !quotaSent && newBalance !== null,
             newBalance,
+            creditBreakdown,
             onStream
           })
+          quotaSent = true
 
           if (!sent) {
             streamAborted = true
@@ -314,6 +320,8 @@ export class StreamingHandler {
     let streamAborted = state.streamAborted
     let isFirstChunk = state.isFirstChunk
     let newBalance = state.newBalance
+    let creditBreakdown = null
+    let quotaSent = false
     let messageRecords = state.messageRecords
 
     for await (const chunk of stream) {
@@ -353,16 +361,19 @@ export class StreamingHandler {
               onStream
             })
             newBalance = result.newBalance
+            creditBreakdown = result.creditBreakdown
             isFirstChunk = false
           }
 
           // Send chunk to client
           const sent = await this._sendChunk({
             chunkToSend,
-            isFirstChunk: false,
+            sendQuota: !quotaSent && newBalance !== null,
             newBalance,
+            creditBreakdown,
             onStream
           })
+          quotaSent = true
 
           if (!sent) {
             streamAborted = true
@@ -446,31 +457,33 @@ export class StreamingHandler {
    */
   static async _handleFirstChunk({ userId, messageCost, creditDescription, hooks, context, messageRecords, onStream }) {
     let newBalance = null
+    let creditBreakdown = null
 
     if (messageCost > 0) {
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId }
+      const result = await prisma.$transaction(async (tx) => {
+        return deductUserCredits(tx, userId, messageCost, creditDescription)
       })
+      newBalance = result.newBalance
+    }
 
-      newBalance = userCredit.balance - messageCost
-
-      await prisma.user_credits.update({
+    // Fetch full credit breakdown to send to client
+    if (newBalance !== null) {
+      const now = new Date()
+      const buckets = await prisma.user_credits.findMany({
         where: { user_id: userId },
-        data: { balance: newBalance }
+        orderBy: { expires_at: 'asc' }
       })
-
-      await prisma.credit_transactions.create({
-        data: {
-          user_id: userId,
-          user_credit_id: userCredit.id,
-          type: 'deduction',
-          amount: -messageCost,
-          balance_before: userCredit.balance,
-          balance_after: newBalance,
-          description: creditDescription,
-          payment_status: 'completed'
-        }
-      })
+      const permanentBalance = parseFloat(buckets
+        .filter(b => b.credit_type === 'permanent')
+        .reduce((sum, b) => sum + parseFloat(b.balance), 0).toFixed(2))
+      const expiringBuckets = buckets
+        .filter(b => b.credit_type === 'expiring' && b.balance > 0 && b.expires_at && new Date(b.expires_at) > now)
+        .map(b => ({
+          balance: parseFloat(parseFloat(b.balance).toFixed(2)),
+          expiresAt: b.expires_at,
+          daysRemaining: Math.ceil((new Date(b.expires_at) - now) / (1000 * 60 * 60 * 24))
+        }))
+      creditBreakdown = { permanentBalance, expiringBuckets }
     }
 
     // HOOK: onFirstChunk
@@ -483,13 +496,13 @@ export class StreamingHandler {
       })
     }
 
-    return { newBalance }
+    return { newBalance, creditBreakdown }
   }
 
   /**
    * Send chunk to client
    */
-  static async _sendChunk({ chunkToSend, isFirstChunk, newBalance, onStream }) {
+  static async _sendChunk({ chunkToSend, sendQuota, newBalance, creditBreakdown, onStream }) {
     try {
       const chunkData = {
         type: 'chunk',
@@ -498,9 +511,13 @@ export class StreamingHandler {
         }
       }
 
-      // Include userQuota in first chunk
-      if (isFirstChunk && newBalance !== null) {
-        chunkData.data.userQuota = { balance: newBalance }
+      // Include userQuota with full breakdown in first chunk
+      if (sendQuota && newBalance !== null) {
+        chunkData.data.userQuota = {
+          balance: newBalance,
+          permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+          expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+        }
       }
 
       onStream(chunkData)

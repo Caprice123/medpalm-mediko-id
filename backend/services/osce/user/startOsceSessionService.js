@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { deductUserCredits, getEffectiveCreditBalance } from '#utils/creditUtils'
 
 export class StartOsceSessionService extends BaseService {
   static async call(userId, sessionId, sttProvider = 'whisper', supportedMimeType = null) {
@@ -58,37 +59,16 @@ export class StartOsceSessionService extends BaseService {
       const sessionStartCost = parseInt(constantsMap.osce_practice_credit_cost) || 10
 
       // Check user credits
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId },
-      })
+      const balance = await getEffectiveCreditBalance(userId)
 
-      if (!userCredit || userCredit.balance < sessionStartCost) {
+      if (balance < sessionStartCost) {
         throw new ValidationError(`Insufficient credits. You need ${sessionStartCost} credits to start a session`)
       }
 
       // Deduct credits and update session status
       await prisma.$transaction(async (tx) => {
         // Deduct credits
-        await tx.user_credits.update({
-          where: { user_id: userId },
-          data: {
-            balance: { decrement: sessionStartCost },
-          },
-        })
-
-        // Record credit transaction
-        await tx.credit_transactions.create({
-          data: {
-            user_id: userId,
-            user_credit_id: userCredit.id,
-            type: 'deduction',
-            amount: sessionStartCost,
-            balance_before: userCredit.balance,
-            balance_after: userCredit.balance - sessionStartCost,
-            description: `OSCE Practice - Start session ${session.unique_id}`,
-            session_id: session.id,
-          },
-        })
+        await deductUserCredits(tx, userId, sessionStartCost, `OSCE Practice - Start session ${session.unique_id}`, session.id)
 
         // Update session status, credits used, and metadata
         await tx.osce_sessions.update({

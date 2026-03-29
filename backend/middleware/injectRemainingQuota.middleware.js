@@ -5,11 +5,19 @@ export const injectRemainingQuota = (req, res, next) => {
     try {
       const userId = req.user?.id;
       if (userId) {
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId },
-          select: { balance: true }
+        const now = new Date();
+        const buckets = await prisma.user_credits.findMany({
+          where: { user_id: userId }
         });
-        res.setHeader("X-Remaining-Quota", userCredit?.balance ?? 0);
+        const permanentBalance = buckets
+          .filter(b => b.credit_type === 'permanent')
+          .reduce((sum, b) => sum + parseFloat(b.balance), 0);
+        const expiringBalance = buckets
+          .filter(b => b.credit_type === 'expiring' && b.balance > 0 && b.expires_at && new Date(b.expires_at) > now)
+          .reduce((sum, b) => sum + parseFloat(b.balance), 0);
+        res.setHeader("X-Remaining-Quota", permanentBalance + expiringBalance);
+        res.setHeader("X-Permanent-Quota", permanentBalance);
+        res.setHeader("X-Expiring-Quota", expiringBalance);
       }
     } catch (error) {
       console.error("Error fetching remaining quota:", error);

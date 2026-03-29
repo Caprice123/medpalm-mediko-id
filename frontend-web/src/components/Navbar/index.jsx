@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection, HamburgerButton, MobileMenu, MobileMenuItem, MobileMenuDivider } from "./Navbar.styles"
+import { Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection, HamburgerButton, MobileMenu, MobileMenuItem, MobileMenuDivider, CreditWrapper, CreditTooltip, TooltipRow, TooltipLabel, TooltipValue, MobileStatusRow, MobileCreditBreakdown, MobileCreditBreakdownRow } from "./Navbar.styles"
 import { useEffect } from "react"
 import { logout } from '@store/auth/action'
 import { fetchUserStatus } from '@store/pricing/action'
@@ -64,10 +64,29 @@ export const Navbar = () => {
                   <StatusDivider />
                 </>
               )}
-              <StatusItem>
-                <span>💎</span>
-                <span>{userStatus?.creditBalance ?? 0} Credits</span>
-              </StatusItem>
+              <CreditWrapper>
+                <StatusItem>
+                  <span>💎</span>
+                  <span>
+                    {parseFloat(userStatus?.creditBalance ?? 0).toFixed(2)} Credits
+                    {(userStatus?.expiringBuckets ?? []).some(b => b.daysRemaining <= 7) && ' ⚠️'}
+                  </span>
+                </StatusItem>
+                {(userStatus?.expiringBuckets?.length > 0 || userStatus?.permanentBalance > 0) && (
+                  <CreditTooltip>
+                    <TooltipRow>
+                      <TooltipLabel>Permanent</TooltipLabel>
+                      <TooltipValue>{parseFloat(userStatus?.permanentBalance ?? 0).toFixed(2)} cr</TooltipValue>
+                    </TooltipRow>
+                    {(userStatus?.expiringBuckets ?? []).map((b, i) => (
+                      <TooltipRow key={i}>
+                        <TooltipLabel>Expiring ({b.daysRemaining}d left)</TooltipLabel>
+                        <TooltipValue $warn={b.daysRemaining <= 7}>{parseFloat(b.balance).toFixed(2)} cr</TooltipValue>
+                      </TooltipRow>
+                    ))}
+                  </CreditTooltip>
+                )}
+              </CreditWrapper>
             </StatusSection>
             {user && (
                 <UserInfo>
@@ -119,22 +138,40 @@ export const Navbar = () => {
             <MobileMenuDivider />
 
             <MobileMenuItem className="status-wrapper">
-              {userStatus?.hasActiveSubscription && userStatus?.subscription && (
-                <StatusItem style={{ fontSize: '1rem', flex: 1 }}>
-                  <span>⭐</span>
+              <MobileStatusRow>
+                {userStatus?.hasActiveSubscription && userStatus?.subscription && (
+                  <StatusItem style={{ fontSize: '1rem' }}>
+                    <span>⭐</span>
+                    <span>
+                      Active
+                      {userStatus?.subscription?.daysRemaining < 14 && (
+                        <> ({userStatus?.subscription?.daysRemaining} days left)</>
+                      )}
+                    </span>
+                  </StatusItem>
+                )}
+                <StatusItem style={{ fontSize: '1rem' }}>
+                  <span>💎</span>
                   <span>
-                    Active
-                    {userStatus?.subscription?.daysRemaining < 14 && (
-                      <> ({userStatus?.subscription?.daysRemaining} days left)</>
-                    )}
+                    {parseFloat(userStatus?.creditBalance ?? 0).toFixed(2)} Credits
+                    {(userStatus?.expiringBuckets ?? []).some(b => b.daysRemaining <= 7) && ' ⚠️'}
                   </span>
                 </StatusItem>
+              </MobileStatusRow>
+              {(userStatus?.permanentBalance > 0 || (userStatus?.expiringBuckets ?? []).length > 0) && (
+                <MobileCreditBreakdown>
+                  <MobileCreditBreakdownRow>
+                    <span>Permanent</span>
+                    <span>{parseFloat(userStatus?.permanentBalance ?? 0).toFixed(2)} cr</span>
+                  </MobileCreditBreakdownRow>
+                  {(userStatus?.expiringBuckets ?? []).map((b, i) => (
+                    <MobileCreditBreakdownRow key={i} $warn={b.daysRemaining <= 7}>
+                      <span>Expiring ({b.daysRemaining}d left)</span>
+                      <span>{parseFloat(b.balance).toFixed(2)} cr</span>
+                    </MobileCreditBreakdownRow>
+                  ))}
+                </MobileCreditBreakdown>
               )}
-
-              <StatusItem style={{ fontSize: '1rem', flex: 1 }}>
-                <span>💎</span>
-                <span>{userStatus?.creditBalance ?? 0} Credits</span>
-              </StatusItem>
             </MobileMenuItem>
 
             <MobileMenuDivider />

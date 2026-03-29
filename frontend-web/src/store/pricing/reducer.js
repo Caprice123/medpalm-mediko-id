@@ -12,6 +12,8 @@ const initialState = {
     hasActiveSubscription: false,
     subscription: null,
     creditBalance: 0,
+    permanentBalance: 0,
+    expiringBuckets: [],
     userId: null
   },
   purchaseHistory: [],
@@ -51,7 +53,14 @@ const { reducer, actions } = createSlice({
       state.userStatus = payload
     },
     updateCreditBalance: (state, { payload }) => {
-      state.userStatus.creditBalance = payload
+      if (typeof payload === 'object' && payload !== null) {
+        // Full breakdown from streaming userQuota
+        state.userStatus.creditBalance = payload.balance ?? state.userStatus.creditBalance
+        if (payload.permanentBalance !== undefined) state.userStatus.permanentBalance = payload.permanentBalance
+        if (payload.expiringBuckets !== undefined) state.userStatus.expiringBuckets = payload.expiringBuckets
+      } else {
+        state.userStatus.creditBalance = payload
+      }
     },
     setPurchaseHistory: (state, { payload }) => {
       state.purchaseHistory = payload.data || payload

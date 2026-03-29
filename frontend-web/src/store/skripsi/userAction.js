@@ -631,7 +631,7 @@ const sendMessageStreaming = async (tabId, content, modeType, dispatch, getState
             }
           } else if (data.type === 'chunk') {
             if (data.data?.userQuota?.balance !== undefined) {
-              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota))
               console.log('💎 Credit balance updated:', data.data.userQuota.balance)
             }
 

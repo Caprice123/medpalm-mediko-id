@@ -385,7 +385,7 @@ model users {
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 
-  user_credit            user_credits?
+  user_credits           user_credits[]
   user_subscription      user_subscriptions[]
   user_purchases         user_purchases[]
   chatbot_conversations  chatbot_conversations[]
@@ -410,16 +410,20 @@ model user_subscriptions {
 }
 
 model user_credits {
-  id         Int      @id @default(autoincrement())
-  user_id    Int      @unique
-  balance    Decimal  @default(0) @db.Decimal(10, 2)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  balance     Decimal   @default(0) @db.Decimal(10, 2)
+  credit_type String    @default("permanent") // permanent, expiring
+  expires_at  DateTime? // null = never expires
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
 
   user                users                 @relation(fields: [user_id], references: [id])
   credit_transactions credit_transactions[]
 
   @@index([user_id])
+  @@index([user_id, credit_type])
+  @@index([expires_at])
 }
 
 // ============= Chatbot Settings =============
@@ -564,6 +568,8 @@ model pricing_plans {
   bundle_type            String   @default("credits") // credits, subscription, hybrid
   duration_days          Int? // for subscription/hybrid bundles
   credits_included       Int      @default(0)
+  credit_type            String   @default("permanent") // permanent, expiring
+  credit_expiry_days     Int? // days until credits expire after approval (null = permanent)
   is_active              Boolean  @default(true)
   is_popular             Boolean  @default(false)
   discount               Int      @default(0)

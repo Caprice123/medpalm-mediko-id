@@ -48,13 +48,13 @@ function Users() {
       header: "Credits",
       align: 'center',
       render: (userCredits) => {
-        const balance = userCredits?.balance || 0
+        const balance = parseFloat(userCredits?.balance || 0)
         return (
           <span style={{
             fontWeight: 500,
             color: balance > 0 ? '#059669' : '#6b7280'
           }}>
-            {balance}
+            {balance.toFixed(2)}
           </span>
         )
       }

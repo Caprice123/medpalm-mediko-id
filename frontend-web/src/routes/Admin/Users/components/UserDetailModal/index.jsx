@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription } from '@store/user/action'
+import { fetchUserSubscriptions, fetchUserCreditBuckets, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription, updateCreditBucket, deleteCreditBucket } from '@store/user/action'
 import { actions } from '@store/user/reducer'
 import { getUserData } from '../../../../../utils/authToken'
 import PermissionManager from '../PermissionManager'
@@ -47,12 +47,14 @@ import {
 function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription }) {
   const dispatch = useDispatch()
   const currentUser = getUserData()
-  const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter } = useSelector(state => state.user)
+  const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter, creditBuckets } = useSelector(state => state.user)
   const [showCreditForm, setShowCreditForm] = useState(false)
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false)
   const [showRoleForm, setShowRoleForm] = useState(false)
   const [showPermissionForm, setShowPermissionForm] = useState(false)
   const [creditAmount, setCreditAmount] = useState('')
+  const [creditType, setCreditType] = useState('permanent')
+  const [creditExpiryDays, setCreditExpiryDays] = useState('')
   const [creditError, setCreditError] = useState('')
   const [selectedRole, setSelectedRole] = useState(null)
   const [roleError, setRoleError] = useState('')
@@ -63,11 +65,15 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const [subscriptionError, setSubscriptionError] = useState('')
   const [editingSubscription, setEditingSubscription] = useState(null) // { id, startDate, endDate }
   const [editError, setEditError] = useState('')
+  const [creditBucketFilter, setCreditBucketFilter] = useState('all') // 'all' | 'expiring'
+  const [editingBucket, setEditingBucket] = useState(null) // { id, balance, expiresAt }
+  const [editBucketError, setEditBucketError] = useState('')
 
-  // Fetch subscriptions when modal opens, page changes, or filter changes
+  // Fetch subscriptions and credit buckets when modal opens or relevant state changes
   useEffect(() => {
     if (isOpen && user?.id) {
       dispatch(fetchUserSubscriptions(user.id))
+      dispatch(fetchUserCreditBuckets(user.id))
     }
   }, [isOpen, user?.id, subscriptionPagination.page, subscriptionFilter, dispatch])
 
@@ -83,6 +89,8 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setShowRoleForm(false)
     setShowPermissionForm(false)
     setCreditAmount('')
+    setCreditType('permanent')
+    setCreditExpiryDays('')
     setCreditError('')
     setSelectedRole(null)
     setRoleError('')
@@ -90,6 +98,9 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setSubscriptionError('')
     setEditingSubscription(null)
     setEditError('')
+    setEditingBucket(null)
+    setEditBucketError('')
+    setCreditBucketFilter('all')
     dispatch(actions.setSubscriptionPage(1))
     onClose()
   }
@@ -141,9 +152,21 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
       return
     }
 
-    // Call the action
-    onAdjustCredit(user.id, amount)
+    if (creditType === 'expiring' && amount > 0) {
+      const days = parseInt(creditExpiryDays)
+      if (!days || days < 1) {
+        setCreditError('Please enter a valid expiry duration in days')
+        return
+      }
+    }
+
+    onAdjustCredit(user.id, amount, {
+      creditType: amount > 0 ? creditType : 'permanent',
+      creditExpiryDays: creditType === 'expiring' && amount > 0 ? parseInt(creditExpiryDays) : null
+    })
     setCreditAmount('')
+    setCreditType('permanent')
+    setCreditExpiryDays('')
     setShowCreditForm(false)
   }
 
@@ -205,6 +228,34 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setShowPermissionForm(false)
   }
 
+  const handleEditBucket = (bucket) => {
+    setEditingBucket({
+      id: bucket.id,
+      balance: parseFloat(bucket.balance).toFixed(2),
+      expiresAt: bucket.expiresAt ? new Date(bucket.expiresAt) : null
+    })
+    setEditBucketError('')
+  }
+
+  const handleEditBucketSubmit = (e) => {
+    e.preventDefault()
+    setEditBucketError('')
+    const balance = parseFloat(editingBucket.balance)
+    if (isNaN(balance) || balance < 0) {
+      setEditBucketError('Please enter a valid balance')
+      return
+    }
+    dispatch(updateCreditBucket(user.id, editingBucket.id, {
+      balance,
+      expiresAt: editingBucket.expiresAt ? editingBucket.expiresAt.toISOString() : null
+    }, () => setEditingBucket(null)))
+  }
+
+  const handleDeleteBucket = (bucket) => {
+    if (!window.confirm(`Delete this credit bucket (${parseFloat(bucket.balance).toFixed(2)} credits)?`)) return
+    dispatch(deleteCreditBucket(user.id, bucket.id))
+  }
+
   const roleOptions = [
     { label: 'User', value: 'user' },
     { label: 'Admin', value: 'admin' },
@@ -216,7 +267,9 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
 
   if (!user) return null
 
-  const currentBalance = user.userCredits?.balance || 0
+  const permanentBalance = creditBuckets?.permanentBalance ?? 0
+  const expiringBuckets = creditBuckets?.expiringBuckets ?? []
+  const totalBalance = creditBuckets?.totalBalance ?? 0
 
   return (
     <Modal
@@ -339,62 +392,208 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
 
       {/* Credit Section */}
       <CreditSection>
-        <SectionTitle>Credit Balance</SectionTitle>
-        <CreditBalance>
-          <BalanceDisplay>
-            <BalanceLabel>Current Balance</BalanceLabel>
-            <BalanceValue value={currentBalance}>
-              {currentBalance} <span style={{ fontSize: '1rem', fontWeight: 400 }}>credits</span>
-            </BalanceValue>
-          </BalanceDisplay>
+        <SubscriptionHeader>
+          <SectionTitle style={{ margin: 0 }}>Credit Balance</SectionTitle>
           {!showCreditForm && (
-            <CreditActions>
-              <Button
-                onClick={() => setShowCreditForm(true)}
-                variant="primary"
-                size="small"
-              >
-                Adjust Credit
-              </Button>
-            </CreditActions>
+            <Button onClick={() => setShowCreditForm(true)} variant="primary" size="small">
+              Adjust Credit
+            </Button>
           )}
-        </CreditBalance>
+        </SubscriptionHeader>
+
+        {/* Balance summary row */}
+        {loading.isFetchCreditBucketsLoading ? (
+          <EmptyState>Loading credits...</EmptyState>
+        ) : (
+          <CreditBalance style={{ marginBottom: '1rem' }}>
+            <BalanceDisplay>
+              <BalanceLabel>Total Balance</BalanceLabel>
+              <BalanceValue value={totalBalance}>
+                {parseFloat(totalBalance).toFixed(2)} <span style={{ fontSize: '1rem', fontWeight: 400 }}>credits</span>
+              </BalanceValue>
+            </BalanceDisplay>
+            <BalanceDisplay>
+              <BalanceLabel>Permanent</BalanceLabel>
+              <BalanceValue value={permanentBalance} style={{ fontSize: '1.25rem' }}>
+                {parseFloat(permanentBalance).toFixed(2)}
+              </BalanceValue>
+            </BalanceDisplay>
+            <BalanceDisplay>
+              <BalanceLabel>Expiring</BalanceLabel>
+              <BalanceValue value={expiringBuckets.reduce((s, b) => s + parseFloat(b.balance), 0)} style={{ fontSize: '1.25rem' }}>
+                {parseFloat(expiringBuckets.reduce((s, b) => s + parseFloat(b.balance), 0)).toFixed(2)}
+              </BalanceValue>
+            </BalanceDisplay>
+          </CreditBalance>
+        )}
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e5e7eb', marginBottom: '1.5rem' }}>
+          {['all', 'expiring'].map(tab => (
+            <button key={tab} onClick={() => setCreditBucketFilter(tab)} style={{
+              padding: '0.75rem 1.5rem', background: 'none', border: 'none',
+              borderBottom: creditBucketFilter === tab ? '2px solid #3b82f6' : '2px solid transparent',
+              color: creditBucketFilter === tab ? '#3b82f6' : '#6b7280',
+              fontWeight: creditBucketFilter === tab ? 600 : 400,
+              cursor: 'pointer', fontSize: '0.875rem', marginBottom: '-2px', transition: 'all 0.2s'
+            }}>
+              {tab === 'all' ? 'All Buckets' : 'Expiring Only'}
+            </button>
+          ))}
+        </div>
+
+        {/* Credit buckets table */}
+        {expiringBuckets.filter(b => creditBucketFilter === 'all' || !b.isExpired).length > 0 ? (
+          <>
+            <SubscriptionTable style={{ marginBottom: '1rem' }}>
+              <TableRow header $hasActions>
+                <div>Credits</div>
+                <div>Expires On</div>
+                <div>Days Left</div>
+                <div>Actions</div>
+              </TableRow>
+              {expiringBuckets
+                .filter(b => creditBucketFilter === 'all' || !b.isExpired)
+                .map((bucket) => (
+                  <>
+                    <TableRow key={bucket.id} $hasActions>
+                      <div style={{ fontWeight: 600 }}>{parseFloat(bucket.balance).toFixed(2)}</div>
+                      <div style={{ fontSize: '0.8rem' }}>{formatLocalDate(bucket.expiresAt)}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <StatusBadge status={bucket.isExpired ? 'expired' : bucket.daysRemaining <= 7 ? 'expired' : 'active'}>
+                          {bucket.isExpired ? 'Expired' : `${bucket.daysRemaining} days`}
+                        </StatusBadge>
+                        {!bucket.isExpired && bucket.daysRemaining <= 7 && (
+                          <span style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: 600 }}>Expiring soon</span>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Button variant="outline" size="small"
+                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                          onClick={() => handleEditBucket(bucket)}
+                          disabled={loading.isDeleteCreditBucketLoading}>
+                          Edit
+                        </Button>
+                        <Button variant="danger" size="small"
+                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                          onClick={() => handleDeleteBucket(bucket)}
+                          disabled={loading.isDeleteCreditBucketLoading}>
+                          Delete
+                        </Button>
+                      </div>
+                    </TableRow>
+
+                    {editingBucket?.id === bucket.id && (
+                      <TableRow key={`edit-${bucket.id}`} style={{ backgroundColor: '#f0f9ff' }}>
+                        <div style={{ gridColumn: '1 / -1', padding: '0.75rem 0' }}>
+                          <form onSubmit={handleEditBucketSubmit}>
+                            <FormRow>
+                              <FormGroup style={{ flex: 1 }}>
+                                <Label>Balance</Label>
+                                <TextInput
+                                  type="number"
+                                  value={editingBucket.balance}
+                                  onChange={(e) => setEditingBucket({ ...editingBucket, balance: e.target.value })}
+                                  step="0.01" min="0"
+                                  hasError={!!editBucketError}
+                                />
+                              </FormGroup>
+                              <FormGroup style={{ flex: 1 }}>
+                                <Label>Expiry Date</Label>
+                                <div className="custom-datepicker-wrapper">
+                                  <DatePicker
+                                    selected={editingBucket.expiresAt}
+                                    onChange={(date) => setEditingBucket({ ...editingBucket, expiresAt: date })}
+                                    dateFormat="dd MMM yyyy"
+                                    placeholderText="Select expiry date"
+                                    dropdownMode="select"
+                                    popperPlacement="top"
+                                    className={`custom-datepicker-input ${editBucketError ? 'error' : ''}`}
+                                  />
+                                </div>
+                              </FormGroup>
+                            </FormRow>
+                            {editBucketError && <ErrorText>{editBucketError}</ErrorText>}
+                            <FormActions style={{ marginTop: '0.75rem' }}>
+                              <Button type="button" size="small"
+                                onClick={() => { setEditingBucket(null); setEditBucketError('') }}
+                                disabled={loading.isUpdateCreditBucketLoading}>
+                                Cancel
+                              </Button>
+                              <Button type="submit" variant="primary" size="small"
+                                disabled={loading.isUpdateCreditBucketLoading}>
+                                {loading.isUpdateCreditBucketLoading ? 'Saving...' : 'Save'}
+                              </Button>
+                            </FormActions>
+                          </form>
+                        </div>
+                      </TableRow>
+                    )}
+                  </>
+                ))}
+            </SubscriptionTable>
+          </>
+        ) : (
+          <EmptyState style={{ marginBottom: '1rem' }}>No expiring credit buckets</EmptyState>
+        )}
 
         {showCreditForm && (
           <CreditForm onSubmit={handleCreditSubmit}>
-            <FormGroup>
-              <Label>Credit Amount</Label>
-              <TextInput
-                type="number"
-                placeholder="Enter amount (positive to add, negative to deduct)"
-                value={creditAmount}
-                onChange={(e) => setCreditAmount(e.target.value)}
-                hasError={!!creditError}
-                autoFocus
-              />
-              {creditError ? (
-                <ErrorText>{creditError}</ErrorText>
-              ) : (
-                <HintText>Use positive number to add credits, negative to deduct</HintText>
+            <FormRow>
+              <FormGroup style={{ flex: 1 }}>
+                <Label>Credit Amount</Label>
+                <TextInput
+                  type="number"
+                  placeholder="Positive to add, negative to deduct"
+                  value={creditAmount}
+                  onChange={(e) => setCreditAmount(e.target.value)}
+                  hasError={!!creditError}
+                  autoFocus
+                />
+              </FormGroup>
+              <FormGroup style={{ flex: 1 }}>
+                <Label>Credit Type</Label>
+                <Dropdown
+                  options={[
+                    { value: 'permanent', label: 'Permanent' },
+                    { value: 'expiring', label: 'Expiring' }
+                  ]}
+                  value={{ value: creditType, label: creditType === 'permanent' ? 'Permanent' : 'Expiring' }}
+                  onChange={(opt) => { setCreditType(opt.value); setCreditExpiryDays('') }}
+                  placeholder="Select type..."
+                />
+              </FormGroup>
+              {creditType === 'expiring' && (
+                <FormGroup style={{ flex: 1 }}>
+                  <Label>Expires After (Days)</Label>
+                  <TextInput
+                    type="number"
+                    placeholder="e.g. 30"
+                    value={creditExpiryDays}
+                    onChange={(e) => setCreditExpiryDays(e.target.value)}
+                    min={1}
+                  />
+                </FormGroup>
               )}
-            </FormGroup>
-            <FormActions style={{ marginTop: '1.75rem' }}>
+            </FormRow>
+            {creditError ? (
+              <ErrorText>{creditError}</ErrorText>
+            ) : (
+              <HintText>
+                {creditType === 'expiring'
+                  ? 'Expiring credits will be deducted before permanent credits'
+                  : 'Permanent credits never expire'}
+              </HintText>
+            )}
+            <FormActions style={{ marginTop: '1rem' }}>
               <Button
                 type="button"
-                onClick={() => {
-                  setShowCreditForm(false)
-                  setCreditAmount('')
-                  setCreditError('')
-                }}
+                onClick={() => { setShowCreditForm(false); setCreditAmount(''); setCreditType('permanent'); setCreditExpiryDays(''); setCreditError('') }}
                 disabled={loading.isAdjustCreditLoading}
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={loading.isAdjustCreditLoading}
-              >
+              <Button type="submit" variant="primary" disabled={loading.isAdjustCreditLoading}>
                 {loading.isAdjustCreditLoading ? 'Adjusting...' : 'Adjust'}
               </Button>
             </FormActions>
