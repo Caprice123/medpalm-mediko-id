@@ -10,6 +10,13 @@ import { FormGroup, FormRow, ButtonGroup } from './PlanModal.styles'
 function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose }) {
   const showCredits = formData.bundle_type === 'credits' || formData.bundle_type === 'hybrid'
   const showDuration = formData.bundle_type === 'subscription' || formData.bundle_type === 'hybrid'
+  const showExpiryDays = showCredits && formData.credit_type === 'expiring'
+
+  // Credit type options for dropdown
+  const creditTypeOptions = [
+    { value: 'permanent', label: 'Permanent (never expires)' },
+    { value: 'expiring', label: 'Expiring (expires after N days)' }
+  ]
 
   // Bundle type options for dropdown
   const bundleTypeOptions = [
@@ -25,6 +32,11 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
     { value: 'manual', label: 'Manual Transfer' },
   ]
 
+  // Get current credit type value as dropdown option
+  const creditTypeValue = creditTypeOptions.find(
+    option => option.value === (formData.credit_type || 'permanent')
+  )
+
   // Get current bundle type value as dropdown option
   const bundleTypeValue = bundleTypeOptions.find(
     option => option.value === formData.bundle_type
@@ -34,6 +46,20 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
   const paymentMethodValue = paymentMethodOptions.find(
     option => option.value === (formData.allowed_payment_method || 'midtrans')
   )
+
+  // Handle credit type dropdown change
+  const handleCreditTypeChange = (selectedOption) => {
+    onChange({
+      target: {
+        name: 'credit_type',
+        value: selectedOption?.value || 'permanent'
+      }
+    })
+    // Clear expiry days when switching to permanent
+    if (selectedOption?.value === 'permanent') {
+      onChange({ target: { name: 'credit_expiry_days', value: '' } })
+    }
+  }
 
   // Handle bundle type dropdown change
   const handleBundleTypeChange = (selectedOption) => {
@@ -161,6 +187,31 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
                 value={formData.duration_days}
                 onChange={onChange}
                 required={showDuration}
+                min={1}
+                allowNegative={false}
+                placeholder="e.g., 30"
+              />
+            )}
+          </FormRow>
+        )}
+
+        {showCredits && (
+          <FormRow>
+            <Dropdown
+              label="Credit Type"
+              options={creditTypeOptions}
+              value={creditTypeValue}
+              onChange={handleCreditTypeChange}
+              placeholder="Select credit type..."
+              required
+            />
+            {showExpiryDays && (
+              <NumberInput
+                label="Expires After (Days)"
+                name="credit_expiry_days"
+                value={formData.credit_expiry_days}
+                onChange={onChange}
+                required
                 min={1}
                 allowNegative={false}
                 placeholder="e.g., 30"

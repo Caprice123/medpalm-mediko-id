@@ -1,4 +1,5 @@
 import prisma from '#prisma/client'
+import { deductUserCredits, getCreditBreakdown } from '#utils/creditUtils'
 
 const CHARS_PER_CHUNK = 20
 const TYPING_SPEED_MS = 1
@@ -71,27 +72,12 @@ export class SkripsiResearchV2Handler {
     if (noResults || !stream) {
       // Deduct credits even when no sources found
       let updatedBalance = null
+      let noResultsBreakdown = null
       if (requiresCredits && messageCost > 0) {
         try {
-          const userCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
-          await prisma.user_credits.update({
-            where: { user_id: userId },
-            data: { balance: { decrement: messageCost } }
-          })
-          const updatedUserCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
-          updatedBalance = updatedUserCredit.balance
-          await prisma.credit_transactions.create({
-            data: {
-              user_id: userId,
-              user_credit_id: userCredit.id,
-              type: 'deduction',
-              amount: -messageCost,
-              balance_before: userCredit.balance,
-              balance_after: updatedBalance,
-              description: `Skripsi Builder research - 1 pesan (no results)`,
-              payment_status: 'completed'
-            }
-          })
+          const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `Skripsi Builder research - 1 pesan (no results)`))
+          updatedBalance = result.newBalance
+          noResultsBreakdown = await getCreditBreakdown(userId)
         } catch (creditError) {
           console.error('[SkripsiResearchV2Handler] Credit deduction error on no-results:', creditError)
         }
@@ -120,7 +106,11 @@ export class SkripsiResearchV2Handler {
         })
 
         const chunkData = { type: 'chunk', data: { content: NO_RESULTS_FALLBACK } }
-        if (updatedBalance !== null) chunkData.data.userQuota = { balance: updatedBalance }
+        if (updatedBalance !== null) chunkData.data.userQuota = {
+          balance: updatedBalance,
+          permanentBalance: noResultsBreakdown?.permanentBalance ?? updatedBalance,
+          expiringBuckets: noResultsBreakdown?.expiringBuckets ?? []
+        }
         onStream(chunkData)
       } catch (_) {}
 
@@ -162,6 +152,7 @@ export class SkripsiResearchV2Handler {
     let streamAborted = false
     let isFirstChunk = true
     let updatedBalance = null
+    let creditBreakdown = null
 
     try {
       for await (const chunk of stream) {
@@ -182,34 +173,19 @@ export class SkripsiResearchV2Handler {
 
           // Deduct credits on first chunk
           if (isFirstChunk && requiresCredits && messageCost > 0) {
-            const userCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
-
-            await prisma.user_credits.update({
-              where: { user_id: userId },
-              data: { balance: { decrement: messageCost } }
-            })
-
-            const updatedUserCredit = await prisma.user_credits.findUnique({ where: { user_id: userId } })
-            updatedBalance = updatedUserCredit.balance
-
-            await prisma.credit_transactions.create({
-              data: {
-                user_id: userId,
-                user_credit_id: userCredit.id,
-                type: 'deduction',
-                amount: -messageCost,
-                balance_before: userCredit.balance,
-                balance_after: updatedBalance,
-                description: `Skripsi Builder research - 1 pesan`,
-                payment_status: 'completed'
-              }
-            })
+            const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `Skripsi Builder research - 1 pesan`))
+            updatedBalance = result.newBalance
+            creditBreakdown = await getCreditBreakdown(userId)
           }
 
           try {
             const chunkData = { type: 'chunk', data: { content: chunkToSend } }
             if (isFirstChunk && updatedBalance !== null) {
-              chunkData.data.userQuota = { balance: updatedBalance }
+              chunkData.data.userQuota = {
+                balance: updatedBalance,
+                permanentBalance: creditBreakdown?.permanentBalance ?? updatedBalance,
+                expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+              }
               isFirstChunk = false
             }
 

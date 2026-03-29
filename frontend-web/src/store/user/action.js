@@ -8,6 +8,7 @@ const {
   setDetail,
   setSubscriptions,
   setSubscriptionPagination,
+  setCreditBuckets,
 } = actions
 
 // ============= Users Actions =============
@@ -34,22 +35,58 @@ export const fetchUsers = () => async (dispatch, getState) => {
   }
 }
 
-export const adjustCredit = (userId, credit, onSuccess) => async (dispatch) => {
+export const adjustCredit = (userId, credit, { creditType = 'permanent', creditExpiryDays = null } = {}, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isAdjustCreditLoading', value: true }))
 
-    const subRoute = "/credits"
-    const route = Endpoints.admin.users + subRoute
+    const route = Endpoints.admin.users + "/credits"
     const requestBody = {
         userId,
         credit,
+        credit_type: creditType,
+        credit_expiry_days: creditExpiryDays
     }
     await putWithToken(route, requestBody)
     if (onSuccess) onSuccess()
-    // Fetch updated user details
     await dispatch(fetchUserDetail(userId))
+    await dispatch(fetchUserCreditBuckets(userId))
   } finally {
     dispatch(setLoading({ key: 'isAdjustCreditLoading', value: false }))
+  }
+}
+
+export const fetchUserCreditBuckets = (userId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isFetchCreditBucketsLoading', value: true }))
+    const route = `${Endpoints.admin.users}/${userId}/credit-buckets`
+    const response = await getWithToken(route)
+    dispatch(setCreditBuckets(response.data.data))
+  } finally {
+    dispatch(setLoading({ key: 'isFetchCreditBucketsLoading', value: false }))
+  }
+}
+
+export const updateCreditBucket = (userId, bucketId, { balance, expiresAt }, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateCreditBucketLoading', value: true }))
+    const route = `${Endpoints.admin.users}/${userId}/credit-buckets/${bucketId}`
+    await putWithToken(route, { balance, expires_at: expiresAt })
+    if (onSuccess) onSuccess()
+    await dispatch(fetchUserCreditBuckets(userId))
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateCreditBucketLoading', value: false }))
+  }
+}
+
+export const deleteCreditBucket = (userId, bucketId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isDeleteCreditBucketLoading', value: true }))
+    const route = `${Endpoints.admin.users}/${userId}/credit-buckets/${bucketId}`
+    await deleteWithToken(route)
+    if (onSuccess) onSuccess()
+    await dispatch(fetchUserCreditBuckets(userId))
+  } finally {
+    dispatch(setLoading({ key: 'isDeleteCreditBucketLoading', value: false }))
   }
 }
 

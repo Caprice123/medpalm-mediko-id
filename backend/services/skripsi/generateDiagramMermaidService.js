@@ -6,6 +6,7 @@ import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { parseMermaid } from '#utils/mermaidParser'
 import dagre from 'dagre'
+import { deductUserCredits, getEffectiveCreditBalance } from '#utils/creditUtils'
 
 /**
  * Apply Dagre layout to nodes and edges
@@ -247,11 +248,9 @@ export class GenerateDiagramMermaidService extends BaseService {
       diagramCost = parseFloat(constantsMap.skripsi_diagram_builder_cost) || 0
 
       if (diagramCost > 0) {
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
+        const balance = await getEffectiveCreditBalance(userId)
 
-        if (!userCredit || userCredit.balance < diagramCost) {
+        if (balance < diagramCost) {
           throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${diagramCost} kredit untuk membuat diagram`)
         }
       }
@@ -384,31 +383,7 @@ export class GenerateDiagramMermaidService extends BaseService {
 
     // Deduct credits if cost > 0
     if (diagramCost > 0) {
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId }
-      })
-
-      const balanceBefore = userCredit ? parseFloat(userCredit.balance.toString()) : 0
-      const balanceAfter = balanceBefore - diagramCost
-
-      await prisma.user_credits.update({
-        where: { user_id: userId },
-        data: {
-          balance: { decrement: diagramCost }
-        }
-      })
-
-      await prisma.credit_transactions.create({
-        data: {
-          user_id: userId,
-          user_credit_id: userCredit.id,
-          amount: -diagramCost,
-          balance_before: balanceBefore,
-          balance_after: balanceAfter,
-          type: 'deduction',
-          description: `Diagram Builder (Mermaid) - ${type}`
-        }
-      })
+      await prisma.$transaction(tx => deductUserCredits(tx, userId, diagramCost, `Diagram Builder (Mermaid) - ${type}`))
     }
 
     // Update tab and set timestamps

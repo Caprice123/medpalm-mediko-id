@@ -11,6 +11,8 @@ export class UpdatePricingPlanService extends BaseService {
       bundle_type,
       duration_days,
       credits_included,
+      credit_type,
+      credit_expiry_days,
       is_active,
       is_popular,
       discount,
@@ -27,6 +29,12 @@ export class UpdatePricingPlanService extends BaseService {
     if (bundle_type !== undefined) updateData.bundle_type = bundle_type
     if (duration_days !== undefined) updateData.duration_days = Number(duration_days)
     if (credits_included !== undefined) updateData.credits_included = Number(credits_included)
+    if (credit_type !== undefined) {
+      updateData.credit_type = credit_type
+      // Reset expiry days when switching to permanent
+      if (credit_type === 'permanent') updateData.credit_expiry_days = null
+    }
+    if (credit_expiry_days !== undefined) updateData.credit_expiry_days = credit_expiry_days ? Number(credit_expiry_days) : null
     if (is_active !== undefined) updateData.is_active = is_active
     if (is_popular !== undefined) updateData.is_popular = is_popular
     if (discount !== undefined) updateData.discount = Number(discount)

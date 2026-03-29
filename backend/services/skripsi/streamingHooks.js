@@ -62,7 +62,7 @@ export class SkripsiGeminiHooks {
   /**
    * On first chunk: Send message IDs to frontend
    */
-  static async onFirstChunk({ messageRecords, newBalance, onStream }) {
+  static async onFirstChunk({ messageRecords, newBalance, creditBreakdown, onStream }) {
     // SEND MESSAGE IDs IMMEDIATELY to frontend
     try {
       onStream({
@@ -70,7 +70,11 @@ export class SkripsiGeminiHooks {
         data: {
           userMessage: messageRecords.userMessage,
           aiMessage: messageRecords.aiMessage,
-          userQuota: newBalance !== null ? { balance: newBalance } : null
+          userQuota: newBalance !== null ? {
+            balance: newBalance,
+            permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+            expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+          } : null
         }
       })
       console.log('✅ Sent message IDs to frontend:', {
@@ -155,7 +159,7 @@ export class SkripsiPerplexityHooks {
   /**
    * On first chunk: Send message IDs to frontend
    */
-  static async onFirstChunk({ messageRecords, newBalance, onStream }) {
+  static async onFirstChunk({ messageRecords, newBalance, creditBreakdown, onStream }) {
     // SEND MESSAGE IDs IMMEDIATELY to frontend
     try {
       onStream({
@@ -163,7 +167,11 @@ export class SkripsiPerplexityHooks {
         data: {
           userMessage: messageRecords.userMessage,
           aiMessage: messageRecords.aiMessage,
-          userQuota: newBalance !== null ? { balance: newBalance } : null
+          userQuota: newBalance !== null ? {
+            balance: newBalance,
+            permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+            expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+          } : null
         }
       })
       console.log('✅ Sent message IDs to frontend:', {

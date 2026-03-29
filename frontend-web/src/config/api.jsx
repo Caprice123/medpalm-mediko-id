@@ -107,14 +107,16 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
     // Response interceptor to handle 401, 403 errors and credit quota updates
     api.interceptors.response.use(
         (response) => {
-            // Check for x-remaining-quota header and update balance
-            // Note: axios normalizes header names to lowercase
+            // Check for quota headers and update balance breakdown
             const remainingQuota = response.headers['x-remaining-quota'];
             if (remainingQuota !== undefined && dispatch) {
                 const balance = parseFloat(remainingQuota);
-                // Update both credit store and pricing store to keep navbar in sync
+                const update = { balance };
+                if (response.headers['x-permanent-quota'] !== undefined) {
+                    update.permanentBalance = parseFloat(response.headers['x-permanent-quota']);
+                }
                 dispatch(creditActions.setBalance(balance));
-                dispatch(pricingActions.updateCreditBalance(balance));
+                dispatch(pricingActions.updateCreditBalance(update));
             }
 
             return response;
@@ -129,9 +131,12 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
             const remainingQuota = error.response?.headers?.['x-remaining-quota'];
             if (remainingQuota !== undefined && dispatch) {
                 const balance = parseFloat(remainingQuota);
-                // Update both credit store and pricing store to keep navbar in sync
+                const update = { balance };
+                if (error.response?.headers?.['x-permanent-quota'] !== undefined) {
+                    update.permanentBalance = parseFloat(error.response.headers['x-permanent-quota']);
+                }
                 dispatch(creditActions.setBalance(balance));
-                dispatch(pricingActions.updateCreditBalance(balance));
+                dispatch(pricingActions.updateCreditBalance(update));
             }
 
             // If we get a 401 error, the token is invalid or expired

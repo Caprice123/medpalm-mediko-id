@@ -139,7 +139,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
       <FilterToggleRow>
         <div>
           <strong>Aktifkan Filter Jurnal</strong>
-          <HintText>Batasi hasil pencarian hanya dari jurnal terpercaya (OpenAlex)</HintText>
+          <HintText>Batasi hasil pencarian hanya dari jurnal terpercaya</HintText>
         </div>
         <ToggleSwitch>
           <input

@@ -83,7 +83,7 @@ export class ChatbotGeminiHooks {
   /**
    * On first chunk: Send message IDs to frontend
    */
-  static async onFirstChunk({ messageRecords, newBalance, onStream }) {
+  static async onFirstChunk({ messageRecords, newBalance, creditBreakdown, onStream }) {
     // SEND MESSAGE IDs to frontend (quota will be sent with first chunk)
     try {
       onStream({
@@ -91,7 +91,11 @@ export class ChatbotGeminiHooks {
         data: {
           userMessage: messageRecords.userMessage,
           aiMessage: messageRecords.aiMessage,
-          userQuota: newBalance !== null ? { balance: newBalance } : null
+          userQuota: newBalance !== null ? {
+            balance: newBalance,
+            permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+            expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+          } : null
         }
       })
       console.log('✅ Sent message IDs to frontend:', {
@@ -222,7 +226,7 @@ export class ChatbotPerplexityHooks {
   /**
    * On first chunk: Send message IDs to frontend
    */
-  static async onFirstChunk({ messageRecords, newBalance, onStream }) {
+  static async onFirstChunk({ messageRecords, newBalance, creditBreakdown, onStream }) {
     // SEND MESSAGE IDs to frontend (quota already sent with deduction)
     try {
       onStream({
@@ -230,7 +234,11 @@ export class ChatbotPerplexityHooks {
         data: {
           userMessage: messageRecords.userMessage,
           aiMessage: messageRecords.aiMessage,
-          userQuota: newBalance !== null ? { balance: newBalance } : null
+          userQuota: newBalance !== null ? {
+            balance: newBalance,
+            permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+            expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+          } : null
         }
       })
       console.log('✅ Sent message IDs to frontend:', {

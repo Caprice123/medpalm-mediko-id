@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
+import { getEffectiveCreditBalance, deductUserCredits } from '#utils/creditUtils'
 
 /**
  * Checks access (subscription and/or credits) based on an access type constant,
@@ -53,31 +54,14 @@ export async function checkAccessAndDeductCredit(tx, {
     const creditCost = parseFloat(constants[creditCostKey]) || 0
 
     if (creditCost > 0) {
-      const userCredit = await tx.user_credits.findUnique({
-        where: { user_id: parseInt(userId) }
-      })
+      const balance = await getEffectiveCreditBalance(parseInt(userId), tx)
 
-      if (!userCredit || userCredit.balance < creditCost) {
+      if (balance < creditCost) {
         throw new ValidationError('Insufficient credits')
       }
 
       if (deductCredit) {
-        await tx.user_credits.update({
-          where: { user_id: parseInt(userId) },
-          data: { balance: { decrement: creditCost } }
-        })
-
-        await tx.credit_transactions.create({
-          data: {
-            user_id: parseInt(userId),
-            user_credit_id: userCredit.id,
-            type: 'deduction',
-            amount: -creditCost,
-            balance_before: userCredit.balance,
-            balance_after: userCredit.balance - creditCost,
-            description
-          }
-        })
+        await deductUserCredits(tx, parseInt(userId), creditCost, description)
       }
     }
   }

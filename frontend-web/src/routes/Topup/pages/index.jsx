@@ -164,7 +164,7 @@ function Topup() {
                     <BalanceLabel>Saldo Kredit</BalanceLabel>
                     <BalanceAmount>
                     <span>💰</span>
-                    {(userStatus?.creditBalance || 0).toLocaleString('id-ID')} Kredit
+                    {parseFloat(userStatus?.creditBalance || 0).toFixed(2)} Kredit
                     </BalanceAmount>
                 </BalanceSection>
 

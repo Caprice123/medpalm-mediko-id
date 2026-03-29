@@ -4,6 +4,7 @@ import { NotFoundError } from '#errors/notFoundError'
 import { ValidationError } from '#errors/validationError'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import { deductUserCredits, getEffectiveCreditBalance } from '#utils/creditUtils'
 
 export class GenerateDiagramService extends BaseService {
   static async call({ tabId, userId, diagramConfig }) {
@@ -85,11 +86,9 @@ export class GenerateDiagramService extends BaseService {
 
       if (diagramCost > 0) {
         // Get user's credit balance
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
+        const balance = await getEffectiveCreditBalance(userId)
 
-        if (!userCredit || userCredit.balance < diagramCost) {
+        if (balance < diagramCost) {
           throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${diagramCost} kredit untuk membuat diagram`)
         }
       }
@@ -208,34 +207,7 @@ export class GenerateDiagramService extends BaseService {
 
       // Deduct credits if cost > 0
       if (diagramCost > 0) {
-        // Get current balance
-        const userCredit = await prisma.user_credits.findUnique({
-          where: { user_id: userId }
-        })
-
-        const balanceBefore = userCredit ? parseFloat(userCredit.balance.toString()) : 0
-        const balanceAfter = balanceBefore - diagramCost
-
-        // Deduct credits
-        await prisma.user_credits.update({
-          where: { user_id: userId },
-          data: {
-            balance: { decrement: diagramCost }
-          }
-        })
-
-        // Log credit transaction
-        await prisma.credit_transactions.create({
-          data: {
-            user_id: userId,
-            user_credit_id: userCredit.id,
-            amount: -diagramCost,
-            balance_before: balanceBefore,
-            balance_after: balanceAfter,
-            type: 'deduction',
-            description: `Diagram Builder - ${type}`
-          }
-        })
+        await prisma.$transaction(tx => deductUserCredits(tx, userId, diagramCost, `Diagram Builder - ${type}`))
       }
 
       // Update tab and set timestamps

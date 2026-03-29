@@ -8,6 +8,7 @@ import { ResearchModeV3 } from '#services/chatbot/ai/researchModeV3'
 import { ResearchV2Handler } from '#services/chatbot/handlers/researchV2Handler'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
+import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
 
 export class SendMessageService extends BaseService {
   static async call({ userId, conversationId, message, mode, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -65,11 +66,9 @@ export class SendMessageService extends BaseService {
       messageCost = parseFloat(constants[`chatbot_${mode}_cost`]) || 5
 
       // Get user's credit balance
-      const userCredit = await prisma.user_credits.findUnique({
-        where: { user_id: userId }
-      })
+      const balance = await getEffectiveCreditBalance(userId)
 
-      if (!userCredit || userCredit.balance < messageCost) {
+      if (balance < messageCost) {
         throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk menggunakan mode ${mode}`)
       }
     }
@@ -246,6 +245,7 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let updatedBalance = null
+    let creditBreakdown = null
 
     try {
       // Process Gemini stream chunks with pacing
@@ -279,32 +279,9 @@ export class SendMessageService extends BaseService {
 
             // Deduct credits on FIRST chunk
             if (isFirstChunk && requiresCredits && creditsUsed > 0 && (sources.length !== 0 && mode !== "normal")) {
-              const userCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-
-              await prisma.user_credits.update({
-                where: { user_id: userId },
-                data: { balance: { decrement: creditsUsed } }
-              })
-
-              const updatedUserCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-              updatedBalance = updatedUserCredit.balance
-
-              await prisma.credit_transactions.create({
-                data: {
-                  user_id: userId,
-                  user_credit_id: userCredit.id,
-                  type: 'deduction',
-                  amount: -creditsUsed,
-                  balance_before: userCredit.balance,
-                  balance_after: updatedBalance,
-                  description: `Chatbot ${mode} mode - 1 pesan`,
-                  payment_status: 'completed'
-                }
-              })
+              const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, creditsUsed, `Chatbot ${mode} mode - 1 pesan`))
+              updatedBalance = result.newBalance
+              creditBreakdown = await getCreditBreakdown(userId)
             }
 
             // Try to send chunk to client
@@ -319,7 +296,11 @@ export class SendMessageService extends BaseService {
 
                 // Include userQuota in first chunk
                 if (isFirstChunk && updatedBalance !== null) {
-                  chunkData.data.userQuota = { balance: updatedBalance }
+                  chunkData.data.userQuota = {
+                    balance: updatedBalance,
+                    permanentBalance: creditBreakdown?.permanentBalance ?? updatedBalance,
+                    expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                  }
                   isFirstChunk = false // Mark first chunk as sent
                 }
 
@@ -549,6 +530,7 @@ export class SendMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let updatedBalance = null
+    let creditBreakdown = null
     let firstContentChunkReceived = false
     const NO_CITATIONS_FALLBACK = 'Maaf, tidak ada informasi yang tersedia karena tidak ditemukan referensi dari trusted domain filter yang dikonfigurasi dalam pengaturan.'
 
@@ -628,32 +610,9 @@ export class SendMessageService extends BaseService {
 
             // Deduct credits on FIRST chunk
             if (isFirstChunk && requiresCredits && creditsUsed > 0) {
-              const userCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-
-              await prisma.user_credits.update({
-                where: { user_id: userId },
-                data: { balance: { decrement: creditsUsed } }
-              })
-
-              const updatedUserCredit = await prisma.user_credits.findUnique({
-                where: { user_id: userId }
-              })
-              updatedBalance = updatedUserCredit.balance
-
-              await prisma.credit_transactions.create({
-                data: {
-                  user_id: userId,
-                  user_credit_id: userCredit.id,
-                  type: 'deduction',
-                  amount: -creditsUsed,
-                  balance_before: userCredit.balance,
-                  balance_after: updatedBalance,
-                  description: `Chatbot ${mode} mode - 1 pesan`,
-                  payment_status: 'completed'
-                }
-              })
+              const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, creditsUsed, `Chatbot ${mode} mode - 1 pesan`))
+              updatedBalance = result.newBalance
+              creditBreakdown = await getCreditBreakdown(userId)
             }
 
             // Try to send chunk to client
@@ -664,7 +623,11 @@ export class SendMessageService extends BaseService {
               }
 
               if (isFirstChunk && updatedBalance !== null) {
-                chunkData.data.userQuota = { balance: updatedBalance }
+                chunkData.data.userQuota = {
+                  balance: updatedBalance,
+                  permanentBalance: creditBreakdown?.permanentBalance ?? updatedBalance,
+                  expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                }
                 isFirstChunk = false
               }
 

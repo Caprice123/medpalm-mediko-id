@@ -93,7 +93,7 @@ function Dashboard() {
             {activeFeatures.map((feature) => {
               // Check user access
               const hasActiveSubscription = userStatus?.hasActiveSubscription || false
-              const userCredits = userStatus?.creditBalance || 0
+              const userCredits = parseFloat(userStatus?.creditBalance || 0)
 
               // Determine requirements
               const needsSubscription = feature.accessType === 'subscription' ||
@@ -152,8 +152,8 @@ function Dashboard() {
                               <span>{creditsMet ? '✓' : '✗'}</span>
                               <span>
                                 {creditsMet
-                                  ? `${feature.cost} Credits (Tersedia: ${userCredits})`
-                                  : `${feature.cost} Credits (Anda: ${userCredits})`}
+                                  ? `${feature.cost} Credits (Tersedia: ${userCredits.toFixed(2)})`
+                                  : `${feature.cost} Credits (Anda: ${userCredits.toFixed(2)})`}
                               </span>
                             </RequirementItem>
                           )}

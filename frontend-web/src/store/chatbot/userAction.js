@@ -670,7 +670,7 @@ const sendMessageStreaming = async (conversationId, content, mode, dispatch, get
           if (data.type === 'chunk') {
             // Check if first chunk contains userQuota and update credit balance
             if (data.data.userQuota && data.data.userQuota.balance !== undefined) {
-              dispatch(pricingActions.updateCreditBalance(data.data.userQuota.balance))
+              dispatch(pricingActions.updateCreditBalance(data.data.userQuota))
               console.log('💎 Credit balance updated:', data.data.userQuota.balance)
             }
             addChunkToContent(data.data.content)

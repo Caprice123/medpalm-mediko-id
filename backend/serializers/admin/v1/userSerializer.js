@@ -13,6 +13,14 @@ export class UserSerializer {
     }
 
     static serializeOne(user) {
+        const buckets = user.user_credits || []
+        const now = new Date()
+        const totalBalance = buckets.reduce((sum, b) => {
+            if (b.credit_type === 'permanent') return sum + parseFloat(b.balance)
+            if (b.credit_type === 'expiring' && b.expires_at && new Date(b.expires_at) > now) return sum + parseFloat(b.balance)
+            return sum
+        }, 0)
+
         return {
             id: user.id,
             name: user.name,
@@ -21,7 +29,7 @@ export class UserSerializer {
             isActive: user.is_active,
             permissions: user.permissions || null,
             userSubscriptions: UserSubscriptionSerializer.serialize(user.user_subscription || []),
-            userCredits: UserCreditSerializer.serialize(user.user_credit),
+            userCredits: { balance: totalBalance },
         }
     }
 }

@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { ValidationError } from '#errors/validationError'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
+import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
 
 export class SendPhysicalExamMessageService extends BaseService {
   static async call({
@@ -89,11 +90,9 @@ export class SendPhysicalExamMessageService extends BaseService {
         messageCost = parseFloat(constantsMap.osce_practice_credit_cost) || 0
 
         if (messageCost > 0) {
-          const userCredit = await prisma.user_credits.findUnique({
-            where: { user_id: userId },
-          })
+          const balance = await getEffectiveCreditBalance(userId)
 
-          if (!userCredit || userCredit.balance < messageCost) {
+          if (balance < messageCost) {
             throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk mengirim pesan`)
           }
         }
@@ -189,6 +188,7 @@ export class SendPhysicalExamMessageService extends BaseService {
     // Track if first chunk has been sent (for credit deduction)
     let isFirstChunk = true
     let newBalance = null
+    let creditBreakdown = null
 
     try {
       // Determine stream type (Gemini vs Perplexity/OpenAI)
@@ -223,32 +223,9 @@ export class SendPhysicalExamMessageService extends BaseService {
 
               // Deduct credits on FIRST chunk
               if (isFirstChunk && requiresCredits && messageCost > 0) {
-                const userCredit = await prisma.user_credits.findUnique({
-                  where: { user_id: userId }
-                })
-
-                await prisma.user_credits.update({
-                  where: { user_id: userId },
-                  data: { balance: { decrement: messageCost } }
-                })
-
-                const updatedUserCredit = await prisma.user_credits.findUnique({
-                  where: { user_id: userId }
-                })
-                newBalance = updatedUserCredit.balance
-
-                await prisma.credit_transactions.create({
-                  data: {
-                    user_id: userId,
-                    user_credit_id: userCredit.id,
-                    type: 'deduction',
-                    amount: -messageCost,
-                    balance_before: userCredit.balance,
-                    balance_after: newBalance,
-                    description: `OSCE Practice - Physical Exam in session`,
-                    payment_status: 'completed'
-                  }
-                })
+                const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `OSCE Practice - Physical Exam in session`))
+                newBalance = result.newBalance
+                creditBreakdown = await getCreditBreakdown(userId)
               }
 
               try {
@@ -262,7 +239,11 @@ export class SendPhysicalExamMessageService extends BaseService {
                 // Include userQuota in first chunk
                 if (isFirstChunk) {
                   if (newBalance !== null) {
-                    chunkData.data.userQuota = { balance: newBalance }
+                    chunkData.data.userQuota = {
+                      balance: newBalance,
+                      permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+                      expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                    }
                   }
                   isFirstChunk = false // Always mark first chunk as sent
                 }
@@ -320,32 +301,9 @@ export class SendPhysicalExamMessageService extends BaseService {
 
               // Deduct credits on FIRST chunk
               if (isFirstChunk && requiresCredits && messageCost > 0) {
-                const userCredit = await prisma.user_credits.findUnique({
-                  where: { user_id: userId }
-                })
-
-                await prisma.user_credits.update({
-                  where: { user_id: userId },
-                  data: { balance: { decrement: messageCost } }
-                })
-
-                const updatedUserCredit = await prisma.user_credits.findUnique({
-                  where: { user_id: userId }
-                })
-                newBalance = updatedUserCredit.balance
-
-                await prisma.credit_transactions.create({
-                  data: {
-                    user_id: userId,
-                    user_credit_id: userCredit.id,
-                    type: 'deduction',
-                    amount: -messageCost,
-                    balance_before: userCredit.balance,
-                    balance_after: newBalance,
-                    description: `OSCE Practice - Physical Exam in session`,
-                    payment_status: 'completed'
-                  }
-                })
+                const result = await prisma.$transaction(tx => deductUserCredits(tx, userId, messageCost, `OSCE Practice - Physical Exam in session`))
+                newBalance = result.newBalance
+                creditBreakdown = await getCreditBreakdown(userId)
               }
 
               try {
@@ -359,7 +317,11 @@ export class SendPhysicalExamMessageService extends BaseService {
                 // Include userQuota in first chunk
                 if (isFirstChunk) {
                   if (newBalance !== null) {
-                    chunkData.data.userQuota = { balance: newBalance }
+                    chunkData.data.userQuota = {
+                      balance: newBalance,
+                      permanentBalance: creditBreakdown?.permanentBalance ?? newBalance,
+                      expiringBuckets: creditBreakdown?.expiringBuckets ?? []
+                    }
                   }
                   isFirstChunk = false // Always mark first chunk as sent
                 }

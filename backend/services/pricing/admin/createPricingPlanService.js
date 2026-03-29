@@ -11,6 +11,8 @@ export class CreatePricingPlanService extends BaseService {
       bundle_type,
       duration_days,
       credits_included,
+      credit_type,
+      credit_expiry_days,
       is_popular,
       discount,
       order,
@@ -19,6 +21,8 @@ export class CreatePricingPlanService extends BaseService {
 
     // Convert allowed_payment_method array to comma-separated string
     let paymentMethods = allowed_payment_method || 'midtrans'
+
+    const resolvedCreditType = credit_type || 'permanent'
 
     const plan = await prisma.pricing_plans.create({
       data: {
@@ -29,6 +33,8 @@ export class CreatePricingPlanService extends BaseService {
         bundle_type: bundle_type || 'credits',
         duration_days: bundle_type === 'subscription' || bundle_type === 'hybrid' ? Number(duration_days) : null,
         credits_included: Number(credits_included) || 0,
+        credit_type: resolvedCreditType,
+        credit_expiry_days: resolvedCreditType === 'expiring' && credit_expiry_days ? Number(credit_expiry_days) : null,
         is_active: true,
         is_popular: is_popular || false,
         discount: Number(discount) || 0,

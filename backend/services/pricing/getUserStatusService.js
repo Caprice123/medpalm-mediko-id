@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import moment from 'moment-timezone'
+import { getEffectiveCreditBalance } from '#utils/creditUtils'
 
 /**
  * Get comprehensive user status including subscription and credits
@@ -21,12 +22,31 @@ export class GetUserStatusService extends BaseService {
       }
     })
 
-    // Get credit balance
-    const userCredit = await prisma.user_credits.findUnique({
-      where: { user_id: userId }
+    const now = new Date()
+    const allBuckets = await prisma.user_credits.findMany({
+      where: { user_id: userId },
+      orderBy: { expires_at: 'asc' }
     })
 
-    const creditBalance = userCredit ? userCredit.balance : 0
+    const permanentBalance = parseFloat(
+      allBuckets
+        .filter(b => b.credit_type === 'permanent')
+        .reduce((sum, b) => sum + parseFloat(b.balance), 0)
+        .toFixed(2)
+    )
+
+    const expiringBuckets = allBuckets
+      .filter(b => b.credit_type === 'expiring' && b.balance > 0 && b.expires_at && new Date(b.expires_at) > now)
+      .map(b => ({
+        id: b.id,
+        balance: parseFloat(parseFloat(b.balance).toFixed(2)),
+        expiresAt: b.expires_at,
+        daysRemaining: Math.ceil((new Date(b.expires_at) - now) / (1000 * 60 * 60 * 24))
+      }))
+
+    const creditBalance = parseFloat(
+      (permanentBalance + expiringBuckets.reduce((sum, b) => sum + b.balance, 0)).toFixed(2)
+    )
 
     return {
       hasActiveSubscription: !!activeSubscription,
@@ -37,7 +57,9 @@ export class GetUserStatusService extends BaseService {
         status: activeSubscription.status,
         daysRemaining: Math.ceil((new Date(activeSubscription.end_date) - new Date()) / (1000 * 60 * 60 * 24))
       } : null,
-      creditBalance: parseFloat(creditBalance) || 0,
+      creditBalance,
+      permanentBalance,
+      expiringBuckets,
       userId: userId
     }
   }
@@ -73,10 +95,6 @@ export class HasActiveSubscriptionService extends BaseService {
  */
 export class GetUserCreditBalanceService extends BaseService {
   static async call(userId) {
-    const userCredit = await prisma.user_credits.findUnique({
-      where: { user_id: userId }
-    })
-
-    return userCredit ? userCredit.balance : 0
+    return getEffectiveCreditBalance(userId)
   }
 }
