@@ -2,8 +2,8 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { ValidationError } from '#errors/validationError'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
-import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
+import { deductUserCredits, getCreditBreakdown } from '#utils/creditUtils'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class SendOsceMessageService extends BaseService {
   static async call({
@@ -73,29 +73,22 @@ export class SendOsceMessageService extends BaseService {
         throw new ValidationError('Session not found or access denied')
       }
 
-      // Check user access based on access type
-      const accessType = constantsMap.osce_practice_access_type || 'subscription'
-      const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
+      // Check access (subscription and/or credits) without deducting
+      await checkAccessAndDeductCredit(prisma, {
+        userId,
+        userRole: 'user',
+        accessTypeKey: 'osce_practice_access_type',
+        creditCostKey: 'osce_practice_credit_cost',
+        deductCredit: false,
+        description: ''
+      })
+
+      // Still need messageCost for deduction on first chunk
+      const accessType = constantsMap.osce_practice_access_type || 'free'
       const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
-
-      if (requiresSubscription) {
-        const hasSubscription = await HasActiveSubscriptionService.call(userId)
-        if (!hasSubscription) {
-          throw new ValidationError('Anda memerlukan langganan aktif untuk menggunakan fitur OSCE Practice')
-        }
-      }
-
       let messageCost = 0
       if (requiresCredits) {
         messageCost = parseFloat(constantsMap.osce_practice_credit_cost) || 0
-
-        if (messageCost > 0) {
-          const balance = await getEffectiveCreditBalance(userId)
-
-          if (balance < messageCost) {
-            throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk mengirim pesan`)
-          }
-        }
       }
 
       // Build system prompt with context, knowledge base, and scenario

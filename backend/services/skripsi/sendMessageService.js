@@ -3,10 +3,10 @@ import { BaseService } from '#services/baseService'
 import { NotFoundError } from '#errors/notFoundError'
 import { ValidationError } from '#errors/validationError'
 import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
-import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { SkripsiResearchModeV3 } from '#services/skripsi/ai/skripsiResearchModeV3'
 import { SkripsiResearchV2Handler } from '#services/skripsi/handlers/skripsiResearchV2Handler'
-import { deductUserCredits, getEffectiveCreditBalance, getCreditBreakdown } from '#utils/creditUtils'
+import { deductUserCredits, getCreditBreakdown } from '#utils/creditUtils'
+import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
 
 export class SendMessageService extends BaseService {
   static async call({ tabId, userId, message, modeType = 'validated', onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
@@ -52,40 +52,22 @@ export class SendMessageService extends BaseService {
       throw new ValidationError(`Mode ${mode} sedang tidak aktif`)
     }
 
-    // Check user access based on access type
-    const accessType = constantsMap.skripsi_access_type || 'subscription'
-    const requiresSubscription = accessType === 'subscription' || accessType === 'subscription_and_credits'
+    // Check access (subscription and/or credits) without deducting
+    await checkAccessAndDeductCredit(prisma, {
+      userId,
+      userRole: 'user',
+      accessTypeKey: 'skripsi_access_type',
+      creditCostKey: `skripsi_${mode}_cost`,
+      deductCredit: false,
+      description: ''
+    })
+
+    // Still need messageCost for deduction on first chunk
+    const accessType = constantsMap.skripsi_access_type || 'free'
     const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
-    console.log('[Skripsi Credit] accessType:', accessType, '| requiresCredits:', requiresCredits, '| requiresSubscription:', requiresSubscription)
-
-    // For subscription_and_credits: subscribers get free access, non-subscribers need credits
     let messageCost = 0
-    let hasSubscription = false
-
-    if (requiresSubscription) {
-      hasSubscription = await HasActiveSubscriptionService.call(userId)
-
-      // If subscription_and_credits mode and user has subscription, they get free access
-      if (accessType === 'subscription_and_credits' && hasSubscription) {
-        // Free for subscribers, skip credit check
-      } else if (!hasSubscription && accessType === 'subscription') {
-        // Subscription only mode and no subscription
-        throw new ValidationError('Anda memerlukan langganan aktif untuk menggunakan fitur Skripsi Builder')
-      }
-    }
-
-    // Check credits if required (and not bypassed by subscription)
     if (requiresCredits) {
       messageCost = parseFloat(constantsMap[`skripsi_${mode}_cost`]) || 0
-
-      if (messageCost > 0) {
-        // Get user's credit balance
-        const balance = await getEffectiveCreditBalance(userId)
-
-        if (balance < messageCost) {
-          throw new ValidationError(`Kredit tidak cukup. Anda memerlukan ${messageCost} kredit untuk menggunakan ${mode}`)
-        }
-      }
     }
 
     // Get AI response with streaming
