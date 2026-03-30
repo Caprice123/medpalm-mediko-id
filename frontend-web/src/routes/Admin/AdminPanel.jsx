@@ -10,6 +10,7 @@ import Tags from './Tags'
 import Users from './Users'
 import TransactionList from './Transactions/components/Table'
 import Transactions from './Transactions'
+import GlobalSettings from './GlobalSettings'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -117,7 +118,7 @@ const hasTabPermission = (user, tab) => {
   // Default permissions based on role
   if (user.role === 'admin') {
     // Admins by default have access to all tabs except 'users'
-    return ['features', 'tags', 'pricingPlans', 'transactions'].includes(tab)
+    return ['features', 'tags', 'pricingPlans', 'transactions', 'globalSettings'].includes(tab)
   }
 
   // Other roles don't have admin panel access
@@ -131,7 +132,8 @@ const getAvailableTabs = (user) => {
     { key: 'tags', label: 'Kelola Tag' },
     { key: 'pricingPlans', label: 'Paket Harga' },
     { key: 'transactions', label: 'Transaksi' },
-    { key: 'users', label: 'Kelola User' }
+    { key: 'users', label: 'Kelola User' },
+    { key: 'globalSettings', label: 'Pengaturan Global' }
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.key))
@@ -198,6 +200,8 @@ function AdminPanel() {
           {activeTab === 'transactions' && <Transactions />}
 
           {activeTab === 'users' && <Users />}
+
+          {activeTab === 'globalSettings' && <GlobalSettings />}
         </ContentArea>
       </MainContent>
     </AdminContainer>

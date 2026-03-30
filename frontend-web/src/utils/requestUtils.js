@@ -1,4 +1,5 @@
 import api from "@config/api";
+import axios from "axios";
 import { getToken } from "./authToken";
 
 function makeRequestWithToken(
@@ -57,10 +58,10 @@ export function deleteWithToken(url, additionalHeaders = {}) {
 
 // Public request methods (no authentication required)
 export function getPublic(url, params = null) {
-    return api({
+    return axios({
         method: "GET",
         params: params,
-        url: url,
+        url: import.meta.env.VITE_API_BASE_URL + url,
         headers: { "Content-Type": "application/json" }
     })
 }

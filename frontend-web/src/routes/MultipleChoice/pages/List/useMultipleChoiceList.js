@@ -41,38 +41,11 @@ export const useMultipleChoiceList = () => {
 
   // Get tag groups
   const universities = tags.find((tag) => tag.name === "university")?.tags || []
-  const universityGroupId = tags.find((tag) => tag.name === "university")?.id
-
-  const semesterGroupId = tags.find((tag) => tag.name === "semester")?.id
   const semesters = tags.find((tag) => tag.name === "semester")?.tags || []
-
-  // Filter topics based on selected filters and only show published topics
-  const filteredTopics = topics.filter(topic => {
-    // Only show published topics
-    if (topic.status !== 'published') return false
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
-      const titleMatch = topic.title?.toLowerCase().includes(searchLower)
-      const descMatch = topic.description?.toLowerCase().includes(searchLower)
-      if (!titleMatch && !descMatch) return false
-    }
-
-    // University filter - check by ID
-    const universityMatch = !filters.university ||
-      topic.tags?.some(tag => tag.tagGroupId === universityGroupId && tag.id === filters.university)
-
-    // Semester filter - check by ID
-    const semesterMatch = !filters.semester ||
-      topic.tags?.some(tag => tag.tagGroupId === semesterGroupId && tag.id === filters.semester)
-
-    return universityMatch && semesterMatch
-  })
 
   return {
     // State
-    filteredTopics,
+    filteredTopics: topics,
     loading,
     filters,
     universities,

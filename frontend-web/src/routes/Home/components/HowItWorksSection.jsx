@@ -8,7 +8,7 @@ import {
   SectionSubtitle,
 } from '../Home.styles'
 
-export default function HowItWorksSection() {
+export default function HowItWorksSection({ youtubeUrl }) {
   return (
     <Parallax speed={2}>
       <StyledHowItWorksSection id="how-it-works">
@@ -37,7 +37,7 @@ export default function HowItWorksSection() {
             >
               <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
                 <iframe
-                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                  src={youtubeUrl || 'https://www.youtube.com/embed/YOUR_VIDEO_ID'}
                   title="MedPal Demo"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

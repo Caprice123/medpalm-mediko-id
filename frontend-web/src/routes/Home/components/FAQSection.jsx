@@ -43,8 +43,9 @@ const FAQS = [
   },
 ]
 
-export default function FAQSection() {
+export default function FAQSection({ faqItems }) {
   const [openSet, setOpenSet] = useState(new Set())
+  const items = faqItems || FAQS
 
   const toggle = (index) => {
     setOpenSet(prev => {
@@ -67,7 +68,7 @@ export default function FAQSection() {
           </SectionHeader>
 
           <FAQList>
-            {FAQS.map((faq, index) => {
+            {items.map((faq, index) => {
               const isOpen = openSet.has(index)
               return (
                 <div key={index} data-aos="fade-up" data-aos-delay={index * 50}>

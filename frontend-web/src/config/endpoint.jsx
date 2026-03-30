@@ -46,6 +46,7 @@ export default {
         skripsiJournals: "/api/v1/skripsi/journals",
         oscePractice: "/api/v1/oscePractice",
         tags: "/api/v1/tags",
+        constants: "/api/v1/constants",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
         oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,

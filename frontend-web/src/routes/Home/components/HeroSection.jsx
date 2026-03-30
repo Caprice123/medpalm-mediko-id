@@ -26,7 +26,7 @@ import {
   HeroSlideIndicator,
 } from '../Home.styles'
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
     icon: '📝',
     label: 'Bank Soal',
@@ -59,33 +59,45 @@ const SLIDES = [
   },
 ]
 
+const DEFAULT_BADGE = '✨ Platform Medis Berbasis AI'
+const DEFAULT_TITLE = 'Better Learning.\nBetter Doctors.\nBetter Lives.'
+const DEFAULT_SUBTITLE = '1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Mahasiswa Kedokteran, Simulasi AI OSCE dengan Pasien Virtual, 25.000+ Kuis & Flashcards, 255+ Kuis Interpretasi Klinis, dan 400+ Artikel Kedokteran'
+
 const SLIDE_DURATION = 3500
 
-export default function HeroSection({ scrollToSection }) {
+export default function HeroSection({ scrollToSection, badge, title, subtitle, slides }) {
   const [current, setCurrent] = useState(0)
+
+  const activeSlides = slides || DEFAULT_SLIDES
+  const activeBadge = badge || DEFAULT_BADGE
+  const activeSubtitle = subtitle || DEFAULT_SUBTITLE
+
+  // Render title: split by newline for <br /> tags
+  const titleLines = (title || DEFAULT_TITLE).split('\n')
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCurrent(c => (c + 1) % SLIDES.length)
+      setCurrent(c => (c + 1) % activeSlides.length)
     }, SLIDE_DURATION)
     return () => clearTimeout(timer)
-  }, [current])
+  }, [current, activeSlides.length])
 
   return (
     <StyledHeroSection>
       <Parallax speed={-5}>
         <HeroContent>
           <HeroText>
-            <Badge data-aos="fade-up">✨ Platform Medis Berbasis AI</Badge>
+            <Badge data-aos="fade-up">{activeBadge}</Badge>
             <HeroTitle data-aos="fade-up" data-aos-delay="100">
-              Better Learning.
-              <br />
-              Better Doctors.
-              <br />
-              Better Lives.
+              {titleLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < titleLines.length - 1 && <br />}
+                </span>
+              ))}
             </HeroTitle>
             <HeroSubtitle data-aos="fade-up" data-aos-delay="200">
-              1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Mahasiswa Kedokteran, Simulasi AI OSCE dengan Pasien Virtual, 25.000+ Kuis & Flashcards, 255+ Kuis Interpretasi Klinis, dan 400+ Artikel Kedokteran
+              {activeSubtitle}
             </HeroSubtitle>
             <HeroButtons data-aos="fade-up" data-aos-delay="300">
               <LinkButton to="/sign-in" variant="primary" size="large">
@@ -113,7 +125,7 @@ export default function HeroSection({ scrollToSection }) {
               </HeroBrowserBar>
 
               <HeroBrowserContent>
-                {SLIDES.map((slide, i) => (
+                {activeSlides.map((slide, i) => (
                   <HeroFeatureSlide key={i} $active={i === current}>
                     <HeroSlideIcon>{slide.icon}</HeroSlideIcon>
                     <HeroSlideLabel>{slide.label}</HeroSlideLabel>
@@ -124,7 +136,7 @@ export default function HeroSection({ scrollToSection }) {
               </HeroBrowserContent>
 
               <HeroSlideIndicators>
-                {SLIDES.map((_, i) => (
+                {activeSlides.map((_, i) => (
                   <HeroSlideIndicator
                     key={i}
                     $active={i === current}
