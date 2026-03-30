@@ -397,6 +397,7 @@ model users {
 model user_subscriptions {
   id         Int      @id @default(autoincrement())
   user_id    Int
+  pricing_plan_id Int?
   start_date DateTime
   end_date   DateTime
   status     String   @default("active") // 'active', 'not_active', 'expired'
@@ -404,8 +405,10 @@ model user_subscriptions {
   updated_at DateTime @default(now())
 
   user users @relation(fields: [user_id], references: [id])
+  pricing_plan pricing_plans? @relation(fields: [pricing_plan_id], references: [id])
 
   @@index([user_id, start_date, end_date])
+  @@index([pricing_plan_id])
   @@index([status])
 }
 
@@ -573,6 +576,7 @@ model pricing_plans {
   updated_at             DateTime @default(now())
 
   user_purchases user_purchases[]
+  user_subscriptions user_subscriptions[]
 
   @@index([is_active])
   @@index([bundle_type])

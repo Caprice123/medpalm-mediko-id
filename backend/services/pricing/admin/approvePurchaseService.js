@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { addUserCredits } from '#utils/creditUtils'
 
 export class ApprovePurchaseService extends BaseService {
   static async call(purchaseId, status) {
@@ -37,40 +38,22 @@ export class ApprovePurchaseService extends BaseService {
 
         // Handle credits
         if (purchase.pricing_plan.credits_included > 0) {
-          let userCredit = await tx.user_credits.findUnique({
-            where: { user_id: purchase.user_id }
-          })
+          const plan = purchase.pricing_plan
+          const creditType = plan.credit_type || 'permanent'
+          let expiresAt = null
 
-          if (!userCredit) {
-            userCredit = await tx.user_credits.create({
-              data: {
-                user_id: purchase.user_id,
-                balance: 0
-              }
-            })
+          if (creditType === 'expiring' && plan.credit_expiry_days) {
+            expiresAt = new Date()
+            expiresAt.setDate(expiresAt.getDate() + plan.credit_expiry_days)
           }
 
-          const newBalance = userCredit.balance + purchase.pricing_plan.credits_included
-
-          await tx.user_credits.update({
-            where: { id: userCredit.id },
-            data: { balance: newBalance }
-          })
-
-          // Create credit transaction record
-          await tx.credit_transactions.create({
-            data: {
-              user_id: purchase.user_id,
-              user_credit_id: userCredit.id,
-              type: 'purchase',
-              amount: purchase.pricing_plan.credits_included,
-              balance_before: userCredit.balance,
-              balance_after: newBalance,
-              description: `Purchase: ${purchase.pricing_plan.name}`,
-              payment_status: 'completed',
-              payment_method: purchase.payment_method,
-              payment_reference: purchase.payment_reference
-            }
+          await addUserCredits(tx, purchase.user_id, plan.credits_included, {
+            creditType,
+            expiresAt,
+            description: `Purchase: ${plan.name}`,
+            transactionType: 'purchase',
+            paymentMethod: purchase.payment_method,
+            paymentReference: purchase.payment_reference
           })
         }
 
