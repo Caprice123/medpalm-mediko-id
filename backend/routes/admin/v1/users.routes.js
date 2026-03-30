@@ -17,6 +17,9 @@ router.use(requireTabPermission('users'))
 router.get('/', asyncHandler(usersController.index.bind(usersController)))
 router.get('/:id', asyncHandler(usersController.show.bind(usersController)))
 router.get('/:id/subscriptions', asyncHandler(usersController.getSubscriptions.bind(usersController)))
+router.get('/:id/credit-buckets', asyncHandler(usersController.getCreditBuckets.bind(usersController)))
+router.put('/:id/credit-buckets/:bucketId', asyncHandler(usersController.updateCreditBucket.bind(usersController)))
+router.delete('/:id/credit-buckets/:bucketId', asyncHandler(usersController.deleteCreditBucket.bind(usersController)))
 router.put('/credits', asyncHandler(usersController.addCredit.bind(usersController)))
 
 // Superadmin only routes
