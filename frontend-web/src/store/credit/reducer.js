@@ -22,8 +22,12 @@ const initialState = {
     isLastPage: true
   },
   filters: {
-    type: '',
-    status: ''
+    code: '',
+    id: '',
+    email: '',
+    status: '',
+    startDate: '',
+    endDate: '',
   },
   stats: {
     total: 0,
@@ -67,7 +71,7 @@ const { reducer, actions } = createSlice({
       state.error = null
     },
     clearFilters: (state) => {
-      state.filters = { type: '', status: '' }
+      state.filters = { code: '', id: '', email: '', status: '', startDate: '', endDate: '' }
       state.pagination.page = 1
     },
     setPage: (state, { payload }) => {

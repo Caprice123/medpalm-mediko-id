@@ -15,6 +15,7 @@ router.use(requireTabPermission('transactions'))
 
 // Admin routes
 router.get('/', asyncHandler(creditsController.getAllTransactions.bind(creditsController)))
+router.get('/export', asyncHandler(creditsController.exportTransactions.bind(creditsController)))
 router.post('/:transactionId/confirm', asyncHandler(creditsController.confirmPayment.bind(creditsController)))
 router.post('/bonus', asyncHandler(creditsController.addBonus.bind(creditsController)))
 

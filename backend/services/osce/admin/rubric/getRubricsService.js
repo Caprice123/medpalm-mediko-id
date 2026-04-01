@@ -17,7 +17,7 @@ export class GetRubricsService extends BaseService {
     const rubrics = await prisma.osce_rubrics.findMany({
         where,
         orderBy: {
-          created_at: 'desc',
+          id: 'desc',
         },
       })
 

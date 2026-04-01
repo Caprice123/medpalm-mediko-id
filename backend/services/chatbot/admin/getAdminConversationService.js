@@ -20,7 +20,7 @@ export class GetAdminConversationService extends BaseService {
             },
             chatbot_message_feedbacks: true
           },
-          orderBy: { created_at: 'asc' }
+          orderBy: { id: 'asc' }
         },
       }
     })

@@ -20,7 +20,7 @@ export const hasTabPermission = (tab) => {
 
   // Default permissions based on role
   if (user.role === 'admin') {
-    return ['features', 'tags', 'pricingPlans', 'transactions'].includes(tab)
+    return ['features', 'tags', 'pricingPlans', 'transactions', 'globalSettings'].includes(tab)
   }
 
   return false

@@ -170,7 +170,8 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
               )}
 
               {transaction.paymentMethod === 'manual' &&
-               transaction.paymentStatus === 'pending' && (
+               transaction.paymentStatus === 'pending' &&
+               transaction.amountPaid > 0 && (
                 <DetailSection>
                   <SectionTitle>Rekening Tujuan</SectionTitle>
                   <BankInfoCard>
@@ -194,7 +195,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                transaction.paymentStatus === 'pending' &&
                (!transaction.paymentEvidence || transaction.paymentEvidence.length === 0) && (
                 <DetailSection>
-                  <SectionTitle>Upload Bukti Pembayaran</SectionTitle>
+                  <SectionTitle>Unggah Bukti</SectionTitle>
                   <EvidenceSection>
                     <FileUpload
                       file={uploadedFile}
@@ -204,7 +205,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                       acceptedTypesLabel="Image atau PDF"
                       maxSizeMB={10}
                       isUploading={isUploading}
-                      uploadText="Klik untuk upload bukti pembayaran"
+                      uploadText="Klik untuk mengunggah bukti"
                       actions={
                         uploadedBlob && (
                           <Button

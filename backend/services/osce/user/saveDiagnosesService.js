@@ -75,7 +75,7 @@ export class SaveDiagnosesService extends BaseService {
         },
         orderBy: [
           { type: 'desc' }, // 'utama' comes before 'pembanding'
-          { created_at: 'asc' },
+          { id: 'asc' },
         ],
       })
 

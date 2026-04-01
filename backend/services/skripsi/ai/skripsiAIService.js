@@ -69,7 +69,7 @@ export class SkripsiAIService extends BaseService {
       where: { id: tabId },
       include: {
         messages: {
-          orderBy: { created_at: 'asc' },
+          orderBy: { id: 'asc' },
           take: 50 // Fetch up to 50, will be trimmed based on context_messages setting
         }
       }

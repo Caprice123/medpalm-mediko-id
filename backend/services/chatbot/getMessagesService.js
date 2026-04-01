@@ -42,7 +42,7 @@ export class GetMessagesService extends BaseService {
         }
       },
       orderBy: {
-        created_at: 'desc' // Return newest first (page 1 = most recent)
+        id: 'desc' // Return newest first (page 1 = most recent)
       }
     })
 

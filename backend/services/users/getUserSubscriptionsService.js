@@ -30,7 +30,7 @@ export class GetUserSubscriptionsService extends BaseService {
         const subscriptions = await prisma.user_subscriptions.findMany({
             where,
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             },
             skip: (page - 1) * perPage,
             take: perPage + 1

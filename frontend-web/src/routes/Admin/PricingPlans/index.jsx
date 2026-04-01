@@ -4,6 +4,7 @@ import { usePricingPlans } from './hooks/usePricingPlans'
 import { usePlanModal } from './hooks/usePlanModal'
 import PlansList from './components/PlansList/index'
 import PlanModal from './components/PlanModal/index'
+import PlanOrderModal from './components/PlanOrderModal/index'
 import Pagination from '@components/Pagination'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
@@ -29,6 +30,7 @@ function PricingPlans() {
     toggleStatus,
   } = usePricingPlans()
 
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
   const [bundleTypeFilter, setBundleTypeFilter] = useState('all')
   const [searchNameInput, setSearchNameInput] = useState('')
   const [searchCodeInput, setSearchCodeInput] = useState('')
@@ -142,10 +144,15 @@ function PricingPlans() {
 
       <HeaderSection>
         <SectionTitle>Pricing Plans</SectionTitle>
-        <Button variant="primary" onClick={() => openModal()}>
-          <span>+</span>
-          Add New Plan
-        </Button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <Button variant="secondary" onClick={() => setIsOrderModalOpen(true)}>
+            Atur Urutan
+          </Button>
+          <Button variant="primary" onClick={() => openModal()}>
+            <span>+</span>
+            Add New Plan
+          </Button>
+        </div>
       </HeaderSection>
 
       <FiltersSection>
@@ -195,6 +202,12 @@ function PricingPlans() {
           language="id"
         />
       )}
+
+      <PlanOrderModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        plans={plans || []}
+      />
 
       <PlanModal
         isOpen={isModalOpen}

@@ -66,6 +66,7 @@ export default {
             create: `/admin/v1/pricing`,
             update: (id) => `/admin/v1/pricing/${id}`,
             toggle: (id) => `/admin/v1/pricing/${id}/toggle`,
+            reorder: `/admin/v1/pricing/reorder`,
         }
     },
 }

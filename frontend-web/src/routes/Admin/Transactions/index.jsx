@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import Filter from '@components/common/Filter'
+import { Filter } from './components/Filter'
 import {
   fetchAllTransactions,
 } from '@store/credit/action'

@@ -15,7 +15,7 @@ export class GetSkripsiSetService extends BaseService {
           orderBy: { id: 'asc' },
           include: includeMessages ? {
             messages: {
-              orderBy: { created_at: 'desc' },
+              orderBy: { id: 'desc' },
               take: messageLimit
             }
           } : undefined

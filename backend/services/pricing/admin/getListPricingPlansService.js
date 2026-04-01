@@ -41,7 +41,7 @@ export class GetListPricingPlansService extends BaseService {
       where: where,
       orderBy: [
         { order: 'asc' },
-        { created_at: 'desc' }
+        { id: 'desc' }
       ],
       skip,
       take

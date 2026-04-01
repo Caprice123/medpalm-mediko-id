@@ -3,6 +3,7 @@ import { GetDetailPricingPlanService } from '#services/pricing/admin/getDetailPr
 import { CreatePricingPlanService } from '#services/pricing/admin/createPricingPlanService'
 import { UpdatePricingPlanService } from '#services/pricing/admin/updatePricingPlanService'
 import { TogglePricingPlanService } from '#services/pricing/admin/togglePricingPlanService'
+import { ReorderPricingPlansService } from '#services/pricing/admin/reorderPricingPlansService'
 import { GetPurchaseDetailService } from '#services/pricing/admin/getPurchaseDetailService'
 import { ApprovePurchaseService } from '#services/pricing/admin/approvePurchaseService'
 
@@ -49,6 +50,11 @@ class PricingPlanController {
     res.status(200).json({
       data: plan,
     })
+  }
+
+  async reorder(req, res) {
+    await ReorderPricingPlansService.call(req)
+    res.status(200).json({ message: 'Order updated successfully' })
   }
 
   async getPurchaseDetail(req, res) {

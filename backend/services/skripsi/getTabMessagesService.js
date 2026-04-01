@@ -32,7 +32,7 @@ export class GetTabMessagesService extends BaseService {
     // Fetch messages (newest first, then reverse)
     const messages = await prisma.skripsi_messages.findMany({
       where,
-      orderBy: { created_at: 'desc' },
+      orderBy: { id: 'desc' },
       take: limit,
       include: {
         skripsi_message_sources: true

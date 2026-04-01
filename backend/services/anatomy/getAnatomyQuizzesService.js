@@ -69,7 +69,7 @@ export class GetAnatomyQuizzesService extends BaseService {
         },
       },
       orderBy: {
-        created_at: 'desc'
+        id: 'desc'
       }
     })
 

@@ -76,7 +76,7 @@ export class GetMcqTopicsService extends BaseService {
       where,
       skip,
       take: limit + 1, // Get one extra to check if there's a next page
-      orderBy: { created_at: 'desc' },
+      orderBy: { id: 'desc' },
       include: {
         mcq_questions: {
           select: {

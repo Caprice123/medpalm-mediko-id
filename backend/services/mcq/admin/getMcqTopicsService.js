@@ -42,7 +42,7 @@ export class GetMcqTopicsService extends BaseService {
       where,
       skip,
       take: perPage + 1,
-      orderBy: { created_at: 'desc' },
+      orderBy: { id: 'desc' },
       include: {
         mcq_questions: { select: { id: true } },
         mcq_topic_tags: {

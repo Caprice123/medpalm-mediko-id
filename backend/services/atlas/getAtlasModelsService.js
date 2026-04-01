@@ -56,7 +56,7 @@ export class GetAtlasModelsService extends BaseService {
           }
         }
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: { id: 'desc' }
     })
 
     const isLastPage = models.length <= perPage

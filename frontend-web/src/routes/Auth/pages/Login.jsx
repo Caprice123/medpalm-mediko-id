@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { GoogleLogin } from '@react-oauth/google'
 import {
   BrandSection,
@@ -31,10 +32,41 @@ import {
   StatLabel
 } from './Login.styles'
 import { login } from '@store/auth/action'
+import { fetchPublicConstants } from '@store/constant/userAction'
+
+const LOGIN_CONSTANT_KEYS = [
+  'home_hero_badge',
+  'home_hero_subtitle',
+  'home_hero_slides',
+  'login_signin_title',
+  'login_signin_subtitle',
+]
+
+const DEFAULT_FEATURES = [
+  { icon: '📚', title: '18.000+ Flashcards' },
+  { icon: '📝', title: '20.000+ Soal UKMPPD' },
+  { icon: '🤖', title: 'Simulasi OSCE AI' },
+  { icon: '🧮', title: 'Medical Calculator' },
+]
+
+function parseFeatures(value) {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+  } catch {
+    return null
+  }
+}
 
 export function Login() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const constants = useSelector(state => state.constant.constants)
+
+  useEffect(() => {
+    dispatch(fetchPublicConstants(LOGIN_CONSTANT_KEYS))
+  }, [dispatch])
 
   const handleGoogleSuccess = async (credentialResponse) => {
     const onSuccess = () => {
@@ -47,6 +79,12 @@ export function Login() {
   const handleGoogleError = () => {
     console.error('Google login failed')
   }
+
+  const tagline = constants.home_hero_badge || 'Platform Belajar Kedokteran Berbasis AI'
+  const description = constants.home_hero_subtitle || '18.000+ flashcards, 20.000+ soal UKMPPD, simulasi OSCE AI, dan medical calculator — semua dalam satu platform.'
+  const features = parseFeatures(constants.home_hero_slides) || DEFAULT_FEATURES
+  const signinTitle = constants.login_signin_title || 'Selamat Datang Kembali'
+  const signinSubtitle = constants.login_signin_subtitle || 'Masuk untuk mengakses platform pembelajaran kedokteran berbasis AI'
 
   return (
     <LoginContainer>
@@ -63,29 +101,17 @@ export function Login() {
               <img src="/icon.png" alt="MedPal Logo" style={{ height: '60px' }} />
             </LogoIcon>
           </LogoText>
-          <Tagline>Platform Belajar Kedokteran Berbasis AI</Tagline>
-          <Description>
-            18.000+ flashcards, 20.000+ soal UKMPPD, simulasi OSCE AI, dan medical calculator — semua dalam satu platform.
-          </Description>
+          <Tagline>{tagline}</Tagline>
+          <Description>{description}</Description>
         </BrandSection>
 
         <FeaturesGrid>
-          <FeatureCard>
-            <FeatureIcon>📚</FeatureIcon>
-            <FeatureTitle>18.000+ Flashcards</FeatureTitle>
-          </FeatureCard>
-          <FeatureCard>
-            <FeatureIcon>📝</FeatureIcon>
-            <FeatureTitle>20.000+ Soal UKMPPD</FeatureTitle>
-          </FeatureCard>
-          <FeatureCard>
-            <FeatureIcon>🤖</FeatureIcon>
-            <FeatureTitle>Simulasi OSCE AI</FeatureTitle>
-          </FeatureCard>
-          <FeatureCard>
-            <FeatureIcon>🧮</FeatureIcon>
-            <FeatureTitle>Medical Calculator</FeatureTitle>
-          </FeatureCard>
+          {features.map((feature, index) => (
+            <FeatureCard key={index}>
+              <FeatureIcon>{feature.icon}</FeatureIcon>
+              <FeatureTitle>{feature.title || feature.label}</FeatureTitle>
+            </FeatureCard>
+          ))}
         </FeaturesGrid>
       </LeftPanel>
 
@@ -96,15 +122,13 @@ export function Login() {
             <img src="/icon.jpg" alt="MedPal Logo" style={{ height: '60px' }} />
           </MobileLogoIcon>
           <MobileLogoText>MedPal</MobileLogoText>
-          <MobileTagline>Platform Belajar Kedokteran Berbasis AI</MobileTagline>
+          <MobileTagline>{tagline}</MobileTagline>
         </MobileLogo>
 
         <SignInCard>
           <SignInHeader>
-            <SignInTitle>Selamat Datang Kembali</SignInTitle>
-            <SignInSubtitle>
-              Masuk untuk mengakses platform pembelajaran kedokteran berbasis AI
-            </SignInSubtitle>
+            <SignInTitle>{signinTitle}</SignInTitle>
+            <SignInSubtitle>{signinSubtitle}</SignInSubtitle>
           </SignInHeader>
 
           <GoogleButtonWrapper>

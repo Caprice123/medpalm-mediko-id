@@ -31,7 +31,7 @@ export class GetConversationsService extends BaseService {
       include: {
         chatbot_messages: {
           where: { is_deleted: false },
-          orderBy: { created_at: 'desc' },
+          orderBy: { id: 'desc' },
           take: 1, // Get last message for preview
           select: {
             content: true,

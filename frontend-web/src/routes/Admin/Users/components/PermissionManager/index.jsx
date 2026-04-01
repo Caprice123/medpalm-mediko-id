@@ -22,7 +22,8 @@ const AVAILABLE_TABS = [
   { value: 'tags', label: 'Kelola Tag' },
   { value: 'pricingPlans', label: 'Paket Harga' },
   { value: 'transactions', label: 'Transaksi' },
-  { value: 'users', label: 'Kelola User' }
+  { value: 'users', label: 'Kelola User' },
+  { value: 'globalSettings', label: 'Pengaturan Global' }
 ]
 
 const AVAILABLE_FEATURES = [

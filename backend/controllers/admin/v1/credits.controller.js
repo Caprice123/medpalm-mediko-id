@@ -2,6 +2,8 @@ import prisma from '#prisma/client'
 import { UserPurchaseSerializer } from '../../../serializers/userPurchaseSerializer.js'
 import { ValidationError } from '#errors/validationError'
 import { getEffectiveCreditBalance, deductUserCredits, addUserCredits } from '#utils/creditUtils'
+import moment from 'moment-timezone'
+import { ExportTransactionsService } from '#services/credits/exportTransactionsService'
 
 class CreditsController {
   /**
@@ -13,15 +15,29 @@ class CreditsController {
     res.status(200).json({ data: { balance } })
   }
 
+  _buildTransactionWhere(query) {
+    const { code, id, email, status, type, startDate, endDate } = query
+    const where = {}
+    if (status) where.payment_status = status
+    if (type) where.bundle_type = type
+    if (id) where.id = parseInt(id)
+    if (code) where.pricing_plan = { code: { contains: code, mode: 'insensitive' } }
+    if (email) where.user = { email: { contains: email, mode: 'insensitive' } }
+    if (startDate || endDate) {
+      where.created_at = {}
+      if (startDate) where.created_at.gte = moment.tz(startDate, 'YYYY-MM-DD', 'Asia/Jakarta').startOf('day').toDate()
+      if (endDate) where.created_at.lte = moment.tz(endDate, 'YYYY-MM-DD', 'Asia/Jakarta').endOf('day').toDate()
+    }
+    return where
+  }
+
   /**
    * Get all user purchases (admin only)
    */
   async getAllTransactions(req, res) {
-    const { page = 1, perPage = 20, status } = req.query
+    const { page = 1, perPage = 20 } = req.query
 
-    const where = {}
-    if (status) where.payment_status = status
-
+    const where = this._buildTransactionWhere(req.query)
     const pageNum = parseInt(page)
     const perPageNum = parseInt(perPage)
     const skip = (pageNum - 1) * perPageNum
@@ -33,7 +49,7 @@ class CreditsController {
         pricing_plan: true
       },
       orderBy: { created_at: 'desc' },
-      take: perPageNum + 1, // Fetch one extra to check if there's a next page
+      take: perPageNum + 1,
       skip
     })
 
@@ -50,6 +66,18 @@ class CreditsController {
         }
       }
     })
+  }
+
+  /**
+   * Export all transactions matching filters as Excel (admin only)
+   */
+  async exportTransactions(req, res) {
+    const buffer = await ExportTransactionsService.call(req.query)
+    const filename = `transactions_${new Date().toISOString().slice(0, 10)}.xlsx`
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+    res.send(buffer)
   }
 
   /**

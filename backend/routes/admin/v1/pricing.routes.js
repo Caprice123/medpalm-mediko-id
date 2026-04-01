@@ -18,6 +18,7 @@ router.get('/:id', asyncHandler(pricingPlanController.show.bind(pricingPlanContr
 router.post('/', asyncHandler(pricingPlanController.create.bind(pricingPlanController)))
 router.put('/:id', asyncHandler(pricingPlanController.update.bind(pricingPlanController)))
 router.patch('/:id/toggle', asyncHandler(pricingPlanController.toggle.bind(pricingPlanController)))
+router.patch('/reorder', asyncHandler(pricingPlanController.reorder.bind(pricingPlanController)))
 
 // Purchase management
 router.get('/purchases/:id', asyncHandler(pricingPlanController.getPurchaseDetail.bind(pricingPlanController)))

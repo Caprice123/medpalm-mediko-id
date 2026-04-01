@@ -1,7 +1,7 @@
 import { actions } from '@store/credit/reducer'
 import Endpoints from '@config/endpoint'
 import { handleApiError } from '@utils/errorUtils'
-import { getWithToken, getPublic, patchWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
+import { getWithToken, downloadWithToken, getPublic, patchWithToken, postWithToken, putWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -192,17 +192,21 @@ export const toggleCreditPlanStatus = (planId) => async (dispatch) => {
 /**
  * Fetch all transactions (admin)
  */
-export const fetchAllTransactions = (params = {}) => async (dispatch) => {
+export const fetchAllTransactions = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isTransactionsLoading', value: true }))
 
-    const { page = 1, perPage = 20, type, status } = params
+    const { pagination, filters } = getState().credit
 
     const queryParams = {
-      page,
-      perPage,
-      type,
-      status,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      ...(filters.code && { code: filters.code }),
+      ...(filters.id && { id: filters.id }),
+      ...(filters.email && { email: filters.email }),
+      ...(filters.status && { status: filters.status }),
+      ...(filters.startDate && { startDate: filters.startDate }),
+      ...(filters.endDate && { endDate: filters.endDate }),
     }
 
     const response = await getWithToken(
@@ -249,6 +253,34 @@ export const addBonusCredits = (userId, amount, description) => async (dispatch)
   } catch {
     // no need to handle anything because already handled in api.jsx
   }
+}
+
+/**
+ * Export transactions as Excel (admin)
+ */
+export const exportTransactions = () => async (_, getState) => {
+  const { filters } = getState().credit
+
+  const queryParams = {
+    ...(filters.code && { code: filters.code }),
+    ...(filters.id && { id: filters.id }),
+    ...(filters.email && { email: filters.email }),
+    ...(filters.type && { type: filters.type }),
+    ...(filters.status && { status: filters.status }),
+    ...(filters.startDate && { startDate: filters.startDate }),
+    ...(filters.endDate && { endDate: filters.endDate }),
+  }
+
+  const response = await downloadWithToken(`${Endpoints.admin.credits}/export`, queryParams)
+
+  const blob = new Blob([response.data], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = `transactions_${new Date().toISOString().slice(0, 10)}.xlsx`
+  link.click()
+  URL.revokeObjectURL(link.href)
 }
 
 // Export filter and pagination actions

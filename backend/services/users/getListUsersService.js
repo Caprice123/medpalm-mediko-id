@@ -48,7 +48,7 @@ export class GetListUsersService extends BaseService {
             include: {
                 user_subscription: {
                     orderBy: {
-                        created_at: 'desc'
+                        id: 'desc'
                     },
                     select: {
                         id: true,

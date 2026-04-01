@@ -35,7 +35,7 @@ export class GetAdminConversationMessagesService extends BaseService {
         }
       },
       orderBy: {
-        created_at: 'desc' // Backend returns DESC (newest first)
+        id: 'desc' // Backend returns DESC (newest first)
       },
       skip,
       take

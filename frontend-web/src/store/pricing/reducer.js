@@ -32,6 +32,7 @@ const initialState = {
     isApprovingTransaction: false,
     isRejectingTransaction: false,
     isAttachingEvidence: false,
+    isReorderingPlans: false,
   },
   error: null,
 }
@@ -45,6 +46,13 @@ const { reducer, actions } = createSlice({
     },
     setPlans: (state, { payload }) => {
       state.plans = payload
+    },
+    updatePlanOrders: (state, { payload }) => {
+      // payload: [{ id, order }]
+      payload.forEach(({ id, order }) => {
+        const plan = state.plans.find(p => p.id === id)
+        if (plan) plan.order = order
+      })
     },
     setPagination: (state, { payload }) => {
       state.pagination = payload || initialState.pagination

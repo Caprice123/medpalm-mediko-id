@@ -22,7 +22,7 @@ const getAdminSkripsiSetTabsService = async (setId) => {
     include: {
       messages: {
         orderBy: {
-          created_at: 'asc'
+          id: 'asc'
         },
         select: {
           id: true,
@@ -33,7 +33,7 @@ const getAdminSkripsiSetTabsService = async (setId) => {
       }
     },
     orderBy: {
-      created_at: 'asc'
+      id: 'asc'
     }
   })
 

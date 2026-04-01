@@ -97,7 +97,7 @@ export class GetFlashcardDecksService extends BaseService {
                 }
             },
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             }
         })
 

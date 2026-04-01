@@ -61,6 +61,7 @@
     "chromadb": "^3.1.8",
     "cors": "^2.8.5",
     "docx": "^9.5.1",
+    "xlsx": "^0.18.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "google-auth-library": "^10.5.0",

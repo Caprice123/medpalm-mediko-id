@@ -69,7 +69,7 @@ export class GetCalculatorTopicsService extends BaseService {
                 }
             },
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             }
         })
 

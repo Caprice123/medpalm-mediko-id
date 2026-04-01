@@ -38,7 +38,7 @@ export class GetAdminConversationsService extends BaseService {
         },
         chatbot_messages: {
           where: { is_deleted: false },
-          orderBy: { created_at: 'desc' },
+          orderBy: { id: 'desc' },
           take: 1,
           select: {
             content: true,

@@ -8,6 +8,7 @@ const {
   setPagination,
   clearError,
   setTransactionDetail,
+  updatePlanOrders,
 } = actions
 
 export const fetchAllPricingPlans = (params = {}) => async (dispatch) => {
@@ -72,6 +73,16 @@ export const togglePricingPlanStatus = (planId) => async (dispatch) => {
     return response.data
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
+  }
+}
+
+export const reorderPricingPlans = (orders) => async (dispatch) => {
+  dispatch(setLoading({ key: 'isReorderingPlans', value: true }))
+  try {
+    await patchWithToken(Endpoints.pricing.admin.reorder, { orders })
+    dispatch(updatePlanOrders(orders))
+  } finally {
+    dispatch(setLoading({ key: 'isReorderingPlans', value: false }))
   }
 }
 

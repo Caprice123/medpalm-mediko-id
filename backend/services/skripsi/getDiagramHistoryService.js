@@ -37,7 +37,7 @@ export class GetDiagramHistoryService extends BaseService {
         // diagram_data excluded for performance
       },
       orderBy: {
-        created_at: 'desc' // Newest first
+        id: 'desc' // Newest first
       }
     })
 

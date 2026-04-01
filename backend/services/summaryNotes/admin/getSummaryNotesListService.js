@@ -88,7 +88,7 @@ export class GetSummaryNotesListService extends BaseService {
         }
       },
       orderBy: {
-        created_at: 'desc'
+        id: 'desc'
       },
       take: limit + 1,
       skip: offset
