@@ -16,7 +16,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
-import { reorderPricingPlans } from '@store/pricing/adminAction'
+import { reorderPricingPlans, fetchAllActivePricingPlans } from '@store/pricing/adminAction'
 
 function SortableRow({ plan }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: plan.id })
@@ -57,17 +57,21 @@ function SortableRow({ plan }) {
   )
 }
 
-function PlanOrderModal({ isOpen, onClose, plans }) {
+function PlanOrderModal({ isOpen, onClose }) {
   const dispatch = useDispatch()
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  // Sync items when modal opens or plans change
   useEffect(() => {
-    if (isOpen) {
-      const activePlans = plans.filter(p => p.isActive).sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
-      setItems(activePlans)
-    }
+    if (!isOpen) return
+    setLoading(true)
+    dispatch(fetchAllActivePricingPlans())
+      .then(plans => {
+        const sorted = [...plans].sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+        setItems(sorted)
+      })
+      .finally(() => setLoading(false))
   }, [isOpen])
 
   const sensors = useSensors(useSensor(PointerSensor))
@@ -102,7 +106,11 @@ function PlanOrderModal({ isOpen, onClose, plans }) {
         Drag dan drop untuk mengatur urutan tampilan pricing plans yang aktif.
       </div>
 
-      {items.length === 0 ? (
+      {loading ? (
+        <div style={{ color: '#9ca3af', textAlign: 'center', padding: '2rem' }}>
+          Memuat data...
+        </div>
+      ) : items.length === 0 ? (
         <div style={{ color: '#9ca3af', textAlign: 'center', padding: '2rem' }}>
           Tidak ada pricing plan yang aktif.
         </div>
@@ -120,7 +128,7 @@ function PlanOrderModal({ isOpen, onClose, plans }) {
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
         <Button variant="secondary" onClick={onClose} disabled={saving}>Batal</Button>
-        <Button variant="primary" onClick={handleSave} disabled={saving || items.length === 0}>
+        <Button variant="primary" onClick={handleSave} disabled={saving || loading || items.length === 0}>
           {saving ? 'Menyimpan...' : 'Simpan Urutan'}
         </Button>
       </div>

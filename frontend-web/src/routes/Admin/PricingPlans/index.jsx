@@ -206,7 +206,6 @@ function PricingPlans() {
       <PlanOrderModal
         isOpen={isOrderModalOpen}
         onClose={() => setIsOrderModalOpen(false)}
-        plans={plans || []}
       />
 
       <PlanModal

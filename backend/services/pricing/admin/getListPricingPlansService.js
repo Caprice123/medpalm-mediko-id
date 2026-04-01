@@ -8,10 +8,15 @@ export class GetListPricingPlansService extends BaseService {
       limit = 10,
       search_name,
       search_code,
-      bundle_type
+      bundle_type,
+      is_active,
     } = req.query
 
     const where = {}
+
+    if (is_active !== undefined) {
+      where.is_active = is_active === 'true'
+    }
 
     // Filter by bundle type
     if (bundle_type && bundle_type !== 'all') {

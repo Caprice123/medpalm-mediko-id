@@ -76,6 +76,12 @@ export const togglePricingPlanStatus = (planId) => async (dispatch) => {
   }
 }
 
+export const fetchAllActivePricingPlans = () => async () => {
+  const url = `${Endpoints.pricing.admin.list}?is_active=true&limit=1000`
+  const response = await getWithToken(url)
+  return response.data.data || []
+}
+
 export const reorderPricingPlans = (orders) => async (dispatch) => {
   dispatch(setLoading({ key: 'isReorderingPlans', value: true }))
   try {

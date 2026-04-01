@@ -27,6 +27,8 @@ const CONSTANT_KEYS = [
   'home_how_it_works_youtube_url',
   'home_faq_items',
   'home_social_items',
+  'login_signin_title',
+  'login_signin_subtitle',
 ]
 
 const SOCIAL_TYPE_OPTIONS = [
@@ -62,6 +64,8 @@ export default function GlobalSettings() {
     home_hero_title: '',
     home_hero_subtitle: '',
     home_how_it_works_youtube_url: '',
+    login_signin_title: '',
+    login_signin_subtitle: '',
   })
   const [heroSlides, setHeroSlides] = useState([{ ...DEFAULT_HERO_SLIDE }])
   const [faqItems, setFaqItems] = useState([{ ...DEFAULT_FAQ }])
@@ -159,6 +163,35 @@ export default function GlobalSettings() {
             placeholder="1.895+ Model Anatomi 3D Interaktif..."
             value={settings.home_hero_subtitle}
             onChange={(e) => handleChange('home_hero_subtitle', e.target.value)}
+            disabled={loading}
+            rows={3}
+          />
+        </FormGroup>
+      </SectionCard>
+
+      {/* Login Page */}
+      <SectionCard>
+        <SectionTitle>Halaman Login</SectionTitle>
+        <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '1rem' }}>
+          Tagline, deskripsi, dan fitur di panel kiri login diambil dari Hero (Badge, Subjudul, Slide Fitur).
+        </p>
+
+        <FormGroup>
+          <TextInput
+            label="Judul Sign In"
+            placeholder="Selamat Datang Kembali"
+            value={settings.login_signin_title}
+            onChange={(e) => handleChange('login_signin_title', e.target.value)}
+            disabled={loading}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Textarea
+            label="Subjudul Sign In"
+            placeholder="Masuk untuk mengakses platform pembelajaran kedokteran berbasis AI"
+            value={settings.login_signin_subtitle}
+            onChange={(e) => handleChange('login_signin_subtitle', e.target.value)}
             disabled={loading}
             rows={3}
           />
