@@ -96,7 +96,9 @@ export class PurchasePricingPlanService extends BaseService {
           bundle_type: plan.bundle_type,
           payment_status: 'pending',
           payment_method: paymentMethod,
-          amount_paid: plan.price
+          amount_paid: plan.price,
+          phone_number: phoneNumber || null,
+          university: university || null,
         },
         include: {
           pricing_plan: true
