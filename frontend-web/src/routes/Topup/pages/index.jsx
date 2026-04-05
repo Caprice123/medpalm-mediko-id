@@ -6,6 +6,7 @@ import Pagination from '@components/Pagination'
 import { TopupTableSkeleton, CreditPurchaseSkeleton } from '@components/common/SkeletonCard'
 import EmptyState from '@components/common/EmptyState'
 import TransactionDetail from './components/TransactionDetail'
+import PlanContactModal from './components/PlanContactModal'
 import 'aos/dist/aos.css'
 import {
   PricingGrid,
@@ -55,11 +56,15 @@ function Topup() {
     showDetailModal,
     selectedPurchaseId,
     isPurchaseLoading,
+    showContactModal,
+    pendingPlan,
     handlePageChange,
     handlePurchaseSuccess,
     handleEvidenceUploaded,
     handleShowDetail,
     handlePlanSelect,
+    handleContactConfirm,
+    handleCloseContactModal,
     handleCloseDetailModal,
   } = useTopup()
 
@@ -293,6 +298,16 @@ function Topup() {
                 )}
                 </TableSection>
             )}
+
+            <PlanContactModal
+                isOpen={showContactModal}
+                onClose={handleCloseContactModal}
+                onConfirm={handleContactConfirm}
+                plan={pendingPlan}
+                defaultPhone={userStatus?.lastPhoneNumber}
+                defaultUniversity={userStatus?.lastUniversity}
+                isLoading={isPurchaseLoading}
+            />
 
             <TransactionDetail
                 isOpen={showDetailModal}

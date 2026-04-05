@@ -25,6 +25,8 @@ export class UserPurchaseSerializer {
       paymentReference: purchase.payment_reference,
       amountPaid: purchase.amount_paid,
       purchaseDate: purchase.purchase_date,
+      phoneNumber: purchase.phone_number || null,
+      university: purchase.university || null,
       createdAt: purchase.created_at,
       pricingPlan: purchase.pricing_plan ? {
         id: purchase.pricing_plan.id,

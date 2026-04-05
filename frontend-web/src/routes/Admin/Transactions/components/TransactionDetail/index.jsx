@@ -206,6 +206,18 @@ function AdminTransactionDetail({ isOpen, onClose, purchaseId, onStatusChange })
                       </DetailValue>
                     </DetailItem>
                   )}
+                  {transaction.phoneNumber && (
+                    <DetailItem>
+                      <DetailLabel>Phone Number</DetailLabel>
+                      <DetailValue>{transaction.phoneNumber}</DetailValue>
+                    </DetailItem>
+                  )}
+                  {transaction.university && (
+                    <DetailItem>
+                      <DetailLabel>University</DetailLabel>
+                      <DetailValue>{transaction.university}</DetailValue>
+                    </DetailItem>
+                  )}
                 </DetailGrid>
               </DetailSection>
 

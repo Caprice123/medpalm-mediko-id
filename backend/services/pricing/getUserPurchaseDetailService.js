@@ -42,6 +42,8 @@ export class GetUserPurchaseDetailService extends BaseService {
       paymentMethod: purchase.payment_method,
       paymentStatus: purchase.payment_status,
       paymentReference: purchase.payment_reference,
+      phoneNumber: purchase.phone_number || null,
+      university: purchase.university || null,
       // Pricing plan details
       pricingPlan: {
         id: purchase.pricing_plan.id,

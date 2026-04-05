@@ -82,7 +82,7 @@ class PricingController {
    */
   async purchase(req, res) {
     const userId = req.user.id
-    const { pricingPlanId, paymentMethod } = req.body
+    const { pricingPlanId, paymentMethod, phoneNumber, university } = req.body
 
     if (!pricingPlanId) {
       return res.status(400).json({
@@ -96,7 +96,8 @@ class PricingController {
     const purchase = await PurchasePricingPlanService.call(
       userId,
       pricingPlanId,
-      paymentMethod || 'manual'
+      paymentMethod || 'manual',
+      { phoneNumber, university }
     )
 
     // If payment method is Xendit, create invoice and return URL

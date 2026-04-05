@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchConstants, updateConstants } from '@store/constant/action'
 import { actions as constantActions } from '@store/constant/reducer'
+import { hasTabPermission } from '@utils/permissionUtils'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
@@ -72,7 +73,7 @@ export default function GlobalSettings() {
   const [socialItems, setSocialItems] = useState([{ ...DEFAULT_SOCIAL }])
 
   useEffect(() => {
-    loadSettings()
+    if (hasTabPermission('globalSettings')) loadSettings()
   }, [])
 
   const loadSettings = async () => {
@@ -125,6 +126,14 @@ export default function GlobalSettings() {
     } finally {
       setSaving(false)
     }
+  }
+
+  if (!hasTabPermission('globalSettings')) {
+    return (
+      <p style={{ color: '#6b7280', padding: '1rem' }}>
+        Anda tidak memiliki akses ke halaman ini. Hubungi administrator untuk mendapatkan izin akses.
+      </p>
+    )
   }
 
   return (

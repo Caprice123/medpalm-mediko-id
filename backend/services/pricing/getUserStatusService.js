@@ -8,6 +8,13 @@ import { getEffectiveCreditBalance } from '#utils/creditUtils'
  */
 export class GetUserStatusService extends BaseService {
   static async call(userId) {
+    // Get most recent purchase for prefilling phone/university at checkout
+    const lastPurchase = await prisma.user_purchases.findFirst({
+      where: { user_id: userId },
+      orderBy: { purchase_date: 'desc' },
+      select: { phone_number: true, university: true }
+    })
+
     // Get active subscription from user_subscriptions table
     const activeSubscription = await prisma.user_subscriptions.findFirst({
       where: {
@@ -49,6 +56,8 @@ export class GetUserStatusService extends BaseService {
     )
 
     return {
+      lastPhoneNumber: lastPurchase?.phone_number || null,
+      lastUniversity: lastPurchase?.university || null,
       hasActiveSubscription: !!activeSubscription,
       subscription: activeSubscription ? {
         id: activeSubscription.id,

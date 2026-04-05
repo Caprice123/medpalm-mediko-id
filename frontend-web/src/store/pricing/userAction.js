@@ -92,13 +92,15 @@ export const fetchPurchaseHistory = () => async (dispatch, getState) => {
   }
 }
 
-export const purchasePricingPlan = (pricingPlanId, paymentMethod = 'manual', onSuccess) => async (dispatch) => {
+export const purchasePricingPlan = (pricingPlanId, paymentMethod = 'manual', onSuccess, { phoneNumber, university } = {}) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isPurchaseLoading', value: true }))
 
     const response = await postWithToken(Endpoints.pricing.purchase, {
       pricingPlanId,
-      paymentMethod
+      paymentMethod,
+      phoneNumber: phoneNumber || undefined,
+      university: university || undefined,
     })
 
     dispatch(fetchUserStatus())

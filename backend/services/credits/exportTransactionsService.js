@@ -46,24 +46,29 @@ export class ExportTransactionsService extends BaseService {
   }
 
   static buildWorkbook(transactions) {
-    // Group by email
-    const groups = {}
-    for (const t of transactions) {
-      const email = t.user?.email || 'Unknown'
-      if (!groups[email]) groups[email] = []
-      groups[email].push(t)
-    }
-
     const wb = XLSX.utils.book_new()
 
-    // Sheet 1: Distinct emails only
-    const emailRows = [['Email']]
-    for (const email of Object.keys(groups)) {
-      emailRows.push([email])
+    // Group by email, collect unique phones and universities
+    const byEmail = {}
+    for (const t of transactions) {
+      const email = t.user?.email || ''
+      if (!byEmail[email]) byEmail[email] = { phones: new Set(), universities: new Set() }
+      if (t.phoneNumber) byEmail[email].phones.add(t.phoneNumber)
+      if (t.university) byEmail[email].universities.add(t.university)
     }
-    const emailSheet = XLSX.utils.aoa_to_sheet(emailRows)
-    emailSheet['!cols'] = [{ wch: 35 }]
-    XLSX.utils.book_append_sheet(wb, emailSheet, 'Email')
+
+    const rows = [['Email', 'No. HP', 'Universitas']]
+    for (const [email, { phones, universities }] of Object.entries(byEmail)) {
+      rows.push([
+        email,
+        [...phones].join(', '),
+        [...universities].join(', '),
+      ])
+    }
+
+    const sheet = XLSX.utils.aoa_to_sheet(rows)
+    sheet['!cols'] = [{ wch: 35 }, { wch: 30 }, { wch: 40 }]
+    XLSX.utils.book_append_sheet(wb, sheet, 'Data')
 
     return wb
   }

@@ -606,6 +606,10 @@ model user_purchases {
   amount_paid       Decimal @db.Decimal(10, 2)
   // Payment evidence is stored via attachments table with name="payment_evidence"
 
+  // Buyer contact info (collected at checkout)
+  phone_number String?
+  university   String?
+
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 

@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 
 export class PurchasePricingPlanService extends BaseService {
-  static async call(userId, pricingPlanId, paymentMethod = 'manual') {
+  static async call(userId, pricingPlanId, paymentMethod = 'manual', { phoneNumber, university } = {}) {
     // Get the pricing plan
     const plan = await prisma.pricing_plans.findUnique({
       where: { id: pricingPlanId }
@@ -30,7 +30,9 @@ export class PurchasePricingPlanService extends BaseService {
             bundle_type: plan.bundle_type,
             payment_status: 'pending',
             payment_method: paymentMethod,
-            amount_paid: plan.price
+            amount_paid: plan.price,
+            phone_number: phoneNumber || null,
+            university: university || null,
           },
           include: {
             pricing_plan: true

@@ -140,6 +140,18 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                       </DetailValue>
                     </DetailItem>
                   )}
+                  {transaction.phoneNumber && (
+                    <DetailItem>
+                      <DetailLabel>No. HP</DetailLabel>
+                      <DetailValue>{transaction.phoneNumber}</DetailValue>
+                    </DetailItem>
+                  )}
+                  {transaction.university && (
+                    <DetailItem>
+                      <DetailLabel>Universitas</DetailLabel>
+                      <DetailValue>{transaction.university}</DetailValue>
+                    </DetailItem>
+                  )}
                 </DetailGrid>
               </DetailSection>
 

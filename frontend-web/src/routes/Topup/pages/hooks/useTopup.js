@@ -19,6 +19,8 @@ export const useTopup = () => {
   const [selectedPurchaseId, setSelectedPurchaseId] = useState(null)
   const [activeTab, setActiveTab] = useState('plans')
   const [planFilter, setPlanFilter] = useState('all')
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [pendingPlan, setPendingPlan] = useState(null)
   const snapScriptLoaded = useRef(false)
 
   const filteredPlans = useMemo(() => plans.filter(plan =>
@@ -77,12 +79,21 @@ export const useTopup = () => {
   }
 
   const handlePlanSelect = (plan) => {
+    setPendingPlan(plan)
+    setShowContactModal(true)
+  }
+
+  const handleContactConfirm = ({ phoneNumber, university }) => {
+    if (!pendingPlan) return
+    const plan = pendingPlan
     const allowedMethods = plan.allowedPaymentMethods || ['xendit']
     let paymentMethod = 'manual'
     if (allowedMethods.includes('midtrans')) paymentMethod = 'midtrans'
     else if (allowedMethods.includes('xendit')) paymentMethod = 'xendit'
 
     dispatch(purchasePricingPlan(plan.id, paymentMethod, (result) => {
+      setShowContactModal(false)
+      setPendingPlan(null)
       const { paymentInfo, id: purchaseId } = result.data
 
       if (paymentMethod === 'midtrans' && paymentInfo?.snapToken) {
@@ -103,7 +114,12 @@ export const useTopup = () => {
         handlePurchaseSuccess()
         if (purchaseId) handleShowDetail(purchaseId)
       }
-    }))
+    }, { phoneNumber, university }))
+  }
+
+  const handleCloseContactModal = () => {
+    setShowContactModal(false)
+    setPendingPlan(null)
   }
 
   const handleCloseDetailModal = () => {
@@ -126,11 +142,15 @@ export const useTopup = () => {
     showDetailModal,
     selectedPurchaseId,
     isPurchaseLoading,
+    showContactModal,
+    pendingPlan,
     handlePageChange,
     handlePurchaseSuccess,
     handleEvidenceUploaded,
     handleShowDetail,
     handlePlanSelect,
+    handleContactConfirm,
+    handleCloseContactModal,
     handleCloseDetailModal,
   }
 }
