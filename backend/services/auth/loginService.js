@@ -85,6 +85,11 @@ class AuthService {
     const refreshTokenExpiresAt = new Date();
     refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 30); // 30 days from now
 
+    // For regular users, disable all other sessions (single session enforcement)
+    if (user.role === 'user') {
+      await this.deactivateUserSessions(user.id);
+    }
+
     // Create new session with both tokens
     await prisma.user_sessions.create({
       data: {

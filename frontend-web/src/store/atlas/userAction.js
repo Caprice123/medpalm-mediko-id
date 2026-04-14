@@ -14,6 +14,8 @@ export const fetchAtlasModels = () => async (dispatch, getState) => {
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester
     if (filter.search) queryParams.search = filter.search
+    if (filter.topic) queryParams.topic = filter.topic
+    if (filter.subtopic) queryParams.subtopic = filter.subtopic
     queryParams.page = pagination.page
     queryParams.perPage = pagination.perPage
 
