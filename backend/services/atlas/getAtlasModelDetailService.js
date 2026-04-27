@@ -31,7 +31,8 @@ export class GetAtlasModelDetailService extends BaseService {
         userRole,
         accessTypeKey: 'atlas_access_type',
         creditCostKey: 'atlas_model_cost',
-        description: `Viewed atlas model: ${model.id} - ${model.title}`
+        description: `Viewed atlas model: ${model.id} - ${model.title}`,
+        featureKey: 'atlas',
       })
 
       return model

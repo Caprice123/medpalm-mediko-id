@@ -97,7 +97,8 @@ export class StartExerciseTopicService extends BaseService {
         userRole,
         accessTypeKey: 'exercise_access_type',
         creditCostKey: 'exercise_credit_cost',
-        description: `Started exercise topic: ${topic.id} - ${topic.title}`
+        description: `Started exercise topic: ${topic.id} - ${topic.title}`,
+        featureKey: 'exercise',
       })
 
       // Fetch image attachments for all questions

@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { addUserCredits } from '#utils/creditUtils'
+import { applyPlanFeatures } from '#services/users/applyPlanFeaturesService'
 
 export class ApprovePurchaseService extends BaseService {
   static async call(purchaseId, status) {
@@ -96,6 +97,9 @@ export class ApprovePurchaseService extends BaseService {
             })
           }
         }
+
+        // Grant feature access from the purchase snapshot
+        await applyPlanFeatures(tx, purchase.user_id, purchase.allowed_features || [])
       })
     } else {
       // Reject: Just update status to failed

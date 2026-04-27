@@ -9,6 +9,7 @@ const {
   setSubscriptions,
   setSubscriptionPagination,
   setCreditBuckets,
+  setFeatureSubscriptions,
 } = actions
 
 // ============= Users Actions =============
@@ -223,5 +224,26 @@ export const updateUserPermissions = (userId, permissions, onSuccess) => async (
     await dispatch(fetchUsers())
   } finally {
     dispatch(setLoading({ key: 'isUpdateUserPermissionsLoading', value: false }))
+  }
+}
+
+export const fetchUserFeatureSubscriptions = (userId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isFetchFeatureSubscriptionsLoading', value: true }))
+    const response = await getWithToken(Endpoints.admin.userFeatureSubscriptions(userId))
+    dispatch(setFeatureSubscriptions(response.data.data || []))
+  } finally {
+    dispatch(setLoading({ key: 'isFetchFeatureSubscriptionsLoading', value: false }))
+  }
+}
+
+export const updateUserFeatureSubscriptions = (userId, activeFeatures, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: true }))
+    const response = await putWithToken(Endpoints.admin.userFeatureSubscriptions(userId), { activeFeatures })
+    dispatch(setFeatureSubscriptions(response.data.data || []))
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: false }))
   }
 }

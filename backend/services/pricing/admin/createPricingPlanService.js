@@ -16,7 +16,8 @@ export class CreatePricingPlanService extends BaseService {
       is_popular,
       discount,
       order,
-      allowed_payment_method
+      allowed_payment_method,
+      allowed_features,
     } = req.body
 
     // Convert allowed_payment_method array to comma-separated string
@@ -39,7 +40,8 @@ export class CreatePricingPlanService extends BaseService {
         is_popular: is_popular || false,
         discount: Number(discount) || 0,
         order: Number(order) || 0,
-        allowed_payment_method: paymentMethods
+        allowed_payment_method: paymentMethods,
+        allowed_features: Array.isArray(allowed_features) ? allowed_features : [],
       }
     })
 

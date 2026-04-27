@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { verifyWebhookToken } from '#services/xendit.service'
 import { ValidationError } from '#errors/validationError'
 import { addUserCredits } from '#utils/creditUtils'
+import { applyPlanFeatures } from '#services/users/applyPlanFeaturesService'
 
 const prisma = new PrismaClient()
 
@@ -286,6 +287,9 @@ async function handlePaidPurchase(purchase, paymentDetails) {
           paymentReference: invoiceId
         })
       }
+
+      // 4. Grant feature access from the purchase snapshot
+      await applyPlanFeatures(tx, purchase.user_id, purchase.allowed_features || [])
     })
 
     console.log(`Payment completed for purchase ${purchase.id}. Granted ${creditsIncluded} credits to user ${purchase.user_id}`)

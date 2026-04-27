@@ -385,13 +385,30 @@ model users {
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 
-  user_credits           user_credits[]
-  user_subscription      user_subscriptions[]
-  user_purchases         user_purchases[]
-  chatbot_conversations  chatbot_conversations[]
-  user_chatbot_settings  user_chatbot_settings?
-  skripsi_sets           skripsi_sets[]
-  osce_sessions          osce_sessions[]
+  user_credits                  user_credits[]
+  user_subscription             user_subscriptions[]
+  user_purchases                user_purchases[]
+  chatbot_conversations         chatbot_conversations[]
+  user_chatbot_settings         user_chatbot_settings?
+  skripsi_sets                  skripsi_sets[]
+  osce_sessions                 osce_sessions[]
+  user_feature_subscriptions    user_feature_subscriptions[]
+}
+
+model user_feature_subscriptions {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  feature    String   // 'exercise' | 'flashcard' | 'calculator' | 'diagnostic' | 'anatomy' | 'mcq' | 'chatbot' | 'skripsi' | 'oscePractice' | 'summaryNotes' | 'atlas'
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, feature])
+  @@index([user_id])
+  @@index([feature])
+  @@index([is_active])
 }
 
 model user_subscriptions {
@@ -578,6 +595,7 @@ model pricing_plans {
   discount               Int      @default(0)
   order                  Int      @default(0)
   allowed_payment_method String   @default("xendit") // comma-separated: xendit, manual
+  allowed_features       Json     @default("[]")    // array of feature keys this plan grants
   created_at             DateTime @default(now())
   updated_at             DateTime @default(now())
 
@@ -609,6 +627,9 @@ model user_purchases {
   // Buyer contact info (collected at checkout)
   phone_number String?
   university   String?
+
+  // Snapshot of features granted by the plan at time of purchase
+  allowed_features Json @default("[]")
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())

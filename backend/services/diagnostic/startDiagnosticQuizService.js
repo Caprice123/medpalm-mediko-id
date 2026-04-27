@@ -106,7 +106,8 @@ export class StartDiagnosticQuizService extends BaseService {
         userRole,
         accessTypeKey: 'diagnostic_access_type',
         creditCostKey: 'diagnostic_quiz_cost',
-        description: `Started diagnostic quiz: ${quiz.id} - ${quiz.title}`
+        description: `Started diagnostic quiz: ${quiz.id} - ${quiz.title}`,
+        featureKey: 'diagnostic',
       })
 
       // Create quiz attempt directly (no sessions)

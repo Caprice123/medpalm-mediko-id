@@ -17,7 +17,8 @@ export class UpdatePricingPlanService extends BaseService {
       is_popular,
       discount,
       order,
-      allowed_payment_method
+      allowed_payment_method,
+      allowed_features,
     } = req.body
 
     const updateData = {}
@@ -40,6 +41,7 @@ export class UpdatePricingPlanService extends BaseService {
     if (discount !== undefined) updateData.discount = Number(discount)
     if (order !== undefined) updateData.order = Number(order)
     if (allowed_payment_method !== undefined) updateData.allowed_payment_method = allowed_payment_method
+    if (allowed_features !== undefined) updateData.allowed_features = Array.isArray(allowed_features) ? allowed_features : []
 
     updateData.updated_at = new Date()
 

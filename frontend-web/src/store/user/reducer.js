@@ -6,6 +6,7 @@ const initialState = {
   detail: null,
   subscriptions: [],
   subscriptionFilter: 'all', // 'all' or 'active'
+  featureSubscriptions: [],
   creditBuckets: { permanentBalance: 0, expiringBuckets: [], totalBalance: 0 },
   filter: {
     email: undefined,
@@ -36,6 +37,8 @@ const initialState = {
     isDeleteSubscriptionLoading: false,
     isUpdateCreditBucketLoading: false,
     isDeleteCreditBucketLoading: false,
+    isFetchFeatureSubscriptionsLoading: false,
+    isUpdateFeatureSubscriptionsLoading: false,
   },
 }
 
@@ -84,6 +87,9 @@ const usersSlice = createSlice({
     },
     setCreditBuckets: (state, action) => {
       state.creditBuckets = action.payload
+    },
+    setFeatureSubscriptions: (state, action) => {
+      state.featureSubscriptions = action.payload
     },
   },
   

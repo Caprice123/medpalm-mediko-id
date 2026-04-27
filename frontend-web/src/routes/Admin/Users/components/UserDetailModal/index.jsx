@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions, fetchUserCreditBuckets, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription, updateCreditBucket, deleteCreditBucket } from '@store/user/action'
+import { fetchUserSubscriptions, fetchUserCreditBuckets, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription, updateCreditBucket, deleteCreditBucket, fetchUserFeatureSubscriptions, updateUserFeatureSubscriptions } from '@store/user/action'
 import { actions } from '@store/user/reducer'
 import { getUserData } from '../../../../../utils/authToken'
 import PermissionManager from '../PermissionManager'
@@ -47,7 +47,7 @@ import {
 function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription }) {
   const dispatch = useDispatch()
   const currentUser = getUserData()
-  const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter, creditBuckets } = useSelector(state => state.user)
+  const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter, creditBuckets, featureSubscriptions } = useSelector(state => state.user)
   const [showCreditForm, setShowCreditForm] = useState(false)
   const [showSubscriptionForm, setShowSubscriptionForm] = useState(false)
   const [showRoleForm, setShowRoleForm] = useState(false)
@@ -69,11 +69,12 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const [editingBucket, setEditingBucket] = useState(null) // { id, balance, expiresAt }
   const [editBucketError, setEditBucketError] = useState('')
 
-  // Fetch subscriptions and credit buckets when modal opens or relevant state changes
+  // Fetch subscriptions, credit buckets, and feature subscriptions when modal opens
   useEffect(() => {
     if (isOpen && user?.id) {
       dispatch(fetchUserSubscriptions(user.id))
       dispatch(fetchUserCreditBuckets(user.id))
+      if (user.role === 'user') dispatch(fetchUserFeatureSubscriptions(user.id))
     }
   }, [isOpen, user?.id, subscriptionPagination.page, subscriptionFilter, dispatch])
 
@@ -865,6 +866,74 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
           </>
         )}
       </SubscriptionSection>
+
+      {/* Feature Subscriptions Section — only for role=user */}
+      {user.role === 'user' && (
+        <SubscriptionSection>
+          <SubscriptionHeader>
+            <SectionTitle style={{ margin: 0 }}>Feature Access</SectionTitle>
+          </SubscriptionHeader>
+          <div style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '1rem' }}>
+            Toggle which features this user can access.
+          </div>
+
+          {loading.isFetchFeatureSubscriptionsLoading ? (
+            <EmptyState>Loading features...</EmptyState>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              {featureSubscriptions.map(({ feature, isActive }) => {
+                const labels = {
+                  exercise: 'Latihan Soal',
+                  flashcard: 'Flashcard',
+                  calculator: 'Kalkulator Medis',
+                  diagnostic: 'Kuis Diagnostik',
+                  anatomy: 'Kuis Anatomi',
+                  mcq: 'Multiple Choice',
+                  chatbot: 'Asisten AI',
+                  skripsi: 'Skripsi Builder',
+                  oscePractice: 'OSCE Practice',
+                  summaryNotes: 'Ringkasan Materi',
+                  atlas: 'Atlas 3D',
+                }
+                return (
+                  <label
+                    key={feature}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.5rem 0.75rem',
+                      border: `1px solid ${isActive ? '#3b82f6' : '#e5e7eb'}`,
+                      borderRadius: '8px',
+                      background: isActive ? '#eff6ff' : '#f9fafb',
+                      cursor: loading.isUpdateFeatureSubscriptionsLoading ? 'not-allowed' : 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 500,
+                      color: isActive ? '#1d4ed8' : '#374151',
+                      userSelect: 'none',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isActive}
+                      disabled={loading.isUpdateFeatureSubscriptionsLoading}
+                      onChange={() => {
+                        const newActive = featureSubscriptions
+                          .map(f => f.feature === feature ? { ...f, isActive: !f.isActive } : f)
+                          .filter(f => f.isActive)
+                          .map(f => f.feature)
+                        dispatch(updateUserFeatureSubscriptions(user.id, newActive))
+                      }}
+                      style={{ accentColor: '#3b82f6' }}
+                    />
+                    {labels[feature] || feature}
+                  </label>
+                )
+              })}
+            </div>
+          )}
+        </SubscriptionSection>
+      )}
 
       <ModalFooter>
         <Button onClick={handleClose}>

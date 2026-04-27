@@ -42,7 +42,8 @@ export class GetMcqTopicByIdService extends BaseService {
         userRole,
         accessTypeKey: 'mcq_access_type',
         creditCostKey: 'mcq_credit_cost',
-        description: `Viewed MCQ topic: ${topic.id} - ${topic.title}`
+        description: `Viewed MCQ topic: ${topic.id} - ${topic.title}`,
+        featureKey: 'mcq',
       })
 
       // If userId is provided, implement spaced repetition

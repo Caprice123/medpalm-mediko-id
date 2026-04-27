@@ -59,7 +59,8 @@ export class SendMessageService extends BaseService {
       accessTypeKey: 'skripsi_access_type',
       creditCostKey: `skripsi_${mode}_cost`,
       deductCredit: false,
-      description: ''
+      description: '',
+      featureKey: 'skripsi',
     })
 
     // Still need messageCost for deduction on first chunk

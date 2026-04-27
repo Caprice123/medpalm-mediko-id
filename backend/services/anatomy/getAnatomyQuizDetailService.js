@@ -41,7 +41,8 @@ export class GetAnatomyQuizDetailService extends BaseService {
         userRole,
         accessTypeKey: 'anatomy_access_type',
         creditCostKey: 'anatomy_quiz_cost',
-        description: `Viewed anatomy quiz: ${quiz.id} - ${quiz.title}`
+        description: `Viewed anatomy quiz: ${quiz.id} - ${quiz.title}`,
+        featureKey: 'anatomy',
       })
 
       return quiz

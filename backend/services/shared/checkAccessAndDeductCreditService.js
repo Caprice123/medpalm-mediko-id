@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import { HasActiveSubscriptionService } from '#services/pricing/getUserStatusService'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 import { getEffectiveCreditBalance, deductUserCredits } from '#utils/creditUtils'
+import { hasFeatureAccess } from '#services/users/getUserFeatureSubscriptionsService'
 
 /**
  * Checks access (subscription and/or credits) based on an access type constant,
@@ -16,6 +17,7 @@ import { getEffectiveCreditBalance, deductUserCredits } from '#utils/creditUtils
  * @param {string|null} options.creditCostKey - Constants key for credit cost, e.g. 'anatomy_quiz_cost'
  * @param {boolean} options.deductCredit    - Whether to actually deduct credits after checking (default: true)
  * @param {string} options.description      - Description for the credit transaction record
+ * @param {string|null} options.featureKey  - Feature key for per-user feature subscription check, e.g. 'anatomy'
  */
 export async function checkAccessAndDeductCredit(tx, {
   userId,
@@ -23,12 +25,21 @@ export async function checkAccessAndDeductCredit(tx, {
   accessTypeKey = null,
   creditCostKey = null,
   deductCredit = true,
-  description = ''
+  description = '',
+  featureKey = null,
 }) {
   const isUser = userRole === 'user'
 
   // Only apply access restrictions for regular users
   if (!isUser) return
+
+  // Per-user feature subscription check
+  if (featureKey) {
+    const allowed = await hasFeatureAccess(parseInt(userId), featureKey)
+    if (!allowed) {
+      throw new ValidationError('You do not have access to this feature')
+    }
+  }
 
   // Resolve access type from constants (default to 'free' if not configured)
   let accessType = 'free'

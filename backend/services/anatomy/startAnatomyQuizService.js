@@ -106,7 +106,8 @@ export class StartAnatomyQuizService extends BaseService {
         userRole,
         accessTypeKey: 'anatomy_access_type',
         creditCostKey: 'anatomy_quiz_cost',
-        description: `Started anatomy quiz: ${quiz.id} - ${quiz.title}`
+        description: `Started anatomy quiz: ${quiz.id} - ${quiz.title}`,
+        featureKey: 'anatomy',
       })
 
       // Create quiz attempt directly (no sessions)

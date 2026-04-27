@@ -4,6 +4,8 @@ import { AddCreditService } from "#services/users/addCreditService";
 import { GetUserSubscriptionsService } from "#services/users/getUserSubscriptionsService";
 import { UpdateUserRoleService } from "#services/users/updateUserRoleService";
 import { UpdateUserPermissionsService } from "#services/users/updateUserPermissionsService";
+import { GetUserFeatureSubscriptionsService } from "#services/users/getUserFeatureSubscriptionsService";
+import { UpdateUserFeatureSubscriptionsService } from "#services/users/updateUserFeatureSubscriptionsService";
 import { UserSerializer } from "#serializers/admin/v1/userSerializer";
 import { UserSubscriptionSerializer } from "#serializers/admin/v1/userSubscriptionSerializer";
 import prisma from '#prisma/client';
@@ -212,6 +214,24 @@ class UsersController {
     res.status(200).json({
       data: UserSerializer.serialize(updatedUser),
     });
+  }
+
+  async getFeatureSubscriptions(req, res) {
+    const userId = parseInt(req.params.id)
+    const subscriptions = await GetUserFeatureSubscriptionsService.call(userId)
+    res.status(200).json({ data: subscriptions })
+  }
+
+  async updateFeatureSubscriptions(req, res) {
+    const userId = parseInt(req.params.id)
+    const { activeFeatures } = req.body
+
+    if (!Array.isArray(activeFeatures)) {
+      return res.status(400).json({ error: 'activeFeatures must be an array' })
+    }
+
+    const result = await UpdateUserFeatureSubscriptionsService.call(userId, activeFeatures)
+    res.status(200).json({ data: result })
   }
 
 }

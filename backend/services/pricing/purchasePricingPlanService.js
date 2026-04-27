@@ -33,6 +33,7 @@ export class PurchasePricingPlanService extends BaseService {
             amount_paid: plan.price,
             phone_number: phoneNumber || null,
             university: university || null,
+            allowed_features: Array.isArray(plan.allowed_features) ? plan.allowed_features : [],
           },
           include: {
             pricing_plan: true
@@ -99,6 +100,7 @@ export class PurchasePricingPlanService extends BaseService {
           amount_paid: plan.price,
           phone_number: phoneNumber || null,
           university: university || null,
+          allowed_features: Array.isArray(plan.allowed_features) ? plan.allowed_features : [],
         },
         include: {
           pricing_plan: true

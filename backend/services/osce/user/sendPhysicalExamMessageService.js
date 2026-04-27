@@ -80,7 +80,8 @@ export class SendPhysicalExamMessageService extends BaseService {
         accessTypeKey: 'osce_practice_access_type',
         creditCostKey: 'osce_practice_credit_cost',
         deductCredit: false,
-        description: ''
+        description: '',
+        featureKey: 'oscePractice',
       })
 
       // Still need messageCost for deduction on first chunk
