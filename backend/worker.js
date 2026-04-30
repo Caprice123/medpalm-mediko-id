@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import { createSummaryNotesWorker, shutdownWorker as shutdownSummaryNotesWorker } from '#jobs/workers/summaryNotesWorker'
+import { createEmailWorker, shutdownWorker as shutdownEmailWorker } from '#jobs/workers/emailWorker'
 
 /**
  * Background Worker Process
@@ -26,13 +27,12 @@ const workerRegistry = {
     name: 'Summary Notes',
     create: createSummaryNotesWorker,
     shutdown: shutdownSummaryNotesWorker
+  },
+  email: {
+    name: 'Email',
+    create: createEmailWorker,
+    shutdown: shutdownEmailWorker
   }
-  // Add more workers here as needed:
-  // otherQueue: {
-  //   name: 'Other Queue',
-  //   create: createOtherQueueWorker,
-  //   shutdown: shutdownOtherQueueWorker
-  // }
 }
 
 console.log('🚀 Starting background worker...\n')

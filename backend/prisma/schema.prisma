@@ -1740,3 +1740,52 @@ model osce_session_therapies {
 
   @@index([osce_session_id])
 }
+
+// ============= Webinar Feature =============
+
+model webinar_events {
+  id           Int       @id @default(autoincrement())
+  unique_id    String    @unique @default(uuid())
+  title        String
+  description  String?   @db.Text
+  speakers     Json?     // array of { name, bio }
+  benefits     String?   @db.Text
+  suitable_for Json?     // array of strings
+  join_url     Json      // array of { label, url }
+  start_at     DateTime
+  end_at       DateTime?
+  status       String    @default("draft") // draft, published, cancelled
+  is_deleted   Boolean   @default(false)
+  deleted_at   DateTime?
+  created_by   Int
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+
+  webinar_registrations webinar_registrations[]
+
+  @@index([status])
+  @@index([is_deleted])
+  @@index([start_at])
+}
+
+model webinar_registrations {
+  id          Int       @id @default(autoincrement())
+  unique_id   String    @unique @default(uuid())
+  webinar_id  Int
+  user_id     Int
+  status      String    @default("pending") // pending, approved, rejected
+  admin_notes String?
+  reviewed_by Int?
+  reviewed_at DateTime?
+  is_deleted  Boolean   @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+
+  webinar_event webinar_events @relation(fields: [webinar_id], references: [id])
+
+  @@unique([webinar_id, user_id])
+  @@index([webinar_id])
+  @@index([user_id])
+  @@index([status])
+}

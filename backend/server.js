@@ -48,6 +48,8 @@ import adminOscePracticeObservationGroupRoutes from '#routes/admin/v1/oscePracti
 import skripsiRoutes from '#routes/api/v1/skripsi.routes';
 import adminSkripsiRoutes from '#routes/admin/v1/skripsi.routes';
 import adminFeatureRoutes from '#routes/admin/v1/feature.routes';
+import webinarRoutes from '#routes/api/v1/webinar.routes';
+import adminWebinarRoutes from '#routes/admin/v1/webinar.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
@@ -156,6 +158,7 @@ app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/blobs', blobRoutes);
 app.use('/api/v1/skripsi', skripsiRoutes);
 app.use('/api/v1/html-to-docx', htmlToDocxRoutes);
+app.use('/api/v1/webinars', webinarRoutes);
 
 // Admin Routes
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);
@@ -181,6 +184,7 @@ app.use('/admin/v1/mcq', adminMcqRoutes);
 app.use('/admin/v1/chatbot', adminChatbotRoutes);
 app.use('/admin/v1/features', adminFeatureRoutes);
 app.use('/admin/v1/skripsi', adminSkripsiRoutes);
+app.use('/admin/v1/webinars', adminWebinarRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

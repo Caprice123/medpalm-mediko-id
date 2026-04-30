@@ -2,6 +2,7 @@ import { createBullBoard } from '@bull-board/api'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { ExpressAdapter } from '@bull-board/express'
 import { summaryNotesQueue } from '#jobs/queues/summaryNotesQueue'
+import { emailQueue } from '#jobs/queues/emailQueue'
 
 /**
  * Bull Board Setup
@@ -16,7 +17,8 @@ export function setupBullBoard() {
 
   createBullBoard({
     queues: [
-      new BullMQAdapter(summaryNotesQueue)
+      new BullMQAdapter(summaryNotesQueue),
+      new BullMQAdapter(emailQueue),
     ],
     serverAdapter: serverAdapter
   })
