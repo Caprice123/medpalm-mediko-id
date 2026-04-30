@@ -56,7 +56,6 @@ export class OpenAlexService {
           sourceIdCache.set(key, null)
           continue
         }
-
         const data = await res.json()
         const source = data.results?.[0]
         if (source?.id) {

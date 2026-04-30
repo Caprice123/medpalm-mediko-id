@@ -27,6 +27,7 @@ export default {
         skripsi: "/admin/v1/skripsi",
         skripsiJournals: "/admin/v1/skripsi/journals",
         oscePractice: "/admin/v1/oscePractice",
+        webinars: "/admin/v1/webinars",
     },
     api: {
         calculators: "/api/v1/calculators",
@@ -47,6 +48,7 @@ export default {
         oscePractice: "/api/v1/oscePractice",
         tags: "/api/v1/tags",
         constants: "/api/v1/constants",
+        webinars: "/api/v1/webinars",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
         oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,

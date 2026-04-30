@@ -131,6 +131,99 @@ export const RequirementsList = styled.div`
   font-size: 0.8125rem;
 `
 
+export const WebinarBanner = styled.div`
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  color: white;
+  box-shadow: 0 4px 20px rgba(107, 185, 232, 0.3);
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+`
+
+export const WebinarBannerLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+
+  @media (max-width: 480px) {
+    gap: 0.875rem;
+  }
+`
+
+export const WebinarBannerIcon = styled.div`
+  font-size: 2.5rem;
+  flex-shrink: 0;
+`
+
+export const WebinarBannerText = styled.div`
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  p {
+    font-size: 0.875rem;
+    margin: 0;
+    opacity: 0.85;
+  }
+`
+
+export const WebinarBannerActions = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    flex-direction: column;
+  }
+`
+
+export const WebinarBannerButtonPrimary = styled.button`
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  background: white;
+  color: #4a9cc7;
+  transition: background 0.15s;
+
+  &:hover { background: #f0fdfa; }
+
+  @media (max-width: 640px) { width: 100%; }
+`
+
+export const WebinarBannerButtonOutline = styled.button`
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255, 255, 255, 0.28); }
+
+  @media (max-width: 640px) { width: 100%; }
+`
+
+
 export const RequirementItem = styled.div`
   display: flex;
   align-items: center;
