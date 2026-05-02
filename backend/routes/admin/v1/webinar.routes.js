@@ -23,6 +23,7 @@ router.delete('/:uniqueId', asyncHandler(adminWebinarController.delete.bind(admi
 
 // Registrations
 router.get('/:uniqueId/registrations', asyncHandler(adminWebinarController.listRegistrations.bind(adminWebinarController)))
+router.get('/registrations/:registrationUniqueId', asyncHandler(adminWebinarController.showRegistration.bind(adminWebinarController)))
 router.put('/registrations/:registrationUniqueId/review', asyncHandler(adminWebinarController.reviewRegistration.bind(adminWebinarController)))
 
 export default router

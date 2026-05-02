@@ -9,6 +9,7 @@ const initialState = {
   filter: {
     search: undefined,
     status: undefined,
+    registrationStatus: 'open',
   },
   pagination: {
     page: 1,

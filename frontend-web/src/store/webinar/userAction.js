@@ -17,6 +17,7 @@ export const fetchWebinars = () => async (dispatch, getState) => {
     const { filter, pagination } = getState().webinar
     const queryParams = { page: pagination.page, perPage: pagination.perPage }
     if (filter.search) queryParams.search = filter.search
+    if (filter.registrationStatus && filter.registrationStatus !== 'all') queryParams.registrationStatus = filter.registrationStatus
 
     const response = await getWithToken(Endpoints.api.webinars, queryParams)
     dispatch(setWebinars(response.data.data || []))

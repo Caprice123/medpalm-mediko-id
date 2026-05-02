@@ -1751,10 +1751,12 @@ model webinar_events {
   speakers     Json?     // array of { name, bio }
   benefits     String?   @db.Text
   suitable_for Json?     // array of strings
-  join_url     Json      // array of { label, url }
-  start_at     DateTime
-  end_at       DateTime?
-  status       String    @default("draft") // draft, published, cancelled
+  join_url              Json      // array of { label, url }
+  start_at              DateTime
+  end_at                DateTime?
+  registration_start_at DateTime
+  registration_end_at   DateTime
+  status                String    @default("draft") // draft, published, cancelled
   is_deleted   Boolean   @default(false)
   deleted_at   DateTime?
   created_by   Int

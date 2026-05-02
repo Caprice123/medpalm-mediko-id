@@ -53,12 +53,12 @@ function Dashboard() {
   const { features } = useSelector(state => state.feature)
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
   const { userStatus } = useSelector(state => state.pricing)
+  const { user } = useSelector(state => state.auth)
 
   // Filter only active features
   const activeFeatures = features.filter(feature => feature.isActive === true || feature.isActive === "true")
 
   useEffect(() => {
-    // Fetch features
     dispatch(fetchFeatures())
   }, [dispatch])
 
@@ -91,8 +91,8 @@ function Dashboard() {
   return (
     <DashboardContainer>
       <MainContent>
-        {/* Webinar Banner */}
-        <WebinarBanner>
+        {/* Webinar Banner — hidden for regular users for now */}
+        {user?.role !== 'user' && <WebinarBanner>
           <WebinarBannerLeft>
             <WebinarBannerIcon>🎓</WebinarBannerIcon>
             <WebinarBannerText>
@@ -108,7 +108,7 @@ function Dashboard() {
               Pendaftaran Saya
             </WebinarBannerButtonOutline>
           </WebinarBannerActions>
-        </WebinarBanner>
+        </WebinarBanner>}
 
         <PageTitle>Fitur Pembelajaran</PageTitle>
         <PageSubtitle>Pilih fitur yang ingin Anda gunakan untuk memulai pembelajaran</PageSubtitle>

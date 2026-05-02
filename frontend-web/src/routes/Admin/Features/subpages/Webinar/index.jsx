@@ -53,7 +53,7 @@ function Webinar({ onBack = null }) {
 
   const [tab, setTab] = useState('webinars')
   const [modal, setModal] = useState(null)
-  const [selectedRegistration, setSelectedRegistration] = useState(null)
+  const [selectedRegistrationId, setSelectedRegistrationId] = useState(null)
 
   useEffect(() => {
     if (tab === 'webinars') dispatch(fetchAdminWebinars())
@@ -152,7 +152,7 @@ function Webinar({ onBack = null }) {
       width: '90px',
       align: 'center',
       render: (row) => (
-        <Button size="small" variant="primary" onClick={() => setSelectedRegistration(row)}>
+        <Button size="small" variant="primary" onClick={() => setSelectedRegistrationId(row.uniqueId)}>
           Detail
         </Button>
       ),
@@ -339,10 +339,10 @@ function Webinar({ onBack = null }) {
         <WebinarFormModal mode="edit" initialValues={detail} onClose={() => setModal(null)} />
       )}
 
-      {selectedRegistration && (
+      {selectedRegistrationId && (
         <RegistrationDetailModal
-          registration={selectedRegistration}
-          onClose={() => setSelectedRegistration(null)}
+          registrationUniqueId={selectedRegistrationId}
+          onClose={() => setSelectedRegistrationId(null)}
         />
       )}
 

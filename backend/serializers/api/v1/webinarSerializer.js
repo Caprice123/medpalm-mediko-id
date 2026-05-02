@@ -9,9 +9,11 @@ export class WebinarSerializer {
       benefits: webinar.benefits,
       suitableFor: webinar.suitable_for || [],
       joinUrl: webinar.join_url || [],
-      isRegistered: webinar.isRegistered ?? false,
+      myRegistrationStatus: webinar.myRegistrationStatus ?? null,
       startAt: webinar.start_at,
       endAt: webinar.end_at,
+      registrationStartAt: webinar.registration_start_at,
+      registrationEndAt: webinar.registration_end_at,
       status: webinar.status,
       createdAt: webinar.created_at,
       thumbnail: webinar.thumbnail

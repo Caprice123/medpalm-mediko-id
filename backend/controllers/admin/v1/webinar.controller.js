@@ -5,6 +5,7 @@ import { GetWebinarsService } from '#services/webinar/admin/getWebinarsService'
 import { GetWebinarDetailService } from '#services/webinar/admin/getWebinarDetailService'
 import { GetRegistrationsService } from '#services/webinar/admin/getRegistrationsService'
 import { GetAllRegistrationsService } from '#services/webinar/admin/getAllRegistrationsService'
+import { GetRegistrationDetailService } from '#services/webinar/admin/getRegistrationDetailService'
 import { ReviewRegistrationService } from '#services/webinar/admin/reviewRegistrationService'
 import { WebinarSerializer } from '#serializers/admin/v1/webinarSerializer'
 import { WebinarRegistrationSerializer } from '#serializers/admin/v1/webinarRegistrationSerializer'
@@ -22,7 +23,7 @@ class AdminWebinarController {
   }
 
   async create(req, res) {
-    const { title, description, speakers, benefits, suitableFor, joinUrl, startAt, endAt, status, thumbnailBlobId } = req.body
+    const { title, description, speakers, benefits, suitableFor, joinUrl, startAt, endAt, registrationStartAt, registrationEndAt, status, thumbnailBlobId } = req.body
 
     const webinar = await CreateWebinarService.call({
       title,
@@ -33,6 +34,8 @@ class AdminWebinarController {
       joinUrl,
       startAt,
       endAt,
+      registrationStartAt,
+      registrationEndAt,
       status,
       thumbnailBlobId,
       createdBy: req.user.id,
@@ -51,7 +54,7 @@ class AdminWebinarController {
 
   async update(req, res) {
     const { uniqueId } = req.params
-    const { title, description, speakers, benefits, suitableFor, joinUrl, startAt, endAt, status, thumbnailBlobId } = req.body
+    const { title, description, speakers, benefits, suitableFor, joinUrl, startAt, endAt, registrationStartAt, registrationEndAt, status, thumbnailBlobId } = req.body
 
     const webinar = await UpdateWebinarService.call({
       uniqueId,
@@ -63,6 +66,8 @@ class AdminWebinarController {
       joinUrl,
       startAt,
       endAt,
+      registrationStartAt,
+      registrationEndAt,
       status,
       thumbnailBlobId,
     })
@@ -104,6 +109,12 @@ class AdminWebinarController {
       data: WebinarRegistrationSerializer.serializeList(result.data),
       pagination: result.pagination,
     })
+  }
+
+  async showRegistration(req, res) {
+    const { registrationUniqueId } = req.params
+    const registration = await GetRegistrationDetailService.call(registrationUniqueId)
+    return res.status(200).json({ data: WebinarRegistrationSerializer.serialize(registration) })
   }
 
   async reviewRegistration(req, res) {

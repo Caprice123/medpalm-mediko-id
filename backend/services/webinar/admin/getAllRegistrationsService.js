@@ -1,5 +1,4 @@
 import prisma from '#prisma/client'
-import attachmentService from '#services/attachment/attachmentService'
 
 export class GetAllRegistrationsService {
   static async call({ page = 1, perPage = 20, status, search, webinarId }) {
@@ -34,7 +33,7 @@ export class GetAllRegistrationsService {
     const isLastPage = registrations.length <= perPageNum
     const data = isLastPage ? registrations : registrations.slice(0, perPageNum)
 
-    const [users, webinars, evidencesPerReg] = await Promise.all([
+    const [users, webinars] = await Promise.all([
       prisma.users.findMany({
         where: { id: { in: data.map(r => r.user_id) } },
         select: { id: true, name: true, email: true },
@@ -43,25 +42,16 @@ export class GetAllRegistrationsService {
         where: { id: { in: data.map(r => r.webinar_id) } },
         select: { id: true, unique_id: true, title: true, start_at: true },
       }),
-      Promise.all(
-        data.map(r =>
-          attachmentService.getAttachmentsWithUrls({
-            recordType: 'webinar_registration',
-            recordId: r.id,
-          })
-        )
-      ),
     ])
 
     const userMap = new Map(users.map(u => [u.id, u]))
     const webinarMap = new Map(webinars.map(w => [w.id, w]))
 
     return {
-      data: data.map((r, i) => ({
+      data: data.map(r => ({
         ...r,
         user: userMap.get(r.user_id) || null,
         webinar: webinarMap.get(r.webinar_id) || null,
-        evidences: evidencesPerReg[i],
       })),
       pagination: { page: pageNum, perPage: perPageNum, isLastPage },
     }

@@ -32,6 +32,12 @@ function WebinarFormModal({ mode = 'create', initialValues, onClose }) {
     endAt: initialValues?.endAt
       ? new Date(initialValues.endAt).toISOString().slice(0, 16)
       : '',
+    registrationStartAt: initialValues?.registrationStartAt
+      ? new Date(initialValues.registrationStartAt).toISOString().slice(0, 16)
+      : '',
+    registrationEndAt: initialValues?.registrationEndAt
+      ? new Date(initialValues.registrationEndAt).toISOString().slice(0, 16)
+      : '',
     status: initialValues?.status || 'draft',
     thumbnailBlobId: null,
     thumbnailFile: initialValues?.thumbnail
@@ -88,6 +94,8 @@ function WebinarFormModal({ mode = 'create', initialValues, onClose }) {
     const e = {}
     if (!values.title.trim()) e.title = 'Judul wajib diisi'
     if (!values.startAt) e.startAt = 'Tanggal mulai wajib diisi'
+    if (!values.registrationStartAt) e.registrationStartAt = 'Tanggal buka pendaftaran wajib diisi'
+    if (!values.registrationEndAt) e.registrationEndAt = 'Tanggal tutup pendaftaran wajib diisi'
     const validLinks = joinLinks.filter(l => l.trim())
     if (validLinks.length === 0) e.joinLinks = 'Minimal satu link bergabung wajib diisi'
     setErrors(e)
@@ -112,6 +120,8 @@ function WebinarFormModal({ mode = 'create', initialValues, onClose }) {
       joinUrl: joinLinks.filter(l => l.trim()).map(url => ({ url })),
       startAt: values.startAt,
       endAt: values.endAt || undefined,
+      registrationStartAt: values.registrationStartAt,
+      registrationEndAt: values.registrationEndAt,
       status: values.status,
       thumbnailBlobId: values.thumbnailBlobId || undefined,
     }
@@ -272,6 +282,29 @@ function WebinarFormModal({ mode = 'create', initialValues, onClose }) {
             type="datetime-local"
             value={values.endAt}
             onChange={e => set('endAt', e.target.value)}
+          />
+        </FormSection>
+      </Row>
+
+      <Row>
+        <FormSection>
+          <TextInput
+            label="Pendaftaran Dibuka"
+            required
+            type="datetime-local"
+            value={values.registrationStartAt}
+            onChange={e => set('registrationStartAt', e.target.value)}
+            error={errors.registrationStartAt}
+          />
+        </FormSection>
+        <FormSection>
+          <TextInput
+            label="Pendaftaran Ditutup"
+            required
+            type="datetime-local"
+            value={values.registrationEndAt}
+            onChange={e => set('registrationEndAt', e.target.value)}
+            error={errors.registrationEndAt}
           />
         </FormSection>
       </Row>

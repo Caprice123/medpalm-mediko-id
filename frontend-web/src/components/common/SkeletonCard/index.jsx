@@ -14,6 +14,7 @@ export { default as ChatbotMessagesSkeleton } from './ChatbotMessagesSkeleton'
 export { default as ChatbotLoadingIndicator } from './ChatbotLoadingIndicator'
 export { default as ConversationListSkeleton } from './ConversationListSkeleton'
 export { SkripsiSetCardSkeleton, SkripsiSetSkeletonGrid } from './SkripsiSetCardSkeleton'
+export { WebinarCardSkeleton, WebinarSkeletonGrid } from './WebinarCardSkeleton'
 export { SkeletonCard } from './GenericSkeleton'
 
 // Default export

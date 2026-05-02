@@ -11,6 +11,8 @@ export class WebinarSerializer {
       joinUrl: webinar.join_url || [],
       startAt: webinar.start_at,
       endAt: webinar.end_at,
+      registrationStartAt: webinar.registration_start_at,
+      registrationEndAt: webinar.registration_end_at,
       status: webinar.status,
       createdBy: webinar.created_by,
       createdAt: webinar.created_at,

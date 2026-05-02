@@ -132,7 +132,7 @@ export const RequirementsList = styled.div`
 `
 
 export const WebinarBanner = styled.div`
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, #0369a1 0%, #15803d 100%);
   border-radius: 16px;
   padding: 1.75rem 2rem;
   margin-bottom: 2.5rem;
@@ -141,7 +141,7 @@ export const WebinarBanner = styled.div`
   justify-content: space-between;
   gap: 1.5rem;
   color: white;
-  box-shadow: 0 4px 20px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 20px rgba(3, 105, 161, 0.35);
 
   @media (max-width: 640px) {
     flex-direction: column;
@@ -174,7 +174,7 @@ export const WebinarBannerText = styled.div`
   p {
     font-size: 0.875rem;
     margin: 0;
-    opacity: 0.85;
+    opacity: 0.9;
   }
 `
 

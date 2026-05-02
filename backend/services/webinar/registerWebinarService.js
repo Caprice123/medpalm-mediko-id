@@ -19,7 +19,28 @@ export class RegisterWebinarService {
       where: { webinar_id: webinar.id, user_id: userId, is_deleted: false },
     })
 
-    if (existing) throw new ValidationError('You have already registered for this webinar')
+    if (existing && existing.status !== 'rejected') {
+      throw new ValidationError('You have already registered for this webinar')
+    }
+
+    if (existing && existing.status === 'rejected') {
+      await attachmentService.detachAll({ recordType: 'webinar_registration', recordId: existing.id })
+      const updated = await prisma.webinar_registrations.update({
+        where: { id: existing.id },
+        data: { status: 'pending', admin_notes: null, reviewed_by: null, reviewed_at: null, updated_at: new Date() },
+      })
+      await Promise.all(
+        blobIds.map((blobId, index) =>
+          attachmentService.attach({
+            blobId: parseInt(blobId),
+            recordType: 'webinar_registration',
+            recordId: existing.id,
+            name: `evidence_${index}`,
+          })
+        )
+      )
+      return updated
+    }
 
     const registration = await prisma.webinar_registrations.create({
       data: {

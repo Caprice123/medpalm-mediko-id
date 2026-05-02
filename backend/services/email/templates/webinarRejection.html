@@ -9,24 +9,16 @@
   <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
 
     <!-- Header -->
-    <div style="background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%); padding: 32px 40px; text-align: center;">
-      <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">
-        MedPalm
-      </h1>
-      <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">
-        Platform Belajar Medis
-      </p>
+    <div style="background: linear-gradient(135deg, #0369a1 0%, #15803d 100%); padding: 32px 40px; text-align: center;">
+      <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MedPal</h1>
+      <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">Platform Belajar Medis</p>
     </div>
 
     <!-- Body -->
     <div style="padding: 40px;">
       <div style="text-align: center; margin-bottom: 28px;">
-        <div style="display: inline-block; background: #fee2e2; border-radius: 50%; width: 56px; height: 56px; line-height: 56px; font-size: 28px; text-align: center;">
-          ❌
-        </div>
-        <h2 style="margin: 16px 0 0; color: #111827; font-size: 22px; font-weight: 700;">
-          Registrasi Tidak Disetujui
-        </h2>
+        <div style="display: inline-block; background: #fee2e2; border-radius: 50%; width: 56px; height: 56px; line-height: 56px; font-size: 28px; text-align: center;">❌</div>
+        <h2 style="margin: 16px 0 0; color: #111827; font-size: 22px; font-weight: 700;">Registrasi Tidak Disetujui</h2>
       </div>
 
       <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 16px;">
@@ -36,8 +28,13 @@
         Mohon maaf, registrasi kamu untuk webinar <strong>{{webinarTitle}}</strong> tidak dapat kami setujui saat ini.
       </p>
 
-      <!-- Admin Notes (only shown if present) -->
-      {{adminNotesBlock}}
+      {{#if adminNotes}}
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; color: #991b1b; font-size: 14px;">
+          <strong>Catatan dari admin:</strong><br />{{adminNotes}}
+        </p>
+      </div>
+      {{/if}}
 
       <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0;">
         Jika ada pertanyaan atau ingin mengajukan kembali, silakan hubungi tim kami.
@@ -47,8 +44,8 @@
     <!-- Footer -->
     <div style="background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 20px 40px; text-align: center;">
       <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.6;">
-        Email ini dikirim otomatis oleh MedPalm. Jangan membalas email ini.<br />
-        © 2026 MedPalm. All rights reserved.
+        Email ini dikirim otomatis oleh MedPal. Jangan membalas email ini.<br />
+        © 2026 MedPal. All rights reserved.
       </p>
     </div>
 

@@ -7,9 +7,9 @@ import { WebinarRegistrationSerializer } from '#serializers/api/v1/webinarRegist
 
 class WebinarController {
   async index(req, res) {
-    const { page, perPage, search } = req.query
+    const { page, perPage, search, registrationStatus } = req.query
 
-    const result = await GetWebinarsService.call({ page, perPage, search, userId: req.user.id })
+    const result = await GetWebinarsService.call({ page, perPage, search, registrationStatus, userId: req.user.id })
 
     return res.status(200).json({
       data: WebinarSerializer.serializeList(result.data),

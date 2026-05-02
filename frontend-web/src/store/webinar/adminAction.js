@@ -11,6 +11,16 @@ const {
   setRegistrationPagination,
 } = actions
 
+export const fetchRegistrationDetail = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isGetDetailLoading', value: true }))
+    const response = await getWithToken(`${Endpoints.admin.webinars}/registrations/${uniqueId}`)
+    return response.data.data
+  } finally {
+    dispatch(setLoading({ key: 'isGetDetailLoading', value: false }))
+  }
+}
+
 export const fetchAdminWebinars = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListLoading', value: true }))

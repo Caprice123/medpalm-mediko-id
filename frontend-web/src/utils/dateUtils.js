@@ -72,7 +72,30 @@ export const formatRelativeTime = (isoString) => {
 
 export const formatToJakarta = (date) => {
     return date?.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" })
-};
+}
+
+const JAKARTA_TZ = 'Asia/Jakarta'
+
+const jakartaParts = (isoString, options) => {
+  const date = new Date(isoString)
+  return new Intl.DateTimeFormat('id-ID', { timeZone: JAKARTA_TZ, ...options }).formatToParts(date)
+}
+const getPart = (parts, type) => parts.find(p => p.type === type)?.value ?? ''
+
+export const formatJakartaDateTimeFull = (isoString) => {
+  if (!isoString) return '-'
+  const parts = jakartaParts(isoString, {
+    weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  })
+  return `${getPart(parts, 'weekday')}, ${getPart(parts, 'day')} ${getPart(parts, 'month')} ${getPart(parts, 'year')}, ${getPart(parts, 'hour')}.${getPart(parts, 'minute')} WIB`
+}
+
+export const formatJakartaDateLong = (isoString) => {
+  if (!isoString) return '-'
+  const parts = jakartaParts(isoString, { day: 'numeric', month: 'long', year: 'numeric' })
+  return `${getPart(parts, 'day')} ${getPart(parts, 'month')} ${getPart(parts, 'year')}`
+}
 
 export const formatDate = (dateString) => {
     return formatLocalDate(dateString)
