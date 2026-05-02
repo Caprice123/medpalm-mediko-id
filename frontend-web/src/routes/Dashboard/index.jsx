@@ -5,6 +5,7 @@ import { Card, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import { FeatureCardSkeletonGrid } from '@components/common/SkeletonCard'
 import { fetchFeatures } from '@store/feature/userAction'
+import { fetchActiveBanners } from '@store/banner/userAction'
 import {
   DashboardContainer,
   MainContent,
@@ -23,13 +24,13 @@ import {
   CardWrapper,
   RequirementsList,
   RequirementItem,
-  WebinarBanner,
-  WebinarBannerLeft,
-  WebinarBannerIcon,
-  WebinarBannerText,
-  WebinarBannerActions,
-  WebinarBannerButtonPrimary,
-  WebinarBannerButtonOutline,
+  BannerList,
+  BannerCard,
+  BannerImage,
+  BannerOverlay,
+  BannerContent,
+  BannerText,
+  BannerButtonPrimary,
 } from './Dashboard.styles'
 import { TopupRoute } from '../Topup/routes'
 import { ExerciseRoute } from '../Exercise/routes'
@@ -43,7 +44,6 @@ import { ChatbotRoute } from '../Chatbot/routes'
 import { SkripsiRoute } from '../SkripsiBuilder/routes'
 import { OscePracticeRoute } from '../OscePractice/routes'
 import { AtlasRoute } from '../Atlas/routes'
-import { WebinarRoute } from '../Webinar/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -53,13 +53,14 @@ function Dashboard() {
   const { features } = useSelector(state => state.feature)
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
   const { userStatus } = useSelector(state => state.pricing)
-  const { user } = useSelector(state => state.auth)
+  const { activeBanners } = useSelector(state => state.banner)
 
   // Filter only active features
   const activeFeatures = features.filter(feature => feature.isActive === true || feature.isActive === "true")
 
   useEffect(() => {
     dispatch(fetchFeatures())
+    dispatch(fetchActiveBanners())
   }, [dispatch])
 
   const handleUseFeature = async (feature) => {
@@ -91,24 +92,38 @@ function Dashboard() {
   return (
     <DashboardContainer>
       <MainContent>
-        {/* Webinar Banner — hidden for regular users for now */}
-        {user?.role !== 'user' && <WebinarBanner>
-          <WebinarBannerLeft>
-            <WebinarBannerIcon>🎓</WebinarBannerIcon>
-            <WebinarBannerText>
-              <h2>Webinar Medis Eksklusif</h2>
-              <p>Daftar & ikuti webinar langsung dari para dokter dan spesialis terkemuka</p>
-            </WebinarBannerText>
-          </WebinarBannerLeft>
-          <WebinarBannerActions>
-            <WebinarBannerButtonPrimary onClick={() => navigate(WebinarRoute.listRoute)}>
-              Lihat Webinar
-            </WebinarBannerButtonPrimary>
-            <WebinarBannerButtonOutline onClick={() => navigate(`${WebinarRoute.listRoute}?tab=registrations`)}>
-              Pendaftaran Saya
-            </WebinarBannerButtonOutline>
-          </WebinarBannerActions>
-        </WebinarBanner>}
+        {activeBanners.length > 0 && (
+          <BannerList>
+            {activeBanners.map(banner => (
+              <BannerCard
+                key={banner.uniqueId}
+                $gradientStart={banner.gradientStart}
+                $gradientEnd={banner.gradientEnd}
+                onClick={() => {
+                  if (banner.redirectUrl.startsWith('http')) {
+                    window.open(banner.redirectUrl, '_blank', 'noopener,noreferrer')
+                  } else {
+                    navigate(banner.redirectUrl)
+                  }
+                }}
+              >
+                {banner.image?.url && (
+                  <BannerImage src={banner.image.url} alt={banner.title} />
+                )}
+                <BannerOverlay $hasImage={!!banner.image?.url} $gradientStart={banner.gradientStart} $gradientEnd={banner.gradientEnd} />
+                <BannerContent>
+                  <BannerText>
+                    <h2>{banner.title}</h2>
+                    {banner.description && <p>{banner.description}</p>}
+                  </BannerText>
+                  <BannerButtonPrimary>
+                    {banner.redirectLabel || 'Lihat Sekarang'}
+                  </BannerButtonPrimary>
+                </BannerContent>
+              </BannerCard>
+            ))}
+          </BannerList>
+        )}
 
         <PageTitle>Fitur Pembelajaran</PageTitle>
         <PageSubtitle>Pilih fitur yang ingin Anda gunakan untuk memulai pembelajaran</PageSubtitle>

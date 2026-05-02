@@ -23,6 +23,7 @@ import oscePractice from "./oscePractice";
 import atlas from "./atlas";
 import webinar from "./webinar";
 import featureSubscriptions from "./featureSubscriptions/reducer";
+import banner from "./banner";
 
 export const rootReducer = combineReducers({
     auth,
@@ -48,6 +49,7 @@ export const rootReducer = combineReducers({
     atlas,
     webinar,
     featureSubscriptions,
+    banner,
 })
 
 export const store = configureStore({
