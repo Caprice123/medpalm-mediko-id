@@ -1791,3 +1791,26 @@ model webinar_registrations {
   @@index([user_id])
   @@index([status])
 }
+
+// ============= Banner Feature =============
+
+model banners {
+  id             Int       @id @default(autoincrement())
+  unique_id      String    @unique @default(uuid())
+  title          String
+  description    String?   @db.Text
+  redirect_url   String
+  redirect_label String?
+  gradient_start String?
+  gradient_end   String?
+  is_active      Boolean   @default(false)
+  order          Int       @default(0)
+  is_deleted     Boolean   @default(false)
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now())
+
+  @@index([is_active])
+  @@index([is_deleted])
+  @@index([order])
+}

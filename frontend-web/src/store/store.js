@@ -22,6 +22,7 @@ import skripsi from "./skripsi/reducer";
 import oscePractice from "./oscePractice";
 import atlas from "./atlas";
 import webinar from "./webinar";
+import banner from "./banner";
 
 export const rootReducer = combineReducers({
     auth,
@@ -46,6 +47,7 @@ export const rootReducer = combineReducers({
     oscePractice,
     atlas,
     webinar,
+    banner,
 })
 
 export const store = configureStore({
