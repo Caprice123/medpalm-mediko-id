@@ -1,4 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/effect-fade'
+import 'swiper/css/pagination'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardBody } from '@components/common/Card'
@@ -24,11 +29,8 @@ import {
   CardWrapper,
   RequirementsList,
   RequirementItem,
-  BannerList,
+  BannerCarousel,
   BannerCard,
-  BannerImage,
-  BannerOverlay,
-  BannerContent,
   BannerText,
   BannerButtonPrimary,
 } from './Dashboard.styles'
@@ -44,6 +46,7 @@ import { ChatbotRoute } from '../Chatbot/routes'
 import { SkripsiRoute } from '../SkripsiBuilder/routes'
 import { OscePracticeRoute } from '../OscePractice/routes'
 import { AtlasRoute } from '../Atlas/routes'
+import { WebinarRoute } from '../Webinar/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -62,6 +65,7 @@ function Dashboard() {
     dispatch(fetchFeatures())
     dispatch(fetchActiveBanners())
   }, [dispatch])
+
 
   const handleUseFeature = async (feature) => {
       // Determine session type based on feature
@@ -93,36 +97,41 @@ function Dashboard() {
     <DashboardContainer>
       <MainContent>
         {activeBanners.length > 0 && (
-          <BannerList>
-            {activeBanners.map(banner => (
-              <BannerCard
-                key={banner.uniqueId}
-                $gradientStart={banner.gradientStart}
-                $gradientEnd={banner.gradientEnd}
-                onClick={() => {
-                  if (banner.redirectUrl.startsWith('http')) {
-                    window.open(banner.redirectUrl, '_blank', 'noopener,noreferrer')
-                  } else {
-                    navigate(banner.redirectUrl)
-                  }
-                }}
-              >
-                {banner.image?.url && (
-                  <BannerImage src={banner.image.url} alt={banner.title} />
-                )}
-                <BannerOverlay $hasImage={!!banner.image?.url} $gradientStart={banner.gradientStart} $gradientEnd={banner.gradientEnd} />
-                <BannerContent>
-                  <BannerText>
-                    <h2>{banner.title}</h2>
-                    {banner.description && <p>{banner.description}</p>}
-                  </BannerText>
-                  <BannerButtonPrimary>
-                    {banner.redirectLabel || 'Lihat Sekarang'}
-                  </BannerButtonPrimary>
-                </BannerContent>
-              </BannerCard>
-            ))}
-          </BannerList>
+          <BannerCarousel>
+            <Swiper
+              modules={[Autoplay, EffectFade, Pagination]}
+              effect="fade"
+              fadeEffect={{ crossFade: true }}
+              loop
+              autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+              pagination={{ clickable: true }}
+            >
+              {activeBanners.map(banner => (
+                <SwiperSlide key={banner.uniqueId}>
+                  <BannerCard
+                    $gradientStart={banner.gradientStart}
+                    $gradientEnd={banner.gradientEnd}
+                  >
+                    <BannerText>
+                      <h2>{banner.title}</h2>
+                      {banner.description && <p>{banner.description}</p>}
+                    </BannerText>
+                    <BannerButtonPrimary
+                      onClick={() => {
+                        if (banner.redirectUrl.startsWith('http')) {
+                          window.open(banner.redirectUrl, '_blank', 'noopener,noreferrer')
+                        } else {
+                          navigate(banner.redirectUrl)
+                        }
+                      }}
+                    >
+                      {banner.redirectLabel || 'Lihat Sekarang'}
+                    </BannerButtonPrimary>
+                  </BannerCard>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </BannerCarousel>
         )}
 
         <PageTitle>Fitur Pembelajaran</PageTitle>
@@ -232,6 +241,28 @@ function Dashboard() {
             <EmptyStateSubtext>Silakan hubungi administrator</EmptyStateSubtext>
           </EmptyState>
         )}
+
+        <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
+        <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
+        <CatalogGrid>
+          <CardWrapper>
+            <Card shadow hoverable>
+              <CardBody>
+                <FeatureIcon>🎓</FeatureIcon>
+                <FeatureTitle>Webinar</FeatureTitle>
+                <FeatureDescription>
+                  Ikuti webinar medis eksklusif dari para dokter dan spesialis terkemuka
+                </FeatureDescription>
+                <div style={{ flex: 1 }} />
+                <FeatureFooter>
+                  <Button variant="primary" onClick={() => navigate(WebinarRoute.listRoute)} fullWidth>
+                    Lihat Webinar
+                  </Button>
+                </FeatureFooter>
+              </CardBody>
+            </Card>
+          </CardWrapper>
+        </CatalogGrid>
       </MainContent>
     </DashboardContainer>
   )

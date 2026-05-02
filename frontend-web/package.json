@@ -42,6 +42,8 @@
     "aos": "^2.3.4",
     "axios": "^1.13.2",
     "docx": "^9.5.1",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "file-saver": "^2.0.5",
     "formik": "^2.4.9",
     "jwt-decode": "^4.0.0",
@@ -73,6 +75,7 @@
     "remark-math": "^6.0.0",
     "serve": "^14.2.3",
     "styled-components": "^6.1.19",
+    "swiper": "^12.1.4",
     "worker-timers": "^8.0.30",
     "yup": "^1.7.1"
   },

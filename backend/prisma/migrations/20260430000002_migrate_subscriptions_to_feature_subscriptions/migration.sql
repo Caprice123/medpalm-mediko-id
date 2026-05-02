@@ -49,8 +49,8 @@ CROSS JOIN (VALUES
   ('mcq'),
   ('chatbot'),
   ('skripsi_builder'),
-  ('osce_rractice'),
+  ('osce_practice'),
   ('summary_notes'),
   ('atlas')
 ) AS f(feature)
-WHERE us.pricing_plan_id IS NULL;
+WHERE us.pricing_plan_id IS not NULL;

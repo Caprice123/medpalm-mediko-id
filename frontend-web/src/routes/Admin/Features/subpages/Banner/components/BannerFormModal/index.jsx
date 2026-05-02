@@ -4,11 +4,9 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
-import FileUpload from '@components/common/FileUpload'
-import { upload } from '@store/common/action'
 import { createBanner, updateBanner, fetchAdminBanners } from '@store/banner/adminAction'
 import {
-  FormSection, Label, Row, ColorRow, ColorSwatch, ColorInput,
+  FormSection, Label, Row, ColorRow, ColorInput,
   ActiveToggle, ToggleSwitch, ToggleLabel, ErrorText,
   PreviewBanner, PreviewText, PreviewButton,
 } from './BannerFormModal.styles'
@@ -16,7 +14,6 @@ import {
 function BannerFormModal({ mode = 'create', initialValues, onClose }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.banner)
-  const { loading: commonLoading } = useSelector(state => state.common)
 
   const [values, setValues] = useState({
     title: initialValues?.title || '',
@@ -27,20 +24,10 @@ function BannerFormModal({ mode = 'create', initialValues, onClose }) {
     gradientEnd: initialValues?.gradientEnd || '#15803d',
     isActive: initialValues?.isActive ?? false,
     order: initialValues?.order ?? 0,
-    imageBlobId: null,
-    imageFile: initialValues?.image
-      ? { name: initialValues.image.filename, url: initialValues.image.url }
-      : null,
   })
   const [errors, setErrors] = useState({})
 
   const set = (key, value) => setValues(prev => ({ ...prev, [key]: value }))
-
-  const handleImageSelect = async (file) => {
-    const result = await dispatch(upload(file, 'banner'))
-    set('imageBlobId', result.blobId)
-    set('imageFile', { name: result.filename, url: result.url })
-  }
 
   const validate = () => {
     const errs = {}
@@ -61,7 +48,6 @@ function BannerFormModal({ mode = 'create', initialValues, onClose }) {
       gradientEnd: values.gradientEnd || null,
       isActive: values.isActive,
       order: values.order,
-      ...(values.imageBlobId && { imageBlobId: values.imageBlobId }),
     }
 
     const onSuccess = () => {
@@ -85,7 +71,6 @@ function BannerFormModal({ mode = 'create', initialValues, onClose }) {
       title={mode === 'create' ? 'Tambah Banner' : 'Edit Banner'}
       size="lg"
     >
-      {/* Live preview */}
       <PreviewBanner $gradientStart={values.gradientStart} $gradientEnd={values.gradientEnd}>
         <PreviewText>
           <h3>{values.title || 'Judul Banner'}</h3>
@@ -169,15 +154,6 @@ function BannerFormModal({ mode = 'create', initialValues, onClose }) {
         </Row>
 
         <Row>
-          <div>
-            <Label>Urutan Tampil</Label>
-            <TextInput
-              type="number"
-              value={values.order}
-              onChange={e => set('order', parseInt(e.target.value) || 0)}
-              min={0}
-            />
-          </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.25rem' }}>
             <ActiveToggle>
               <ToggleSwitch $active={values.isActive}>
@@ -192,20 +168,6 @@ function BannerFormModal({ mode = 'create', initialValues, onClose }) {
             </ActiveToggle>
           </div>
         </Row>
-
-        <div>
-          <Label>Gambar Banner</Label>
-          <FileUpload
-            file={values.imageFile}
-            onFileSelect={handleImageSelect}
-            onRemove={() => { set('imageBlobId', null); set('imageFile', null) }}
-            acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-            acceptedTypesLabel="JPG, PNG, WEBP"
-            maxSizeMB={5}
-            isUploading={commonLoading.isUploading}
-            uploadText="Klik untuk upload gambar banner"
-          />
-        </div>
       </FormSection>
 
       <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>

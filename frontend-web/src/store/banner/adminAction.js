@@ -1,6 +1,6 @@
 import { actions } from '@store/banner/reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken, patchWithToken } from '@utils/requestUtils'
 
 const { setLoading, setBanners, setDetail, setPagination } = actions
 
@@ -10,10 +10,12 @@ export const fetchAdminBanners = () => async (dispatch, getState) => {
     const { filter, pagination } = getState().banner
     const queryParams = { page: pagination.page, perPage: pagination.perPage }
     if (filter.search) queryParams.search = filter.search
+    if (filter.isActive !== undefined && filter.isActive !== '') queryParams.isActive = filter.isActive
 
     const response = await getWithToken(Endpoints.admin.banners, queryParams)
     dispatch(setBanners(response.data.data || []))
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
+    return response.data
   } finally {
     dispatch(setLoading({ key: 'isGetListLoading', value: false }))
   }
@@ -47,6 +49,15 @@ export const updateBanner = (uniqueId, data, onSuccess) => async (dispatch) => {
     dispatch(setLoading({ key: 'isUpdateLoading', value: true }))
     await putWithToken(`${Endpoints.admin.banners}/${uniqueId}`, data)
     if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateLoading', value: false }))
+  }
+}
+
+export const reorderBanners = (orders) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateLoading', value: true }))
+    await patchWithToken(Endpoints.admin.bannersReorder, { orders })
   } finally {
     dispatch(setLoading({ key: 'isUpdateLoading', value: false }))
   }

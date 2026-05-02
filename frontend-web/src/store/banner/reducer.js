@@ -5,7 +5,7 @@ const initialState = {
   banners: [],
   activeBanners: [],
   detail: undefined,
-  filter: { search: undefined },
+  filter: { search: undefined, isActive: undefined },
   pagination: { page: 1, perPage: 20, isLastPage: false },
   loading: {
     isGetListLoading: false,

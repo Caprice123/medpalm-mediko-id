@@ -1,4 +1,5 @@
 import { CreateBannerService } from '#services/banner/admin/CreateBannerService'
+import { ReorderBannersService } from '#services/banner/admin/ReorderBannersService'
 import { GetBannersService } from '#services/banner/admin/GetBannersService'
 import { GetBannerDetailService } from '#services/banner/admin/GetBannerDetailService'
 import { UpdateBannerService } from '#services/banner/admin/UpdateBannerService'
@@ -7,8 +8,8 @@ import { BannerSerializer } from '#serializers/admin/v1/bannerSerializer'
 
 class AdminBannerController {
   async index(req, res) {
-    const { page, perPage, search } = req.query
-    const result = await GetBannersService.call({ page, perPage, search })
+    const { page, perPage, search, isActive } = req.query
+    const result = await GetBannersService.call({ page, perPage, search, isActive })
     return res.status(200).json({
       data: BannerSerializer.serializeList(result.data),
       pagination: result.pagination,
@@ -37,6 +38,12 @@ class AdminBannerController {
   async delete(req, res) {
     const { uniqueId } = req.params
     await DeleteBannerService.call(uniqueId)
+    return res.status(200).json({ data: { success: true } })
+  }
+
+  async reorder(req, res) {
+    const { orders } = req.body
+    await ReorderBannersService.call({ orders })
     return res.status(200).json({ data: { success: true } })
   }
 }

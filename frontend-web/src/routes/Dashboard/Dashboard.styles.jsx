@@ -131,95 +131,82 @@ export const RequirementsList = styled.div`
   font-size: 0.8125rem;
 `
 
-export const BannerList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-`
+export const BannerCarousel = styled.div`
+  margin-bottom: 2rem;
 
-export const BannerCard = styled.div`
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  min-height: 110px;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-  transition: transform 0.15s, box-shadow 0.15s;
+  .swiper {
+    padding-bottom: 2rem;
+  }
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  .swiper-pagination-bullet {
+    background: #06b6d4;
+    opacity: 0.4;
+    transition: all 0.25s;
+  }
+
+  .swiper-pagination-bullet-active {
+    opacity: 1;
+    width: 20px;
+    border-radius: 4px;
   }
 `
 
-export const BannerImage = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`
-
-export const BannerOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: ${props => props.$hasImage
-    ? 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)'
-    : props.$gradientStart && props.$gradientEnd
-      ? `linear-gradient(135deg, ${props.$gradientStart} 0%, ${props.$gradientEnd} 100%)`
-      : 'linear-gradient(135deg, #0369a1 0%, #15803d 100%)'
-  };
-`
-
-export const BannerContent = styled.div`
-  position: relative;
-  z-index: 1;
+export const BannerCard = styled.div`
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  background: ${props => props.$gradientStart && props.$gradientEnd
+    ? `linear-gradient(135deg, ${props.$gradientStart} 0%, ${props.$gradientEnd} 100%)`
+    : 'linear-gradient(135deg, #0369a1 0%, #15803d 100%)'};
+  padding: 1.75rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 1.75rem 2rem;
   color: white;
 
   @media (max-width: 640px) {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.25rem;
     gap: 0.75rem;
+    padding: 1.25rem;
   }
 `
+
+export const BannerButtonPrimary = styled.button`
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: white;
+  color: #0369a1;
+  border: none;
+  cursor: pointer;
+  pointer-events: all;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.9; }
+
+  @media (max-width: 640px) { align-self: flex-start; }
+`
+
+
 
 export const BannerText = styled.div`
   h2 {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0 0 0.25rem;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   p {
     font-size: 0.875rem;
     margin: 0;
     opacity: 0.9;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
 `
 
-export const BannerButtonPrimary = styled.div`
-  padding: 0.5rem 1.25rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  white-space: nowrap;
-  background: white;
-  color: #0369a1;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-
-  @media (max-width: 640px) {
-    align-self: flex-start;
-  }
-`
 
 
 export const RequirementItem = styled.div`

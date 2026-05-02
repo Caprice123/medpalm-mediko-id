@@ -31,6 +31,7 @@ export default {
         oscePractice: "/admin/v1/oscePractice",
         webinars: "/admin/v1/webinars",
         banners: "/admin/v1/banners",
+        bannersReorder: "/admin/v1/banners/reorder",
     },
     api: {
         calculators: "/api/v1/calculators",
