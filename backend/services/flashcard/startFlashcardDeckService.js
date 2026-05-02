@@ -103,7 +103,8 @@ export class StartFlashcardDeckService extends BaseService {
         userRole,
         accessTypeKey: 'flashcard_access_type',
         creditCostKey: 'flashcard_credit_cost',
-        description: `Started flashcard deck: ${deck.id} - ${deck.title}`
+        description: `Started flashcard deck: ${deck.id} - ${deck.title}`,
+        featureKey: 'flashcard',
       })
 
       // Get attachments for all cards

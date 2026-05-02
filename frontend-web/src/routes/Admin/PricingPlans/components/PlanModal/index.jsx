@@ -1,3 +1,6 @@
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchAdminFeatures } from '@store/feature/action'
 import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import NumberInput from '@components/common/NumberInput'
@@ -7,7 +10,14 @@ import Dropdown from '@components/common/Dropdown'
 import Checkbox from '@components/common/Checkbox'
 import { FormGroup, FormRow, ButtonGroup } from './PlanModal.styles'
 
-function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose }) {
+function PlanModal({ isOpen, editingPlan, formData, onChange, onFeatureToggle, onSubmit, onClose }) {
+  const dispatch = useDispatch()
+  const appFeatures = useSelector(state => state.feature.features)
+
+  useEffect(() => {
+    if (isOpen && appFeatures.length === 0) dispatch(fetchAdminFeatures())
+  }, [isOpen])
+  const ALL_FEATURES = appFeatures.map(f => ({ key: f.sessionType, label: f.name }))
   const showCredits = formData.bundle_type === 'credits' || formData.bundle_type === 'hybrid'
   const showDuration = formData.bundle_type === 'subscription' || formData.bundle_type === 'hybrid'
   const showExpiryDays = showCredits && formData.credit_type === 'expiring'
@@ -260,6 +270,47 @@ function PlanModal({ isOpen, editingPlan, formData, onChange, onSubmit, onClose 
             label="Mark as Popular"
           />
         </FormRow>
+
+        <FormGroup>
+          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
+            Feature Access Granted
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+            Select which features are unlocked when a user purchases this plan.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.5rem' }}>
+            {ALL_FEATURES.map(({ key, label }) => {
+              const active = (formData.allowed_features || []).includes(key)
+              return (
+                <label
+                  key={key}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.4rem 0.65rem',
+                    border: `1px solid ${active ? '#3b82f6' : '#e5e7eb'}`,
+                    borderRadius: '6px',
+                    background: active ? '#eff6ff' : '#f9fafb',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem',
+                    fontWeight: 500,
+                    color: active ? '#1d4ed8' : '#374151',
+                    userSelect: 'none',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={active}
+                    onChange={() => onFeatureToggle(key)}
+                    style={{ accentColor: '#3b82f6' }}
+                  />
+                  {label}
+                </label>
+              )
+            })}
+          </div>
+        </FormGroup>
       </form>
     </Modal>
   )

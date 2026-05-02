@@ -1,4 +1,7 @@
 import moment from 'moment-timezone'
+import 'moment/locale/id'
+
+moment.locale('id')
 
 const LOCAL_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 

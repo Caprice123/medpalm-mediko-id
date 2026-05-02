@@ -6,6 +6,8 @@ const initialState = {
   detail: null,
   subscriptions: [],
   subscriptionFilter: 'all', // 'all' or 'active'
+  featureSubscriptions: [],
+  featureSubscriptionPagination: { page: 1, perPage: 10, isLastPage: true },
   creditBuckets: { permanentBalance: 0, expiringBuckets: [], totalBalance: 0 },
   filter: {
     email: undefined,
@@ -36,6 +38,8 @@ const initialState = {
     isDeleteSubscriptionLoading: false,
     isUpdateCreditBucketLoading: false,
     isDeleteCreditBucketLoading: false,
+    isFetchFeatureSubscriptionsLoading: false,
+    isUpdateFeatureSubscriptionsLoading: false,
   },
 }
 
@@ -84,6 +88,17 @@ const usersSlice = createSlice({
     },
     setCreditBuckets: (state, action) => {
       state.creditBuckets = action.payload
+    },
+    setFeatureSubscriptions: (state, action) => {
+      state.featureSubscriptions = action.payload
+    },
+    setFeatureSubscriptionPagination: (state, action) => {
+      const { page, isLastPage } = action.payload
+      state.featureSubscriptionPagination.page = page
+      state.featureSubscriptionPagination.isLastPage = isLastPage
+    },
+    setFeatureSubscriptionPage: (state, { payload }) => {
+      state.featureSubscriptionPagination.page = payload
     },
   },
   

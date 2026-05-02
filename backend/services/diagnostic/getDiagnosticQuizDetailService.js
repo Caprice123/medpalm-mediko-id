@@ -39,7 +39,8 @@ export class GetDiagnosticQuizDetailService extends BaseService {
         userRole,
         accessTypeKey: 'diagnostic_access_type',
         creditCostKey: 'diagnostic_quiz_cost',
-        description: `Viewed diagnostic quiz: ${quiz.id} - ${quiz.title}`
+        description: `Viewed diagnostic quiz: ${quiz.id} - ${quiz.title}`,
+        featureKey: 'diagnostic',
       })
 
       return quiz

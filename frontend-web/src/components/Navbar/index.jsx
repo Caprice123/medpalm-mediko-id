@@ -1,18 +1,21 @@
 import { useState } from "react"
-import { Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection, HamburgerButton, MobileMenu, MobileMenuItem, MobileMenuDivider, CreditWrapper, CreditTooltip, TooltipRow, TooltipLabel, TooltipValue, MobileStatusRow, MobileCreditBreakdown, MobileCreditBreakdownRow } from "./Navbar.styles"
+import { Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection, HamburgerButton, MobileMenu, MobileMenuItem, MobileMenuDivider, CreditWrapper, CreditTooltip, TooltipRow, TooltipLabel, TooltipValue, MobileStatusRow, MobileCreditBreakdown, MobileCreditBreakdownRow, SubscriptionWrapper, SubscriptionTooltip } from "./Navbar.styles"
 import { useEffect } from "react"
 import { logout } from '@store/auth/action'
 import { fetchUserStatus } from '@store/pricing/action'
+import { fetchFeatures } from '@store/feature/action'
 import { getUserData } from '@utils/authToken'
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 // import CreditPurchase from '@components/CreditPurchase'
 import Button from '@components/common/Button'
+import { formatLocalDate } from '@utils/dateUtils'
 
 export const Navbar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { userStatus } = useSelector(state => state.pricing)
+    const appFeatures = useSelector(state => state.feature.features)
     const [user, setUser] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -21,6 +24,7 @@ export const Navbar = () => {
         const userData = getUserData()
         setUser(userData)
         dispatch(fetchUserStatus())
+        if (appFeatures.length === 0) dispatch(fetchFeatures())
     }, [dispatch])
     
 
@@ -50,20 +54,42 @@ export const Navbar = () => {
             {/* Desktop Navigation */}
             <UserSection>
             <StatusSection>
-              {userStatus?.hasActiveSubscription && userStatus?.subscription && (
-                <>
-                  <StatusItem>
-                    <span>⭐</span>
-                    <span>
-                      Active
-                      {userStatus?.subscription?.daysRemaining < 14 && (
-                        <> ({userStatus?.subscription?.daysRemaining} days left)</>
+              {(userStatus?.activeFeatureKeys?.length > 0) && (() => {
+                const featureLabels = Object.fromEntries(appFeatures.map(f => [f.sessionType, f.name]))
+                const fmt = (d) => d ? formatLocalDate(d) : 'Tidak ada batas'
+                const subs = (userStatus.activeFeatureKeys || []).filter(({ feature }) => featureLabels[feature])
+                return (
+                  <>
+                    <SubscriptionWrapper>
+                      <StatusItem>
+                        <span>⭐</span>
+                        <span>
+                          Active
+                          {userStatus?.subscription?.daysRemaining < 14 && userStatus?.subscription?.daysRemaining != null && (
+                            <> ({userStatus.subscription.daysRemaining}d left)</>
+                          )}
+                        </span>
+                      </StatusItem>
+                      {subs.length > 0 && (
+                        <SubscriptionTooltip>
+                          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                            Feature Access
+                          </div>
+                          {subs.map(({ feature, endDate }) => (
+                            <TooltipRow key={feature}>
+                              <TooltipLabel>{featureLabels[feature]}</TooltipLabel>
+                              <TooltipValue style={{ fontSize: '0.72rem' }}>
+                                hingga {fmt(endDate)}
+                              </TooltipValue>
+                            </TooltipRow>
+                          ))}
+                        </SubscriptionTooltip>
                       )}
-                    </span>
-                  </StatusItem>
-                  <StatusDivider />
-                </>
-              )}
+                    </SubscriptionWrapper>
+                    <StatusDivider />
+                  </>
+                )
+              })()}
               <CreditWrapper>
                 <StatusItem>
                   <span>💎</span>
@@ -139,13 +165,13 @@ export const Navbar = () => {
 
             <MobileMenuItem className="status-wrapper">
               <MobileStatusRow>
-                {userStatus?.hasActiveSubscription && userStatus?.subscription && (
+                {(userStatus?.hasActiveSubscription || userStatus?.activeFeatureKeys?.length > 0) && (
                   <StatusItem style={{ fontSize: '1rem' }}>
                     <span>⭐</span>
                     <span>
                       Active
-                      {userStatus?.subscription?.daysRemaining < 14 && (
-                        <> ({userStatus?.subscription?.daysRemaining} days left)</>
+                      {userStatus?.subscription?.daysRemaining < 14 && userStatus?.subscription?.daysRemaining != null && (
+                        <> ({userStatus.subscription.daysRemaining}d left)</>
                       )}
                     </span>
                   </StatusItem>

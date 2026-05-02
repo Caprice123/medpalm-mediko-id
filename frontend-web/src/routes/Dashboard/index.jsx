@@ -119,8 +119,10 @@ function Dashboard() {
           <CatalogGrid>
             {activeFeatures.map((feature) => {
               // Check user access
-              const hasActiveSubscription = userStatus?.hasActiveSubscription || false
               const userCredits = parseFloat(userStatus?.creditBalance || 0)
+              const activeFeatureKeys = userStatus?.activeFeatureKeys || []
+
+              const hasFeatureSubscription = activeFeatureKeys.some(f => f.feature === feature.sessionType)
 
               // Determine requirements
               const needsSubscription = feature.accessType === 'subscription' ||
@@ -130,9 +132,9 @@ function Dashboard() {
               const isFree = feature.accessType === 'free'
 
               // Check if requirements are met
-              const subscriptionMet = !needsSubscription || hasActiveSubscription
+              const subscriptionMet = !needsSubscription || hasFeatureSubscription
               const creditsMet = !needsCredits || userCredits >= (feature.cost || 0)
-              const canUse = (subscriptionMet && creditsMet) || isFree
+              const canUse = (subscriptionMet && creditsMet) || isFree || hasFeatureSubscription
 
               // Determine button text and action
               const getButtonConfig = () => {

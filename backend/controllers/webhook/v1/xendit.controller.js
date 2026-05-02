@@ -1,7 +1,9 @@
+import moment from 'moment'
 import { PrismaClient } from '@prisma/client'
 import { verifyWebhookToken } from '#services/xendit.service'
 import { ValidationError } from '#errors/validationError'
 import { addUserCredits } from '#utils/creditUtils'
+import { applyPlanFeatures } from '#services/users/applyPlanFeaturesService'
 
 const prisma = new PrismaClient()
 
@@ -192,99 +194,46 @@ async function handleExpiredInvoice(transaction) {
 async function handlePaidPurchase(purchase, paymentDetails) {
   try {
     const { paidAmount, paymentMethod, paymentChannel, paidAt, invoiceId } = paymentDetails
-    const creditsIncluded = purchase.pricing_plan?.credits_included || 0
 
-    // Properly populate all 4 tables in a transaction
+    if (parseFloat(paidAmount) < parseFloat(purchase.amount_paid)) {
+      console.error(`Amount mismatch for purchase ${purchase.id}: paid ${paidAmount}, expected ${purchase.amount_paid}`)
+      return
+    }
+
+    const durationDays = purchase.duration_days ?? purchase.pricing_plan?.duration_days
+    const creditsIncluded = purchase.credits_included ?? purchase.pricing_plan?.credits_included ?? 0
+    const creditType = purchase.credit_type ?? purchase.pricing_plan?.credit_type ?? 'permanent'
+    const creditExpiryDays = purchase.credit_expiry_days ?? purchase.pricing_plan?.credit_expiry_days
+    const allowedFeatures = purchase.allowed_features || []
+
     await prisma.$transaction(async (tx) => {
-      // 1. Update purchase record to completed (user_purchases table)
+      // 1. Update purchase record to completed
       await tx.user_purchases.update({
         where: { id: purchase.id },
-        data: {
-          payment_status: 'completed'
-        }
+        data: { payment_status: 'completed' }
       })
 
-      // 2. Activate subscription if plan includes subscription (user_subscriptions table)
-      // Subscription was already created with 'not_active' status when purchase was initiated
-      if (purchase.bundle_type === 'subscription' || purchase.bundle_type === 'hybrid') {
-        // Find the pending subscription created for this user
-        // We find the most recent 'not_active' subscription for this user
-        const pendingSubscription = await tx.user_subscriptions.findFirst({
-          where: {
-            user_id: purchase.user_id,
-            status: 'not_active'
-          },
-          orderBy: {
-            created_at: 'desc' // Get the most recently created pending subscription
-          }
-        })
 
-        if (pendingSubscription) {
-          // Activate the pending subscription
-          await tx.user_subscriptions.update({
-            where: { id: pendingSubscription.id },
-            data: {
-              status: 'active' // Activate the subscription now that payment is confirmed
-            }
-          })
-        } else {
-          // Fallback: If no pending subscription found (shouldn't happen in normal flow)
-          // Create subscription with active status
-          console.warn(`No pending subscription found for user ${purchase.user_id}, creating new active subscription`)
-
-          const activeSubscription = await tx.user_subscriptions.findFirst({
-            where: {
-              user_id: purchase.user_id,
-              end_date: { gte: new Date() },
-              status: 'active'
-            },
-            orderBy: {
-              end_date: 'desc'
-            }
-          })
-
-          let subscriptionStart
-          let subscriptionEnd
-
-          if (activeSubscription) {
-            subscriptionStart = activeSubscription.end_date
-            subscriptionEnd = new Date(subscriptionStart)
-            subscriptionEnd.setDate(subscriptionEnd.getDate() + (purchase.pricing_plan.duration_days || 30))
-          } else {
-            subscriptionStart = new Date()
-            subscriptionEnd = new Date(subscriptionStart)
-            subscriptionEnd.setDate(subscriptionEnd.getDate() + (purchase.pricing_plan.duration_days || 30))
-          }
-
-          await tx.user_subscriptions.create({
-            data: {
-              user_id: purchase.user_id,
-              start_date: subscriptionStart,
-              end_date: subscriptionEnd,
-              status: 'active'
-            }
-          })
-        }
-      }
-
-      // 3. Add credits to user's balance if plan includes credits (user_credits table)
+      // 3. Add credits using snapshotted values
       if (creditsIncluded > 0) {
-        const plan = purchase.pricing_plan
-        const creditType = plan.credit_type || 'permanent'
         let expiresAt = null
-        if (creditType === 'expiring' && plan.credit_expiry_days) {
+        if (creditType === 'expiring' && creditExpiryDays) {
           expiresAt = new Date()
-          expiresAt.setDate(expiresAt.getDate() + plan.credit_expiry_days)
+          expiresAt.setDate(expiresAt.getDate() + creditExpiryDays)
         }
-
         await addUserCredits(tx, purchase.user_id, creditsIncluded, {
           creditType,
           expiresAt,
-          description: `Credits from ${plan.name} (Paid via ${paymentChannel})`,
+          description: `Credits from ${purchase.pricing_plan?.name} (Paid via ${paymentChannel})`,
           transactionType: purchase.bundle_type === 'credits' ? 'purchase' : 'subscription_bonus',
           paymentMethod: `${paymentMethod} - ${paymentChannel}`,
           paymentReference: invoiceId
         })
+      }
+
+      // 4. Grant feature access — each feature uses its own last subscription as base
+      if (durationDays > 0) {
+        await applyPlanFeatures(tx, purchase.user_id, allowedFeatures, durationDays)
       }
     })
 

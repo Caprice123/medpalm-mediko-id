@@ -33,6 +33,11 @@ export class PurchasePricingPlanService extends BaseService {
             amount_paid: plan.price,
             phone_number: phoneNumber || null,
             university: university || null,
+            duration_days: plan.duration_days || null,
+            credits_included: plan.credits_included ?? 0,
+            credit_type: plan.credit_type || 'permanent',
+            credit_expiry_days: plan.credit_expiry_days || null,
+            allowed_features: Array.isArray(plan.allowed_features) ? plan.allowed_features : [],
           },
           include: {
             pricing_plan: true
@@ -99,6 +104,7 @@ export class PurchasePricingPlanService extends BaseService {
           amount_paid: plan.price,
           phone_number: phoneNumber || null,
           university: university || null,
+          allowed_features: Array.isArray(plan.allowed_features) ? plan.allowed_features : [],
         },
         include: {
           pricing_plan: true

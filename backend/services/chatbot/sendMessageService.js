@@ -53,7 +53,8 @@ export class SendMessageService extends BaseService {
       accessTypeKey: 'chatbot_access_type',
       creditCostKey: `chatbot_${mode}_cost`,
       deductCredit: false,
-      description: ''
+      description: '',
+      featureKey: 'chatbot',
     })
 
     // Still need messageCost for deduction on first chunk

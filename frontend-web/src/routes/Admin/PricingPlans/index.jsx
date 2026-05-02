@@ -53,7 +53,8 @@ function PricingPlans() {
     formData,
     openModal,
     closeModal,
-    handleChange
+    handleChange,
+    handleFeatureToggle,
   } = usePlanModal()
 
   const handleSubmit = async (e) => {
@@ -213,6 +214,7 @@ function PricingPlans() {
         editingPlan={editingPlan}
         formData={formData}
         onChange={handleChange}
+        onFeatureToggle={handleFeatureToggle}
         onSubmit={handleSubmit}
         onClose={closeModal}
       />

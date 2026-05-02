@@ -35,6 +35,7 @@ import adminTagsRoutes from '#routes/admin/v1/tag.routes';
 import adminTagGroupsRoutes from '#routes/admin/v1/tagGroup.routes';
 import adminUsersRoutes from '#routes/admin/v1/users.routes';
 import adminSubscriptionsRoutes from '#routes/admin/v1/subscriptions.routes';
+import adminFeatureSubscriptionsRoutes from '#routes/admin/v1/featureSubscriptions.routes';
 import adminDiagnosticRoutes from '#routes/admin/v1/diagnostic.routes'
 import adminAnatomyRoutes from '#routes/admin/v1/anatomy.routes'
 import adminAtlasRoutes from '#routes/admin/v1/atlas.routes';
@@ -177,6 +178,7 @@ app.use('/admin/v1/oscePractice/rubrics', adminOscePracticeRubricRoutes);
 app.use('/admin/v1/oscePractice/observations', adminOscePracticeObservationRoutes);
 app.use('/admin/v1/oscePractice/observation-groups', adminOscePracticeObservationGroupRoutes);
 app.use('/admin/v1/subscriptions', adminSubscriptionsRoutes);
+app.use('/admin/v1/feature-subscriptions', adminFeatureSubscriptionsRoutes);
 app.use('/admin/v1/diagnostic', adminDiagnosticRoutes);
 app.use('/admin/v1/anatomy', adminAnatomyRoutes);
 app.use('/admin/v1/atlas', adminAtlasRoutes);

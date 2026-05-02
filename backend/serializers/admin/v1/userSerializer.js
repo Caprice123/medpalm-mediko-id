@@ -1,4 +1,3 @@
-import { UserCreditSerializer } from "./userCreditSerializer.js"
 import { UserSubscriptionSerializer } from "./userSubscriptionSerializer.js"
 
 export class UserSerializer {
@@ -21,6 +20,10 @@ export class UserSerializer {
             return sum
         }, 0)
 
+        const activeGlobalSub = (user.user_subscription || []).find(s =>
+            s.status === 'active' && new Date(s.start_date) <= now && new Date(s.end_date) >= now
+        )
+
         return {
             id: user.id,
             name: user.name,
@@ -30,6 +33,7 @@ export class UserSerializer {
             permissions: user.permissions || null,
             userSubscriptions: UserSubscriptionSerializer.serialize(user.user_subscription || []),
             userCredits: { balance: totalBalance },
+            hasActiveSubscription: !!(activeGlobalSub || (user.user_feature_subscriptions?.length > 0)),
         }
     }
 }

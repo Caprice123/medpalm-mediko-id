@@ -52,7 +52,8 @@ export class StartSummaryNoteSessionService extends BaseService {
         userRole,
         accessTypeKey: 'summary_notes_access_type',
         creditCostKey: 'summary_notes_credit_cost',
-        description: `Viewed summary note: ${summaryNote.id} - ${summaryNote.title}`
+        description: `Viewed summary note: ${summaryNote.id} - ${summaryNote.title}`,
+        featureKey: 'summaryNotes',
       })
 
       // Create summary note session

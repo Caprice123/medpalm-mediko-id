@@ -45,7 +45,8 @@ export class GetUserCalculatorTopicDetailService extends BaseService {
         userRole,
         accessTypeKey: 'calculator_access_type',
         creditCostKey: 'calculator_topic_cost',
-        description: `Viewed calculator topic: ${topic.id} - ${topic.title}`
+        description: `Viewed calculator topic: ${topic.id} - ${topic.title}`,
+        featureKey: 'calculator',
       })
 
       return topic

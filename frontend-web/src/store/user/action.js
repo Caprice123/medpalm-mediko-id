@@ -1,6 +1,6 @@
 import { actions } from '@store/user/reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, putWithToken, patchWithToken, deleteWithToken } from '../../utils/requestUtils'
+import { getWithToken, putWithToken, patchWithToken, deleteWithToken, postWithToken } from '../../utils/requestUtils'
 
 const {
   setLoading,
@@ -9,6 +9,9 @@ const {
   setSubscriptions,
   setSubscriptionPagination,
   setCreditBuckets,
+  setFeatureSubscriptions,
+  setFeatureSubscriptionPagination,
+  setFeatureSubscriptionPage,
 } = actions
 
 // ============= Users Actions =============
@@ -223,5 +226,62 @@ export const updateUserPermissions = (userId, permissions, onSuccess) => async (
     await dispatch(fetchUsers())
   } finally {
     dispatch(setLoading({ key: 'isUpdateUserPermissionsLoading', value: false }))
+  }
+}
+
+export const fetchUserFeatureSubscriptions = (userId, feature = null, page = 1) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading({ key: 'isFetchFeatureSubscriptionsLoading', value: true }))
+    const { perPage } = getState().user.featureSubscriptionPagination
+    const params = { page, perPage, ...(feature ? { feature } : {}) }
+    const response = await getWithToken(Endpoints.admin.userFeatureSubscriptions(userId), params)
+    dispatch(setFeatureSubscriptions(response.data.data || []))
+    dispatch(setFeatureSubscriptionPagination({ page, isLastPage: response.data.isLastPage ?? true }))
+  } finally {
+    dispatch(setLoading({ key: 'isFetchFeatureSubscriptionsLoading', value: false }))
+  }
+}
+
+export const updateUserFeatureSubscriptions = (userId, activeFeatures, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: true }))
+    const response = await putWithToken(Endpoints.admin.userFeatureSubscriptions(userId), { activeFeatures })
+    dispatch(setFeatureSubscriptions(response.data.data || []))
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: false }))
+  }
+}
+
+export const addUserFeatureSubscription = (userId, { feature, startDate, endDate }, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: true }))
+    await postWithToken(Endpoints.admin.featureSubscriptions, { userId, feature, startDate, endDate })
+    dispatch(fetchUserFeatureSubscriptions(userId, feature))
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: false }))
+  }
+}
+
+export const updateUserFeatureSubscriptionById = (userId, recordId, { startDate, endDate }, feature, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: true }))
+    await patchWithToken(`${Endpoints.admin.featureSubscriptions}/${recordId}`, { startDate, endDate })
+    dispatch(fetchUserFeatureSubscriptions(userId, feature))
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: false }))
+  }
+}
+
+export const deleteUserFeatureSubscriptionById = (userId, recordId, feature, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: true }))
+    await deleteWithToken(`${Endpoints.admin.featureSubscriptions}/${recordId}`)
+    dispatch(fetchUserFeatureSubscriptions(userId, feature))
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isUpdateFeatureSubscriptionsLoading', value: false }))
   }
 }

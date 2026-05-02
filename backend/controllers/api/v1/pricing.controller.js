@@ -119,7 +119,7 @@ class PricingController {
         // Create Xendit invoice
         const invoice = await createInvoice({
           amount: Number(purchase.amount_paid),
-          externalId: `PURCHASE-${purchase.id}-${Date.now()}`,
+          externalId: `PURCHASE-${Date.now()}`,
           payerEmail: user.email,
           description: `${purchase.pricing_plan.name} - ${purchase.bundle_type === 'credits' ? `${purchase.pricing_plan.credits_included} Credits` : purchase.bundle_type === 'subscription' ? 'Subscription' : 'Hybrid Package'}`
         })

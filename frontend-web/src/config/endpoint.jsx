@@ -18,6 +18,8 @@ export default {
         tags: "/admin/v1/tags",
         tagGroups: "/admin/v1/tag-groups",
         users: "/admin/v1/users",
+        userFeatureSubscriptions: (id) => `/admin/v1/users/${id}/feature-subscriptions`,
+        featureSubscriptions: "/admin/v1/feature-subscriptions",
         subscriptions: "/admin/v1/subscriptions",
         summaryNotes: "/admin/v1/summary-notes",
         mcq: "/admin/v1/mcq",

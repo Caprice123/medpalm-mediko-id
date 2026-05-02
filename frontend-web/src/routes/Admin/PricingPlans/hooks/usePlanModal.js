@@ -17,7 +17,8 @@ export const usePlanModal = () => {
     is_popular: false,
     discount: 0,
     order: 0,
-    allowed_payment_method: 'xendit'
+    allowed_payment_method: 'xendit',
+    allowed_features: [],
   })
 
   const openModal = (plan = null) => {
@@ -40,7 +41,8 @@ export const usePlanModal = () => {
         is_popular: plan.is_popular !== undefined ? plan.is_popular : plan.isPopular,
         discount: plan.discount || 0,
         order: plan.order || 0,
-        allowed_payment_method: allowedMethod
+        allowed_payment_method: allowedMethod,
+        allowed_features: plan.allowed_features || plan.allowedFeatures || [],
       })
     } else {
       setEditingPlan(null)
@@ -58,7 +60,8 @@ export const usePlanModal = () => {
         is_popular: false,
         discount: 0,
         order: 0,
-        allowed_payment_method: 'xendit'
+        allowed_payment_method: 'xendit',
+        allowed_features: [],
       })
     }
     setIsModalOpen(true)
@@ -77,12 +80,23 @@ export const usePlanModal = () => {
     }))
   }
 
+  const handleFeatureToggle = (feature) => {
+    setFormData(prev => {
+      const current = prev.allowed_features || []
+      const next = current.includes(feature)
+        ? current.filter(f => f !== feature)
+        : [...current, feature]
+      return { ...prev, allowed_features: next }
+    })
+  }
+
   return {
     isModalOpen,
     editingPlan,
     formData,
     openModal,
     closeModal,
-    handleChange
+    handleChange,
+    handleFeatureToggle,
   }
 }
