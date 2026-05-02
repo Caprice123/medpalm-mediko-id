@@ -36,6 +36,7 @@ export async function checkAccessAndDeductCredit(tx, {
   // Per-user feature subscription check
   if (featureKey) {
     const allowed = await hasFeatureAccess(parseInt(userId), featureKey)
+    console.log(allowed)
     if (!allowed) {
       throw new ValidationError('You do not have access to this feature')
     }

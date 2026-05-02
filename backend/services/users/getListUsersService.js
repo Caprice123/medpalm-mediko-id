@@ -43,27 +43,21 @@ export class GetListUsersService extends BaseService {
             where.is_active = status === 'active'
         }
 
+        const now = new Date()
         const users = await prisma.users.findMany({
             where,
             include: {
                 user_subscription: {
-                    orderBy: {
-                        id: 'desc'
-                    },
-                    select: {
-                        id: true,
-                        start_date: true,
-                        end_date: true,
-                        status: true,
-                        created_at: true,
-                    }
+                    orderBy: { id: 'desc' },
+                    select: { id: true, start_date: true, end_date: true, status: true, created_at: true }
                 },
                 user_credits: {
-                    select: {
-                        balance: true,
-                        credit_type: true,
-                        expires_at: true,
-                    }
+                    select: { balance: true, credit_type: true, expires_at: true }
+                },
+                user_feature_subscriptions: {
+                    where: { start_date: { lte: now }, end_date: { gte: now } },
+                    select: { id: true },
+                    take: 1,
                 }
             },
             orderBy: {

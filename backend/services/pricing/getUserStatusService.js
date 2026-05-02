@@ -30,6 +30,35 @@ export class GetUserStatusService extends BaseService {
     })
 
     const now = new Date()
+
+    // Fetch all active + future feature subscriptions, ordered so we can chain them
+    const featureRows = await prisma.user_feature_subscriptions.findMany({
+      where: { user_id: userId, end_date: { gte: now } },
+      orderBy: { start_date: 'asc' },
+      select: { feature: true, start_date: true, end_date: true },
+    })
+
+    // For each feature, start a chain from the currently-active row and extend
+    // through any consecutive future rows (gap <= 1 day) to get the real effective end date
+    const featureMap = {}
+    for (const row of featureRows) {
+      const entry = featureMap[row.feature]
+      if (!entry) {
+        if (row.start_date <= now) {
+          featureMap[row.feature] = { startDate: row.start_date, endDate: row.end_date }
+        }
+      } else {
+        const gapDays = (row.start_date - entry.endDate) / (1000 * 60 * 60 * 24)
+        if (gapDays <= 1) entry.endDate = row.end_date
+      }
+    }
+
+    const activeFeatureKeys = Object.entries(featureMap).map(([feature, { startDate, endDate }]) => ({
+      feature,
+      startDate,
+      endDate,
+    }))
+
     const allBuckets = await prisma.user_credits.findMany({
       where: { user_id: userId },
       orderBy: { expires_at: 'asc' }
@@ -64,11 +93,12 @@ export class GetUserStatusService extends BaseService {
         startDate: activeSubscription.start_date,
         endDate: activeSubscription.end_date,
         status: activeSubscription.status,
-        daysRemaining: Math.ceil((new Date(activeSubscription.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+        daysRemaining: Math.ceil((new Date(activeSubscription.end_date) - now) / (1000 * 60 * 60 * 24))
       } : null,
       creditBalance,
       permanentBalance,
       expiringBuckets,
+      activeFeatureKeys,
       userId: userId
     }
   }

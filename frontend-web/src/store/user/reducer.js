@@ -7,6 +7,7 @@ const initialState = {
   subscriptions: [],
   subscriptionFilter: 'all', // 'all' or 'active'
   featureSubscriptions: [],
+  featureSubscriptionPagination: { page: 1, perPage: 10, isLastPage: true },
   creditBuckets: { permanentBalance: 0, expiringBuckets: [], totalBalance: 0 },
   filter: {
     email: undefined,
@@ -90,6 +91,14 @@ const usersSlice = createSlice({
     },
     setFeatureSubscriptions: (state, action) => {
       state.featureSubscriptions = action.payload
+    },
+    setFeatureSubscriptionPagination: (state, action) => {
+      const { page, isLastPage } = action.payload
+      state.featureSubscriptionPagination.page = page
+      state.featureSubscriptionPagination.isLastPage = isLastPage
+    },
+    setFeatureSubscriptionPage: (state, { payload }) => {
+      state.featureSubscriptionPagination.page = payload
     },
   },
   

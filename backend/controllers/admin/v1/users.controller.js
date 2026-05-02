@@ -4,7 +4,7 @@ import { AddCreditService } from "#services/users/addCreditService";
 import { GetUserSubscriptionsService } from "#services/users/getUserSubscriptionsService";
 import { UpdateUserRoleService } from "#services/users/updateUserRoleService";
 import { UpdateUserPermissionsService } from "#services/users/updateUserPermissionsService";
-import { GetUserFeatureSubscriptionsService } from "#services/users/getUserFeatureSubscriptionsService";
+import { ListFeatureSubscriptionsService } from "#services/users/listFeatureSubscriptionsService";
 import { UpdateUserFeatureSubscriptionsService } from "#services/users/updateUserFeatureSubscriptionsService";
 import { UserSerializer } from "#serializers/admin/v1/userSerializer";
 import { UserSubscriptionSerializer } from "#serializers/admin/v1/userSubscriptionSerializer";
@@ -218,8 +218,9 @@ class UsersController {
 
   async getFeatureSubscriptions(req, res) {
     const userId = parseInt(req.params.id)
-    const subscriptions = await GetUserFeatureSubscriptionsService.call(userId)
-    res.status(200).json({ data: subscriptions })
+    const { feature, page, perPage } = req.query
+    const result = await ListFeatureSubscriptionsService.call({ userId, feature, page, perPage })
+    res.status(200).json({ data: result.items, isLastPage: result.isLastPage })
   }
 
   async updateFeatureSubscriptions(req, res) {

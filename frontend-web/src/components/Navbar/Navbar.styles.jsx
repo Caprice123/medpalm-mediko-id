@@ -139,6 +139,30 @@ export const StatusItem = styled.div`
   }
 `
 
+export const SubscriptionWrapper = styled.div`
+  position: relative;
+  cursor: default;
+`
+
+export const SubscriptionTooltip = styled.div`
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  background: white;
+  border: 1px solid ${colors.neutral.gray200};
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  min-width: 220px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  white-space: nowrap;
+
+  ${SubscriptionWrapper}:hover & {
+    display: block;
+  }
+`
+
 export const CreditWrapper = styled.div`
   position: relative;
   cursor: default;

@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { formatLocalDate } from '@utils/dateUtils'
 import Modal from '@components/common/Modal'
+import Pagination from '@components/common/Pagination'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
-import Pagination from '@components/common/Pagination'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DatePicker.styles.css'
 import { formatDate } from '../../../../../utils/dateUtils'
-import { fetchUserSubscriptions, fetchUserCreditBuckets, updateUserRole, updateUserPermissions, updateSubscription, deleteSubscription, updateCreditBucket, deleteCreditBucket, fetchUserFeatureSubscriptions, updateUserFeatureSubscriptions } from '@store/user/action'
-import { actions } from '@store/user/reducer'
+import { fetchUserCreditBuckets, updateUserRole, updateUserPermissions, updateCreditBucket, deleteCreditBucket, fetchUserFeatureSubscriptions, addUserFeatureSubscription, updateUserFeatureSubscriptionById, deleteUserFeatureSubscriptionById } from '@store/user/action'
+import { fetchAdminFeatures } from '@store/feature/action'
 import { getUserData } from '../../../../../utils/authToken'
 import PermissionManager from '../PermissionManager'
 import {
@@ -44,12 +44,13 @@ import {
   ModalFooter
 } from './UserDetailModal.styles'
 
-function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription }) {
+function UserDetailModal({ isOpen, onClose, onAdjustCredit }) {
   const dispatch = useDispatch()
   const currentUser = getUserData()
-  const { loading, detail: user, subscriptions, subscriptionPagination, subscriptionFilter, creditBuckets, featureSubscriptions } = useSelector(state => state.user)
+  const { loading, detail: user, creditBuckets, featureSubscriptions, featureSubscriptionPagination } = useSelector(state => state.user)
+  console.log(featureSubscriptions)
+  const appFeatures = useSelector(state => state.feature.features)
   const [showCreditForm, setShowCreditForm] = useState(false)
-  const [showSubscriptionForm, setShowSubscriptionForm] = useState(false)
   const [showRoleForm, setShowRoleForm] = useState(false)
   const [showPermissionForm, setShowPermissionForm] = useState(false)
   const [creditAmount, setCreditAmount] = useState('')
@@ -58,35 +59,42 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const [creditError, setCreditError] = useState('')
   const [selectedRole, setSelectedRole] = useState(null)
   const [roleError, setRoleError] = useState('')
-  const [subscriptionData, setSubscriptionData] = useState({
-    startDate: null,
-    endDate: null
-  })
-  const [subscriptionError, setSubscriptionError] = useState('')
-  const [editingSubscription, setEditingSubscription] = useState(null) // { id, startDate, endDate }
-  const [editError, setEditError] = useState('')
   const [creditBucketFilter, setCreditBucketFilter] = useState('all') // 'all' | 'expiring'
   const [editingBucket, setEditingBucket] = useState(null) // { id, balance, expiresAt }
   const [editBucketError, setEditBucketError] = useState('')
+  const [editingFeatureSub, setEditingFeatureSub] = useState(null) // { id, feature, startDate, endDate }
+  const [editFeatureError, setEditFeatureError] = useState('')
+  const [showAddFeatureForm, setShowAddFeatureForm] = useState(false)
+  const [addFeatureData, setAddFeatureData] = useState({ feature: null, startDate: null, endDate: null })
+  const [addFeatureError, setAddFeatureError] = useState('')
+  const [featureTabFilter, setFeatureTabFilter] = useState(null)
 
-  // Fetch subscriptions, credit buckets, and feature subscriptions when modal opens
+  // On open: fetch credit buckets, ensure features are loaded, then fetch the first tab's subscriptions
   useEffect(() => {
     if (isOpen && user?.id) {
-      dispatch(fetchUserSubscriptions(user.id))
       dispatch(fetchUserCreditBuckets(user.id))
-      if (user.role === 'user') dispatch(fetchUserFeatureSubscriptions(user.id))
+      if (appFeatures.length === 0) {
+        dispatch(fetchAdminFeatures())
+      } else {
+        const firstTab = appFeatures[0].sessionType
+        setFeatureTabFilter(firstTab)
+        dispatch(fetchUserFeatureSubscriptions(user.id, firstTab))
+      }
     }
-  }, [isOpen, user?.id, subscriptionPagination.page, subscriptionFilter, dispatch])
+  }, [isOpen, user?.id, dispatch])
 
-  // Handle tab change
-  const handleTabChange = (newFilter) => {
-    dispatch(actions.setSubscriptionFilter(newFilter))
-  }
+  // If features were not yet loaded when modal opened, fetch the first tab once they arrive
+  useEffect(() => {
+    if (isOpen && user?.id && appFeatures.length > 0 && !featureTabFilter) {
+      const firstTab = appFeatures[0].sessionType
+      setFeatureTabFilter(firstTab)
+      dispatch(fetchUserFeatureSubscriptions(user.id, firstTab))
+    }
+  }, [appFeatures])
 
   // Reset forms when modal closes
   const handleClose = () => {
     setShowCreditForm(false)
-    setShowSubscriptionForm(false)
     setShowRoleForm(false)
     setShowPermissionForm(false)
     setCreditAmount('')
@@ -95,51 +103,16 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setCreditError('')
     setSelectedRole(null)
     setRoleError('')
-    setSubscriptionData({ startDate: null, endDate: null })
-    setSubscriptionError('')
-    setEditingSubscription(null)
-    setEditError('')
     setEditingBucket(null)
     setEditBucketError('')
     setCreditBucketFilter('all')
-    dispatch(actions.setSubscriptionPage(1))
+    setEditingFeatureSub(null)
+    setEditFeatureError('')
+    setShowAddFeatureForm(false)
+    setAddFeatureData({ feature: null, startDate: null, endDate: null })
+    setAddFeatureError('')
+    setFeatureTabFilter(null)
     onClose()
-  }
-
-  const handleEditSubscription = (sub) => {
-    setEditingSubscription({
-      id: sub.id,
-      startDate: new Date(sub.startDate),
-      endDate: new Date(sub.endDate),
-    })
-    setEditError('')
-  }
-
-  const handleEditSubmit = (e) => {
-    e.preventDefault()
-    setEditError('')
-
-    if (!editingSubscription.startDate || !editingSubscription.endDate) {
-      setEditError('Both dates are required')
-      return
-    }
-    if (editingSubscription.endDate <= editingSubscription.startDate) {
-      setEditError('End date must be after start date')
-      return
-    }
-
-    dispatch(updateSubscription(
-      editingSubscription.id,
-      user.id,
-      editingSubscription.startDate.toISOString(),
-      editingSubscription.endDate.toISOString(),
-      () => setEditingSubscription(null)
-    ))
-  }
-
-  const handleDeleteSubscription = (sub) => {
-    if (!window.confirm(`Delete subscription (${formatDate(sub.startDate)} – ${formatDate(sub.endDate)})?`)) return
-    dispatch(deleteSubscription(sub.id, user.id))
   }
 
   // Credit form handlers
@@ -169,36 +142,6 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
     setCreditType('permanent')
     setCreditExpiryDays('')
     setShowCreditForm(false)
-  }
-
-  // Subscription form handlers
-  const handleSubscriptionSubmit = (e) => {
-    e.preventDefault()
-    setSubscriptionError('')
-
-    if (!subscriptionData.startDate) {
-      setSubscriptionError('Please select a start date')
-      return
-    }
-
-    if (!subscriptionData.endDate) {
-      setSubscriptionError('Please select an end date')
-      return
-    }
-
-    if (subscriptionData.endDate <= subscriptionData.startDate) {
-      setSubscriptionError('End date must be after start date')
-      return
-    }
-
-    // Convert Date objects to ISO strings for the API
-    const startDateISO = subscriptionData.startDate.toISOString()
-    const endDateISO = subscriptionData.endDate.toISOString()
-
-    // Call the action
-    onAddSubscription(user.id, startDateISO, endDateISO)
-    setSubscriptionData({ startDate: null, endDate: null })
-    setShowSubscriptionForm(false)
   }
 
   // Role form handlers
@@ -255,6 +198,84 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
   const handleDeleteBucket = (bucket) => {
     if (!window.confirm(`Delete this credit bucket (${parseFloat(bucket.balance).toFixed(2)} credits)?`)) return
     dispatch(deleteCreditBucket(user.id, bucket.id))
+  }
+
+  const featureLabels = Object.fromEntries(appFeatures.map(f => [f.sessionType, f.name]))
+  const featureOptions = appFeatures.map(f => ({ value: f.sessionType, label: f.name }))
+
+  const handleEditFeatureSub = (sub) => {
+    setEditingFeatureSub({
+      id: sub.id,
+      feature: sub.feature,
+      startDate: sub.startDate ? new Date(sub.startDate) : null,
+      endDate: sub.endDate ? new Date(sub.endDate) : null,
+    })
+    setEditFeatureError('')
+  }
+
+  const handleEditFeatureSubmit = (e) => {
+    e.preventDefault()
+    setEditFeatureError('')
+    if (!editingFeatureSub.startDate) {
+      setEditFeatureError('Start date is required')
+      return
+    }
+    if (!editingFeatureSub.endDate) {
+      setEditFeatureError('End date is required')
+      return
+    }
+    if (editingFeatureSub.endDate <= editingFeatureSub.startDate) {
+      setEditFeatureError('End date must be after start date')
+      return
+    }
+    dispatch(updateUserFeatureSubscriptionById(
+      user.id,
+      editingFeatureSub.id,
+      {
+        startDate: editingFeatureSub.startDate.toISOString(),
+        endDate: editingFeatureSub.endDate.toISOString(),
+      },
+      editingFeatureSub.feature,
+      () => setEditingFeatureSub(null)
+    ))
+  }
+
+  const handleDeleteFeatureSub = (id, feature) => {
+    if (!window.confirm(`Remove ${featureLabels[feature] || feature} access for this user?`)) return
+    dispatch(deleteUserFeatureSubscriptionById(user.id, id, feature))
+  }
+
+  const handleAddFeatureSubmit = (e) => {
+    e.preventDefault()
+    setAddFeatureError('')
+    if (!addFeatureData.feature) {
+      setAddFeatureError('Please select a feature')
+      return
+    }
+    if (!addFeatureData.startDate) {
+      setAddFeatureError('Please select a start date')
+      return
+    }
+    if (!addFeatureData.endDate) {
+      setAddFeatureError('Please select an end date')
+      return
+    }
+    if (addFeatureData.endDate <= addFeatureData.startDate) {
+      setAddFeatureError('End date must be after start date')
+      return
+    }
+    dispatch(addUserFeatureSubscription(
+      user.id,
+      {
+        feature: addFeatureData.feature,
+        startDate: addFeatureData.startDate.toISOString(),
+        endDate: addFeatureData.endDate.toISOString(),
+      },
+      () => {
+        setShowAddFeatureForm(false)
+        setAddFeatureData({ feature: null, startDate: null, endDate: null })
+      }
+    ))
   }
 
   const roleOptions = [
@@ -602,237 +623,217 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
         )}
       </CreditSection>
 
-      {/* Subscription Section */}
-      <SubscriptionSection>
-        {/* Tabs */}
-        <div style={{
-          display: 'flex',
-          gap: '0.5rem',
-          borderBottom: '2px solid #e5e7eb',
-          marginBottom: '1.5rem'
-        }}>
-          <button
-            onClick={() => handleTabChange('all')}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'none',
-              border: 'none',
-              borderBottom: subscriptionFilter === 'all' ? '2px solid #3b82f6' : '2px solid transparent',
-              color: subscriptionFilter === 'all' ? '#3b82f6' : '#6b7280',
-              fontWeight: subscriptionFilter === 'all' ? 600 : 400,
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              marginBottom: '-2px',
-              transition: 'all 0.2s'
-            }}
-          >
-            All Subscriptions
-          </button>
-          <button
-            onClick={() => handleTabChange('active')}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'none',
-              border: 'none',
-              borderBottom: subscriptionFilter === 'active' ? '2px solid #3b82f6' : '2px solid transparent',
-              color: subscriptionFilter === 'active' ? '#3b82f6' : '#6b7280',
-              fontWeight: subscriptionFilter === 'active' ? 600 : 400,
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              marginBottom: '-2px',
-              transition: 'all 0.2s'
-            }}
-          >
-            Active Only
-          </button>
-        </div>
-
-        <SubscriptionHeader>
-          <SectionTitle style={{ margin: 0 }}>
-            {subscriptionFilter === 'active' ? 'Active Subscriptions' : 'All Subscriptions'}
-          </SectionTitle>
-          {!showSubscriptionForm && (
-            <Button
-              onClick={() => setShowSubscriptionForm(true)}
-              variant="primary"
-              size="small"
-            >
-              Add Subscription
-            </Button>
-          )}
-        </SubscriptionHeader>
-
-        {showSubscriptionForm && (
-          <SubscriptionForm onSubmit={handleSubscriptionSubmit}>
-            <FormRow>
-              <FormGroup style={{ flex: 1 }}>
-                <Label>Start Date</Label>
-                <div className="custom-datepicker-wrapper">
-                  <DatePicker
-                    selected={subscriptionData.startDate}
-                    onChange={(date) => setSubscriptionData({ ...subscriptionData, startDate: date })}
-                    dateFormat="dd MMM yyyy"
-                    placeholderText="Select start date"
-                    isClearable
-                    dropdownMode="select"
-                    popperPlacement="top"
-                    className={`custom-datepicker-input ${subscriptionError ? 'error' : ''}`}
-                  />
-                </div>
-              </FormGroup>
-              <FormGroup style={{ flex: 1 }}>
-                <Label>End Date</Label>
-                <div className="custom-datepicker-wrapper">
-                  <DatePicker
-                    selected={subscriptionData.endDate}
-                    onChange={(date) => setSubscriptionData({ ...subscriptionData, endDate: date })}
-                    dateFormat="dd MMM yyyy"
-                    placeholderText="Select end date"
-                    minDate={subscriptionData.startDate}
-                    isClearable
-                    dropdownMode="select"
-                    popperPlacement="top"
-                    className={`custom-datepicker-input ${subscriptionError ? 'error' : ''}`}
-                  />
-                </div>
-              </FormGroup>
-            </FormRow>
-            {subscriptionError ? (
-              <ErrorText>{subscriptionError}</ErrorText>
-            ) : (
-              <HintText>Select the start and end dates for the subscription period</HintText>
+      {/* Feature Subscriptions Section */}
+        <SubscriptionSection>
+          <SubscriptionHeader>
+            <SectionTitle style={{ margin: 0 }}>Feature Access</SectionTitle>
+            {!showAddFeatureForm && (
+              <Button onClick={() => setShowAddFeatureForm(true)} variant="primary" size="small">
+                Add Feature Access
+              </Button>
             )}
-            <FormActions>
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowSubscriptionForm(false)
-                  setSubscriptionData({ startDate: null, endDate: null })
-                  setSubscriptionError('')
-                }}
-                disabled={loading.isAddSubscriptionLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={loading.isAddSubscriptionLoading}
-              >
-                {loading.isAddSubscriptionLoading ? 'Adding...' : 'Add Subscription'}
-              </Button>
-            </FormActions>
-          </SubscriptionForm>
-        )}
+          </SubscriptionHeader>
 
-        {loading.isFetchUserSubscriptionsLoading ? (
-          <EmptyState>Loading subscriptions...</EmptyState>
-        ) : subscriptions.length === 0 ? (
-          <EmptyState>No subscriptions found</EmptyState>
-        ) : (
-          <>
+          {showAddFeatureForm && (
+            <SubscriptionForm onSubmit={handleAddFeatureSubmit}>
+              <FormRow style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                <FormGroup>
+                  <Label>Feature</Label>
+                  <Dropdown
+                    options={featureOptions}
+                    value={featureOptions.find(o => o.value === addFeatureData.feature) || null}
+                    onChange={(opt) => setAddFeatureData({ ...addFeatureData, feature: opt.value })}
+                    placeholder="Select feature..."
+                    hasError={!!addFeatureError && !addFeatureData.feature}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Start Date</Label>
+                  <div className="custom-datepicker-wrapper">
+                    <DatePicker
+                      selected={addFeatureData.startDate}
+                      onChange={(date) => setAddFeatureData({ ...addFeatureData, startDate: date })}
+                      dateFormat="dd MMM yyyy"
+                      placeholderText="Select start date"
+                      dropdownMode="select"
+                      popperPlacement="top"
+                      className={`custom-datepicker-input ${addFeatureError ? 'error' : ''}`}
+                    />
+                  </div>
+                </FormGroup>
+                <FormGroup>
+                  <Label>End Date</Label>
+                  <div className="custom-datepicker-wrapper">
+                    <DatePicker
+                      selected={addFeatureData.endDate}
+                      onChange={(date) => setAddFeatureData({ ...addFeatureData, endDate: date })}
+                      dateFormat="dd MMM yyyy"
+                      placeholderText="Select end date"
+                      minDate={addFeatureData.startDate}
+                      dropdownMode="select"
+                      popperPlacement="top"
+                      className={`custom-datepicker-input ${addFeatureError ? 'error' : ''}`}
+                    />
+                  </div>
+                </FormGroup>
+              </FormRow>
+              {addFeatureError && <ErrorText>{addFeatureError}</ErrorText>}
+              <FormActions>
+                <Button
+                  type="button"
+                  onClick={() => { setShowAddFeatureForm(false); setAddFeatureData({ feature: null, startDate: null, endDate: null }); setAddFeatureError('') }}
+                  disabled={loading.isUpdateFeatureSubscriptionsLoading}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" disabled={loading.isUpdateFeatureSubscriptionsLoading}>
+                  {loading.isUpdateFeatureSubscriptionsLoading ? 'Adding...' : 'Add'}
+                </Button>
+              </FormActions>
+            </SubscriptionForm>
+          )}
+
+          {/* Feature tabs */}
+          <div style={{ overflowX: 'auto', borderBottom: '2px solid #e5e7eb', marginBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+              {Object.entries(featureLabels).map(([key, label]) => (
+                <button key={key} onClick={() => { setFeatureTabFilter(key); dispatch(fetchUserFeatureSubscriptions(user.id, key, 1)) }} style={{
+                  padding: '0.5rem 1rem', background: 'none', border: 'none',
+                  borderBottom: featureTabFilter === key ? '2px solid #3b82f6' : '2px solid transparent',
+                  color: featureTabFilter === key ? '#3b82f6' : '#6b7280',
+                  fontWeight: featureTabFilter === key ? 600 : 400,
+                  cursor: 'pointer', fontSize: '0.8rem', marginBottom: '-2px', transition: 'all 0.2s',
+                  flexShrink: 0,
+                }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Per-feature summary */}
+          {!loading.isFetchFeatureSubscriptionsLoading && (() => {
+            const activeSub = featureSubscriptions.find(f => f.isActive)
+            if (!activeSub) return null
+
+            // Chain forward through consecutive future rows to get effective end date
+            const sorted = [...featureSubscriptions].sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+            let effectiveEnd = new Date(activeSub.endDate)
+            for (const row of sorted) {
+              const rowStart = new Date(row.startDate)
+              if (rowStart <= effectiveEnd) continue
+              const gapDays = (rowStart - effectiveEnd) / (1000 * 60 * 60 * 24)
+              if (gapDays <= 1) effectiveEnd = new Date(row.endDate)
+              else break
+            }
+
+            return (
+              <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '1rem', padding: '0.75rem 1rem', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Status</div>
+                  <StatusBadge status="active">Active</StatusBadge>
+                </div>
+                <div style={{ borderLeft: '1px solid #e5e7eb', paddingLeft: '1.5rem' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Active Period</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.875rem', color: '#111827' }}>
+                    {formatDate(activeSub.startDate)} – {formatDate(effectiveEnd.toISOString())}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+
+          {loading.isFetchFeatureSubscriptionsLoading ? (
+            <EmptyState>Loading features...</EmptyState>
+          ) : (
             <SubscriptionTable>
-              <TableRow header $hasActions={isSuperAdmin}>
+              <TableRow header $hasActions $template="1.5fr 90px 1fr 1fr 140px">
+                <div>Feature</div>
+                <div>Status</div>
                 <div>Start Date</div>
                 <div>End Date</div>
-                <div>Status</div>
-                <div>Created</div>
-                {isSuperAdmin && <div>Actions</div>}
+                <div>Actions</div>
               </TableRow>
-              {subscriptions.map((sub, index) => (
+              {featureSubscriptions
+                .filter(f => !featureTabFilter || f.feature === featureTabFilter)
+                .map(({ id, feature, isActive, startDate, endDate }) => (
                 <>
-                  <TableRow key={sub.id || index} $hasActions={isSuperAdmin}>
-                    <div>{formatDate(sub.startDate)}</div>
-                    <div>{formatDate(sub.endDate)}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <StatusBadge status={sub.status}>
-                        {sub.status === 'active' ? 'Active' :
-                         sub.status === 'not_active' ? 'Pending' :
-                         'Expired'}
+                  <TableRow key={feature} $hasActions $template="1.5fr 90px 1fr 1fr 140px">
+                    <div style={{ fontWeight: 500 }}>{featureLabels[feature] || feature}</div>
+                    <div>
+                      <StatusBadge status={isActive ? 'active' : 'expired'}>
+                        {isActive ? 'Active' : 'Inactive'}
                       </StatusBadge>
-                      {sub.isCurrentlyActive && (
-                        <span style={{
-                          fontSize: '0.75rem',
-                          color: '#059669',
-                          fontWeight: 600,
-                          backgroundColor: '#d1fae5',
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: '9999px'
-                        }}>
-                          ● Current
-                        </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem' }}>{startDate ? formatDate(startDate) : 'â€”'}</div>
+                    <div style={{ fontSize: '0.8rem' }}>{formatDate(endDate)}</div>
+                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                      {id && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="small"
+                            style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                            onClick={() => handleEditFeatureSub({ id, feature, startDate, endDate })}
+                            disabled={loading.isUpdateFeatureSubscriptionsLoading}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="small"
+                            style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
+                            onClick={() => handleDeleteFeatureSub(id, feature)}
+                            disabled={loading.isUpdateFeatureSubscriptionsLoading}
+                          >
+                            Delete
+                          </Button>
+                        </>
                       )}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                      {formatLocalDate(sub.createdAt)}
-                    </div>
-                    {isSuperAdmin && (
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <Button
-                          variant="outline"
-                          size="small"
-                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
-                          onClick={() => handleEditSubscription(sub)}
-                          disabled={loading.isDeleteSubscriptionLoading}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="small"
-                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}
-                          onClick={() => handleDeleteSubscription(sub)}
-                          disabled={loading.isDeleteSubscriptionLoading}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    )}
                   </TableRow>
-
-                  {/* Inline edit form for this subscription */}
-                  {isSuperAdmin && editingSubscription?.id === sub.id && (
-                    <TableRow key={`edit-${sub.id}`} style={{ backgroundColor: '#f0f9ff' }}>
+                  {editingFeatureSub?.id === id && (
+                    <TableRow key={`edit-${feature}`} $template="1.5fr 90px 1fr 1fr 140px" style={{ backgroundColor: '#f0f9ff' }}>
                       <div style={{ gridColumn: '1 / -1', padding: '0.75rem 0' }}>
-                        <form onSubmit={handleEditSubmit}>
+                        <form onSubmit={handleEditFeatureSubmit}>
                           <FormRow>
-                            <FormGroup style={{ flex: 1 }}>
+                            <FormGroup>
                               <Label>Start Date</Label>
                               <div className="custom-datepicker-wrapper">
                                 <DatePicker
-                                  selected={editingSubscription.startDate}
-                                  onChange={(date) => setEditingSubscription({ ...editingSubscription, startDate: date })}
+                                  selected={editingFeatureSub.startDate}
+                                  onChange={(date) => setEditingFeatureSub({ ...editingFeatureSub, startDate: date })}
                                   dateFormat="dd MMM yyyy"
                                   placeholderText="Select start date"
                                   dropdownMode="select"
                                   popperPlacement="top"
-                                  className={`custom-datepicker-input ${editError ? 'error' : ''}`}
+                                  className={`custom-datepicker-input ${editFeatureError ? 'error' : ''}`}
                                 />
                               </div>
                             </FormGroup>
-                            <FormGroup style={{ flex: 1 }}>
+                            <FormGroup>
                               <Label>End Date</Label>
                               <div className="custom-datepicker-wrapper">
                                 <DatePicker
-                                  selected={editingSubscription.endDate}
-                                  onChange={(date) => setEditingSubscription({ ...editingSubscription, endDate: date })}
+                                  selected={editingFeatureSub.endDate}
+                                  onChange={(date) => setEditingFeatureSub({ ...editingFeatureSub, endDate: date })}
                                   dateFormat="dd MMM yyyy"
                                   placeholderText="Select end date"
-                                  minDate={editingSubscription.startDate}
+                                  minDate={editingFeatureSub.startDate}
                                   dropdownMode="select"
                                   popperPlacement="top"
-                                  className={`custom-datepicker-input ${editError ? 'error' : ''}`}
+                                  className={`custom-datepicker-input ${editFeatureError ? 'error' : ''}`}
                                 />
                               </div>
                             </FormGroup>
                           </FormRow>
-                          {editError && <ErrorText>{editError}</ErrorText>}
+                          {editFeatureError && <ErrorText>{editFeatureError}</ErrorText>}
                           <FormActions style={{ marginTop: '0.75rem' }}>
                             <Button
                               type="button"
                               size="small"
-                              onClick={() => { setEditingSubscription(null); setEditError('') }}
-                              disabled={loading.isUpdateSubscriptionLoading}
+                              onClick={() => { setEditingFeatureSub(null); setEditFeatureError('') }}
+                              disabled={loading.isUpdateFeatureSubscriptionsLoading}
                             >
                               Cancel
                             </Button>
@@ -840,9 +841,9 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
                               type="submit"
                               variant="primary"
                               size="small"
-                              disabled={loading.isUpdateSubscriptionLoading}
+                              disabled={loading.isUpdateFeatureSubscriptionsLoading}
                             >
-                              {loading.isUpdateSubscriptionLoading ? 'Saving...' : 'Save'}
+                              {loading.isUpdateFeatureSubscriptionsLoading ? 'Saving...' : 'Save'}
                             </Button>
                           </FormActions>
                         </form>
@@ -852,88 +853,19 @@ function UserDetailModal({ isOpen, onClose, onAdjustCredit, onAddSubscription })
                 </>
               ))}
             </SubscriptionTable>
-
-            {((subscriptionPagination.page === 1 && !subscriptionPagination.isLastPage) || subscriptionPagination.page > 1) && (
-              <div style={{ marginTop: '1rem' }}>
-                <Pagination
-                  currentPage={subscriptionPagination.page}
-                  isLastPage={subscriptionPagination.isLastPage}
-                  onPageChange={(page) => dispatch(actions.setSubscriptionPage(page))}
-                  isLoading={loading.isFetchUserSubscriptionsLoading}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </SubscriptionSection>
-
-      {/* Feature Subscriptions Section — only for role=user */}
-      {user.role === 'user' && (
-        <SubscriptionSection>
-          <SubscriptionHeader>
-            <SectionTitle style={{ margin: 0 }}>Feature Access</SectionTitle>
-          </SubscriptionHeader>
-          <div style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '1rem' }}>
-            Toggle which features this user can access.
-          </div>
-
-          {loading.isFetchFeatureSubscriptionsLoading ? (
-            <EmptyState>Loading features...</EmptyState>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
-              {featureSubscriptions.map(({ feature, isActive }) => {
-                const labels = {
-                  exercise: 'Latihan Soal',
-                  flashcard: 'Flashcard',
-                  calculator: 'Kalkulator Medis',
-                  diagnostic: 'Kuis Diagnostik',
-                  anatomy: 'Kuis Anatomi',
-                  mcq: 'Multiple Choice',
-                  chatbot: 'Asisten AI',
-                  skripsi: 'Skripsi Builder',
-                  oscePractice: 'OSCE Practice',
-                  summaryNotes: 'Ringkasan Materi',
-                  atlas: 'Atlas 3D',
-                }
-                return (
-                  <label
-                    key={feature}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.5rem 0.75rem',
-                      border: `1px solid ${isActive ? '#3b82f6' : '#e5e7eb'}`,
-                      borderRadius: '8px',
-                      background: isActive ? '#eff6ff' : '#f9fafb',
-                      cursor: loading.isUpdateFeatureSubscriptionsLoading ? 'not-allowed' : 'pointer',
-                      fontSize: '0.8rem',
-                      fontWeight: 500,
-                      color: isActive ? '#1d4ed8' : '#374151',
-                      userSelect: 'none',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isActive}
-                      disabled={loading.isUpdateFeatureSubscriptionsLoading}
-                      onChange={() => {
-                        const newActive = featureSubscriptions
-                          .map(f => f.feature === feature ? { ...f, isActive: !f.isActive } : f)
-                          .filter(f => f.isActive)
-                          .map(f => f.feature)
-                        dispatch(updateUserFeatureSubscriptions(user.id, newActive))
-                      }}
-                      style={{ accentColor: '#3b82f6' }}
-                    />
-                    {labels[feature] || feature}
-                  </label>
-                )
-              })}
-            </div>
           )}
-        </SubscriptionSection>
-      )}
+
+          {(!featureSubscriptionPagination.isLastPage || featureSubscriptionPagination.page > 1) && (
+            <Pagination
+              currentPage={featureSubscriptionPagination.page}
+              isLastPage={featureSubscriptionPagination.isLastPage}
+              onPageChange={(page) => dispatch(fetchUserFeatureSubscriptions(user.id, featureTabFilter, page))}
+              isLoading={loading.isFetchFeatureSubscriptionsLoading}
+              variant="admin"
+              language="id"
+            />
+          )}
+      </SubscriptionSection>
 
       <ModalFooter>
         <Button onClick={handleClose}>

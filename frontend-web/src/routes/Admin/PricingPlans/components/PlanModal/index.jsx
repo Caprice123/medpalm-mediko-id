@@ -1,3 +1,6 @@
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchAdminFeatures } from '@store/feature/action'
 import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import NumberInput from '@components/common/NumberInput'
@@ -7,21 +10,14 @@ import Dropdown from '@components/common/Dropdown'
 import Checkbox from '@components/common/Checkbox'
 import { FormGroup, FormRow, ButtonGroup } from './PlanModal.styles'
 
-const ALL_FEATURES = [
-  { key: 'exercise', label: 'Latihan Soal' },
-  { key: 'flashcard', label: 'Flashcard' },
-  { key: 'calculator', label: 'Kalkulator Medis' },
-  { key: 'diagnostic', label: 'Kuis Diagnostik' },
-  { key: 'anatomy', label: 'Kuis Anatomi' },
-  { key: 'mcq', label: 'Multiple Choice' },
-  { key: 'chatbot', label: 'Asisten AI' },
-  { key: 'skripsi', label: 'Skripsi Builder' },
-  { key: 'oscePractice', label: 'OSCE Practice' },
-  { key: 'summaryNotes', label: 'Ringkasan Materi' },
-  { key: 'atlas', label: 'Atlas 3D' },
-]
-
 function PlanModal({ isOpen, editingPlan, formData, onChange, onFeatureToggle, onSubmit, onClose }) {
+  const dispatch = useDispatch()
+  const appFeatures = useSelector(state => state.feature.features)
+
+  useEffect(() => {
+    if (isOpen && appFeatures.length === 0) dispatch(fetchAdminFeatures())
+  }, [isOpen])
+  const ALL_FEATURES = appFeatures.map(f => ({ key: f.sessionType, label: f.name }))
   const showCredits = formData.bundle_type === 'credits' || formData.bundle_type === 'hybrid'
   const showDuration = formData.bundle_type === 'subscription' || formData.bundle_type === 'hybrid'
   const showExpiryDays = showCredits && formData.credit_type === 'expiring'

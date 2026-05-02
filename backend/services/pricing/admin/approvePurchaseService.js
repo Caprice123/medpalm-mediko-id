@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
@@ -12,9 +13,7 @@ export class ApprovePurchaseService extends BaseService {
 
     const purchase = await prisma.user_purchases.findUnique({
       where: { id: parseInt(purchaseId) },
-      include: {
-        pricing_plan: true
-      }
+      include: { pricing_plan: true }
     })
 
     if (!purchase) {
@@ -26,89 +25,48 @@ export class ApprovePurchaseService extends BaseService {
     }
 
     if (status === 'completed') {
-      // Approve: Grant credits and/or subscription
       await prisma.$transaction(async (tx) => {
-        // Update purchase status
         await tx.user_purchases.update({
           where: { id: parseInt(purchaseId) },
-          data: {
-            payment_status: 'completed',
-            updated_at: new Date()
-          }
+          data: { payment_status: 'completed', updated_at: new Date() }
         })
 
-        // Handle credits
-        if (purchase.pricing_plan.credits_included > 0) {
-          const plan = purchase.pricing_plan
-          const creditType = plan.credit_type || 'permanent'
-          let expiresAt = null
+        // Handle credits — use snapshotted values from purchase
+        const creditsIncluded = purchase.credits_included ?? purchase.pricing_plan.credits_included
+        const creditType = purchase.credit_type ?? purchase.pricing_plan.credit_type ?? 'permanent'
+        const creditExpiryDays = purchase.credit_expiry_days ?? purchase.pricing_plan.credit_expiry_days
 
-          if (creditType === 'expiring' && plan.credit_expiry_days) {
+        if (creditsIncluded > 0) {
+          let expiresAt = null
+          if (creditType === 'expiring' && creditExpiryDays) {
             expiresAt = new Date()
-            expiresAt.setDate(expiresAt.getDate() + plan.credit_expiry_days)
+            expiresAt.setDate(expiresAt.getDate() + creditExpiryDays)
           }
 
-          await addUserCredits(tx, purchase.user_id, plan.credits_included, {
+          await addUserCredits(tx, purchase.user_id, creditsIncluded, {
             creditType,
             expiresAt,
-            description: `Purchase: ${plan.name}`,
+            description: `Purchase: ${purchase.pricing_plan.name}`,
             transactionType: 'purchase',
             paymentMethod: purchase.payment_method,
             paymentReference: purchase.payment_reference
           })
         }
 
-        // Handle subscription
-        if (purchase.pricing_plan.duration_days > 0) {
-          const startDate = new Date()
-          const endDate = new Date()
-          endDate.setDate(endDate.getDate() + purchase.pricing_plan.duration_days)
+        // Handle subscription — use snapshotted duration_days from purchase
+        const durationDays = purchase.duration_days ?? purchase.pricing_plan.duration_days
+        let featureStartDate
+        let featureEndDate
 
-          // Check if user has active subscription
-          const activeSubscription = await tx.user_subscriptions.findFirst({
-            where: {
-              user_id: purchase.user_id,
-              end_date: { gte: new Date() }
-            },
-            orderBy: { end_date: 'desc' }
-          })
-
-          if (activeSubscription) {
-            // Extend existing subscription
-            const extendedEndDate = new Date(activeSubscription.end_date)
-            extendedEndDate.setDate(extendedEndDate.getDate() + purchase.pricing_plan.duration_days)
-
-            await tx.user_subscriptions.update({
-              where: { id: activeSubscription.id },
-              data: {
-                end_date: extendedEndDate,
-                pricing_plan_id: purchase.pricing_plan_id
-              }
-            })
-          } else {
-            // Create new subscription
-            await tx.user_subscriptions.create({
-              data: {
-                user_id: purchase.user_id,
-                pricing_plan_id: purchase.pricing_plan_id,
-                start_date: startDate,
-                end_date: endDate
-              }
-            })
-          }
+        // Grant feature access — each feature gets its own start date based on its own last subscription
+        if (durationDays > 0) {
+          await applyPlanFeatures(tx, purchase.user_id, purchase.allowed_features || [], durationDays)
         }
-
-        // Grant feature access from the purchase snapshot
-        await applyPlanFeatures(tx, purchase.user_id, purchase.allowed_features || [])
       })
     } else {
-      // Reject: Just update status to failed
       await prisma.user_purchases.update({
         where: { id: parseInt(purchaseId) },
-        data: {
-          payment_status: 'rejected',
-          updated_at: new Date()
-        }
+        data: { payment_status: 'rejected', updated_at: new Date() }
       })
     }
   }

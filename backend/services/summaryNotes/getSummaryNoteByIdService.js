@@ -47,7 +47,7 @@ export class GetSummaryNoteByIdService extends BaseService {
         accessTypeKey: 'summary_notes_access_type',
         creditCostKey: 'summary_notes_credit_cost',
         description: `Viewed summary note: ${note.id} - ${note.title}`,
-        featureKey: 'summaryNotes',
+        featureKey: 'summary_notes',
       })
 
       return note

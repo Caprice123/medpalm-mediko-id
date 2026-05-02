@@ -60,24 +60,22 @@ function Users() {
       }
     },
     {
-      key: "userSubscriptions",
+      key: '',
       header: "Subscription",
       align: 'center',
-      render: (userSubscriptions) => {
-        const activeSub = getActiveSubscription(userSubscriptions)
-        if (!activeSub) {
-          return (
-            <StatusBadge status="inactive">
-              No Subscription
-            </StatusBadge>
-          )
+      render: (user) => {
+        if (!user.hasActiveSubscription) {
+          return <StatusBadge status="inactive">No Subscription</StatusBadge>
         }
+        const activeSub = getActiveSubscription(user.userSubscriptions)
         return (
           <div style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
             <StatusBadge status="active">Active</StatusBadge>
-            <div style={{ marginTop: '0.25rem', color: '#6b7280' }}>
-              Until {formatDate(activeSub.endDate)}
-            </div>
+            {activeSub && (
+              <div style={{ marginTop: '0.25rem', color: '#6b7280' }}>
+                Until {formatDate(activeSub.endDate)}
+              </div>
+            )}
           </div>
         )
       }

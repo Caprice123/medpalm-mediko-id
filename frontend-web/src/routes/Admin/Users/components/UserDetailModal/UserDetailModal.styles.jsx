@@ -109,7 +109,7 @@ export const SubscriptionTable = styled.div`
 
 export const TableRow = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.$hasActions ? '1fr 1fr 1fr 100px 130px' : '1fr 1fr 1fr 100px'};
+  grid-template-columns: ${props => props.$template || (props.$hasActions ? '1fr 1fr 1fr 100px 130px' : '1fr 1fr 1fr 100px')};
   gap: 1rem;
   align-items: center;
   padding: 0.75rem 1rem;

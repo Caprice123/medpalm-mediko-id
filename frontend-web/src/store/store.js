@@ -21,6 +21,7 @@ import chatbot from "./chatbot/reducer";
 import skripsi from "./skripsi/reducer";
 import oscePractice from "./oscePractice";
 import atlas from "./atlas";
+import featureSubscriptions from "./featureSubscriptions/reducer";
 
 export const rootReducer = combineReducers({
     auth,
@@ -44,6 +45,7 @@ export const rootReducer = combineReducers({
     skripsi,
     oscePractice,
     atlas,
+    featureSubscriptions,
 })
 
 export const store = configureStore({
