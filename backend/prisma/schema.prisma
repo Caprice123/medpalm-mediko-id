@@ -396,19 +396,21 @@ model users {
 }
 
 model user_feature_subscriptions {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   user_id    Int
-  feature    String   // 'exercise' | 'flashcard' | 'calculator' | 'diagnostic' | 'anatomy' | 'mcq' | 'chatbot' | 'skripsi' | 'oscePractice' | 'summaryNotes' | 'atlas'
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  feature    String    // 'exercise' | 'flashcard' | 'calculator' | 'diagnostic' | 'anatomy' | 'mcq' | 'chatbot' | 'skripsi' | 'oscePractice' | 'summaryNotes' | 'atlas'
+  start_date DateTime  @default(now())
+  end_date   DateTime
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
 
   user users @relation(fields: [user_id], references: [id])
 
-  @@unique([user_id, feature])
   @@index([user_id])
   @@index([feature])
-  @@index([is_active])
+  @@index([user_id, feature])
+  @@index([end_date])
+  @@index([start_date])
 }
 
 model user_subscriptions {
@@ -628,8 +630,12 @@ model user_purchases {
   phone_number String?
   university   String?
 
-  // Snapshot of features granted by the plan at time of purchase
-  allowed_features Json @default("[]")
+  // Snapshot of plan details at time of purchase
+  duration_days      Int?
+  credits_included   Int?
+  credit_type        String?
+  credit_expiry_days Int?
+  allowed_features   Json @default("[]")
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
