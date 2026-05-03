@@ -11,6 +11,7 @@ import Button from '@components/common/Button'
 import { FeatureCardSkeletonGrid } from '@components/common/SkeletonCard'
 import { fetchFeatures } from '@store/feature/userAction'
 import { fetchActiveBanners } from '@store/banner/userAction'
+import { getUserData } from '@utils/authToken'
 import {
   DashboardContainer,
   MainContent,
@@ -47,10 +48,14 @@ import { SkripsiRoute } from '../SkripsiBuilder/routes'
 import { OscePracticeRoute } from '../OscePractice/routes'
 import { AtlasRoute } from '../Atlas/routes'
 import { WebinarRoute } from '../Webinar/routes'
+import { EventRoute } from '../Event/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const currentUser = getUserData()
+  const isNonUser = currentUser?.role !== 'user'
 
   // Redux selectors
   const { features } = useSelector(state => state.feature)
@@ -96,7 +101,7 @@ function Dashboard() {
   return (
     <DashboardContainer>
       <MainContent>
-        {activeBanners.length > 0 && (
+        {isNonUser && activeBanners.length > 0 && (
           <BannerCarousel>
             <Swiper
               modules={[Autoplay, EffectFade, Pagination]}
@@ -242,27 +247,48 @@ function Dashboard() {
           </EmptyState>
         )}
 
-        <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
-        <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
-        <CatalogGrid>
-          <CardWrapper>
-            <Card shadow hoverable>
-              <CardBody>
-                <FeatureIcon>🎓</FeatureIcon>
-                <FeatureTitle>Webinar</FeatureTitle>
-                <FeatureDescription>
-                  Ikuti webinar medis eksklusif dari para dokter dan spesialis terkemuka
-                </FeatureDescription>
-                <div style={{ flex: 1 }} />
-                <FeatureFooter>
-                  <Button variant="primary" onClick={() => navigate(WebinarRoute.listRoute)} fullWidth>
-                    Lihat Webinar
-                  </Button>
-                </FeatureFooter>
-              </CardBody>
-            </Card>
-          </CardWrapper>
-        </CatalogGrid>
+        {isNonUser && (
+          <>
+            <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
+            <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
+            <CatalogGrid>
+              <CardWrapper>
+                <Card shadow hoverable>
+                  <CardBody>
+                    <FeatureIcon>🎓</FeatureIcon>
+                    <FeatureTitle>Webinar</FeatureTitle>
+                    <FeatureDescription>
+                      Ikuti webinar medis eksklusif dari para dokter dan spesialis terkemuka
+                    </FeatureDescription>
+                    <div style={{ flex: 1 }} />
+                    <FeatureFooter>
+                      <Button variant="primary" onClick={() => navigate(WebinarRoute.listRoute)} fullWidth>
+                        Lihat Webinar
+                      </Button>
+                    </FeatureFooter>
+                  </CardBody>
+                </Card>
+              </CardWrapper>
+              <CardWrapper>
+                <Card shadow hoverable>
+                  <CardBody>
+                    <FeatureIcon>🗓️</FeatureIcon>
+                    <FeatureTitle>Events</FeatureTitle>
+                    <FeatureDescription>
+                      Daftar dan ikuti event medis eksklusif yang tersedia untukmu
+                    </FeatureDescription>
+                    <div style={{ flex: 1 }} />
+                    <FeatureFooter>
+                      <Button variant="primary" onClick={() => navigate(EventRoute.listRoute)} fullWidth>
+                        Lihat Events
+                      </Button>
+                    </FeatureFooter>
+                  </CardBody>
+                </Card>
+              </CardWrapper>
+            </CatalogGrid>
+          </>
+        )}
       </MainContent>
     </DashboardContainer>
   )

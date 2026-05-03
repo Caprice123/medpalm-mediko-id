@@ -21,7 +21,8 @@ import chatbot from "./chatbot/reducer";
 import skripsi from "./skripsi/reducer";
 import oscePractice from "./oscePractice";
 import atlas from "./atlas";
-import webinar from "./webinar";
+import webinar from "./webinar"
+import event from "./event";
 import featureSubscriptions from "./featureSubscriptions/reducer";
 import banner from "./banner";
 
@@ -48,6 +49,7 @@ export const rootReducer = combineReducers({
     oscePractice,
     atlas,
     webinar,
+    event,
     featureSubscriptions,
     banner,
 })

@@ -15,6 +15,7 @@ import { topupRoutes } from './routes/Topup/routes';
 import { oscePracticeRoutes } from './routes/OscePractice/routes';
 import { atlasRoutes } from './routes/Atlas/routes';
 import { webinarRoutes } from './routes/Webinar/routes';
+import { eventRoutes } from './routes/Event/routes';
 
 // Lazy load components
 const Login = lazy(() => import('@routes/Auth/pages/Login'));
@@ -62,6 +63,7 @@ const appRoutes = [
             ...oscePracticeRoutes,
             ...atlasRoutes,
             ...webinarRoutes,
+            ...eventRoutes,
             {
                 path: '/admin',
                 element: withSuspense(<AdminPanel />)

@@ -30,6 +30,7 @@ export default {
         skripsiJournals: "/admin/v1/skripsi/journals",
         oscePractice: "/admin/v1/oscePractice",
         webinars: "/admin/v1/webinars",
+        events: "/admin/v1/events",
         banners: "/admin/v1/banners",
         bannersReorder: "/admin/v1/banners/reorder",
     },
@@ -53,6 +54,7 @@ export default {
         tags: "/api/v1/tags",
         constants: "/api/v1/constants",
         webinars: "/api/v1/webinars",
+        events: "/api/v1/events",
         banners: "/api/v1/banners",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,

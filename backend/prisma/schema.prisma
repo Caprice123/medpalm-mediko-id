@@ -1813,8 +1813,60 @@ model webinar_registrations {
 
   webinar_event webinar_events @relation(fields: [webinar_id], references: [id])
 
-  @@unique([webinar_id, user_id])
   @@index([webinar_id])
+  @@index([user_id])
+  @@index([status])
+}
+
+// ============= Events Feature =============
+
+model events {
+  id           Int       @id @default(autoincrement())
+  code         String    @unique
+  title        String
+  description  String?   @db.Text
+  start_at     DateTime?
+  end_at       DateTime?
+  registration_start_at DateTime?
+  registration_end_at   DateTime?
+  status       String    @default("draft") // draft, published, cancelled
+  // Quota disbursed on approval
+  credits_on_approval Int     @default(0)
+  credit_type         String  @default("permanent") // permanent, expiring
+  credit_expiry_days  Int?
+  allowed_features    Json    @default("[]") // [{ key, durationDays }]
+  is_deleted   Boolean   @default(false)
+  deleted_at   DateTime?
+  created_by   Int
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+
+  event_registrations event_registrations[]
+
+  @@index([status])
+  @@index([is_deleted])
+  @@index([start_at])
+}
+
+model event_registrations {
+  id          Int       @id @default(autoincrement())
+  unique_id   String    @unique @default(uuid())
+  event_id    Int
+  user_id     Int
+  status      String    @default("pending") // pending, approved, rejected
+  admin_notes String?
+  reviewed_by Int?
+  reviewed_at DateTime?
+  credits_granted   Int?
+  features_granted  Json?
+  is_deleted  Boolean   @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+
+  event events @relation(fields: [event_id], references: [id])
+
+  @@index([event_id])
   @@index([user_id])
   @@index([status])
 }

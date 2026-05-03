@@ -51,6 +51,8 @@ import adminSkripsiRoutes from '#routes/admin/v1/skripsi.routes';
 import adminFeatureRoutes from '#routes/admin/v1/feature.routes';
 import webinarRoutes from '#routes/api/v1/webinar.routes';
 import adminWebinarRoutes from '#routes/admin/v1/webinar.routes';
+import eventRoutes from '#routes/api/v1/event.routes';
+import adminEventRoutes from '#routes/admin/v1/event.routes';
 import bannerRoutes from '#routes/api/v1/banner.routes';
 import adminBannerRoutes from '#routes/admin/v1/banner.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
@@ -162,6 +164,7 @@ app.use('/api/v1/blobs', blobRoutes);
 app.use('/api/v1/skripsi', skripsiRoutes);
 app.use('/api/v1/html-to-docx', htmlToDocxRoutes);
 app.use('/api/v1/webinars', webinarRoutes);
+app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/banners', bannerRoutes);
 
 // Admin Routes
@@ -190,6 +193,7 @@ app.use('/admin/v1/chatbot', adminChatbotRoutes);
 app.use('/admin/v1/features', adminFeatureRoutes);
 app.use('/admin/v1/skripsi', adminSkripsiRoutes);
 app.use('/admin/v1/webinars', adminWebinarRoutes);
+app.use('/admin/v1/events', adminEventRoutes);
 app.use('/admin/v1/banners', adminBannerRoutes);
 
 // Bull Board - Job Queue Monitoring UI
