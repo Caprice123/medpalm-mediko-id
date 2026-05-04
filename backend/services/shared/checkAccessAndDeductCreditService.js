@@ -34,13 +34,7 @@ export async function checkAccessAndDeductCredit(tx, {
   if (!isUser) return
 
   // Per-user feature subscription check
-  if (featureKey) {
-    const allowed = await hasFeatureAccess(parseInt(userId), featureKey)
-    console.log(allowed)
-    if (!allowed) {
-      throw new ValidationError('You do not have access to this feature')
-    }
-  }
+  
 
   // Resolve access type from constants (default to 'free' if not configured)
   let accessType = 'free'
@@ -54,9 +48,12 @@ export async function checkAccessAndDeductCredit(tx, {
 
   // Subscription check
   if (requiresSubscription) {
-    const hasSubscription = await HasActiveSubscriptionService.call(parseInt(userId))
-    if (!hasSubscription) {
-      throw new ValidationError('Active subscription required')
+    if (featureKey) {
+    const allowed = await hasFeatureAccess(parseInt(userId), featureKey)
+    console.log(allowed)
+    if (!allowed) {
+      throw new ValidationError('You do not have access to this feature')
+    }
     }
   }
 
