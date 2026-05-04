@@ -40,12 +40,12 @@ function BannerAdmin() {
   const applyFilters = () => {
     dispatch(actions.updateFilter({ key: 'search', value: searchInput }))
     dispatch(actions.updateFilter({ key: 'isActive', value: activeFilter }))
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchAdminBanners())
   }
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchAdminBanners())
   }
 

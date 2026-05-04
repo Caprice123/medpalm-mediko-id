@@ -24,7 +24,7 @@ export function useEventList() {
 
   const handleSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchEvents())
   }
 
@@ -34,12 +34,12 @@ export function useEventList() {
 
   const handleRegistrationFilterChange = (key) => {
     dispatch(actions.updateFilter({ key: 'registrationStatus', value: key }))
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchEvents())
   }
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     if (tab === 'list') dispatch(fetchEvents())
     else dispatch(fetchMyEventRegistrations())
   }

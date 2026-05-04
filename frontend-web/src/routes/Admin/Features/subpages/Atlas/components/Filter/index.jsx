@@ -14,6 +14,7 @@ export const Filter = () => {
   const { tags } = useSelector(state => state.tags)
 
   const onSearch = () => {
+    dispatch(actions.setPage(1))
     dispatch(fetchAdminAtlasModels())
   }
 

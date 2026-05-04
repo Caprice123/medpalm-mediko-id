@@ -13,6 +13,7 @@ export const Filter = () => {
     const { tags } = useSelector(state => state.tags)
 
     const onSearch = () => {
+        dispatch(actions.setPage(1))
         dispatch(fetchSummaryNotes())
     }
 
@@ -65,7 +66,7 @@ export const Filter = () => {
                         <Dropdown
                             options={universityTags}
                             value={filters.university ? universityTags.find(t => t.value === filters.university) : null}
-                            onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "university", value: option?.value || "" })) }}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "university", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan universitas..."
                         />
                     </FilterComponent.Group>
@@ -75,7 +76,7 @@ export const Filter = () => {
                         <Dropdown
                             options={semesterTags}
                             value={filters.semester ? semesterTags.find(t => t.value === filters.semester) : null}
-                            onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" })) }}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan semester..."
                         />
                     </FilterComponent.Group>
@@ -85,7 +86,7 @@ export const Filter = () => {
                         <Dropdown
                             options={departmentTags}
                             value={filters.department ? departmentTags.find(t => t.value === filters.department) : null}
-                            onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "department", value: option?.value || "" })) }}
+                            onChange={(option) => dispatch(actions.updateFilter({ key: "department", value: option?.value || "" }))}
                             placeholder="Filter berdasarkan departemen..."
                         />
                     </FilterComponent.Group>

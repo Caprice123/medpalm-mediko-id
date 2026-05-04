@@ -18,7 +18,7 @@ export function useWebinarList() {
 
   const handleSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchWebinars())
   }
 
@@ -28,12 +28,12 @@ export function useWebinarList() {
 
   const handleRegistrationFilterChange = (key) => {
     dispatch(actions.updateFilter({ key: 'registrationStatus', value: key }))
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchWebinars())
   }
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     if (tab === 'list') dispatch(fetchWebinars())
     else dispatch(fetchMyRegistrations())
   }

@@ -64,12 +64,12 @@ function Webinar({ onBack = null }) {
 
   const handleWebinarSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchAdminWebinars())
   }
 
   const handleWebinarPageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchAdminWebinars())
   }
 
@@ -87,12 +87,12 @@ function Webinar({ onBack = null }) {
 
   const handleRegSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setRegistrationPagination({ ...registrationPagination, page: 1 }))
+    dispatch(actions.setRegistrationPage(1))
     dispatch(fetchAllWebinarRegistrations())
   }
 
   const handleRegPageChange = (page) => {
-    dispatch(actions.setRegistrationPagination({ ...registrationPagination, page }))
+    dispatch(actions.setRegistrationPage(page))
     dispatch(fetchAllWebinarRegistrations())
   }
 

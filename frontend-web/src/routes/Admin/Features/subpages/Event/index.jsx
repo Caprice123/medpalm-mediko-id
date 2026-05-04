@@ -61,12 +61,12 @@ function Event({ onBack = null }) {
 
   const handleEventSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setPagination({ ...pagination, page: 1 }))
+    dispatch(actions.setPage(1))
     dispatch(fetchAdminEvents())
   }
 
   const handleEventPageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchAdminEvents())
   }
 
@@ -82,12 +82,12 @@ function Event({ onBack = null }) {
 
   const handleRegSearch = (e) => {
     e.preventDefault()
-    dispatch(actions.setRegistrationPagination({ ...registrationPagination, page: 1 }))
+    dispatch(actions.setRegistrationPage(1))
     dispatch(fetchAllEventRegistrations())
   }
 
   const handleRegPageChange = (page) => {
-    dispatch(actions.setRegistrationPagination({ ...registrationPagination, page }))
+    dispatch(actions.setRegistrationPage(page))
     dispatch(fetchAllEventRegistrations())
   }
 

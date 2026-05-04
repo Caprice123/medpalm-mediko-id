@@ -25,7 +25,7 @@ function Atlas({ onBack }) {
   const { uiState, setUiState } = useAtlasSection()
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchAdminAtlasModels())
   }
 

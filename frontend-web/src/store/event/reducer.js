@@ -62,8 +62,14 @@ const { reducer, actions } = createSlice({
     setPagination: (state, { payload }) => {
       state.pagination = payload
     },
+    setPage: (state, { payload }) => {
+      state.pagination.page = payload
+    },
     setRegistrationPagination: (state, { payload }) => {
       state.registrationPagination = payload
+    },
+    setRegistrationPage: (state, { payload }) => {
+      state.registrationPagination.page = payload
     },
     updateFilter: (state, { payload: { key, value } }) => {
       state.filter[key] = value

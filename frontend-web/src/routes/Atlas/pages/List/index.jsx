@@ -49,7 +49,7 @@ function AtlasListPage() {
   const onSearch = () => dispatch(fetchAtlasModels())
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchAtlasModels())
   }
 

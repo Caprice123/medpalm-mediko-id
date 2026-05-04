@@ -115,7 +115,7 @@ function MyRegistrationsPage() {
   }, [dispatch])
 
   const handlePageChange = (page) => {
-    dispatch(actions.setPagination({ ...pagination, page }))
+    dispatch(actions.setPage(page))
     dispatch(fetchMyRegistrations())
   }
 
