@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetSummaryNotesListService extends BaseService {
-  static async call({ page = 1, perPage = 30, status, search, university, semester, topic, department }) {
+  static async call({ page = 1, perPage = 30, status, search, university, semester, department }) {
     // Calculate pagination
     const limit = parseInt(perPage)
     const offset = (parseInt(page) - 1) * limit
@@ -41,17 +41,6 @@ export class GetSummaryNotesListService extends BaseService {
         summary_note_tags: {
           some: {
             tag_id: parseInt(semester)
-          }
-        }
-      })
-    }
-
-    // Filter by topic tag
-    if (topic) {
-      tagFilters.push({
-        summary_note_tags: {
-          some: {
-            tag_id: parseInt(topic)
           }
         }
       })
@@ -113,7 +102,6 @@ export class GetSummaryNotesListService extends BaseService {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-      const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
       const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
       return {
@@ -127,7 +115,6 @@ export class GetSummaryNotesListService extends BaseService {
         tags: allTags,
         universityTags,
         semesterTags,
-        topicTags,
         departmentTags
       }
     })

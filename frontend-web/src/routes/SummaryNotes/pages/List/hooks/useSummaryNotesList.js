@@ -11,7 +11,7 @@ export const useSummaryNotesList = () => {
 
   useEffect(() => {
     dispatch(fetchSummaryNotes())
-    dispatch(tagActions.updateFilter({ key: 'tagGroupNames', value: ['university', 'semester', 'topic', 'department'] }))
+    dispatch(tagActions.updateFilter({ key: 'tagGroupNames', value: ['university', 'semester', 'department'] }))
     dispatch(fetchTags())
   }, [dispatch])
 

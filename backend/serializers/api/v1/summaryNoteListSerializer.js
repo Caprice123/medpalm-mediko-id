@@ -11,7 +11,6 @@ export class SummaryNoteListSerializer {
 
       const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
       const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-      const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
       const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
       return {
@@ -21,7 +20,6 @@ export class SummaryNoteListSerializer {
         description: note.description,
         universityTags,
         semesterTags,
-        topicTags,
         departmentTags,
         updatedAt: note.updated_at ? moment(note.updated_at).tz('Asia/Jakarta').toISOString() : null
       }

@@ -25,7 +25,6 @@ export const useCreateNote = (onClose) => {
       status: 'draft',
       universityTags: [],
       semesterTags: [],
-      topicTags: [],
       departmentTags: [],
       // File upload state merged into Formik
       uploadedFile: null,
@@ -58,7 +57,6 @@ export const useCreateNote = (onClose) => {
         const allTags = [
           ...values.universityTags,
           ...values.semesterTags,
-          ...values.topicTags,
           ...values.departmentTags
         ]
 

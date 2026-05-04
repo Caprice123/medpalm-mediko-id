@@ -75,14 +75,6 @@ const SummaryNotesDetail = () => {
               </TagList>
             )}
 
-            {note.topicTags?.length > 0 && (
-              <TagList>
-                {note.topicTags.map((tag) => (
-                  <Tag key={tag.id} topic>🔬 {tag.name}</Tag>
-                ))}
-              </TagList>
-            )}
-
             {note.departmentTags?.length > 0 && (
               <TagList>
                 {note.departmentTags.map((tag) => (

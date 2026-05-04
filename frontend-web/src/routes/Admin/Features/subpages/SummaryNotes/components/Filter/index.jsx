@@ -25,10 +25,6 @@ export const Filter = () => {
     return tags?.find(tag => tag.name === "semester")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
 
-  const topicTags = useMemo(() => {
-    return tags?.find(tag => tag.name === "topic")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
-  }, [tags])
-
   const departmentTags = useMemo(() => {
     return tags?.find(tag => tag.name === "department")?.tags?.map((tag) => ({ label: tag.name, value: tag.id })) || []
   }, [tags])
@@ -77,7 +73,7 @@ export const Filter = () => {
             <Dropdown
               options={universityTags}
               value={filters.university ? universityTags.find(t => t.value === filters.university) : null}
-              onChange={(option) => dispatch(actions.updateFilter({ key: "university", value: option?.value || "" }))}
+              onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "university", value: option?.value || "" })) }}
               placeholder="Filter berdasarkan universitas..."
             />
           </FilterComponent.Group>
@@ -87,18 +83,8 @@ export const Filter = () => {
             <Dropdown
               options={semesterTags}
               value={filters.semester ? semesterTags.find(t => t.value === filters.semester) : null}
-              onChange={(option) => dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" }))}
+              onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "semester", value: option?.value || "" })) }}
               placeholder="Filter berdasarkan semester..."
-            />
-          </FilterComponent.Group>
-
-          <FilterComponent.Group>
-            <FilterComponent.Label>Topik</FilterComponent.Label>
-            <Dropdown
-              options={topicTags}
-              value={filters.topic ? topicTags.find(t => t.value === filters.topic) : null}
-              onChange={(option) => dispatch(actions.updateFilter({ key: "topic", value: option?.value || "" }))}
-              placeholder="Filter berdasarkan topik..."
             />
           </FilterComponent.Group>
 
@@ -107,7 +93,7 @@ export const Filter = () => {
             <Dropdown
               options={departmentTags}
               value={filters.department ? departmentTags.find(t => t.value === filters.department) : null}
-              onChange={(option) => dispatch(actions.updateFilter({ key: "department", value: option?.value || "" }))}
+              onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "department", value: option?.value || "" })) }}
               placeholder="Filter berdasarkan departemen..."
             />
           </FilterComponent.Group>
@@ -117,7 +103,7 @@ export const Filter = () => {
             <Dropdown
               options={statusOptions}
               value={filters.status ? statusOptions.find(t => t.value === filters.status) : null}
-              onChange={(option) => dispatch(actions.updateFilter({ key: "status", value: option?.value || "" }))}
+              onChange={(option) => { dispatch(actions.setPage(1)); dispatch(actions.updateFilter({ key: "status", value: option?.value || "" })) }}
               placeholder="Filter berdasarkan status..."
             />
           </FilterComponent.Group>

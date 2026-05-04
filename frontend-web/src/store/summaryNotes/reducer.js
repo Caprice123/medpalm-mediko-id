@@ -30,7 +30,6 @@ const initialState = {
   filters: {
     university: '',
     semester: '',
-    topic: '',
     department: '',
     status: '',
     isActive: '',
@@ -85,7 +84,6 @@ const { reducer, actions } = createSlice({
       state.filters = {
         university: '',
         semester: '',
-        topic: '',
         department: '',
         status: '',
         isActive: '',

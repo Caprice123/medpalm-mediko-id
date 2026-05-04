@@ -34,7 +34,6 @@ function MyRegistrationsTab({ myRegistrations, loading, onSwitchToList }) {
         <RegCard key={reg.uniqueId}>
           <RegInfo>
             <RegTitle>{reg.event?.title || '—'}</RegTitle>
-            {reg.event?.code && <RegCode>{reg.event.code}</RegCode>}
             <RegMeta>Mendaftar: {formatLocalDate(reg.createdAt)}</RegMeta>
 
             {reg.evidences?.length > 0 && (

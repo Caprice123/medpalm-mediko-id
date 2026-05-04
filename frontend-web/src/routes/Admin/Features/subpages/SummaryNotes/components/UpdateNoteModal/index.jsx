@@ -47,10 +47,6 @@ const UpdateNoteModal = ({ onClose }) => {
     tags.find(t => t.name === 'semester')?.tags || [],
     [tags]
   )
-  const topicTags = useMemo(() =>
-    tags.find(t => t.name === 'topic')?.tags || [],
-    [tags]
-  )
   const departmentTags = useMemo(() =>
     tags.find(t => t.name === 'department')?.tags || [],
     [tags]
@@ -63,10 +59,6 @@ const UpdateNoteModal = ({ onClose }) => {
 
   const handleSemesterTagsChange = (newTags) => {
     form.setFieldValue('semesterTags', newTags)
-  }
-
-  const handleTopicTagsChange = (newTags) => {
-    form.setFieldValue('topicTags', newTags)
   }
 
   const handleDepartmentTagsChange = (newTags) => {
@@ -238,18 +230,6 @@ const UpdateNoteModal = ({ onClose }) => {
           onTagsChange={handleSemesterTagsChange}
           placeholder="-- Pilih Semester --"
           helpText="Pilih semester untuk membantu mengorganisir ringkasan"
-        />
-      </FormSection>
-
-      {/* Topic Tags */}
-      <FormSection>
-        <Label>Topik</Label>
-        <TagSelector
-          allTags={topicTags}
-          selectedTags={form.values.topicTags || []}
-          onTagsChange={handleTopicTagsChange}
-          placeholder="-- Pilih Topik --"
-          helpText="Pilih topik materi (mis. Anatomi, Fisiologi, dll)"
         />
       </FormSection>
 

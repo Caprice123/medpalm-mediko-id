@@ -27,7 +27,6 @@ export const useUpdateNote = (onClose) => {
       status: 'draft',
       universityTags: [],
       semesterTags: [],
-      topicTags: [],
       departmentTags: [],
       // File upload state merged into Formik
       uploadedFile: null,
@@ -71,7 +70,6 @@ export const useUpdateNote = (onClose) => {
       const allTags = [
         ...values.universityTags,
         ...values.semesterTags,
-        ...values.topicTags,
         ...values.departmentTags
       ]
 
@@ -128,7 +126,6 @@ export const useUpdateNote = (onClose) => {
       // Backend already separates tags - just use them directly
       const universityTags = detail.universityTags || []
       const semesterTags = detail.semesterTags || []
-      const topicTags = detail.topicTags || []
       const departmentTags = detail.departmentTags || []
 
       const formValues = {
@@ -138,7 +135,6 @@ export const useUpdateNote = (onClose) => {
         status: combinedStatus,
         universityTags: universityTags,
         semesterTags: semesterTags,
-        topicTags: topicTags,
         departmentTags: departmentTags,
         uploadedFile: null,
         blobId: null,
