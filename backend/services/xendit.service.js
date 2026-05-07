@@ -36,8 +36,8 @@ export const createInvoice = async ({ amount, externalId, payerEmail, descriptio
         description,
         currency: 'IDR',
         reminderTime: 1, // Reminder in minutes before expiry
-        successRedirectUrl: process.env.FRONTEND_URL,
-        failureRedirectUrl: process.env.FRONTEND_URL,
+        successRedirectUrl: `${process.env.FRONTEND_URL}/topup?tab=history`,
+        failureRedirectUrl: `${process.env.FRONTEND_URL}/topup?tab=history`,
         invoiceDuration: 86400, // 24 hours in seconds
         shouldSendEmail: true,
         items: [

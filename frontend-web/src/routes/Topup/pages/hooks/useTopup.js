@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import { fetchPurchaseHistory, fetchUserStatus, fetchInitialTopupData, purchasePricingPlan } from '@store/pricing/userAction'
 import { actions } from '@store/pricing/reducer'
 import { actions as commonActions } from '@store/common/reducer'
@@ -7,6 +8,7 @@ import AOS from 'aos'
 
 export const useTopup = () => {
   const dispatch = useDispatch()
+  const location = useLocation()
   const purchaseHistory = useSelector(state => state.pricing.purchaseHistory)
   const pagination = useSelector(state => state.pricing.historyPagination)
   const userStatus = useSelector(state => state.pricing.userStatus)
@@ -17,7 +19,8 @@ export const useTopup = () => {
 
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedPurchaseId, setSelectedPurchaseId] = useState(null)
-  const [activeTab, setActiveTab] = useState('plans')
+  const initialTab = new URLSearchParams(location.search).get('tab') || 'plans'
+  const [activeTab, setActiveTab] = useState(initialTab)
   const [planFilter, setPlanFilter] = useState('all')
   const [showContactModal, setShowContactModal] = useState(false)
   const [pendingPlan, setPendingPlan] = useState(null)
