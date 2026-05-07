@@ -89,9 +89,7 @@ function WebinarListTab({ webinars, filter, loading, onSearchChange, onSearch, o
 
               <CardFooterRow>
                 <Button variant="ghost" onClick={() => onDetail(w)}>Lihat Detail</Button>
-                {w.myRegistrationStatus === 'pending' ? (
-                  <Button variant="secondary" disabled>⏳ Menunggu Review</Button>
-                ) : w.myRegistrationStatus === 'approved' ? (
+                {w.myRegistrationStatus === 'approved' ? (
                   <Button variant="secondary" disabled>✓ Terdaftar</Button>
                 ) : getRegistrationStatus(w) === 'upcoming' ? (
                   <Button variant="secondary" disabled>Belum Dibuka</Button>

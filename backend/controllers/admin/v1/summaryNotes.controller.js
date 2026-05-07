@@ -12,7 +12,7 @@ import { ValidationError } from '#errors/validationError'
 class SummaryNotesAdminController {
   // List all summary notes (with pagination)
   async index(req, res) {
-    const { page, perPage, status, search, university, semester, topic, department } = req.query
+    const { page, perPage, status, search, university, semester, department } = req.query
 
     const result = await GetSummaryNotesListService.call({
       page: page ? parseInt(page) : 1,
@@ -21,7 +21,6 @@ class SummaryNotesAdminController {
       search,
       university,
       semester,
-      topic,
       department
     })
 

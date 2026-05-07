@@ -1,14 +1,10 @@
 import { ValidationError } from '#errors/validationError'
 import { NotFoundError } from '#errors/notFoundError'
 import prisma from '#prisma/client'
-import attachmentService from '#services/attachment/attachmentService'
+import { queueWebinarApprovalEmail } from '#jobs/queues/emailQueue'
 
 export class RegisterWebinarService {
-  static async call({ webinarUniqueId, userId, blobIds }) {
-    if (!blobIds || blobIds.length === 0) {
-      throw new ValidationError('At least one evidence file is required')
-    }
-
+  static async call({ webinarUniqueId, userId }) {
     const webinar = await prisma.webinar_events.findFirst({
       where: { unique_id: webinarUniqueId, is_deleted: false, status: 'published' },
     })
@@ -23,43 +19,33 @@ export class RegisterWebinarService {
       throw new ValidationError('You have already registered for this webinar')
     }
 
+    let registration
+
     if (existing && existing.status === 'rejected') {
-      await attachmentService.detachAll({ recordType: 'webinar_registration', recordId: existing.id })
-      const updated = await prisma.webinar_registrations.update({
+      registration = await prisma.webinar_registrations.update({
         where: { id: existing.id },
-        data: { status: 'pending', admin_notes: null, reviewed_by: null, reviewed_at: null, updated_at: new Date() },
+        data: { status: 'approved', admin_notes: null, reviewed_by: null, reviewed_at: null, updated_at: new Date() },
       })
-      await Promise.all(
-        blobIds.map((blobId, index) =>
-          attachmentService.attach({
-            blobId: parseInt(blobId),
-            recordType: 'webinar_registration',
-            recordId: existing.id,
-            name: `evidence_${index}`,
-          })
-        )
-      )
-      return updated
+    } else {
+      registration = await prisma.webinar_registrations.create({
+        data: { webinar_id: webinar.id, user_id: userId, status: 'approved' },
+      })
     }
 
-    const registration = await prisma.webinar_registrations.create({
-      data: {
-        webinar_id: webinar.id,
-        user_id: userId,
-        status: 'pending',
-      },
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
     })
 
-    await Promise.all(
-      blobIds.map((blobId, index) =>
-        attachmentService.attach({
-          blobId: parseInt(blobId),
-          recordType: 'webinar_registration',
-          recordId: registration.id,
-          name: `evidence_${index}`,
-        })
-      )
-    )
+    if (user?.email) {
+      await queueWebinarApprovalEmail({
+        to: user.email,
+        userName: user.name || user.email,
+        webinarTitle: webinar.title,
+        joinLinks: webinar.join_url || [],
+        startAt: webinar.start_at,
+      })
+    }
 
     return registration
   }
