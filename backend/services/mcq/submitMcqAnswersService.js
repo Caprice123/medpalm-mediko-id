@@ -55,7 +55,6 @@ export class SubmitMcqAnswersService extends BaseService {
 
       // Update user_mcq_progress for persistent tracking (spaced repetition)
       const userIdInt = parseInt(userId)
-      const topicIdInt = parseInt(topicId)
 
       for (const result of questionResults) {
         await tx.user_mcq_progress.upsert({
@@ -68,7 +67,7 @@ export class SubmitMcqAnswersService extends BaseService {
           create: {
             user_id: userIdInt,
             question_id: result.question_id,
-            topic_id: topicIdInt,
+            topic_id: topic.id,
             times_correct: result.is_correct ? 1 : 0,
             times_incorrect: result.is_correct ? 0 : 1,
             last_reviewed: new Date()
