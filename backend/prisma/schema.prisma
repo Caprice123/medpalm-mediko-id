@@ -1893,3 +1893,19 @@ model banners {
   @@index([is_deleted])
   @@index([order])
 }
+
+model webhook_logs {
+  id                Int      @id @default(autoincrement())
+  source            String   // 'xendit_invoice', 'xendit_va', 'midtrans'
+  event_type        String?  // 'PAID', 'EXPIRED', 'SETTLEMENT', etc.
+  payment_reference String?  // invoice ID / external_id / order ID
+  payload           Json     // full raw webhook body
+  status            String   // 'processed', 'not_found', 'error'
+  error_message     String?
+  created_at        DateTime @default(now())
+
+  @@index([source])
+  @@index([payment_reference])
+  @@index([status])
+  @@index([created_at])
+}

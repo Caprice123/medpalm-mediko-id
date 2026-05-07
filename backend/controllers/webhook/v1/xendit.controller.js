@@ -12,13 +12,10 @@ const prisma = new PrismaClient()
  * This is called when invoice status changes (paid, expired, etc.)
  */
 export const handleXenditInvoiceWebhook = async (req, res) => {
-    // Verify webhook token
     const callbackToken = req.headers['x-callback-token']
     if (!verifyWebhookToken(callbackToken)) {
       console.error('Invalid webhook token')
-      return res.status(401).json({
-        message: 'Invalid webhook token'
-      })
+      return res.status(401).json({ message: 'Invalid webhook token' })
     }
 
     const webhookData = req.body
@@ -34,93 +31,74 @@ export const handleXenditInvoiceWebhook = async (req, res) => {
       paid_at: paidAt
     } = webhookData
 
-    // First, check if this is a user_purchase (new pricing plan flow)
-    const purchase = await prisma.user_purchases.findFirst({
-      where: {
+    const log = await prisma.webhook_logs.create({
+      data: {
+        source: 'xendit_invoice',
+        event_type: status,
         payment_reference: invoiceId,
-        payment_status: 'pending'
-      },
-      include: {
-        pricing_plan: true
+        payload: webhookData,
+        status: 'processing',
       }
     })
 
+    const updateLog = (status, error_message = null) =>
+      prisma.webhook_logs.update({ where: { id: log.id }, data: { status, error_message } })
+
+    // First, check if this is a user_purchase (new pricing plan flow)
+    const purchase = await prisma.user_purchases.findFirst({
+      where: { payment_reference: invoiceId, payment_status: 'pending' },
+      include: { pricing_plan: true }
+    })
+
     if (purchase) {
-      // Handle pricing plan purchase
       switch (status) {
         case 'PAID':
-          await handlePaidPurchase(purchase, {
-            paidAmount,
-            paymentMethod,
-            paymentChannel,
-            paidAt,
-            invoiceId
-          })
+          await handlePaidPurchase(purchase, { paidAmount, paymentMethod, paymentChannel, paidAt, invoiceId })
           break
-
         case 'EXPIRED':
           await handleExpiredPurchase(purchase)
           break
-
         default:
           console.log(`Unhandled invoice status: ${status}`)
       }
-
-      return res.status(200).json({
-        message: 'Webhook processed'
-      })
+      await updateLog('processed')
+      return res.status(200).json({ message: 'Webhook processed' })
     }
 
     // Fallback to credit_transactions (old flow)
     const transactions = await prisma.credit_transactions.findMany({
       where: {
         OR: [
-          { payment_reference: invoiceId }, // Xendit invoice ID
-          { payment_reference: { contains: externalId.split('-')[0] } } // Original reference prefix
+          { payment_reference: invoiceId },
+          { payment_reference: { contains: externalId.split('-')[0] } }
         ],
         payment_status: 'pending'
       },
-      include: {
-        credit_plans: true
-      },
-      orderBy: {
-        created_at: 'desc'
-      }
+      include: { credit_plans: true },
+      orderBy: { created_at: 'desc' }
     })
 
     if (transactions.length === 0) {
       console.error(`Transaction/Purchase not found for invoice ${invoiceId} / ${externalId}`)
-      return res.status(404).json({
-        message: 'Transaction not found'
-      })
+      await updateLog('not_found')
+      return res.status(404).json({ message: 'Transaction not found' })
     }
 
-    const transaction = transactions[0] // Get the most recent matching transaction
+    const transaction = transactions[0]
 
-    // Handle different invoice statuses
     switch (status) {
       case 'PAID':
-        await handlePaidInvoice(transaction, {
-          paidAmount,
-          paymentMethod,
-          paymentChannel,
-          paidAt,
-          invoiceId
-        })
+        await handlePaidInvoice(transaction, { paidAmount, paymentMethod, paymentChannel, paidAt, invoiceId })
         break
-
       case 'EXPIRED':
         await handleExpiredInvoice(transaction)
         break
-
       default:
         console.log(`Unhandled invoice status: ${status}`)
     }
 
-    // Always return 200 to acknowledge receipt
-    res.status(200).json({
-      message: 'Webhook processed'
-    })
+    await updateLog('processed')
+    res.status(200).json({ message: 'Webhook processed' })
 }
 
 /**
@@ -294,66 +272,75 @@ async function handleExpiredPurchase(purchase) {
  * This is called when VA payment is received
  */
 export const handleXenditVAWebhook = async (req, res) => {
-  try {
-    // Verify webhook token
-    const callbackToken = req.headers['x-callback-token']
-    if (!verifyWebhookToken(callbackToken)) {
-      console.error('Invalid webhook token')
-      return res.status(401).json({
-        message: 'Invalid webhook token'
-      })
+  const callbackToken = req.headers['x-callback-token']
+  if (!verifyWebhookToken(callbackToken)) {
+    console.error('Invalid webhook token')
+    return res.status(401).json({ message: 'Invalid webhook token' })
+  }
+
+  const webhookData = req.body
+  console.log('Xendit VA webhook received:', JSON.stringify(webhookData, null, 2))
+
+  const {
+    external_id: externalId,
+    amount,
+    bank_code: bankCode,
+    transaction_timestamp: transactionTimestamp
+  } = webhookData
+
+  const log = await prisma.webhook_logs.create({
+    data: {
+      source: 'xendit_va',
+      event_type: 'PAID',
+      payment_reference: externalId,
+      payload: webhookData,
+      status: 'processing',
     }
+  })
 
-    const webhookData = req.body
-    console.log('Xendit VA webhook received:', JSON.stringify(webhookData, null, 2))
+  const updateLog = (status, error_message = null) =>
+    prisma.webhook_logs.update({ where: { id: log.id }, data: { status, error_message } })
 
-    const {
-      external_id: externalId,
-      amount,
-      bank_code: bankCode,
-      transaction_timestamp: transactionTimestamp
-    } = webhookData
+  // First, check if this is a user_purchase (new pricing plan flow)
+  const purchase = await prisma.user_purchases.findFirst({
+    where: { payment_reference: externalId, payment_status: 'pending' },
+    include: { pricing_plan: true }
+  })
 
-    // Find transaction by external ID
-    const transaction = await prisma.credit_transactions.findFirst({
-      where: {
-        payment_reference: { contains: externalId },
-        payment_status: 'pending'
-      },
-      include: {
-        creditPlan: true
-      }
-    })
-
-    if (!transaction) {
-      console.error(`Transaction not found for VA payment ${externalId}`)
-      return res.status(404).json({
-        message: 'Transaction not found'
-      })
-    }
-
-    // Process payment
-    await handlePaidInvoice(transaction, {
+  if (purchase) {
+    await handlePaidPurchase(purchase, {
       paidAmount: amount,
-      payment_method: 'Virtual Account',
+      paymentMethod: 'Virtual Account',
       paymentChannel: bankCode,
       paidAt: transactionTimestamp,
       invoiceId: externalId
     })
-
-    // Return 200 to acknowledge receipt
-    res.status(200).json({
-      message: 'VA webhook processed'
-    })
-  } catch (error) {
-    console.error('Error processing Xendit VA webhook:', error)
-    // Still return 200 to prevent retries
-    res.status(200).json({
-      success: false,
-      message: 'Webhook processing failed',
-      error: error.message
-    })
+    await updateLog('processed')
+    return res.status(200).json({ message: 'VA webhook processed' })
   }
+
+  // Fallback to credit_transactions (old flow)
+  const transaction = await prisma.credit_transactions.findFirst({
+    where: { payment_reference: { contains: externalId }, payment_status: 'pending' },
+    include: { credit_plans: true }
+  })
+
+  if (!transaction) {
+    console.error(`Transaction not found for VA payment ${externalId}`)
+    await updateLog('not_found')
+    return res.status(404).json({ message: 'Transaction not found' })
+  }
+
+  await handlePaidInvoice(transaction, {
+    paidAmount: amount,
+    paymentMethod: 'Virtual Account',
+    paymentChannel: bankCode,
+    paidAt: transactionTimestamp,
+    invoiceId: externalId
+  })
+
+  await updateLog('processed')
+  return res.status(200).json({ message: 'VA webhook processed' })
 }
 
 export default {
