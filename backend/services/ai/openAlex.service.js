@@ -101,7 +101,7 @@ export class OpenAlexService {
    * @param {string[]} options.sourceIds - OpenAlex source IDs to filter by (e.g. ["S137773608"])
    * @returns {Promise<Array>} Raw OpenAlex work objects
    */
-  static async search(query, { limit = 10, sourceIds = [] } = {}) {
+  static async search(query, { limit = 10, sourceIds = [], yearFrom = null, yearTo = null } = {}) {
     const params = new URLSearchParams({
       search: query.trim(),
       'per-page': String(Math.min(limit, 200)),
@@ -112,10 +112,12 @@ export class OpenAlexService {
     const filters = ['type:article'] // only peer-reviewed articles
 
     if (sourceIds.length > 0) {
-      // Pipe-separated source IDs → OR within the same filter (valid field)
       const idFilter = sourceIds.join('|')
       filters.push(`primary_location.source.id:${idFilter}`)
     }
+
+    if (yearFrom) filters.push(`from_publication_date:${yearFrom}-01-01`)
+    if (yearTo)   filters.push(`to_publication_date:${yearTo}-12-31`)
 
     params.set('filter', filters.join(','))
 
@@ -157,8 +159,14 @@ export class OpenAlexService {
     const sourceIds = await this.resolveSourceIds(trustedJournals)
     console.log(`[OpenAlex] Resolved ${trustedJournals.length} journal names → ${sourceIds.length} source IDs`)
 
+    const yearFrom = options.yearFrom || null
+    const yearTo   = options.yearTo   || null
+    if (yearFrom || yearTo) {
+      console.log(`[OpenAlex] Year filter: ${yearFrom ?? 'any'} → ${yearTo ?? 'now'}`)
+    }
+
     const results = await Promise.allSettled(
-      queries.map(q => this.search(q, { limit: perQueryLimit, sourceIds }))
+      queries.map(q => this.search(q, { limit: perQueryLimit, sourceIds, yearFrom, yearTo }))
     )
 
     // Merge and deduplicate by OpenAlex work ID

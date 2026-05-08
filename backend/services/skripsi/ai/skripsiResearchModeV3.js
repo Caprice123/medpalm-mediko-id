@@ -53,12 +53,16 @@ export class SkripsiResearchModeV3 extends BaseService {
     const maxResults          = parseInt(c[`skripsi_${mode}_v3_max_results`]) || 8
     const lastMessageCount    = parseInt(c[`skripsi_${mode}_context_messages`]) || 10
 
-    // Resolve trusted journal names from the set's selected domains
+    // Resolve trusted journal names and year filter from the set's settings
     const tab = await prisma.skripsi_tabs.findUnique({
       where: { id: tabId },
       select: { set_id: true }
     })
-    const trustedJournals = await this.resolveJournalNames(tab?.set_id ?? null)
+    const setId = tab?.set_id ?? null
+    const [trustedJournals, yearFilter] = await Promise.all([
+      this.resolveJournalNames(setId),
+      this.resolveYearFilter(setId),
+    ])
 
     // Conversation history
     const dbMessages = await prisma.skripsi_messages.findMany({
@@ -85,7 +89,7 @@ export class SkripsiResearchModeV3 extends BaseService {
       const sources = await OpenAlexService.searchMulti(
         queryResult.main_query,
         queryResult.related_queries,
-        { trustedJournals },
+        { trustedJournals, ...yearFilter },
         maxResults
       )
       console.log(`📚 [SkripsiResearchV3] Stage 2 retrieved ${sources.length} papers`)
@@ -131,6 +135,36 @@ export class SkripsiResearchModeV3 extends BaseService {
     } catch (err) {
       console.warn('[SkripsiResearchV3] Could not resolve journal names:', err.message)
       return []
+    }
+  }
+
+  // ── Resolve year filter from the set's settings ────────────────────────────
+
+  static async resolveYearFilter(setId) {
+    try {
+      if (!setId) return {}
+      const setSettings = await prisma.skripsi_set_settings.findUnique({
+        where: { set_id: setId },
+        select: { latest_years: true, year_from: true, year_to: true }
+      })
+
+      if (!setSettings) return {}
+
+      if (setSettings.latest_years) {
+        const yearFrom = new Date().getFullYear() - setSettings.latest_years
+        console.log(`[SkripsiResearchV3] Year filter: latest ${setSettings.latest_years} years → from ${yearFrom}`)
+        return { yearFrom, yearTo: null }
+      }
+
+      if (setSettings.year_from || setSettings.year_to) {
+        console.log(`[SkripsiResearchV3] Year filter: range ${setSettings.year_from ?? 'any'} → ${setSettings.year_to ?? 'now'}`)
+        return { yearFrom: setSettings.year_from ?? null, yearTo: setSettings.year_to ?? null }
+      }
+
+      return {}
+    } catch (err) {
+      console.warn('[SkripsiResearchV3] Could not resolve year filter:', err.message)
+      return {}
     }
   }
 

@@ -36,7 +36,10 @@ export class GetUserChatbotSettingsService extends BaseService {
       domainFilterEnabled,
       isTutor,
       selectedJournals: allJournals.filter(j => adminJournalSet.has(j)),
-      customJournals: allJournals.filter(j => !adminJournalSet.has(j))
+      customJournals: allJournals.filter(j => !adminJournalSet.has(j)),
+      latestYears: userSettings?.latest_years ?? null,
+      yearFrom: userSettings?.year_from ?? null,
+      yearTo: userSettings?.year_to ?? null,
     }
   }
 }

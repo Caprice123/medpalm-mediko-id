@@ -475,6 +475,9 @@ model user_chatbot_settings {
   selected_domains      Json     @default("[]") // Array of domain strings selected from admin list
   selected_journals     Json     @default("[]") // Array of journal name strings for tutor users
   domain_filter_enabled Boolean  @default(true)
+  latest_years          Int?     // "last N years" filter, computed at query time (takes priority over year_from/year_to)
+  year_from             Int?     // range start year (used when latest_years is null)
+  year_to               Int?     // range end year (used when latest_years is null; null = up to now)
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 
@@ -1371,6 +1374,9 @@ model skripsi_set_settings {
   selected_domains      Json     @default("[]")
   domain_filter_enabled Boolean  @default(true)
   selected_journals     Json     @default("[]") // Array of journal name strings for tutor users
+  latest_years          Int?
+  year_from             Int?
+  year_to               Int?
   created_at            DateTime @default(now())
   updated_at            DateTime @default(now())
 

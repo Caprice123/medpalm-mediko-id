@@ -37,7 +37,10 @@ export class GetSetResearchSettingsService extends BaseService {
       domainFilterEnabled,
       isTutor,
       selectedJournals: allJournals.filter(j => adminJournalSet.has(j)),
-      customJournals: allJournals.filter(j => !adminJournalSet.has(j))
+      customJournals: allJournals.filter(j => !adminJournalSet.has(j)),
+      latestYears: settings?.latest_years ?? null,
+      yearFrom: settings?.year_from ?? null,
+      yearTo: settings?.year_to ?? null,
     }
   }
 }

@@ -13,13 +13,16 @@ class ChatbotSettingsController {
 
   async updateSettings(req, res) {
     const userId = req.user.id
-    const { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals } = req.body
+    const { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals, latestYears, yearFrom, yearTo } = req.body
     const settings = await UpdateUserChatbotSettingsService.call(userId, {
       selectedDomains,
       customDomains,
       domainFilterEnabled,
       selectedJournals,
-      customJournals
+      customJournals,
+      latestYears,
+      yearFrom,
+      yearTo,
     })
     return res.status(200).json({ data: settings })
   }

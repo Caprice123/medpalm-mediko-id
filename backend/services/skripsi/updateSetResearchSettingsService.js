@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 
 export class UpdateSetResearchSettingsService extends BaseService {
-  static async call(setId, userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals }) {
+  static async call(setId, userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals, latestYears, yearFrom, yearTo }) {
     const set = await prisma.skripsi_sets.findFirst({
       where: { id: setId, user_id: userId, is_deleted: false }
     })
@@ -20,6 +20,21 @@ export class UpdateSetResearchSettingsService extends BaseService {
     ]
     const journals = [...new Set(allJournals.map(j => j.trim()).filter(Boolean))]
 
+    const parsedLatestYears = latestYears != null ? parseInt(latestYears) : null
+    const parsedYearFrom    = yearFrom    != null ? parseInt(yearFrom)    : null
+    const parsedYearTo      = yearTo      != null ? parseInt(yearTo)      : null
+
+    const currentYear = new Date().getFullYear()
+    const validLatestYears = parsedLatestYears > 0 && parsedLatestYears <= 100 ? parsedLatestYears : null
+    const validYearFrom    = parsedYearFrom >= 1900 && parsedYearFrom <= currentYear ? parsedYearFrom : null
+    const validYearTo      = parsedYearTo   >= 1900 && parsedYearTo   <= currentYear ? parsedYearTo   : null
+
+    const yearFields = {
+      latest_years: validLatestYears,
+      year_from: validLatestYears ? null : validYearFrom,
+      year_to:   validLatestYears ? null : validYearTo,
+    }
+
     const settings = await prisma.skripsi_set_settings.upsert({
       where: { set_id: setId },
       create: {
@@ -27,12 +42,14 @@ export class UpdateSetResearchSettingsService extends BaseService {
         selected_domains: domains,
         domain_filter_enabled: domainFilterEnabled ?? true,
         selected_journals: journals,
+        ...yearFields,
         updated_at: new Date()
       },
       update: {
         selected_domains: domains,
         domain_filter_enabled: domainFilterEnabled ?? true,
         selected_journals: journals,
+        ...yearFields,
         updated_at: new Date()
       }
     })
@@ -58,7 +75,10 @@ export class UpdateSetResearchSettingsService extends BaseService {
       customDomains: allSaved.filter(d => !adminSet.has(d)),
       domainFilterEnabled: settings.domain_filter_enabled,
       selectedJournals: savedJournals.filter(j => adminJournalSet.has(j)),
-      customJournals: savedJournals.filter(j => !adminJournalSet.has(j))
+      customJournals: savedJournals.filter(j => !adminJournalSet.has(j)),
+      latestYears: settings.latest_years ?? null,
+      yearFrom: settings.year_from ?? null,
+      yearTo: settings.year_to ?? null,
     }
   }
 }

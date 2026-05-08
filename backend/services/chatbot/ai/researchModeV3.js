@@ -57,9 +57,12 @@ export class ResearchModeV3 extends BaseService {
     const fieldsOfStudy    = c.chatbot_research_v3_fields_of_study      || ''
     const lastMessageCount = parseInt(c.chatbot_research_last_message_count) || 10
 
-    // Resolve journal names from user's selected domains
-    // User selects domain URLs → we look up their journal_name in the DB → pass to OpenAlex
-    const trustedJournals = await this.resolveJournalNames(userId)
+    // Resolve journal names and year filter from user settings
+    const [trustedJournals, yearFilter] = await Promise.all([
+      this.resolveJournalNames(userId),
+      this.resolveYearFilter(userId),
+    ])
+    console.log(yearFilter)
 
     // Conversation history for context
     const dbMessages = await prisma.chatbot_messages.findMany({
@@ -78,12 +81,13 @@ export class ResearchModeV3 extends BaseService {
       console.log('🔄 [ResearchV3] Stage 1 reformulation:', queryResult)
 
       // ── STAGE 2: OpenAlex multi-query search with journal filter ──────────
+      const searchOptions = { trustedJournals, fieldsOfStudy, ...yearFilter }
       console.log('🔬 [ResearchV3] Stage 2 OpenAlex filter:', {
         trustedJournals: trustedJournals.length > 0 ? trustedJournals : '(none — searching all journals)',
         fieldsOfStudy: fieldsOfStudy || '(none)',
+        yearFilter: yearFilter,
         maxResults
       })
-      const searchOptions = { trustedJournals, fieldsOfStudy }
 
       const sources = await OpenAlexService.searchMulti(
         queryResult.main_query,
@@ -137,6 +141,37 @@ export class ResearchModeV3 extends BaseService {
     } catch (err) {
       console.warn('[ResearchV3] Could not resolve journal names:', err.message)
       return []
+    }
+  }
+
+  // ── Resolve year filter from user settings ─────────────────────────────────
+  // Returns { yearFrom, yearTo } to pass directly to OpenAlexService.searchMulti options.
+  // latest_years takes priority: computed fresh at query time so it stays current.
+
+  static async resolveYearFilter(userId) {
+    try {
+      const userSettings = await prisma.user_chatbot_settings.findUnique({
+        where: { user_id: userId },
+        select: { latest_years: true, year_from: true, year_to: true }
+      })
+
+      if (!userSettings) return {}
+
+      if (userSettings.latest_years) {
+        const yearFrom = new Date().getFullYear() - userSettings.latest_years
+        console.log(`[ResearchV3] Year filter: latest ${userSettings.latest_years} years → from ${yearFrom}`)
+        return { yearFrom, yearTo: null }
+      }
+
+      if (userSettings.year_from || userSettings.year_to) {
+        console.log(`[ResearchV3] Year filter: range ${userSettings.year_from ?? 'any'} → ${userSettings.year_to ?? 'now'}`)
+        return { yearFrom: userSettings.year_from ?? null, yearTo: userSettings.year_to ?? null }
+      }
+
+      return {}
+    } catch (err) {
+      console.warn('[ResearchV3] Could not resolve year filter:', err.message)
+      return {}
     }
   }
 
