@@ -39,7 +39,10 @@ const initialState = {
     domainFilterEnabled: true,
     isTutor: false,
     selectedJournals: [],      // journal names selected by tutor users (from admin list)
-    customJournals: []         // journal names manually typed by tutor users
+    customJournals: [],        // journal names manually typed by tutor users
+    latestYears: null,         // "last N years" filter; takes priority over yearFrom/yearTo
+    yearFrom: null,            // range start year
+    yearTo: null,              // range end year
   },
   loading: {
     isConversationsLoading: false,

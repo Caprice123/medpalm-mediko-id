@@ -27,12 +27,12 @@ const featureSlice = createSlice({
     }
   },
   
-    extraReducers: (builder) => {
-      builder.addCase(resetAllState, (state) => ({
-          ...initialState,
-          loading: state.loading, // 🔥 preserve current loading state
-      }));
-    },
+    // extraReducers: (builder) => {
+    //   builder.addCase(resetAllState, (state) => ({
+    //       ...initialState,
+    //       loading: state.loading, // 🔥 preserve current loading state
+    //   }));
+    // },
 })
 
 export const { actions } = featureSlice

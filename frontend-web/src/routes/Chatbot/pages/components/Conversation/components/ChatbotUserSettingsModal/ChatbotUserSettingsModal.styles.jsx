@@ -269,3 +269,61 @@ export const EmptyDomains = styled.div`
   border-radius: 8px;
   margin-top: 0.75rem;
 `
+
+export const YearFilterSection = styled.div`
+  margin-bottom: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+`
+
+export const YearPresetRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+`
+
+export const YearPresetBtn = styled.button`
+  padding: 0.375rem 0.875rem;
+  border-radius: 99px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid ${({ $active }) => $active ? '#3b82f6' : '#e5e7eb'};
+  background: ${({ $active }) => $active ? '#eff6ff' : '#fff'};
+  color: ${({ $active }) => $active ? '#1d4ed8' : '#374151'};
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+`
+
+export const YearRangeRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+
+  span {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+`
+
+export const YearInput = styled.input`
+  width: 90px;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #111827;
+  outline: none;
+  text-align: center;
+
+  &::placeholder { color: #9ca3af; }
+  &:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+`

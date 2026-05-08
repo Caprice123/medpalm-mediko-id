@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules'
 import 'swiper/css'
@@ -247,8 +247,6 @@ function Dashboard() {
           </EmptyState>
         )}
 
-        {isNonUser && (
-          <>
             <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
             <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
             <CatalogGrid>
@@ -269,7 +267,7 @@ function Dashboard() {
                   </CardBody>
                 </Card>
               </CardWrapper>
-              <CardWrapper>
+              { isNonUser && <CardWrapper>
                 <Card shadow hoverable>
                   <CardBody>
                     <FeatureIcon>🗓️</FeatureIcon>
@@ -285,10 +283,8 @@ function Dashboard() {
                     </FeatureFooter>
                   </CardBody>
                 </Card>
-              </CardWrapper>
+              </CardWrapper>}
             </CatalogGrid>
-          </>
-        )}
       </MainContent>
     </DashboardContainer>
   )

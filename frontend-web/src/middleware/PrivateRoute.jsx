@@ -12,10 +12,10 @@ const PrivateRoute = () => {
 
   // Render children if authenticated
   return (
-    <>
+    <div style={{ backgroundColor: "#f0fdfa", minHeight: "100vh" }}>
       <Navbar />
       <Outlet />
-    </>
+    </div>
 
   )
 }

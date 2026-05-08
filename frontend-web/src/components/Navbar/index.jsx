@@ -7,7 +7,6 @@ import { fetchFeatures } from '@store/feature/action'
 import { getUserData } from '@utils/authToken'
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-// import CreditPurchase from '@components/CreditPurchase'
 import Button from '@components/common/Button'
 import { formatLocalDate } from '@utils/dateUtils'
 
@@ -19,28 +18,36 @@ export const Navbar = () => {
     const [user, setUser] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-    // Get user data
     useEffect(() => {
         const userData = getUserData()
         setUser(userData)
         dispatch(fetchUserStatus())
         if (appFeatures.length === 0) dispatch(fetchFeatures())
     }, [dispatch])
-    
 
-    // Handle logout
-    
-  const handleLogout = () => {
-    const onSuccess = () => {
-      navigate('/sign-in')
+    const handleLogout = () => {
+        const onSuccess = () => navigate('/sign-in')
+        dispatch(logout(onSuccess))
     }
-    dispatch(logout(onSuccess))
-  }
 
-  const handleTopUp = () => {
-    navigate('/topup')
-  }
+    const handleTopUp = () => navigate('/topup')
 
+    // Subscription expiry calculations
+    const featureLabels = Object.fromEntries(appFeatures.map(f => [f.sessionType, f.name]))
+    const fmt = (d) => d ? formatLocalDate(d) : 'Tidak ada batas'
+    const now = new Date()
+    const getDaysRemaining = (endDate) => {
+        if (!endDate) return null
+        return Math.ceil((new Date(endDate) - now) / (1000 * 60 * 60 * 24))
+    }
+    const subs = (userStatus?.activeFeatureKeys || [])
+        .filter(({ feature }) => featureLabels[feature])
+        .map(({ feature, endDate }) => ({
+            feature,
+            endDate,
+            daysRemaining: getDaysRemaining(endDate),
+        }))
+    const hasExpiringSoon = subs.some(s => s.daysRemaining !== null && s.daysRemaining <= 7)
 
     return (
         <>
@@ -54,42 +61,35 @@ export const Navbar = () => {
             {/* Desktop Navigation */}
             <UserSection>
             <StatusSection>
-              {(userStatus?.activeFeatureKeys?.length > 0) && (() => {
-                const featureLabels = Object.fromEntries(appFeatures.map(f => [f.sessionType, f.name]))
-                const fmt = (d) => d ? formatLocalDate(d) : 'Tidak ada batas'
-                const subs = (userStatus.activeFeatureKeys || []).filter(({ feature }) => featureLabels[feature])
-                return (
-                  <>
-                    <SubscriptionWrapper>
-                      <StatusItem>
-                        <span>⭐</span>
-                        <span>
-                          Active
-                          {userStatus?.subscription?.daysRemaining < 14 && userStatus?.subscription?.daysRemaining != null && (
-                            <> ({userStatus.subscription.daysRemaining}d left)</>
-                          )}
-                        </span>
-                      </StatusItem>
-                      {subs.length > 0 && (
-                        <SubscriptionTooltip>
-                          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                            Feature Access
-                          </div>
-                          {subs.map(({ feature, endDate }) => (
-                            <TooltipRow key={feature}>
-                              <TooltipLabel>{featureLabels[feature]}</TooltipLabel>
-                              <TooltipValue style={{ fontSize: '0.72rem' }}>
-                                hingga {fmt(endDate)}
-                              </TooltipValue>
-                            </TooltipRow>
-                          ))}
-                        </SubscriptionTooltip>
-                      )}
-                    </SubscriptionWrapper>
-                    <StatusDivider />
-                  </>
-                )
-              })()}
+              {(userStatus?.activeFeatureKeys?.length > 0) && (
+                <>
+                  <SubscriptionWrapper>
+                    <StatusItem>
+                      <span>⭐</span>
+                      <span>
+                        Active
+                        {hasExpiringSoon && ' ⚠️'}
+                      </span>
+                    </StatusItem>
+                    {subs.length > 0 && (
+                      <SubscriptionTooltip>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                          Feature Access
+                        </div>
+                        {subs.map(({ feature, endDate }) => (
+                          <TooltipRow key={feature}>
+                            <TooltipLabel>{featureLabels[feature]}</TooltipLabel>
+                            <TooltipValue style={{ fontSize: '0.72rem' }}>
+                              hingga {fmt(endDate)}
+                            </TooltipValue>
+                          </TooltipRow>
+                        ))}
+                      </SubscriptionTooltip>
+                    )}
+                  </SubscriptionWrapper>
+                  <StatusDivider />
+                </>
+              )}
               <CreditWrapper>
                 <StatusItem>
                   <span>💎</span>
@@ -170,9 +170,7 @@ export const Navbar = () => {
                     <span>⭐</span>
                     <span>
                       Active
-                      {userStatus?.subscription?.daysRemaining < 14 && userStatus?.subscription?.daysRemaining != null && (
-                        <> ({userStatus.subscription.daysRemaining}d left)</>
-                      )}
+                      {hasExpiringSoon && ' ⚠️'}
                     </span>
                   </StatusItem>
                 )}
@@ -243,13 +241,6 @@ export const Navbar = () => {
                 </Button>
             </MobileMenuItem>
         </MobileMenu>
-
-        {/* Credit Purchase Modal */}
-        {/* <CreditPurchase
-            isOpen={isPurchaseModalOpen}
-            onClose={() => setIsPurchaseModalOpen(false)}
-            onPurchaseSuccess={handlePurchaseSuccess}
-        /> */}
         </>
     )
 }

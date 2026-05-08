@@ -28,10 +28,17 @@ import {
   CustomDomainInput,
   CustomDomainChips,
   CustomDomainChip,
+  YearFilterSection,
+  YearPresetRow,
+  YearPresetBtn,
+  YearRangeRow,
+  YearInput,
 } from './ChatbotUserSettingsModal.styles'
 
 const PER_PAGE = 12
 const MAX_JOURNALS = 20
+const CURRENT_YEAR = new Date().getFullYear()
+
 
 function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const dispatch = useDispatch()
@@ -41,6 +48,12 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const [selectedJournals, setSelectedJournals] = useState([]) // from admin list
   const [customJournals, setCustomJournals] = useState([])     // manually typed
   const [newCustomJournal, setNewCustomJournal] = useState('')
+
+  // Year filter state
+  const [yearMode, setYearMode] = useState('default') // 'default' | 'latest5' | 'latest10' | 'custom'
+  const [latestYears, setLatestYears] = useState(null)
+  const [yearFrom, setYearFrom] = useState('')
+  const [yearTo, setYearTo] = useState('')
 
   const [journals, setJournals] = useState([])
   const [journalPagination, setJournalPagination] = useState({ page: 1, isLastPage: true })
@@ -56,6 +69,24 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
     setNewCustomJournal('')
     setJournalSearch('')
     loadJournals(1, '')
+
+    // Restore year filter state
+    if (userSettings.latestYears) {
+      setLatestYears(userSettings.latestYears)
+      setYearMode(`latest${userSettings.latestYears}`)
+      setYearFrom('')
+      setYearTo('')
+    } else if (userSettings.yearFrom || userSettings.yearTo) {
+      setYearMode('custom')
+      setLatestYears(null)
+      setYearFrom(userSettings.yearFrom ? String(userSettings.yearFrom) : '')
+      setYearTo(userSettings.yearTo ? String(userSettings.yearTo) : '')
+    } else {
+      setYearMode('default')
+      setLatestYears(null)
+      setYearFrom('')
+      setYearTo('')
+    }
   }, [isOpen])
 
   const loadJournals = useCallback(async (page, searchTerm) => {
@@ -113,7 +144,26 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const removeCustomJournal = (name) => setCustomJournals(prev => prev.filter(j => j !== name))
 
   const handleSave = async () => {
-    await dispatch(updateUserChatbotSettings({ domainFilterEnabled, selectedJournals, customJournals }))
+    let saveLatestYears = null
+    let saveYearFrom = null
+    let saveYearTo = null
+
+    if (yearMode !== 'default' && yearMode !== 'custom') {
+      // preset: extract N from e.g. 'latest5'
+      saveLatestYears = latestYears
+    } else if (yearMode === 'custom') {
+      saveYearFrom = yearFrom ? parseInt(yearFrom) : null
+      saveYearTo   = yearTo   ? parseInt(yearTo)   : null
+    }
+
+    await dispatch(updateUserChatbotSettings({
+      domainFilterEnabled,
+      selectedJournals,
+      customJournals,
+      latestYears: saveLatestYears,
+      yearFrom: saveYearFrom,
+      yearTo: saveYearTo,
+    }))
     onClose()
   }
 
@@ -150,6 +200,73 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
           <ToggleSlider />
         </ToggleSwitch>
       </FilterToggleRow>
+
+      <YearFilterSection>
+        <SectionTitle>Filter Tahun Publikasi</SectionTitle>
+        <HintText>Batasi pencarian berdasarkan tahun terbit artikel.</HintText>
+        <YearPresetRow>
+          <YearPresetBtn
+            type="button"
+            $active={yearMode === 'default'}
+            onClick={() => { setYearMode('default'); setLatestYears(null); setYearFrom(''); setYearTo('') }}
+          >
+            Semua Tahun
+          </YearPresetBtn>
+          <YearPresetBtn
+            type="button"
+            $active={yearMode === 'latest5'}
+            onClick={() => { setYearMode('latest5'); setLatestYears(5); setYearFrom(''); setYearTo('') }}
+          >
+            5 Tahun Terakhir
+          </YearPresetBtn>
+          <YearPresetBtn
+            type="button"
+            $active={yearMode === 'latest10'}
+            onClick={() => { setYearMode('latest10'); setLatestYears(10); setYearFrom(''); setYearTo('') }}
+          >
+            10 Tahun Terakhir
+          </YearPresetBtn>
+          <YearPresetBtn
+            type="button"
+            $active={yearMode === 'custom'}
+            onClick={() => { setYearMode('custom'); setLatestYears(null) }}
+          >
+            Kustom
+          </YearPresetBtn>
+        </YearPresetRow>
+
+        {yearMode === 'custom' && (
+          <>
+            <YearRangeRow>
+              <span>Dari</span>
+              <YearInput
+                type="number"
+                placeholder="1900"
+                min="1900"
+                max={CURRENT_YEAR}
+                value={yearFrom}
+                onChange={e => setYearFrom(e.target.value)}
+              />
+              <span>sampai</span>
+              <YearInput
+                type="number"
+                placeholder={String(CURRENT_YEAR)}
+                min="1900"
+                max={CURRENT_YEAR}
+                value={yearTo}
+                onChange={e => setYearTo(e.target.value)}
+              />
+            </YearRangeRow>
+            <HintText>Kosongkan salah satu untuk tidak membatasi batas tersebut.</HintText>
+          </>
+        )}
+
+        {yearMode !== 'default' && yearMode !== 'custom' && (
+          <HintText>
+            Menampilkan artikel dari tahun {CURRENT_YEAR - latestYears} ke atas (dihitung saat pencarian).
+          </HintText>
+        )}
+      </YearFilterSection>
 
       {domainFilterEnabled && (
         <>
