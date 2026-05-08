@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchSetResearchSettings, updateSetResearchSettings, fetchSkripsiJournals } from '@store/skripsi/userAction'
+import { getUserData } from '@utils/authToken'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { ToggleSlider, ToggleSwitch } from '@routes/Admin/Features/subpages/SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
@@ -40,6 +41,7 @@ const CURRENT_YEAR = new Date().getFullYear()
 
 function ResearchSettingsModal({ isOpen, onClose, setUniqueId }) {
   const dispatch = useDispatch()
+  const isNonUser = getUserData()?.role !== 'user'
   const [domainFilterEnabled, setDomainFilterEnabled] = useState(true)
   const [selectedJournals, setSelectedJournals] = useState([])
   const [customJournals, setCustomJournals] = useState([])
@@ -207,7 +209,7 @@ function ResearchSettingsModal({ isOpen, onClose, setUniqueId }) {
         </ToggleSwitch>
       </FilterToggleRow>
 
-      <YearFilterSection>
+      {isNonUser && <YearFilterSection>
         <SectionTitle>Filter Tahun Publikasi</SectionTitle>
         <HintText>Batasi pencarian berdasarkan tahun terbit artikel.</HintText>
         <YearPresetRow>
@@ -272,7 +274,7 @@ function ResearchSettingsModal({ isOpen, onClose, setUniqueId }) {
             Menampilkan artikel dari tahun {CURRENT_YEAR - latestYears} ke atas (dihitung saat pencarian).
           </HintText>
         )}
-      </YearFilterSection>
+      </YearFilterSection>}
 
       {domainFilterEnabled && (
         <>

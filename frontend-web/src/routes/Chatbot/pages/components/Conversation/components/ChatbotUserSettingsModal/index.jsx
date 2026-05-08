@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserChatbotSettings, fetchChatbotJournals } from '@store/chatbot/userAction'
+import { getUserData } from '@utils/authToken'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { ToggleSlider, ToggleSwitch } from '@routes/Admin/Features/subpages/SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
@@ -43,6 +44,7 @@ const CURRENT_YEAR = new Date().getFullYear()
 function ChatbotUserSettingsModal({ isOpen, onClose }) {
   const dispatch = useDispatch()
   const { userSettings, loading } = useSelector(state => state.chatbot)
+  const isNonUser = getUserData()?.role !== 'user'
 
   const [domainFilterEnabled, setDomainFilterEnabled] = useState(true)
   const [selectedJournals, setSelectedJournals] = useState([]) // from admin list
@@ -201,7 +203,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
         </ToggleSwitch>
       </FilterToggleRow>
 
-      <YearFilterSection>
+      {isNonUser && <YearFilterSection>
         <SectionTitle>Filter Tahun Publikasi</SectionTitle>
         <HintText>Batasi pencarian berdasarkan tahun terbit artikel.</HintText>
         <YearPresetRow>
@@ -266,7 +268,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
             Menampilkan artikel dari tahun {CURRENT_YEAR - latestYears} ke atas (dihitung saat pencarian).
           </HintText>
         )}
-      </YearFilterSection>
+      </YearFilterSection>}
 
       {domainFilterEnabled && (
         <>
