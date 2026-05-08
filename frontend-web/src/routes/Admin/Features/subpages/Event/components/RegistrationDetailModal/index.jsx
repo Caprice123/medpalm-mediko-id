@@ -5,7 +5,7 @@ import Button from '@components/common/Button'
 import Textarea from '@components/common/Textarea'
 import Loading from '@components/common/Loading'
 import { fetchRegistrationDetail, reviewRegistration, fetchAllEventRegistrations } from '@store/event/adminAction'
-import { formatLocalDateLong } from '@utils/dateUtils'
+import { formatJakartaDateTimeFull, formatJakartaDateLong } from '@utils/dateUtils'
 import {
   DetailSection, SectionTitle, DetailGrid, DetailItem, DetailLabel, DetailValue,
   StatusBadge, EvidenceList, EvidenceItem, EvidenceInfo, EvidenceFileName,
@@ -85,7 +85,7 @@ function RegistrationDetailModal({ registrationUniqueId, onClose }) {
               <DetailItem>
                 <DetailLabel>Tanggal</DetailLabel>
                 <DetailValue>
-                  {registration.event?.startAt ? formatLocalDateLong(registration.event.startAt) : '—'}
+                  {registration.event?.startAt ? formatJakartaDateTimeFull(registration.event.startAt) : '—'}
                 </DetailValue>
               </DetailItem>
             </DetailGrid>
@@ -106,12 +106,12 @@ function RegistrationDetailModal({ registrationUniqueId, onClose }) {
               </DetailItem>
               <DetailItem>
                 <DetailLabel>Tanggal Mendaftar</DetailLabel>
-                <DetailValue>{formatLocalDateLong(registration.createdAt)}</DetailValue>
+                <DetailValue>{formatJakartaDateLong(registration.createdAt)}</DetailValue>
               </DetailItem>
               {registration.reviewedAt && (
                 <DetailItem>
                   <DetailLabel>Tanggal Ditinjau</DetailLabel>
-                  <DetailValue>{formatLocalDateLong(registration.reviewedAt)}</DetailValue>
+                  <DetailValue>{formatJakartaDateLong(registration.reviewedAt)}</DetailValue>
                 </DetailItem>
               )}
               {registration.adminNotes && (

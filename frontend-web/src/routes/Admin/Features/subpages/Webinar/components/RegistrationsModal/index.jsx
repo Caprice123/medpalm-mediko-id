@@ -6,7 +6,7 @@ import Textarea from '@components/common/Textarea'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
 import { fetchWebinarRegistrations, reviewRegistration } from '@store/webinar/adminAction'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateLong } from '@utils/dateUtils'
 import {
   Tabs, Tab,
   RegistrationList, RegistrationCard, RegHeader,
@@ -104,7 +104,7 @@ function RegistrationsModal({ webinar, onClose }) {
                 <UserInfo>
                   <UserName>{reg.user?.name || '—'}</UserName>
                   <UserEmail>{reg.user?.email || '—'}</UserEmail>
-                  <DateText>Mendaftar: {formatLocalDate(reg.createdAt)}</DateText>
+                  <DateText>Mendaftar: {formatJakartaDateLong(reg.createdAt)}</DateText>
                 </UserInfo>
                 <StatusBadge status={reg.status}>
                   {reg.status === 'pending' ? 'Pending' :

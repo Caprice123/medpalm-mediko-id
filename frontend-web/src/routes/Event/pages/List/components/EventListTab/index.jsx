@@ -4,7 +4,7 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import EmptyState from '@components/common/EmptyState'
 import Loading from '@components/common/Loading'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateTimeFull } from '@utils/dateUtils'
 import { getRegistrationStatus } from '../../utils'
 import {
   FilterCard, FilterField, FilterLabel, FilterActions,
@@ -77,8 +77,8 @@ function EventListTab({ events, filter, loading, onSearchChange, onSearch, onReg
                 <CardTitle>{event.title}</CardTitle>
                 {event.registrationStartAt && (
                   <CardDateText>
-                    📅 Pendaftaran: {formatLocalDate(event.registrationStartAt)}
-                    {event.registrationEndAt && ` — ${formatLocalDate(event.registrationEndAt)}`}
+                    📅 Pendaftaran: {formatJakartaDateTimeFull(event.registrationStartAt)}
+                    {event.registrationEndAt && ` — ${formatJakartaDateTimeFull(event.registrationEndAt)}`}
                   </CardDateText>
                 )}
                 {event.description && <CardDescText>{event.description}</CardDescText>}

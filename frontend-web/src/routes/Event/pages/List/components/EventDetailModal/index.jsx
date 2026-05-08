@@ -3,7 +3,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateTimeFull } from '@utils/dateUtils'
 import { getRegistrationStatus } from '../../utils'
 import { DetailModalThumb, DetailRow, DetailLabel, DetailText, RewardBadge, FeatureList, FeatureTag } from './EventDetailModal.styles'
 
@@ -59,8 +59,8 @@ function EventDetailModal({ event, onClose, onRegister }) {
         <DetailRow>
           <DetailLabel>Periode Pendaftaran</DetailLabel>
           <DetailText>
-            {event.registrationStartAt ? formatLocalDate(event.registrationStartAt) : '—'}
-            {event.registrationEndAt && ` s/d ${formatLocalDate(event.registrationEndAt)}`}
+            {event.registrationStartAt ? formatJakartaDateTimeFull(event.registrationStartAt) : '—'}
+            {event.registrationEndAt && ` s/d ${formatJakartaDateTimeFull(event.registrationEndAt)}`}
           </DetailText>
         </DetailRow>
       )}

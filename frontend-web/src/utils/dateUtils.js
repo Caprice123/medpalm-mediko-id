@@ -103,3 +103,8 @@ export const formatJakartaDateLong = (isoString) => {
 export const formatDate = (dateString) => {
     return formatLocalDate(dateString)
 }
+
+export const toJakartaInputValue = (isoString) => {
+  if (!isoString) return ''
+  return moment(isoString).tz('Asia/Jakarta').format('YYYY-MM-DDTHH:mm')
+}

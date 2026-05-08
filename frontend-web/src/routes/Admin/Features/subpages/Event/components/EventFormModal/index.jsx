@@ -8,6 +8,7 @@ import FileUpload from '@components/common/FileUpload'
 import { upload } from '@store/common/action'
 import { fetchAdminFeatures } from '@store/feature/adminAction'
 import { createEvent, updateEvent, fetchAdminEvents } from '@store/event/adminAction'
+import { toJakartaInputValue } from '@utils/dateUtils'
 import {
   FormSection, Label, Row, StatusToggle, StatusOption, ErrorText, HintText,
   SectionTitle, QuotaTypeToggle, QuotaOption, FeatureRow, FeatureCheckLabel, FeatureDurationInput,
@@ -43,10 +44,8 @@ function EventFormModal({ mode = 'create', initialValues, onClose }) {
     code: initialValues?.code || '',
     title: initialValues?.title || '',
     description: initialValues?.description || '',
-    registrationStartAt: initialValues?.registrationStartAt
-      ? new Date(initialValues.registrationStartAt).toISOString().slice(0, 16) : '',
-    registrationEndAt: initialValues?.registrationEndAt
-      ? new Date(initialValues.registrationEndAt).toISOString().slice(0, 16) : '',
+    registrationStartAt: toJakartaInputValue(initialValues?.registrationStartAt),
+    registrationEndAt: toJakartaInputValue(initialValues?.registrationEndAt),
     status: initialValues?.status || 'draft',
     thumbnailBlobId: null,
     thumbnailFile: initialValues?.thumbnail
@@ -106,8 +105,8 @@ function EventFormModal({ mode = 'create', initialValues, onClose }) {
     const payload = {
       title: values.title,
       description: values.description || undefined,
-      registrationStartAt: values.registrationStartAt || undefined,
-      registrationEndAt: values.registrationEndAt || undefined,
+      registrationStartAt: values.registrationStartAt ? new Date(`${values.registrationStartAt}:00+07:00`).toISOString() : undefined,
+      registrationEndAt: values.registrationEndAt ? new Date(`${values.registrationEndAt}:00+07:00`).toISOString() : undefined,
       status: values.status,
       thumbnailBlobId: values.thumbnailBlobId || undefined,
       creditsOnApproval: includeCredits ? parseInt(values.creditsOnApproval) : 0,

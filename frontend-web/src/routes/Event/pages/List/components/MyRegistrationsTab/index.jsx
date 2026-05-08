@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateLong } from '@utils/dateUtils'
 import { STATUS_LABEL } from '../../utils'
 import {
   RegCard, RegInfo, RegTitle, RegCode, RegMeta,
@@ -34,7 +34,7 @@ function MyRegistrationsTab({ myRegistrations, loading, onSwitchToList }) {
         <RegCard key={reg.uniqueId}>
           <RegInfo>
             <RegTitle>{reg.event?.title || '—'}</RegTitle>
-            <RegMeta>Mendaftar: {formatLocalDate(reg.createdAt)}</RegMeta>
+            <RegMeta>Mendaftar: {formatJakartaDateLong(reg.createdAt)}</RegMeta>
 
             {reg.evidences?.length > 0 && (
               <EvidenceLinks>

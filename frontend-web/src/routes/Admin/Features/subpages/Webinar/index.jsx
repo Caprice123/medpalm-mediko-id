@@ -16,7 +16,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import WebinarFormModal from './components/WebinarFormModal'
 import RegistrationDetailModal from './components/RegistrationDetailModal'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateLong, formatJakartaDateTimeFull } from '@utils/dateUtils'
 import {
   Container, Header, HeaderContent, TitleSection, Title, Actions,
   TabBar, TabBtn,
@@ -109,7 +109,7 @@ function Webinar({ onBack = null }) {
       width: '130px',
       render: (createdAt) => (
         <DateCell>
-          <DateCellMain>{formatLocalDate(createdAt)}</DateCellMain>
+          <DateCellMain>{formatJakartaDateLong(createdAt)}</DateCellMain>
         </DateCell>
       ),
     },
@@ -130,7 +130,7 @@ function Webinar({ onBack = null }) {
         <UserCell>
           <UserCellName>{webinar?.title || '—'}</UserCellName>
           {webinar?.startAt && (
-            <UserCellEmail>{formatLocalDate(webinar.startAt)}</UserCellEmail>
+            <UserCellEmail>{formatJakartaDateTimeFull(webinar.startAt)}</UserCellEmail>
           )}
         </UserCell>
       ),
@@ -246,7 +246,7 @@ function Webinar({ onBack = null }) {
                        webinar.status === 'cancelled' ? 'Cancelled' : 'Draft'}
                     </StatusBadge>
                   </CardHeader>
-                  <CardMeta>📅 {formatLocalDate(webinar.startAt)}</CardMeta>
+                  <CardMeta>📅 {formatJakartaDateTimeFull(webinar.startAt)}</CardMeta>
                   {webinar.description && <CardDescription>{webinar.description}</CardDescription>}
                   <CardStats>👥 {webinar.registrationCount ?? 0} pendaftar</CardStats>
                   <CardActions>

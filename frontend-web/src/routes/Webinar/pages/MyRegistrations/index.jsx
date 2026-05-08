@@ -6,7 +6,7 @@ import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
 import Pagination from '@components/Pagination'
 import { actions } from '@store/webinar/reducer'
-import { formatLocalDateLong } from '@utils/dateUtils'
+import { formatJakartaDateTimeFull, formatJakartaDateLong } from '@utils/dateUtils'
 import { WebinarRoute } from '../../routes'
 import styled from 'styled-components'
 
@@ -146,9 +146,9 @@ function MyRegistrationsPage() {
             <WebinarInfo>
               <WebinarTitle>{reg.webinar?.title || '—'}</WebinarTitle>
               {reg.webinar?.startAt && (
-                <MetaText>📅 {formatLocalDateLong(reg.webinar.startAt)}</MetaText>
+                <MetaText>📅 {formatJakartaDateTimeFull(reg.webinar.startAt)}</MetaText>
               )}
-              <MetaText>Mendaftar: {formatLocalDateLong(reg.createdAt)}</MetaText>
+              <MetaText>Mendaftar: {formatJakartaDateLong(reg.createdAt)}</MetaText>
 
               {reg.evidences?.length > 0 && (
                 <EvidenceList>

@@ -15,7 +15,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import EventFormModal from './components/EventFormModal'
 import RegistrationDetailModal from './components/RegistrationDetailModal'
-import { formatLocalDate } from '@utils/dateUtils'
+import { formatJakartaDateLong, formatJakartaDateTimeFull } from '@utils/dateUtils'
 import {
   Container, Header, HeaderContent, TitleSection, Title, Actions,
   TabBar, TabBtn,
@@ -102,7 +102,7 @@ function Event({ onBack = null }) {
       width: '130px',
       render: (createdAt) => (
         <DateCell>
-          <DateCellMain>{formatLocalDate(createdAt)}</DateCellMain>
+          <DateCellMain>{formatJakartaDateLong(createdAt)}</DateCellMain>
         </DateCell>
       ),
     },
@@ -239,7 +239,7 @@ function Event({ onBack = null }) {
                        event.status === 'cancelled' ? 'Cancelled' : 'Draft'}
                     </StatusBadge>
                   </CardHeader>
-                  <CardMeta>📅 {formatLocalDate(event.startAt)}</CardMeta>
+                  <CardMeta>📅 {formatJakartaDateTimeFull(event.startAt)}</CardMeta>
                   {event.description && <CardDescription>{event.description}</CardDescription>}
                   <CardStats>👥 {event.registrationCount ?? 0} pendaftar</CardStats>
                   <CardActions>
