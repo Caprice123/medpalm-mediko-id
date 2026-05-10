@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer'
 import Handlebars from 'handlebars'
 import fs from 'fs'
 import path from 'path'
@@ -18,19 +17,17 @@ function getTemplate(filename) {
   return templateCache[filename]
 }
 
-class EmailService {
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
+async function loadProvider() {
+  const provider = (process.env.EMAIL_PROVIDER || 'smtp').toLowerCase()
+  if (provider === 'resend') {
+    return (await import('./providers/resendProvider.js')).default
   }
+  return (await import('./providers/smtpProvider.js')).default
+}
 
+const providerPromise = loadProvider()
+
+class EmailService {
   async sendWebinarApproval({ to, userName, webinarTitle, joinLinks, startAt }) {
     const formattedDate = new Date(startAt).toLocaleString('id-ID', {
       weekday: 'long',
@@ -49,12 +46,8 @@ class EmailService {
       joinLinks: Array.isArray(joinLinks) ? joinLinks : [],
     })
 
-    await this.transporter.sendMail({
-      from: `"MedPal" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to,
-      subject: `Registrasi Webinar Disetujui: ${webinarTitle}`,
-      html,
-    })
+    const provider = await providerPromise
+    await provider.sendMail({ to, subject: `Registrasi Webinar Disetujui: ${webinarTitle}`, html })
   }
 
   async sendWebinarRejection({ to, userName, webinarTitle, adminNotes }) {
@@ -64,12 +57,8 @@ class EmailService {
       adminNotes: adminNotes || null,
     })
 
-    await this.transporter.sendMail({
-      from: `"MedPal" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to,
-      subject: `Registrasi Webinar Ditolak: ${webinarTitle}`,
-      html,
-    })
+    const provider = await providerPromise
+    await provider.sendMail({ to, subject: `Registrasi Webinar Ditolak: ${webinarTitle}`, html })
   }
 }
 
