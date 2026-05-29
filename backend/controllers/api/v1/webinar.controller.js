@@ -27,10 +27,12 @@ class WebinarController {
 
   async register(req, res) {
     const { uniqueId } = req.params
+    const { blobIds } = req.body
 
     const registration = await RegisterWebinarService.call({
       webinarUniqueId: uniqueId,
       userId: req.user.id,
+      blobIds: blobIds || [],
     })
 
     return res.status(201).json({ data: WebinarRegistrationSerializer.serialize(registration) })

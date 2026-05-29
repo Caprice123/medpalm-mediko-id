@@ -1,9 +1,20 @@
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
+import FileUpload from '@components/common/FileUpload'
 import { useRegisterModal } from '../../hooks/useRegisterModal'
+import { Label, HelpText, UploadedList, UploadedItem, UploadError } from './RegisterModal.styles'
 
 function RegisterModal({ webinar, onClose, onSuccess }) {
-  const { isRegisterLoading, handleSubmit } = useRegisterModal({ webinar, onSuccess, onClose })
+  const {
+    isRegisterLoading,
+    isUploading,
+    uploadedFiles,
+    error,
+    canAddMore,
+    handleFileSelect,
+    removeFile,
+    handleSubmit,
+  } = useRegisterModal({ webinar, onSuccess, onClose })
 
   const isReapply = webinar.myRegistrationStatus === 'rejected'
 
@@ -16,17 +27,43 @@ function RegisterModal({ webinar, onClose, onSuccess }) {
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Batal</Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={isRegisterLoading}>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={isRegisterLoading || isUploading}
+          >
             {isRegisterLoading ? 'Mendaftarkan...' : 'Daftar Sekarang'}
           </Button>
         </>
       }
     >
-      <p style={{ color: '#374151', fontSize: '0.9375rem', lineHeight: 1.6, margin: 0 }}>
-        {isReapply
-          ? `Konfirmasi pendaftaran ulang kamu untuk webinar ini. Email konfirmasi akan dikirimkan segera setelah mendaftar.`
-          : `Konfirmasi pendaftaran kamu untuk webinar ini. Email konfirmasi akan dikirimkan segera setelah mendaftar.`}
-      </p>
+      <Label>Upload Bukti Pendaftaran *</Label>
+      <HelpText>
+        Upload bukti pembayaran, KTM, atau dokumen lain yang diperlukan. Maks. 3 file (gambar atau PDF).
+      </HelpText>
+      {canAddMore && (
+        <FileUpload
+          file={null}
+          onFileSelect={handleFileSelect}
+          acceptedTypes={['image/*', 'application/pdf']}
+          acceptedTypesLabel="Gambar, PDF"
+          maxSizeMB={10}
+          isUploading={isUploading}
+          uploadText="Klik untuk memilih file"
+          multiple
+        />
+      )}
+      {uploadedFiles.length > 0 && (
+        <UploadedList>
+          {uploadedFiles.map((f, i) => (
+            <UploadedItem key={i}>
+              <span>{f.filename}</span>
+              <Button variant="ghost" size="small" onClick={() => removeFile(i)}>Hapus</Button>
+            </UploadedItem>
+          ))}
+        </UploadedList>
+      )}
+      {error && <UploadError>{error}</UploadError>}
     </Modal>
   )
 }

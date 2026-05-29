@@ -1,5 +1,18 @@
 import styled from 'styled-components'
 
+export const Label = styled.p`
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #111827;
+  margin: 0 0 0.25rem;
+`
+
+export const HelpText = styled.p`
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem;
+`
+
 export const UploadedList = styled.div`
   display: flex;
   flex-direction: column;
