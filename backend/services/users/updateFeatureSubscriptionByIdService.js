@@ -1,4 +1,6 @@
-import moment from 'moment'
+import momentTz from 'moment-timezone'
+
+const TZ = 'Asia/Jakarta'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
@@ -6,8 +8,8 @@ export class UpdateFeatureSubscriptionByIdService extends BaseService {
   static async call(id, { startDate, endDate }) {
     const now = new Date()
     const data = { updated_at: now }
-    if (startDate !== undefined) data.start_date = moment(startDate || now).startOf('day').toDate()
-    if (endDate !== undefined) data.end_date = moment(endDate).startOf('day').toDate()
+    if (startDate !== undefined) data.start_date = momentTz(startDate || now).tz(TZ).startOf('day').toDate()
+    if (endDate !== undefined) data.end_date = momentTz(endDate).tz(TZ).endOf('day').toDate()
 
     const row = await prisma.user_feature_subscriptions.update({
       where: { id },

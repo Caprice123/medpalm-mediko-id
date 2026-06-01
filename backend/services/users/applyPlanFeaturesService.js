@@ -33,7 +33,7 @@ export async function applyPlanFeatures(tx, userId, allowedFeatures, durationDay
       ? momentTz(lastSub.end_date).tz(TZ).add(1, 'day').startOf('day').toDate()
       : momentTz().tz(TZ).startOf('day').toDate()
 
-    const endDate = momentTz(startDate).tz(TZ).add(durationDays, 'days').endOf('day').toDate()
+    const endDate = momentTz(startDate).tz(TZ).add(durationDays - 1, 'days').endOf('day').toDate()
 
     await tx.user_feature_subscriptions.create({
       data: { user_id: userId, feature, start_date: startDate, end_date: endDate },

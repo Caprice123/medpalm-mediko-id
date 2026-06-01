@@ -1,4 +1,6 @@
-import moment from 'moment'
+import momentTz from 'moment-timezone'
+
+const TZ = 'Asia/Jakarta'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ALL_FEATURES } from './getUserFeatureSubscriptionsService.js'
@@ -21,10 +23,10 @@ export class CreateFeatureSubscriptionService extends BaseService {
     })
 
     const effectiveStartDate = lastActive
-      ? moment(lastActive.end_date).add(1, 'day').startOf('day').toDate()
-      : moment(startDate || now).startOf('day').toDate()
+      ? momentTz(lastActive.end_date).tz(TZ).add(1, 'day').startOf('day').toDate()
+      : momentTz(startDate || now).tz(TZ).startOf('day').toDate()
 
-    const effectiveEndDate = moment(endDate).startOf('day').toDate()
+    const effectiveEndDate = momentTz(endDate).tz(TZ).endOf('day').toDate()
 
     const row = await prisma.user_feature_subscriptions.create({
       data: {
