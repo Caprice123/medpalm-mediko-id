@@ -1,4 +1,6 @@
-import moment from 'moment'
+import momentTz from 'moment-timezone'
+
+const TZ = 'Asia/Jakarta'
 import { ALL_FEATURES } from './getUserFeatureSubscriptionsService.js'
 
 /**
@@ -28,10 +30,10 @@ export async function applyPlanFeatures(tx, userId, allowedFeatures, durationDay
     })
 
     const startDate = lastSub
-      ? moment(lastSub.end_date).add(1, 'day').startOf('day').toDate()
-      : moment().startOf('day').toDate()
+      ? momentTz(lastSub.end_date).tz(TZ).add(1, 'day').startOf('day').toDate()
+      : momentTz().tz(TZ).startOf('day').toDate()
 
-    const endDate = moment(startDate).add(durationDays, 'days').endOf('day').toDate()
+    const endDate = momentTz(startDate).tz(TZ).add(durationDays, 'days').endOf('day').toDate()
 
     await tx.user_feature_subscriptions.create({
       data: { user_id: userId, feature, start_date: startDate, end_date: endDate },
