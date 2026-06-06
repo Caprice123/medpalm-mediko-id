@@ -84,6 +84,7 @@ app.use(cors({
         "http://localhost:5173",
         "https://medpalm.mediko.id",   // React
         "https://medpal.id",
+        "https://www.medpal.id",
     ],
     exposedHeaders: ['X-Remaining-Quota'], // Expose custom header to frontend
 }));

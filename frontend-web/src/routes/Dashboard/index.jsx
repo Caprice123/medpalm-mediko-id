@@ -267,7 +267,7 @@ function Dashboard() {
                   </CardBody>
                 </Card>
               </CardWrapper>
-              { isNonUser && <CardWrapper>
+              <CardWrapper>
                 <Card shadow hoverable>
                   <CardBody>
                     <FeatureIcon>🗓️</FeatureIcon>
@@ -283,7 +283,7 @@ function Dashboard() {
                     </FeatureFooter>
                   </CardBody>
                 </Card>
-              </CardWrapper>}
+              </CardWrapper>
             </CatalogGrid>
       </MainContent>
     </DashboardContainer>

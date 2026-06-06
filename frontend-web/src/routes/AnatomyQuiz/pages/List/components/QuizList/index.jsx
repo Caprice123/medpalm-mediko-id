@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux'
-import { formatLocalDate } from '@utils/dateUtils'
 import { Card, CardHeader, CardBody } from '@components/common/Card'
 import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
@@ -57,12 +56,6 @@ function QuizList() {
               <StatItem>
                 <StatLabel>Questions</StatLabel>
                 <StatValue>{quiz.questionCount || 0}</StatValue>
-              </StatItem>
-              <StatItem>
-                <StatLabel>Terakhir Diperbaharui</StatLabel>
-                <StatValue>
-                  {formatLocalDate(quiz.updatedAt)}
-                </StatValue>
               </StatItem>
             </QuizStats>
 
