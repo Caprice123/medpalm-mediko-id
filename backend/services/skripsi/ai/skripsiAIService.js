@@ -141,7 +141,7 @@ export class SkripsiAIService extends BaseService {
 
     // Get conversation history with configurable context length
     const conversationHistory = tab.messages.slice(-contextMessages)
-
+    const isPerplexity = modelName.startsWith('sonar')
     if (isPerplexity) {
       // Get trusted domains for filtering
       const trustedDomains = await GetSkripsiTrustedDomainsService.call()

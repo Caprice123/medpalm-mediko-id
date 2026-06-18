@@ -6,9 +6,30 @@ import path from 'path'
 import compression from 'vite-plugin-compression'
 import { visualizer } from 'rollup-plugin-visualizer'
 
+// Patch mdast-util-gfm-autolink-literal: it uses a lookbehind assertion (?<=...)
+// and Unicode property escapes (\p{P}, \p{S}) that crash Safari/WebKit < 16.4.
+// The findEmail() function already calls previous() which validates the preceding
+// character, so stripping the lookbehind from the regex is safe.
+function patchSafariGfm() {
+  return {
+    name: 'patch-safari-gfm',
+    transform(code, id) {
+      if (!id.includes('mdast-util-gfm-autolink-literal')) return
+      return {
+        code: code.replace(
+          '/(?<=^|\\s|\\p{P}|\\p{S})([-.\\w+]+)@([-\\w]+(?:\\.[-\\w]+)+)/gu',
+          '/([-.\\w+]+)@([-\\w]+(?:\\.[-\\w]+)+)/g'
+        ),
+        map: null,
+      }
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    patchSafariGfm(),
     react(),
     svgr(),
     compression({ algorithm: 'gzip' }),
@@ -17,8 +38,12 @@ export default defineConfig({
     sentryVitePlugin({
       org: "medpal-project",
       project: "medpal"
-    })
+    }),
   ],
+  // Exclude from esbuild pre-bundling so patchSafariGfm runs in dev mode too
+  optimizeDeps: {
+    exclude: ['mdast-util-gfm-autolink-literal'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/'),
