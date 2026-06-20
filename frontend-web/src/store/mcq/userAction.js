@@ -14,7 +14,6 @@ export const fetchMcqTopics = () => async (dispatch, getState) => {
     const { filter, pagination } = getState().mcq
 
     const queryParams = {}
-    if (filter.topic) queryParams.topic = filter.topic
     if (filter.department) queryParams.department = filter.department
     if (filter.university) queryParams.university = filter.university
     if (filter.semester) queryParams.semester = filter.semester

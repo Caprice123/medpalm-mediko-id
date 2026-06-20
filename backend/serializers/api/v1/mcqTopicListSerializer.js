@@ -1,7 +1,7 @@
 export class McqTopicListSerializer {
   static serialize(topics) {
     return topics.map(topic => {
-      const topicTags = (topic.mcq_topic_tags || []).filter(tt => tt.tags)
+      const topicTags = (topic.mcq_topic_tags || []).filter(tt => tt.tags && tt.tags.tag_group?.name !== 'topic')
 
       return {
         id: topic.id,

@@ -18,7 +18,7 @@ export const useMultipleChoiceDetail = () => {
 
   useEffect(() => {
     setQuizResult(null)
-    dispatch(tagActions.updateFilter({ key: 'tagGroupNames', value: ['department', 'topic', 'university', 'semester'] }))
+    dispatch(tagActions.updateFilter({ key: 'tagGroupNames', value: ['department', 'university', 'semester'] }))
     dispatch(fetchTags())
     dispatch(fetchMcqTopicById(id))
   }, [dispatch, id])

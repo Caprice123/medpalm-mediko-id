@@ -2,7 +2,7 @@ export class McqTopicSerializer {
   static serialize(topic, includeAnswers = false) {
     const questions = topic.mcq_questions || topic.questions || []
     const topicTags = (topic.mcq_topic_tags || [])
-      .filter(tt => tt.tags)
+      .filter(tt => tt.tags && tt.tags.tag_group?.name !== 'topic')
       .map(tt => ({
         id: tt.tags.id,
         name: tt.tags.name,

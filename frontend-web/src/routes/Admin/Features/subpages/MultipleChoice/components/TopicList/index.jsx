@@ -43,7 +43,6 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
   return (
     <TopicsGrid>
       {topics.map(topic => {
-        const topicTags = topic.topicTags || []
         const departmentTags = topic.departmentTags || []
         const universityTags = topic.universityTags || []
         const semesterTags = topic.semesterTags || []
@@ -62,17 +61,6 @@ function TopicList({ onEdit, onDelete, onCreateFirst }) {
           </TopicDescription>
 
           <div style={{flex: "1"}}></div>
-
-          {/* Topic Tags */}
-          {topicTags.length > 0 && (
-            <TagList>
-              {topicTags.map((tag) => (
-                <Tag key={tag.id} topic>
-                  🏥 {tag.name}
-                </Tag>
-              ))}
-            </TagList>
-          )}
 
           {/* Department Tags */}
           {departmentTags.length > 0 && (

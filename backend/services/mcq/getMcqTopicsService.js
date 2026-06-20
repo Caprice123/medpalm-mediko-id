@@ -15,16 +15,6 @@ export class GetMcqTopicsService extends BaseService {
     // Tag filtering - build AND conditions for each tag filter
     const tagAndConditions = []
 
-    if (filters.topicTagIds && filters.topicTagIds.length > 0) {
-      tagAndConditions.push({
-        mcq_topic_tags: {
-          some: {
-            tag_id: { in: filters.topicTagIds.map(Number) }
-          }
-        }
-      })
-    }
-
     if (filters.departmentTagIds && filters.departmentTagIds.length > 0) {
       tagAndConditions.push({
         mcq_topic_tags: {

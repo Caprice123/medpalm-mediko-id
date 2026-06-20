@@ -13,12 +13,9 @@ class McqController {
    * GET /api/v1/mcq/topics
    */
   async getTopics(req, res) {
-    const { page, limit, topic, department, university, semester, search } = req.query
+    const { page, limit, department, university, semester, search } = req.query
 
     const filters = {}
-    if (topic) {
-      filters.topicTagIds = topic.split(',')
-    }
     if (department) {
       filters.departmentTagIds = department.split(',')
     }

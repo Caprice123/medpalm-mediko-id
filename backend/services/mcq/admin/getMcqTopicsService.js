@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetMcqTopicsService extends BaseService {
-  static async call({ page = 1, limit = 30, status, search, university, semester, topic, department }) {
+  static async call({ page = 1, limit = 30, status, search, university, semester, department }) {
     const perPage = parseInt(limit)
     const skip = (parseInt(page) - 1) * perPage
 
@@ -26,9 +26,6 @@ export class GetMcqTopicsService extends BaseService {
     }
     if (semester) {
       tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(semester) } } })
-    }
-    if (topic) {
-      tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(topic) } } })
     }
     if (department) {
       tagFilters.push({ mcq_topic_tags: { some: { tag_id: parseInt(department) } } })
@@ -70,7 +67,6 @@ export class GetMcqTopicsService extends BaseService {
         tags: allTags,
         universityTags: allTags.filter(t => t.tagGroupName === 'university'),
         semesterTags: allTags.filter(t => t.tagGroupName === 'semester'),
-        topicTags: allTags.filter(t => t.tagGroupName === 'topic'),
         departmentTags: allTags.filter(t => t.tagGroupName === 'department')
       }
     })

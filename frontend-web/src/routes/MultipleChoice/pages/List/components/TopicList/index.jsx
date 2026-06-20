@@ -45,7 +45,6 @@ function TopicList() {
     <TopicsGrid>
       {topics.map(topic => {
         // Get tag groups
-        const topicTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'topic') || []
         const departmentTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'department') || []
         const universityTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'university') || []
         const semesterTags = topic.tags?.filter(tag => tag.tagGroup?.name === 'semester') || []
@@ -73,14 +72,6 @@ function TopicList() {
                 <TagList>
                   {semesterTags.map((tag) => (
                     <Tag key={tag.id} semester>📚 {tag.name}</Tag>
-                  ))}
-                </TagList>
-              )}
-
-              {topicTags.length > 0 && (
-                <TagList>
-                  {topicTags.map((tag) => (
-                    <Tag key={tag.id} topic>📖 {tag.name}</Tag>
                   ))}
                 </TagList>
               )}

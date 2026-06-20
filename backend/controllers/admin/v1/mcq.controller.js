@@ -53,14 +53,13 @@ class McqController {
    * GET /admin/v1/mcq/topics
    */
   async index(req, res) {
-    const { page, limit, status, search, topic, department, university, semester } = req.query
+    const { page, limit, status, search, department, university, semester } = req.query
 
     const result = await GetMcqTopicsService.call({
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 30,
       status,
       search,
-      topic,
       department,
       university,
       semester

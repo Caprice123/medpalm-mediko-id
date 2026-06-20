@@ -49,10 +49,6 @@ const CreateTopicModal = ({ onClose }) => {
   } = useCreateTopic(onClose)
 
   // Get tags from all tag groups - memoized
-  const topicTags = useMemo(() =>
-    tags.find(t => t.name === 'topic')?.tags || [],
-    [tags]
-  )
   const departmentTags = useMemo(() =>
     tags.find(t => t.name === 'department')?.tags || [],
     [tags]
@@ -67,10 +63,6 @@ const CreateTopicModal = ({ onClose }) => {
   )
 
   // Handlers for tag changes
-  const handleTopicTagsChange = (newTags) => {
-    form.setFieldValue('topicTags', newTags)
-  }
-
   const handleDepartmentTagsChange = (newTags) => {
     form.setFieldValue('departmentTags', newTags)
   }
@@ -154,18 +146,6 @@ const CreateTopicModal = ({ onClose }) => {
           <HelpText>Minimum score to pass (default: 70%)</HelpText>
         </FormSection>
       </FormRow>
-
-      {/* Topic Tags Section */}
-      <FormSection>
-        <Label>Topik</Label>
-        <TagSelector
-          allTags={topicTags}
-          selectedTags={form.values.topicTags || []}
-          onTagsChange={handleTopicTagsChange}
-          placeholder="-- Pilih Topik --"
-          helpText="Pilih topik medis untuk membantu mengorganisir topik"
-        />
-      </FormSection>
 
       {/* Department Tags Section */}
       <FormSection>

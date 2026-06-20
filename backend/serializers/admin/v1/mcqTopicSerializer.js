@@ -12,7 +12,6 @@ export class McqTopicSerializer {
 
     const universityTags = allTags.filter(tag => tag.tagGroupName === 'university')
     const semesterTags = allTags.filter(tag => tag.tagGroupName === 'semester')
-    const topicTags = allTags.filter(tag => tag.tagGroupName === 'topic')
     const departmentTags = allTags.filter(tag => tag.tagGroupName === 'department')
 
     return {
@@ -37,7 +36,6 @@ export class McqTopicSerializer {
       })),
       universityTags,
       semesterTags,
-      topicTags,
       departmentTags
     }
   }
