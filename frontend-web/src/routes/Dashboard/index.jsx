@@ -296,7 +296,7 @@ function Dashboard() {
                     </FeatureDescription>
                     <div style={{ flex: 1 }} />
                     <FeatureFooter>
-                      <Button variant="primary" onClick={() => navigate(ChallengeRoute.listRoute)} fullWidth>
+                      <Button variant="primary" onClick={() => navigate(ChallengeRoute.homeRoute)} fullWidth>
                         Lihat Challenge
                       </Button>
                     </FeatureFooter>

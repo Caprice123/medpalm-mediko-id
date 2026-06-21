@@ -18,6 +18,7 @@ export class UserChallengeSerializer {
       badgesDisbursed: challenge.badges_disbursed,
       tags: (challenge.challenge_tags ?? []).map(ct => ({ id: ct.tags.id, name: ct.tags.name, tagGroupId: ct.tags.tag_group_id, tagGroupName: ct.tags.tag_group?.name || null })),
       poolSize: challenge._count?.challenge_questions ?? undefined,
+      playedCount: challenge.playedCount ?? 0,
       myStatus: mySession ? mySession.status : 'not_started',
       myScore: mySession?.score ?? null,
       myCorrectCount: mySession?.correct_count ?? null,

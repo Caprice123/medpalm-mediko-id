@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import PageLoader from '@components/PageLoader'
 
+const ChallengeHomePage = lazy(() => import('../pages/Home'))
 const ChallengePage = lazy(() => import('../pages/List'))
 const ChallengeDetailPage = lazy(() => import('../pages/Detail'))
 const ChallengeSessionPage = lazy(() => import('../pages/Session'))
@@ -14,13 +15,15 @@ const withSuspense = (Component) => (
 
 export class ChallengeRoute {
   static moduleRoute = '/challenge'
-  static listRoute = ChallengeRoute.moduleRoute + '/'
+  static homeRoute = ChallengeRoute.moduleRoute + '/'
+  static listRoute = ChallengeRoute.moduleRoute + '/list'
   static detailRoute = (uniqueId) => `${ChallengeRoute.moduleRoute}/${uniqueId}`
   static sessionRoute = (uniqueId) => `${ChallengeRoute.moduleRoute}/${uniqueId}/session`
   static resultRoute = (uniqueId) => `${ChallengeRoute.moduleRoute}/${uniqueId}/result`
 }
 
 export const challengeRoutes = [
+  { path: ChallengeRoute.homeRoute, element: withSuspense(<ChallengeHomePage />) },
   { path: ChallengeRoute.listRoute, element: withSuspense(<ChallengePage />) },
   { path: `${ChallengeRoute.moduleRoute}/:uniqueId`, element: withSuspense(<ChallengeDetailPage />) },
   { path: `${ChallengeRoute.moduleRoute}/:uniqueId/session`, element: withSuspense(<ChallengeSessionPage />) },
