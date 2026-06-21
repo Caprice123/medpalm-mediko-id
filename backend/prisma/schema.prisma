@@ -201,6 +201,7 @@ model tags {
   mcq_topic_tags               mcq_topic_tags[]
   osce_topic_tags              osce_topic_tags[]
   osce_session_topic_snapshots osce_session_tag_snapshots[]
+  challenge_tags               challenge_tags[]
 
   @@unique([name, tag_group_id])
 }
@@ -1898,6 +1899,138 @@ model banners {
   @@index([is_active])
   @@index([is_deleted])
   @@index([order])
+}
+
+// ============= Challenge Feature =============
+
+model challenges {
+  id                       Int       @id @default(autoincrement())
+  unique_id                String    @unique @default(uuid())
+  title                    String
+  description              String?   @db.Text
+  scoring_type             String    // "classic" | "blitz"
+  duration_minutes         Int
+  total_questions          Int
+  base_points_per_correct  Int       @default(100)
+  time_bonus_pool          Float     @default(50)
+  time_bonus_multiplier    Float     @default(5)
+  max_special_per_session  Int       @default(0)
+  special_duration_minutes Int       @default(2)
+  status                   String    @default("draft") // "draft" | "active" | "inactive"
+  start_at                 DateTime?
+  end_at                   DateTime?
+  badges_disbursed         Boolean   @default(false)
+  is_deleted               Boolean   @default(false)
+  deleted_at               DateTime?
+  created_by               Int
+  created_at               DateTime  @default(now())
+  updated_at               DateTime  @default(now())
+
+  challenge_questions challenge_questions[]
+  challenge_badges    challenge_badges[]
+  challenge_sessions  challenge_sessions[]
+  challenge_tags      challenge_tags[]
+
+  @@index([status])
+  @@index([is_deleted])
+  @@index([start_at])
+  @@index([scoring_type])
+  @@index([badges_disbursed])
+}
+
+model challenge_questions {
+  id                   Int      @id @default(autoincrement())
+  unique_id            String   @unique @default(uuid())
+  challenge_id         Int
+  question             String?  @db.Text
+  options              Json
+  correct_option_index Int
+  explanation          String?  @db.Text
+  order                Int      @default(0)
+  is_special           Boolean  @default(false)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @default(now())
+
+  challenge             challenges                @relation(fields: [challenge_id], references: [id])
+  challenge_session_answers challenge_session_answers[]
+
+  @@index([challenge_id])
+  @@index([order])
+}
+
+model challenge_badges {
+  id           Int      @id @default(autoincrement())
+  unique_id    String   @unique @default(uuid())
+  challenge_id Int
+  name         String
+  description  String?
+  min_rank     Int
+  max_rank     Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  challenge challenges @relation(fields: [challenge_id], references: [id])
+
+  @@index([challenge_id])
+  @@index([min_rank])
+}
+
+model challenge_sessions {
+  id                 Int       @id @default(autoincrement())
+  unique_id          String    @unique @default(uuid())
+  challenge_id       Int
+  user_id            Int
+  question_ids       Json
+  status             String    @default("in_progress") // "in_progress" | "completed"
+  score              Float?
+  correct_count      Int?
+  total_time_seconds Float?
+  started_at         DateTime  @default(now())
+  completed_at       DateTime?
+  earned_badge_id    Int?
+  final_rank         Int?
+  created_at         DateTime  @default(now())
+
+  challenge             challenges                @relation(fields: [challenge_id], references: [id])
+  challenge_session_answers challenge_session_answers[]
+
+  @@unique([challenge_id, user_id])
+  @@index([challenge_id])
+  @@index([user_id])
+  @@index([status])
+  @@index([score])
+  @@index([earned_badge_id])
+}
+
+model challenge_session_answers {
+  id                    Int      @id @default(autoincrement())
+  session_id            Int
+  question_id           Int
+  selected_option_index Int
+  is_correct            Boolean
+  time_taken_seconds    Float
+  created_at            DateTime @default(now())
+
+  challenge_session  challenge_sessions  @relation(fields: [session_id], references: [id])
+  challenge_question challenge_questions @relation(fields: [question_id], references: [id])
+
+  @@unique([session_id, question_id])
+  @@index([session_id])
+  @@index([question_id])
+}
+
+model challenge_tags {
+  id           Int      @id @default(autoincrement())
+  challenge_id Int
+  tag_id       Int
+  created_at   DateTime @default(now())
+
+  challenge challenges @relation(fields: [challenge_id], references: [id])
+  tags      tags       @relation(fields: [tag_id], references: [id])
+
+  @@unique([challenge_id, tag_id])
+  @@index([challenge_id])
+  @@index([tag_id])
 }
 
 model webhook_logs {

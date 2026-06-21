@@ -31,6 +31,7 @@ function Modal({
   children,
   footer,
   size = 'medium',
+  scrollable = true,
   showCloseButton = true,
   closeOnOverlayClick = false,
   className = ''
@@ -83,7 +84,7 @@ function Modal({
           </ModalHeader>
         )}
 
-        <ModalBody>
+        <ModalBody $scrollable={scrollable}>
           {children}
         </ModalBody>
 

@@ -33,6 +33,7 @@ export default {
         events: "/admin/v1/events",
         banners: "/admin/v1/banners",
         bannersReorder: "/admin/v1/banners/reorder",
+        challenges: "/admin/v1/challenges",
     },
     api: {
         calculators: "/api/v1/calculators",
@@ -56,6 +57,8 @@ export default {
         webinars: "/api/v1/webinars",
         events: "/api/v1/events",
         banners: "/api/v1/banners",
+        challenges: "/api/v1/challenges",
+        challengeMyBadges: "/api/v1/challenges/my-badges",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
         oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,

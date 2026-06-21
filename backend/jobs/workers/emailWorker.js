@@ -16,6 +16,10 @@ async function processEmailJob(job) {
       await emailService.sendWebinarRejection(data)
       break
 
+    case EmailJobTypes.CHALLENGE_ANSWER_KEY:
+      await emailService.sendChallengeAnswerKey(data)
+      break
+
     default:
       throw new Error(`Unknown email job type: ${name}`)
   }

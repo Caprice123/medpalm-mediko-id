@@ -49,6 +49,7 @@ import { OscePracticeRoute } from '../OscePractice/routes'
 import { AtlasRoute } from '../Atlas/routes'
 import { WebinarRoute } from '../Webinar/routes'
 import { EventRoute } from '../Event/routes'
+import { ChallengeRoute } from '../Challenge/routes'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -88,6 +89,7 @@ function Dashboard() {
         'skripsi_builder': SkripsiRoute.moduleRoute,
         'osce_practice': OscePracticeRoute.moduleRoute,
         'atlas': AtlasRoute.moduleRoute,
+        'challenge': ChallengeRoute.moduleRoute,
       }
       
       // Navigate to the mapped route if it exists
@@ -279,6 +281,23 @@ function Dashboard() {
                     <FeatureFooter>
                       <Button variant="primary" onClick={() => navigate(EventRoute.listRoute)} fullWidth>
                         Lihat Events
+                      </Button>
+                    </FeatureFooter>
+                  </CardBody>
+                </Card>
+              </CardWrapper>
+              <CardWrapper>
+                <Card shadow hoverable>
+                  <CardBody>
+                    <FeatureIcon>🏆</FeatureIcon>
+                    <FeatureTitle>Challenge</FeatureTitle>
+                    <FeatureDescription>
+                      Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif
+                    </FeatureDescription>
+                    <div style={{ flex: 1 }} />
+                    <FeatureFooter>
+                      <Button variant="primary" onClick={() => navigate(ChallengeRoute.listRoute)} fullWidth>
+                        Lihat Challenge
                       </Button>
                     </FeatureFooter>
                   </CardBody>

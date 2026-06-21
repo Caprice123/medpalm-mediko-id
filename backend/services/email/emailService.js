@@ -60,6 +60,21 @@ class EmailService {
     const provider = await providerPromise
     await provider.sendMail({ to, subject: `Registrasi Webinar Ditolak: ${webinarTitle}`, html })
   }
+
+  async sendChallengeAnswerKey({ to, userName, challengeTitle, score, correctCount, totalQuestions, finalRank, questions }) {
+    const html = getTemplate('challengeAnswerKey.html')({
+      userName,
+      challengeTitle,
+      score,
+      correctCount,
+      totalQuestions,
+      finalRank,
+      questions,
+    })
+
+    const provider = await providerPromise
+    await provider.sendMail({ to, subject: `Kunci Jawaban: ${challengeTitle}`, html })
+  }
 }
 
 export default new EmailService()

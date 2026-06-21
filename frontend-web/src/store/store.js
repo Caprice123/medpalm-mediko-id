@@ -25,6 +25,7 @@ import webinar from "./webinar"
 import event from "./event";
 import featureSubscriptions from "./featureSubscriptions/reducer";
 import banner from "./banner";
+import challenge from "./challenge";
 
 export const rootReducer = combineReducers({
     auth,
@@ -52,6 +53,7 @@ export const rootReducer = combineReducers({
     event,
     featureSubscriptions,
     banner,
+    challenge,
 })
 
 export const store = configureStore({

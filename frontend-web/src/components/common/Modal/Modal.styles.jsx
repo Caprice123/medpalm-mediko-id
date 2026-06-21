@@ -126,9 +126,9 @@ export const CloseButton = styled.button`
 
 export const ModalBody = styled.div`
   padding: 1.5rem;
-  overflow-y: auto;
+  overflow-y: ${props => props.$scrollable === false ? 'visible' : 'auto'};
   overflow-x: hidden;
-  flex: 1;
+  flex: ${props => props.$scrollable === false ? 'initial' : '1'};
   position: relative;
 
   /* Allow dropdowns to overflow the scrollable area */

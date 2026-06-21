@@ -14,6 +14,7 @@ import GlobalSettings from './GlobalSettings'
 import WebinarAdmin from './Features/subpages/Webinar'
 import EventAdmin from './Features/subpages/Event'
 import BannerAdmin from './Features/subpages/Banner'
+import Layanan from './Layanan'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -121,7 +122,7 @@ const hasTabPermission = (user, tab) => {
   // Default permissions based on role
   if (user.role === 'admin') {
     // Admins by default have access to all tabs except 'users'
-    return ['features', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings'].includes(tab)
+    return ['features', 'layanan', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings'].includes(tab)
   }
 
   // Other roles don't have admin panel access
@@ -132,6 +133,7 @@ const hasTabPermission = (user, tab) => {
 const getAvailableTabs = (user) => {
   const allTabs = [
     { key: 'features', label: 'Kelola Fitur' },
+    { key: 'layanan', label: 'Layanan' },
     { key: 'webinar', label: 'Webinar' },
     { key: 'events', label: 'Events' },
     { key: 'banners', label: 'Banner' },
@@ -198,6 +200,8 @@ function AdminPanel() {
 
         <ContentArea>
           {activeTab === 'features' && <Features />}
+
+          {activeTab === 'layanan' && <Layanan />}
 
           {activeTab === 'webinar' && <WebinarAdmin />}
 

@@ -26,7 +26,7 @@ function makeRequestWithToken(
         method: method,
         params: params,
         url: url,
-        data: requestBody,
+        data: requestBody ?? undefined,
         headers: headers,
         ...additionalConfig,
     })

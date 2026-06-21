@@ -55,6 +55,8 @@ import eventRoutes from '#routes/api/v1/event.routes';
 import adminEventRoutes from '#routes/admin/v1/event.routes';
 import bannerRoutes from '#routes/api/v1/banner.routes';
 import adminBannerRoutes from '#routes/admin/v1/banner.routes';
+import challengeRoutes from '#routes/api/v1/challenge.routes';
+import adminChallengeRoutes from '#routes/admin/v1/challenge.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
@@ -167,6 +169,7 @@ app.use('/api/v1/html-to-docx', htmlToDocxRoutes);
 app.use('/api/v1/webinars', webinarRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/banners', bannerRoutes);
+app.use('/api/v1/challenges', challengeRoutes);
 
 // Admin Routes
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);
@@ -196,6 +199,7 @@ app.use('/admin/v1/skripsi', adminSkripsiRoutes);
 app.use('/admin/v1/webinars', adminWebinarRoutes);
 app.use('/admin/v1/events', adminEventRoutes);
 app.use('/admin/v1/banners', adminBannerRoutes);
+app.use('/admin/v1/challenges', adminChallengeRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

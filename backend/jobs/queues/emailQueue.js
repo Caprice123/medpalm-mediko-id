@@ -30,6 +30,7 @@ export const emailQueue = new Queue(EMAIL_QUEUE_NAME, {
 export const EmailJobTypes = {
   WEBINAR_APPROVAL: 'webinar-approval',
   WEBINAR_REJECTION: 'webinar-rejection',
+  CHALLENGE_ANSWER_KEY: 'challenge-answer-key',
 }
 
 export async function queueWebinarApprovalEmail({ to, userName, webinarTitle, joinLinks, startAt }) {
@@ -49,5 +50,15 @@ export async function queueWebinarRejectionEmail({ to, userName, webinarTitle, a
     { jobId: `webinar-rejection-${Date.now()}` }
   )
   console.log(`📤 Queued webinar rejection email to ${to} (Job ID: ${job.id})`)
+  return job
+}
+
+export async function queueChallengeAnswerKeyEmail({ to, userName, challengeTitle, score, correctCount, totalQuestions, finalRank, questions }) {
+  const job = await emailQueue.add(
+    EmailJobTypes.CHALLENGE_ANSWER_KEY,
+    { to, userName, challengeTitle, score, correctCount, totalQuestions, finalRank, questions },
+    { jobId: `challenge-answer-key-${to}-${Date.now()}` }
+  )
+  console.log(`📤 Queued challenge answer key email to ${to} (Job ID: ${job.id})`)
   return job
 }
