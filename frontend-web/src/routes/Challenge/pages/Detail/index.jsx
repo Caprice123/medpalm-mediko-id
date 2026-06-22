@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ShareModal from './ShareModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchChallengeDetail, fetchChallengeBadges, fetchChallengeLeaderboard, startChallenge } from '@store/challenge/userAction'
@@ -14,7 +15,7 @@ import {
   DateCardsRow, DateCard, DateCardIcon, DateCardInfo, DateCardLabel, DateCardValue,
   PointsGuideCard, PointsGuideHeader, PointsGuideTitleIcon, PointsGuideTitle, PointsItem, PointsItemIcon,
   StartSection, StartBtn, ContinueBtn, StartHint, CompletedNote,
-  MyResultBox, MyResultHeader, MyResultTitle, MyResultBadge, MyResultStats, Stat, StatValue, StatLabel,
+  MyResultBox, MyResultHeader, MyResultTitle, MyResultBadge, MyResultStats, Stat, StatValue, StatLabel, ShareBtn,
   TabsRow, TabBtn, TabPanel,
   Panel, PanelTitle, LeaderboardHeader, RefreshCountdown,
   LeaderRow, RankNum, MedalIcon, LeaderName, LeaderScore, EmptyLeader,
@@ -49,13 +50,13 @@ export default function ChallengeDetailPage() {
   const { uniqueId } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { detail, challengeBadges, challengeLeaderboard, challengeMyRank, challengeMyBadge, loading } = useSelector(state => state.challenge)
-  const [activeTab, setActiveTab] = useState('leaderboard')
+  const { detail, /* challengeBadges, */ challengeLeaderboard, challengeMyRank, /* challengeMyBadge, */ loading } = useSelector(state => state.challenge)
   const [countdown, setCountdown] = useState(15)
+  const [shareOpen, setShareOpen] = useState(false)
 
   useEffect(() => {
     dispatch(fetchChallengeDetail(uniqueId))
-    dispatch(fetchChallengeBadges(uniqueId))
+    // dispatch(fetchChallengeBadges(uniqueId))
   }, [dispatch, uniqueId])
 
   const myStatus = detail?.myStatus
@@ -65,7 +66,6 @@ export default function ChallengeDetailPage() {
   }, [dispatch, uniqueId, myStatus])
 
   useEffect(() => {
-    if (activeTab !== 'leaderboard') return
     if (myStatus !== 'completed') return
     if (detail?.challenge?.badgesDisbursed) return
     if (countdown === 0) {
@@ -75,9 +75,7 @@ export default function ChallengeDetailPage() {
     }
     const t = setTimeout(() => setCountdown(prev => prev - 1), 1000)
     return () => clearTimeout(t)
-  }, [activeTab, countdown, detail?.challenge?.badgesDisbursed, dispatch, uniqueId, myStatus])
-
-  useEffect(() => { setCountdown(15) }, [activeTab])
+  }, [countdown, detail?.challenge?.badgesDisbursed, dispatch, uniqueId, myStatus])
 
   const handleStart = async () => {
     await dispatch(startChallenge(uniqueId))
@@ -168,23 +166,28 @@ export default function ChallengeDetailPage() {
               <PointsItem>
                 <PointsItemIcon $bg="#d1fae5">⚡</PointsItemIcon>
                 <span>
-                  <strong>{challenge.basePointsPerCorrect} poin</strong> untuk setiap jawaban benar
-                  {challenge.timeBonusPool > 0 && (
-                    <> · bonus kecepatan hingga <strong>+{challenge.timeBonusPool} poin</strong></>
-                  )}
+                  {challenge.scoringType === 'classic'
+                    ? <>Maks <strong>{challenge.basePointsPerCorrect * 2} poin</strong> per soal (tergantung kecepatan &amp; streak)</>
+                    : <><strong>{challenge.basePointsPerCorrect} poin</strong> untuk setiap jawaban benar</>
+                  }
                 </span>
               </PointsItem>
               {challenge.maxSpecialPerSession > 0 && (
                 <PointsItem>
                   <PointsItemIcon $bg="#ede9fe">⭐</PointsItemIcon>
                   <span>
-                    Hingga <strong>{challenge.maxSpecialPerSession} soal spesial</strong> bernilai poin ×2
+                    Hingga <strong>{challenge.maxSpecialPerSession} soal spesial</strong> —{' '}
+                    {challenge.scoringType === 'classic'
+                      ? <>bernilai <strong>{challenge.basePointsPerCorrect * 2} poin</strong> (2× lebih besar dari soal biasa)</>
+                      : <>bernilai <strong>2 poin</strong> (soal biasa hanya 1 poin)</>
+                    }
                     {challenge.specialDurationMinutes > 0 && (
-                      <> — waktu pengerjaan hanya <strong>{challenge.specialDurationMinutes} menit</strong></>
+                      <> · waktu pengerjaan hanya <strong>{challenge.specialDurationMinutes} menit</strong></>
                     )}
                   </span>
                 </PointsItem>
               )}
+              {/* BADGES HIDDEN
               {challengeBadges.length > 0 && (
                 <PointsItem>
                   <PointsItemIcon $bg="#fef3c7">🏅</PointsItemIcon>
@@ -194,6 +197,7 @@ export default function ChallengeDetailPage() {
                   </span>
                 </PointsItem>
               )}
+              */}
               <PointsItem>
                 <PointsItemIcon $bg="#fee2e2">⚠️</PointsItemIcon>
                 <span>Challenge hanya bisa diikuti <strong>1 kali</strong> — tidak bisa diulang</span>
@@ -259,7 +263,7 @@ export default function ChallengeDetailPage() {
               <MyResultBox>
                 <MyResultHeader>
                   <MyResultTitle>🎯 Hasil Kamu</MyResultTitle>
-                  {challengeMyBadge && <MyResultBadge>🏅 {challengeMyBadge.name}</MyResultBadge>}
+                  {/* {challengeMyBadge && <MyResultBadge>🏅 {challengeMyBadge.name}</MyResultBadge>} */}
                 </MyResultHeader>
                 <MyResultStats>
                   <Stat>
@@ -279,96 +283,93 @@ export default function ChallengeDetailPage() {
                     <StatLabel>Waktu</StatLabel>
                   </Stat>
                 </MyResultStats>
+                <ShareBtn onClick={() => setShareOpen(true)}>
+                  ↗ Bagikan Hasil
+                </ShareBtn>
               </MyResultBox>
             </CompletedTopRow>
 
+            {(challenge.startAt || challenge.endAt) && (
+              <DateCardsRow>
+                {challenge.startAt && (
+                  <DateCard>
+                    <DateCardIcon $color="#f0fdf4">📅</DateCardIcon>
+                    <DateCardInfo>
+                      <DateCardLabel>Mulai</DateCardLabel>
+                      <DateCardValue>{formatJakartaDateLong(challenge.startAt)}</DateCardValue>
+                    </DateCardInfo>
+                  </DateCard>
+                )}
+                {challenge.endAt && (
+                  <DateCard>
+                    <DateCardIcon $color="#fff7ed">⏰</DateCardIcon>
+                    <DateCardInfo>
+                      <DateCardLabel>Berakhir</DateCardLabel>
+                      <DateCardValue>{formatJakartaDateLong(challenge.endAt)}</DateCardValue>
+                    </DateCardInfo>
+                  </DateCard>
+                )}
+              </DateCardsRow>
+            )}
+
             <CompletedNote>✓ Kamu sudah menyelesaikan challenge ini</CompletedNote>
 
+            {/* TABS HIDDEN
             <TabsRow>
               <TabBtn $active={activeTab === 'leaderboard'} onClick={() => setActiveTab('leaderboard')}>
                 Leaderboard {challengeLeaderboard.length > 0 ? `(${challengeLeaderboard.length})` : ''}
               </TabBtn>
               <TabBtn $active={activeTab === 'badge'} onClick={() => setActiveTab('badge')}>
-                Badge {challengeBadges.length > 0 ? `(${challengeBadges.length})` : ''}
+                Badge ...
               </TabBtn>
             </TabsRow>
+            */}
 
-            {activeTab === 'leaderboard' && (
-              <TabPanel>
-                <Panel>
-                  <LeaderboardHeader>
-                    <PanelTitle style={{ margin: 0, border: 'none', paddingBottom: 0 }}>
-                      Leaderboard · {challengeLeaderboard.length} peserta
-                    </PanelTitle>
-                    {!challenge.badgesDisbursed && (
-                      <RefreshCountdown>Refresh dalam {countdown}s</RefreshCountdown>
-                    )}
-                  </LeaderboardHeader>
-                  {loading.isGetChallengeLeaderboardLoading ? (
-                    <EmptyLeader>Memuat leaderboard...</EmptyLeader>
-                  ) : challengeLeaderboard.length === 0 ? (
-                    <EmptyLeader>Belum ada peserta yang menyelesaikan challenge ini.</EmptyLeader>
-                  ) : (
-                    challengeLeaderboard.map(entry => (
-                      <LeaderRow key={entry.rank} $isMe={entry.isMe} $rank={entry.rank}>
-                        {MEDALS[entry.rank]
-                          ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
-                          : <RankNum $rank={entry.rank}>#{entry.rank}</RankNum>}
-                        <LeaderName $isMe={entry.isMe}>
-                          {entry.userName}{entry.isMe && ' (Kamu)'}
-                        </LeaderName>
-                        <LeaderScore>
-                          {entry.score?.toFixed(0)} · {entry.correctCount}/{challenge.totalQuestions}
-                        </LeaderScore>
-                      </LeaderRow>
-                    ))
-                  )}
-                </Panel>
-              </TabPanel>
-            )}
-
-            {activeTab === 'badge' && (
-              <TabPanel>
+            <Panel>
+              <LeaderboardHeader>
+                <PanelTitle style={{ margin: 0, border: 'none', paddingBottom: 0 }}>
+                  Leaderboard · {challengeLeaderboard.length} peserta
+                </PanelTitle>
                 {!challenge.badgesDisbursed && (
-                  <BadgeInfoBanner>
-                    <BadgeInfoIcon>⏳</BadgeInfoIcon>
-                    <span>
-                      Badge akan dihitung berdasarkan peringkat akhir dan <strong>dibagikan setelah challenge berakhir</strong>.
-                      Selesaikan challenge dengan skor terbaik untuk mendapatkan badge eksklusif!
-                    </span>
-                  </BadgeInfoBanner>
+                  <RefreshCountdown>Refresh dalam {countdown}s</RefreshCountdown>
                 )}
-                {challengeBadges.length === 0 ? (
-                  <Panel><EmptyLeader>Belum ada badge untuk challenge ini.</EmptyLeader></Panel>
-                ) : (
-                  <BadgeCardGrid>
-                    {challengeBadges.map(b => {
-                      const earned = challenge.badgesDisbursed && challengeMyBadge?.uniqueId === b.uniqueId
-                      return (
-                        <BadgeCard key={b.uniqueId} $earned={earned}>
-                          {b.image?.url
-                            ? <BadgeCardImg src={b.image.url} alt={b.name} $earned={earned} />
-                            : <BadgeCardPlaceholder>🏅</BadgeCardPlaceholder>}
-                          <BadgeCardName>{b.name}</BadgeCardName>
-                          <BadgeCardRankLabel>
-                            Rank {b.minRank === b.maxRank ? b.minRank : `${b.minRank}–${b.maxRank}`}
-                          </BadgeCardRankLabel>
-                          {b.description && (
-                            <div style={{ fontSize: '0.75rem', color: '#9CA3AF', lineHeight: 1.4 }}>
-                              {b.description}
-                            </div>
-                          )}
-                          {earned && <BadgeEarnedTag>✓ Kamu peroleh!</BadgeEarnedTag>}
-                        </BadgeCard>
-                      )
-                    })}
-                  </BadgeCardGrid>
-                )}
-              </TabPanel>
-            )}
+              </LeaderboardHeader>
+              {loading.isGetChallengeLeaderboardLoading ? (
+                <EmptyLeader>Memuat leaderboard...</EmptyLeader>
+              ) : challengeLeaderboard.length === 0 ? (
+                <EmptyLeader>Belum ada peserta yang menyelesaikan challenge ini.</EmptyLeader>
+              ) : (
+                challengeLeaderboard.map(entry => (
+                  <LeaderRow key={entry.rank} $isMe={entry.isMe} $rank={entry.rank}>
+                    {MEDALS[entry.rank]
+                      ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
+                      : <RankNum $rank={entry.rank}>#{entry.rank}</RankNum>}
+                    <LeaderName $isMe={entry.isMe}>
+                      {entry.userName}{entry.isMe && ' (Kamu)'}
+                    </LeaderName>
+                    <LeaderScore>
+                      {entry.score?.toFixed(0)} pts
+                    </LeaderScore>
+                  </LeaderRow>
+                ))
+              )}
+            </Panel>
+
+            {/* BADGE PANEL HIDDEN
+            {activeTab === 'badge' && ( ... )}
+            */}
           </>
         )}
       </Container>
+
+      {completed && (
+        <ShareModal
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+          challengeTitle={challenge?.title}
+          score={myScore?.toFixed(0) ?? 0}
+        />
+      )}
     </PageWrapper>
   )
 }

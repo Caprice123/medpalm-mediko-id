@@ -457,6 +457,24 @@ export const StatLabel = styled.div`
   margin-top: 0.3rem;
 `
 
+export const ShareBtn = styled.button`
+  width: 100%;
+  padding: 0.75rem;
+  background: none;
+  border: none;
+  border-top: 1px solid #f3f4f6;
+  color: #06b6d4;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover { background: #f0fdfa; }
+`
+
 /* ——— Tabs ——— */
 export const TabsRow = styled.div`
   display: flex;
@@ -552,10 +570,14 @@ export const MedalIcon = styled.span`
 
 export const LeaderName = styled.span`
   flex: 1;
+  min-width: 0;
   font-size: 0.875rem;
   color: ${props => props.$isMe ? '#0e7490' : '#374151'};
   font-weight: ${props => props.$isMe ? 700 : 500};
   padding: 0 0.625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const LeaderScore = styled.span`

@@ -74,7 +74,12 @@ export const fetchMyBadges = () => async (dispatch) => {
 }
 
 export const saveAnswer = (uniqueId, answer) => async () => {
-  postWithToken(`${Endpoints.api.challenges}/${uniqueId}/answer`, answer).catch(() => {})
+  try {
+    const response = await postWithToken(`${Endpoints.api.challenges}/${uniqueId}/answer`, answer)
+    return response.data
+  } catch {
+    return null
+  }
 }
 
 export const submitChallenge = (uniqueId) => async (dispatch) => {

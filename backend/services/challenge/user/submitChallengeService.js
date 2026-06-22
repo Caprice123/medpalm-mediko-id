@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
 import { LeaderboardCacheService } from '#services/challenge/leaderboardCacheService'
+import { getScoringStrategy } from '#services/challenge/scoring/index'
 
 export class SubmitChallengeService {
   static async call({ challengeUniqueId, userId }) {
@@ -28,30 +29,15 @@ export class SubmitChallengeService {
       }).then(qs => qs.map(q => [q.id, q]))
     )
 
-    let correctCount = 0
-    let totalScore = 0
-    let totalTime = 0
+    const answerMap = Object.fromEntries(savedAnswers.map(a => [a.question_id, a]))
 
-    for (const ans of savedAnswers) {
-      const q = ans.challenge_question
-      const timeTaken = ans.time_taken_seconds
-      totalTime += timeTaken
-
-      if (ans.is_correct) {
-        correctCount++
-        if (challenge.scoring_type === 'classic') {
-          // Classic: base points + time bonus per question
-          const pointMultiplier = q.is_special ? 2 : 1
-          const bonus = Math.max(0, challenge.time_bonus_pool - challenge.time_bonus_multiplier * timeTaken)
-          totalScore += challenge.base_points_per_correct * pointMultiplier + bonus
-        }
-      }
-    }
-
-    // Blitz: score is simply the number of correct answers
-    if (challenge.scoring_type === 'blitz') {
-      totalScore = correctCount
-    }
+    const scoring = getScoringStrategy(challenge.scoring_type)
+    const { totalScore, correctCount, totalTime } = scoring.calculate({
+      challenge,
+      questionIds,
+      questionMap,
+      answerMap,
+    })
 
     await prisma.challenge_sessions.update({
       where: { id: session.id },
@@ -103,7 +89,6 @@ export class SubmitChallengeService {
       earnedBadgeWithImage = { ...earnedBadge, image }
     }
 
-    const answerMap = Object.fromEntries(savedAnswers.map(a => [a.question_id, a]))
     const review = questionIds.map((qId) => {
       const q = questionMap[qId]
       const ans = answerMap[qId]

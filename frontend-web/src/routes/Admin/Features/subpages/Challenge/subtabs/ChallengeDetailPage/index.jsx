@@ -435,7 +435,7 @@ function SoalTab({ challenge }) {
 }
 
 // ── Badge Tab ────────────────────────────────────────────────────────────────
-
+/* BADGES COMMENTED OUT — restore when ready
 function BadgeTab({ challenge }) {
   const dispatch = useDispatch()
   const { badges, loading } = useSelector(s => s.challenge)
@@ -553,6 +553,7 @@ function BadgeTab({ challenge }) {
   )
 }
 
+*/
 // ── Sesi Tab ─────────────────────────────────────────────────────────────────
 
 const formatTime = (totalSeconds) => {
@@ -638,12 +639,12 @@ export default function ChallengeDetailPage({ challenge, onBack }) {
 
       <TabsContainer>
         <Tab $active={activeTab === 'soal'} onClick={() => setActiveTab('soal')}>Soal</Tab>
-        <Tab $active={activeTab === 'badge'} onClick={() => setActiveTab('badge')}>Badge</Tab>
+        {/* <Tab $active={activeTab === 'badge'} onClick={() => setActiveTab('badge')}>Badge</Tab> */}
         <Tab $active={activeTab === 'sesi'} onClick={() => setActiveTab('sesi')}>Sesi</Tab>
       </TabsContainer>
 
       {activeTab === 'soal' && <SoalTab challenge={challenge} />}
-      {activeTab === 'badge' && <BadgeTab challenge={challenge} />}
+      {/* {activeTab === 'badge' && <BadgeTab challenge={challenge} />} */}
       {activeTab === 'sesi' && <SesiTab challenge={challenge} />}
     </Container>
   )

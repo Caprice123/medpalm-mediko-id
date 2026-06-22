@@ -189,7 +189,7 @@ export default function BlitzSession({ session, uniqueId }) {
     startedAt,
     durationMinutes,
   } = session
-  const specialDurationMinutes = session.specialDurationMinutes ?? 2
+  const specialDurationMinutes = session.specialDurationMinutes || 2
   const regularCount = session.regularCount ?? questions.length
 
   const regularQuestions = questions.slice(0, regularCount)
@@ -197,7 +197,9 @@ export default function BlitzSession({ session, uniqueId }) {
   const hasSpecials = specialQuestions.length > 0
 
   const answeredMap = Object.fromEntries(
-    (answeredQuestions || []).map(a => [a.questionId, a.selectedOptionIndex])
+    (answeredQuestions || [])
+      .filter(a => a.selectedOptionIndex !== null)
+      .map(a => [a.questionId, a.selectedOptionIndex])
   )
 
   // Determine initial phase and remaining seconds based on elapsed time
@@ -226,14 +228,22 @@ export default function BlitzSession({ session, uniqueId }) {
   const [currentIdx, setCurrentIdx] = useState(initIdx)
   const [selected, setSelected] = useState(null)
   const [locked, setLocked] = useState(false)
-  const [questionStartTime, setQuestionStartTime] = useState(Date.now())
   const [submitting, setSubmitting] = useState(false)
   const [answeredCount, setAnsweredCount] = useState(Object.keys(answeredMap).length)
   const [showTransition, setShowTransition] = useState(false)
 
+  const questionStartTimeRef = useRef(Date.now())
+
   const timerRef = useRef(null)
   const submittingRef = useRef(false)
   const handledRef = useRef(false) // prevents double-action when multiple deps change at once
+
+  // Mark question as seen when it appears
+  useEffect(() => {
+    const q = activeQuestions[currentIdx]
+    if (!q) return
+    dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: null, timeTakenSeconds: null }))
+  }, [currentIdx, phase])
 
   const activeQuestions = phase === 'regular' ? regularQuestions : specialQuestions
   const isPhaseExhausted = currentIdx >= activeQuestions.length
@@ -260,6 +270,13 @@ export default function BlitzSession({ session, uniqueId }) {
       handledRef.current = true
       clearTimeout(timerRef.current)
 
+      // Save elapsed time for the current question before transitioning/submitting
+      const currentQ = activeQuestions[currentIdx]
+      if (currentQ) {
+        const elapsed = (Date.now() - questionStartTimeRef.current) / 1000
+        dispatch(saveAnswer(uniqueId, { questionId: currentQ.id, selectedOptionIndex: null, timeTakenSeconds: elapsed }))
+      }
+
       if (phase === 'regular' && hasSpecials) {
         // Transition to special phase
         setShowTransition(true)
@@ -272,7 +289,7 @@ export default function BlitzSession({ session, uniqueId }) {
           setSecondsLeft(specialDurationMinutes * 60)
           setSelected(null)
           setLocked(false)
-          setQuestionStartTime(Date.now())
+          questionStartTimeRef.current = Date.now()
           handledRef.current = false
         }, 1800)
       } else {
@@ -290,14 +307,14 @@ export default function BlitzSession({ session, uniqueId }) {
     setSelected(idx)
     setLocked(true)
     const q = activeQuestions[currentIdx]
-    const timeTaken = (Date.now() - questionStartTime) / 1000
+    const timeTaken = (Date.now() - questionStartTimeRef.current) / 1000
     dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: idx, timeTakenSeconds: timeTaken }))
     setAnsweredCount(prev => prev + 1)
     setTimeout(() => {
       setCurrentIdx(prev => prev + 1)
       setSelected(null)
       setLocked(false)
-      setQuestionStartTime(Date.now())
+      questionStartTimeRef.current = Date.now()
     }, 350)
   }
 

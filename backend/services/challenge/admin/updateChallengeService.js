@@ -2,7 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 
 export class UpdateChallengeService {
-  static async call({ uniqueId, title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, timeBonusPool, timeBonusMultiplier, maxSpecialPerSession, status, startAt, endAt, tagIds }) {
+  static async call({ uniqueId, title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, tagIds }) {
     const challenge = await prisma.challenges.findUnique({ where: { unique_id: uniqueId } })
     if (!challenge || challenge.is_deleted) throw new ValidationError('Challenge not found')
 
@@ -20,8 +20,7 @@ export class UpdateChallengeService {
           duration_minutes: durationMinutes != null ? parseInt(durationMinutes) : challenge.duration_minutes,
           total_questions: totalQuestions != null ? parseInt(totalQuestions) : challenge.total_questions,
           base_points_per_correct: basePointsPerCorrect != null ? parseInt(basePointsPerCorrect) : challenge.base_points_per_correct,
-          time_bonus_pool: timeBonusPool != null ? parseFloat(timeBonusPool) : challenge.time_bonus_pool,
-          time_bonus_multiplier: timeBonusMultiplier != null ? parseFloat(timeBonusMultiplier) : challenge.time_bonus_multiplier,
+          seconds_per_question: secondsPerQuestion != null ? parseInt(secondsPerQuestion) : challenge.seconds_per_question,
           max_special_per_session: maxSpecialPerSession != null ? parseInt(maxSpecialPerSession) : challenge.max_special_per_session,
           special_duration_minutes: specialDurationMinutes != null ? parseInt(specialDurationMinutes) : challenge.special_duration_minutes,
           status: status ?? challenge.status,

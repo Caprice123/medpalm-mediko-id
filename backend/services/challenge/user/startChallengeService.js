@@ -115,8 +115,7 @@ export class StartChallengeService {
       regularCount,
       scoringType: challenge.scoring_type,
       basePointsPerCorrect: challenge.base_points_per_correct,
-      timeBonusPool: challenge.time_bonus_pool,
-      timeBonusMultiplier: challenge.time_bonus_multiplier,
+      secondsPerQuestion: challenge.seconds_per_question,
       questions: questionsWithImages,
       answeredQuestions: existingAnswers.map(a => ({
         questionId: a.question_id,

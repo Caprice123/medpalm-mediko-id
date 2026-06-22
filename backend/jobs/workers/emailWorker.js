@@ -2,6 +2,57 @@ import { Worker } from 'bullmq'
 import { redisOptions } from '#config/redis'
 import { EMAIL_QUEUE_NAME, EmailJobTypes } from '#jobs/queues/emailQueue'
 import emailService from '#services/email/emailService'
+import prisma from '#client'
+
+const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
+
+async function buildChallengeAnswerKeyPayload({ sessionId }) {
+  const session = await prisma.challenge_sessions.findUnique({
+    where: { id: sessionId },
+    include: {
+      challenge: { select: { title: true } },
+      challenge_session_answers: {
+        include: { challenge_question: true },
+        orderBy: { challenge_question: { order: 'asc' } },
+      },
+    },
+  })
+
+  if (!session) throw new Error(`Session ${sessionId} not found`)
+
+  const user = await prisma.users.findUnique({
+    where: { id: session.user_id },
+    select: { name: true, email: true },
+  })
+
+  if (!user?.email) throw new Error(`No user/email for session ${sessionId}`)
+
+  const questions = session.challenge_session_answers.map((a, idx) => {
+    const q = a.challenge_question
+    const options = Array.isArray(q.options) ? q.options : []
+    return {
+      num: idx + 1,
+      questionText: q.question || '',
+      selectedOption: a.selected_option_index !== null
+        ? `${OPTION_LABELS[a.selected_option_index] ?? a.selected_option_index}. ${options[a.selected_option_index] ?? ''}`
+        : 'Tidak dijawab',
+      correctOption: `${OPTION_LABELS[q.correct_option_index] ?? q.correct_option_index}. ${options[q.correct_option_index] ?? ''}`,
+      isCorrect: a.is_correct,
+      explanation: q.explanation || null,
+    }
+  })
+
+  return {
+    to: user.email,
+    userName: user.name,
+    challengeTitle: session.challenge.title,
+    score: (session.score ?? 0).toFixed(0),
+    correctCount: session.correct_count ?? 0,
+    totalQuestions: questions.length,
+    finalRank: session.final_rank,
+    questions,
+  }
+}
 
 async function processEmailJob(job) {
   const { name, data } = job
@@ -16,9 +67,11 @@ async function processEmailJob(job) {
       await emailService.sendWebinarRejection(data)
       break
 
-    case EmailJobTypes.CHALLENGE_ANSWER_KEY:
-      await emailService.sendChallengeAnswerKey(data)
+    case EmailJobTypes.CHALLENGE_ANSWER_KEY: {
+      const payload = await buildChallengeAnswerKeyPayload(data)
+      await emailService.sendChallengeAnswerKey(payload)
       break
+    }
 
     default:
       throw new Error(`Unknown email job type: ${name}`)
@@ -37,7 +90,7 @@ export function createEmailWorker() {
   worker.on('completed', (job) => console.log(`✅ Email sent: ${job.name} (ID: ${job.id})`))
   worker.on('failed', (job, err) => {
     console.error(`❌ Email job failed: ${job?.name} (ID: ${job?.id})`)
-    console.error(`   Error: ${err.message}`)
+    console.error(`   Error: ${err.stack}`)
     console.error(`   Attempts: ${job?.attemptsMade}/${job?.opts?.attempts}`)
   })
   worker.on('error', (err) => console.error('Email worker error:', err))

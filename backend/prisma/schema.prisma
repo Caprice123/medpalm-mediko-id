@@ -1911,9 +1911,8 @@ model challenges {
   scoring_type             String    // "classic" | "blitz"
   duration_minutes         Int
   total_questions          Int
-  base_points_per_correct  Int       @default(100)
-  time_bonus_pool          Float     @default(50)
-  time_bonus_multiplier    Float     @default(5)
+  base_points_per_correct  Int       @default(1000)
+  seconds_per_question     Int       @default(30)
   max_special_per_session  Int       @default(0)
   special_duration_minutes Int       @default(2)
   status                   String    @default("draft") // "draft" | "active" | "inactive"
@@ -2006,9 +2005,9 @@ model challenge_session_answers {
   id                    Int      @id @default(autoincrement())
   session_id            Int
   question_id           Int
-  selected_option_index Int
+  selected_option_index Int?
   is_correct            Boolean
-  time_taken_seconds    Float
+  time_taken_seconds    Float?
   created_at            DateTime @default(now())
 
   challenge_session  challenge_sessions  @relation(fields: [session_id], references: [id])

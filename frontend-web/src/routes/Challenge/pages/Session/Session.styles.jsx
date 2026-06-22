@@ -1,4 +1,9 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+
+const timerDrain = keyframes`
+  from { width: 100%; }
+  to { width: 0%; }
+`
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 90px);
@@ -70,6 +75,9 @@ export const QuestionCard = styled.div`
 `
 
 export const QuestionCounter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.8125rem;
   font-weight: 500;
   color: #6b7280;
@@ -96,12 +104,18 @@ export const OptionBtn = styled.button`
   align-items: center;
   gap: 0.875rem;
   padding: 1rem 1.25rem;
-  background: ${props => props.$selected ? '#EFF6FF' : '#fff'};
-  border: 2px solid ${props => props.$selected ? '#3B82F6' : '#e5e7eb'};
+  background: ${props =>
+    props.$correct ? '#D1FAE5' :
+    props.$wrong   ? '#FEE2E2' :
+    props.$selected ? '#EFF6FF' : '#fff'};
+  border: 2px solid ${props =>
+    props.$correct ? '#10B981' :
+    props.$wrong   ? '#EF4444' :
+    props.$selected ? '#3B82F6' : '#e5e7eb'};
   border-radius: 10px;
   cursor: ${props => props.$locked ? 'default' : 'pointer'};
   text-align: left;
-  transition: all 0.1s;
+  transition: all 0.15s;
   font-size: 0.9375rem;
   color: #111827;
 
@@ -117,11 +131,84 @@ export const OptionLetter = styled.span`
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: ${props => props.$selected ? '#3B82F6' : '#f3f4f6'};
-  color: ${props => props.$selected ? '#fff' : '#374151'};
+  background: ${props =>
+    props.$correct ? '#10B981' :
+    props.$wrong   ? '#EF4444' :
+    props.$selected ? '#3B82F6' : '#f3f4f6'};
+  color: ${props => (props.$correct || props.$wrong || props.$selected) ? '#fff' : '#374151'};
   font-size: 0.8125rem;
   font-weight: 700;
   flex-shrink: 0;
+`
+
+export const TopBarRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`
+
+export const StreakBadge = styled.div`
+  background: #fff7ed;
+  border: 2px solid #f97316;
+  color: #c2410c;
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+`
+
+export const ScoreBadge = styled.div`
+  background: #ecfdf5;
+  border: 2px solid #6ee7b7;
+  color: #065f46;
+  border-radius: 20px;
+  padding: 0.3rem 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+`
+
+export const SpecialMultBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  color: #b45309;
+  border-radius: 6px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+`
+
+export const QuestionTimerBar = styled.div`
+  height: 6px;
+  background: #e5e7eb;
+  width: 100%;
+`
+
+export const QuestionTimerFill = styled.div`
+  height: 100%;
+  border-radius: 3px;
+  background: ${props => props.$urgent ? '#EF4444' : props.$pct > 50 ? '#22C55E' : '#F59E0B'};
+  transition: background 0.3s;
+  animation: ${timerDrain} ${props => props.$duration}s linear forwards;
+  animation-play-state: ${props => props.$paused ? 'paused' : 'running'};
+`
+
+export const PointsFlash = styled.div`
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: ${props => props.$correct ? '#16a34a' : '#dc2626'};
+  animation: fadeInUp 0.2s ease;
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 `
 
 export const NavRow = styled.div`

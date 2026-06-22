@@ -22,53 +22,57 @@
         <p style="margin: 6px 0 0; color: #6b7280; font-size: 14px;">{{challengeTitle}}</p>
       </div>
 
-      <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+      <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 28px;">
         Halo <strong>{{userName}}</strong>, challenge telah berakhir. Berikut adalah kunci jawaban beserta pembahasannya.
       </p>
 
-      <!-- Score Summary -->
-      <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 20px; margin-bottom: 32px; display: flex; gap: 0;">
-        <div style="text-align: center; flex: 1; padding: 0 12px; border-right: 1px solid #bae6fd;">
-          <div style="font-size: 28px; font-weight: 700; color: #0369a1;">{{score}}</div>
-          <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Total Poin</div>
-        </div>
-        <div style="text-align: center; flex: 1; padding: 0 12px; border-right: 1px solid #bae6fd;">
-          <div style="font-size: 28px; font-weight: 700; color: #16a34a;">{{correctCount}}/{{totalQuestions}}</div>
-          <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Benar</div>
-        </div>
-        <div style="text-align: center; flex: 1; padding: 0 12px;">
-          <div style="font-size: 28px; font-weight: 700; color: #7c3aed;">#{{finalRank}}</div>
-          <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Peringkat Akhir</div>
-        </div>
+      <!-- Score Summary (Total Poin + Peringkat only) -->
+      <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 24px 20px; margin-bottom: 36px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td style="text-align: center; padding: 0 20px; border-right: 1px solid #bae6fd;">
+              <div style="font-size: 30px; font-weight: 700; color: #0369a1;">{{score}}</div>
+              <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Total Poin</div>
+            </td>
+            <td style="text-align: center; padding: 0 20px;">
+              <div style="font-size: 30px; font-weight: 700; color: #7c3aed;">#{{finalRank}}</div>
+              <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Peringkat Akhir</div>
+            </td>
+          </tr>
+        </table>
       </div>
 
       <!-- Questions -->
-      <h3 style="margin: 0 0 16px; color: #111827; font-size: 16px; font-weight: 700;">Pembahasan Soal</h3>
+      <h3 style="margin: 0 0 20px; color: #111827; font-size: 16px; font-weight: 700;">Pembahasan Soal</h3>
 
       {{#each questions}}
-      <div style="border: 1px solid {{#if isCorrect}}#bbf7d0{{else}}#fecaca{{/if}}; border-radius: 10px; padding: 18px; margin-bottom: 14px; background: {{#if isCorrect}}#f0fdf4{{else}}#fff7f7{{/if}};">
+      <div style="border: 1px solid {{#if isCorrect}}#bbf7d0{{else}}#fecaca{{/if}}; border-radius: 10px; padding: 20px; margin-bottom: 16px; background: {{#if isCorrect}}#f0fdf4{{else}}#fff7f7{{/if}};">
 
-        <!-- Question number + result badge -->
-        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
-          <span style="background: {{#if isCorrect}}#16a34a{{else}}#dc2626{{/if}}; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; margin-top: 2px;">
-            {{#if isCorrect}}✓ Benar{{else}}✗ Salah{{/if}}
-          </span>
-          <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600; line-height: 1.5;">
-            {{num}}. {{questionText}}
-          </p>
-        </div>
+        <!-- Question text + badge inline -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+          <tr>
+            <td style="vertical-align: top; padding-right: 12px;">
+              <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600; line-height: 1.6;">
+                {{num}}. {{questionText}}
+              </p>
+            </td>
+            <td style="vertical-align: top; text-align: right; white-space: nowrap;">
+              <span style="display: inline-block; background: {{#if isCorrect}}#16a34a{{else}}#dc2626{{/if}}; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px;">
+                {{#if isCorrect}}✓ Benar{{else}}✗ Salah{{/if}}
+              </span>
+            </td>
+          </tr>
+        </table>
 
-        <!-- Options -->
-        <div style="margin-left: 4px; margin-bottom: 12px;">
+        <!-- Answers -->
+        <div style="margin-bottom: {{#if explanation}}14px{{else}}0{{/if}};">
           {{#unless isCorrect}}
-          <div style="font-size: 13px; color: #6b7280; margin-bottom: 4px;">
-            Jawaban kamu:&nbsp;
-            <span style="color: #dc2626; font-weight: 600;">{{selectedOption}}</span>
+          <div style="font-size: 13px; color: #6b7280; margin-bottom: 5px;">
+            Jawaban kamu:&nbsp;<span style="color: #dc2626; font-weight: 600;">{{selectedOption}}</span>
           </div>
           {{/unless}}
           <div style="font-size: 13px; color: #6b7280;">
-            Jawaban benar:&nbsp;
-            <span style="color: #16a34a; font-weight: 600;">{{correctOption}}</span>
+            Jawaban benar:&nbsp;<span style="color: #16a34a; font-weight: 600;">{{correctOption}}</span>
           </div>
         </div>
 

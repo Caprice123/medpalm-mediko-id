@@ -2,7 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 
 export class CreateChallengeService {
-  static async call({ title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, timeBonusPool, timeBonusMultiplier, maxSpecialPerSession, status, startAt, endAt, createdBy, tagIds }) {
+  static async call({ title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, createdBy, tagIds }) {
     this.validate({ title, scoringType, durationMinutes, totalQuestions })
 
     const challenge = await prisma.challenges.create({
@@ -12,9 +12,8 @@ export class CreateChallengeService {
         scoring_type: scoringType,
         duration_minutes: parseInt(durationMinutes),
         total_questions: parseInt(totalQuestions),
-        base_points_per_correct: basePointsPerCorrect != null ? parseInt(basePointsPerCorrect) : 100,
-        time_bonus_pool: timeBonusPool != null ? parseFloat(timeBonusPool) : 50,
-        time_bonus_multiplier: timeBonusMultiplier != null ? parseFloat(timeBonusMultiplier) : 5,
+        base_points_per_correct: basePointsPerCorrect != null ? parseInt(basePointsPerCorrect) : 1000,
+        seconds_per_question: secondsPerQuestion != null ? parseInt(secondsPerQuestion) : 30,
         max_special_per_session: maxSpecialPerSession != null ? parseInt(maxSpecialPerSession) : 0,
         special_duration_minutes: specialDurationMinutes != null ? parseInt(specialDurationMinutes) : 2,
         status: status || 'draft',

@@ -282,7 +282,7 @@ export default function ChallengeHomePage() {
           </ChallengeGrid>
         )}
 
-        {/* ── Latest Badge ── */}
+        {/* BADGE TERBARU HIDDEN
         <BadgesSection>
           <SectionHeader>
             <div>
@@ -325,6 +325,7 @@ export default function ChallengeHomePage() {
             )
           })()}
         </BadgesSection>
+        */}
 
         {/* ── How to play ── */}
         <SectionHeader>

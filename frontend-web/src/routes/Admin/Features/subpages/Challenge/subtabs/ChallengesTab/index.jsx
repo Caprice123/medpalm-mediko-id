@@ -27,8 +27,8 @@ const HintText = styled.p`
 `
 
 const SCORING_HINTS = {
-  classic: 'Skor = jumlah jawaban benar × poin. Jika nilai sama, waktu lebih cepat menang.',
-  blitz:   'Skor = poin + bonus kecepatan per soal. Semakin cepat menjawab, semakin tinggi poin.',
+  classic: 'Kahoot-style: tiap soal punya timer sendiri. Semakin cepat menjawab = poin lebih besar. Streak jawaban benar berturut-turut memberi multiplier (×1.5 ab 3, ×2 ab 5).',
+  blitz:   'Skor = jumlah jawaban benar. Timer global berlaku untuk semua soal.',
 }
 
 const STATUS_OPTIONS = [
@@ -44,8 +44,8 @@ const SCORING_OPTIONS = [
 
 const defaultForm = {
   title: '', description: '', scoringType: 'classic', durationMinutes: 30,
-  specialDurationMinutes: 2, totalQuestions: 20, basePointsPerCorrect: 100,
-  timeBonusPool: 50, timeBonusMultiplier: 5, maxSpecialPerSession: 0, status: 'draft',
+  specialDurationMinutes: 2, totalQuestions: 20, basePointsPerCorrect: 1000,
+  secondsPerQuestion: 30, maxSpecialPerSession: 0, status: 'draft',
   startAt: '', endAt: '', universityTags: [], semesterTags: [],
 }
 
@@ -71,7 +71,7 @@ export default function ChallengesTab({ onConfigure }) {
       title: c.title || '', description: c.description || '',
       scoringType: c.scoringType, durationMinutes: c.durationMinutes, specialDurationMinutes: c.specialDurationMinutes ?? 2,
       totalQuestions: c.totalQuestions, basePointsPerCorrect: c.basePointsPerCorrect,
-      timeBonusPool: c.timeBonusPool, timeBonusMultiplier: c.timeBonusMultiplier,
+      secondsPerQuestion: c.secondsPerQuestion ?? 30,
       maxSpecialPerSession: c.maxSpecialPerSession ?? 0,
       status: c.status,
       startAt: c.startAt ? c.startAt.slice(0, 16) : '',
@@ -90,8 +90,7 @@ export default function ChallengesTab({ onConfigure }) {
       durationMinutes: parseInt(form.durationMinutes),
       totalQuestions: parseInt(form.totalQuestions),
       basePointsPerCorrect: parseInt(form.basePointsPerCorrect),
-      timeBonusPool: parseFloat(form.timeBonusPool),
-      timeBonusMultiplier: parseFloat(form.timeBonusMultiplier),
+      secondsPerQuestion: parseInt(form.secondsPerQuestion) || 30,
       maxSpecialPerSession: parseInt(form.maxSpecialPerSession) || 0,
       specialDurationMinutes: parseInt(form.specialDurationMinutes) || 2,
       startAt: form.startAt ? new Date(`${form.startAt}:00+07:00`).toISOString() : null,
@@ -236,6 +235,13 @@ export default function ChallengesTab({ onConfigure }) {
               <Label>Poin per jawaban benar</Label>
               <TextInput type="number" min="1" value={form.basePointsPerCorrect} onChange={set('basePointsPerCorrect')} />
             </FormGroup>
+            {form.scoringType === 'classic' && (
+              <FormGroup>
+                <Label>Waktu per soal (detik)</Label>
+                <TextInput type="number" min="5" max="120" value={form.secondsPerQuestion} onChange={set('secondsPerQuestion')} />
+                <HintText>Timer countdown per soal (Kahoot-style). Minimal 5, maks 120 detik.</HintText>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label>Maks soal spesial per sesi</Label>
               <TextInput type="number" min="0" value={form.maxSpecialPerSession} onChange={set('maxSpecialPerSession')} />

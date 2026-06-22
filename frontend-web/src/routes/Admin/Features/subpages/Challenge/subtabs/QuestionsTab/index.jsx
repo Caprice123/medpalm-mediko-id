@@ -20,7 +20,7 @@ import {
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
 
 const defaultForm = {
-  question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '', order: 0,
+  question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '',
 }
 
 export default function QuestionsTab() {
@@ -45,7 +45,6 @@ export default function QuestionsTab() {
       options: [...q.options],
       correctOptionIndex: q.correctOptionIndex,
       explanation: q.explanation || '',
-      order: q.order,
     })
     setModal({ open: true, mode: 'edit', target: q })
   }
@@ -183,10 +182,6 @@ export default function QuestionsTab() {
             <Textarea value={form.explanation} onChange={v => setForm(prev => ({ ...prev, explanation: v }))} placeholder="Penjelasan jawaban..." rows={2} />
           </FormGroup>
 
-          <FormGroup style={{ marginTop: '1rem' }}>
-            <Label>Urutan</Label>
-            <TextInput type="number" min="0" value={form.order} onChange={v => setForm(prev => ({ ...prev, order: v }))} />
-          </FormGroup>
         </Modal>
       )}
     </>

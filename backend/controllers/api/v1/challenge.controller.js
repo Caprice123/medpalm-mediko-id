@@ -50,8 +50,8 @@ class ChallengeController {
   async answer(req, res) {
     const { uniqueId } = req.params
     const { questionId, selectedOptionIndex, timeTakenSeconds } = req.body
-    await SaveAnswerService.call({ challengeUniqueId: uniqueId, userId: req.user.id, questionId, selectedOptionIndex, timeTakenSeconds })
-    return res.status(200).json({ ok: true })
+    const result = await SaveAnswerService.call({ challengeUniqueId: uniqueId, userId: req.user.id, questionId, selectedOptionIndex, timeTakenSeconds })
+    return res.status(200).json({ ok: true, isCorrect: result?.isCorrect ?? null })
   }
 
   async submit(req, res) {

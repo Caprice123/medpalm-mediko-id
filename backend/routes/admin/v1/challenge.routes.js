@@ -4,6 +4,7 @@ import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import { DisburseBadgesService } from '#services/challenge/disburseBadgesService'
+import prisma from '#prisma/client'
 
 const router = express.Router()
 
@@ -37,6 +38,21 @@ router.get('/:uniqueId/leaderboard', asyncHandler(adminChallengeController.leade
 router.post('/trigger-disburse', asyncHandler(async (req, res) => {
   const count = await DisburseBadgesService.call()
   return res.status(200).json({ ok: true, disbursedCount: count })
+}))
+
+// Dev/test only: queue answer key email for a specific session
+router.post('/test-answer-key-email', asyncHandler(async (req, res) => {
+  const { sessionUniqueId } = req.body
+
+  const session = await prisma.challenge_sessions.findUnique({
+    where: { unique_id: sessionUniqueId },
+    include: { challenge: true },
+  })
+  if (!session) return res.status(404).json({ ok: false, message: 'Session not found' })
+
+  await DisburseBadgesService.sendAnswerKeyEmails({ challenge: session.challenge, sessions: [session] })
+
+  return res.status(200).json({ ok: true })
 }))
 
 export default router
