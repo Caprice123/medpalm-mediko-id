@@ -17,8 +17,14 @@ class SmtpProvider {
     return `"MedPal" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`
   }
 
-  async sendMail({ from, to, subject, html }) {
-    await this.transporter.sendMail({ from: from ?? this.defaultFrom, to, subject, html })
+  async sendMail({ from, to, subject, html, attachments }) {
+    await this.transporter.sendMail({
+      from: from ?? this.defaultFrom,
+      to,
+      subject,
+      html,
+      ...(attachments?.length ? { attachments } : {}),
+    })
   }
 }
 

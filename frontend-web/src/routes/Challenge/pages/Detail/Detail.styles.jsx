@@ -46,6 +46,7 @@ export const HeroCard = styled.div`
   background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
   border-radius: 20px;
   padding: 2rem;
+  margin-bottom: 1.25rem;
   position: relative;
   overflow: hidden;
 
@@ -177,6 +178,10 @@ export const DateCardsRow = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 0.875rem;
   margin-bottom: 1.25rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 export const DateCard = styled.div`
@@ -375,6 +380,8 @@ export const CompletedTopRow = styled.div`
   align-items: stretch;
   margin-bottom: 1.25rem;
 
+  ${HeroCard} { margin-bottom: 0; }
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -421,23 +428,20 @@ export const MyResultBadge = styled.div`
 `
 
 export const MyResultStats = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   flex: 1;
 `
 
 export const Stat = styled.div`
-  text-align: center;
-  padding: 1rem 0.75rem;
-  border-right: 1px solid #f3f4f6;
-  border-bottom: 1px solid #f3f4f6;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
 
-  &:nth-child(2n) { border-right: none; }
-  &:nth-last-child(-n+2) { border-bottom: none; }
+  &:last-child { border-bottom: none; }
 `
 
 export const StatValue = styled.div`

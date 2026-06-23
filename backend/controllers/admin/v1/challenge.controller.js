@@ -24,9 +24,9 @@ class AdminChallengeController {
   }
 
   async create(req, res) {
-    const { title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, tagIds } = req.body
+    const { title, description, scoringType, durationSeconds, specialDurationSeconds, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, tagIds } = req.body
     const challenge = await CreateChallengeService.call({
-      title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions,
+      title, description, scoringType, durationSeconds, specialDurationSeconds, totalQuestions,
       basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession,
       status, startAt, endAt, createdBy: req.user.id, tagIds,
     })
@@ -35,9 +35,9 @@ class AdminChallengeController {
 
   async update(req, res) {
     const { uniqueId } = req.params
-    const { title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, tagIds } = req.body
+    const { title, description, scoringType, durationSeconds, specialDurationSeconds, totalQuestions, basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession, status, startAt, endAt, tagIds } = req.body
     const challenge = await UpdateChallengeService.call({
-      uniqueId, title, description, scoringType, durationMinutes, specialDurationMinutes, totalQuestions,
+      uniqueId, title, description, scoringType, durationSeconds, specialDurationSeconds, totalQuestions,
       basePointsPerCorrect, secondsPerQuestion, maxSpecialPerSession,
       status, startAt, endAt, tagIds,
     })

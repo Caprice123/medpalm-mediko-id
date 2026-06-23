@@ -59,7 +59,7 @@ function buildSpecialQuestions(count, orderOffset = 0) {
     opts.splice(correctPos, 0, String(correct))
 
     questions.push({
-      question: `⭐ [SOAL SPESIAL] Berapa hasil dari ${a} × ${b}?`,
+      question: `[SOAL SPESIAL] Berapa hasil dari ${a} × ${b}?`,
       options: opts,
       correct_option_index: correctPos,
       explanation: `${a} × ${b} = ${correct}`,
@@ -81,17 +81,17 @@ const CHALLENGES = [
     title: 'Classic Math Challenge',
     description: 'Uji kemampuan matematika dasarmu! Jawab 10 soal penjumlahan dalam waktu 1 menit.',
     scoring_type: 'classic',
-    duration_minutes: 1,
+    duration_seconds: 60,
     total_questions: 10,
     base_points_per_correct: 100,
     seconds_per_question: 30,
-    max_special_per_session: 3,
+    max_special_per_session: 1,
     status: 'active',
     start_at: startAt,
     end_at: endAt,
     questions: [
       ...buildAdditionQuestions(10, 1, 2, 0),
-      ...buildSpecialQuestions(5, 10),  // pool of 5, up to 3 drawn per session
+      ...buildSpecialQuestions(5, 10),  // pool of 5, up to 1 drawn per session
     ],
     badges: [
       { unique_id: 'seed-badge-classic-gold-001',   name: 'Gold Classic',   description: 'Top 10% pemain Classic',  min_rank: 1,  max_rank: 10 },
@@ -104,17 +104,17 @@ const CHALLENGES = [
     title: 'Blitz Math Challenge',
     description: 'Tantangan cepat! Jawab 50 soal penjumlahan dalam waktu 1 menit. Kecepatan dan akurasi adalah kunci!',
     scoring_type: 'blitz',
-    duration_minutes: 1,
+    duration_seconds: 60,
     total_questions: 50,
     base_points_per_correct: 100,
     seconds_per_question: 30,
-    max_special_per_session: 5,
+    max_special_per_session: 1,
     status: 'active',
     start_at: startAt,
     end_at: endAt,
     questions: [
       ...buildAdditionQuestions(50, 1, 2, 0),
-      ...buildSpecialQuestions(10, 50),  // pool of 10, up to 5 drawn per session
+      ...buildSpecialQuestions(10, 50),  // pool of 10, up to 1 drawn per session
     ],
     badges: [
       { unique_id: 'seed-badge-blitz-gold-001',   name: 'Gold Blitz',   description: 'Top 10% pemain Blitz',  min_rank: 1,  max_rank: 10 },
@@ -140,7 +140,7 @@ export async function seedChallengeData() {
         title: challengeFields.title,
         description: challengeFields.description,
         scoring_type: challengeFields.scoring_type,
-        duration_minutes: challengeFields.duration_minutes,
+        duration_seconds: challengeFields.duration_seconds,
         total_questions: challengeFields.total_questions,
         base_points_per_correct: challengeFields.base_points_per_correct,
         seconds_per_question: challengeFields.seconds_per_question,

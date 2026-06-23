@@ -43,8 +43,8 @@ const SCORING_OPTIONS = [
 ]
 
 const defaultForm = {
-  title: '', description: '', scoringType: 'classic', durationMinutes: 30,
-  specialDurationMinutes: 2, totalQuestions: 20, basePointsPerCorrect: 1000,
+  title: '', description: '', scoringType: 'classic', durationSeconds: 1800,
+  specialDurationSeconds: 120, totalQuestions: 20, basePointsPerCorrect: 1000,
   secondsPerQuestion: 30, maxSpecialPerSession: 0, status: 'draft',
   startAt: '', endAt: '', universityTags: [], semesterTags: [],
 }
@@ -69,7 +69,7 @@ export default function ChallengesTab({ onConfigure }) {
     const allTagsFlat = c.tags || []
     setForm({
       title: c.title || '', description: c.description || '',
-      scoringType: c.scoringType, durationMinutes: c.durationMinutes, specialDurationMinutes: c.specialDurationMinutes ?? 2,
+      scoringType: c.scoringType, durationSeconds: c.durationSeconds, specialDurationSeconds: c.specialDurationSeconds ?? 120,
       totalQuestions: c.totalQuestions, basePointsPerCorrect: c.basePointsPerCorrect,
       secondsPerQuestion: c.secondsPerQuestion ?? 30,
       maxSpecialPerSession: c.maxSpecialPerSession ?? 0,
@@ -87,12 +87,12 @@ export default function ChallengesTab({ onConfigure }) {
     const payload = {
       ...rest,
       tagIds: [...(universityTags || []), ...(semesterTags || [])].map(t => t.id),
-      durationMinutes: parseInt(form.durationMinutes),
+      durationSeconds: parseInt(form.durationSeconds),
       totalQuestions: parseInt(form.totalQuestions),
       basePointsPerCorrect: parseInt(form.basePointsPerCorrect),
       secondsPerQuestion: parseInt(form.secondsPerQuestion) || 30,
       maxSpecialPerSession: parseInt(form.maxSpecialPerSession) || 0,
-      specialDurationMinutes: parseInt(form.specialDurationMinutes) || 2,
+      specialDurationSeconds: parseInt(form.specialDurationSeconds) || 120,
       startAt: form.startAt ? new Date(`${form.startAt}:00+07:00`).toISOString() : null,
       endAt: form.endAt ? new Date(`${form.endAt}:00+07:00`).toISOString() : null,
     }
@@ -129,7 +129,7 @@ export default function ChallengesTab({ onConfigure }) {
         </ScoringBadge>
       ),
     },
-    { header: 'Durasi', render: (c) => `${c.durationMinutes} menit` },
+    { header: 'Durasi', render: (c) => `${c.durationSeconds}s` },
     { header: 'Soal / Pool', render: (c) => `${c.totalQuestions} soal / ${c.questionCount ?? 0} pool` },
     { header: 'Sesi', render: (c) => c.sessionCount ?? 0 },
     {
@@ -224,8 +224,8 @@ export default function ChallengesTab({ onConfigure }) {
               />
             </FormGroup>
             <FormGroup>
-              <Label>Durasi (menit) *</Label>
-              <TextInput type="number" min="1" value={form.durationMinutes} onChange={set('durationMinutes')} />
+              <Label>Durasi (detik) *</Label>
+              <TextInput type="number" min="1" value={form.durationSeconds} onChange={set('durationSeconds')} />
             </FormGroup>
             <FormGroup>
               <Label>Jumlah soal per sesi *</Label>
@@ -248,8 +248,8 @@ export default function ChallengesTab({ onConfigure }) {
             </FormGroup>
             {form.scoringType === 'blitz' && (
               <FormGroup>
-                <Label>Durasi soal spesial (menit)</Label>
-                <TextInput type="number" min="1" value={form.specialDurationMinutes} onChange={set('specialDurationMinutes')} />
+                <Label>Durasi soal spesial (detik)</Label>
+                <TextInput type="number" min="1" value={form.specialDurationSeconds} onChange={set('specialDurationSeconds')} />
                 <HintText>Timer terpisah untuk soal spesial setelah soal reguler selesai.</HintText>
               </FormGroup>
             )}

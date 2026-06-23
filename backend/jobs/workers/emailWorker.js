@@ -3,8 +3,21 @@ import { redisOptions } from '#config/redis'
 import { EMAIL_QUEUE_NAME, EmailJobTypes } from '#jobs/queues/emailQueue'
 import emailService from '#services/email/emailService'
 import prisma from '#client'
+import attachmentService from '#services/attachment/attachmentService'
+import idriveService from '#services/idrive.service'
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
+
+async function fetchImageBuffer(questionId, name) {
+  try {
+    const attachments = await attachmentService.getAttachments('challenge_question', questionId, name)
+    if (!attachments.length) return null
+    return await idriveService.downloadFileAsBuffer(attachments[0].blob.key)
+  } catch (e) {
+    console.warn(`[email] Failed to fetch image "${name}" for question ${questionId}:`, e.message)
+    return null
+  }
+}
 
 async function buildChallengeAnswerKeyPayload({ sessionId }) {
   const session = await prisma.challenge_sessions.findUnique({
@@ -27,20 +40,31 @@ async function buildChallengeAnswerKeyPayload({ sessionId }) {
 
   if (!user?.email) throw new Error(`No user/email for session ${sessionId}`)
 
-  const questions = session.challenge_session_answers.map((a, idx) => {
-    const q = a.challenge_question
-    const options = Array.isArray(q.options) ? q.options : []
-    return {
-      num: idx + 1,
-      questionText: q.question || '',
-      selectedOption: a.selected_option_index !== null
-        ? `${OPTION_LABELS[a.selected_option_index] ?? a.selected_option_index}. ${options[a.selected_option_index] ?? ''}`
-        : 'Tidak dijawab',
-      correctOption: `${OPTION_LABELS[q.correct_option_index] ?? q.correct_option_index}. ${options[q.correct_option_index] ?? ''}`,
-      isCorrect: a.is_correct,
-      explanation: q.explanation || null,
-    }
-  })
+  const questions = await Promise.all(
+    session.challenge_session_answers.map(async (a, idx) => {
+      const q = a.challenge_question
+      const options = Array.isArray(q.options) ? q.options : []
+
+      // Fetch question image + all option images in parallel
+      const [questionImageBuffer, ...optionImageBuffers] = await Promise.all([
+        fetchImageBuffer(q.id, 'question_image'),
+        ...options.map((_, i) => fetchImageBuffer(q.id, `option_image_${i}`)),
+      ])
+
+      return {
+        num: idx + 1,
+        questionText: q.question || '',
+        selectedOption: a.selected_option_index !== null
+          ? `${OPTION_LABELS[a.selected_option_index] ?? a.selected_option_index}. ${options[a.selected_option_index] ?? ''}`
+          : 'Tidak dijawab',
+        correctOption: `${OPTION_LABELS[q.correct_option_index] ?? q.correct_option_index}. ${options[q.correct_option_index] ?? ''}`,
+        isCorrect: a.is_correct,
+        explanation: q.explanation || null,
+        questionImageBuffer,
+        optionImageBuffers,
+      }
+    })
+  )
 
   return {
     to: user.email,

@@ -20,7 +20,7 @@ export const TopBar = styled.div`
   align-items: center;
   justify-content: space-between;
   position: sticky;
-  top: 0;
+  top: 90px;
   z-index: 10;
 `
 
@@ -194,6 +194,7 @@ export const QuestionTimerFill = styled.div`
   background: ${props => props.$urgent ? '#EF4444' : props.$pct > 50 ? '#22C55E' : '#F59E0B'};
   transition: background 0.3s;
   animation: ${timerDrain} ${props => props.$duration}s linear forwards;
+  animation-delay: ${props => props.$delay ?? 0}s;
   animation-play-state: ${props => props.$paused ? 'paused' : 'running'};
 `
 

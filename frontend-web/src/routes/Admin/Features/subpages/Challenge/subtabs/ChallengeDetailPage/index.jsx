@@ -158,11 +158,23 @@ function SoalTab({ challenge }) {
     setForm(prev => ({ ...prev, questionImageBlobId: result.blobId, questionImagePreviewUrl: result.url }))
   }
 
+  const handleClearQuestionImage = () => {
+    setForm(prev => ({ ...prev, questionImageBlobId: null, questionImagePreviewUrl: null }))
+  }
+
   const handleOptionImageSelect = async (file, idx) => {
     const result = await dispatch(upload(file, 'challenge-questions'))
     setForm(prev => {
       const options = [...prev.options]
       options[idx] = { ...options[idx], imageBlobId: result.blobId, imagePreviewUrl: result.url }
+      return { ...prev, options }
+    })
+  }
+
+  const handleClearOptionImage = (idx) => {
+    setForm(prev => {
+      const options = [...prev.options]
+      options[idx] = { ...options[idx], imageBlobId: null, imagePreviewUrl: null }
       return { ...prev, options }
     })
   }
@@ -384,10 +396,20 @@ function SoalTab({ challenge }) {
 
             <FormGroup style={{ gridColumn: '1 / -1' }}>
               <Label>Gambar Soal (opsional)</Label>
-              {form.questionImagePreviewUrl && (
-                <img src={form.questionImagePreviewUrl} alt="soal" style={{ maxWidth: 220, maxHeight: 160, objectFit: 'contain', marginBottom: '0.5rem', borderRadius: 4, border: '1px solid #E5E7EB', display: 'block' }} />
-              )}
-              <FileUpload onFileSelect={handleQuestionImageSelect} accept="image/*" />
+              <FileUpload
+                file={form.questionImagePreviewUrl ? { name: 'Gambar soal', type: 'image/jpeg' } : null}
+                onFileSelect={handleQuestionImageSelect}
+                onRemove={handleClearQuestionImage}
+                acceptedTypes={['image/*']}
+                acceptedTypesLabel="PNG, JPG, GIF"
+                maxSizeMB={5}
+                uploadText="Klik untuk upload gambar"
+                actions={
+                  form.questionImagePreviewUrl
+                    ? <Button variant="primary" size="small" onClick={() => window.open(form.questionImagePreviewUrl, '_blank')}>Lihat</Button>
+                    : null
+                }
+              />
             </FormGroup>
 
             <FormGroup style={{ gridColumn: '1 / -1' }}>
@@ -420,10 +442,20 @@ function SoalTab({ challenge }) {
                   </CorrectBtn>
                 </OptionRow>
                 <div style={{ marginTop: '0.5rem', marginLeft: '1.5rem' }}>
-                  {opt.imagePreviewUrl && (
-                    <img src={opt.imagePreviewUrl} alt={`opsi ${OPTION_LABELS[idx]}`} style={{ maxWidth: 160, maxHeight: 100, objectFit: 'contain', marginBottom: '0.375rem', borderRadius: 4, border: '1px solid #E5E7EB', display: 'block' }} />
-                  )}
-                  <FileUpload onFileSelect={file => handleOptionImageSelect(file, idx)} accept="image/*" />
+                  <FileUpload
+                    file={opt.imagePreviewUrl ? { name: `Gambar opsi ${OPTION_LABELS[idx]}`, type: 'image/jpeg' } : null}
+                    onFileSelect={file => handleOptionImageSelect(file, idx)}
+                    onRemove={() => handleClearOptionImage(idx)}
+                    acceptedTypes={['image/*']}
+                    acceptedTypesLabel="PNG, JPG, GIF"
+                    maxSizeMB={5}
+                    uploadText="Klik untuk upload gambar"
+                    actions={
+                      opt.imagePreviewUrl
+                        ? <Button variant="primary" size="small" onClick={() => window.open(opt.imagePreviewUrl, '_blank')}>Lihat</Button>
+                        : null
+                    }
+                  />
                 </div>
               </div>
             ))}
@@ -627,11 +659,11 @@ export default function ChallengeDetailPage({ challenge, onBack }) {
             <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#111827' }}>{challenge.title}</h2>
             <Badge $status={challenge.status}>{challenge.status}</Badge>
             <ScoringBadge $type={challenge.scoringType}>
-              {challenge.scoringType === 'speed_accuracy' ? 'Speed + Accuracy' : 'Accuracy'}
+              {challenge.scoringType === 'blitz' ? 'Blitz' : 'Classic'}
             </ScoringBadge>
           </div>
           <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#6B7280' }}>
-            {challenge.durationMinutes} menit · {challenge.totalQuestions} soal per sesi
+            {challenge.durationSeconds}s · {challenge.totalQuestions} soal per sesi
             {challenge.maxSpecialPerSession > 0 && ` · maks ${challenge.maxSpecialPerSession} soal spesial`}
           </p>
         </div>

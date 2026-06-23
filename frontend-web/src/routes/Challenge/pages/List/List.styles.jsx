@@ -14,6 +14,22 @@ export const Container = styled.div`
   @media (max-width: 640px) { padding: 1.25rem; }
 `
 
+export const BackBtn = styled.button`
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.15s;
+
+  &:hover { color: #06b6d4; }
+`
+
 export const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
@@ -57,31 +73,33 @@ export const Grid = styled.div`
 
 export const ChallengeCard = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.25rem;
+  border: 1px solid #e8ecf0;
+  border-radius: 14px;
+  padding: 1.25rem 1.375rem 1.125rem;
   cursor: pointer;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition: box-shadow 0.15s, transform 0.1s;
   display: flex;
   flex-direction: column;
+  gap: 0.625rem;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border-color: #67e8f9;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
+    transform: translateY(-1px);
   }
 `
 
 export const CardTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
   color: #111827;
-  margin: 0 0 0.3rem;
+  margin: 0;
+  line-height: 1.3;
 `
 
 export const CardDesc = styled.p`
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0 0 0.75rem;
+  margin: 0;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -152,30 +170,67 @@ export const StatusRow = styled.div`
   margin-top: auto;
 `
 
-export const TimeRemainingChip = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+export const TimeLeftTag = styled.span`
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: ${props => props.$urgent ? '#FEF3C7' : '#CFFAFE'};
-  color: ${props => props.$urgent ? '#92400E' : '#0e7490'};
+  color: ${props => props.$urgent ? '#DC2626' : '#9CA3AF'};
 `
 
-export const StatusLabel = styled.span`
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: ${props => props.$done ? '#065F46' : '#0e7490'};
-  background: ${props => props.$done ? '#D1FAE5' : '#CFFAFE'};
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+export const StatusBtn = styled.span`
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: ${props =>
+    props.$status === 'completed'   ? '#059669' :
+    props.$status === 'in_progress' ? '#d97706' :
+    '#0d9488'};
+  margin-left: auto;
 `
 
 export const DateLabel = styled.span`
   font-size: 0.75rem;
   color: #9CA3AF;
+`
+
+export const CardTopRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+`
+
+const CHIP_COLORS = {
+  blitz:   { bg: '#FEF3C7', color: '#92400E' },
+  classic: { bg: '#CFFAFE', color: '#0e7490' },
+}
+
+export const CategoryChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: ${props => CHIP_COLORS[props.$type]?.bg || '#F3F4F6'};
+  color: ${props => CHIP_COLORS[props.$type]?.color || '#374151'};
+`
+
+export const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  margin-top: auto;
+  gap: 0.5rem;
+`
+
+export const PlayedCount = styled.span`
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  white-space: nowrap;
 `
 
 // ─── Badge Saya tab ────────────────────────────────────────────────────────

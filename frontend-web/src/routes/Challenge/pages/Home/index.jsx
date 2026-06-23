@@ -16,7 +16,7 @@ import {
   EmptyLeaderMsg,
   StatsRow, StatCard, StatCardLabel, StatCardValue,
   SectionHeader, SectionTitle, SectionSub, SeeAllBtn,
-  ChallengeGrid, ChallengeCard, CardTopRow, CategoryChip, TimeLeftTag, CardTitle, CardFooter,
+  ChallengeGrid, ChallengeCard, CardTopRow, CategoryChip, TimeLeftTag, CardTitle, CardDesc, CardTagList, CardTag, CardFooter,
   PlayedCount, PointsLabel, PlayBtn,
   BadgesSection,
   LatestBadgeCard, LatestBadgeImg, LatestBadgePlaceholder, LatestBadgeInfo,
@@ -221,29 +221,6 @@ export default function ChallengeHomePage() {
           </LeaderPanel>
         </TopSection>
 
-        {/* ── Stats row ── */}
-        {featured && (
-          <StatsRow key={featured.uniqueId}>
-            <StatCard $index={0}>
-              <StatCardLabel>Peringkat Saya</StatCardLabel>
-              <StatCardValue $color="#0d9488">#{myRank || '–'}</StatCardValue>
-            </StatCard>
-            <StatCard $index={1}>
-              <StatCardLabel>Total Soal</StatCardLabel>
-              <StatCardValue>{featured.totalQuestions || '–'}</StatCardValue>
-            </StatCard>
-            <StatCard $index={2}>
-              <StatCardLabel>Poin / Benar</StatCardLabel>
-              <StatCardValue $color="#d97706">+{featured.basePointsPerCorrect}</StatCardValue>
-            </StatCard>
-            {timeLeft && (
-              <StatCard $index={3}>
-                <StatCardLabel>Berakhir Dalam</StatCardLabel>
-                <StatCardValue $color="#DC2626">{timeLeft.short}</StatCardValue>
-              </StatCard>
-            )}
-          </StatsRow>
-        )}
 
         {/* ── Active challenges ── */}
         <SectionHeader>
@@ -271,9 +248,27 @@ export default function ChallengeHomePage() {
                     {tl && <TimeLeftTag $urgent={tl.urgent}>{tl.short} tersisa</TimeLeftTag>}
                   </CardTopRow>
                   <CardTitle>{c.title}</CardTitle>
+                  {c.description && <CardDesc>{c.description}</CardDesc>}
+                  {(c.tags || []).length > 0 && (
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      {(c.tags || []).filter(t => t.tagGroupName === 'university').length > 0 && (
+                        <CardTagList>
+                          {(c.tags || []).filter(t => t.tagGroupName === 'university').map(t => (
+                            <CardTag key={t.id} $university>🏛️ {t.name}</CardTag>
+                          ))}
+                        </CardTagList>
+                      )}
+                      {(c.tags || []).filter(t => t.tagGroupName === 'semester').length > 0 && (
+                        <CardTagList>
+                          {(c.tags || []).filter(t => t.tagGroupName === 'semester').map(t => (
+                            <CardTag key={t.id} $semester>📚 {t.name}</CardTag>
+                          ))}
+                        </CardTagList>
+                      )}
+                    </div>
+                  )}
                   <CardFooter>
                     <PlayedCount>{c.playedCount?.toLocaleString('id-ID')} peserta</PlayedCount>
-                    <PointsLabel>+{c.basePointsPerCorrect} poin</PointsLabel>
                     <PlayBtn $status={c.myStatus}>{getCardLabel(c.myStatus)}</PlayBtn>
                   </CardFooter>
                 </ChallengeCard>
@@ -338,20 +333,20 @@ export default function ChallengeHomePage() {
           <HowToPlayCard>
             <HowToPlayIcon>🎯</HowToPlayIcon>
             <HowToPlayStep>Langkah 1</HowToPlayStep>
-            <HowToPlayTitle>Pilih Challenge</HowToPlayTitle>
-            <HowToPlayDesc>Pilih challenge yang sedang aktif dan klik "Ikuti Sekarang" untuk memulai</HowToPlayDesc>
+            <HowToPlayTitle>Pilih Mode & Challenge</HowToPlayTitle>
+            <HowToPlayDesc>Tersedia dua mode: Classic (berbasis kecepatan & streak) dan Blitz (jawab sebanyak mungkin). Pilih challenge aktif dan mulai bermain.</HowToPlayDesc>
           </HowToPlayCard>
           <HowToPlayCard>
             <HowToPlayIcon>⚡</HowToPlayIcon>
             <HowToPlayStep>Langkah 2</HowToPlayStep>
             <HowToPlayTitle>Jawab Soal</HowToPlayTitle>
-            <HowToPlayDesc>Jawab setiap soal dengan cepat dan tepat — makin cepat makin besar bonus poinmu</HowToPlayDesc>
+            <HowToPlayDesc>Jawab setiap soal dengan benar untuk mengumpulkan poin. Setiap mode memiliki cara perhitungan poin yang berbeda.</HowToPlayDesc>
           </HowToPlayCard>
           <HowToPlayCard>
             <HowToPlayIcon>🏆</HowToPlayIcon>
             <HowToPlayStep>Langkah 3</HowToPlayStep>
-            <HowToPlayTitle>Raih Badge</HowToPlayTitle>
-            <HowToPlayDesc>Masuk peringkat teratas dan dapatkan badge eksklusif yang bisa kamu bagikan</HowToPlayDesc>
+            <HowToPlayTitle>Raih Peringkat Terbaik</HowToPlayTitle>
+            <HowToPlayDesc>Kumpulkan poin sebanyak mungkin dan bersaing dengan peserta lain di leaderboard untuk meraih posisi teratas.</HowToPlayDesc>
           </HowToPlayCard>
         </HowToPlayGrid>
 
@@ -372,7 +367,7 @@ export default function ChallengeHomePage() {
                   <UpcomingDesc>{upcoming.description}</UpcomingDesc>
                 ) : (
                   <UpcomingDesc>
-                    {upcoming.totalQuestions} soal · {SCORING_LABEL[upcoming.scoringType] || upcoming.scoringType?.toUpperCase()}
+                    {SCORING_LABEL[upcoming.scoringType] || upcoming.scoringType?.toUpperCase()}
                   </UpcomingDesc>
                 )}
                 {upcoming.startAt && (

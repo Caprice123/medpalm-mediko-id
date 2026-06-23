@@ -45,23 +45,15 @@ export class GetUserChallengesService {
     const isLastPage = data.length <= pp
     const sliced = data.slice(0, pp)
 
-    const [sessions, playedCounts] = await Promise.all([
-      prisma.challenge_sessions.findMany({
-        where: { challenge_id: { in: sliced.map(c => c.id) }, user_id: userId },
-        select: { challenge_id: true, status: true, score: true, correct_count: true },
-      }),
-      prisma.challenge_sessions.groupBy({
-        by: ['challenge_id'],
-        where: { challenge_id: { in: sliced.map(c => c.id) }, status: 'completed' },
-        _count: { _all: true },
-      }),
-    ])
+    const sessions = await prisma.challenge_sessions.findMany({
+      where: { challenge_id: { in: sliced.map(c => c.id) }, user_id: userId },
+      select: { challenge_id: true, status: true, score: true, correct_count: true },
+    })
 
     const sessionMap = Object.fromEntries(sessions.map(s => [s.challenge_id, s]))
-    const playedCountMap = Object.fromEntries(playedCounts.map(p => [p.challenge_id, p._count._all]))
 
     return {
-      data: sliced.map(c => ({ ...c, mySession: sessionMap[c.id] || null, playedCount: playedCountMap[c.id] || 0 })),
+      data: sliced.map(c => ({ ...c, mySession: sessionMap[c.id] || null, playedCount: c.participant_count })),
       pagination: { page: p, perPage: pp, isLastPage },
     }
   }

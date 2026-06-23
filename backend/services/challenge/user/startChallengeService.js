@@ -28,12 +28,13 @@ export class StartChallengeService {
     let selectedIds
 
     if (challenge.scoring_type === 'blitz') {
-      // Blitz: regular questions first (shuffled), special questions last (shuffled separately)
+      // Blitz: all regular questions (shuffled), then up to max_special_per_session specials
       const regularPool = allQuestions.filter(q => !q.is_special)
       const specialPool = allQuestions.filter(q => q.is_special)
       const shuffledRegular = [...regularPool].sort(() => Math.random() - 0.5)
-      const shuffledSpecial = [...specialPool].sort(() => Math.random() - 0.5)
-      selectedIds = [...shuffledRegular, ...shuffledSpecial].map(q => q.id)
+      const maxSpecial = Math.min(challenge.max_special_per_session, specialPool.length)
+      const drawnSpecial = [...specialPool].sort(() => Math.random() - 0.5).slice(0, maxSpecial)
+      selectedIds = [...shuffledRegular, ...drawnSpecial].map(q => q.id)
     } else {
       // Classic: total_questions = number of regular questions to draw
       // Special questions are appended after all regular questions
@@ -56,14 +57,20 @@ export class StartChallengeService {
       ].map(q => q.id)
     }
 
-    const session = await prisma.challenge_sessions.create({
-      data: {
-        challenge_id: challenge.id,
-        user_id: userId,
-        question_ids: selectedIds,
-        status: 'in_progress',
-      },
-    })
+    const [session] = await prisma.$transaction([
+      prisma.challenge_sessions.create({
+        data: {
+          challenge_id: challenge.id,
+          user_id: userId,
+          question_ids: selectedIds,
+          status: 'in_progress',
+        },
+      }),
+      prisma.challenges.update({
+        where: { id: challenge.id },
+        data: { participant_count: { increment: 1 } },
+      }),
+    ])
 
     return this.buildSessionResponse(challenge, session)
   }
@@ -109,8 +116,8 @@ export class StartChallengeService {
     return {
       sessionUniqueId: session.unique_id,
       startedAt: session.started_at,
-      durationMinutes: challenge.duration_minutes,
-      specialDurationMinutes: challenge.special_duration_minutes,
+      durationSeconds: challenge.duration_seconds,
+      specialDurationSeconds: challenge.special_duration_seconds,
       totalQuestions: questionIds.length,
       regularCount,
       scoringType: challenge.scoring_type,

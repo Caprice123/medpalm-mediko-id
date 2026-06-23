@@ -1909,16 +1909,17 @@ model challenges {
   title                    String
   description              String?   @db.Text
   scoring_type             String    // "classic" | "blitz"
-  duration_minutes         Int
+  duration_seconds         Int
   total_questions          Int
   base_points_per_correct  Int       @default(1000)
   seconds_per_question     Int       @default(30)
   max_special_per_session  Int       @default(0)
-  special_duration_minutes Int       @default(2)
+  special_duration_seconds Int       @default(120)
   status                   String    @default("draft") // "draft" | "active" | "inactive"
   start_at                 DateTime?
   end_at                   DateTime?
   badges_disbursed         Boolean   @default(false)
+  participant_count        Int       @default(0)
   is_deleted               Boolean   @default(false)
   deleted_at               DateTime?
   created_by               Int

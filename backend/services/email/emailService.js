@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
+import { generateChallengeAnswerKeyPdf } from '#services/pdf/challengeAnswerKeyPdf'
 
 dotenv.config()
 
@@ -62,18 +63,34 @@ class EmailService {
   }
 
   async sendChallengeAnswerKey({ to, userName, challengeTitle, score, correctCount, totalQuestions, finalRank, questions }) {
-    const html = getTemplate('challengeAnswerKey.html')({
+    const html = getTemplate('challengeAnswerKeyNotification.html')({
       userName,
       challengeTitle,
       score,
-      correctCount,
-      totalQuestions,
+      finalRank,
+    })
+
+    const pdfBuffer = await generateChallengeAnswerKeyPdf({
+      userName,
+      challengeTitle,
+      score,
       finalRank,
       questions,
     })
 
     const provider = await providerPromise
-    await provider.sendMail({ to, subject: `Kunci Jawaban: ${challengeTitle}`, html })
+    await provider.sendMail({
+      to,
+      subject: `Kunci Jawaban: ${challengeTitle}`,
+      html,
+      attachments: [
+        {
+          filename: `kunci-jawaban-${challengeTitle.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    })
   }
 }
 

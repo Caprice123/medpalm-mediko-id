@@ -13,9 +13,9 @@ import Pagination from '@components/Pagination'
 import { formatJakartaDateLong } from '@utils/dateUtils'
 import { ChallengeRoute } from '../../routes'
 import {
-  PageWrapper, Container, PageTitle, PageSubtitle, TabBar, TabBtn, Grid,
-  ChallengeCard, CardTitle, CardDesc, MetaRow, MetaChip,
-  TagList, Tag, StatusRow, StatusLabel, DateLabel, TimeRemainingChip,
+  PageWrapper, Container, BackBtn, PageTitle, PageSubtitle, TabBar, TabBtn, Grid,
+  ChallengeCard, CardTitle, CardTopRow, CategoryChip, CardDesc,
+  TagList, Tag, CardFooter, PlayedCount, TimeLeftTag, StatusBtn, DateLabel,
   BadgeGrid, BadgeCard, BadgeImg, BadgePlaceholder, BadgeName, BadgeChallenge, BadgeMeta, BadgeRankTag,
 } from './List.styles'
 
@@ -77,9 +77,9 @@ export default function ChallengePage() {
   }
 
   const statusLabel = (c) => {
-    if (c.myStatus === 'completed') return { label: 'Selesai', done: true }
-    if (c.myStatus === 'in_progress') return { label: 'Sedang berlangsung', done: false }
-    return { label: 'Belum dimulai', done: false }
+    if (c.myStatus === 'completed') return 'Selesai ✓'
+    if (c.myStatus === 'in_progress') return 'Lanjut →'
+    return 'PLAY →'
   }
 
   const questionLabel = (c) => {
@@ -94,6 +94,7 @@ export default function ChallengePage() {
   return (
     <PageWrapper>
       <Container>
+        <BackBtn onClick={() => navigate(ChallengeRoute.homeRoute)}>← Kembali</BackBtn>
         <PageTitle>🏆 Challenge</PageTitle>
         <PageSubtitle>Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif</PageSubtitle>
 
@@ -173,16 +174,32 @@ export default function ChallengePage() {
             ) : (
               <Grid>
                 {challenges.map(c => {
-                  const { label, done } = statusLabel(c)
+                  const label = statusLabel(c)
                   const universityTags = (c.tags || []).filter(t => t.tagGroupName === 'university')
                   const semesterTags = (c.tags || []).filter(t => t.tagGroupName === 'semester')
+                  const days = tab === 'ongoing' ? getDaysLeft(c.endAt) : null
                   return (
                     <ChallengeCard key={c.uniqueId} onClick={() => navigate(ChallengeRoute.detailRoute(c.uniqueId))}>
+                      <CardTopRow>
+                        <CategoryChip $type={c.scoringType}>
+                          {SCORING_LABEL[c.scoringType] || c.scoringType?.toUpperCase()}
+                        </CategoryChip>
+                        {tab === 'ongoing' && days !== null && days > 0 && (
+                          <TimeLeftTag $urgent={days <= 3}>{days}h tersisa</TimeLeftTag>
+                        )}
+                        {tab === 'upcoming' && c.startAt && (
+                          <DateLabel>Mulai {formatJakartaDateLong(c.startAt)}</DateLabel>
+                        )}
+                        {tab === 'past' && c.endAt && (
+                          <DateLabel>Berakhir {formatJakartaDateLong(c.endAt)}</DateLabel>
+                        )}
+                      </CardTopRow>
+
                       <CardTitle>{c.title}</CardTitle>
                       {c.description && <CardDesc>{c.description}</CardDesc>}
 
                       {(universityTags.length > 0 || semesterTags.length > 0) && (
-                        <div style={{ marginBottom: '0.5rem' }}>
+                        <div>
                           {universityTags.length > 0 && (
                             <TagList>
                               {universityTags.map(t => <Tag key={t.id} $university>🏛️ {t.name}</Tag>)}
@@ -196,32 +213,12 @@ export default function ChallengePage() {
                         </div>
                       )}
 
-                      <MetaRow>
-                        <MetaChip $variant="blue">{c.durationMinutes} menit</MetaChip>
-                        <MetaChip $variant="blue">{questionLabel(c)}</MetaChip>
-                        <MetaChip $variant={SCORING_VARIANT[c.scoringType] || 'gray'}>
-                          {SCORING_LABEL[c.scoringType] || c.scoringType}
-                        </MetaChip>
-                      </MetaRow>
-
-                      <StatusRow>
-                        {tab !== 'upcoming' && <StatusLabel $done={done}>{label}</StatusLabel>}
-                        {tab === 'upcoming' && c.startAt && (
-                          <DateLabel>Mulai {formatJakartaDateLong(c.startAt)}</DateLabel>
+                      <CardFooter>
+                        <PlayedCount>{c.playedCount?.toLocaleString('id-ID')} peserta</PlayedCount>
+                        {tab !== 'upcoming' && (
+                          <StatusBtn $status={c.myStatus}>{label}</StatusBtn>
                         )}
-                        {tab === 'ongoing' && c.endAt && (() => {
-                          const days = getDaysLeft(c.endAt)
-                          if (days === null || days <= 0) return null
-                          return (
-                            <TimeRemainingChip $urgent={days <= 3}>
-                              ⏰ {days} hari tersisa
-                            </TimeRemainingChip>
-                          )
-                        })()}
-                        {tab === 'past' && c.endAt && (
-                          <DateLabel>Berakhir {formatJakartaDateLong(c.endAt)}</DateLabel>
-                        )}
-                      </StatusRow>
+                      </CardFooter>
                     </ChallengeCard>
                   )
                 })}

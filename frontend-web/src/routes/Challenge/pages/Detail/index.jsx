@@ -39,11 +39,14 @@ function getTagIcon(groupName) {
   return '📋'
 }
 
-function formatDuration(minutes) {
-  if (minutes < 60) return `${minutes} menit`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m ? `${h}j ${m}m` : `${h} jam`
+function formatDuration(seconds) {
+  if (seconds < 60) return `${seconds} detik`
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  if (m < 60) return s ? `${m}m ${s}s` : `${m} menit`
+  const h = Math.floor(m / 60)
+  const rem = m % 60
+  return rem ? `${h}j ${rem}m` : `${h} jam`
 }
 
 export default function ChallengeDetailPage() {
@@ -127,7 +130,7 @@ export default function ChallengeDetailPage() {
               )}
               <HeroMetaRow>
                 <HeroMetaChip><span>📝</span> {challenge.totalQuestions} soal</HeroMetaChip>
-                <HeroMetaChip><span>⏱</span> {formatDuration(challenge.durationMinutes)}</HeroMetaChip>
+                <HeroMetaChip><span>⏱</span> {formatDuration(challenge.durationSeconds)}</HeroMetaChip>
                 <HeroMetaChip><span>⚡</span> {challenge.scoringType === 'blitz' ? 'Blitz' : 'Classic'}</HeroMetaChip>
                 {challenge.maxSpecialPerSession > 0 && (
                   <HeroMetaChip><span>⭐</span> {challenge.maxSpecialPerSession} soal spesial</HeroMetaChip>
@@ -181,8 +184,8 @@ export default function ChallengeDetailPage() {
                       ? <>bernilai <strong>{challenge.basePointsPerCorrect * 2} poin</strong> (2× lebih besar dari soal biasa)</>
                       : <>bernilai <strong>2 poin</strong> (soal biasa hanya 1 poin)</>
                     }
-                    {challenge.specialDurationMinutes > 0 && (
-                      <> · waktu pengerjaan hanya <strong>{challenge.specialDurationMinutes} menit</strong></>
+                    {challenge.specialDurationSeconds > 0 && (
+                      <> · waktu pengerjaan hanya <strong>{formatDuration(challenge.specialDurationSeconds)}</strong></>
                     )}
                   </span>
                 </PointsItem>
@@ -255,7 +258,7 @@ export default function ChallengeDetailPage() {
                 )}
                 <HeroMetaRow>
                   <HeroMetaChip><span>📝</span> {challenge.totalQuestions} soal</HeroMetaChip>
-                  <HeroMetaChip><span>⏱</span> {formatDuration(challenge.durationMinutes)}</HeroMetaChip>
+                  <HeroMetaChip><span>⏱</span> {formatDuration(challenge.durationSeconds)}</HeroMetaChip>
                   <HeroMetaChip><span>⚡</span> {challenge.scoringType === 'blitz' ? 'Blitz' : 'Classic'}</HeroMetaChip>
                 </HeroMetaRow>
               </HeroCard>
@@ -269,10 +272,6 @@ export default function ChallengeDetailPage() {
                   <Stat>
                     <StatValue>{myScore?.toFixed(0) ?? 0}</StatValue>
                     <StatLabel>Skor</StatLabel>
-                  </Stat>
-                  <Stat>
-                    <StatValue>{myCorrectCount ?? 0}/{challenge.totalQuestions}</StatValue>
-                    <StatLabel>Benar</StatLabel>
                   </Stat>
                   <Stat>
                     <StatValue>{challengeMyRank ? `#${challengeMyRank}` : '—'}</StatValue>
