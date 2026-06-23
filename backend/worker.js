@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { createSummaryNotesWorker, shutdownWorker as shutdownSummaryNotesWorker } from '#jobs/workers/summaryNotesWorker'
 import { createEmailWorker, shutdownWorker as shutdownEmailWorker } from '#jobs/workers/emailWorker'
+import { createChallengeWorker, shutdownWorker as shutdownChallengeWorker } from '#jobs/workers/challengeWorker'
 
 /**
  * Background Worker Process
@@ -32,6 +33,11 @@ const workerRegistry = {
     name: 'Email',
     create: createEmailWorker,
     shutdown: shutdownEmailWorker
+  },
+  challenge: {
+    name: 'Challenge',
+    create: createChallengeWorker,
+    shutdown: shutdownChallengeWorker
   }
 }
 
