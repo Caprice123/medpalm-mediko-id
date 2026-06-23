@@ -37,7 +37,6 @@ export class GetUserChallengesService {
       take: pp + 1,
       skip: (p - 1) * pp,
       include: {
-        _count: { select: { challenge_questions: true } },
         challenge_tags: { include: { tags: { include: { tag_group: true } } } },
       },
     })

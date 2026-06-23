@@ -16,8 +16,8 @@ export class AdminChallengeSerializer {
       startAt: challenge.start_at,
       endAt: challenge.end_at,
       tags: (challenge.challenge_tags ?? []).map(ct => ({ id: ct.tags.id, name: ct.tags.name, tagGroupId: ct.tags.tag_group_id, tagGroupName: ct.tags.tag_group?.name || null })),
-      questionCount: challenge._count?.challenge_questions ?? undefined,
-      sessionCount: challenge._count?.challenge_sessions ?? undefined,
+      questionCount: challenge.question_pool_count,
+      sessionCount: challenge.participant_count,
       createdAt: challenge.created_at,
       updatedAt: challenge.updated_at,
     }

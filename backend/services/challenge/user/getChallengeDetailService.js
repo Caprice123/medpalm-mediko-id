@@ -6,7 +6,6 @@ export class GetChallengeDetailService {
     const challenge = await prisma.challenges.findUnique({
       where: { unique_id: challengeUniqueId },
       include: {
-        _count: { select: { challenge_questions: true } },
         challenge_tags: { include: { tags: { include: { tag_group: true } } } },
       },
     })

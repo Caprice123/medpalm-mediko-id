@@ -24,7 +24,6 @@ export class GetChallengesService {
         take: pp + 1,
         skip: (p - 1) * pp,
         include: {
-          _count: { select: { challenge_questions: true, challenge_sessions: true } },
           challenge_tags: { include: { tags: { include: { tag_group: true } } } },
         },
       }),

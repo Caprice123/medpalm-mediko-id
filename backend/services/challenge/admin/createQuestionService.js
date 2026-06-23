@@ -12,17 +12,23 @@ export class CreateQuestionService {
       throw new ValidationError('Invalid correct option index')
     }
 
-    const q = await prisma.challenge_questions.create({
-      data: {
-        challenge_id: challenge.id,
-        question: question || null,
-        options,
-        correct_option_index: parseInt(correctOptionIndex),
-        explanation: explanation || null,
-        order: order != null ? parseInt(order) : 0,
-        is_special: Boolean(isSpecial),
-      },
-    })
+    const [q] = await prisma.$transaction([
+      prisma.challenge_questions.create({
+        data: {
+          challenge_id: challenge.id,
+          question: question || null,
+          options,
+          correct_option_index: parseInt(correctOptionIndex),
+          explanation: explanation || null,
+          order: order != null ? parseInt(order) : 0,
+          is_special: Boolean(isSpecial),
+        },
+      }),
+      prisma.challenges.update({
+        where: { id: challenge.id },
+        data: { question_pool_count: { increment: 1 } },
+      }),
+    ])
 
     if (questionImageBlobId) {
       await attachmentService.attach({
