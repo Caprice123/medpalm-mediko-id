@@ -23,13 +23,13 @@ export default function ChallengeResultPage() {
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchChallengeLeaderboard(uniqueId)).then(() => setFetched(true))
+    dispatch(fetchChallengeLeaderboard(uniqueId, { limit: 25 })).then(() => setFetched(true))
   }, [dispatch, uniqueId])
 
   useEffect(() => {
     if (!fetched) return
     if (countdown === 0) {
-      dispatch(fetchChallengeLeaderboard(uniqueId, { silent: true }))
+      dispatch(fetchChallengeLeaderboard(uniqueId, { silent: true, limit: 25 }))
       setCountdown(15)
       return
     }

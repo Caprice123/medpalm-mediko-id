@@ -47,12 +47,13 @@ export class LeaderboardCacheService {
 
   // Returns ordered array of { userId, rank, score, correctCount, totalTime } or null if cache is empty.
   // Tied entries (same compositeScore) receive the same rank; the next distinct group skips accordingly.
-  static async getLeaderboard({ challengeId }) {
+  static async getLeaderboard({ challengeId, limit = null }) {
     const lbKey = LB_KEY(challengeId)
     const dataKey = DATA_KEY(challengeId)
 
+    const end = limit ? limit - 1 : -1
     // WITHSCORES returns [uid, score, uid, score, ...]
-    const raw = await redis.zrevrange(lbKey, 0, -1, 'WITHSCORES')
+    const raw = await redis.zrevrange(lbKey, 0, end, 'WITHSCORES')
     if (!raw.length) return null
 
     const entries = []

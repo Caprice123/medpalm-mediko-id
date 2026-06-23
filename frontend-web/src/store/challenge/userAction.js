@@ -42,10 +42,11 @@ export const fetchChallengeBadges = (uniqueId) => async (dispatch) => {
   }
 }
 
-export const fetchChallengeLeaderboard = (uniqueId, { silent = false } = {}) => async (dispatch) => {
+export const fetchChallengeLeaderboard = (uniqueId, { silent = false, limit = null } = {}) => async (dispatch) => {
   try {
     if (!silent) dispatch(setLoading({ key: 'isGetChallengeLeaderboardLoading', value: true }))
-    const response = await getWithToken(`${Endpoints.api.challenges}/${uniqueId}/leaderboard`)
+    const params = limit ? { limit } : {}
+    const response = await getWithToken(`${Endpoints.api.challenges}/${uniqueId}/leaderboard`, params)
     const { leaderboard, myRank, myBadge } = response.data.data
     dispatch(setChallengeLeaderboard({ leaderboard, myRank, myBadge }))
   } finally {

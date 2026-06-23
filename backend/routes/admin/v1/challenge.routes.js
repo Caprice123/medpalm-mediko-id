@@ -3,7 +3,7 @@ import adminChallengeController from '#controllers/admin/v1/challenge.controller
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
-import { DisburseBadgesService } from '#services/challenge/disburseBadgesService'
+import { CompleteChallengeService } from '#services/challenge/completeChallengeService'
 import prisma from '#prisma/client'
 
 const router = express.Router()
@@ -36,7 +36,7 @@ router.get('/:uniqueId/leaderboard', asyncHandler(adminChallengeController.leade
 
 // Dev/test only: manually trigger badge disbursement
 router.post('/trigger-disburse', asyncHandler(async (req, res) => {
-  const count = await DisburseBadgesService.call()
+  const count = await CompleteChallengeService.call()
   return res.status(200).json({ ok: true, disbursedCount: count })
 }))
 
@@ -50,7 +50,7 @@ router.post('/test-answer-key-email', asyncHandler(async (req, res) => {
   })
   if (!session) return res.status(404).json({ ok: false, message: 'Session not found' })
 
-  await DisburseBadgesService.sendAnswerKeyEmails({ challenge: session.challenge, sessions: [session] })
+  await CompleteChallengeService.sendAnswerKeyEmails({ challenge: session.challenge, sessions: [session] })
 
   return res.status(200).json({ ok: true })
 }))

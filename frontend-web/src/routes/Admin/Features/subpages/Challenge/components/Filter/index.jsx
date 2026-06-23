@@ -12,6 +12,7 @@ const STATUS_OPTIONS = [
   { label: 'Draft', value: 'draft' },
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' },
+  { label: 'Completed', value: 'completed' },
 ]
 
 const SCORING_OPTIONS = [

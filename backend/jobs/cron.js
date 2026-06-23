@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import prisma from '#prisma/client';
-import { DisburseBadgesService } from '#services/challenge/disburseBadgesService';
+import { queueCompleteChallenge } from '#jobs/queues/challengeQueue';
 
 // Run every day at midnight
 const dailyCleanupJob = cron.schedule('0 0 * * *', async () => {
@@ -27,15 +27,12 @@ const dailyCleanupJob = cron.schedule('0 0 * * *', async () => {
   scheduled: false // Don't start automatically, we'll start it manually
 });
 
-// Run daily at midnight: lock in final badges for ended challenges
-const disburseChallengesBadgesJob = cron.schedule('0 0 * * *', async () => {
+// Run daily at midnight: dispatch complete-challenge job for ended challenges
+const completeChallengesJob = cron.schedule('0 0 * * *', async () => {
   try {
-    const count = await DisburseBadgesService.call()
-    if (count > 0) {
-      console.log(`[cron] Disbursed badges for ${count} challenge(s)`)
-    }
+    await queueCompleteChallenge()
   } catch (error) {
-    console.error('[cron] Error disbursing challenge badges:', error)
+    console.error('[cron] Error queuing complete-challenge job:', error)
   }
 }, {
   scheduled: false
@@ -53,7 +50,7 @@ const healthCheckJob = cron.schedule('*/5 * * * *', () => {
 export const startCronJobs = () => {
   console.log('Starting cron jobs...');
   dailyCleanupJob.start();
-  disburseChallengesBadgesJob.start();
+  completeChallengesJob.start();
   healthCheckJob.start();
   console.log('All cron jobs started successfully');
 };
@@ -62,7 +59,7 @@ export const startCronJobs = () => {
 export const stopCronJobs = () => {
   console.log('Stopping cron jobs...');
   dailyCleanupJob.stop();
-  disburseChallengesBadgesJob.stop();
+  completeChallengesJob.stop();
   healthCheckJob.stop();
   console.log('All cron jobs stopped');
 };

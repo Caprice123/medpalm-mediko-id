@@ -37,7 +37,8 @@ class ChallengeController {
 
   async leaderboard(req, res) {
     const { uniqueId } = req.params
-    const result = await GetChallengeLeaderboardService.call({ challengeUniqueId: uniqueId, userId: req.user.id })
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : null
+    const result = await GetChallengeLeaderboardService.call({ challengeUniqueId: uniqueId, userId: req.user.id, limit })
     return res.status(200).json({ data: UserChallengeSerializer.serializeLeaderboard(result) })
   }
 

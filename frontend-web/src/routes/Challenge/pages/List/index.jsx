@@ -79,7 +79,7 @@ export default function ChallengePage() {
   const statusLabel = (c) => {
     if (c.myStatus === 'completed') return 'Selesai ✓'
     if (c.myStatus === 'in_progress') return 'Lanjut →'
-    return 'PLAY →'
+    return 'Mulai →'
   }
 
   const questionLabel = (c) => {

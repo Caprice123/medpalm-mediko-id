@@ -4,21 +4,24 @@ import attachmentService from '#services/attachment/attachmentService'
 import { LeaderboardCacheService } from '#services/challenge/leaderboardCacheService'
 
 export class GetChallengeLeaderboardService {
-  static async call({ challengeUniqueId, userId }) {
+  static async call({ challengeUniqueId, userId, limit = null }) {
     const challenge = await prisma.challenges.findUnique({
       where: { unique_id: challengeUniqueId },
-      select: { id: true, is_deleted: true, scoring_type: true, badges_disbursed: true, end_at: true, total_questions: true },
+      select: { id: true, is_deleted: true, scoring_type: true, status: true, end_at: true, total_questions: true },
     })
     if (!challenge || challenge.is_deleted) throw new ValidationError('Challenge not found')
+
+    const isCompleted = challenge.status === 'completed'
 
     let leaderboard
     let myRank = null
     let mySessionData = null
 
-    if (challenge.badges_disbursed) {
+    if (isCompleted) {
       const allSessions = await prisma.challenge_sessions.findMany({
         where: { challenge_id: challenge.id, status: 'completed' },
         orderBy: [{ final_rank: 'asc' }],
+        ...(limit ? { take: limit } : {}),
       })
       const userIds = allSessions.map(s => s.user_id)
       const users = await prisma.users.findMany({
@@ -42,7 +45,7 @@ export class GetChallengeLeaderboardService {
       let usedCache = false
 
       try {
-        let cached = await LeaderboardCacheService.getLeaderboard({ challengeId: challenge.id })
+        let cached = await LeaderboardCacheService.getLeaderboard({ challengeId: challenge.id, limit })
 
         if (!cached) {
           const orderBy = challenge.scoring_type === 'classic'
@@ -59,7 +62,7 @@ export class GetChallengeLeaderboardService {
               endAt: challenge.end_at,
               sessions: dbSessions,
             })
-            cached = await LeaderboardCacheService.getLeaderboard({ challengeId: challenge.id })
+            cached = await LeaderboardCacheService.getLeaderboard({ challengeId: challenge.id, limit })
           }
           mySessionData = dbSessions.find(s => s.user_id === userId) || null
         } else {
@@ -118,7 +121,7 @@ export class GetChallengeLeaderboardService {
       }
     }
 
-    return { leaderboard, myRank, myBadge, totalQuestions: challenge.total_questions, badgesDisbursed: challenge.badges_disbursed }
+    return { leaderboard, myRank, myBadge, totalQuestions: challenge.total_questions, badgesDisbursed: isCompleted }
   }
 
   static async getLeaderboardFromDB({ challengeId, userId }) {

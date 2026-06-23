@@ -65,14 +65,14 @@ export default function ChallengeDetailPage() {
   const myStatus = detail?.myStatus
   useEffect(() => {
     if (myStatus !== 'completed') return
-    dispatch(fetchChallengeLeaderboard(uniqueId))
+    dispatch(fetchChallengeLeaderboard(uniqueId, { limit: 25 }))
   }, [dispatch, uniqueId, myStatus])
 
   useEffect(() => {
     if (myStatus !== 'completed') return
     if (detail?.challenge?.badgesDisbursed) return
     if (countdown === 0) {
-      dispatch(fetchChallengeLeaderboard(uniqueId, { silent: true }))
+      dispatch(fetchChallengeLeaderboard(uniqueId, { silent: true, limit: 25 }))
       setCountdown(15)
       return
     }

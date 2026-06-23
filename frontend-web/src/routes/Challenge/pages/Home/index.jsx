@@ -72,7 +72,7 @@ export default function ChallengeHomePage() {
           try {
             const lbResults = await Promise.all(
               ongoingList.map(c =>
-                getWithToken(`${Endpoints.api.challenges}/${c.uniqueId}/leaderboard`)
+                getWithToken(`${Endpoints.api.challenges}/${c.uniqueId}/leaderboard`, { limit: 10 })
                   .then(res => ({ uniqueId: c.uniqueId, data: res.data.data }))
                   .catch(() => ({ uniqueId: c.uniqueId, data: null }))
               )
@@ -202,14 +202,14 @@ export default function ChallengeHomePage() {
               <EmptyLeaderMsg>Belum ada peserta</EmptyLeaderMsg>
             ) : (
               <div key={featured?.uniqueId}>
-                {leaderboard.slice(0, 10).map((row, i) => (
+                {leaderboard.map((row, i) => (
                   <MiniLeaderRow key={row.rank} $index={i}>
                     <MiniRank>{row.rank}</MiniRank>
                     <MiniLeaderName>{row.userName}</MiniLeaderName>
                     <MiniScore>{row.score?.toFixed(0)}</MiniScore>
                   </MiniLeaderRow>
                 ))}
-                {myRank && !leaderboard.slice(0, 10).find(r => r.isMe) && (
+                {myRank && !leaderboard.find(r => r.isMe) && (
                   <MiniLeaderRow $self $index={10}>
                     <MiniRank>{myRank}</MiniRank>
                     <MiniLeaderName>Kamu</MiniLeaderName>

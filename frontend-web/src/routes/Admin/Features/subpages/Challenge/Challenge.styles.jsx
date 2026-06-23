@@ -123,11 +123,13 @@ export const Badge = styled.span`
   background: ${props => {
     if (props.$status === 'active') return '#D1FAE5'
     if (props.$status === 'inactive') return '#FEE2E2'
+    if (props.$status === 'completed') return '#EDE9FE'
     return '#F3F4F6'
   }};
   color: ${props => {
     if (props.$status === 'active') return '#065F46'
     if (props.$status === 'inactive') return '#991B1B'
+    if (props.$status === 'completed') return '#5B21B6'
     return '#374151'
   }};
 `
