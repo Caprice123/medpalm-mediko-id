@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
-  PageWrapper, TopBar, TopBarRight, TimerBox, ScoreBadge,
+  PageWrapper, StickyHeader, TopBar, LeftSlot, TopBarRight, TimerBox, ScoreBadge,
   QuestionTimerBar, QuestionTimerFill,
   Main, QuestionCard, QuestionText, OptionsGrid,
   OptionBtn, OptionLetter, PointsFlash,
@@ -111,8 +111,8 @@ export default function BlitzSession({ session, uniqueId }) {
   const activeQuestions = phase === 'regular' ? regularQuestions : specialQuestions
   const isPhaseExhausted = currentIdx >= activeQuestions.length
   const totalSeconds = phase === 'regular' ? durationSeconds : specialDurationSeconds
+  const timerDelay = useMemo(() => -(totalSeconds - secondsLeft), [phase])
   const isUrgent = secondsLeft <= totalSeconds * 0.1
-  const isSpecialPhase = phase === 'special'
 
   useEffect(() => {
     const q = activeQuestions[currentIdx]
@@ -126,8 +126,8 @@ export default function BlitzSession({ session, uniqueId }) {
     setSubmitting(true)
     clearTimeout(timerRef.current)
     try {
-      const result = await dispatch(submitChallenge(uniqueId))
-      navigate(ChallengeRoute.resultRoute(uniqueId), { state: { result } })
+      await dispatch(submitChallenge(uniqueId))
+      navigate(ChallengeRoute.resultRoute(uniqueId))
     } finally {
       setSubmitting(false)
       submittingRef.current = false
@@ -189,7 +189,7 @@ export default function BlitzSession({ session, uniqueId }) {
     const timeTaken = (Date.now() - questionStartTimeRef.current) / 1000
 
     // Fallback: advance after 2.5s if server doesn't respond
-    const fallback = setTimeout(advanceNext, 2500)
+    const fallback = setTimeout(advanceNext, 1200)
 
     dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: idx, timeTakenSeconds: timeTaken }))
       .then((result) => {
@@ -197,7 +197,7 @@ export default function BlitzSession({ session, uniqueId }) {
         const isCorrect = result?.isCorrect ?? false
         setRevealed({ isCorrect })
         if (isCorrect) setAnsweredCount(prev => prev + 1)
-        setTimeout(advanceNext, 1800)
+        setTimeout(advanceNext, 900)
       })
       .catch(() => {
         clearTimeout(fallback)
@@ -245,26 +245,23 @@ export default function BlitzSession({ session, uniqueId }) {
   return (
     <PhotoProvider>
     <PageWrapper>
-      <TopBar>
-        <PhaseBadge $special={isSpecialPhase}>
-          {isSpecialPhase ? '⭐ Soal Spesial' : 'Soal Reguler'}
-        </PhaseBadge>
-        <TopBarRight>
-          <ScoreBadge>{answeredCount} benar</ScoreBadge>
-          <TimerBox $urgent={isUrgent}>{formatTime(secondsLeft)}</TimerBox>
-        </TopBarRight>
-      </TopBar>
-
-      <QuestionTimerBar>
-        <QuestionTimerFill
-          key={phase}
-          $duration={totalSeconds}
-          $delay={-(totalSeconds - secondsLeft)}
-          $pct={(secondsLeft / totalSeconds) * 100}
-          $urgent={isUrgent}
-          $paused={false}
-        />
-      </QuestionTimerBar>
+      <StickyHeader>
+        <TopBar>
+          <LeftSlot></LeftSlot>
+          <TopBarRight>
+            <ScoreBadge>{answeredCount} benar</ScoreBadge>
+            <TimerBox $urgent={isUrgent}>{formatTime(secondsLeft)}</TimerBox>
+          </TopBarRight>
+        </TopBar>
+        <QuestionTimerBar>
+          <QuestionTimerFill
+            key={phase}
+            $duration={totalSeconds}
+            $delay={timerDelay}
+            $paused={false}
+          />
+        </QuestionTimerBar>
+      </StickyHeader>
 
       <Main>
         <QuestionCard>

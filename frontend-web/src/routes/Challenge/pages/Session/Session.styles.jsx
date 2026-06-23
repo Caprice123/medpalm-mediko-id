@@ -1,8 +1,12 @@
 import styled, { keyframes } from 'styled-components'
 
 const timerDrain = keyframes`
-  from { width: 100%; }
-  to { width: 0%; }
+  0%   { width: 100%; background: #22C55E; }
+  50%  { background: #22C55E; }
+  51%  { background: #F59E0B; }
+  90%  { background: #F59E0B; }
+  91%  { background: #EF4444; }
+  100% { width: 0%;  background: #EF4444; }
 `
 
 export const PageWrapper = styled.div`
@@ -12,6 +16,12 @@ export const PageWrapper = styled.div`
   flex-direction: column;
 `
 
+export const StickyHeader = styled.div`
+  position: sticky;
+  top: 90px;
+  z-index: 10;
+`
+
 export const TopBar = styled.div`
   background: #fff;
   border-bottom: 2px solid #a5f3fc;
@@ -19,9 +29,17 @@ export const TopBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 90px;
-  z-index: 10;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+`
+
+export const LeftSlot = styled.div`
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 export const TopBarTitle = styled.div`
@@ -191,8 +209,6 @@ export const QuestionTimerBar = styled.div`
 export const QuestionTimerFill = styled.div`
   height: 100%;
   border-radius: 3px;
-  background: ${props => props.$urgent ? '#EF4444' : props.$pct > 50 ? '#22C55E' : '#F59E0B'};
-  transition: background 0.3s;
   animation: ${timerDrain} ${props => props.$duration}s linear forwards;
   animation-delay: ${props => props.$delay ?? 0}s;
   animation-play-state: ${props => props.$paused ? 'paused' : 'running'};

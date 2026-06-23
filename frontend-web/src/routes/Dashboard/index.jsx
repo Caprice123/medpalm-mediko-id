@@ -286,23 +286,25 @@ function Dashboard() {
                   </CardBody>
                 </Card>
               </CardWrapper>
-              <CardWrapper>
-                <Card shadow hoverable>
-                  <CardBody>
-                    <FeatureIcon>🏆</FeatureIcon>
-                    <FeatureTitle>Challenge</FeatureTitle>
-                    <FeatureDescription>
-                      Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif
-                    </FeatureDescription>
-                    <div style={{ flex: 1 }} />
-                    <FeatureFooter>
-                      <Button variant="primary" onClick={() => navigate(ChallengeRoute.homeRoute)} fullWidth>
-                        Lihat Challenge
-                      </Button>
-                    </FeatureFooter>
-                  </CardBody>
-                </Card>
-              </CardWrapper>
+              {isNonUser && (
+                <CardWrapper>
+                  <Card shadow hoverable>
+                    <CardBody>
+                      <FeatureIcon>🏆</FeatureIcon>
+                      <FeatureTitle>Challenge</FeatureTitle>
+                      <FeatureDescription>
+                        Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif
+                      </FeatureDescription>
+                      <div style={{ flex: 1 }} />
+                      <FeatureFooter>
+                        <Button variant="primary" onClick={() => navigate(ChallengeRoute.homeRoute)} fullWidth>
+                          Lihat Challenge
+                        </Button>
+                      </FeatureFooter>
+                    </CardBody>
+                  </Card>
+                </CardWrapper>
+              )}
             </CatalogGrid>
       </MainContent>
     </DashboardContainer>

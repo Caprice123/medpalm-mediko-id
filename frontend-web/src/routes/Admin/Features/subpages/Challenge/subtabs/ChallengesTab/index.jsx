@@ -227,14 +227,18 @@ export default function ChallengesTab({ onConfigure }) {
               <Label>Durasi (detik) *</Label>
               <TextInput type="number" min="1" value={form.durationSeconds} onChange={set('durationSeconds')} />
             </FormGroup>
-            <FormGroup>
-              <Label>Jumlah soal per sesi *</Label>
-              <TextInput type="number" min="1" value={form.totalQuestions} onChange={set('totalQuestions')} />
-            </FormGroup>
-            <FormGroup>
-              <Label>Poin per jawaban benar</Label>
-              <TextInput type="number" min="1" value={form.basePointsPerCorrect} onChange={set('basePointsPerCorrect')} />
-            </FormGroup>
+            {form.scoringType !== 'blitz' && (
+              <FormGroup>
+                <Label>Jumlah soal per sesi *</Label>
+                <TextInput type="number" min="1" value={form.totalQuestions} onChange={set('totalQuestions')} />
+              </FormGroup>
+            )}
+            {form.scoringType !== 'blitz' && (
+              <FormGroup>
+                <Label>Poin per jawaban benar</Label>
+                <TextInput type="number" min="1" value={form.basePointsPerCorrect} onChange={set('basePointsPerCorrect')} />
+              </FormGroup>
+            )}
             {form.scoringType === 'classic' && (
               <FormGroup>
                 <Label>Waktu per soal (detik)</Label>

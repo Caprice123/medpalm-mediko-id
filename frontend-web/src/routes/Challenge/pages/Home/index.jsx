@@ -138,7 +138,7 @@ export default function ChallengeHomePage() {
   const getCardLabel = (myStatus) => {
     if (myStatus === 'completed')   return 'Selesai ✓'
     if (myStatus === 'in_progress') return 'Lanjut →'
-    return 'PLAY →'
+    return 'Mulai →'
   }
 
   if (!loaded) return <Loading text="Memuat Challenge Arena..." minHeight="calc(100vh - 90px)" />

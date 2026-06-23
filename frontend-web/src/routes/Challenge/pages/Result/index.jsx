@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchChallengeLeaderboard } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
   PageWrapper, Container, BackBtn,
   HeroCard, HeroTitle, HeroSub, StatsRow, Stat, StatValue, StatLabel,
-  // BadgeBox, BadgeImg, BadgeName, BadgeDesc,
   EmailNotice,
   Panel, PanelHeader, PanelTitle, RefreshCountdown,
   LeaderRow, RankNum, MedalIcon, LeaderName, LeaderScore, EmptyLeader,
@@ -19,16 +18,16 @@ export default function ChallengeResultPage() {
   const { uniqueId } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { state } = useLocation()
-  const result = state?.result
-  const { challengeLeaderboard, loading } = useSelector(s => s.challenge)
+  const { challengeLeaderboard, challengeMyRank, loading } = useSelector(s => s.challenge)
   const [countdown, setCountdown] = useState(15)
+  const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchChallengeLeaderboard(uniqueId))
+    dispatch(fetchChallengeLeaderboard(uniqueId)).then(() => setFetched(true))
   }, [dispatch, uniqueId])
 
   useEffect(() => {
+    if (!fetched) return
     if (countdown === 0) {
       dispatch(fetchChallengeLeaderboard(uniqueId, { silent: true }))
       setCountdown(15)
@@ -36,14 +35,27 @@ export default function ChallengeResultPage() {
     }
     const t = setTimeout(() => setCountdown(p => p - 1), 1000)
     return () => clearTimeout(t)
-  }, [countdown, dispatch, uniqueId])
+  }, [countdown, dispatch, uniqueId, fetched])
 
-  if (!result) {
+  if (!fetched || loading.isGetChallengeLeaderboardLoading) {
+    return (
+      <PageWrapper>
+        <Container>
+          <EmptyLeader>Memuat hasil...</EmptyLeader>
+        </Container>
+      </PageWrapper>
+    )
+  }
+
+  if (challengeMyRank === null) {
     navigate(ChallengeRoute.detailRoute(uniqueId))
     return null
   }
 
-  const { score, correctCount, totalQuestions, answeredCount, totalTimeSeconds, rank, totalParticipants, scoringType, earnedBadge } = result
+  const myEntry = challengeLeaderboard.find(e => e.isMe)
+  const score = myEntry?.score ?? 0
+  const totalTimeSeconds = myEntry?.totalTimeSeconds ?? 0
+  const totalParticipants = challengeLeaderboard.length
 
   return (
     <PageWrapper>
@@ -52,14 +64,14 @@ export default function ChallengeResultPage() {
 
         <HeroCard>
           <HeroTitle>🏆 Challenge Selesai!</HeroTitle>
-          <HeroSub>Peringkat #{rank} dari {totalParticipants} peserta</HeroSub>
+          <HeroSub>Peringkat #{challengeMyRank} dari {totalParticipants} peserta</HeroSub>
           <StatsRow>
             <Stat>
               <StatValue>{score?.toFixed(0) ?? 0}</StatValue>
               <StatLabel>Skor</StatLabel>
             </Stat>
             <Stat>
-              <StatValue>#{rank}</StatValue>
+              <StatValue>#{challengeMyRank}</StatValue>
               <StatLabel>Peringkat</StatLabel>
             </Stat>
             <Stat>
@@ -69,21 +81,6 @@ export default function ChallengeResultPage() {
           </StatsRow>
         </HeroCard>
 
-        {/* BADGE HIDDEN
-        {earnedBadge && (
-          <BadgeBox>
-            {earnedBadge.image?.url
-              ? <BadgeImg src={earnedBadge.image.url} alt={earnedBadge.name} />
-              : <span style={{ fontSize: '2.5rem' }}>🏅</span>
-            }
-            <div>
-              <BadgeName>{earnedBadge.name}</BadgeName>
-              {earnedBadge.description && <BadgeDesc>{earnedBadge.description}</BadgeDesc>}
-            </div>
-          </BadgeBox>
-        )}
-        */}
-
         <EmailNotice>
           <span style={{ fontSize: '1.25rem' }}>📧</span>
           <span>Pembahasan jawaban lengkap akan dikirimkan ke email kamu.</span>
@@ -91,13 +88,11 @@ export default function ChallengeResultPage() {
 
         <Panel>
           <PanelHeader>
-            <PanelTitle>Leaderboard · {challengeLeaderboard.length} peserta</PanelTitle>
+            <PanelTitle>Leaderboard · {totalParticipants} peserta</PanelTitle>
             <RefreshCountdown>Refresh dalam {countdown}s</RefreshCountdown>
           </PanelHeader>
 
-          {loading.isGetChallengeLeaderboardLoading ? (
-            <EmptyLeader>Memuat leaderboard...</EmptyLeader>
-          ) : challengeLeaderboard.length === 0 ? (
+          {challengeLeaderboard.length === 0 ? (
             <EmptyLeader>Belum ada peserta yang menyelesaikan challenge ini.</EmptyLeader>
           ) : (
             challengeLeaderboard.map(entry => (

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
@@ -6,8 +6,8 @@ import 'react-photo-view/dist/react-photo-view.css'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
-  PageWrapper, TopBar, TopBarTitle, TopBarRight,
-  QuestionTimerBar, QuestionTimerFill, StreakBadge, ScoreBadge, SpecialMultBadge, PointsFlash,
+  PageWrapper, StickyHeader, TopBar, LeftSlot, TopBarRight, TimerBox,
+  QuestionTimerBar, QuestionTimerFill, StreakBadge, ScoreBadge, PointsFlash,
   Main, QuestionCard, QuestionCounter, QuestionText, OptionsGrid,
   OptionBtn, OptionLetter,
 } from '../Session/Session.styles'
@@ -45,7 +45,14 @@ export default function ClassicSession({ session, uniqueId }) {
   const [currentIdx, setCurrentIdx] = useState(startIdx)
   const [answers, setAnswers] = useState(initialAnswers)
   const [selected, setSelected] = useState(initialAnswers[questions[startIdx]?.id]?.selectedOptionIndex ?? null)
-  const [questionTimer, setQuestionTimer] = useState(secondsPerQuestion)
+  const [questionTimer, setQuestionTimer] = useState(() => {
+    const q = questions[startIdx]
+    if (!q) return secondsPerQuestion
+    const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
+    if (!stored) return secondsPerQuestion
+    const elapsed = Math.floor((Date.now() - parseInt(stored)) / 1000)
+    return Math.max(0, secondsPerQuestion - elapsed)
+  })
   const [streak, setStreak] = useState(0)
   const [totalScore, setTotalScore] = useState(0)
   const [pointsFlash, setPointsFlash] = useState(null)
@@ -58,7 +65,12 @@ export default function ClassicSession({ session, uniqueId }) {
   const answersRef = useRef(initialAnswers)
   const streakRef = useRef(0)
   const lockedRef = useRef(false)
-  const questionStartTimeRef = useRef(Date.now())
+  const questionStartTimeRef = useRef(() => {
+    const q = questions[startIdx]
+    if (!q) return Date.now()
+    const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
+    return stored ? parseInt(stored) : Date.now()
+  })()
   const timerRef = useRef(null)
   const submittingRef = useRef(false)
 
@@ -66,13 +78,27 @@ export default function ClassicSession({ session, uniqueId }) {
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
   useEffect(() => { answersRef.current = answers }, [answers])
 
-  // Mark question as seen when it appears for the first time
+  // Mark question as seen and record start time when it appears for the first time
   useEffect(() => {
     const q = questions[currentIdx]
     if (!q) return
+    const key = `qs_${uniqueId}_${q.id}`
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, Date.now().toString())
+    }
     const existing = answersRef.current[q.id]
     if (existing && existing.selectedOptionIndex !== null) return
     dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: null, timeTakenSeconds: null }))
+  }, [currentIdx])
+
+  // Frozen per-question delay for the progress bar animation
+  const timerDelay = useMemo(() => {
+    const q = questions[currentIdx]
+    if (!q) return 0
+    const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
+    if (!stored) return 0
+    const elapsed = (Date.now() - parseInt(stored)) / 1000
+    return -Math.min(elapsed, secondsPerQuestion)
   }, [currentIdx])
 
   const doSubmit = async () => {
@@ -81,8 +107,8 @@ export default function ClassicSession({ session, uniqueId }) {
     setSubmitting(true)
     clearTimeout(timerRef.current)
     try {
-      const result = await dispatch(submitChallenge(uniqueId))
-      navigate(ChallengeRoute.resultRoute(uniqueId), { state: { result } })
+      await dispatch(submitChallenge(uniqueId))
+      navigate(ChallengeRoute.resultRoute(uniqueId))
     } finally {
       setSubmitting(false)
       submittingRef.current = false
@@ -154,11 +180,11 @@ export default function ClassicSession({ session, uniqueId }) {
         : 0
       setPointsFlash({ points: pts, isCorrect, streak: streakRef.current })
       if (isCorrect) setTotalScore(prev => prev + pts)
-      setTimeout(() => { setPointsFlash(null); goNext() }, 1800)
+      setTimeout(() => { setPointsFlash(null); goNext() }, 900)
     }
 
     // Fallback: advance after 3s even if server is slow
-    const fallbackTimer = setTimeout(() => advanceWithResult(false), 3000)
+    const fallbackTimer = setTimeout(() => advanceWithResult(false), 1500)
 
     dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: idx, timeTakenSeconds: timeTaken }))
       .then((result) => {
@@ -174,25 +200,24 @@ export default function ClassicSession({ session, uniqueId }) {
   return (
     <PhotoProvider>
     <PageWrapper>
-      <TopBar>
-        <TopBarTitle>Classic · {questions.length} soal</TopBarTitle>
-        <TopBarRight>
-          <ScoreBadge>{totalScore} pts</ScoreBadge>
-          {streak >= 2 && <StreakBadge>🔥 {streak}</StreakBadge>}
-        </TopBarRight>
-      </TopBar>
-
-      <QuestionTimerBar>
-        <QuestionTimerFill key={currentIdx} $duration={secondsPerQuestion} $pct={timerPct} $urgent={isUrgent} $paused={locked} />
-      </QuestionTimerBar>
+      <StickyHeader>
+        <TopBar>
+          <LeftSlot />
+          <TopBarRight>
+            <ScoreBadge>{totalScore} pts</ScoreBadge>
+            {streak >= 2 && <StreakBadge>🔥 {streak}</StreakBadge>}
+            <TimerBox $urgent={isUrgent}>{questionTimer}s</TimerBox>
+          </TopBarRight>
+        </TopBar>
+        <QuestionTimerBar>
+          <QuestionTimerFill key={currentIdx} $duration={secondsPerQuestion} $delay={timerDelay} $paused={locked} />
+        </QuestionTimerBar>
+      </StickyHeader>
 
       <Main>
         <QuestionCard>
           <QuestionCounter>
-            <span>
-              Soal {currentIdx + 1} dari {questions.length}
-            </span>
-            <span style={{ fontWeight: 700, color: isUrgent ? '#DC2626' : '#374151' }}>{questionTimer}s</span>
+            <span>Soal {currentIdx + 1} dari {questions.length}</span>
           </QuestionCounter>
 
           {currentQ?.isSpecial && (
