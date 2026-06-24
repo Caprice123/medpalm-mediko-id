@@ -24,7 +24,7 @@ export class GetAdminLeaderboardService {
     const sliced = sessions.slice(0, pp)
 
     const userIds = sliced.map(s => s.user_id)
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       where: { id: { in: userIds } },
       select: { id: true, name: true, email: true },
     })
