@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
+import { setTimeout, clearTimeout } from 'worker-timers'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
@@ -65,12 +66,12 @@ export default function ClassicSession({ session, uniqueId }) {
   const answersRef = useRef(initialAnswers)
   const streakRef = useRef(0)
   const lockedRef = useRef(false)
-  const questionStartTimeRef = useRef(() => {
+  const questionStartTimeRef = useRef((() => {
     const q = questions[startIdx]
     if (!q) return Date.now()
     const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
     return stored ? parseInt(stored) : Date.now()
-  })()
+  })())
   const timerRef = useRef(null)
   const submittingRef = useRef(false)
 

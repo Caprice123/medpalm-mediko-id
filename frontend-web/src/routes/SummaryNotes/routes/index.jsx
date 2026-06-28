@@ -1,4 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import lazyWithRetry from '@utils/lazyWithRetry';
+const lazy = lazyWithRetry;
 import PageLoader from '@components/PageLoader';
 
 const SummaryNotesList = lazy(() => import('../pages/List'));
