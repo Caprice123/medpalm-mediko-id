@@ -8,6 +8,12 @@ const initialState = {
   challengeLeaderboard: [],
   challengeMyRank: null,
   challengeMyBadge: null,
+  challengeTotalParticipants: null,
+  challengeRewards: [],
+  challengeReward: null,
+  challengeRewardRead: null,
+  adminRewards: [],
+  adminDisbursements: [],
   questions: [],
   badges: [],
   myBadges: [],
@@ -51,6 +57,10 @@ const initialState = {
     isStartLoading: false,
     isSubmitLoading: false,
     isImporting: false,
+    isGetAdminRewardLoading: false,
+    isRewardMutating: false,
+    isGetDisbursementsLoading: false,
+    isDisbursementMutating: false,
   },
   error: null,
 }
@@ -71,10 +81,11 @@ const { reducer, actions } = createSlice({
     setChallengeBadges: (state, { payload }) => {
       state.challengeBadges = payload
     },
-    setChallengeLeaderboard: (state, { payload: { leaderboard, myRank, myBadge } }) => {
+    setChallengeLeaderboard: (state, { payload: { leaderboard, myRank, myBadge, totalParticipants } }) => {
       state.challengeLeaderboard = leaderboard
       state.challengeMyRank = myRank
       state.challengeMyBadge = myBadge
+      state.challengeTotalParticipants = totalParticipants ?? null
     },
     setQuestions: (state, { payload }) => {
       state.questions = payload
@@ -108,6 +119,20 @@ const { reducer, actions } = createSlice({
     },
     updateFilter: (state, { payload: { key, value } }) => {
       state.filter[key] = value
+    },
+    setChallengeReward: (state, { payload: { rewards, reward, rewardRead } }) => {
+      state.challengeRewards = rewards ?? []
+      state.challengeReward = reward ?? null
+      state.challengeRewardRead = rewardRead ?? false
+    },
+    setRewardRead: (state) => {
+      state.challengeRewardRead = true
+    },
+    setAdminRewards: (state, { payload }) => {
+      state.adminRewards = payload
+    },
+    setAdminDisbursements: (state, { payload }) => {
+      state.adminDisbursements = payload
     },
   },
   extraReducers: (builder) => {

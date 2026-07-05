@@ -53,6 +53,34 @@ export class CompleteChallengeService {
         data: { badges_disbursed: true, status: 'completed' },
       })
 
+      // Create reward disbursement records for eligible sessions
+      const rewards = await prisma.challenge_rewards.findMany({
+        where: { challenge_id: challenge.id },
+      })
+      if (rewards.length > 0) {
+        const rankedSessions = await prisma.challenge_sessions.findMany({
+          where: { challenge_id: challenge.id, status: 'completed', final_rank: { not: null } },
+          select: { id: true, final_rank: true },
+        })
+        const disbursements = []
+        console.log(rankedSessions)
+        for (const session of rankedSessions) {
+          const matched = rewards.find(r =>
+            (r.min_rank === null && r.max_rank === null) ||
+            (session.final_rank >= (r.min_rank ?? 1) && session.final_rank <= (r.max_rank ?? Infinity))
+          )
+          if (matched) {
+            disbursements.push({ challenge_reward_id: matched.id, challenge_session_id: session.id })
+          }
+        }
+        if (disbursements.length > 0) {
+          await prisma.challenge_reward_disbursements.createMany({
+            data: disbursements,
+            skipDuplicates: true,
+          })
+        }
+      }
+
       // Clean up live leaderboard cache — final_rank in DB is now the source of truth
       await LeaderboardCacheService.deleteChallenge({ challengeId: challenge.id })
 

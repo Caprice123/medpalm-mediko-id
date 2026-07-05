@@ -6,6 +6,7 @@ import { GetMyBadgesService } from '#services/challenge/user/getMyBadgesService'
 import { StartChallengeService } from '#services/challenge/user/startChallengeService'
 import { SubmitChallengeService } from '#services/challenge/user/submitChallengeService'
 import { SaveAnswerService } from '#services/challenge/user/saveAnswerService'
+import { MarkRewardReadService } from '#services/challenge/user/markRewardReadService'
 import { UserChallengeSerializer } from '#serializers/api/v1/challengeSerializer'
 
 class ChallengeController {
@@ -52,13 +53,25 @@ class ChallengeController {
     const { uniqueId } = req.params
     const { questionId, selectedOptionIndex, timeTakenSeconds } = req.body
     const result = await SaveAnswerService.call({ challengeUniqueId: uniqueId, userId: req.user.id, questionId, selectedOptionIndex, timeTakenSeconds })
-    return res.status(200).json({ ok: true, isCorrect: result?.isCorrect ?? null })
+    return res.status(200).json({
+      ok: true,
+      isCorrect: result?.isCorrect ?? null,
+      streak: result?.streak ?? null,
+      totalScore: result?.totalScore ?? null,
+      pointsEarned: result?.pointsEarned ?? null,
+    })
   }
 
   async submit(req, res) {
     const { uniqueId } = req.params
     const result = await SubmitChallengeService.call({ challengeUniqueId: uniqueId, userId: req.user.id })
     return res.status(200).json({ data: result })
+  }
+
+  async markRewardRead(req, res) {
+    const { uniqueId } = req.params
+    await MarkRewardReadService.call({ challengeUniqueId: uniqueId, userId: req.user.id })
+    return res.status(200).json({ data: { success: true } })
   }
 }
 

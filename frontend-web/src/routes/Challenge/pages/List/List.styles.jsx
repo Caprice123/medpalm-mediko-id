@@ -76,16 +76,18 @@ export const ChallengeCard = styled.div`
   border: 1px solid #e8ecf0;
   border-radius: 14px;
   padding: 1.25rem 1.375rem 1.125rem;
-  cursor: pointer;
+  cursor: ${({ $clickable }) => $clickable ? 'pointer' : 'default'};
   transition: box-shadow 0.15s, transform 0.1s;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
 
-  &:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
-    transform: translateY(-1px);
-  }
+  ${({ $clickable }) => $clickable && `
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
+      transform: translateY(-1px);
+    }
+  `}
 `
 
 export const CardTitle = styled.h3`

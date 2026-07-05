@@ -16,7 +16,7 @@ export class StartChallengeService {
       where: { challenge_id: challenge.id, user_id: userId },
     })
     if (existing) {
-      if (existing.status === 'completed') throw new ValidationError('You have already completed this challenge')
+      if (existing.status === 'completed') return { completed: true }
       return this.buildSessionResponse(challenge, existing)
     }
 
@@ -123,11 +123,14 @@ export class StartChallengeService {
       scoringType: challenge.scoring_type,
       basePointsPerCorrect: challenge.base_points_per_correct,
       secondsPerQuestion: challenge.seconds_per_question,
+      currentStreak: session.current_streak ?? 0,
+      score: session.score ?? 0,
       questions: questionsWithImages,
       answeredQuestions: existingAnswers.map(a => ({
         questionId: a.question_id,
         selectedOptionIndex: a.selected_option_index,
         timeTakenSeconds: a.time_taken_seconds,
+        isCorrect: a.is_correct,
       })),
     }
   }

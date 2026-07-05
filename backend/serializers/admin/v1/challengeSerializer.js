@@ -73,4 +73,39 @@ export class AdminChallengeSerializer {
   static serializeBadgeList(badges) {
     return badges.map(b => this.serializeBadge(b))
   }
+
+  static serializeReward(reward) {
+    if (!reward) return null
+    return {
+      id: reward.id,
+      title: reward.title,
+      description: reward.description,
+      status: reward.status,
+      minRank: reward.min_rank ?? null,
+      maxRank: reward.max_rank ?? null,
+      proof: reward.proof ? { url: reward.proof.url } : null,
+      createdAt: reward.created_at,
+      updatedAt: reward.updated_at,
+    }
+  }
+
+  static serializeRewards(rewards) {
+    return rewards.map(r => this.serializeReward(r))
+  }
+
+  static serializeDisbursements(groups) {
+    return groups.map(({ reward, disbursements }) => ({
+      reward: this.serializeReward(reward),
+      disbursements: disbursements.map(d => ({
+        id: d.id,
+        status: d.status,
+        proof: d.proof ? { url: d.proof.url } : null,
+        user: d.challenge_sessions?.users
+          ? { name: d.challenge_sessions.users.name, email: d.challenge_sessions.users.email }
+          : null,
+        createdAt: d.created_at,
+        updatedAt: d.updated_at,
+      })),
+    }))
+  }
 }

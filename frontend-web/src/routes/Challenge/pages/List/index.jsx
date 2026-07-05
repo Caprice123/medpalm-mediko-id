@@ -30,7 +30,7 @@ const TABS = [
   { key: 'ongoing',  label: 'Sedang Berlangsung' },
   { key: 'upcoming', label: 'Akan Datang' },
   { key: 'past',     label: 'Telah Berlangsung' },
-  { key: 'badges',   label: '🏅 Badge Saya' },
+//   { key: 'badges',   label: '🏅 Badge Saya' },
 ]
 
 const SCORING_LABEL = { classic: 'Classic', blitz: 'Blitz' }
@@ -179,7 +179,11 @@ export default function ChallengePage() {
                   const semesterTags = (c.tags || []).filter(t => t.tagGroupName === 'semester')
                   const days = tab === 'ongoing' ? getDaysLeft(c.endAt) : null
                   return (
-                    <ChallengeCard key={c.uniqueId} onClick={() => navigate(ChallengeRoute.detailRoute(c.uniqueId))}>
+                    <ChallengeCard
+                      key={c.uniqueId}
+                      $clickable={tab === 'ongoing' || tab === 'past'}
+                      onClick={tab === 'ongoing' || tab === 'past' ? () => navigate(ChallengeRoute.detailRoute(c.uniqueId)) : undefined}
+                    >
                       <CardTopRow>
                         <CategoryChip $type={c.scoringType}>
                           {SCORING_LABEL[c.scoringType] || c.scoringType?.toUpperCase()}

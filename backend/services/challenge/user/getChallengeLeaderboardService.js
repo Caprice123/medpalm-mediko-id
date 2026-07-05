@@ -7,7 +7,7 @@ export class GetChallengeLeaderboardService {
   static async call({ challengeUniqueId, userId, limit = null }) {
     const challenge = await prisma.challenges.findUnique({
       where: { unique_id: challengeUniqueId },
-      select: { id: true, is_deleted: true, scoring_type: true, status: true, end_at: true, total_questions: true },
+      select: { id: true, is_deleted: true, scoring_type: true, status: true, end_at: true, total_questions: true, participant_count: true },
     })
     if (!challenge || challenge.is_deleted) throw new ValidationError('Challenge not found')
 
@@ -121,7 +121,7 @@ export class GetChallengeLeaderboardService {
       }
     }
 
-    return { leaderboard, myRank, myBadge, totalQuestions: challenge.total_questions, badgesDisbursed: isCompleted }
+    return { leaderboard, myRank, myBadge, totalQuestions: challenge.total_questions, badgesDisbursed: isCompleted, totalParticipants: challenge.participant_count }
   }
 
   static async getLeaderboardFromDB({ challengeId, userId }) {

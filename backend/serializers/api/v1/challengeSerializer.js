@@ -29,7 +29,7 @@ export class UserChallengeSerializer {
     return challenges.map(c => this.serialize(c))
   }
 
-  static serializeDetail({ challenge, mySession, activeSession }) {
+  static serializeDetail({ challenge, mySession, activeSession, rewards, reward, rewardRead }) {
     return {
       challenge: {
         id: challenge.id,
@@ -45,6 +45,7 @@ export class UserChallengeSerializer {
         secondsPerQuestion: challenge.seconds_per_question,
         startAt: challenge.start_at,
         endAt: challenge.end_at,
+        status: challenge.status,
         badgesDisbursed: challenge.badges_disbursed,
         tags: (challenge.challenge_tags ?? []).map(ct => ({ id: ct.tags.id, name: ct.tags.name, tagGroupId: ct.tags.tag_group_id, tagGroupName: ct.tags.tag_group?.name || null })),
         poolSize: challenge.question_pool_count,
@@ -54,6 +55,23 @@ export class UserChallengeSerializer {
       myCorrectCount: mySession?.correct_count ?? null,
       myTotalTimeSeconds: mySession?.total_time_seconds ?? null,
       activeSession,
+      rewards: (rewards ?? []).map(r => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        minRank: r.min_rank,
+        maxRank: r.max_rank,
+      })),
+      reward: reward ? {
+        id: reward.id,
+        title: reward.title,
+        description: reward.description,
+        status: reward.disbursementStatus ?? 'pending',
+        minRank: reward.min_rank,
+        maxRank: reward.max_rank,
+        proof: reward.proof ? { url: reward.proof.url } : null,
+      } : null,
+      rewardRead: rewardRead ?? false,
     }
   }
 
@@ -69,7 +87,7 @@ export class UserChallengeSerializer {
     }))
   }
 
-  static serializeLeaderboard({ leaderboard, myRank, myBadge, totalQuestions, badgesDisbursed }) {
+  static serializeLeaderboard({ leaderboard, myRank, myBadge, totalQuestions, badgesDisbursed, totalParticipants }) {
     return {
       leaderboard,
       myRank,
@@ -81,6 +99,7 @@ export class UserChallengeSerializer {
       } : null,
       totalQuestions,
       badgesDisbursed,
+      totalParticipants,
     }
   }
 }

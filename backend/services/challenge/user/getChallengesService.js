@@ -10,15 +10,14 @@ export class GetUserChallengesService {
 
     if (tab === 'ongoing') {
       where.status = 'active'
-      where.OR = [{ start_at: null }, { start_at: { lte: now } }]
-      where.AND = [{ OR: [{ end_at: null }, { end_at: { gte: now } }] }]
+      where.AND = [{ start_at: { lte: now } }]
+      where.AND = [{ end_at: { gte: now } }]
     } else if (tab === 'upcoming') {
       where.status = 'active'
       where.start_at = { gt: now }
     } else if (tab === 'past') {
-      where.OR = [
-        { status: 'inactive' },
-        { status: 'active', end_at: { lt: now } },
+      where.AND = [
+        { status: 'completed' },
       ]
     }
 

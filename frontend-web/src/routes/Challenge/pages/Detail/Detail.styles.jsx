@@ -298,6 +298,134 @@ export const PointsItemIcon = styled.div`
   margin-top: 0.0625rem;
 `
 
+/* ——— Reward Card (pre-start preview) ——— */
+export const RewardCard = styled.div`
+  background: linear-gradient(135deg, #fffbeb 0%, #fef9c3 100%);
+  border: 1px solid #fde68a;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    border-radius: 4px 0 0 4px;
+  }
+
+  &::after {
+    content: '🎁';
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    font-size: 5rem;
+    opacity: 0.07;
+    line-height: 1;
+    pointer-events: none;
+  }
+`
+
+export const RewardCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+`
+
+export const RewardCardIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 4px 10px rgba(251, 191, 36, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+`
+
+export const RewardCardMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+export const RewardCardLabel = styled.div`
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #d97706;
+  margin-bottom: 0.2rem;
+`
+
+export const RewardCardTitle = styled.div`
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: #78350f;
+  line-height: 1.2;
+`
+
+export const RewardCardDesc = styled.p`
+  font-size: 0.875rem;
+  color: #92400e;
+  line-height: 1.6;
+  margin: 0;
+  padding-left: calc(40px + 0.75rem);
+`
+
+export const RewardTierGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+`
+
+export const RewardTierCard = styled.div`
+  background: ${p => p.$isMyReward ? '#fffbeb' : '#fff'};
+  border: 1.5px solid ${p => p.$isMyReward ? '#f59e0b' : '#fde68a'};
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  box-shadow: ${p => p.$isMyReward ? '0 0 0 3px rgba(245,158,11,0.15)' : 'none'};
+`
+
+export const RewardTierRank = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.2rem 0.625rem;
+  width: fit-content;
+`
+
+export const RewardTierTitle = styled.div`
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #78350f;
+  line-height: 1.3;
+`
+
+export const RewardTierDesc = styled.div`
+  font-size: 0.8125rem;
+  color: #a16207;
+  line-height: 1.5;
+`
+
 /* ——— Start Button ——— */
 export const StartSection = styled.div`
   margin-bottom: 2rem;
@@ -671,6 +799,150 @@ export const BadgeEarnedTag = styled.div`
   align-items: center;
   gap: 0.25rem;
 `
+
+/* ——— Reward Tab Panel ——— */
+export const RewardTabPanel = styled.div`
+  background: #fff;
+  border: 1.5px solid #fde68a;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    border-radius: 4px 0 0 4px;
+  }
+`
+
+export const RewardTabHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+`
+
+export const RewardTabIconRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+`
+
+export const RewardTabIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 3px 8px rgba(251, 191, 36, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+`
+
+export const RewardTabTitle = styled.div`
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #78350f;
+  line-height: 1.3;
+`
+
+export const RewardTabStatus = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: ${p => p.$ready ? '#d1fae5' : '#fef3c7'};
+  color: ${p => p.$ready ? '#065f46' : '#92400e'};
+  border: 1px solid ${p => p.$ready ? '#6ee7b7' : '#fcd34d'};
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+`
+
+export const RewardTabDesc = styled.div`
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.55;
+  margin-bottom: 0.875rem;
+  padding-left: calc(36px + 0.625rem);
+`
+
+export const RewardProofSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid #fef3c7;
+`
+
+export const RewardProofThumb = styled.img`
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #fde68a;
+  flex-shrink: 0;
+  cursor: zoom-in;
+`
+
+export const RewardProofInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`
+
+export const RewardProofLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+`
+
+export const RewardProofLink = styled.a`
+  font-size: 0.8125rem;
+  color: #d97706;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &:hover { text-decoration: underline; }
+`
+
+export const RewardPendingNote = styled.div`
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #fef3c7;
+  font-size: 0.8125rem;
+  color: #92400e;
+  line-height: 1.55;
+
+  /* unused kept for compat */
+`
+
+export const RewardTabHero = styled.div``
+export const RewardTabEmoji = styled.div``
+export const RewardTabBody = styled.div``
+export const RewardProofFrame = styled.div``
+export const RewardProofImage = styled.img``
+export const RewardPendingBox = styled.div``
+export const RewardPendingIcon = styled.div``
+export const RewardPendingText = styled.div``
+export const RewardPendingSub = styled.div``
 
 export const BadgeInfoBanner = styled.div`
   display: flex;

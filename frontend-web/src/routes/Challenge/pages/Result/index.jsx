@@ -18,7 +18,7 @@ export default function ChallengeResultPage() {
   const { uniqueId } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { challengeLeaderboard, challengeMyRank, loading } = useSelector(s => s.challenge)
+  const { challengeLeaderboard, challengeMyRank, challengeTotalParticipants, loading } = useSelector(s => s.challenge)
   const [countdown, setCountdown] = useState(15)
   const [fetched, setFetched] = useState(false)
 
@@ -55,7 +55,7 @@ export default function ChallengeResultPage() {
   const myEntry = challengeLeaderboard.find(e => e.isMe)
   const score = myEntry?.score ?? 0
   const totalTimeSeconds = myEntry?.totalTimeSeconds ?? 0
-  const totalParticipants = challengeLeaderboard.length
+  const totalParticipants = challengeTotalParticipants ?? challengeLeaderboard.length
 
   return (
     <PageWrapper>

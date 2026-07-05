@@ -5,6 +5,8 @@ import {
   fetchAdminQuestions, createQuestion, updateQuestion, deleteQuestion,
   fetchAdminBadges, createBadge, updateBadge, deleteBadge,
   fetchAdminLeaderboard,
+  fetchAdminRewards, createAdminReward, updateAdminReward, deleteAdminReward,
+  fetchAdminDisbursements, updateAdminDisbursement,
 } from '@store/challenge/adminAction'
 import { upload } from '@store/common/action'
 import * as XLSX from 'xlsx'
@@ -586,6 +588,276 @@ function BadgeTab({ challenge }) {
 }
 
 */
+// ── Reward Tab ───────────────────────────────────────────────────────────────
+
+const DISBURSEMENT_STATUS_OPTIONS = [
+  { label: 'Pending', value: 'pending' },
+  { label: 'Completed', value: 'completed' },
+]
+
+const defaultRewardForm = { title: '', description: '', minRank: '', maxRank: '' }
+
+// ── Reward Tab ───────────────────────────────────────────────────────────────
+
+function RewardTab({ challenge }) {
+  const dispatch = useDispatch()
+  const { adminRewards, loading } = useSelector(s => s.challenge)
+  const [modal, setModal] = useState({ open: false, mode: 'create', target: null })
+  const [form, setForm] = useState(defaultRewardForm)
+
+  useEffect(() => {
+    dispatch(fetchAdminRewards(challenge.uniqueId))
+  }, [challenge.uniqueId, dispatch])
+
+  const refresh = () => dispatch(fetchAdminRewards(challenge.uniqueId))
+
+  const openCreate = () => { setForm(defaultRewardForm); setModal({ open: true, mode: 'create', target: null }) }
+  const openEdit = (r) => {
+    setForm({ title: r.title, description: r.description || '', minRank: r.minRank ?? '', maxRank: r.maxRank ?? '' })
+    setModal({ open: true, mode: 'edit', target: r })
+  }
+
+  const set = (key) => (val) => setForm(prev => ({ ...prev, [key]: val?.target?.value ?? val?.value ?? val }))
+
+  const handleSave = async () => {
+    const payload = {
+      title: form.title,
+      description: form.description || null,
+      minRank: form.minRank !== '' ? parseInt(form.minRank) : null,
+      maxRank: form.maxRank !== '' ? parseInt(form.maxRank) : null,
+    }
+    const onSuccess = () => { setModal({ open: false, mode: 'create', target: null }); refresh() }
+    if (modal.mode === 'create') {
+      await dispatch(createAdminReward(challenge.uniqueId, payload, onSuccess))
+    } else {
+      await dispatch(updateAdminReward(challenge.uniqueId, modal.target.id, payload, onSuccess))
+    }
+  }
+
+  const handleDelete = async (r) => {
+    if (!window.confirm(`Hapus reward "${r.title}"?`)) return
+    await dispatch(deleteAdminReward(challenge.uniqueId, r.id, refresh))
+  }
+
+  return (
+    <>
+      <SubHeader>
+        <SubTitle>Daftar Reward</SubTitle>
+        <Button variant="primary" onClick={openCreate}>+ Tambah Reward</Button>
+      </SubHeader>
+
+      {loading.isGetAdminRewardLoading ? (
+        <Loading />
+      ) : adminRewards.length === 0 ? (
+        <EmptyRow>Belum ada reward. Klik "+ Tambah Reward" untuk memulai.</EmptyRow>
+      ) : (
+        <BadgeCardGrid>
+          {adminRewards.map(r => (
+            <BadgeCard key={r.id}>
+              <BadgeCardName>{r.title}</BadgeCardName>
+              {(r.minRank || r.maxRank) && (
+                <BadgeCardRank>
+                  {r.minRank && r.maxRank
+                    ? r.minRank === r.maxRank ? `Rank ${r.minRank}` : `Rank ${r.minRank} – ${r.maxRank}`
+                    : r.minRank ? `Rank ≥ ${r.minRank}` : `Rank ≤ ${r.maxRank}`}
+                </BadgeCardRank>
+              )}
+              {r.description && <BadgeCardDesc>{r.description}</BadgeCardDesc>}
+              <BadgeCardActions>
+                <Button onClick={() => openEdit(r)}>Edit</Button>
+                <Button variant="danger" onClick={() => handleDelete(r)}>Hapus</Button>
+              </BadgeCardActions>
+            </BadgeCard>
+          ))}
+        </BadgeCardGrid>
+      )}
+
+      {modal.open && (
+        <Modal
+          isOpen={modal.open}
+          onClose={() => setModal({ open: false, mode: 'create', target: null })}
+          title={modal.mode === 'create' ? 'Tambah Reward' : 'Edit Reward'}
+          footer={
+            <Button variant="primary" onClick={handleSave} disabled={loading.isRewardMutating}>
+              {loading.isRewardMutating ? 'Menyimpan...' : 'Simpan'}
+            </Button>
+          }
+        >
+          <FormGrid>
+            <FormGroup style={{ gridColumn: '1 / -1' }}>
+              <Label>Judul Reward *</Label>
+              <TextInput value={form.title} onChange={set('title')} placeholder="Contoh: Voucher Belanja Rp100.000" />
+            </FormGroup>
+            <FormGroup style={{ gridColumn: '1 / -1' }}>
+              <Label>Deskripsi</Label>
+              <Textarea value={form.description} onChange={set('description')} placeholder="Keterangan reward..." rows={2} />
+            </FormGroup>
+            <FormGroup>
+              <Label>Peringkat Minimum (opsional)</Label>
+              <TextInput type="number" min="1" value={form.minRank} onChange={set('minRank')} placeholder="Contoh: 1" />
+            </FormGroup>
+            <FormGroup>
+              <Label>Peringkat Maksimum (opsional)</Label>
+              <TextInput type="number" min="1" value={form.maxRank} onChange={set('maxRank')} placeholder="Contoh: 10" />
+            </FormGroup>
+          </FormGrid>
+        </Modal>
+      )}
+    </>
+  )
+}
+
+// ── Disbursement Tab ─────────────────────────────────────────────────────────
+
+function DisbursementTab({ challenge }) {
+  const dispatch = useDispatch()
+  const { adminDisbursements, loading } = useSelector(s => s.challenge)
+  const [savingId, setSavingId] = useState(null)
+  const [localData, setLocalData] = useState({})
+
+  useEffect(() => {
+    dispatch(fetchAdminDisbursements(challenge.uniqueId))
+  }, [challenge.uniqueId, dispatch])
+
+  useEffect(() => {
+    const next = {}
+    adminDisbursements.forEach(group => {
+      group.disbursements.forEach(d => {
+        next[d.id] = {
+          status: d.status,
+          proofBlobId: null,
+          proofPreviewUrl: d.proof?.url || null,
+        }
+      })
+    })
+    setLocalData(next)
+  }, [adminDisbursements])
+
+  const handleProofUpload = async (file, id) => {
+    const result = await dispatch(upload(file, 'challenge-disbursements'))
+    setLocalData(prev => ({
+      ...prev,
+      [id]: { ...prev[id], proofBlobId: result.blobId, proofPreviewUrl: result.url },
+    }))
+  }
+
+  const handleRemoveProof = (id) => {
+    setLocalData(prev => ({ ...prev, [id]: { ...prev[id], proofBlobId: null, proofPreviewUrl: null } }))
+  }
+
+  const handleComplete = async (id) => {
+    const data = localData[id] || {}
+    setSavingId(id)
+    await dispatch(updateAdminDisbursement(
+      challenge.uniqueId,
+      id,
+      { status: 'completed', proofBlobId: data.proofBlobId || null },
+      () => dispatch(fetchAdminDisbursements(challenge.uniqueId))
+    ))
+    setSavingId(null)
+  }
+
+  if (loading.isGetDisbursementsLoading) return <Loading />
+
+  return (
+    <>
+      <SubHeader>
+        <SubTitle>Disbursement Reward</SubTitle>
+      </SubHeader>
+
+      {adminDisbursements.length === 0 ? (
+        <EmptyRow>Belum ada disbursement. Data akan muncul setelah challenge selesai dan reward telah dikonfigurasi.</EmptyRow>
+      ) : (
+        adminDisbursements.map(({ reward, disbursements }) => (
+          <div key={reward.id} style={{ marginBottom: '2.5rem' }}>
+            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{ fontWeight: 700, color: '#78350f', fontSize: '0.9375rem' }}>🎁 {reward.title}</span>
+              {(reward.minRank || reward.maxRank) && (
+                <span style={{ fontSize: '0.8125rem', color: '#92400e', background: '#fef3c7', borderRadius: 999, padding: '0.15rem 0.625rem', fontWeight: 600 }}>
+                  {reward.minRank && reward.maxRank
+                    ? reward.minRank === reward.maxRank ? `Rank ${reward.minRank}` : `Rank ${reward.minRank}–${reward.maxRank}`
+                    : reward.minRank ? `Rank ≥ ${reward.minRank}` : `Rank ≤ ${reward.maxRank}`}
+                </span>
+              )}
+              <span style={{ fontSize: '0.8rem', color: '#9ca3af', marginLeft: 'auto' }}>
+                {disbursements.filter(d => d.status === 'completed').length}/{disbursements.length} selesai
+              </span>
+            </div>
+
+            {disbursements.length === 0 ? (
+              <EmptyRow>Tidak ada penerima untuk reward ini.</EmptyRow>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                {disbursements.map(d => {
+                  const local = localData[d.id] || {}
+                  const isCompleted = local.status === 'completed'
+                  return (
+                    <div key={d.id} style={{ background: '#fff', border: `1.5px solid ${isCompleted ? '#6ee7b7' : '#e5e7eb'}`, borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                      <div style={{ background: isCompleted ? '#f0fdf4' : '#f9fafb', borderBottom: `1px solid ${isCompleted ? '#bbf7d0' : '#e5e7eb'}`, padding: '0.75rem 1rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827' }}>{d.user?.name || '-'}</div>
+                          <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.125rem' }}>{d.user?.email || '-'}</div>
+                        </div>
+                        <div style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: isCompleted ? '#d1fae5' : '#fef3c7', color: isCompleted ? '#065f46' : '#92400e', borderRadius: 999, padding: '0.2rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>
+                          {isCompleted ? '✓ Selesai' : '⏳ Pending'}
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '1rem' }}>
+                        <Label style={{ fontSize: '0.8125rem', marginBottom: '0.5rem', display: 'block' }}>Bukti / Proof</Label>
+
+                        {local.proofPreviewUrl ? (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <img src={local.proofPreviewUrl} alt="Proof" style={{ width: '100%', borderRadius: 8, border: '1px solid #e5e7eb', maxHeight: 160, objectFit: 'cover', display: 'block' }} />
+                            {!isCompleted && (
+                              <button onClick={() => handleRemoveProof(d.id)} style={{ marginTop: '0.375rem', fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                Hapus gambar
+                              </button>
+                            )}
+                          </div>
+                        ) : !isCompleted ? (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <FileUpload
+                              onFileSelect={file => handleProofUpload(file, d.id)}
+                              acceptedTypes={['image/*']}
+                              acceptedTypesLabel="PNG, JPG, GIF"
+                              maxSizeMB={5}
+                              uploadText="Upload bukti reward"
+                            />
+                          </div>
+                        ) : (
+                          <div style={{ marginBottom: '0.75rem', fontSize: '0.8125rem', color: '#9ca3af', fontStyle: 'italic' }}>Tidak ada bukti diunggah</div>
+                        )}
+
+                        {!isCompleted && (
+                          <Button
+                            variant="primary"
+                            style={{ width: '100%' }}
+                            onClick={() => handleComplete(d.id)}
+                            disabled={savingId === d.id}
+                          >
+                            {savingId === d.id ? 'Menyimpan...' : '✓ Tandai Selesai'}
+                          </Button>
+                        )}
+
+                        {isCompleted && (
+                          <div style={{ fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', marginTop: '0.25rem' }}>
+                            Selesai pada {formatJakartaDateTimeFull(d.updatedAt)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        ))
+      )}
+    </>
+  )
+}
+
 // ── Sesi Tab ─────────────────────────────────────────────────────────────────
 
 const formatTime = (totalSeconds) => {
@@ -671,12 +943,14 @@ export default function ChallengeDetailPage({ challenge, onBack }) {
 
       <TabsContainer>
         <Tab $active={activeTab === 'soal'} onClick={() => setActiveTab('soal')}>Soal</Tab>
-        {/* <Tab $active={activeTab === 'badge'} onClick={() => setActiveTab('badge')}>Badge</Tab> */}
+        <Tab $active={activeTab === 'reward'} onClick={() => setActiveTab('reward')}>Reward</Tab>
+        <Tab $active={activeTab === 'disbursement'} onClick={() => setActiveTab('disbursement')}>Disbursement</Tab>
         <Tab $active={activeTab === 'sesi'} onClick={() => setActiveTab('sesi')}>Sesi</Tab>
       </TabsContainer>
 
       {activeTab === 'soal' && <SoalTab challenge={challenge} />}
-      {/* {activeTab === 'badge' && <BadgeTab challenge={challenge} />} */}
+      {activeTab === 'reward' && <RewardTab challenge={challenge} />}
+      {activeTab === 'disbursement' && <DisbursementTab challenge={challenge} />}
       {activeTab === 'sesi' && <SesiTab challenge={challenge} />}
     </Container>
   )

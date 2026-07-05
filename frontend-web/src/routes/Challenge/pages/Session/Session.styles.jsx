@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 
 const timerDrain = keyframes`
   0%   { width: 100%; background: #22C55E; }
@@ -7,6 +7,91 @@ const timerDrain = keyframes`
   90%  { background: #F59E0B; }
   91%  { background: #EF4444; }
   100% { width: 0%;  background: #EF4444; }
+`
+
+const overlayIn = keyframes`
+  from { opacity: 0; }
+  to   { opacity: 1; }
+`
+
+const overlayOut = keyframes`
+  from { opacity: 1; }
+  to   { opacity: 0; }
+`
+
+const burstIn = keyframes`
+  0%   { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  65%  { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+`
+
+const starFloat = keyframes`
+  0%   { transform: translate(0, 0) scale(0); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(1.4); opacity: 0; }
+`
+
+const shimmerGold = keyframes`
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+`
+
+const goldPulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5), 0 2px 8px rgba(0,0,0,0.04); }
+  50%       { box-shadow: 0 0 0 10px rgba(245,158,11,0),  0 2px 8px rgba(0,0,0,0.04); }
+`
+
+export const SpecialOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ${props => props.$out ? overlayOut : overlayIn} 0.25s ease forwards;
+`
+
+export const SpecialCard = styled.div`
+  position: relative;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%);
+  border: 3px solid #f59e0b;
+  border-radius: 28px;
+  padding: 2.75rem 4rem;
+  text-align: center;
+  animation: ${burstIn} 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow: 0 0 60px rgba(245,158,11,0.45), 0 24px 48px rgba(0,0,0,0.25);
+`
+
+export const SpecialCardTitle = styled.div`
+  font-size: 2.75rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #f59e0b, #d97706, #fbbf24, #d97706, #f59e0b);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${shimmerGold} 1.4s linear infinite;
+  margin-bottom: 0.5rem;
+`
+
+export const SpecialCardSub = styled.div`
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #92400e;
+`
+
+export const SpecialStar = styled.span`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: ${props => props.$size || '1.5rem'};
+  line-height: 1;
+  animation: ${starFloat} 1.1s ease-out ${props => props.$delay || 0}s both;
+  --tx: ${props => props.$tx || '0px'};
+  --ty: ${props => props.$ty || '-60px'};
 `
 
 export const PageWrapper = styled.div`
@@ -84,12 +169,17 @@ export const Main = styled.div`
 
 export const QuestionCard = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 2.5rem;
   max-width: 700px;
   width: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  ${props => props.$isSpecial ? css`
+    border: 2px solid #f59e0b;
+    animation: ${goldPulse} 2s ease-in-out infinite;
+  ` : css`
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  `}
 `
 
 export const QuestionCounter = styled.div`

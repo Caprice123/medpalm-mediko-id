@@ -12,6 +12,7 @@ import {
   QuestionTimerBar, QuestionTimerFill,
   Main, QuestionCard, QuestionText, OptionsGrid,
   OptionBtn, OptionLetter, PointsFlash,
+  SpecialOverlay, SpecialCard, SpecialCardTitle, SpecialCardSub, SpecialStar,
 } from '../Session/Session.styles'
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
@@ -103,6 +104,8 @@ export default function BlitzSession({ session, uniqueId }) {
     (answeredQuestions || []).filter(a => a.isCorrect).length
   )
   const [showTransition, setShowTransition] = useState(false)
+  const [showSpecialAnnounce, setShowSpecialAnnounce] = useState(false)
+  const [specialOut, setSpecialOut] = useState(false)
 
   const questionStartTimeRef = useRef(Date.now())
   const timerRef = useRef(null)
@@ -119,6 +122,17 @@ export default function BlitzSession({ session, uniqueId }) {
     const q = activeQuestions[currentIdx]
     if (!q) return
     dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: null, timeTakenSeconds: null }))
+  }, [currentIdx, phase])
+
+  // Special question announcement overlay (same as ClassicSession)
+  useEffect(() => {
+    if (phase !== 'special') return
+    if (!activeQuestions[currentIdx]) return
+    setSpecialOut(false)
+    setShowSpecialAnnounce(true)
+    const t1 = setTimeout(() => setSpecialOut(true), 1300)
+    const t2 = setTimeout(() => setShowSpecialAnnounce(false), 1600)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [currentIdx, phase])
 
   const doSubmit = async () => {
@@ -245,6 +259,20 @@ export default function BlitzSession({ session, uniqueId }) {
 
   return (
     <PhotoProvider>
+    {showSpecialAnnounce && (
+      <SpecialOverlay $out={specialOut}>
+        <SpecialCard>
+          <SpecialStar $tx="-90px" $ty="-75px" $delay={0.05} $size="2.25rem">⭐</SpecialStar>
+          <SpecialStar $tx="90px"  $ty="-75px" $delay={0.15} $size="1.75rem">✨</SpecialStar>
+          <SpecialStar $tx="-110px" $ty="10px" $delay={0.1}  $size="1.5rem">🌟</SpecialStar>
+          <SpecialStar $tx="110px"  $ty="10px" $delay={0.2}  $size="1.75rem">⭐</SpecialStar>
+          <SpecialStar $tx="-70px"  $ty="65px" $delay={0.25} $size="1.25rem">✨</SpecialStar>
+          <SpecialStar $tx="70px"   $ty="65px" $delay={0.08} $size="1.5rem">🌟</SpecialStar>
+          <SpecialCardTitle>⭐ Soal Spesial!</SpecialCardTitle>
+          <SpecialCardSub>Poin kamu lebih besar di soal ini 🎯</SpecialCardSub>
+        </SpecialCard>
+      </SpecialOverlay>
+    )}
     <PageWrapper>
       <StickyHeader>
         <TopBar>

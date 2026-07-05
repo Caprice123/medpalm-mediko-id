@@ -2,7 +2,7 @@ import { actions } from '@store/challenge/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
-const { setLoading, setChallenges, setPagination, setDetail, setChallengeBadges, setChallengeLeaderboard, setMyBadges } = actions
+const { setLoading, setChallenges, setPagination, setDetail, setChallengeBadges, setChallengeLeaderboard, setMyBadges, setChallengeReward, setRewardRead } = actions
 
 export const fetchChallenges = (tab = 'ongoing') => async (dispatch, getState) => {
   try {
@@ -25,11 +25,20 @@ export const fetchChallengeDetail = (uniqueId, { silent = false } = {}) => async
   try {
     if (!silent) dispatch(setLoading({ key: 'isGetDetailLoading', value: true }))
     const response = await getWithToken(`${Endpoints.api.challenges}/${uniqueId}`)
-    dispatch(setDetail(response.data.data))
-    return response.data.data
+    const data = response.data.data
+    dispatch(setDetail(data))
+    dispatch(setChallengeReward({ rewards: data.rewards ?? [], reward: data.reward ?? null, rewardRead: data.rewardRead ?? false }))
+    return data
   } finally {
     if (!silent) dispatch(setLoading({ key: 'isGetDetailLoading', value: false }))
   }
+}
+
+export const markRewardRead = (uniqueId) => async (dispatch) => {
+  try {
+    await postWithToken(`${Endpoints.api.challenges}/${uniqueId}/reward/read`)
+    dispatch(setRewardRead())
+  } catch {}
 }
 
 export const fetchChallengeBadges = (uniqueId) => async (dispatch) => {
@@ -47,8 +56,8 @@ export const fetchChallengeLeaderboard = (uniqueId, { silent = false, limit = nu
     if (!silent) dispatch(setLoading({ key: 'isGetChallengeLeaderboardLoading', value: true }))
     const params = limit ? { limit } : {}
     const response = await getWithToken(`${Endpoints.api.challenges}/${uniqueId}/leaderboard`, params)
-    const { leaderboard, myRank, myBadge } = response.data.data
-    dispatch(setChallengeLeaderboard({ leaderboard, myRank, myBadge }))
+    const { leaderboard, myRank, myBadge, totalParticipants } = response.data.data
+    dispatch(setChallengeLeaderboard({ leaderboard, myRank, myBadge, totalParticipants }))
   } finally {
     if (!silent) dispatch(setLoading({ key: 'isGetChallengeLeaderboardLoading', value: false }))
   }

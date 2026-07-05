@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import ShareModal from './ShareModal'
+import RewardPopup from './RewardPopup'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchChallengeDetail, fetchChallengeBadges, fetchChallengeLeaderboard, startChallenge } from '@store/challenge/userAction'
+import { fetchChallengeDetail, fetchChallengeBadges, fetchChallengeLeaderboard, startChallenge, markRewardRead } from '@store/challenge/userAction'
 import Loading from '@components/common/Loading'
 import { formatJakartaDateLong } from '@utils/dateUtils'
 import { ChallengeRoute } from '../../routes'
@@ -14,6 +15,8 @@ import {
   HeroMetaRow, HeroMetaChip,
   DateCardsRow, DateCard, DateCardIcon, DateCardInfo, DateCardLabel, DateCardValue,
   PointsGuideCard, PointsGuideHeader, PointsGuideTitleIcon, PointsGuideTitle, PointsItem, PointsItemIcon,
+  RewardCard, RewardCardHeader, RewardCardIcon, RewardCardMeta, RewardCardLabel, RewardCardTitle, RewardCardDesc,
+  RewardTierGrid, RewardTierCard, RewardTierRank, RewardTierTitle, RewardTierDesc,
   StartSection, StartBtn, ContinueBtn, StartHint, CompletedNote,
   MyResultBox, MyResultHeader, MyResultTitle, MyResultBadge, MyResultStats, Stat, StatValue, StatLabel, ShareBtn,
   TabsRow, TabBtn, TabPanel,
@@ -22,6 +25,9 @@ import {
   BadgeCardGrid, BadgeCard, BadgeCardImg, BadgeCardPlaceholder,
   BadgeCardName, BadgeCardRankLabel, BadgeEarnedTag,
   BadgeInfoBanner, BadgeInfoIcon,
+  RewardTabPanel, RewardTabHeader, RewardTabIconRow, RewardTabIcon, RewardTabTitle, RewardTabDesc,
+  RewardTabStatus, RewardProofSection, RewardProofThumb, RewardProofInfo, RewardProofLabel,
+  RewardProofLink, RewardPendingNote,
 } from './Detail.styles'
 
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' }
@@ -53,9 +59,11 @@ export default function ChallengeDetailPage() {
   const { uniqueId } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { detail, /* challengeBadges, */ challengeLeaderboard, challengeMyRank, /* challengeMyBadge, */ loading } = useSelector(state => state.challenge)
+  const { detail, /* challengeBadges, */ challengeLeaderboard, challengeMyRank, challengeTotalParticipants, challengeRewards, challengeReward, challengeRewardRead, /* challengeMyBadge, */ loading } = useSelector(state => state.challenge)
   const [countdown, setCountdown] = useState(15)
   const [shareOpen, setShareOpen] = useState(false)
+  const [showRewardPopup, setShowRewardPopup] = useState(false)
+  const [activeTab, setActiveTab] = useState('leaderboard')
 
   useEffect(() => {
     dispatch(fetchChallengeDetail(uniqueId))
@@ -63,10 +71,19 @@ export default function ChallengeDetailPage() {
   }, [dispatch, uniqueId])
 
   const myStatus = detail?.myStatus
+  const challengeStatus = detail?.challenge?.status
   useEffect(() => {
     if (myStatus !== 'completed') return
     dispatch(fetchChallengeLeaderboard(uniqueId, { limit: 25 }))
   }, [dispatch, uniqueId, myStatus])
+
+  useEffect(() => {
+    if (myStatus !== 'completed' || challengeStatus !== 'completed') return
+    if (challengeRewardRead === false) {
+      setShowRewardPopup(true)
+      dispatch(markRewardRead(uniqueId))
+    }
+  }, [myStatus, challengeStatus, challengeRewardRead, challengeReward])
 
   useEffect(() => {
     if (myStatus !== 'completed') return
@@ -207,6 +224,42 @@ export default function ChallengeDetailPage() {
               </PointsItem>
             </PointsGuideCard>
 
+            {challengeRewards.length > 0 && (
+              <RewardCard>
+                <RewardCardHeader>
+                  <RewardCardIcon>🎁</RewardCardIcon>
+                  <RewardCardMeta>
+                    <RewardCardLabel>Hadiah Challenge</RewardCardLabel>
+                    <RewardCardTitle>
+                      {challengeRewards.length === 1
+                        ? challengeRewards[0].title
+                        : `${challengeRewards.length} hadiah tersedia`}
+                    </RewardCardTitle>
+                  </RewardCardMeta>
+                </RewardCardHeader>
+                {challengeRewards.length > 1 && (
+                  <RewardTierGrid>
+                    {challengeRewards.map(r => (
+                      <RewardTierCard key={r.id}>
+                        <RewardTierRank>
+                          {r.minRank && r.maxRank
+                            ? `🏅 Rank ${r.minRank === r.maxRank ? r.minRank : `${r.minRank}–${r.maxRank}`}`
+                            : '🎁 Semua'}
+                        </RewardTierRank>
+                        <RewardTierTitle>{r.title}</RewardTierTitle>
+                        {r.description && <RewardTierDesc>{r.description}</RewardTierDesc>}
+                      </RewardTierCard>
+                    ))}
+                  </RewardTierGrid>
+                )}
+                {challengeRewards.length === 1 && challengeRewards[0].description && (
+                  <RewardTierDesc style={{ marginTop: '0.5rem', paddingLeft: 'calc(40px + 0.75rem)' }}>
+                    {challengeRewards[0].description}
+                  </RewardTierDesc>
+                )}
+              </RewardCard>
+            )}
+
             <StartSection>
               {canStart && (
                 <>
@@ -275,7 +328,7 @@ export default function ChallengeDetailPage() {
                   </Stat>
                   <Stat>
                     <StatValue>{challengeMyRank ? `#${challengeMyRank}` : '—'}</StatValue>
-                    <StatLabel>Peringkat</StatLabel>
+                    <StatLabel>{challengeTotalParticipants ? `dari ${challengeTotalParticipants} peserta` : 'Peringkat'}</StatLabel>
                   </Stat>
                   <Stat>
                     <StatValue>{myTotalTimeSeconds != null ? `${Math.round(myTotalTimeSeconds)}s` : '—'}</StatValue>
@@ -311,52 +364,152 @@ export default function ChallengeDetailPage() {
               </DateCardsRow>
             )}
 
+            {challengeRewards.length > 0 && (
+              <RewardCard>
+                <RewardCardHeader>
+                  <RewardCardIcon>🎁</RewardCardIcon>
+                  <RewardCardMeta>
+                    <RewardCardLabel>Hadiah Challenge</RewardCardLabel>
+                    <RewardCardTitle>
+                      {challengeRewards.length === 1
+                        ? challengeRewards[0].title
+                        : `${challengeRewards.length} hadiah tersedia`}
+                    </RewardCardTitle>
+                  </RewardCardMeta>
+                </RewardCardHeader>
+                {challengeRewards.length > 1 && (
+                  <RewardTierGrid>
+                    {challengeRewards.map(r => (
+                      <RewardTierCard key={r.id} $isMyReward={challengeReward?.id === r.id}>
+                        <RewardTierRank>
+                          {r.minRank && r.maxRank
+                            ? `🏅 Rank ${r.minRank === r.maxRank ? r.minRank : `${r.minRank}–${r.maxRank}`}`
+                            : '🎁 Semua'}
+                        </RewardTierRank>
+                        <RewardTierTitle>{r.title}</RewardTierTitle>
+                        {r.description && <RewardTierDesc>{r.description}</RewardTierDesc>}
+                      </RewardTierCard>
+                    ))}
+                  </RewardTierGrid>
+                )}
+                {challengeRewards.length === 1 && challengeRewards[0].description && (
+                  <RewardCardDesc style={{ marginTop: '0.5rem', paddingLeft: 'calc(40px + 0.75rem)' }}>
+                    {challengeRewards[0].description}
+                  </RewardCardDesc>
+                )}
+              </RewardCard>
+            )}
+
             <CompletedNote>✓ Kamu sudah menyelesaikan challenge ini</CompletedNote>
 
-            {/* TABS HIDDEN
             <TabsRow>
               <TabBtn $active={activeTab === 'leaderboard'} onClick={() => setActiveTab('leaderboard')}>
-                Leaderboard {challengeLeaderboard.length > 0 ? `(${challengeLeaderboard.length})` : ''}
+                Leaderboard
               </TabBtn>
-              <TabBtn $active={activeTab === 'badge'} onClick={() => setActiveTab('badge')}>
-                Badge ...
-              </TabBtn>
+              {/* {challengeRewards.length > 0 && ( */}
+                <TabBtn $active={activeTab === 'reward'} onClick={() => setActiveTab('reward')}>
+                  🎁 Reward Kamu
+                </TabBtn>
+              {/* )} */}
             </TabsRow>
-            */}
 
-            <Panel>
-              <LeaderboardHeader>
-                <PanelTitle style={{ margin: 0, border: 'none', paddingBottom: 0 }}>
-                  Leaderboard · {challengeLeaderboard.length} peserta
-                </PanelTitle>
-                {!challenge.badgesDisbursed && (
-                  <RefreshCountdown>Refresh dalam {countdown}s</RefreshCountdown>
+            {activeTab === 'leaderboard' && (
+              <Panel>
+                <LeaderboardHeader>
+                  <PanelTitle style={{ margin: 0, border: 'none', paddingBottom: 0 }}>
+                    Leaderboard · {challengeTotalParticipants ?? challengeLeaderboard.length} peserta
+                  </PanelTitle>
+                  {!challenge.badgesDisbursed && (
+                    <RefreshCountdown>Refresh dalam {countdown}s</RefreshCountdown>
+                  )}
+                </LeaderboardHeader>
+                {loading.isGetChallengeLeaderboardLoading ? (
+                  <EmptyLeader>Memuat leaderboard...</EmptyLeader>
+                ) : challengeLeaderboard.length === 0 ? (
+                  <EmptyLeader>Belum ada peserta yang menyelesaikan challenge ini.</EmptyLeader>
+                ) : (
+                  challengeLeaderboard.map(entry => (
+                    <LeaderRow key={entry.rank} $isMe={entry.isMe} $rank={entry.rank}>
+                      {MEDALS[entry.rank]
+                        ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
+                        : <RankNum $rank={entry.rank}>#{entry.rank}</RankNum>}
+                      <LeaderName $isMe={entry.isMe}>
+                        {entry.userName}{entry.isMe && ' (Kamu)'}
+                      </LeaderName>
+                      <LeaderScore>
+                        {entry.score?.toFixed(0)} pts
+                      </LeaderScore>
+                    </LeaderRow>
+                  ))
                 )}
-              </LeaderboardHeader>
-              {loading.isGetChallengeLeaderboardLoading ? (
-                <EmptyLeader>Memuat leaderboard...</EmptyLeader>
-              ) : challengeLeaderboard.length === 0 ? (
-                <EmptyLeader>Belum ada peserta yang menyelesaikan challenge ini.</EmptyLeader>
-              ) : (
-                challengeLeaderboard.map(entry => (
-                  <LeaderRow key={entry.rank} $isMe={entry.isMe} $rank={entry.rank}>
-                    {MEDALS[entry.rank]
-                      ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
-                      : <RankNum $rank={entry.rank}>#{entry.rank}</RankNum>}
-                    <LeaderName $isMe={entry.isMe}>
-                      {entry.userName}{entry.isMe && ' (Kamu)'}
-                    </LeaderName>
-                    <LeaderScore>
-                      {entry.score?.toFixed(0)} pts
-                    </LeaderScore>
-                  </LeaderRow>
-                ))
-              )}
-            </Panel>
+              </Panel>
+            )}
 
-            {/* BADGE PANEL HIDDEN
-            {activeTab === 'badge' && ( ... )}
-            */}
+            {activeTab === 'reward' && (
+              <>
+                {myStatus !== 'completed' ? (
+                  <Panel>
+                    <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏆</div>
+                      <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
+                        Reward menunggumu!
+                      </div>
+                      <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.6, maxWidth: 320, margin: '0 auto' }}>
+                        Reward akan dianalisa setelah kamu menyelesaikan challenge ini. Selesaikan untuk mengetahui apakah kamu berhak mendapatkannya!
+                      </div>
+                    </div>
+                  </Panel>
+                ) : !challengeReward ? (
+                  <Panel>
+                    <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>💪</div>
+                      <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
+                        Belum berhasil kali ini
+                      </div>
+                      <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.6, maxWidth: 340, margin: '0 auto' }}>
+                        Peringkatmu kali ini belum masuk dalam kriteria penerima reward. Terus tingkatkan kemampuanmu dan raih posisi lebih tinggi di challenge berikutnya!
+                      </div>
+                    </div>
+                  </Panel>
+                ) : (
+                  <RewardTabPanel>
+                    <RewardTabHeader>
+                      <RewardTabIconRow>
+                        <RewardTabIcon>🎁</RewardTabIcon>
+                        <RewardTabTitle>{challengeReward.title}</RewardTabTitle>
+                      </RewardTabIconRow>
+                      <RewardTabStatus $ready={challengeReward.status === 'completed'}>
+                        {challengeReward.status === 'completed' ? '✓ Siap diklaim' : '⏳ Diproses'}
+                      </RewardTabStatus>
+                    </RewardTabHeader>
+
+                    {challengeReward.description && (
+                      <RewardTabDesc>{challengeReward.description}</RewardTabDesc>
+                    )}
+
+                    {challengeReward.status === 'completed' && challengeReward.proof?.url ? (
+                      <RewardProofSection>
+                        <RewardProofThumb
+                          src={challengeReward.proof.url}
+                          alt="Bukti reward"
+                          onClick={() => window.open(challengeReward.proof.url, '_blank')}
+                        />
+                        <RewardProofInfo>
+                          <RewardProofLabel>Bukti Reward</RewardProofLabel>
+                          <RewardProofLink href={challengeReward.proof.url} target="_blank" rel="noreferrer">
+                            Lihat gambar penuh ↗
+                          </RewardProofLink>
+                        </RewardProofInfo>
+                      </RewardProofSection>
+                    ) : challengeReward.status !== 'completed' ? (
+                      <RewardPendingNote>
+                        ⏳ Admin sedang memproses rewardmu. Pantau terus halaman ini — hasilnya akan muncul di sini.
+                      </RewardPendingNote>
+                    ) : null}
+                  </RewardTabPanel>
+                )}
+              </>
+            )}
           </>
         )}
       </Container>
@@ -367,6 +520,17 @@ export default function ChallengeDetailPage() {
           onClose={() => setShareOpen(false)}
           challengeTitle={challenge?.title}
           score={myScore?.toFixed(0) ?? 0}
+          rank={challengeMyRank}
+          totalParticipants={challengeTotalParticipants}
+        />
+      )}
+
+      {showRewardPopup && (
+        <RewardPopup
+          rank={challengeMyRank}
+          totalParticipants={challengeTotalParticipants}
+          reward={challengeReward}
+          onClose={() => setShowRewardPopup(false)}
         />
       )}
     </PageWrapper>

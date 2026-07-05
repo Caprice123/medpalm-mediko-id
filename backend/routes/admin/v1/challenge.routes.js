@@ -34,6 +34,16 @@ router.delete('/:uniqueId/badges/:badgeUniqueId', asyncHandler(adminChallengeCon
 // Leaderboard
 router.get('/:uniqueId/leaderboard', asyncHandler(adminChallengeController.leaderboard.bind(adminChallengeController)))
 
+// Rewards
+router.get('/:uniqueId/rewards', asyncHandler(adminChallengeController.indexRewards.bind(adminChallengeController)))
+router.post('/:uniqueId/rewards', asyncHandler(adminChallengeController.createReward.bind(adminChallengeController)))
+router.put('/:uniqueId/rewards/:rewardId', asyncHandler(adminChallengeController.updateReward.bind(adminChallengeController)))
+router.delete('/:uniqueId/rewards/:rewardId', asyncHandler(adminChallengeController.destroyReward.bind(adminChallengeController)))
+
+// Disbursements
+router.get('/:uniqueId/disbursements', asyncHandler(adminChallengeController.indexDisbursements.bind(adminChallengeController)))
+router.put('/:uniqueId/disbursements/:disbursementId', asyncHandler(adminChallengeController.updateDisbursement.bind(adminChallengeController)))
+
 // Dev/test only: manually trigger badge disbursement
 router.post('/trigger-disburse', asyncHandler(async (req, res) => {
   const count = await CompleteChallengeService.call()

@@ -2,7 +2,7 @@ import { actions } from '@store/challenge/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setLoading, setChallenges, setPagination, setDetail, setQuestions, setQuestionsPagination, setBadges, setLeaderboard, setLeaderboardPagination } = actions
+const { setLoading, setChallenges, setPagination, setDetail, setQuestions, setQuestionsPagination, setBadges, setLeaderboard, setLeaderboardPagination, setAdminRewards, setAdminDisbursements } = actions
 
 // Challenges
 export const fetchAdminChallenges = () => async (dispatch, getState) => {
@@ -138,6 +138,68 @@ export const deleteBadge = (challengeUniqueId, badgeUniqueId, onSuccess) => asyn
     if (onSuccess) onSuccess()
   } finally {
     dispatch(setLoading({ key: 'isBadgeMutating', value: false }))
+  }
+}
+
+// Rewards (admin)
+export const fetchAdminRewards = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isGetAdminRewardLoading', value: true }))
+    const response = await getWithToken(`${Endpoints.admin.challenges}/${uniqueId}/rewards`)
+    dispatch(setAdminRewards(response.data.data))
+  } finally {
+    dispatch(setLoading({ key: 'isGetAdminRewardLoading', value: false }))
+  }
+}
+
+export const createAdminReward = (uniqueId, payload, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isRewardMutating', value: true }))
+    await postWithToken(`${Endpoints.admin.challenges}/${uniqueId}/rewards`, payload)
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ key: 'isRewardMutating', value: false }))
+  }
+}
+
+export const updateAdminReward = (uniqueId, rewardId, payload, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isRewardMutating', value: true }))
+    await putWithToken(`${Endpoints.admin.challenges}/${uniqueId}/rewards/${rewardId}`, payload)
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ key: 'isRewardMutating', value: false }))
+  }
+}
+
+export const deleteAdminReward = (uniqueId, rewardId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isRewardMutating', value: true }))
+    await deleteWithToken(`${Endpoints.admin.challenges}/${uniqueId}/rewards/${rewardId}`)
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ key: 'isRewardMutating', value: false }))
+  }
+}
+
+// Disbursements (admin)
+export const fetchAdminDisbursements = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isGetDisbursementsLoading', value: true }))
+    const response = await getWithToken(`${Endpoints.admin.challenges}/${uniqueId}/disbursements`)
+    dispatch(setAdminDisbursements(response.data.data))
+  } finally {
+    dispatch(setLoading({ key: 'isGetDisbursementsLoading', value: false }))
+  }
+}
+
+export const updateAdminDisbursement = (uniqueId, disbursementId, { status, proofBlobId }, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isDisbursementMutating', value: true }))
+    await putWithToken(`${Endpoints.admin.challenges}/${uniqueId}/disbursements/${disbursementId}`, { status, proofBlobId })
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ key: 'isDisbursementMutating', value: false }))
   }
 }
 

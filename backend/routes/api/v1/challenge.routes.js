@@ -15,5 +15,6 @@ router.get('/:uniqueId/leaderboard', asyncHandler(challengeController.leaderboar
 router.post('/:uniqueId/start', asyncHandler(challengeController.start.bind(challengeController)))
 router.post('/:uniqueId/answer', asyncHandler(challengeController.answer.bind(challengeController)))
 router.post('/:uniqueId/submit', asyncHandler(challengeController.submit.bind(challengeController)))
+router.post('/:uniqueId/reward/read', asyncHandler(challengeController.markRewardRead.bind(challengeController)))
 
 export default router

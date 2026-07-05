@@ -394,6 +394,7 @@ model users {
   skripsi_sets                  skripsi_sets[]
   osce_sessions                 osce_sessions[]
   user_feature_subscriptions    user_feature_subscriptions[]
+  challenge_sessions            challenge_sessions[]
 }
 
 model user_feature_subscriptions {
@@ -1931,6 +1932,7 @@ model challenges {
   challenge_badges    challenge_badges[]
   challenge_sessions  challenge_sessions[]
   challenge_tags      challenge_tags[]
+  challenge_rewards   challenge_rewards[]
 
   @@index([status])
   @@index([is_deleted])
@@ -1984,16 +1986,20 @@ model challenge_sessions {
   question_ids       Json
   status             String    @default("in_progress") // "in_progress" | "completed"
   score              Float?
+  current_streak     Int       @default(0)
   correct_count      Int?
   total_time_seconds Float?
   started_at         DateTime  @default(now())
   completed_at       DateTime?
   earned_badge_id    Int?
   final_rank         Int?
+  reward_read        Boolean   @default(false)
   created_at         DateTime  @default(now())
 
-  challenge             challenges                @relation(fields: [challenge_id], references: [id])
-  challenge_session_answers challenge_session_answers[]
+  challenge                      challenges                         @relation(fields: [challenge_id], references: [id])
+  users                          users                              @relation(fields: [user_id], references: [id])
+  challenge_session_answers      challenge_session_answers[]
+  challenge_reward_disbursements challenge_reward_disbursements[]
 
   @@unique([challenge_id, user_id])
   @@index([challenge_id])
@@ -2001,6 +2007,33 @@ model challenge_sessions {
   @@index([status])
   @@index([score])
   @@index([earned_badge_id])
+}
+
+model challenge_rewards {
+  id                              Int                              @id @default(autoincrement())
+  challenge_id                    Int
+  title                           String
+  description                     String?
+  status                          String                           @default("pending")
+  min_rank                        Int?
+  max_rank                        Int?
+  created_at                      DateTime                         @default(now())
+  updated_at                      DateTime                         @updatedAt
+  challenges                      challenges                       @relation(fields: [challenge_id], references: [id])
+  challenge_reward_disbursements  challenge_reward_disbursements[]
+}
+
+model challenge_reward_disbursements {
+  id                   Int                @id @default(autoincrement())
+  challenge_reward_id  Int
+  challenge_session_id Int
+  status               String             @default("pending")
+  created_at           DateTime           @default(now())
+  updated_at           DateTime           @updatedAt
+  challenge_rewards    challenge_rewards  @relation(fields: [challenge_reward_id], references: [id], onDelete: Cascade)
+  challenge_sessions   challenge_sessions @relation(fields: [challenge_session_id], references: [id], onDelete: Cascade)
+
+  @@unique([challenge_reward_id, challenge_session_id])
 }
 
 model challenge_session_answers {

@@ -1,10 +1,11 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { toPng } from 'html-to-image'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import styled from 'styled-components'
+import { fetchPublicConstants } from '@store/constant/userAction'
 
-// ── Wrapper that scales the card for display inside the modal ──────────────
 const PreviewWrap = styled.div`
   display: flex;
   justify-content: center;
@@ -30,8 +31,23 @@ const DownloadNote = styled.p`
   margin: 0.75rem 0 0;
 `
 
-// ── The actual captured card — 480×480, inline styles for html-to-image ───
-function ShareCard({ cardRef, challengeTitle, score }) {
+function parseJson(value) {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+// ── The captured card — 480×480, all inline styles for html-to-image ─────────
+function ShareCard({ cardRef, challengeTitle, score, rank, totalParticipants, instagramHandle, website }) {
+  const displayRank = rank ? `#${rank}` : '—'
+  const displayTotal = totalParticipants ? `DARI ${totalParticipants} PESERTA` : 'PESERTA'
+  const siteUrl = website || 'medpal.id'
+  const igHandle = instagramHandle || '@medpal.id'
+
   return (
     <div
       ref={cardRef}
@@ -51,30 +67,23 @@ function ShareCard({ cardRef, challengeTitle, score }) {
       {/* dot-grid overlay */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }} />
 
-      {/* large decorative trophy — background watermark */}
-      <div style={{
-        position: 'absolute',
-        right: -20,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        fontSize: 260,
-        lineHeight: 1,
-        opacity: 0.07,
-        userSelect: 'none',
-        pointerEvents: 'none',
-      }}>
-        🏆
-      </div>
-
-      {/* big circle top-left accent */}
+      {/* decorative circle top-left */}
       <div style={{
         position: 'absolute', top: -80, left: -80,
         width: 280, height: 280,
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(255,255,255,0.05)',
+        borderRadius: '50%',
+      }} />
+
+      {/* decorative circle bottom-right */}
+      <div style={{
+        position: 'absolute', bottom: -60, right: -60,
+        width: 220, height: 220,
+        background: 'rgba(255,255,255,0.04)',
         borderRadius: '50%',
       }} />
 
@@ -95,64 +104,82 @@ function ShareCard({ cardRef, challengeTitle, score }) {
         }}>
           🏆 MEDPAL CHALLENGE
         </div>
-        <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em' }}>
-          medpal.id
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.04em' }}>
+          {siteUrl}
         </div>
       </div>
 
-      {/* ── MAIN SCORE SECTION ── */}
+      {/* ── HERO: RANK ── */}
       <div style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '0 1.5rem',
+        padding: '0 1.75rem',
         zIndex: 1,
       }}>
-        {/* tagline */}
+        {/* PERINGKAT label */}
         <div style={{
-          fontSize: 13,
-          fontWeight: 500,
-          color: 'rgba(255,255,255,0.65)',
-          marginBottom: '0.25rem',
-          letterSpacing: '0.02em',
+          fontSize: 11,
+          fontWeight: 700,
+          color: 'rgba(255,255,255,0.55)',
+          letterSpacing: '0.15em',
+          marginBottom: 2,
         }}>
-          Aku berhasil menyelesaikan challenge ini! 🎉
+          PERINGKAT
         </div>
 
-        {/* challenge title */}
+        {/* Rank number — biggest element */}
         <div style={{
-          fontSize: 17,
-          fontWeight: 700,
+          fontSize: 104,
+          fontWeight: 900,
           color: '#fff',
-          lineHeight: 1.35,
-          marginBottom: '1.5rem',
-          maxWidth: 320,
+          lineHeight: 1,
+          letterSpacing: '-0.04em',
+          textShadow: '0 4px 28px rgba(0,0,0,0.3)',
+        }}>
+          {displayRank}
+        </div>
+
+        {/* DARI X PESERTA */}
+        <div style={{
+          fontSize: 15,
+          fontWeight: 700,
+          color: 'rgba(255,255,255,0.65)',
+          letterSpacing: '0.06em',
+          marginBottom: '1.25rem',
+        }}>
+          {displayTotal}
+        </div>
+
+        {/* Challenge title */}
+        <div style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: 'rgba(255,255,255,0.88)',
+          lineHeight: 1.4,
+          marginBottom: '0.875rem',
+          maxWidth: 300,
         }}>
           {challengeTitle}
         </div>
 
-        {/* score hero */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <div style={{
-            fontSize: 96,
-            fontWeight: 900,
-            color: '#fff',
-            lineHeight: 1,
-            letterSpacing: '-0.04em',
-            textShadow: '0 4px 24px rgba(0,0,0,0.25)',
-          }}>
-            {score}
-          </div>
-          <div style={{
-            fontSize: 22,
-            fontWeight: 700,
-            color: 'rgba(255,255,255,0.65)',
-            letterSpacing: '0.1em',
-            paddingBottom: 8,
-          }}>
-            POIN
-          </div>
+        {/* Score badge */}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          background: 'rgba(255,255,255,0.15)',
+          border: '1px solid rgba(255,255,255,0.28)',
+          borderRadius: 999,
+          padding: '5px 16px',
+          fontSize: 14,
+          fontWeight: 800,
+          color: '#fff',
+          letterSpacing: '0.06em',
+          alignSelf: 'flex-start',
+        }}>
+          ⚡ {score} POIN
         </div>
       </div>
 
@@ -160,24 +187,53 @@ function ShareCard({ cardRef, challengeTitle, score }) {
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         padding: '0 1.5rem 1.25rem',
         zIndex: 1,
+        gap: '1rem',
       }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
-          Platform Belajar Kedokteran
+        {/* Social watermark */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.02em' }}>
+            📷 {igHandle}
+          </div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.02em' }}>
+            🌐 {siteUrl}
+          </div>
         </div>
-        <div style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.04em' }}>
-          medpal.id
+
+        {/* CTA */}
+        <div style={{
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'rgba(255,255,255,0.6)',
+          textAlign: 'right',
+          maxWidth: 160,
+          lineHeight: 1.4,
+        }}>
+          Visit {siteUrl} untuk ikuti challenge ini →
         </div>
       </div>
     </div>
   )
 }
 
-export default function ShareModal({ isOpen, onClose, challengeTitle, score }) {
+export default function ShareModal({ isOpen, onClose, challengeTitle, score, rank, totalParticipants }) {
   const cardRef = useRef(null)
   const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+  const constants = useSelector(state => state.constant.constants)
+
+  useEffect(() => {
+    if (isOpen && !constants.home_social_items) {
+      dispatch(fetchPublicConstants(['home_social_items']))
+    }
+  }, [isOpen, dispatch, constants.home_social_items])
+
+  const socialItems = parseJson(constants.home_social_items)
+  const instagramItem = socialItems?.find(s => s.type === 'instagram')
+  const instagramHandle = instagramItem?.handle || '@medpal.id'
+  const website = 'medpal.id'
 
   const handleDownload = useCallback(async () => {
     if (!cardRef.current) return
@@ -206,11 +262,10 @@ export default function ShareModal({ isOpen, onClose, challengeTitle, score }) {
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: 'Hasil Challenge Medpal',
-          text: `Aku dapat ${score} poin di "${challengeTitle}" — coba juga di medpal.id!`,
+          text: `Aku peringkat #${rank} dari ${totalParticipants} peserta dengan ${score} poin di "${challengeTitle}" — coba juga di ${website}!`,
           files: [file],
         })
       } else {
-        // fallback: download
         const link = document.createElement('a')
         link.download = `medpal-challenge-${score}poin.png`
         link.href = dataUrl
@@ -221,21 +276,20 @@ export default function ShareModal({ isOpen, onClose, challengeTitle, score }) {
     } finally {
       setLoading(false)
     }
-  }, [score, challengeTitle])
+  }, [score, challengeTitle, rank, totalParticipants])
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Bagikan Hasil"
-      size="medium"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Bagikan Hasil" size="medium">
       <PreviewWrap>
         <ScaleBox>
           <ShareCard
             cardRef={cardRef}
             challengeTitle={challengeTitle}
             score={score}
+            rank={rank}
+            totalParticipants={totalParticipants}
+            instagramHandle={instagramHandle}
+            website={website}
           />
         </ScaleBox>
       </PreviewWrap>
@@ -250,7 +304,7 @@ export default function ShareModal({ isOpen, onClose, challengeTitle, score }) {
       </ActionRow>
 
       <DownloadNote>
-        Gambar akan disimpan ke perangkat kamu · resolusi 960x960px
+        Gambar akan disimpan ke perangkat kamu · resolusi 960×960px
       </DownloadNote>
     </Modal>
   )
