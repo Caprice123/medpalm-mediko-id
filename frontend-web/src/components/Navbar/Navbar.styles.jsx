@@ -337,3 +337,69 @@ export const MobileCreditBreakdownRow = styled.div`
   }
 `
 
+export const AvatarWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+`
+
+export const AvatarDropdown = styled.div`
+  display: ${props => props.$open ? 'block' : 'none'};
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: white;
+  border: 1px solid ${colors.neutral.gray200};
+  border-radius: 12px;
+  padding: 0.5rem;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 200;
+`
+
+export const AvatarDropdownUser = styled.div`
+  padding: 0.5rem 0.75rem 0.75rem;
+  border-bottom: 1px solid ${colors.neutral.gray100};
+  margin-bottom: 0.25rem;
+`
+
+export const AvatarDropdownUserName = styled.div`
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: ${colors.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+`
+
+export const AvatarDropdownUserEmail = styled.div`
+  font-size: 0.75rem;
+  color: ${colors.text.secondary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  margin-top: 0.15rem;
+`
+
+export const AvatarDropdownItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: ${props => props.$danger ? '#dc2626' : colors.text.primary};
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+
+  &:hover {
+    background: ${props => props.$danger ? '#fef2f2' : colors.neutral.gray50};
+  }
+`
+

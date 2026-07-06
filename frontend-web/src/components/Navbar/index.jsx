@@ -1,6 +1,13 @@
-import { useState } from "react"
-import { Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection, UserInfo, UserName, UserSection, HamburgerButton, MobileMenu, MobileMenuItem, MobileMenuDivider, CreditWrapper, CreditTooltip, TooltipRow, TooltipLabel, TooltipValue, MobileStatusRow, MobileCreditBreakdown, MobileCreditBreakdownRow, SubscriptionWrapper, SubscriptionTooltip } from "./Navbar.styles"
-import { useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import {
+  Avatar, Container, Logo, StatusDivider, StatusItem, StatusSection,
+  UserInfo, UserName, UserSection, HamburgerButton, MobileMenu,
+  MobileMenuItem, MobileMenuDivider, CreditWrapper, CreditTooltip,
+  TooltipRow, TooltipLabel, TooltipValue, MobileStatusRow,
+  MobileCreditBreakdown, MobileCreditBreakdownRow, SubscriptionWrapper,
+  SubscriptionTooltip, AvatarWrapper, AvatarDropdown, AvatarDropdownUser,
+  AvatarDropdownUserName, AvatarDropdownUserEmail, AvatarDropdownItem,
+} from "./Navbar.styles"
 import { logout } from '@store/auth/action'
 import { fetchUserStatus } from '@store/pricing/action'
 import { fetchFeatures } from '@store/feature/action'
@@ -9,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import Button from '@components/common/Button'
 import { formatLocalDate } from '@utils/dateUtils'
+import { ProfileRoute } from '@routes/Profile/routes'
 
 export const Navbar = () => {
     const dispatch = useDispatch()
@@ -17,6 +25,8 @@ export const Navbar = () => {
     const appFeatures = useSelector(state => state.feature.features)
     const [user, setUser] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+    const avatarRef = useRef(null)
 
     useEffect(() => {
         const userData = getUserData()
@@ -25,12 +35,33 @@ export const Navbar = () => {
         if (appFeatures.length === 0) dispatch(fetchFeatures())
     }, [dispatch])
 
+    // Close avatar dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (avatarRef.current && !avatarRef.current.contains(e.target)) {
+                setAvatarMenuOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
     const handleLogout = () => {
         const onSuccess = () => navigate('/sign-in')
         dispatch(logout(onSuccess))
     }
 
     const handleTopUp = () => navigate('/topup')
+
+    const handleGoToProfile = () => {
+        setAvatarMenuOpen(false)
+        navigate(ProfileRoute.setupRoute)
+    }
+
+    const handleLogoutFromDropdown = () => {
+        setAvatarMenuOpen(false)
+        handleLogout()
+    }
 
     // Subscription expiry calculations
     const featureLabels = Object.fromEntries(appFeatures.map(f => [f.sessionType, f.name]))
@@ -114,28 +145,42 @@ export const Navbar = () => {
                 )}
               </CreditWrapper>
             </StatusSection>
-            {user && (
-                <UserInfo>
-                {user.picture ? (
-                    <Avatar src={user.picture} alt={user.name} />
-                ) : (
-                    <Avatar as="div">
-                    {user.name?.charAt(0).toUpperCase()}
-                    </Avatar>
-                )}
-                </UserInfo>
-            )}
-            {(user?.role === 'admin' || user?.role === 'superadmin') && (
-                <Button onClick={() => navigate('/admin')} variant="primary" size="small">
-                Admin
-                </Button>
-            )}
+
             <Button variant="outline" onClick={handleTopUp} size="small">
                 Top Up
             </Button>
-            <Button variant="outline" onClick={handleLogout} size="small">
-                Keluar
-            </Button>
+
+            {/* Avatar with dropdown */}
+            {user && (
+                <AvatarWrapper ref={avatarRef} onClick={() => setAvatarMenuOpen(o => !o)}>
+                    <UserInfo>
+                    {user.picture ? (
+                        <Avatar src={user.picture} alt={user.name} />
+                    ) : (
+                        <Avatar as="div">
+                        {user.name?.charAt(0).toUpperCase()}
+                        </Avatar>
+                    )}
+                    </UserInfo>
+                    <AvatarDropdown $open={avatarMenuOpen}>
+                        <AvatarDropdownUser>
+                            <AvatarDropdownUserName>{user.name}</AvatarDropdownUserName>
+                            <AvatarDropdownUserEmail>{user.email}</AvatarDropdownUserEmail>
+                        </AvatarDropdownUser>
+                        <AvatarDropdownItem onClick={handleGoToProfile}>
+                            👤 Edit Profil
+                        </AvatarDropdownItem>
+                        {(user?.role === 'admin' || user?.role === 'superadmin') && (
+                            <AvatarDropdownItem onClick={() => { setAvatarMenuOpen(false); navigate('/admin') }}>
+                                🛠️ Admin Panel
+                            </AvatarDropdownItem>
+                        )}
+                        <AvatarDropdownItem $danger onClick={handleLogoutFromDropdown}>
+                            🚪 Keluar
+                        </AvatarDropdownItem>
+                    </AvatarDropdown>
+                </AvatarWrapper>
+            )}
             </UserSection>
 
             {/* Mobile Hamburger Button */}
@@ -214,6 +259,19 @@ export const Navbar = () => {
                     </Button>
                 </MobileMenuItem>
             )}
+
+            <MobileMenuItem>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        navigate(ProfileRoute.setupRoute)
+                        setMobileMenuOpen(false)
+                    }}
+                    fullWidth
+                >
+                    👤 Edit Profil
+                </Button>
+            </MobileMenuItem>
 
             <MobileMenuItem>
                 <Button

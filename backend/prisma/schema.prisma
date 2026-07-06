@@ -395,6 +395,21 @@ model users {
   osce_sessions                 osce_sessions[]
   user_feature_subscriptions    user_feature_subscriptions[]
   challenge_sessions            challenge_sessions[]
+  user_profile                  user_profiles?
+}
+
+model user_profiles {
+  id           Int      @id @default(autoincrement())
+  user_id      Int      @unique
+  phone_number String?
+  university   String?
+  is_complete  Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
 }
 
 model user_feature_subscriptions {

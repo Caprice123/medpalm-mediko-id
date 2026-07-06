@@ -22,8 +22,6 @@ export const useTopup = () => {
   const initialTab = new URLSearchParams(location.search).get('tab') || 'plans'
   const [activeTab, setActiveTab] = useState(initialTab)
   const [planFilter, setPlanFilter] = useState('all')
-  const [showContactModal, setShowContactModal] = useState(false)
-  const [pendingPlan, setPendingPlan] = useState(null)
   const snapScriptLoaded = useRef(false)
 
   const filteredPlans = useMemo(() => plans.filter(plan =>
@@ -82,21 +80,15 @@ export const useTopup = () => {
   }
 
   const handlePlanSelect = (plan) => {
-    setPendingPlan(plan)
-    setShowContactModal(true)
-  }
-
-  const handleContactConfirm = ({ phoneNumber, university }) => {
-    if (!pendingPlan) return
-    const plan = pendingPlan
     const allowedMethods = plan.allowedPaymentMethods || ['xendit']
     let paymentMethod = 'manual'
     if (allowedMethods.includes('midtrans')) paymentMethod = 'midtrans'
     else if (allowedMethods.includes('xendit')) paymentMethod = 'xendit'
 
+    const phoneNumber = userStatus?.profile?.phoneNumber
+    const university = userStatus?.profile?.university
+
     dispatch(purchasePricingPlan(plan.id, paymentMethod, (result) => {
-      setShowContactModal(false)
-      setPendingPlan(null)
       const { paymentInfo, id: purchaseId } = result.data
 
       if (paymentMethod === 'midtrans' && paymentInfo?.snapToken) {
@@ -120,11 +112,6 @@ export const useTopup = () => {
     }, { phoneNumber, university }))
   }
 
-  const handleCloseContactModal = () => {
-    setShowContactModal(false)
-    setPendingPlan(null)
-  }
-
   const handleCloseDetailModal = () => {
     setShowDetailModal(false)
     setSelectedPurchaseId(null)
@@ -145,15 +132,11 @@ export const useTopup = () => {
     showDetailModal,
     selectedPurchaseId,
     isPurchaseLoading,
-    showContactModal,
-    pendingPlan,
     handlePageChange,
     handlePurchaseSuccess,
     handleEvidenceUploaded,
     handleShowDetail,
     handlePlanSelect,
-    handleContactConfirm,
-    handleCloseContactModal,
     handleCloseDetailModal,
   }
 }
