@@ -83,7 +83,7 @@ export default function ChallengeResultPage() {
 
         <EmailNotice>
           <span style={{ fontSize: '1.25rem' }}>📧</span>
-          <span>Pembahasan jawaban lengkap akan dikirimkan ke email kamu.</span>
+          <span>Pembahasan jawaban lengkap akan dikirimkan ke email kamu setelah challenge berakhir.</span>
         </EmailNotice>
 
         <Panel>

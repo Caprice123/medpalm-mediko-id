@@ -35,7 +35,9 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { questions, answeredQuestions, secondsPerQuestion, basePointsPerCorrect, currentStreak: resumedStreak, score: resumedScore } = session
+  const { questions, answeredQuestions, secondsPerQuestion, specialDurationSeconds, basePointsPerCorrect, currentStreak: resumedStreak, score: resumedScore } = session
+
+  const getQuestionDuration = (q) => (q?.isSpecial && specialDurationSeconds > 0) ? specialDurationSeconds : secondsPerQuestion
 
   const initialAnswers = Object.fromEntries(
     (answeredQuestions || []).map(a => [a.questionId, { selectedOptionIndex: a.selectedOptionIndex, timeTakenSeconds: a.timeTakenSeconds }])
@@ -50,11 +52,12 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
   const [selected, setSelected] = useState(initialAnswers[questions[startIdx]?.id]?.selectedOptionIndex ?? null)
   const [questionTimer, setQuestionTimer] = useState(() => {
     const q = questions[startIdx]
-    if (!q) return secondsPerQuestion
+    const duration = (q?.isSpecial && specialDurationSeconds > 0) ? specialDurationSeconds : secondsPerQuestion
+    if (!q) return duration
     const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
-    if (!stored) return secondsPerQuestion
+    if (!stored) return duration
     const elapsed = Math.floor((Date.now() - parseInt(stored)) / 1000)
-    return Math.max(0, secondsPerQuestion - elapsed)
+    return Math.max(0, duration - elapsed)
   })
   const [streak, setStreak] = useState(resumedStreak ?? 0)
   const [totalScore, setTotalScore] = useState(resumedScore ?? 0)
@@ -83,22 +86,28 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
   useEffect(() => { answersRef.current = answers }, [answers])
 
-  // Special question announcement
+  // Special question announcement — timer starts only after animation completes
   useEffect(() => {
     if (!questions[currentIdx]?.isSpecial) return
     setSpecialOut(false)
     setShowSpecialAnnounce(true)
     const t1 = setTimeout(() => setSpecialOut(true), 1300)
-    const t2 = setTimeout(() => setShowSpecialAnnounce(false), 1600)
+    const t2 = setTimeout(() => {
+      setShowSpecialAnnounce(false)
+      const now = Date.now()
+      const q = questions[currentIdx]
+      if (q) localStorage.setItem(`qs_${uniqueId}_${q.id}`, now.toString())
+      questionStartTimeRef.current = now
+    }, 1600)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [currentIdx])
 
-  // Mark question as seen and record start time when it appears for the first time
+  // Mark question as seen; for special questions the start time is set after animation
   useEffect(() => {
     const q = questions[currentIdx]
     if (!q) return
     const key = `qs_${uniqueId}_${q.id}`
-    if (!localStorage.getItem(key)) {
+    if (!q.isSpecial && !localStorage.getItem(key)) {
       localStorage.setItem(key, Date.now().toString())
     }
     const existing = answersRef.current[q.id]
@@ -110,10 +119,11 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
   const timerDelay = useMemo(() => {
     const q = questions[currentIdx]
     if (!q) return 0
+    const duration = getQuestionDuration(q)
     const stored = localStorage.getItem(`qs_${uniqueId}_${q.id}`)
     if (!stored) return 0
     const elapsed = (Date.now() - parseInt(stored)) / 1000
-    return -Math.min(elapsed, secondsPerQuestion)
+    return -Math.min(elapsed, duration)
   }, [currentIdx])
 
   const doSubmit = async () => {
@@ -153,13 +163,14 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
     setAnswers({ ...answersRef.current })
     setSelected(answersRef.current[questions[nextIdx]?.id]?.selectedOptionIndex ?? null)
     questionStartTimeRef.current = Date.now()
-    setQuestionTimer(secondsPerQuestion)
+    setQuestionTimer(getQuestionDuration(questions[nextIdx]))
     setLocked(false)
   }
 
   // Per-question countdown
   useEffect(() => {
     if (lockedRef.current) return
+    if (showSpecialAnnounce) return
     if (questionTimer <= 0) {
       lockedRef.current = true
       setLocked(true)
@@ -169,7 +180,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
       const q = questions[currentIdxRef.current]
       if (q) {
         localStorage.removeItem(`qs_${uniqueId}_${q.id}`)
-        dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: null, timeTakenSeconds: secondsPerQuestion }))
+        dispatch(saveAnswer(uniqueId, { questionId: q.id, selectedOptionIndex: null, timeTakenSeconds: getQuestionDuration(q) }))
       }
       const t = setTimeout(() => {
         setPointsFlash(null)
@@ -179,7 +190,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
     }
     timerRef.current = setTimeout(() => setQuestionTimer(prev => prev - 1), 1000)
     return () => clearTimeout(timerRef.current)
-  }, [questionTimer])
+  }, [questionTimer, showSpecialAnnounce])
 
   const handleSelect = (idx) => {
     if (lockedRef.current) return
@@ -210,7 +221,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
           streakRef.current = 0
         }
         newStreak = streakRef.current
-        pts = isCorrect ? computePoints(basePointsPerCorrect, q.isSpecial, timeTaken, secondsPerQuestion, newStreak) : 0
+        pts = isCorrect ? computePoints(basePointsPerCorrect, q.isSpecial, timeTaken, getQuestionDuration(q), newStreak) : 0
         setStreak(newStreak)
         if (isCorrect) setTotalScore(prev => prev + pts)
       }
@@ -236,8 +247,9 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
   }
 
   const currentQ = questions[currentIdx]
-  const timerPct = (questionTimer / secondsPerQuestion) * 100
-  const isUrgent = questionTimer <= Math.ceil(secondsPerQuestion * 0.25)
+  const currentDuration = getQuestionDuration(currentQ)
+  const timerPct = (questionTimer / currentDuration) * 100
+  const isUrgent = questionTimer <= Math.ceil(currentDuration * 0.25)
 
   return (
     <PhotoProvider>
@@ -258,7 +270,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
     <PageWrapper>
       <StickyHeader>
         <QuestionTimerBar>
-          <QuestionTimerFill key={currentIdx} $duration={secondsPerQuestion} $delay={timerDelay} $paused={locked} />
+          <QuestionTimerFill key={currentIdx} $duration={currentDuration} $delay={timerDelay} $paused={locked || showSpecialAnnounce} />
         </QuestionTimerBar>
       </StickyHeader>
 

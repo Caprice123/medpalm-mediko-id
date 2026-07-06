@@ -134,6 +134,7 @@ export default function BlitzSession({ session, uniqueId, endAt }) {
 
   useEffect(() => {
     if (submittingRef.current) return
+    if (showTransition) return
 
     if (isPhaseExhausted || secondsLeft <= 0) {
       if (handledRef.current) return
@@ -168,7 +169,7 @@ export default function BlitzSession({ session, uniqueId, endAt }) {
 
     timerRef.current = setTimeout(() => setSecondsLeft(prev => prev - 1), 1000)
     return () => clearTimeout(timerRef.current)
-  }, [secondsLeft, isPhaseExhausted, phase])
+  }, [secondsLeft, isPhaseExhausted, phase, showTransition])
 
   const advanceNext = () => {
     setRevealed(null)

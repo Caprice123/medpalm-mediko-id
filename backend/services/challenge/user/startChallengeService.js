@@ -42,8 +42,7 @@ export class StartChallengeService {
       const drawnSpecial = [...specialPool].sort(() => Math.random() - 0.5).slice(0, maxSpecial)
       selectedIds = [...shuffledRegular, ...drawnSpecial].map(q => q.id)
     } else {
-      // Classic: total_questions = number of regular questions to draw
-      // Special questions are appended after all regular questions
+      // Classic: draw regular questions + specials, shuffle them together
       const specialPool = allQuestions.filter(q => q.is_special)
       const regularPool = allQuestions.filter(q => !q.is_special)
 
@@ -56,11 +55,9 @@ export class StartChallengeService {
       const drawnRegular = [...regularPool].sort(() => Math.random() - 0.5).slice(0, challenge.total_questions)
       const drawnSpecial = [...specialPool].sort(() => Math.random() - 0.5).slice(0, maxSpecial)
 
-      // Regular questions in random order, specials always last
-      selectedIds = [
-        ...drawnRegular.sort(() => Math.random() - 0.5),
-        ...drawnSpecial.sort(() => Math.random() - 0.5),
-      ].map(q => q.id)
+      selectedIds = [...drawnRegular, ...drawnSpecial]
+        .sort(() => Math.random() - 0.5)
+        .map(q => q.id)
     }
 
     const [session] = await prisma.$transaction([
