@@ -57,6 +57,7 @@ import bannerRoutes from '#routes/api/v1/banner.routes';
 import adminBannerRoutes from '#routes/admin/v1/banner.routes';
 import challengeRoutes from '#routes/api/v1/challenge.routes';
 import adminChallengeRoutes from '#routes/admin/v1/challenge.routes';
+import profileRoutes from '#routes/api/v1/profile.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
 import blobRoutes from '#routes/api/v1/blobs.routes';
 import htmlToDocxRoutes from '#routes/api/v1/htmlToDocx.routes';
@@ -170,6 +171,7 @@ app.use('/api/v1/webinars', webinarRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/challenges', challengeRoutes);
+app.use('/api/v1/profile', profileRoutes);
 
 // Admin Routes
 app.use('/admin/v1/credit-plans', adminCreditPlanRoutes);

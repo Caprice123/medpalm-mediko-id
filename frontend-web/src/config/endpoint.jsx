@@ -59,6 +59,7 @@ export default {
         banners: "/api/v1/banners",
         challenges: "/api/v1/challenges",
         challengeMyBadges: "/api/v1/challenges/my-badges",
+        profile: "/api/v1/profile",
         // OSCE Practice session endpoints
         osceMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/messages`,
         oscePhysicalExamMessages: (sessionId) => `/api/v1/oscePractice/sessions/${sessionId}/physical-exam/messages`,

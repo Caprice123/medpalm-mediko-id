@@ -14,7 +14,9 @@ const initialState = {
     creditBalance: 0,
     permanentBalance: 0,
     expiringBuckets: [],
-    userId: null
+    userId: null,
+    profile: null,
+    isProfileComplete: null,
   },
   purchaseHistory: [],
   historyPagination: {
