@@ -1,22 +1,34 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { getToken } from '@utils/authToken'
+import { useDispatch } from 'react-redux'
+import { getToken, getUserData } from '@utils/authToken'
+import { fetchUserStatus } from '@store/pricing/action'
 import { Navbar } from '../components/Navbar'
 
 const PrivateRoute = () => {
   const token = getToken()
+  const dispatch = useDispatch()
+  const currentUser = getUserData()
+  const isUser = currentUser?.role === 'user'
 
-  // Redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (token) dispatch(fetchUserStatus())
+  }, [dispatch, token])
+
+  useEffect(() => {
+    document.body.style.backgroundColor = '#f0fdfa'
+    return () => { document.body.style.backgroundColor = '' }
+  }, [])
+
   if (!token) {
     return <Navigate to="/sign-in" replace />
   }
 
-  // Render children if authenticated
   return (
-    <div style={{ backgroundColor: "#f0fdfa", minHeight: "100vh" }}>
-      <Navbar />
+    <>
+      {isUser && <Navbar />}
       <Outlet />
-    </div>
-
+    </>
   )
 }
 

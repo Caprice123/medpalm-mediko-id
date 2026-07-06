@@ -192,8 +192,6 @@ export const BannerButtonPrimary = styled.button`
   @media (max-width: 640px) { align-self: flex-start; }
 `
 
-
-
 export const BannerText = styled.div`
   h2 {
     font-size: 1.25rem;
@@ -206,8 +204,6 @@ export const BannerText = styled.div`
     opacity: 0.9;
   }
 `
-
-
 
 export const RequirementItem = styled.div`
   display: flex;

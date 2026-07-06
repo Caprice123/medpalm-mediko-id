@@ -58,13 +58,11 @@ function Dashboard() {
   const currentUser = getUserData()
   const isNonUser = currentUser?.role !== 'user'
 
-  // Redux selectors
   const { features } = useSelector(state => state.feature)
   const { isLoadingFeatures } = useSelector(state => state.feature.loading)
   const { userStatus } = useSelector(state => state.pricing)
   const { activeBanners } = useSelector(state => state.banner)
 
-  // Filter only active features
   const activeFeatures = features.filter(feature => feature.isActive === true || feature.isActive === "true")
 
   useEffect(() => {
@@ -72,32 +70,23 @@ function Dashboard() {
     dispatch(fetchActiveBanners())
   }, [dispatch])
 
-
-  const handleUseFeature = async (feature) => {
-      // Determine session type based on feature
-      const sessionType = feature.sessionType
-
-      const sessionTypeRouteMappings = {
-        'flashcard': FlashcardRoute.moduleRoute,
-        'exercise': ExerciseRoute.moduleRoute,
-        'calculator': CalculatorRoute.moduleRoute,
-        'diagnostic': DiagnosticQuizRoute.moduleRoute,
-        'anatomy': AnatomyQuizRoute.moduleRoute,
-        'summary_notes': SummaryNotesRoute.moduleRoute,
-        'mcq': MultipleChoiceRoute.moduleRoute,
-        'chatbot': ChatbotRoute.moduleRoute,
-        'skripsi_builder': SkripsiRoute.moduleRoute,
-        'osce_practice': OscePracticeRoute.moduleRoute,
-        'atlas': AtlasRoute.moduleRoute,
-        'challenge': ChallengeRoute.moduleRoute,
-      }
-      
-      // Navigate to the mapped route if it exists
-      const route = sessionTypeRouteMappings[sessionType]
-      if (route) {
-        navigate(route)
-        return
-      }
+  const handleUseFeature = (feature) => {
+    const routes = {
+      'flashcard': FlashcardRoute.moduleRoute,
+      'exercise': ExerciseRoute.moduleRoute,
+      'calculator': CalculatorRoute.moduleRoute,
+      'diagnostic': DiagnosticQuizRoute.moduleRoute,
+      'anatomy': AnatomyQuizRoute.moduleRoute,
+      'summary_notes': SummaryNotesRoute.moduleRoute,
+      'mcq': MultipleChoiceRoute.moduleRoute,
+      'chatbot': ChatbotRoute.moduleRoute,
+      'skripsi_builder': SkripsiRoute.moduleRoute,
+      'osce_practice': OscePracticeRoute.moduleRoute,
+      'atlas': AtlasRoute.moduleRoute,
+      'challenge': ChallengeRoute.moduleRoute,
+    }
+    const route = routes[feature.sessionType]
+    if (route) navigate(route)
   }
 
   return (
@@ -149,31 +138,21 @@ function Dashboard() {
         ) : activeFeatures.length > 0 ? (
           <CatalogGrid>
             {activeFeatures.map((feature) => {
-              // Check user access
               const userCredits = parseFloat(userStatus?.creditBalance || 0)
               const activeFeatureKeys = userStatus?.activeFeatureKeys || []
-
               const hasFeatureSubscription = activeFeatureKeys.some(f => f.feature === feature.sessionType)
-
-              // Determine requirements
-              const needsSubscription = feature.accessType === 'subscription' ||
-                                       feature.accessType === 'subscription_and_credits'
-              const needsCredits = feature.accessType === 'credits' ||
-                                  feature.accessType === 'subscription_and_credits'
+              const needsSubscription = feature.accessType === 'subscription' || feature.accessType === 'subscription_and_credits'
+              const needsCredits = feature.accessType === 'credits' || feature.accessType === 'subscription_and_credits'
               const isFree = feature.accessType === 'free'
-
-              // Check if requirements are met
               const subscriptionMet = !needsSubscription || hasFeatureSubscription
               const creditsMet = !needsCredits || userCredits >= (feature.cost || 0)
               const canUse = (subscriptionMet && creditsMet) || isFree || hasFeatureSubscription
 
-              // Determine button text and action
               const getButtonConfig = () => {
                 if (isFree) return { text: 'Gunakan Fitur', variant: 'primary' }
                 if (!canUse) return { text: 'Lihat Paket', variant: 'outline' }
                 return { text: 'Gunakan Fitur', variant: 'primary' }
               }
-
               const buttonConfig = getButtonConfig()
 
               return (
@@ -186,25 +165,17 @@ function Dashboard() {
                       </FeatureTitle>
                       <FeatureDescription>{feature.description}</FeatureDescription>
                       <div style={{flex: 1}}></div>
-
-                      {/* Requirements Badge */}
                       {!isFree && (
                         <RequirementBadge $locked={!canUse}>
                           {canUse ? '✓ Akses Tersedia' : '⚠️ Perlu Akses'}
                         </RequirementBadge>
                       )}
-
-                      {/* Requirements List */}
                       {!isFree && (
                         <RequirementsList>
                           {needsSubscription && (
                             <RequirementItem $met={subscriptionMet}>
                               <span>{subscriptionMet ? '✓' : '✗'}</span>
-                              <span>
-                                {subscriptionMet
-                                  ? 'Berlangganan Aktif'
-                                  : 'Perlu Berlangganan'}
-                              </span>
+                              <span>{subscriptionMet ? 'Berlangganan Aktif' : 'Perlu Berlangganan'}</span>
                             </RequirementItem>
                           )}
                           {needsCredits && feature.cost > 0 && (
@@ -219,7 +190,6 @@ function Dashboard() {
                           )}
                         </RequirementsList>
                       )}
-
                       <FeatureFooter>
                         <Button
                           variant={buttonConfig.variant}
@@ -249,63 +219,63 @@ function Dashboard() {
           </EmptyState>
         )}
 
-            <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
-            <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
-            <CatalogGrid>
-              <CardWrapper>
-                <Card shadow hoverable>
-                  <CardBody>
-                    <FeatureIcon>🎓</FeatureIcon>
-                    <FeatureTitle>Webinar</FeatureTitle>
-                    <FeatureDescription>
-                      Ikuti webinar medis eksklusif dari para dokter dan spesialis terkemuka
-                    </FeatureDescription>
-                    <div style={{ flex: 1 }} />
-                    <FeatureFooter>
-                      <Button variant="primary" onClick={() => navigate(WebinarRoute.listRoute)} fullWidth>
-                        Lihat Webinar
-                      </Button>
-                    </FeatureFooter>
-                  </CardBody>
-                </Card>
-              </CardWrapper>
-              <CardWrapper>
-                <Card shadow hoverable>
-                  <CardBody>
-                    <FeatureIcon>🗓️</FeatureIcon>
-                    <FeatureTitle>Events</FeatureTitle>
-                    <FeatureDescription>
-                      Daftar dan ikuti event medis eksklusif yang tersedia untukmu
-                    </FeatureDescription>
-                    <div style={{ flex: 1 }} />
-                    <FeatureFooter>
-                      <Button variant="primary" onClick={() => navigate(EventRoute.listRoute)} fullWidth>
-                        Lihat Events
-                      </Button>
-                    </FeatureFooter>
-                  </CardBody>
-                </Card>
-              </CardWrapper>
-              {isNonUser && (
-                <CardWrapper>
-                  <Card shadow hoverable>
-                    <CardBody>
-                      <FeatureIcon>🏆</FeatureIcon>
-                      <FeatureTitle>Challenge</FeatureTitle>
-                      <FeatureDescription>
-                        Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif
-                      </FeatureDescription>
-                      <div style={{ flex: 1 }} />
-                      <FeatureFooter>
-                        <Button variant="primary" onClick={() => navigate(ChallengeRoute.homeRoute)} fullWidth>
-                          Lihat Challenge
-                        </Button>
-                      </FeatureFooter>
-                    </CardBody>
-                  </Card>
-                </CardWrapper>
-              )}
-            </CatalogGrid>
+        <PageTitle style={{ marginTop: '2.5rem' }}>Layanan</PageTitle>
+        <PageSubtitle>Akses layanan tambahan yang tersedia untuk Anda</PageSubtitle>
+        <CatalogGrid>
+          <CardWrapper>
+            <Card shadow hoverable>
+              <CardBody>
+                <FeatureIcon>🎓</FeatureIcon>
+                <FeatureTitle>Webinar</FeatureTitle>
+                <FeatureDescription>
+                  Ikuti webinar medis eksklusif dari para dokter dan spesialis terkemuka
+                </FeatureDescription>
+                <div style={{ flex: 1 }} />
+                <FeatureFooter>
+                  <Button variant="primary" onClick={() => navigate(WebinarRoute.listRoute)} fullWidth>
+                    Lihat Webinar
+                  </Button>
+                </FeatureFooter>
+              </CardBody>
+            </Card>
+          </CardWrapper>
+          <CardWrapper>
+            <Card shadow hoverable>
+              <CardBody>
+                <FeatureIcon>🗓️</FeatureIcon>
+                <FeatureTitle>Events</FeatureTitle>
+                <FeatureDescription>
+                  Daftar dan ikuti event medis eksklusif yang tersedia untukmu
+                </FeatureDescription>
+                <div style={{ flex: 1 }} />
+                <FeatureFooter>
+                  <Button variant="primary" onClick={() => navigate(EventRoute.listRoute)} fullWidth>
+                    Lihat Events
+                  </Button>
+                </FeatureFooter>
+              </CardBody>
+            </Card>
+          </CardWrapper>
+          {isNonUser && (
+            <CardWrapper>
+              <Card shadow hoverable>
+                <CardBody>
+                  <FeatureIcon>🏆</FeatureIcon>
+                  <FeatureTitle>Challenge</FeatureTitle>
+                  <FeatureDescription>
+                    Uji pengetahuanmu dan bersaing dengan pengguna lain dalam challenge eksklusif
+                  </FeatureDescription>
+                  <div style={{ flex: 1 }} />
+                  <FeatureFooter>
+                    <Button variant="primary" onClick={() => navigate(ChallengeRoute.homeRoute)} fullWidth>
+                      Lihat Challenge
+                    </Button>
+                  </FeatureFooter>
+                </CardBody>
+              </Card>
+            </CardWrapper>
+          )}
+        </CatalogGrid>
       </MainContent>
     </DashboardContainer>
   )

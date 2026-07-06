@@ -4,7 +4,7 @@ import { colors } from '@config/colors';
 export const LoaderWrapper = styled.div`
   position: ${props => props.fullScreen ? 'fixed' : 'absolute'};
   inset: 0;
-  z-index: 100000;
+  z-index: 999999;
   display: flex;
   flex-direction: column;
   justify-content: center;
