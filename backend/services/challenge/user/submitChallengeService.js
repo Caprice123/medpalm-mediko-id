@@ -19,6 +19,8 @@ export class SubmitChallengeService {
 
     // Score is already accumulated accurately by saveAnswerService on each answer.
     // Only correctCount and totalTime need to be derived from the answer records.
+    const now = new Date()
+    const isExpired = challenge.end_at && now > challenge.end_at
     const totalScore = session.score ?? 0
     let correctCount = 0
     let totalTime = 0
@@ -34,9 +36,11 @@ export class SubmitChallengeService {
         score: totalScore,
         correct_count: correctCount,
         total_time_seconds: totalTime,
-        completed_at: new Date(),
+        completed_at: now,
       },
     })
+
+    if (isExpired) return { ok: true }
 
     // Update Redis leaderboard cache so the result page gets fresh rank immediately
     try {

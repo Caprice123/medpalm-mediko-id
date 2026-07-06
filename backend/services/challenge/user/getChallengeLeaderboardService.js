@@ -39,7 +39,12 @@ export class GetChallengeLeaderboardService {
         userName: userMap[session.user_id]?.name || 'Pengguna',
       }))
 
-      mySessionData = allSessions.find(s => s.user_id === userId) || null
+      mySessionData = allSessions.find(s => s.user_id === userId)
+        ?? await prisma.challenge_sessions.findFirst({
+          where: { challenge_id: challenge.id, user_id: userId, status: 'completed' },
+          select: { final_rank: true },
+        })
+        ?? null
       myRank = mySessionData?.final_rank ?? null
     } else {
       let usedCache = false
@@ -48,12 +53,9 @@ export class GetChallengeLeaderboardService {
         let cached = await LeaderboardCacheService.getLeaderboard({ challengeId: challenge.id, limit })
 
         if (!cached) {
-          const orderBy = challenge.scoring_type === 'classic'
-            ? [{ score: 'desc' }, { total_time_seconds: 'asc' }]
-            : [{ score: 'desc' }]
           const dbSessions = await prisma.challenge_sessions.findMany({
             where: { challenge_id: challenge.id, status: 'completed' },
-            orderBy,
+            orderBy: [{ score: 'desc' }],
           })
           if (dbSessions.length) {
             await LeaderboardCacheService.warmCache({
@@ -90,8 +92,7 @@ export class GetChallengeLeaderboardService {
           userName: userMap[entry.userId]?.name || 'Pengguna',
         }))
 
-        const myEntry = leaderboard.find(e => e.isMe)
-        myRank = myEntry?.rank ?? null
+        myRank = await LeaderboardCacheService.getRank({ challengeId: challenge.id, userId })
         usedCache = true
       } catch (err) {
         console.warn('[leaderboard] Redis unavailable, falling back to DB:', err.message)
@@ -125,10 +126,9 @@ export class GetChallengeLeaderboardService {
   }
 
   static async getLeaderboardFromDB({ challengeId, userId }) {
-    const orderBy = [{ score: 'desc' }, { total_time_seconds: 'asc' }]
     const sessions = await prisma.challenge_sessions.findMany({
       where: { challenge_id: challengeId, status: 'completed' },
-      orderBy,
+      orderBy: [{ score: 'desc' }],
     })
     const userIds = sessions.map(s => s.user_id)
     const users = userIds.length
@@ -138,10 +138,7 @@ export class GetChallengeLeaderboardService {
 
     let rank = 1
     return sessions.map((s, idx) => {
-      if (idx > 0) {
-        const prev = sessions[idx - 1]
-        if (s.score !== prev.score || s.total_time_seconds !== prev.total_time_seconds) rank = idx + 1
-      }
+      if (idx > 0 && s.score !== sessions[idx - 1].score) rank = idx + 1
       return {
         rank,
         score: s.score,

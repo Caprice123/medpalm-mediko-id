@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { startChallenge } from '@store/challenge/userAction'
+import { startChallenge, submitChallenge } from '@store/challenge/userAction'
 import Loading from '@components/common/Loading'
 import ClassicSession from '../ClassicSession'
 import BlitzSession from '../BlitzSession'
@@ -29,7 +29,7 @@ export default function ChallengeSessionPage() {
   }
 
   if (session.scoringType === 'blitz') {
-    return <BlitzSession session={session} uniqueId={uniqueId} />
+    return <BlitzSession session={session} uniqueId={uniqueId} endAt={session.endAt} />
   }
-  return <ClassicSession session={session} uniqueId={uniqueId} />
+  return <ClassicSession session={session} uniqueId={uniqueId} endAt={session.endAt} />
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import { setTimeout, clearTimeout } from 'worker-timers'
+import moment from 'moment-timezone'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
@@ -30,7 +31,7 @@ function computePoints(basePoints, isSpecial, timeTaken, secondsPerQuestion, str
   return Math.round(basePoints * pointMult * speedFactor * streakMult)
 }
 
-export default function ClassicSession({ session, uniqueId }) {
+export default function ClassicSession({ session, uniqueId, endAt }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -129,6 +130,15 @@ export default function ClassicSession({ session, uniqueId }) {
       submittingRef.current = false
     }
   }
+
+  // Force-submit when the challenge end_at deadline passes
+  useEffect(() => {
+    if (!endAt) return
+    const msLeft = moment(endAt).tz('Asia/Jakarta').diff(moment().tz('Asia/Jakarta'))
+    if (msLeft <= 0) { doSubmit(); return }
+    const t = setTimeout(() => doSubmit(), msLeft)
+    return () => clearTimeout(t)
+  }, [])
 
   const goNext = () => {
     const nextIdx = currentIdxRef.current + 1

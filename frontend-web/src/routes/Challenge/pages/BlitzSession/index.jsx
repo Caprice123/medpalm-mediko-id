@@ -5,6 +5,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import styled from 'styled-components'
 import { setTimeout, clearTimeout } from 'worker-timers'
+import moment from 'moment-timezone'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
@@ -35,7 +36,7 @@ const PhaseBadge = styled.div`
 `
 
 
-export default function BlitzSession({ session, uniqueId }) {
+export default function BlitzSession({ session, uniqueId, endAt }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -121,6 +122,15 @@ export default function BlitzSession({ session, uniqueId }) {
       submittingRef.current = false
     }
   }
+
+  // Force-submit when the challenge end_at deadline passes
+  useEffect(() => {
+    if (!endAt) return
+    const msLeft = moment(endAt).tz('Asia/Jakarta').diff(moment().tz('Asia/Jakarta'))
+    if (msLeft <= 0) { doSubmit(); return }
+    const t = setTimeout(() => doSubmit(), msLeft)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     if (submittingRef.current) return

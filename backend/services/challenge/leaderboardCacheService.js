@@ -5,9 +5,8 @@ const redis = createRedisConnection()
 const LB_KEY = (id) => `challenge:leaderboard:${id}`
 const DATA_KEY = (id) => `challenge:session_data:${id}`
 
-// Both types: rank by score DESC then time ASC (faster = higher rank on tie)
-function compositeScore(scoringType, score, totalTimeSec) {
-  return score * 1_000_000 - totalTimeSec
+function compositeScore(score) {
+  return score
 }
 
 function ttlSeconds(endAt) {
@@ -20,7 +19,7 @@ export class LeaderboardCacheService {
   static async addEntry({ challengeId, scoringType, userId, score, correctCount, totalTimeSec, endAt }) {
     const lbKey = LB_KEY(challengeId)
     const dataKey = DATA_KEY(challengeId)
-    const cs = compositeScore(scoringType, score, totalTimeSec)
+    const cs = compositeScore(score)
     const payload = JSON.stringify({ score, correctCount, totalTime: totalTimeSec })
 
     const pipeline = redis.pipeline()
@@ -87,7 +86,7 @@ export class LeaderboardCacheService {
     const pipeline = redis.pipeline()
 
     for (const s of sessions) {
-      const cs = compositeScore(scoringType, s.score, s.total_time_seconds)
+      const cs = compositeScore(s.score)
       pipeline.zadd(lbKey, cs, String(s.user_id))
       pipeline.hset(dataKey, String(s.user_id), JSON.stringify({
         score: s.score,

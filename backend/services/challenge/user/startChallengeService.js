@@ -1,6 +1,12 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
+import { DateTime } from 'luxon'
+
+const toJktIso = (date) => {
+  if (!date) return null
+  return DateTime.fromJSDate(new Date(date), { zone: 'Asia/Jakarta' }).toISO()
+}
 
 export class StartChallengeService {
   static async call({ challengeUniqueId, userId }) {
@@ -115,7 +121,8 @@ export class StartChallengeService {
 
     return {
       sessionUniqueId: session.unique_id,
-      startedAt: session.started_at,
+      startedAt: toJktIso(session.started_at),
+      endAt: toJktIso(challenge.end_at),
       durationSeconds: challenge.duration_seconds,
       specialDurationSeconds: challenge.special_duration_seconds,
       totalQuestions: questionIds.length,
