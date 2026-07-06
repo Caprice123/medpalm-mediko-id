@@ -140,9 +140,10 @@ export const TimerBox = styled.div`
   background: ${props => props.$urgent ? '#FEE2E2' : '#EFF6FF'};
   color: ${props => props.$urgent ? '#DC2626' : '#1E40AF'};
   border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 1.25rem;
+  padding: ${props => props.$compact ? '0.25rem 0.625rem' : '0.5rem 1rem'};
+  font-size: ${props => props.$compact ? '0.9375rem' : '1.25rem'};
   font-weight: 700;
+  white-space: nowrap;
 `
 
 export const ProgressBar = styled.div`
@@ -260,10 +261,11 @@ export const StreakBadge = styled.div`
   border: 2px solid #f97316;
   color: #c2410c;
   border-radius: 20px;
-  padding: 0.3rem 0.75rem;
-  font-size: 1rem;
+  padding: ${props => props.$compact ? '0.2rem 0.625rem' : '0.3rem 0.75rem'};
+  font-size: ${props => props.$compact ? '0.8125rem' : '1rem'};
   font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 `
 
 export const ScoreBadge = styled.div`
@@ -271,9 +273,16 @@ export const ScoreBadge = styled.div`
   border: 2px solid #6ee7b7;
   color: #065f46;
   border-radius: 20px;
-  padding: 0.3rem 0.875rem;
-  font-size: 0.9375rem;
+  padding: ${props => props.$compact ? '0.2rem 0.625rem' : '0.3rem 0.875rem'};
+  font-size: ${props => props.$compact ? '0.8125rem' : '0.9375rem'};
   font-weight: 700;
+  white-space: nowrap;
+`
+
+export const CardStats = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 `
 
 export const SpecialMultBadge = styled.div`

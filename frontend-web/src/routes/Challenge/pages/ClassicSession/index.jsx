@@ -7,8 +7,8 @@ import { setTimeout, clearTimeout } from 'worker-timers'
 import { saveAnswer, submitChallenge } from '@store/challenge/userAction'
 import { ChallengeRoute } from '../../routes'
 import {
-  PageWrapper, StickyHeader, TopBar, LeftSlot, TopBarRight, TimerBox,
-  QuestionTimerBar, QuestionTimerFill, StreakBadge, ScoreBadge, PointsFlash,
+  PageWrapper, StickyHeader, TimerBox,
+  QuestionTimerBar, QuestionTimerFill, StreakBadge, ScoreBadge, CardStats, PointsFlash,
   Main, QuestionCard, QuestionCounter, QuestionText, OptionsGrid,
   OptionBtn, OptionLetter,
   SpecialOverlay, SpecialCard, SpecialCardTitle, SpecialCardSub, SpecialStar,
@@ -247,14 +247,6 @@ export default function ClassicSession({ session, uniqueId }) {
     )}
     <PageWrapper>
       <StickyHeader>
-        <TopBar>
-          <LeftSlot />
-          <TopBarRight>
-            <ScoreBadge>{totalScore} pts</ScoreBadge>
-            {streak >= 2 && <StreakBadge>🔥 {streak}</StreakBadge>}
-            <TimerBox $urgent={isUrgent}>{questionTimer}s</TimerBox>
-          </TopBarRight>
-        </TopBar>
         <QuestionTimerBar>
           <QuestionTimerFill key={currentIdx} $duration={secondsPerQuestion} $delay={timerDelay} $paused={locked} />
         </QuestionTimerBar>
@@ -264,6 +256,11 @@ export default function ClassicSession({ session, uniqueId }) {
         <QuestionCard $isSpecial={currentQ?.isSpecial}>
           <QuestionCounter>
             <span>Soal {currentIdx + 1} dari {questions.length}</span>
+            <CardStats>
+              {streak >= 2 && <StreakBadge $compact>🔥 {streak}</StreakBadge>}
+              <ScoreBadge $compact>{totalScore} pts</ScoreBadge>
+              <TimerBox $compact $urgent={isUrgent}>⏱ {questionTimer}s</TimerBox>
+            </CardStats>
           </QuestionCounter>
 
           {currentQ?.isSpecial && (

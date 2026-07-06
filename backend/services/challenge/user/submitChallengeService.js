@@ -1,7 +1,6 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { LeaderboardCacheService } from '#services/challenge/leaderboardCacheService'
-import { getScoringStrategy } from '#services/challenge/scoring/index'
 
 export class SubmitChallengeService {
   static async call({ challengeUniqueId, userId }) {
@@ -18,23 +17,15 @@ export class SubmitChallengeService {
       where: { session_id: session.id },
     })
 
-    const questionIds = session.question_ids
-    const questionMap = Object.fromEntries(
-      await prisma.challenge_questions.findMany({
-        where: { id: { in: questionIds } },
-        select: { id: true, is_special: true },
-      }).then(qs => qs.map(q => [q.id, q]))
-    )
-
-    const answerMap = Object.fromEntries(savedAnswers.map(a => [a.question_id, a]))
-
-    const scoring = getScoringStrategy(challenge.scoring_type)
-    const { totalScore, correctCount, totalTime } = scoring.calculate({
-      challenge,
-      questionIds,
-      questionMap,
-      answerMap,
-    })
+    // Score is already accumulated accurately by saveAnswerService on each answer.
+    // Only correctCount and totalTime need to be derived from the answer records.
+    const totalScore = session.score ?? 0
+    let correctCount = 0
+    let totalTime = 0
+    for (const ans of savedAnswers) {
+      if (ans.is_correct) correctCount++
+      totalTime += ans.time_taken_seconds ?? 0
+    }
 
     await prisma.challenge_sessions.update({
       where: { id: session.id },
