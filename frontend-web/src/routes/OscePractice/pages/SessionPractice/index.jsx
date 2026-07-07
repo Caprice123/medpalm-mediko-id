@@ -41,11 +41,12 @@ function SessionPractice() {
     isAutoEnd,
     isTestingSttProvider,
     sttProvider,
+    hasFetchedForSession,
     handleEndSession,
     handleConfirmEndSession,
   } = useSessionPractice()
 
-  if (loading.isLoadingSessionDetail || isTestingSttProvider) {
+  if (!hasFetchedForSession || isTestingSttProvider) {
     return <SessionSkeleton />
   }
 

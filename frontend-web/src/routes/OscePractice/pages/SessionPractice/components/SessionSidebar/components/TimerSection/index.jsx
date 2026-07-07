@@ -6,7 +6,7 @@ import { setInterval, clearInterval } from 'worker-timers'
 
 const TimerSection = ({ onEndSession, isEndingSession }) => {
     const { sessionDetail } = useSelector(state => state.oscePractice)
-    const [timeRemaining, setTimeRemaining] = useState(0)
+    const [timeRemaining, setTimeRemaining] = useState(sessionDetail?.topic?.remainingTime || 0)
     const timerRef = useRef(null)
 
     useEffect(() => {
