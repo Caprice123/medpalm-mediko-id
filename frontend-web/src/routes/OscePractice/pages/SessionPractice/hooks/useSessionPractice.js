@@ -139,6 +139,7 @@ export const useSessionPractice = () => {
     isAutoEnd,
     isTestingSttProvider,
     sttProvider,
+    hasFetchedForSession,
     handleEndSession,
     handleConfirmEndSession,
   }
