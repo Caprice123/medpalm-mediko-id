@@ -67,9 +67,9 @@ export class SendMessageService extends BaseService {
     const accessType = constantsMap.skripsi_access_type || 'free'
     const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
     let messageCost = 0
-    if (requiresCredits) {
-      messageCost = parseFloat(constantsMap[`skripsi_${mode}_cost`]) || 0
-    }
+    // if (requiresCredits) {
+    //   messageCost = parseFloat(constantsMap[`skripsi_${mode}_cost`]) || 0
+    // }
 
     // Get AI response with streaming
     try {

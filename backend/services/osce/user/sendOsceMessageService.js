@@ -88,9 +88,9 @@ export class SendOsceMessageService extends BaseService {
       const accessType = constantsMap.osce_practice_access_type || 'free'
       const requiresCredits = accessType === 'credits' || accessType === 'subscription_and_credits'
       let messageCost = 0
-      if (requiresCredits) {
-        messageCost = parseFloat(constantsMap.osce_practice_credit_cost) || 0
-      }
+    //   if (requiresCredits) {
+    //     messageCost = parseFloat(constantsMap.osce_practice_credit_cost) || 0
+    //   }
 
       // Build system prompt with context, knowledge base, and scenario
       let systemPrompt = constantsMap.osce_practice_chat_completion_prompt
