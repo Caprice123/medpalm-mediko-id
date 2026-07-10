@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { startFlashcardDeck, submitFlashcardProgress } from '@store/session/action'
 import { fetchTags } from '@store/tags/userAction'
 import { actions as tagActions } from '@store/tags/reducer'
-import { FlashcardRoute } from '../../routes'
+import { FlashcardRoute } from '../../../routes'
 
 export const useFlashcardDetail = () => {
   const dispatch = useDispatch()

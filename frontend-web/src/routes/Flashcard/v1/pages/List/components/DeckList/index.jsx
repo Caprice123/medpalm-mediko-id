@@ -14,7 +14,7 @@ import {
   StatValue
 } from './DeckList.styles'
 import { generatePath, useNavigate } from 'react-router-dom'
-import { FlashcardRoute } from '../../../../routes'
+import { FlashcardRoute } from '../../../../../routes'
 import { formatLocalDate } from '@utils/dateUtils'
 
 function DeckList() {
