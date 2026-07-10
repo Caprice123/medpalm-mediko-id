@@ -40,6 +40,9 @@ const { reducer, actions } = createSlice({
     setDecks: (state, { payload }) => {
       state.decks = payload
     },
+    appendDecks: (state, { payload }) => {
+      state.decks = [...state.decks, ...payload]
+    },
     setDetail: (state, { payload }) => {
       state.detail = payload
     },

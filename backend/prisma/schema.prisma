@@ -412,6 +412,38 @@ model user_profiles {
   @@index([user_id])
 }
 
+model feature_nodes {
+  id        Int             @id @default(autoincrement())
+  name      String
+  slug      String          @unique
+  parent_id Int?
+  node_type String?
+  created_at DateTime       @default(now())
+  updated_at DateTime       @default(now())
+
+  parent   feature_nodes?  @relation("FeatureNodeChildren", fields: [parent_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  children feature_nodes[] @relation("FeatureNodeChildren")
+
+  feature_node_records feature_node_records[]
+
+  @@index([parent_id])
+  @@index([name])
+}
+
+model feature_node_records {
+  id          Int           @id @default(autoincrement())
+  node_id     Int
+  record_type String
+  record_id   Int
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @default(now())
+
+  node feature_nodes @relation(fields: [node_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([node_id, record_type, record_id])
+  @@index([record_type, record_id])
+}
+
 model user_feature_subscriptions {
   id         Int       @id @default(autoincrement())
   user_id    Int

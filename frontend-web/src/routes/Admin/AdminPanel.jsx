@@ -15,6 +15,8 @@ import WebinarAdmin from './Features/subpages/Webinar'
 import EventAdmin from './Features/subpages/Event'
 import BannerAdmin from './Features/subpages/Banner'
 import Layanan from './Layanan'
+import FeaturesV2 from './FeaturesV2'
+import NodeStructure from './NodeStructure'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -122,7 +124,7 @@ const hasTabPermission = (user, tab) => {
   // Default permissions based on role
   if (user.role === 'admin') {
     // Admins by default have access to all tabs except 'users'
-    return ['features', 'layanan', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings'].includes(tab)
+    return ['features', 'layanan', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings', 'featuresV2', 'nodeStructure'].includes(tab)
   }
 
   // Other roles don't have admin panel access
@@ -141,7 +143,9 @@ const getAvailableTabs = (user) => {
     { key: 'pricingPlans', label: 'Paket Harga' },
     { key: 'transactions', label: 'Transaksi' },
     { key: 'users', label: 'Kelola User' },
-    { key: 'globalSettings', label: 'Pengaturan Global' }
+    { key: 'globalSettings', label: 'Pengaturan Global' },
+    { key: 'featuresV2', label: 'Fitur V2' },
+    { key: 'nodeStructure', label: 'Struktur Folder' },
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.key))
@@ -218,6 +222,10 @@ function AdminPanel() {
           {activeTab === 'users' && <Users />}
 
           {activeTab === 'globalSettings' && <GlobalSettings />}
+
+          {activeTab === 'featuresV2' && <FeaturesV2 />}
+
+          {activeTab === 'nodeStructure' && <NodeStructure />}
         </ContentArea>
       </MainContent>
     </AdminContainer>

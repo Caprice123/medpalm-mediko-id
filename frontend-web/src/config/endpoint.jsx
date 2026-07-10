@@ -34,6 +34,10 @@ export default {
         banners: "/admin/v1/banners",
         bannersReorder: "/admin/v1/banners/reorder",
         challenges: "/admin/v1/challenges",
+        featureNodes: "/admin/v1/feature-nodes",
+        featureNodeRecords: "/admin/v1/feature-nodes/records",
+        autoLinkFlashcardDecks: "/admin/v1/feature-nodes/auto-link/flashcard-decks",
+        flashcardsV2: "/admin/v2/flashcards",
     },
     api: {
         calculators: "/api/v1/calculators",
