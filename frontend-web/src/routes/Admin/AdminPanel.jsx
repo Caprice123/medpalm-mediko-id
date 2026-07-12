@@ -72,6 +72,9 @@ const TabContainer = styled.div`
   display: flex;
   gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-top: 0.5rem;
 `
 
 const Tab = styled.button`
@@ -85,6 +88,8 @@ const Tab = styled.button`
   transition: all 0.2s;
   margin-bottom: -2px;
   position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
 
   ${props => props.active && `
     background: linear-gradient(180deg, rgba(107, 185, 232, 0.05), transparent);

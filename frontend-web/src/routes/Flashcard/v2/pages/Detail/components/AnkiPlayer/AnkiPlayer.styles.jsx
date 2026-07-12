@@ -367,3 +367,78 @@ export const DoneSecondaryBtn = styled.button`
     color: #0d9488;
   }
 `
+
+// ── Related Content ───────────────────────────────────────────────────────────
+
+export const RelatedSection = styled.div`
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.25rem;
+`
+
+export const RelatedSectionTitle = styled.h3`
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin: 0 0 0.875rem;
+  text-align: left;
+`
+
+export const RelatedGroup = styled.div`
+  margin-bottom: 1rem;
+
+  &:last-child { margin-bottom: 0; }
+`
+
+export const RelatedGroupLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: ${p => p.$type === 'mcq_topic' ? '#7c3aed' : '#d97706'};
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+`
+
+export const RelatedCards = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+`
+
+export const RelatedCard = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-left: 4px solid ${p => p.$type === 'mcq_topic' ? '#7c3aed' : '#d97706'};
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow 0.15s, background 0.15s;
+  width: 100%;
+
+  &:hover {
+    background: ${p => p.$type === 'mcq_topic' ? '#faf5ff' : '#fffbeb'};
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+`
+
+export const RelatedCardTitle = styled.span`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+  flex: 1;
+  text-align: left;
+`
+
+export const RelatedCardArrow = styled.span`
+  font-size: 0.875rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+`

@@ -3,11 +3,18 @@ import { BaseService } from '#services/baseService'
 import idriveService from '#services/idrive.service'
 
 export class GetReviewSessionService extends BaseService {
-  static async call({ userId, recordType = 'flashcard_card', nodeId, departmentNodeId, mode = 'due_today', limit = 20, lastRating }) {
+  static async call({ userId, recordType = 'flashcard_card', nodeId, nodeIds, departmentNodeId, departmentNodeIds, mode = 'due_today', limit, lastRating }) {
     // 1. Find published deck IDs linked to the node filter
     const nodeWhere = { record_type: 'flashcard_deck' }
-    if (nodeId) nodeWhere.node_id = parseInt(nodeId)
-    else if (departmentNodeId) nodeWhere.node = { parent_id: parseInt(departmentNodeId) }
+    const parsedNodeIds = nodeIds
+      ? String(nodeIds).split(',').map(Number).filter(Boolean)
+      : nodeId ? [parseInt(nodeId)] : []
+    const parsedDeptIds = departmentNodeIds
+      ? String(departmentNodeIds).split(',').map(Number).filter(Boolean)
+      : departmentNodeId ? [parseInt(departmentNodeId)] : []
+
+    if (parsedNodeIds.length > 0) nodeWhere.node_id = { in: parsedNodeIds }
+    else if (parsedDeptIds.length > 0) nodeWhere.node = { parent_id: { in: parsedDeptIds } }
 
     const nodeRecords = await prisma.feature_node_records.findMany({
       where: nodeWhere,
@@ -59,7 +66,7 @@ export class GetReviewSessionService extends BaseService {
     }
 
     // 5. Apply limit
-    const cards = filtered.slice(0, parseInt(limit) || 20)
+    const cards = limit != null ? filtered.slice(0, parseInt(limit) || 20) : filtered
 
     // 6. Attach image URLs via attachments
     const ids = cards.map(c => c.id)

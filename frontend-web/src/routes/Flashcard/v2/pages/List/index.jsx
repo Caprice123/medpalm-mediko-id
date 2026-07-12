@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { actions } from '@store/flashcard/reducer'
 import { fetchV2UserDecks } from '@store/flashcard/v2/userAction'
-import { fetchReviewStats } from '@store/review/userAction'
+import { fetchReviewStats, startReviewSession } from '@store/review/userAction'
+import { fetchPublicConstants } from '@store/constant/userAction'
 import Button from '@components/common/Button'
+import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import FilterComponent from '@components/common/Filter'
 import EmptyState from '@components/common/EmptyState'
 import DeckCard from './components/DeckCard'
-import ReviewModal from '../Review/ReviewModal'
+import ReviewCustomModal from './components/ReviewCustomModal'
 import { getWithToken } from '@utils/requestUtils'
 import Endpoints from '@config/endpoint'
+import { FlashcardRoute } from '../../../routes'
 import {
   Container, PageHeader, Title, Grid, LoadMoreRow,
   StatsPanel,
@@ -21,6 +25,9 @@ import {
   TopicSplitLayout, TopicScrollList, TopicResizeHandle, TopicItem, TopicName, DuePill,
   TopicDetailPanel, TopicDetailTitle, TopicStatRow, TopicStat, TopicStatNum, TopicStatLabel,
   LoadMoreTopicBtn,
+  ReviewAllBanner, ReviewAllLeft, ReviewAllEyebrow, ReviewAllCount, ReviewAllSub,
+  ReviewAllStats, ReviewAllStatBox, ReviewAllStatNum, ReviewAllStatLabel,
+  ReviewAllDesc, ReviewAllEmptyBox,
 } from './List.styles'
 
 const DIST = [
@@ -112,7 +119,7 @@ function ReviewStats({ stats }) {
                     $last={isLast}
                     onClick={() => setSelectedId(topic.nodeId)}
                   >
-                    <TopicName>{topic.nodeName}</TopicName>
+                    <TopicName $selected={selectedId === topic.nodeId}>{topic.nodeName}</TopicName>
                   </TopicItem>
                 )
               })}
@@ -154,12 +161,15 @@ function ReviewStats({ stats }) {
 
 function FlashcardV2ListPage() {
   const dispatch  = useDispatch()
-  const [showReview, setShowReview] = useState(false)
+  const navigate  = useNavigate()
   const [departments, setDepartments] = useState([])
   const [topics, setTopics] = useState([])
   const [selectedDept, setSelectedDept] = useState(null)
+  const [reviewAllOpen, setReviewAllOpen] = useState(false)
+  const [reviewCustomOpen, setReviewCustomOpen] = useState(false)
   const { decks, pagination, loading, filters } = useSelector(state => state.flashcard)
   const { stats, loading: reviewLoading } = useSelector(state => state.review)
+  const constants = useSelector(state => state.constant.constants)
   const isLoading = loading?.isGetListDecksLoading
 
   const [allTopics, setAllTopics] = useState([])
@@ -168,6 +178,7 @@ function FlashcardV2ListPage() {
     dispatch(actions.setPage(1))
     dispatch(fetchV2UserDecks())
     dispatch(fetchReviewStats())
+    dispatch(fetchPublicConstants(['flashcard_feature_title', 'flashcard_feature_description']))
     getWithToken(Endpoints.api.featureNodes, { nodeType: 'department' }).then(res => {
       setDepartments((res.data.data || []).map(n => ({ value: String(n.id), label: n.name })))
     })
@@ -203,15 +214,25 @@ function FlashcardV2ListPage() {
   return (
     <Container>
       <PageHeader>
-        <Title>Flashcard</Title>
-        <Button variant="primary" onClick={() => setShowReview(true)}>
-          Mulai Review
-        </Button>
+        <div>
+          <Title>{constants?.flashcard_feature_title || 'Flashcard'}</Title>
+          {constants?.flashcard_feature_description && (
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+              {constants.flashcard_feature_description}
+            </p>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Button variant="secondary" onClick={() => setReviewAllOpen(true)}>
+            Review Semua
+          </Button>
+          <Button variant="primary" onClick={() => setReviewCustomOpen(true)}>
+            Review Kustom
+          </Button>
+        </div>
       </PageHeader>
 
       {!reviewLoading.isFetchingStats && <ReviewStats stats={stats} />}
-
-      <ReviewModal isOpen={showReview} onClose={() => setShowReview(false)} />
 
       {isLoading && decks.length === 0 ? (
         <EmptyState icon="🎴" title="Memuat deck..." />
@@ -280,6 +301,60 @@ function FlashcardV2ListPage() {
           )}
         </>
       )}
+      <ReviewCustomModal isOpen={reviewCustomOpen} onClose={() => setReviewCustomOpen(false)} />
+
+      <Modal
+        isOpen={reviewAllOpen}
+        onClose={() => setReviewAllOpen(false)}
+        title="Review Semua"
+        footer={
+          <Button
+            variant="primary"
+            onClick={() => dispatch(startReviewSession(
+              { type: 'all', recordType: 'flashcard_card', mode: 'due_today' },
+              (uniqueId) => { setReviewAllOpen(false); navigate(FlashcardRoute.sessionRoute(uniqueId)) }
+            ))}
+            disabled={reviewLoading.isFetchingSession}
+          >
+            {reviewLoading.isFetchingSession ? 'Memuat...' : 'Mulai Sesi'}
+          </Button>
+        }
+      >
+        {stats?.dueCount > 0 ? (() => {
+          const totalNew = (stats.topics || []).reduce((s, t) => s + (t.counts?.new || 0), 0)
+          const totalReview = stats.dueCount - totalNew
+          return (
+            <ReviewAllBanner>
+              <ReviewAllLeft>
+                <ReviewAllEyebrow>Jatuh Tempo Hari Ini</ReviewAllEyebrow>
+                <ReviewAllCount>{stats.dueCount}</ReviewAllCount>
+                <ReviewAllSub>kartu menunggu reviewmu</ReviewAllSub>
+              </ReviewAllLeft>
+              <ReviewAllStats>
+                {totalNew > 0 && (
+                  <ReviewAllStatBox>
+                    <ReviewAllStatNum>{totalNew}</ReviewAllStatNum>
+                    <ReviewAllStatLabel>Baru</ReviewAllStatLabel>
+                  </ReviewAllStatBox>
+                )}
+                {totalReview > 0 && (
+                  <ReviewAllStatBox>
+                    <ReviewAllStatNum>{totalReview}</ReviewAllStatNum>
+                    <ReviewAllStatLabel>Ulang</ReviewAllStatLabel>
+                  </ReviewAllStatBox>
+                )}
+              </ReviewAllStats>
+            </ReviewAllBanner>
+          )
+        })() : (
+          <ReviewAllEmptyBox>
+            Tidak ada kartu yang jatuh tempo hari ini. Kembali lagi besok! 🎉
+          </ReviewAllEmptyBox>
+        )}
+        <ReviewAllDesc>
+          Kartu diprioritaskan berdasarkan yang paling lama jatuh tempo, lalu diacak urutannya. Sesi dibatasi hingga 100 kartu.
+        </ReviewAllDesc>
+      </Modal>
     </Container>
   )
 }

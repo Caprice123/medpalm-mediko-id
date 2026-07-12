@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchReviewSession } from '@store/review/userAction'
+import { startReviewSession } from '@store/review/userAction'
 import { getWithToken } from '@utils/requestUtils'
 import Endpoints from '@config/endpoint'
 import Modal from '@components/common/Modal'
@@ -15,29 +15,6 @@ import {
 import styled from 'styled-components'
 
 /* ── local styles ── */
-const TypeToggle = styled.div`
-  display: flex;
-  background: #f3f4f6;
-  border-radius: 10px;
-  padding: 3px;
-  gap: 3px;
-  margin-bottom: 1.5rem;
-`
-
-const TypeBtn = styled.button`
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: ${p => p.$active ? 'white' : 'transparent'};
-  color: ${p => p.$active ? '#111827' : '#6b7280'};
-  box-shadow: ${p => p.$active ? '0 1px 3px rgba(0,0,0,0.12)' : 'none'};
-  transition: all 0.15s;
-`
-
 const RatingChips = styled.div`
   display: flex;
   gap: 0.5rem;
@@ -60,13 +37,6 @@ const RatingChip = styled.button`
     border-color: ${p => p.$color};
     color: ${p => p.$color};
   }
-`
-
-const QuickDesc = styled.p`
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0 0 1.25rem;
-  line-height: 1.5;
 `
 
 const SliderRow = styled.div`
@@ -127,22 +97,29 @@ const RATING_OPTIONS = [
   { key: 'easy',  label: 'Mudah', color: '#22c55e' },
 ]
 
-export default function ReviewModal({ isOpen, onClose }) {
+export default function ReviewModal({ isOpen, onClose, autoStart = false }) {
   const dispatch = useDispatch()
   const { sessionCards, loading } = useSelector(state => state.review)
 
-  const [reviewType, setReviewType] = useState('all')
   const [departments, setDepartments] = useState([])
   const [allTopics, setAllTopics] = useState([])
   const [topics, setTopics] = useState([])
-  const [selectedDept, setSelectedDept] = useState(null)
-  const [selectedTopic, setSelectedTopic] = useState(null)
-  const [selectedRatings, setSelectedRatings] = useState([])  // multi-select
+  const [selectedDepts, setSelectedDepts] = useState([])
+  const [selectedTopics, setSelectedTopics] = useState([])
+  const [selectedRatings, setSelectedRatings] = useState([])
   const [limit, setLimit] = useState(20)
   const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) {
+      setPlaying(false)
+      return
+    }
+    if (autoStart) {
+      dispatch(fetchReviewSession({ recordType: 'flashcard_card', mode: 'due_today', limit: 100 }))
+      setPlaying(true)
+      return
+    }
     getWithToken(Endpoints.api.featureNodes, { nodeType: 'department' }).then(res => {
       setDepartments((res.data.data || []).map(n => ({ value: String(n.id), label: n.name })))
     })
@@ -151,16 +128,18 @@ export default function ReviewModal({ isOpen, onClose }) {
       setAllTopics(mapped)
       setTopics(mapped)
     })
-  }, [dispatch, isOpen])
+  }, [isOpen])
 
   useEffect(() => {
-    setSelectedTopic(null)
-    if (!selectedDept) {
+    if (selectedDepts.length === 0) {
       setTopics(allTopics)
     } else {
-      setTopics(allTopics.filter(t => t.parentId === selectedDept.value))
+      const deptIds = new Set(selectedDepts.map(d => d.value))
+      const filtered = allTopics.filter(t => deptIds.has(t.parentId))
+      setTopics(filtered)
+      setSelectedTopics(prev => prev.filter(t => deptIds.has(t.parentId)))
     }
-  }, [selectedDept, allTopics])
+  }, [selectedDepts, allTopics])
 
   const toggleRating = (key) => {
     setSelectedRatings(prev =>
@@ -173,21 +152,20 @@ export default function ReviewModal({ isOpen, onClose }) {
     onClose()
   }
 
-  const buildParams = () => {
-    if (reviewType === 'all') {
-      return { recordType: 'flashcard_card', mode: 'due_today', limit: 100 }
-    }
-    return {
-      recordType: 'flashcard_card',
-      mode: 'all',
-      limit,
-      ...(selectedRatings.length > 0 ? { lastRating: selectedRatings.join(',') } : {}),
-      ...(selectedTopic ? { nodeId: selectedTopic.value } : selectedDept ? { departmentNodeId: selectedDept.value } : {}),
-    }
-  }
+  const buildParams = () => ({
+    recordType: 'flashcard_card',
+    mode: 'all',
+    limit,
+    ...(selectedRatings.length > 0 ? { lastRating: selectedRatings.join(',') } : {}),
+    ...(selectedTopics.length > 0
+      ? { nodeIds: selectedTopics.map(t => t.value).join(',') }
+      : selectedDepts.length > 0
+        ? { departmentNodeIds: selectedDepts.map(d => d.value).join(',') }
+        : {}),
+  })
 
   const handleStart = async () => {
-    await dispatch(fetchReviewSession(buildParams()))
+    await dispatch(startReviewSession(buildParams()))
     setPlaying(true)
   }
 
@@ -199,10 +177,15 @@ export default function ReviewModal({ isOpen, onClose }) {
       document.body
     )
 
+    const handleBack = () => {
+      setPlaying(false)
+      if (autoStart) onClose()
+    }
+
     if (sessionCards.length === 0) return createPortal(
       <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#f0fdfa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
         <span style={{ color: '#6b7280', fontSize: '0.9375rem' }}>Tidak ada kartu untuk sesi ini.</span>
-        <Button variant="secondary" onClick={() => setPlaying(false)}>Kembali</Button>
+        <Button variant="secondary" onClick={handleBack}>Kembali</Button>
       </div>,
       document.body
     )
@@ -211,7 +194,7 @@ export default function ReviewModal({ isOpen, onClose }) {
       <div style={{ position: 'fixed', inset: 0, zIndex: 9999, overflowY: 'auto' }}>
         <AnkiPlayer
           deck={{ title: 'Sesi Review', cards: sessionCards }}
-          onBack={() => setPlaying(false)}
+          onBack={handleBack}
           recordType="flashcard_card"
         />
       </div>,
@@ -219,89 +202,65 @@ export default function ReviewModal({ isOpen, onClose }) {
     )
   }
 
+  if (autoStart) return null
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Sesi Review" size="large">
-      <TypeToggle>
-        <TypeBtn $active={reviewType === 'all'} onClick={() => setReviewType('all')}>
-          Review Semua
-        </TypeBtn>
-        <TypeBtn $active={reviewType === 'custom'} onClick={() => setReviewType('custom')}>
-          Review Kustom
-        </TypeBtn>
-      </TypeToggle>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Review Kustom" size="large">
+      <BuilderCard style={{ border: 'none', padding: 0 }}>
+        <SectionLabel>Filter Berdasarkan Rating Terakhir</SectionLabel>
+        <RatingChips>
+          {RATING_OPTIONS.map(r => (
+            <RatingChip
+              key={r.key}
+              $active={selectedRatings.includes(r.key)}
+              $color={r.color}
+              onClick={() => toggleRating(r.key)}
+            >
+              {r.label}
+            </RatingChip>
+          ))}
+        </RatingChips>
 
-      {reviewType === 'all' ? (
-        <>
-          <QuickDesc>
-            Review semua kartu yang sudah jatuh tempo hari ini, termasuk kartu baru yang belum pernah dipelajari.
-          </QuickDesc>
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={handleStart}
-            disabled={loading.isFetchingSession}
-          >
-            {loading.isFetchingSession ? 'Memuat...' : 'Mulai Sesi'}
-          </Button>
-        </>
-      ) : (
-        <BuilderCard style={{ border: 'none', padding: 0 }}>
-          <SectionLabel>Filter Berdasarkan Rating Terakhir</SectionLabel>
-          <RatingChips>
-            {RATING_OPTIONS.map(r => (
-              <RatingChip
-                key={r.key}
-                $active={selectedRatings.includes(r.key)}
-                $color={r.color}
-                onClick={() => toggleRating(r.key)}
-              >
-                {r.label}
-              </RatingChip>
-            ))}
-          </RatingChips>
+        <SectionLabel>Filter Topik</SectionLabel>
+        <Row style={{ marginBottom: '1.25rem' }}>
+          <Dropdown
+            placeholder="Semua Departemen"
+            options={departments}
+            value={selectedDepts}
+            onChange={v => setSelectedDepts(v || [])}
+            isMulti
+          />
+          <Dropdown
+            placeholder="Semua Topik"
+            options={topics}
+            value={selectedTopics}
+            onChange={v => setSelectedTopics(v || [])}
+            isMulti
+          />
+        </Row>
 
-          <SectionLabel>Filter Topik</SectionLabel>
-          <Row style={{ marginBottom: '1.25rem' }}>
-            <Dropdown
-              placeholder="Semua Departemen"
-              options={departments}
-              value={selectedDept}
-              onChange={setSelectedDept}
-              isClearable
-            />
-            <Dropdown
-              placeholder="Semua Topik"
-              options={topics}
-              value={selectedTopic}
-              onChange={setSelectedTopic}
-              isClearable
-            />
-          </Row>
+        <SectionLabel>Jumlah Kartu</SectionLabel>
+        <SliderRow>
+          <SliderInput
+            type="range"
+            min="1"
+            max="100"
+            value={limit}
+            onChange={e => setLimit(Number(e.target.value))}
+          />
+          <SliderValue>{limit}</SliderValue>
+        </SliderRow>
 
-          <SectionLabel>Jumlah Kartu</SectionLabel>
-          <SliderRow>
-            <SliderInput
-              type="range"
-              min="1"
-              max="100"
-              value={limit}
-              onChange={e => setLimit(Number(e.target.value))}
-            />
-            <SliderValue>{limit}</SliderValue>
-          </SliderRow>
-
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={handleStart}
-            disabled={loading.isFetchingSession}
-            style={{ marginTop: '0.5rem' }}
-          >
-            {loading.isFetchingSession ? 'Memuat...' : 'Mulai Sesi'}
-          </Button>
-        </BuilderCard>
-      )}
-
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={handleStart}
+          disabled={loading.isFetchingSession}
+          style={{ marginTop: '0.5rem' }}
+        >
+          {loading.isFetchingSession ? 'Memuat...' : 'Mulai Sesi'}
+        </Button>
+      </BuilderCard>
     </Modal>
   )
 }

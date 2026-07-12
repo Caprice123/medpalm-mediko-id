@@ -51,6 +51,9 @@ const { reducer, actions } = createSlice({
     setNotes: (state, { payload }) => {
       state.notes = payload
     },
+    appendNotes: (state, { payload }) => {
+      state.notes = [...state.notes, ...payload]
+    },
     setDetail: (state, { payload }) => {
       state.detail = payload
     },

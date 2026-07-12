@@ -41,6 +41,11 @@ export const Row = styled.div`
   align-items: flex-start;
 
   & > * { flex: 1; }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    & > * { width: 100%; }
+  }
 `
 
 export const ModeGrid = styled.div`
@@ -150,4 +155,79 @@ export const EmptyHint = styled.div`
   padding: 3rem;
   color: #6b7280;
   font-size: 0.9375rem;
+`
+
+export const RatingChips = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+`
+
+export const RatingChip = styled.button`
+  padding: 0.375rem 0.875rem;
+  border-radius: 99px;
+  border: 2px solid ${p => p.$active ? p.$color : '#e5e7eb'};
+  background: ${p => p.$active ? p.$color + '18' : 'white'};
+  color: ${p => p.$active ? p.$color : '#6b7280'};
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: ${p => p.$color};
+    color: ${p => p.$color};
+  }
+`
+
+export const SliderRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+`
+
+export const SliderInput = styled.input`
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    #0d9488 0%,
+    #0d9488 ${p => (p.value - 1) / 99 * 100}%,
+    #e5e7eb ${p => (p.value - 1) / 99 * 100}%,
+    #e5e7eb 100%
+  );
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0d9488;
+    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: #0d9488;
+    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    cursor: pointer;
+  }
+`
+
+export const SliderValue = styled.span`
+  min-width: 2.5rem;
+  text-align: right;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0d9488;
 `

@@ -38,6 +38,7 @@ export default {
         featureNodeRecords: "/admin/v1/feature-nodes/records",
         autoLinkFlashcardDecks: "/admin/v1/feature-nodes/auto-link/flashcard-decks",
         flashcardsV2: "/admin/v2/flashcards",
+        contentRelations: "/admin/v1/content-relations",
     },
     api: {
         calculators: "/api/v1/calculators",
@@ -47,6 +48,8 @@ export default {
         reviewRate: "/api/v2/review/rate",
         reviewSession: "/api/v2/review/session",
         reviewCustomSessions: "/api/v2/review/custom-sessions",
+        reviewSessions: "/api/v2/review/sessions",
+        reviewSessionByUniqueId: (uid) => `/api/v2/review/sessions/${uid}`,
         featureNodes: "/api/v1/feature-nodes",
         exercises: "/api/v1/exercises",
         diagnostic: "/api/v1/diagnostic",

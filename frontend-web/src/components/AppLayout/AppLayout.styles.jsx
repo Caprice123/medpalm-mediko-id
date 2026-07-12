@@ -8,7 +8,7 @@ export const LayoutWrapper = styled.div`
 export const MobileCloseButton = styled.button`
   display: none;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,7 +35,7 @@ export const MobileCloseButton = styled.button`
 export const FloatingHamburger = styled.button`
   display: none;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     display: ${props => props.$open ? 'none' : 'flex'};
     flex-direction: column;
     justify-content: center;
@@ -71,7 +71,7 @@ export const FloatingHamburger = styled.button`
 export const MobileOverlay = styled.div`
   display: none;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     display: ${props => props.$open ? 'block' : 'none'};
     position: fixed;
     inset: 0;
@@ -93,7 +93,7 @@ export const Sidebar = styled.aside`
   flex-direction: column;
   transition: width 0.25s ease, min-width 0.25s ease;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     position: fixed;
     top: 0;
     left: 0;
@@ -114,7 +114,7 @@ export const SidebarInner = styled.div`
   height: 100%;
   overflow: hidden;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     width: 100%;
     height: 100%;
     position: relative;
@@ -406,7 +406,7 @@ export const ToggleButton = styled.button`
     border-color: #06b6d4;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     display: none;
   }
 `

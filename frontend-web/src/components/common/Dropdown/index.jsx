@@ -16,7 +16,7 @@ import { Label, RequiredMark, Wrapper } from './Dropdown.styles'
  * @param {string} props.className - Additional CSS class
  */
 const Dropdown = memo(function Dropdown({
-    label,
+  label,
   options = [],
   value,
   onChange,
@@ -25,6 +25,8 @@ const Dropdown = memo(function Dropdown({
   hasError = false,
   usePortal = false,
   required = false,
+  isMulti = false,
+  isClearable = true,
   className = ''
 }) {
   // Custom styles for react-select
@@ -144,6 +146,22 @@ const Dropdown = memo(function Dropdown({
       marginBottom: '0.25rem',
       backgroundColor: '#f9fafb',
     }),
+    multiValue: (provided) => ({
+      ...provided,
+      background: '#e0f2fe',
+      borderRadius: '4px',
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: '#0369a1',
+      fontSize: '0.8125rem',
+      padding: '1px 4px',
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: '#0369a1',
+      ':hover': { background: '#bae6fd', color: '#075985' },
+    }),
   }
 
   return (
@@ -164,14 +182,19 @@ const Dropdown = memo(function Dropdown({
           styles={customStyles}
           menuPortalTarget={usePortal ? document.body : null}
           menuPosition={usePortal ? 'fixed' : 'absolute'}
-          isClearable
+          isClearable={isClearable}
           isSearchable
+          isMulti={isMulti}
+          closeMenuOnSelect={!isMulti}
         />
     </Wrapper>
   )
 }, (prev, next) => {
+  const valEqual = Array.isArray(prev.value) && Array.isArray(next.value)
+    ? prev.value.length === next.value.length && prev.value.every((v, i) => v === next.value[i])
+    : prev.value === next.value
   return prev.options.length === next.options.length &&
-    prev.value === next.value &&
+    valEqual &&
     prev.disabled === next.disabled &&
     prev.hasError === next.hasError
 })

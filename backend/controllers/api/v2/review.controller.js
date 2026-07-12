@@ -1,5 +1,7 @@
 import { SubmitUserReviewStateService } from '#services/review/submitUserReviewStateService'
 import { GetReviewSessionService } from '#services/review/getReviewSessionService'
+import { StartReviewSessionService } from '#services/review/startReviewSessionService'
+import { GetSessionByUniqueIdService } from '#services/review/getSessionByUniqueIdService'
 import { GetReviewStatsService } from '#services/review/getReviewStatsService'
 import { CreateCustomSessionService } from '#services/review/createCustomSessionService'
 import { GetCustomSessionsService } from '#services/review/getCustomSessionsService'
@@ -18,17 +20,42 @@ class ReviewV2Controller {
   }
 
   async getSession(req, res) {
-    const { recordType, nodeId, departmentNodeId, mode, limit, lastRating } = req.query
+    const { recordType, nodeId, nodeIds, departmentNodeId, departmentNodeIds, mode, limit, lastRating } = req.query
     const cards = await GetReviewSessionService.call({
       userId: req.user.id,
       recordType,
       nodeId,
+      nodeIds,
       departmentNodeId,
+      departmentNodeIds,
       mode,
       limit,
       lastRating,
     })
     return res.status(200).json({ data: cards })
+  }
+
+  async startSession(req, res) {
+    const { type, recordType, mode, nodeIds, departmentNodeIds, lastRating, cardLimit } = req.body
+    const result = await StartReviewSessionService.call({
+      userId: req.user.id,
+      type,
+      recordType,
+      mode,
+      nodeIds,
+      departmentNodeIds,
+      lastRating,
+      cardLimit: parseInt(cardLimit) || 20,
+    })
+    return res.status(201).json({ data: result })
+  }
+
+  async getSessionByUniqueId(req, res) {
+    const result = await GetSessionByUniqueIdService.call({
+      userId: req.user.id,
+      uniqueId: req.params.uniqueId,
+    })
+    return res.status(200).json({ data: result })
   }
 
   async listCustomSessions(req, res) {

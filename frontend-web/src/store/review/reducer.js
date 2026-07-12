@@ -4,6 +4,7 @@ const reviewSlice = createSlice({
   name: 'review',
   initialState: {
     sessionCards: [],
+    sessionUniqueId: null,
     customSessions: [],
     stats: null,
     loading: {
@@ -17,6 +18,7 @@ const reviewSlice = createSlice({
   },
   reducers: {
     setSessionCards: (state, { payload }) => { state.sessionCards = payload },
+    setSessionUniqueId: (state, { payload }) => { state.sessionUniqueId = payload },
     setCustomSessions: (state, { payload }) => { state.customSessions = payload },
     setStats: (state, { payload }) => { state.stats = payload },
     setLoading: (state, { payload }) => { state.loading[payload.key] = payload.value },

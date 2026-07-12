@@ -309,3 +309,74 @@ export const HelpText = styled.p`
   margin-top: 0.5rem;
   margin-bottom: 0;
 `
+
+export const RelationsTabBar = styled.div`
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0.875rem;
+`
+
+export const RelationsTab = styled.button`
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: ${p => p.$active ? '#0d9488' : '#6b7280'};
+  border: none;
+  border-bottom: 2px solid ${p => p.$active ? '#0d9488' : 'transparent'};
+  background: none;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: -1px;
+
+  &:hover { color: #0d9488; }
+`
+
+export const RelationsTabCount = styled.span`
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 99px;
+  background: ${p => p.$active ? '#ccfbf1' : '#f3f4f6'};
+  color: ${p => p.$active ? '#0f766e' : '#9ca3af'};
+`
+
+export const RelationItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+`
+
+export const RelationTypeBadge = styled.span`
+  padding: 0.125rem 0.5rem;
+  border-radius: 99px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: ${p => p.$type === 'mcq_topic' ? '#ede9fe' : '#fef9c3'};
+  color: ${p => p.$type === 'mcq_topic' ? '#6d28d9' : '#92400e'};
+`
+
+export const RelationTitle = styled.span`
+  flex: 1;
+  font-size: 0.875rem;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const RelationAddRow = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-top: 0.75rem;
+`

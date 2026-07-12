@@ -27,6 +27,7 @@ export class FlashcardDeckV2Serializer {
         image: card.image || null,
         imageUrl: card.image_url || null,
       })),
+      relatedContent: deck.relatedContent || [],
       createdAt: toJakartaISO(deck.created_at),
       updatedAt: toJakartaISO(deck.updated_at),
     }

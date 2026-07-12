@@ -2,30 +2,38 @@ import { actions } from '@store/mcq/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setLoading, setTopics, setPagination, setSelectedTopic, setQuestions, removeTopic, clearUploadedQuestionImage, setPage } = actions
+const { setLoading, setTopics, appendTopics, setPagination, setSelectedTopic, setQuestions, removeTopic, clearUploadedQuestionImage, setPage } = actions
 
 /**
- * Fetch all MCQ topics for admin panel
+ * Fetch MCQ topics for admin panel.
+ * Pass overrides = { status, page, limit, append } to customise without touching filter Redux state.
  */
-export const fetchAdminMcqTopics = () => async (dispatch, getState) => {
+export const fetchAdminMcqTopics = (overrides = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isTopicsLoading', value: true }))
 
     const { filter, pagination } = getState().mcq
 
     const queryParams = {}
-    if (filter.status) queryParams.status = filter.status
-    if (filter.search) queryParams.search = filter.search
-    if (filter.department) queryParams.department = filter.department
-    if (filter.university) queryParams.university = filter.university
-    if (filter.semester) queryParams.semester = filter.semester
-    queryParams.page = pagination.page
-    queryParams.limit = pagination.limit
+    const activeStatus = overrides.status ?? filter.status
+    if (activeStatus) queryParams.status = activeStatus
+    if (!overrides.status) {
+      if (filter.search) queryParams.search = filter.search
+      if (filter.department) queryParams.department = filter.department
+      if (filter.university) queryParams.university = filter.university
+      if (filter.semester) queryParams.semester = filter.semester
+    }
+    queryParams.page = overrides.page ?? pagination.page
+    queryParams.limit = overrides.limit ?? pagination.limit
 
     const route = Endpoints.admin.mcq + "/topics"
     const response = await getWithToken(route, queryParams)
 
-    dispatch(setTopics(response.data.data || []))
+    if (overrides.append) {
+      dispatch(appendTopics(response.data.data || []))
+    } else {
+      dispatch(setTopics(response.data.data || []))
+    }
     dispatch(setPagination(response.data.pagination || { page: 1, limit: 30, isLastPage: false }))
   } finally {
     dispatch(setLoading({ key: 'isTopicsLoading', value: false }))
@@ -113,6 +121,14 @@ export const updateMcqTopic = (topicId, topicData, onSuccess) => async (dispatch
   } finally {
     dispatch(setLoading({ key: 'isUpdatingTopic', value: false }))
   }
+}
+
+/**
+ * Fetch one page of published MCQ topics (returns { data, pagination }, does not touch list Redux state)
+ */
+export const fetchPublishedMcqTopics = (page = 1, limit = 12) => async () => {
+  const res = await getWithToken(Endpoints.admin.mcq + '/topics', { page, limit, status: 'published' })
+  return { data: res.data.data || [], pagination: res.data.pagination || { page, isLastPage: true } }
 }
 
 /**

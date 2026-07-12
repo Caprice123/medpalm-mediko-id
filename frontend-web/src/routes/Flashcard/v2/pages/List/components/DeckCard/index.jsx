@@ -59,7 +59,7 @@ export default function DeckCard({ deck }) {
             <StatValue>{notReviewed}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>Diperbarui</StatLabel>
+            <StatLabel>Terakhir Diperbarui</StatLabel>
             <StatValue>{deck.updatedAt ? formatLocalDate(deck.updatedAt) : '-'}</StatValue>
           </StatItem>
         </CardStats>

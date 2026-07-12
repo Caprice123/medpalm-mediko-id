@@ -58,6 +58,7 @@ import adminBannerRoutes from '#routes/admin/v1/banner.routes';
 import challengeRoutes from '#routes/api/v1/challenge.routes';
 import adminChallengeRoutes from '#routes/admin/v1/challenge.routes';
 import adminFeatureNodesRoutes from '#routes/admin/v1/featureNodes.routes';
+import adminContentRelationRoutes from '#routes/admin/v1/contentRelation.routes';
 import adminV2FlashcardRoutes from '#routes/admin/v2/flashcard.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
 import apiV2ReviewRoutes from '#routes/api/v2/review.routes';
@@ -211,6 +212,7 @@ app.use('/admin/v1/events', adminEventRoutes);
 app.use('/admin/v1/banners', adminBannerRoutes);
 app.use('/admin/v1/challenges', adminChallengeRoutes);
 app.use('/admin/v1/feature-nodes', adminFeatureNodesRoutes);
+app.use('/admin/v1/content-relations', adminContentRelationRoutes);
 app.use('/admin/v2/flashcards', adminV2FlashcardRoutes);
 
 // Bull Board - Job Queue Monitoring UI

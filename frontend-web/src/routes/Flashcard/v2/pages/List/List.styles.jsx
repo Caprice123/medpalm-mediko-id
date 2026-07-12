@@ -1,16 +1,17 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 2rem;
 `
 
 export const PageHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 `
 
 export const Title = styled.h1`
@@ -178,10 +179,17 @@ export const TopicScrollList = styled.div`
   border-right: 1px solid #e5e7eb;
 
   @media (max-width: 600px) {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     width: 100%;
     min-width: 0;
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    gap: 0.375rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
   }
 `
 
@@ -222,6 +230,16 @@ export const TopicItem = styled.div`
   &:hover {
     background: ${p => p.$selected ? '#f0fdfa' : '#f9fafb'};
   }
+
+  @media (max-width: 600px) {
+    flex-shrink: 0;
+    border-bottom: none;
+    border-left: none;
+    border-radius: 99px;
+    padding: 0.375rem 0.875rem;
+    background: ${p => p.$selected ? '#0d9488' : '#f3f4f6'};
+    &:hover { background: ${p => p.$selected ? '#0f766e' : '#e5e7eb'}; }
+  }
 `
 
 export const TopicName = styled.div`
@@ -233,6 +251,11 @@ export const TopicName = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 600px) {
+    color: ${p => p.$selected ? 'white' : '#374151'};
+    font-size: 0.8125rem;
+  }
 `
 
 export const DuePill = styled.div`
@@ -247,6 +270,99 @@ export const DuePill = styled.div`
   background: ${p => p.$count > 0 ? '#fee2e2' : '#f0fdf4'};
   color: ${p => p.$count > 0 ? '#b91c1c' : '#166534'};
   border: 1px solid ${p => p.$count > 0 ? '#fecaca' : '#bbf7d0'};
+`
+
+/* ── Review All Modal ── */
+
+export const ReviewAllBanner = styled.div`
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0891b2 100%);
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.25);
+`
+
+export const ReviewAllLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+`
+
+export const ReviewAllEyebrow = styled.div`
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+`
+
+export const ReviewAllCount = styled.div`
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  letter-spacing: -0.03em;
+`
+
+export const ReviewAllSub = styled.div`
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 0.125rem;
+`
+
+export const ReviewAllStats = styled.div`
+  display: flex;
+  gap: 0.625rem;
+`
+
+export const ReviewAllStatBox = styled.div`
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 0.625rem 0.875rem;
+  min-width: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  backdrop-filter: blur(4px);
+`
+
+export const ReviewAllStatNum = styled.div`
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+`
+
+export const ReviewAllStatLabel = styled.div`
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+`
+
+export const ReviewAllDesc = styled.p`
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+`
+
+export const ReviewAllEmptyBox = styled.div`
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #9ca3af;
 `
 
 export const LoadMoreTopicBtn = styled.button`
@@ -289,6 +405,21 @@ export const TopicStatRow = styled.div`
   border-radius: 10px;
   overflow: hidden;
   background: #fafafa;
+
+  @media (max-width: 600px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "a b e"
+      "c d e";
+
+    & > * { border-right: none; }
+    & > *:nth-child(1) { grid-area: a; border-right: 1px solid #e5e7eb; }
+    & > *:nth-child(2) { grid-area: b; }
+    & > *:nth-child(3) { grid-area: c; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; }
+    & > *:nth-child(4) { grid-area: d; border-top: 1px solid #e5e7eb; }
+    & > *:nth-child(5) { grid-area: e; border-left: 1px solid #e5e7eb; justify-content: center; }
+  }
 `
 
 export const TopicStat = styled.div`

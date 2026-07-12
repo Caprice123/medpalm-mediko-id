@@ -69,6 +69,39 @@ export class GetFlashcardDeckDetailV2Service extends BaseService {
       }
     })
 
-    return { ...deck, flashcard_cards: cards, nodeRecords }
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]]
+    }
+
+    const rawRelations = await prisma.content_relations.findMany({
+      where: { source_type: 'flashcard_deck', source_id: deck.id },
+      orderBy: { order: 'asc' },
+    })
+
+    const mcqIds = rawRelations.filter(r => r.target_type === 'mcq_topic').map(r => r.target_id)
+    const snIds = rawRelations.filter(r => r.target_type === 'summary_note').map(r => r.target_id)
+
+    const [mcqTopics, summaryNotes] = await Promise.all([
+      mcqIds.length
+        ? prisma.mcq_topics.findMany({
+            where: { id: { in: mcqIds }, status: 'published', is_deleted: false },
+            select: { id: true, unique_id: true, title: true },
+          })
+        : Promise.resolve([]),
+      snIds.length
+        ? prisma.summary_notes.findMany({
+            where: { id: { in: snIds }, status: 'published', is_deleted: false },
+            select: { id: true, unique_id: true, title: true },
+          })
+        : Promise.resolve([]),
+    ])
+
+    const relatedContent = [
+      ...mcqTopics.map(t => ({ type: 'mcq_topic', id: t.id, uniqueId: t.unique_id, title: t.title })),
+      ...summaryNotes.map(n => ({ type: 'summary_note', id: n.id, uniqueId: n.unique_id, title: n.title })),
+    ]
+
+    return { ...deck, flashcard_cards: cards, nodeRecords, relatedContent }
   }
 }

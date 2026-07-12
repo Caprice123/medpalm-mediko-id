@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { submitRating } from '@store/review/userAction'
+import { fetchPublicConstants } from '@store/constant/userAction'
 import {
   Wrapper, BackBtn, DeckContainer, DeckHeader, DeckTitle,
   StatsRow, CardCounter, ReviewedCount,
@@ -12,7 +14,13 @@ import {
   DoneWrap, DoneBanner, DoneIcon, DoneTitle, DoneSub, DoneBody,
   SummaryGrid, SummaryItem, SummaryValue, SummaryLabel,
   DoneActions, DoneSecondaryBtn,
+  RelatedSection, RelatedSectionTitle,
+  RelatedGroup, RelatedGroupLabel, RelatedCards,
+  RelatedCard, RelatedCardTitle, RelatedCardArrow,
 } from './AnkiPlayer.styles'
+
+const RELATED_ROUTES  = { mcq_topic: '/multiple-choice', summary_note: '/summary-notes' }
+const RELATED_ICONS   = { mcq_topic: '📝', summary_note: '📖' }
 
 const RATINGS = [
   { key: 'again', label: 'Lagi',  color: '#ef4444' },
@@ -25,6 +33,8 @@ const MAX_LAGI = 2
 
 export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card' }) {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const constants = useSelector(state => state.constant.constants)
   const cards = deck.cards || []
 
   const [queue, setQueue] = useState(() => [...cards])
@@ -37,6 +47,10 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
   const card = queue[index]
   const progress = (index / queue.length) * 100
   const retryCount = card ? (retryCounts[card.id] || 0) : 0
+
+  useEffect(() => {
+    dispatch(fetchPublicConstants(['mcq_feature_title', 'summary_notes_feature_title']))
+  }, [dispatch])
 
   const handleReveal = useCallback(() => {
     if (!revealed) setRevealed(true)
@@ -98,7 +112,6 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
             <DoneBanner>
               <DoneIcon>🎉</DoneIcon>
               <DoneTitle>Sesi Selesai!</DoneTitle>
-              <DoneSub>{uniqueCards} kartu · {totalReviews} total ulasan · {deck.title}</DoneSub>
             </DoneBanner>
 
             <DoneBody>
@@ -115,6 +128,53 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
                 <DoneSecondaryBtn onClick={handleRestart}>🔁 Ulangi Sesi</DoneSecondaryBtn>
                 <ShowAnswerBtn onClick={onBack} style={{ flex: 1 }}>Kembali ke Daftar</ShowAnswerBtn>
               </DoneActions>
+
+              {deck.relatedContent?.length > 0 && (() => {
+                const mcqItems = deck.relatedContent.filter(i => i.type === 'mcq_topic')
+                const snItems  = deck.relatedContent.filter(i => i.type === 'summary_note')
+                return (
+                  <RelatedSection>
+                    <RelatedSectionTitle>Pelajari Lebih Lanjut</RelatedSectionTitle>
+
+                    {mcqItems.length > 0 && (
+                      <RelatedGroup>
+                        <RelatedGroupLabel $type="mcq_topic">{RELATED_ICONS['mcq_topic']} {constants?.mcq_feature_title || 'Soal MCQ'}</RelatedGroupLabel>
+                        <RelatedCards>
+                          {mcqItems.map(item => (
+                            <RelatedCard
+                              key={item.id}
+                              $type="mcq_topic"
+                              onClick={() => navigate(`${RELATED_ROUTES['mcq_topic']}/${item.uniqueId}`)}
+                            >
+                              <RelatedCardTitle>{item.title}</RelatedCardTitle>
+                              <RelatedCardArrow>→</RelatedCardArrow>
+                            </RelatedCard>
+                          ))}
+                        </RelatedCards>
+                      </RelatedGroup>
+                    )}
+
+                    {snItems.length > 0 && (
+                      <RelatedGroup>
+                        <RelatedGroupLabel $type="summary_note">{RELATED_ICONS['summary_note']} {constants?.summary_notes_feature_title || 'Ringkasan Materi'}</RelatedGroupLabel>
+                        <RelatedCards>
+                          {snItems.map(item => (
+                            <RelatedCard
+                              key={item.id}
+                              $type="summary_note"
+                              onClick={() => navigate(`${RELATED_ROUTES['summary_note']}/${item.uniqueId}`)}
+                            >
+                              <RelatedCardTitle>{item.title}</RelatedCardTitle>
+                              <RelatedCardArrow>→</RelatedCardArrow>
+                            </RelatedCard>
+                          ))}
+                        </RelatedCards>
+                      </RelatedGroup>
+                    )}
+                  </RelatedSection>
+                )
+              })()}
+
             </DoneBody>
           </DoneWrap>
         </DeckContainer>

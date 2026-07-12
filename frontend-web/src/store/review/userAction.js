@@ -22,6 +22,30 @@ export const fetchReviewSession = (params) => async (dispatch) => {
   }
 }
 
+export const startReviewSession = (params, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(actions.setLoading({ key: 'isFetchingSession', value: true }))
+    const response = await postWithToken(Endpoints.api.reviewSessions, params)
+    const { uniqueId, cards } = response.data.data || {}
+    dispatch(actions.setSessionUniqueId(uniqueId || null))
+    dispatch(actions.setSessionCards(cards || []))
+    onSuccess?.(uniqueId)
+  } finally {
+    dispatch(actions.setLoading({ key: 'isFetchingSession', value: false }))
+  }
+}
+
+export const fetchSessionByUniqueId = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(actions.setLoading({ key: 'isFetchingSession', value: true }))
+    const response = await getWithToken(Endpoints.api.reviewSessionByUniqueId(uniqueId))
+    const { cards } = response.data.data || {}
+    dispatch(actions.setSessionCards(cards || []))
+  } finally {
+    dispatch(actions.setLoading({ key: 'isFetchingSession', value: false }))
+  }
+}
+
 export const submitRating = ({ recordType, recordId, rating }) => async (dispatch) => {
   try {
     dispatch(actions.setLoading({ key: 'isSubmittingRating', value: true }))
