@@ -5,10 +5,13 @@ import { getUserData } from '@utils/authToken'
 
 const lazy = lazyWithRetry
 
-const FlashcardV1ListPage = lazy(() => import('../v1/pages/List'))
+const FlashcardV1ListPage   = lazy(() => import('../v1/pages/List'))
 const FlashcardV1DetailPage = lazy(() => import('../v1/pages/Detail'))
+const FlashcardV2ListPage   = lazy(() => import('../v2/pages/List'))
+const FlashcardV2DetailPage = lazy(() => import('../v2/pages/Detail'))
+const FlashcardV2ReviewPage = lazy(() => import('../v2/pages/Review'))
 
-const withSuspense = (Component) => (
+const wrap = (Component) => (
   <Suspense fallback={<PageLoader text="Loading..." />}>
     {Component}
   </Suspense>
@@ -16,12 +19,18 @@ const withSuspense = (Component) => (
 
 export function FlashcardListRouter() {
   const user = getUserData()
-  if (user?.role !== 'user') return withSuspense(<FlashcardV1ListPage />)
-  return withSuspense(<FlashcardV1ListPage />)
+  return user?.role === 'user'
+    ? wrap(<FlashcardV1ListPage />)
+    : wrap(<FlashcardV2ListPage />)
 }
 
 export function FlashcardDetailRouter() {
   const user = getUserData()
-  if (user?.role !== 'user') return withSuspense(<FlashcardV1DetailPage />)
-  return withSuspense(<FlashcardV1DetailPage />)
+  return user?.role === 'user'
+    ? wrap(<FlashcardV1DetailPage />)
+    : wrap(<FlashcardV2DetailPage />)
+}
+
+export function FlashcardReviewRouter() {
+  return wrap(<FlashcardV2ReviewPage />)
 }

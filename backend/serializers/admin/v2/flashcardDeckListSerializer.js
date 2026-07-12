@@ -15,6 +15,7 @@ export class FlashcardDeckListV2Serializer {
       description: deck.description,
       status: deck.status,
       cardCount: deckCards.length,
+      reviewCounts: deck.reviewCounts ?? null,
       nodes: (deck.nodeRecords || []).map(r => ({
         id: r.id,
         nodeId: r.node_id,

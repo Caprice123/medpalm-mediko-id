@@ -42,6 +42,12 @@ export default {
     api: {
         calculators: "/api/v1/calculators",
         flashcards: "/api/v1/flashcards",
+        flashcardsV2: "/api/v2/flashcards",
+        reviewStats: "/api/v2/review/stats",
+        reviewRate: "/api/v2/review/rate",
+        reviewSession: "/api/v2/review/session",
+        reviewCustomSessions: "/api/v2/review/custom-sessions",
+        featureNodes: "/api/v1/feature-nodes",
         exercises: "/api/v1/exercises",
         diagnostic: "/api/v1/diagnostic",
         anatomy: "/api/v1/anatomy",

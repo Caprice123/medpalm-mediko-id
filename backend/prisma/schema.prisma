@@ -339,6 +339,40 @@ model user_card_progress {
   @@index([card_id])
 }
 
+model user_review_states {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  record_type  String
+  record_id    Int
+  interval     Float    @default(1)
+  ease_factor  Float    @default(2.5)
+  due_date     DateTime
+  review_count Int      @default(0)
+  last_rating  String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  @@unique([user_id, record_type, record_id])
+  @@index([user_id])
+  @@index([due_date])
+  @@index([record_type, record_id])
+}
+
+model user_review_custom_sessions {
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  name               String
+  record_type        String   @default("flashcard_card")
+  node_id            Int?
+  department_node_id Int?
+  mode               String   @default("due_today")
+  card_limit         Int      @default(20)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now())
+
+  @@index([user_id])
+}
+
 model user_question_progress {
   id              Int      @id @default(autoincrement())
   user_id         Int

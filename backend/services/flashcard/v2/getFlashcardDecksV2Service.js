@@ -2,13 +2,14 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetFlashcardDecksV2Service extends BaseService {
-  static async call(filters = {}) {
+  static async call(filters = {}, userId = null) {
     const page = parseInt(filters.page) || 1
     const perPage = parseInt(filters.perPage) || 20
     const skip = (page - 1) * perPage
     const take = perPage + 1
 
     const where = { is_deleted: false }
+    if (filters.userRole === 'user') where.status = 'published'
     const andConditions = []
 
     if (filters.search) {
@@ -19,25 +20,25 @@ export class GetFlashcardDecksV2Service extends BaseService {
       ]
     }
 
-    // Filter by topic node ID (direct assignment via feature_node_records)
+    // Filter by topic node ID — polymorphic lookup first, then filter by deck IDs
     if (filters.topic) {
-      andConditions.push({
-        feature_node_records: {
-          some: { node_id: parseInt(filters.topic), record_type: 'flashcard_deck' },
-        },
+      const records = await prisma.feature_node_records.findMany({
+        where: { node_id: parseInt(filters.topic), record_type: 'flashcard_deck' },
+        select: { record_id: true },
       })
+      andConditions.push({ id: { in: records.map(r => r.record_id) } })
     }
 
-    // Filter by department node ID (via topic node whose parent is the department)
+    // Filter by department node ID — match decks whose topic node's parent is the department
     if (filters.department) {
-      andConditions.push({
-        feature_node_records: {
-          some: {
-            record_type: 'flashcard_deck',
-            node: { parent_id: parseInt(filters.department) },
-          },
+      const records = await prisma.feature_node_records.findMany({
+        where: {
+          record_type: 'flashcard_deck',
+          node: { parent_id: parseInt(filters.department) },
         },
+        select: { record_id: true },
       })
+      andConditions.push({ id: { in: records.map(r => r.record_id) } })
     }
 
     if (andConditions.length > 0) {
@@ -71,9 +72,37 @@ export class GetFlashcardDecksV2Service extends BaseService {
       nodesByDeckId[r.record_id].push(r)
     }
 
+    // Per-deck review counts
+    let reviewCountsByDeckId = {}
+    if (userId) {
+      const allCardIds = paginatedDecks.flatMap(d => (d.flashcard_cards || []).map(c => c.id))
+      if (allCardIds.length > 0) {
+        const states = await prisma.user_review_states.findMany({
+          where: { user_id: userId, record_type: 'flashcard_card', record_id: { in: allCardIds } },
+          select: { record_id: true, last_rating: true, due_date: true },
+        })
+
+        const cardToDeck = {}
+        for (const d of paginatedDecks) {
+          for (const c of d.flashcard_cards || []) cardToDeck[c.id] = d.id
+        }
+
+        const now = new Date()
+        for (const s of states) {
+          const deckId = cardToDeck[s.record_id]
+          if (!deckId) continue
+          if (!reviewCountsByDeckId[deckId]) reviewCountsByDeckId[deckId] = { again: 0, hard: 0, good: 0, easy: 0, due: 0 }
+          const rk = s.last_rating
+          if (rk in reviewCountsByDeckId[deckId]) reviewCountsByDeckId[deckId][rk]++
+          if (s.due_date <= now) reviewCountsByDeckId[deckId].due++
+        }
+      }
+    }
+
     const decksWithNodes = paginatedDecks.map(d => ({
       ...d,
       nodeRecords: nodesByDeckId[d.id] || [],
+      reviewCounts: reviewCountsByDeckId[d.id] || null,
     }))
 
     return {

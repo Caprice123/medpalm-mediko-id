@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { getUserData } from '@utils/authToken'
 import { fetchFeatures } from '@store/feature/userAction'
 import { logout } from '@store/auth/action'
-import { formatJakartaDateLong } from '@utils/dateUtils'
+import { formatLocalDate } from '@utils/dateUtils'
 import { ProfileRoute } from '@routes/Profile/routes'
 import {
   LayoutWrapper,
@@ -81,7 +81,7 @@ function AppLayout() {
   const { features } = useSelector(state => state.feature)
   const { userStatus } = useSelector(state => state.pricing)
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
   const [collapsed, setCollapsed] = useState({ fitur: false, layanan: false, akun: false })
   const [detailOpen, setDetailOpen] = useState({ credits: false, subs: false })
 
@@ -265,7 +265,7 @@ function AppLayout() {
                       <StatDetailRow key={feature} $warn={daysLeft !== null && daysLeft <= 7}>
                         <StatDetailLabel>{featureLabels[feature]}</StatDetailLabel>
                         <StatDetailValue>
-                          {endDate ? formatJakartaDateLong(endDate) : '∞'}
+                          {endDate ? formatLocalDate(endDate) : '∞'}
                         </StatDetailValue>
                       </StatDetailRow>
                     )
