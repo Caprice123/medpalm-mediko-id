@@ -37,7 +37,9 @@ export default defineConfig({
     visualizer({ open: false, filename: 'dist/stats.html', gzipSize: true }),
     sentryVitePlugin({
       org: "medpal-project",
-      project: "medpal"
+      project: "medpal",
+      disable: process.env.DISABLE_SENTRY === 'true',
+      telemetry: process.env.DISABLE_SENTRY !== 'true',
     }),
   ],
   // Exclude from esbuild pre-bundling so patchSafariGfm runs in dev mode too
