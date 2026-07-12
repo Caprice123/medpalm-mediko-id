@@ -88,6 +88,7 @@ app.use(cors({
         "https://medpalm.mediko.id",   // React
         "https://medpal.id",
         "https://www.medpal.id",
+        "https://dev.medpal.id",   // React
     ],
     exposedHeaders: ['X-Remaining-Quota'], // Expose custom header to frontend
 }));
