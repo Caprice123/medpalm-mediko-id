@@ -1,24 +1,21 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
-import PageLoader from '@components/PageLoader';
-
-const FlashcardListPage = lazy(() => import('../pages/List'));
-const FlashcardDetailPage = lazy(() => import('../pages/Detail'));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading..." />}>
-        {Component}
-    </Suspense>
-);
+import { FlashcardListRouter, FlashcardDetailRouter, FlashcardReviewRouter, FlashcardReviewAllRouter, FlashcardReviewCustomRouter, FlashcardSessionRouter } from './FlashcardRouter'
 
 export class FlashcardRoute {
-    static moduleRoute = "/flashcards"
-    static initialRoute = FlashcardRoute.moduleRoute
-    static detailRoute = FlashcardRoute.moduleRoute + "/:id"
+  static moduleRoute = '/flashcards'
+  static initialRoute = FlashcardRoute.moduleRoute
+  static detailRoute = FlashcardRoute.moduleRoute + '/:id'
+  static reviewRoute = FlashcardRoute.moduleRoute + '/review'
+  static reviewAllRoute = FlashcardRoute.moduleRoute + '/review/all'
+  static reviewCustomRoute = FlashcardRoute.moduleRoute + '/review/custom'
+  static sessionRoute = (uniqueId) => `${FlashcardRoute.moduleRoute}/session/${uniqueId}`
+  static sessionRoutePath = FlashcardRoute.moduleRoute + '/session/:uniqueId'
 }
 
 export const flashcardRoutes = [
-    { path: FlashcardRoute.initialRoute, element: withSuspense(<FlashcardListPage />) },
-    { path: FlashcardRoute.detailRoute, element: withSuspense(<FlashcardDetailPage />) },
-];
+  { path: FlashcardRoute.sessionRoutePath,  element: <FlashcardSessionRouter /> },
+  { path: FlashcardRoute.reviewAllRoute,    element: <FlashcardReviewAllRouter /> },
+  { path: FlashcardRoute.reviewCustomRoute, element: <FlashcardReviewCustomRouter /> },
+  { path: FlashcardRoute.reviewRoute,       element: <FlashcardReviewRouter /> },
+  { path: FlashcardRoute.initialRoute,      element: <FlashcardListRouter /> },
+  { path: FlashcardRoute.detailRoute,       element: <FlashcardDetailRouter /> },
+]

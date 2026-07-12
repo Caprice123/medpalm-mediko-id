@@ -46,6 +46,9 @@ const { reducer, actions } = createSlice({
     setTopics: (state, { payload }) => {
       state.topics = payload
     },
+    appendTopics: (state, { payload }) => {
+      state.topics = [...state.topics, ...payload]
+    },
     setPagination: (state, { payload }) => {
       state.pagination = payload
     },

@@ -1,8 +1,8 @@
 import { AuthorizationError } from '#errors/authorizationError'
 
 // Define valid tabs and features (simplified - just access, no CRUD)
-const VALID_TABS = ['features', 'tags', 'pricingPlans', 'transactions', 'users']
-const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas']
+const VALID_TABS = ['features', 'tags', 'pricingPlans', 'transactions', 'users', 'featuresV2', 'nodeStructure']
+const VALID_FEATURES = ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas', 'featureNodes', 'flashcardV2']
 
 /**
  * Middleware to check if user has permission to access a specific tab
@@ -92,8 +92,8 @@ function getDefaultPermissions(role) {
 
   if (role === 'admin') {
     return {
-      tabs: ['features', 'tags', 'pricingPlans', 'transactions'],
-      features: ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas']
+      tabs: ['features', 'tags', 'pricingPlans', 'transactions', 'featuresV2', 'nodeStructure'],
+      features: ['exercise', 'flashcard', 'calculator', 'diagnostic', 'anatomy', 'mcq', 'chatbot', 'skripsi', 'oscePractice', 'summaryNotes', 'atlas', 'featureNodes', 'flashcardV2']
     }
   }
 

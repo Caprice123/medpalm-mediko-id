@@ -11,9 +11,13 @@ const LOCAL_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
  * @param {string} format - moment format string
  * @returns {string}
  */
-export const formatLocalDate = (isoString, format = 'D MMM YYYY') => {
+export const formatLocalDate = (isoString) => {
   if (!isoString) return '-'
-  return moment(isoString).tz(LOCAL_TIMEZONE).format(format)
+  const parts = new Intl.DateTimeFormat('id-ID', {
+    timeZone: LOCAL_TIMEZONE, day: 'numeric', month: 'short', year: 'numeric',
+  }).formatToParts(new Date(isoString))
+  const get = (type) => parts.find(p => p.type === type)?.value ?? ''
+  return `${get('day')} ${get('month')} ${get('year')}`
 }
 
 /**
@@ -22,36 +26,23 @@ export const formatLocalDate = (isoString, format = 'D MMM YYYY') => {
  * @returns {string}
  */
 export const formatLocalDateTime = (isoString) => {
-  return formatLocalDate(isoString, 'D MMM YYYY, HH:mm')
+  if (!isoString) return '-'
+  return moment(isoString).locale('id').tz(LOCAL_TIMEZONE).format('D MMM YYYY, HH:mm')
 }
 
-/**
- * Formats an ISO8601 string with long month name into the user's local timezone.
- * e.g. "18 Februari 2026"
- * @param {string} isoString
- * @returns {string}
- */
 export const formatLocalDateLong = (isoString) => {
-  return formatLocalDate(isoString, 'D MMMM YYYY')
+  if (!isoString) return '-'
+  return moment(isoString).locale('id').tz(LOCAL_TIMEZONE).format('D MMMM YYYY')
 }
 
-/**
- * Formats an ISO8601 string with full weekday + date + time into the user's local timezone.
- * e.g. "Rabu, 18 Feb 2026, 14:30"
- * @param {string} isoString
- * @returns {string}
- */
 export const formatLocalDateTimeFull = (isoString) => {
-  return formatLocalDate(isoString, 'dddd, D MMM YYYY, HH:mm')
+  if (!isoString) return '-'
+  return moment(isoString).locale('id').tz(LOCAL_TIMEZONE).format('dddd, D MMM YYYY, HH:mm')
 }
 
-/**
- * Formats an ISO8601 string to time only (HH:mm) in the user's local timezone.
- * @param {string} isoString
- * @returns {string}
- */
 export const formatLocalTime = (isoString) => {
-  return formatLocalDate(isoString, 'HH:mm')
+  if (!isoString) return '-'
+  return moment(isoString).locale('id').tz(LOCAL_TIMEZONE).format('HH:mm')
 }
 
 /**
@@ -99,6 +90,7 @@ export const formatJakartaDateLong = (isoString) => {
   const parts = jakartaParts(isoString, { day: 'numeric', month: 'long', year: 'numeric' })
   return `${getPart(parts, 'day')} ${getPart(parts, 'month')} ${getPart(parts, 'year')}`
 }
+
 
 export const formatDate = (dateString) => {
     return formatLocalDate(dateString)

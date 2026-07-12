@@ -7,7 +7,7 @@ const SummaryNotesList = lazy(() => import('../pages/List'));
 const SummaryNotesDetail = lazy(() => import('../pages/Detail'));
 
 const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader fullScreen={false} text="Loading Summary Notes..." />}>
+    <Suspense fallback={<PageLoader text="Loading Summary Notes..." />}>
         {Component}
     </Suspense>
 );

@@ -3,6 +3,7 @@ import lazyWithRetry from '@utils/lazyWithRetry';
 const lazy = lazyWithRetry;
 import PrivateRoute from '@middleware/PrivateRoute';
 import ProfileGuard from '@middleware/ProfileGuard';
+import AppLayout from '@components/AppLayout';
 import PageLoader from '@components/PageLoader';
 import { AuthRoute } from './routes/Auth/routes';
 import { calculatorRoutes } from './routes/Calculator/routes';
@@ -59,28 +60,34 @@ const appRoutes = [
                 element: <ProfileGuard />,
                 children: [
                     {
-                        path: '/dashboard',
-                        element: withSuspense(<Dashboard />)
-                    },
-                    ...exerciseRoutes,
-                    ...diagnosticQuizRoutes,
-                    ...anatomyQuizRoutes,
-                    ...calculatorRoutes,
-                    ...summaryNotesRoutes,
-                    ...multipleChoiceRoutes,
-                    ...flashcardRoutes,
-                    ...chatbotRoutes,
-                    ...skripsiRoutes,
-                    ...topupRoutes,
-                    ...oscePracticeRoutes,
-                    ...atlasRoutes,
-                    ...webinarRoutes,
-                    ...eventRoutes,
-                    ...challengeRoutes,
-                    {
-                        path: '/admin',
-                        element: withSuspense(<AdminPanel />)
-                    },
+                        path: "/",
+                        element: <AppLayout />,
+                        children: [
+                            {
+                                path: '/dashboard',
+                                element: withSuspense(<Dashboard />)
+                            },
+                            ...exerciseRoutes,
+                            ...diagnosticQuizRoutes,
+                            ...anatomyQuizRoutes,
+                            ...calculatorRoutes,
+                            ...summaryNotesRoutes,
+                            ...multipleChoiceRoutes,
+                            ...flashcardRoutes,
+                            ...chatbotRoutes,
+                            ...skripsiRoutes,
+                            ...topupRoutes,
+                            ...oscePracticeRoutes,
+                            ...atlasRoutes,
+                            ...webinarRoutes,
+                            ...eventRoutes,
+                            ...challengeRoutes,
+                            {
+                                path: '/admin',
+                                element: withSuspense(<AdminPanel />)
+                            },
+                        ]
+                    }
                 ]
             }
         ]

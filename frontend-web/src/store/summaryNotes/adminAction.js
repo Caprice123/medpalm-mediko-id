@@ -5,39 +5,49 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../.
 const {
   setLoading,
   setNotes,
+  appendNotes,
   setDetail,
   setPagination,
 } = actions
 
 // ============= Admin Endpoints =============
 
-export const fetchAdminSummaryNotes = () => async (dispatch, getState) => {
+/**
+ * Fetch summary notes for admin panel.
+ * Pass overrides = { status, page, perPage, append } to customise without touching filter Redux state.
+ */
+export const fetchAdminSummaryNotes = (overrides = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isAdminNotesLoading', value: true }))
 
     const state = getState().summaryNotes
     const currentFilters = state.filters
-    const currentPage = state.pagination.page
-    const currentPerPage = state.pagination.perPage
 
     const queryParams = {}
-    if (currentFilters.search) queryParams.search = currentFilters.search
-    if (currentFilters.university) queryParams.university = currentFilters.university
-    if (currentFilters.semester) queryParams.semester = currentFilters.semester
-    if (currentFilters.department) queryParams.department = currentFilters.department
-    if (currentFilters.status) queryParams.status = currentFilters.status
-
-    queryParams.page = currentPage
-    queryParams.perPage = currentPerPage
+    const activeStatus = overrides.status ?? currentFilters.status
+    if (activeStatus) queryParams.status = activeStatus
+    if (!overrides.status) {
+      if (currentFilters.search) queryParams.search = currentFilters.search
+      if (currentFilters.university) queryParams.university = currentFilters.university
+      if (currentFilters.semester) queryParams.semester = currentFilters.semester
+      if (currentFilters.department) queryParams.department = currentFilters.department
+    }
+    queryParams.page = overrides.page ?? state.pagination.page
+    queryParams.perPage = overrides.perPage ?? state.pagination.perPage
 
     const route = Endpoints.admin.summaryNotes
     const response = await getWithToken(route, queryParams)
-    dispatch(setNotes(response.data.data || []))
+    if (overrides.append) {
+      dispatch(appendNotes(response.data.data || []))
+    } else {
+      dispatch(setNotes(response.data.data || []))
+    }
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 30, isLastPage: false }))
   } finally {
     dispatch(setLoading({ key: 'isAdminNotesLoading', value: false }))
   }
 }
+
 
 export const fetchSummaryNoteDetail = (noteId) => async (dispatch) => {
   try {

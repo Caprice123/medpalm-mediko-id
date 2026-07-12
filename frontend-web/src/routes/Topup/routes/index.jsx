@@ -6,7 +6,7 @@ import PageLoader from '@components/PageLoader'
 const TopupPage = lazy(() => import('../pages'))
 
 const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader fullScreen={true} text="Loading Top Up..." />}>
+  <Suspense fallback={<PageLoader text="Loading Top Up..." />}>
     {Component}
   </Suspense>
 )

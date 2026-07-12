@@ -26,7 +26,9 @@ import event from "./event";
 import featureSubscriptions from "./featureSubscriptions/reducer";
 import banner from "./banner";
 import challenge from "./challenge";
-import profile from "./profile/reducer";
+import profile from "./profile/reducer"
+import featureNodes from "./featureNodes/reducer";
+import review from "./review/reducer";
 
 export const rootReducer = combineReducers({
     auth,
@@ -36,6 +38,7 @@ export const rootReducer = combineReducers({
     credit,
     exercise,
     flashcard,
+    review,
     tags,
     tagGroups,
     session,
@@ -56,6 +59,7 @@ export const rootReducer = combineReducers({
     banner,
     challenge,
     profile,
+    featureNodes,
 })
 
 export const store = configureStore({
