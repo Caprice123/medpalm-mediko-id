@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { fetchSummaryNotesNodes, fetchRecentlyViewed } from '@store/summaryNotes/v2/userAction'
+import { fetchRecentlyViewed } from '@store/summaryNotes/v2/userAction'
 import CurriculumSidebar from './components/CurriculumSidebar'
 import NotePanel from './components/NotePanel'
 import { PageWrapper, SidebarWrapper, PanelWrapper } from './index.styles'
@@ -13,7 +13,6 @@ function SummaryNotesV2Page() {
   const [isFullScreen, setIsFullScreen] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchSummaryNotesNodes())
     dispatch(fetchRecentlyViewed())
   }, [dispatch])
 

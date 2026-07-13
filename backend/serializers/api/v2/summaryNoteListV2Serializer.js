@@ -7,7 +7,10 @@ export class SummaryNoteListV2Serializer {
       uniqueId: note.unique_id,
       title: note.title,
       description: note.description,
-      updatedAt: toJakartaISO(note.updated_at)
+      updatedAt: toJakartaISO(note.updated_at),
+      nodePath: note._node
+        ? [note._node.parent?.name, note._node.name].filter(Boolean)
+        : null,
     }))
   }
 }

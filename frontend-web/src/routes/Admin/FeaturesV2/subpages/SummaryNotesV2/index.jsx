@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAdminSummaryNotes, fetchSummaryNoteDetail, deleteSummaryNote } from '@store/summaryNotes/adminAction'
+import { fetchAdminSummaryNotesV2, fetchAdminSummaryNoteDetailV2, deleteSummaryNoteV2 } from '@store/summaryNotes/v2/adminAction'
 import { fetchLazyNodes } from '@store/featureNodes/adminAction'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
@@ -60,7 +60,7 @@ function FolderNode({ node, depth, childrenMap, loadingNodeIds, expandedIds, sel
 
 function SummaryNotesV2({ onBack }) {
   const dispatch = useDispatch()
-  const { notes, loading: notesLoading, pagination } = useSelector(s => s.summaryNotes)
+  const { notes, loading: notesLoading, pagination } = useSelector(s => s.summaryNotesV2)
 
   // Lazy tree state
   const [rootNodes, setRootNodes] = useState([])
@@ -97,19 +97,19 @@ function SummaryNotesV2({ onBack }) {
 
   const doFetchNotes = (nodeId, page, gSearch, gStatus, fSearch, sFilter, append = false) => {
     if (gSearch.trim() || gStatus) {
-      dispatch(fetchAdminSummaryNotes({
+      dispatch(fetchAdminSummaryNotesV2({
         ...(gSearch.trim() && { search: gSearch.trim() }),
         ...(gStatus && { status: gStatus }),
         perPage: PER_PAGE, page, append,
       }))
     } else if (nodeId === UNASSIGNED_ID) {
-      dispatch(fetchAdminSummaryNotes({
+      dispatch(fetchAdminSummaryNotesV2({
         unassigned: true, perPage: PER_PAGE, page, append,
         ...(fSearch && { search: fSearch }),
         ...(sFilter && { status: sFilter }),
       }))
     } else {
-      dispatch(fetchAdminSummaryNotes({
+      dispatch(fetchAdminSummaryNotesV2({
         nodeId, perPage: PER_PAGE, page, append,
         ...(fSearch && { search: fSearch }),
         ...(sFilter && { status: sFilter }),
@@ -167,13 +167,13 @@ function SummaryNotesV2({ onBack }) {
   // ── Notes actions ─────────────────────────────────────────────
 
   const handleKelola = async (note) => {
-    await dispatch(fetchSummaryNoteDetail(note.uniqueId))
+    await dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId))
     setSelectedNote(note)
   }
 
   const handleDelete = async (note) => {
     if (!window.confirm(`Hapus ringkasan "${note.title}"?`)) return
-    await dispatch(deleteSummaryNote(note.uniqueId))
+    await dispatch(deleteSummaryNoteV2(note.uniqueId))
     setNotesPage(1)
     doFetchNotes(selectedNodeId, 1, globalSearch, globalStatusFilter, folderSearch, statusFilter)
   }
@@ -378,7 +378,7 @@ function SummaryNotesV2({ onBack }) {
           onClose={async (note) => {
             setCreatingNote(false)
             if (note?.uniqueId) {
-              await dispatch(fetchSummaryNoteDetail(note.uniqueId))
+              await dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId))
               setSelectedNote(note)
             } else {
               doFetchNotes(selectedNodeId, notesPage, globalSearch, globalStatusFilter, folderSearch, statusFilter)

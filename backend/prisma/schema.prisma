@@ -449,6 +449,7 @@ model users {
   challenge_sessions            challenge_sessions[]
   user_profile                  user_profiles?
   user_recently_viewed          user_recently_viewed[]
+  user_favorites                user_favorites[]
 }
 
 model user_profiles {
@@ -2211,4 +2212,17 @@ model user_recently_viewed {
 
   @@unique([user_id, record_type, record_id])
   @@index([user_id, record_type, viewed_at(sort: Desc)])
+}
+
+model user_favorites {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  record_type String
+  record_id   Int
+  created_at  DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, record_type, record_id])
+  @@index([user_id, record_type])
 }

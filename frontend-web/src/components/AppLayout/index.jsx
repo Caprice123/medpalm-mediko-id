@@ -37,6 +37,7 @@ import {
   FooterActions,
   FooterActionButton,
   ContentArea,
+  SidebarOuter,
   ToggleButton,
 } from './AppLayout.styles'
 import { ExerciseRoute } from '@routes/Exercise/routes'
@@ -143,13 +144,14 @@ function AppLayout() {
             <span /><span /><span />
           </FloatingHamburger>
           <MobileOverlay $open={sidebarOpen} onClick={() => setSidebarOpen(false)} />
-          <ToggleButton $open={sidebarOpen} onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
-            {sidebarOpen ? '◀' : '▶'}
-          </ToggleButton>
         </>
       )}
 
-      {isNonUser && <Sidebar $open={sidebarOpen}>
+      {isNonUser && <SidebarOuter $open={sidebarOpen}>
+        <ToggleButton onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
+          {sidebarOpen ? '◀' : '▶'}
+        </ToggleButton>
+        <Sidebar $open={sidebarOpen}>
         <SidebarInner>
           <MobileCloseButton onClick={() => setSidebarOpen(false)}>✕</MobileCloseButton>
           <SidebarLogo onClick={() => navigateTo('/dashboard')}>
@@ -283,7 +285,8 @@ function AppLayout() {
             </FooterActions>
           </SidebarFooter>
         </SidebarInner>
-      </Sidebar>}
+      </Sidebar>
+      </SidebarOuter>}
 
       <ContentArea>
         <Outlet />

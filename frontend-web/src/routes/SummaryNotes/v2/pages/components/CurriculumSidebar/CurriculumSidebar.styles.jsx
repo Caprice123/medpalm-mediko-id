@@ -80,7 +80,7 @@ export const NodeRow = styled.div`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.1}rem;
+  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
   cursor: ${p => p.$clickable ? 'pointer' : 'default'};
   border-radius: 0;
   user-select: none;
@@ -115,7 +115,7 @@ export const NoteRow = styled.div`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.1}rem;
+  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
   cursor: pointer;
   border-radius: 0;
   background: ${p => p.$selected ? '#ccfbf1' : 'transparent'};
@@ -139,9 +139,11 @@ export const NoteLabel = styled.span`
 `
 
 export const LoadingRow = styled.div`
-  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.1}rem;
+  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: ${p => p.$clickable ? '#0d9488' : '#9ca3af'};
+  cursor: ${p => p.$clickable ? 'pointer' : 'default'};
+  &:hover { ${p => p.$clickable && 'text-decoration: underline;'} }
 `
 
 export const Divider = styled.div`
@@ -150,16 +152,48 @@ export const Divider = styled.div`
   margin: 0.25rem 0;
 `
 
+export const CollapsibleSection = styled.div`
+  flex-shrink: 0;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+`
+
+export const FavoritesSection = CollapsibleSection
+export const RecentSection = CollapsibleSection
+
+export const SectionListArea = styled.div`
+  max-height: ${p => p.$open ? '160px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.22s ease;
+`
+
 export const RecentHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: space-between;
   padding: 0.5rem 1rem 0.25rem;
+  cursor: pointer;
+  user-select: none;
+  &:hover { background: #f9fafb; }
+`
+
+export const RecentHeaderLabel = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+`
+
+export const CollapseChevron = styled.span`
+  font-size: 0.625rem;
+  color: #9ca3af;
+  transform: ${p => p.$open ? 'rotate(90deg)' : 'rotate(0deg)'};
+  transition: transform 0.15s;
+  display: inline-block;
 `
 
 export const RecentNoteRow = styled.div`
@@ -179,4 +213,52 @@ export const EmptyHint = styled.div`
   padding: 0.5rem 1rem;
   font-size: 0.8125rem;
   color: #9ca3af;
+`
+
+export const SearchNoteRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem 0.4rem 1rem;
+  cursor: pointer;
+  background: ${p => p.$selected ? '#ccfbf1' : 'transparent'};
+  &:hover { background: ${p => p.$selected ? '#99f6e4' : '#f1f5f9'}; }
+`
+
+export const SearchNoteInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+`
+
+export const SearchNoteTitle = styled.span`
+  font-size: 0.8125rem;
+  color: ${p => p.$selected ? '#0f766e' : '#374151'};
+  font-weight: ${p => p.$selected ? '600' : '400'};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const SearchNotePath = styled.span`
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const FavoriteBtn = styled.button`
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  color: ${p => p.$active ? '#f59e0b' : '#d1d5db'};
+  &:hover { color: ${p => p.$active ? '#d97706' : '#9ca3af'}; }
 `

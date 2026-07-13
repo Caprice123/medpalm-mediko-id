@@ -6,7 +6,7 @@ import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
 import { SummaryNoteDetailSkeleton } from '@components/common/SkeletonCard'
 import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
-import FlashcardDeckCard from '@routes/SummaryNotes/pages/Detail/components/FlashcardDeckCard'
+import DeckCard from '@routes/Flashcard/v2/pages/List/components/DeckCard'
 import McqTopicCard from '@routes/SummaryNotes/pages/Detail/components/McqTopicCard'
 import {
   EmptyPanel, EmptyIcon, EmptyText,
@@ -160,7 +160,7 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
             {activeResourceType === 'flashcards' && hasFlashcards && (
               <ResourceGrid>
                 {detail.flashcardDecks.map(deck => (
-                  <FlashcardDeckCard key={deck.id} deck={deck} />
+                  <DeckCard key={deck.id} deck={deck} />
                 ))}
               </ResourceGrid>
             )}

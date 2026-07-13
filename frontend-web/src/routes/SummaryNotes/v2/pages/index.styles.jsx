@@ -4,7 +4,7 @@ export const PageWrapper = styled.div`
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: #f8fafc;
+  background: #f5f3ee;
 `
 
 export const SidebarWrapper = styled.aside`

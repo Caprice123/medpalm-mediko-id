@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSummaryNoteDetail } from '@store/summaryNotes/adminAction'
+import { fetchAdminSummaryNoteDetailV2 } from '@store/summaryNotes/v2/adminAction'
 import Button from '@components/common/Button'
-import { useUpdateNote } from '@routes/Admin/Features/subpages/SummaryNotes/hooks/subhooks/useUpdateNote'
+import { useUpdateNoteV2 } from '../../hooks/useUpdateNoteV2'
 import { Container, Header, HeaderLeft, Title } from '../../SummaryNotesV2.styles'
 import { TabBar, Tab, TabContent } from './NoteDetailPage.styles'
 import DetailTab from './components/DetailTab'
@@ -14,14 +14,14 @@ function NoteDetailPage({ note, onBack }) {
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('detail')
 
-  const { loading } = useSelector(s => s.summaryNotes)
+  const { loading } = useSelector(s => s.summaryNotesV2)
   const { loading: commonLoading } = useSelector(s => s.common)
 
   const { form, handleFileSelect, handleGenerate, handleRemoveFile, handleRemoveSourceFile, handleImageUpload } =
-    useUpdateNote(() => {})
+    useUpdateNoteV2(() => {})
 
   useEffect(() => {
-    dispatch(fetchSummaryNoteDetail(note.uniqueId))
+    dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId))
   }, [note.uniqueId, dispatch])
 
   const isSaving = loading?.isUpdating

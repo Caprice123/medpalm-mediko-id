@@ -26,6 +26,10 @@ export const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100%;
+
+  .bn-editor {
+    padding: 0;
+  }
 `
 
 export const TopBar = styled.div`
@@ -74,8 +78,9 @@ export const FullScreenBtn = styled.button`
 `
 
 export const PanelContent = styled.div`
-  padding: 2rem;
-  max-width: 860px;
+  padding: 1rem 1.5rem;
+  background: #fdfcf8;
+  min-height: calc(100vh - 56px);
 `
 
 export const NoteTitle = styled.h1`

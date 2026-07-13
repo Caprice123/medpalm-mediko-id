@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateSummaryNote, fetchAdminSummaryNotes } from '@store/summaryNotes/adminAction'
+import { updateSummaryNoteV2, fetchAdminSummaryNotesV2 } from '@store/summaryNotes/v2/adminAction'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
@@ -9,7 +9,7 @@ import { StatusToggle, StatusOption } from '../NoteDetailPage/NoteDetailPage.sty
 
 function EditNoteMetaModal({ note, onClose }) {
   const dispatch = useDispatch()
-  const { loading } = useSelector(s => s.summaryNotes)
+  const { loading } = useSelector(s => s.summaryNotesV2)
 
   const [title, setTitle] = useState(note.title || '')
   const [description, setDescription] = useState(note.description || '')
@@ -25,14 +25,14 @@ function EditNoteMetaModal({ note, onClose }) {
     }
     setTitleError('')
 
-    await dispatch(updateSummaryNote(note.uniqueId, {
+    await dispatch(updateSummaryNoteV2(note.uniqueId, {
       title: title.trim(),
       description: description.trim(),
       status: status === 'inactive' ? 'draft' : status,
       isActive: status !== 'inactive',
     }))
 
-    dispatch(fetchAdminSummaryNotes({ perPage: 500 }))
+    dispatch(fetchAdminSummaryNotesV2({ perPage: 500 }))
     onClose()
   }
 

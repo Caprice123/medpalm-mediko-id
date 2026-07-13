@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createSummaryNote } from '@store/summaryNotes/adminAction'
+import { createSummaryNoteV2 } from '@store/summaryNotes/v2/adminAction'
 import { createNodeRecord, fetchNodeRecords } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
@@ -10,7 +10,7 @@ import { FormSection, Label, StatusToggle, StatusOption } from '../NoteDetailPag
 
 function CreateNoteModalV2({ nodeId, onClose }) {
   const dispatch = useDispatch()
-  const { loading } = useSelector(s => s.summaryNotes)
+  const { loading } = useSelector(s => s.summaryNotesV2)
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -23,7 +23,7 @@ function CreateNoteModalV2({ nodeId, onClose }) {
       return
     }
     setTitleError('')
-    const note = await dispatch(createSummaryNote({
+    const note = await dispatch(createSummaryNoteV2({
       title: title.trim(),
       description: description.trim(),
       status,

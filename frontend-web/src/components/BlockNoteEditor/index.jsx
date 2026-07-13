@@ -30,15 +30,13 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
   const [images, setImages] = useState([])
   const dispatch = useDispatch()
 
-  // Use the shared schema instead of creating a new one
   const schema = editorSchema;
+  const safeInitialContent = (Array.isArray(initialContent) && initialContent.length > 0)
+    ? initialContent
+    : [{ type: "paragraph", content: "" }]
+
   const editor = useCreateBlockNote({
-    initialContent: initialContent || [
-      {
-        type: "paragraph",
-        content: "",
-      },
-    ],
+    initialContent: safeInitialContent,
     schema: schema,
     uploadFile: onImageUpload ? async (file) => {
       try {

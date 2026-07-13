@@ -7,7 +7,7 @@ class SummaryNotesV2Controller {
   async index(req, res) {
     const { nodeId, search, page, perPage } = req.query
     const result = await GetSummaryNotesByNodeService.call({
-      nodeId, search, page, perPage, userRole: req.user.role
+      nodeId, search, page, perPage
     })
     return res.json({
       data: SummaryNoteListV2Serializer.serialize(result.data),
