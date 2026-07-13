@@ -60,8 +60,11 @@ import adminChallengeRoutes from '#routes/admin/v1/challenge.routes';
 import adminFeatureNodesRoutes from '#routes/admin/v1/featureNodes.routes';
 import adminContentRelationRoutes from '#routes/admin/v1/contentRelation.routes';
 import adminV2FlashcardRoutes from '#routes/admin/v2/flashcard.routes';
+import adminV2SummaryNotesRoutes from '#routes/admin/v2/summaryNotes.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
 import apiV2ReviewRoutes from '#routes/api/v2/review.routes';
+import apiV2SummaryNotesRoutes from '#routes/api/v2/summaryNotes.routes';
+import recentlyViewedRoutes from '#routes/api/v1/recentlyViewed.routes';
 import apiFeatureNodesRoutes from '#routes/api/v1/featureNodes.routes';
 import profileRoutes from '#routes/api/v1/profile.routes';
 import uploadRoutes from '#routes/api/v1/upload.routes';
@@ -157,6 +160,8 @@ app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/flashcards', flashcardRoutes);
 app.use('/api/v2/flashcards', apiV2FlashcardRoutes);
 app.use('/api/v2/review', apiV2ReviewRoutes);
+app.use('/api/v2/summary-notes', apiV2SummaryNotesRoutes);
+app.use('/api/v1/recently-viewed', recentlyViewedRoutes);
 app.use('/api/v1/feature-nodes', apiFeatureNodesRoutes);
 app.use('/api/v1/summary-notes', summaryNoteRoutes);
 app.use('/api/v1/tags', tagRoutes);
@@ -214,6 +219,7 @@ app.use('/admin/v1/challenges', adminChallengeRoutes);
 app.use('/admin/v1/feature-nodes', adminFeatureNodesRoutes);
 app.use('/admin/v1/content-relations', adminContentRelationRoutes);
 app.use('/admin/v2/flashcards', adminV2FlashcardRoutes);
+app.use('/admin/v2/summary-notes', adminV2SummaryNotesRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

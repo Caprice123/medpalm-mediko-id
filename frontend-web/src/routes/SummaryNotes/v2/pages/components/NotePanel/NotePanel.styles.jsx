@@ -1,0 +1,160 @@
+import styled from 'styled-components'
+
+export const EmptyPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+  color: #9ca3af;
+  padding: 3rem;
+  text-align: center;
+`
+
+export const EmptyIcon = styled.div`
+  font-size: 3rem;
+  opacity: 0.5;
+`
+
+export const EmptyText = styled.p`
+  font-size: 1rem;
+  margin: 0;
+`
+
+export const PanelContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+`
+
+export const TopBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+`
+
+export const Breadcrumb = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+`
+
+export const BreadcrumbItem = styled.span`
+  color: #6b7280;
+  cursor: default;
+  &:last-child { color: #374151; font-weight: 500; }
+`
+
+export const BreadcrumbSep = styled.span`
+  color: #d1d5db;
+`
+
+export const FullScreenBtn = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover { background: #f9fafb; }
+`
+
+export const PanelContent = styled.div`
+  padding: 2rem;
+  max-width: 860px;
+`
+
+export const NoteTitle = styled.h1`
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+`
+
+export const NoteDescription = styled.p`
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+`
+
+export const MetaRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`
+
+export const MetaChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: ${p => p.$teal ? '#ccfbf1' : '#f1f5f9'};
+  color: ${p => p.$teal ? '#0f766e' : '#6b7280'};
+`
+
+export const ActionRow = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+`
+
+export const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  margin: 2rem 0;
+`
+
+export const SectionTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+export const ToggleButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`
+
+export const ToggleButton = styled.button`
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid ${p => p.$active ? '#0d9488' : '#e5e7eb'};
+  background: ${p => p.$active ? '#0d9488' : 'white'};
+  color: ${p => p.$active ? 'white' : '#6b7280'};
+  &:hover:not(:disabled) { border-color: #0d9488; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+`
+
+export const ResourceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+`

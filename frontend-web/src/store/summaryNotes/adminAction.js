@@ -35,6 +35,15 @@ export const fetchAdminSummaryNotes = (overrides = {}) => async (dispatch, getSt
     queryParams.page = overrides.page ?? state.pagination.page
     queryParams.perPage = overrides.perPage ?? state.pagination.perPage
 
+    // V2 folder/search overrides — take priority over filter state
+    if (overrides.nodeId !== undefined) queryParams.nodeId = overrides.nodeId
+    if (overrides.unassigned) queryParams.unassigned = 'true'
+    if ('search' in overrides) {
+      if (overrides.search) queryParams.search = overrides.search
+      else delete queryParams.search
+    }
+    if ('status' in overrides && overrides.status) queryParams.status = overrides.status
+
     const route = Endpoints.admin.summaryNotes
     const response = await getWithToken(route, queryParams)
     if (overrides.append) {
@@ -132,4 +141,27 @@ export const generateSummaryFromDocument = (blobId) => async (dispatch) => {
   } finally {
     dispatch(setLoading({ key: 'isGenerating', value: false }))
   }
+}
+
+// ── Content Relations ──
+
+export const fetchSummaryNoteRelations = (noteId) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'summary_note',
+    sourceId: noteId,
+  })
+  return res.data.data || []
+}
+
+export const addSummaryNoteRelation = (sourceId, targetType, targetId) => async () => {
+  await postWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'summary_note',
+    sourceId,
+    targetType,
+    targetId,
+  })
+}
+
+export const removeSummaryNoteRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelations}/${relationId}`)
 }

@@ -28,6 +28,9 @@ export class FlashcardDeckV2Serializer {
         imageUrl: card.image_url || null,
       })),
       relatedContent: deck.relatedContent || [],
+      sourcePdf: deck.sourcePdf
+        ? { url: deck.sourcePdf.url, filename: deck.sourcePdf.blob?.filename || null }
+        : null,
       createdAt: toJakartaISO(deck.created_at),
       updatedAt: toJakartaISO(deck.updated_at),
     }

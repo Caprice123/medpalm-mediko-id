@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import idriveService from '#services/idrive.service'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class GetFlashcardDeckDetailV2Service extends BaseService {
   static async call(uniqueId) {
@@ -102,6 +103,8 @@ export class GetFlashcardDeckDetailV2Service extends BaseService {
       ...summaryNotes.map(n => ({ type: 'summary_note', id: n.id, uniqueId: n.unique_id, title: n.title })),
     ]
 
-    return { ...deck, flashcard_cards: cards, nodeRecords, relatedContent }
+    const sourcePdf = await attachmentService.getAttachmentWithUrl('flashcard_deck', deck.id, 'source_pdf')
+
+    return { ...deck, flashcard_cards: cards, nodeRecords, relatedContent, sourcePdf }
   }
 }

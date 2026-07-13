@@ -15,6 +15,7 @@ router.get('/', asyncHandler(flashcardV2Controller.index.bind(flashcardV2Control
 router.post('/', asyncHandler(flashcardV2Controller.create.bind(flashcardV2Controller)))
 router.get('/:uniqueId', asyncHandler(flashcardV2Controller.show.bind(flashcardV2Controller)))
 router.put('/:uniqueId', asyncHandler(flashcardV2Controller.update.bind(flashcardV2Controller)))
+router.post('/:uniqueId/source-pdf', asyncHandler(flashcardV2Controller.attachSourcePdf.bind(flashcardV2Controller)))
 router.delete('/:uniqueId', asyncHandler(flashcardV2Controller.destroy.bind(flashcardV2Controller)))
 
 export default router

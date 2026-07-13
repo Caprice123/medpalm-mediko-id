@@ -12,6 +12,7 @@ import session from "./session/reducer";
 import feature from "./feature/reducer";
 import pricing from "./pricing/reducer";
 import summaryNotes from "./summaryNotes";
+import summaryNotesV2 from "./summaryNotes/v2";
 import user from "./user";
 import diagnostic from "./diagnostic";
 import anatomy from "./anatomy";
@@ -45,6 +46,7 @@ export const rootReducer = combineReducers({
     feature,
     pricing,
     summaryNotes,
+    summaryNotesV2,
     user,
     diagnostic,
     anatomy,

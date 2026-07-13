@@ -33,6 +33,7 @@ import {
   RelationsTabCount,
   RelationItem,
   RelationTitle,
+  RelationTypeBadge,
   RelationAddRow,
 } from './UpdateFlashcardModal.styles'
 
@@ -40,6 +41,16 @@ const REL_TABS = [
   { key: 'mcq_topic',    label: 'Soal MCQ' },
   { key: 'summary_note', label: 'Ringkasan Materi' },
 ]
+
+const TYPE_OPTIONS = [
+  { value: 'mcq_topic',    label: 'Soal MCQ' },
+  { value: 'summary_note', label: 'Ringkasan Materi' },
+]
+
+const TYPE_LABELS = {
+  mcq_topic:    'MCQ',
+  summary_note: 'Ringkasan',
+}
 
 const SortableCard = memo(function SortableCard({ card, index, form, handleRemoveCard, handleImageUpload }) {
   const {
@@ -438,7 +449,23 @@ const UpdateFlashcardModal = ({ onClose }) => {
           Hubungkan deck ini dengan soal MCQ atau ringkasan materi yang relevan. Akan ditampilkan setelah pengguna selesai belajar.
         </HelpText>
 
-        {relations.map(rel => (
+        <RelationsTabBar>
+          {REL_TABS.map(tab => {
+            const count = tab.key === 'mcq_topic' ? mcqRelations.length : snRelations.length
+            return (
+              <RelationsTab
+                key={tab.key}
+                $active={activeRelTab === tab.key}
+                onClick={() => handleRelTabChange(tab.key)}
+              >
+                {tab.label}
+                {count > 0 && <RelationsTabCount>{count}</RelationsTabCount>}
+              </RelationsTab>
+            )
+          })}
+        </RelationsTabBar>
+
+        {activeRelations.map(rel => (
           <RelationItem key={rel.id}>
             <RelationTypeBadge $type={rel.targetType}>
               {TYPE_LABELS[rel.targetType]}
@@ -456,17 +483,10 @@ const UpdateFlashcardModal = ({ onClose }) => {
         ))}
 
         <RelationAddRow>
-          <div style={{ width: '140px', flexShrink: 0 }}>
-            <Dropdown
-              options={TYPE_OPTIONS}
-              value={TYPE_OPTIONS.find(o => o.value === selectedType)}
-              onChange={opt => { setSelectedType(opt.value); setSelectedItem(null) }}
-            />
-          </div>
           <div style={{ flex: 1 }}>
             <Dropdown
-              placeholder={selectedType === 'mcq_topic' ? 'Pilih topik MCQ...' : 'Pilih ringkasan...'}
-              options={availableOptions}
+              placeholder={activeRelTab === 'mcq_topic' ? 'Pilih topik MCQ...' : 'Pilih ringkasan...'}
+              options={activeOptions}
               value={selectedItem}
               onChange={setSelectedItem}
               isClearable

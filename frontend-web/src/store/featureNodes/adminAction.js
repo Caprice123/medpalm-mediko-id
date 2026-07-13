@@ -4,6 +4,13 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@uti
 
 const { setNodes, setNodeRecords, setLoading } = actions
 
+// Returns nodes without touching Redux state — for lazy tree loading
+export const fetchLazyNodes = (parentId = null) => async () => {
+  const params = { parentId: parentId === null ? 'null' : parentId }
+  const res = await getWithToken(Endpoints.admin.featureNodes, params)
+  return res.data.data || []
+}
+
 export const fetchFeatureNodes = (params = {}) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingNodes: true }))

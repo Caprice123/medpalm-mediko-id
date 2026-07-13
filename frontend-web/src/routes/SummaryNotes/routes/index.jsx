@@ -1,16 +1,4 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
-import PageLoader from '@components/PageLoader';
-
-const SummaryNotesList = lazy(() => import('../pages/List'));
-const SummaryNotesDetail = lazy(() => import('../pages/Detail'));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading Summary Notes..." />}>
-        {Component}
-    </Suspense>
-);
+import { SummaryNotesListRouter, SummaryNotesDetailRouter } from './SummaryNotesRouter'
 
 export class SummaryNotesRoute {
     static moduleRoute = "/summary-notes"
@@ -19,6 +7,6 @@ export class SummaryNotesRoute {
 }
 
 export const summaryNotesRoutes = [
-    { path: SummaryNotesRoute.initialRoute, element: withSuspense(<SummaryNotesList />) },
-    { path: SummaryNotesRoute.detailRoute, element: withSuspense(<SummaryNotesDetail />) },
+    { path: SummaryNotesRoute.initialRoute, element: <SummaryNotesListRouter /> },
+    { path: SummaryNotesRoute.detailRoute, element: <SummaryNotesDetailRouter /> },
 ];

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FeaturesList from '../Features/components/FeaturesList'
 import FlashcardV2 from './subpages/FlashcardV2'
+import SummaryNotesV2 from './subpages/SummaryNotesV2'
 import {
   Container,
   LoadingState,
@@ -12,6 +13,13 @@ const V2_FEATURES = [
     name: 'Flashcard V2',
     icon: '🃏',
     description: 'Sistem flashcard Anki-style dengan spaced repetition (again / hard / good / easy)',
+    isActive: true,
+  },
+  {
+    sessionType: 'summary_notes_v2',
+    name: 'Summary Notes V2',
+    icon: '📄',
+    description: 'Ringkasan materi dengan navigasi kurikulum berbasis folder/node',
     isActive: true,
   },
   {
@@ -32,6 +40,8 @@ function FeaturesV2() {
     switch (selectedFeature.sessionType) {
       case 'flashcard_v2':
         return <FlashcardV2 onBack={handleBackToList} />
+      case 'summary_notes_v2':
+        return <SummaryNotesV2 onBack={handleBackToList} />
       default:
         return null
     }
