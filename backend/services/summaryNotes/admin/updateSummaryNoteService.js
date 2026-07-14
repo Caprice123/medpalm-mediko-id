@@ -91,12 +91,10 @@ export class UpdateSummaryNoteService extends BaseService {
 
       // Update flashcard deck links if provided
       if (flashcardDeckIds !== undefined) {
-        // Delete existing flashcard deck links
-        await tx.summary_note_flashcard_decks.deleteMany({
-          where: { summary_note_id: summaryNote.id }
+        await tx.summary_note_flashcard_decks.deleteMany({ where: { summary_note_id: summaryNote.id } })
+        await tx.content_relations.deleteMany({
+          where: { source_type: 'summary_note', source_id: summaryNote.id, target_type: 'flashcard_deck' }
         })
-
-        // Create new flashcard deck links
         if (flashcardDeckIds.length > 0) {
           await tx.summary_note_flashcard_decks.createMany({
             data: flashcardDeckIds.map(deckId => ({
@@ -104,23 +102,41 @@ export class UpdateSummaryNoteService extends BaseService {
               flashcard_deck_id: parseInt(deckId)
             }))
           })
+          await tx.content_relations.createMany({
+            data: flashcardDeckIds.map((deckId, i) => ({
+              source_type: 'summary_note',
+              source_id: summaryNote.id,
+              target_type: 'flashcard_deck',
+              target_id: parseInt(deckId),
+              order: i,
+            })),
+            skipDuplicates: true,
+          })
         }
       }
 
       // Update MCQ topic links if provided
       if (mcqTopicIds !== undefined) {
-        // Delete existing MCQ topic links
-        await tx.summary_note_mcq_topics.deleteMany({
-          where: { summary_note_id: summaryNote.id }
+        await tx.summary_note_mcq_topics.deleteMany({ where: { summary_note_id: summaryNote.id } })
+        await tx.content_relations.deleteMany({
+          where: { source_type: 'summary_note', source_id: summaryNote.id, target_type: 'mcq_topic' }
         })
-
-        // Create new MCQ topic links
         if (mcqTopicIds.length > 0) {
           await tx.summary_note_mcq_topics.createMany({
             data: mcqTopicIds.map(topicId => ({
               summary_note_id: summaryNote.id,
               mcq_topic_id: parseInt(topicId)
             }))
+          })
+          await tx.content_relations.createMany({
+            data: mcqTopicIds.map((topicId, i) => ({
+              source_type: 'summary_note',
+              source_id: summaryNote.id,
+              target_type: 'mcq_topic',
+              target_id: parseInt(topicId),
+              order: i,
+            })),
+            skipDuplicates: true,
           })
         }
       }

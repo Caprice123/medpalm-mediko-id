@@ -9,6 +9,8 @@ const initialState = {
     isNodesLoading: false,
     isNoteDetailLoading: false,
     isSearchLoading: false,
+    isLinkedFlashcardsLoading: false,
+    isLinkedMcqLoading: false,
     isAdminNotesLoading: false,
     isUpdating: false,
     isCreating: false,
@@ -16,6 +18,10 @@ const initialState = {
     isGenerating: false,
   },
   recentlyViewed: [], // [{ id, recordType, recordId, metadata: { title, uniqueId }, viewedAt }]
+  linkedFlashcards: [],
+  linkedFlashcardsPagination: { page: 1, perPage: 6, isLastPage: true },
+  linkedMcq: [],
+  linkedMcqPagination: { page: 1, perPage: 6, isLastPage: true },
   // Admin list state
   notes: [],
   pagination: { page: 1, perPage: 50, isLastPage: false },
@@ -63,6 +69,22 @@ const summaryNotesV2Slice = createSlice({
     prependRecentlyViewed(state, { payload }) {
       const filtered = state.recentlyViewed.filter(r => r.metadata?.uniqueId !== payload.metadata?.uniqueId)
       state.recentlyViewed = [payload, ...filtered].slice(0, 5)
+    },
+    setLinkedFlashcards(state, { payload: { data, pagination } }) {
+      state.linkedFlashcards = data
+      state.linkedFlashcardsPagination = pagination
+    },
+    appendLinkedFlashcards(state, { payload: { data, pagination } }) {
+      state.linkedFlashcards = [...state.linkedFlashcards, ...data]
+      state.linkedFlashcardsPagination = pagination
+    },
+    setLinkedMcq(state, { payload: { data, pagination } }) {
+      state.linkedMcq = data
+      state.linkedMcqPagination = pagination
+    },
+    appendLinkedMcq(state, { payload: { data, pagination } }) {
+      state.linkedMcq = [...state.linkedMcq, ...data]
+      state.linkedMcqPagination = pagination
     },
     setNotes(state, { payload }) {
       state.notes = payload

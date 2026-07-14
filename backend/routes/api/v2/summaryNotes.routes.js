@@ -10,6 +10,7 @@ router.use(authenticateToken)
 router.use(checkFeature('summary_notes_is_active'))
 
 router.get('/', asyncHandler(summaryNotesV2Controller.index.bind(summaryNotesV2Controller)))
+router.get('/:id/content-relations', asyncHandler(summaryNotesV2Controller.contentRelations.bind(summaryNotesV2Controller)))
 router.get('/:id', asyncHandler(summaryNotesV2Controller.show.bind(summaryNotesV2Controller)))
 
 export default router

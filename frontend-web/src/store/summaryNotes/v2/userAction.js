@@ -60,6 +60,36 @@ export const searchSummaryNotesV2 = (search) => async (dispatch) => {
   }
 }
 
+export const fetchLinkedFlashcards = (uniqueId, page = 1) => async (dispatch) => {
+  try {
+    dispatch(actions.setLoading({ isLinkedFlashcardsLoading: true }))
+    const response = await getWithToken(`${Endpoints.api.summaryNotesV2}/${uniqueId}/content-relations`, { targetType: 'flashcard_deck', page, perPage: 6 })
+    const payload = { data: response.data.data || [], pagination: response.data.pagination }
+    if (page === 1) {
+      dispatch(actions.setLinkedFlashcards(payload))
+    } else {
+      dispatch(actions.appendLinkedFlashcards(payload))
+    }
+  } finally {
+    dispatch(actions.setLoading({ isLinkedFlashcardsLoading: false }))
+  }
+}
+
+export const fetchLinkedMcq = (uniqueId, page = 1) => async (dispatch) => {
+  try {
+    dispatch(actions.setLoading({ isLinkedMcqLoading: true }))
+    const response = await getWithToken(`${Endpoints.api.summaryNotesV2}/${uniqueId}/content-relations`, { targetType: 'mcq_topic', page, perPage: 6 })
+    const payload = { data: response.data.data || [], pagination: response.data.pagination }
+    if (page === 1) {
+      dispatch(actions.setLinkedMcq(payload))
+    } else {
+      dispatch(actions.appendLinkedMcq(payload))
+    }
+  } finally {
+    dispatch(actions.setLoading({ isLinkedMcqLoading: false }))
+  }
+}
+
 export const fetchRecentlyViewed = () => async (dispatch) => {
   try {
     const response = await getWithToken(Endpoints.api.recentlyViewed, {

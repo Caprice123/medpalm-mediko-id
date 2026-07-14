@@ -17,14 +17,6 @@ export class GetSummaryNoteDetailV2Service extends BaseService {
           summary_note_tags: {
             include: { tags: { include: { tag_group: true } } }
           },
-          summary_note_flashcard_decks: {
-            where: { flashcard_deck: { status: 'published', is_deleted: false } },
-            include: { flashcard_deck: true }
-          },
-          summary_note_mcq_topics: {
-            where: { mcq_topic: { status: 'published', is_deleted: false } },
-            include: { mcq_topic: true }
-          }
         }
       })
 

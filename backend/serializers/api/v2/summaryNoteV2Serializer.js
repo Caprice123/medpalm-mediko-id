@@ -1,5 +1,3 @@
-import { FlashcardDeckListSerializer } from '../v1/flashcardDeckListSerializer.js'
-import { McqTopicListSerializer } from '../v1/mcqTopicListSerializer.js'
 import { toJakartaISO } from '#utils/dateUtils'
 
 export class SummaryNoteV2Serializer {
@@ -16,13 +14,6 @@ export class SummaryNoteV2Serializer {
       byteSize: note.sourceAttachment.blob.byte_size,
       url: note.sourceAttachment.url
     } : null
-
-    const flashcardDecks = FlashcardDeckListSerializer.serialize(
-      (note.summary_note_flashcard_decks || []).map(link => link.flashcard_deck)
-    )
-    const mcqTopics = McqTopicListSerializer.serialize(
-      (note.summary_note_mcq_topics || []).map(link => link.mcq_topic)
-    )
 
     // Build node path for breadcrumb (root → … → leaf)
     const nodes = (note.nodeRecords || []).map(record => {
@@ -51,8 +42,6 @@ export class SummaryNoteV2Serializer {
       universityTags: allTags.filter(t => t.tagGroupName === 'university'),
       semesterTags: allTags.filter(t => t.tagGroupName === 'semester'),
       departmentTags: allTags.filter(t => t.tagGroupName === 'department'),
-      flashcardDecks,
-      mcqTopics,
       nodes,
       updatedAt: toJakartaISO(note.updated_at),
       createdAt: toJakartaISO(note.created_at)

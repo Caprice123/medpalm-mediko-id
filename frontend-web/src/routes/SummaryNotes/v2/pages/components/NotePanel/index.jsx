@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { fetchSummaryNoteDetailV2 } from '@store/summaryNotes/v2/userAction'
+import { fetchSummaryNoteDetailV2, fetchLinkedFlashcards, fetchLinkedMcq } from '@store/summaryNotes/v2/userAction'
+import { fetchPublicConstants } from '@store/constant/userAction'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
@@ -18,11 +19,18 @@ import {
 function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { detail, loading } = useSelector(s => s.summaryNotesV2)
+  const { detail, loading, linkedFlashcards, linkedFlashcardsPagination, linkedMcq, linkedMcqPagination } = useSelector(s => s.summaryNotesV2)
+  const constants = useSelector(s => s.constant.constants)
+
+  useEffect(() => {
+    dispatch(fetchPublicConstants(['flashcard_feature_title', 'mcq_feature_title']))
+  }, [dispatch])
 
   useEffect(() => {
     if (noteId) {
       dispatch(fetchSummaryNoteDetailV2(noteId))
+      dispatch(fetchLinkedFlashcards(noteId, 1))
+      dispatch(fetchLinkedMcq(noteId, 1))
     }
   }, [noteId, dispatch])
 
@@ -54,8 +62,11 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
     )
   }
 
-  const hasFlashcards = detail.flashcardDecks?.length > 0
-  const hasMcq = detail.mcqTopics?.length > 0
+  const flashcardLabel = constants?.flashcard_feature_title || 'Flashcard'
+  const mcqLabel = constants?.mcq_feature_title || 'MCQ'
+
+  const hasFlashcards = linkedFlashcards.length > 0 || !linkedFlashcardsPagination.isLastPage
+  const hasMcq = linkedMcq.length > 0 || !linkedMcqPagination.isLastPage
   const hasLinkedResources = hasFlashcards || hasMcq
 
   return (
@@ -137,9 +148,9 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
 
             {hasFlashcards && (
               <LinkedGroup>
-                <LinkedGroupLabel $type="flashcard">🃏 Flashcard</LinkedGroupLabel>
+                <LinkedGroupLabel $type="flashcard">🃏 {flashcardLabel}</LinkedGroupLabel>
                 <LinkedCards>
-                  {detail.flashcardDecks.map(deck => (
+                  {linkedFlashcards.map(deck => (
                     <LinkedCard
                       key={deck.id}
                       $type="flashcard"
@@ -150,14 +161,25 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
                     </LinkedCard>
                   ))}
                 </LinkedCards>
+                {!linkedFlashcardsPagination.isLastPage && (
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    disabled={loading.isLinkedFlashcardsLoading}
+                    onClick={() => dispatch(fetchLinkedFlashcards(noteId, linkedFlashcardsPagination.page + 1))}
+                    style={{ marginTop: '0.75rem' }}
+                  >
+                    {loading.isLinkedFlashcardsLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                  </Button>
+                )}
               </LinkedGroup>
             )}
 
             {hasMcq && (
               <LinkedGroup>
-                <LinkedGroupLabel $type="mcq">📝 MCQ</LinkedGroupLabel>
+                <LinkedGroupLabel $type="mcq">📝 {mcqLabel}</LinkedGroupLabel>
                 <LinkedCards>
-                  {detail.mcqTopics.map(topic => (
+                  {linkedMcq.map(topic => (
                     <LinkedCard
                       key={topic.id}
                       $type="mcq"
@@ -168,6 +190,17 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
                     </LinkedCard>
                   ))}
                 </LinkedCards>
+                {!linkedMcqPagination.isLastPage && (
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    disabled={loading.isLinkedMcqLoading}
+                    onClick={() => dispatch(fetchLinkedMcq(noteId, linkedMcqPagination.page + 1))}
+                    style={{ marginTop: '0.75rem' }}
+                  >
+                    {loading.isLinkedMcqLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                  </Button>
+                )}
               </LinkedGroup>
             )}
           </>

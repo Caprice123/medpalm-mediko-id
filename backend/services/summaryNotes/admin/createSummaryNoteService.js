@@ -71,6 +71,16 @@ export class CreateSummaryNoteService extends BaseService {
             flashcard_deck_id: parseInt(deckId)
           }))
         })
+        await tx.content_relations.createMany({
+          data: flashcardDeckIds.map((deckId, i) => ({
+            source_type: 'summary_note',
+            source_id: summaryNote.id,
+            target_type: 'flashcard_deck',
+            target_id: parseInt(deckId),
+            order: i,
+          })),
+          skipDuplicates: true,
+        })
       }
 
       // Create MCQ topic links if provided
@@ -80,6 +90,16 @@ export class CreateSummaryNoteService extends BaseService {
             summary_note_id: summaryNote.id,
             mcq_topic_id: parseInt(topicId)
           }))
+        })
+        await tx.content_relations.createMany({
+          data: mcqTopicIds.map((topicId, i) => ({
+            source_type: 'summary_note',
+            source_id: summaryNote.id,
+            target_type: 'mcq_topic',
+            target_id: parseInt(topicId),
+            order: i,
+          })),
+          skipDuplicates: true,
         })
       }
 
