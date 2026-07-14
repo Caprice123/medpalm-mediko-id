@@ -10,7 +10,7 @@ import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
 import {
   EmptyPanel, EmptyIcon, EmptyText,
   PanelContainer, TopBar, Breadcrumb, BreadcrumbItem, BreadcrumbSep, FullScreenBtn,
-  PanelContent, NoteTitle, NoteDescription,
+  PanelContent, NoteTitle, NoteDescription, EditorWrapper,
   ActionRow, Divider, SectionRow, SectionLabel, SectionLine,
   LinkedGroup, LinkedGroupLabel, LinkedCards, LinkedCard, LinkedCardTitle, LinkedCardArrow,
 } from './NotePanel.styles'
@@ -93,10 +93,12 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
 
         {parsedContent?.some(block => block.type === 'embed') && <EmbedLoadingBanner />}
 
-        <BlockNoteEditor
-          initialContent={parsedContent}
-          editable={false}
-        />
+        <EditorWrapper>
+          <BlockNoteEditor
+            initialContent={parsedContent}
+            editable={false}
+          />
+        </EditorWrapper>
 
         {detail.sourceDocument && (
           <>

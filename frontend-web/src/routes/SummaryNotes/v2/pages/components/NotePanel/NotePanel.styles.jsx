@@ -31,9 +31,11 @@ export const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  margin-left: -1rem;
 
   .bn-editor {
-    padding: 0;
+    padding-left: 1rem;
+    padding-inline: 0;
   }
 `
 
@@ -108,15 +110,48 @@ export const MobileMenuBtn = styled.button`
 `
 
 export const NoteHeaderSection = styled.div`
-  padding: 1.5rem 2rem;
+  padding: 1rem;
   background: white;
   border-bottom: 1px solid #f1f5f9;
 `
 
 export const PanelContent = styled.div`
   padding: 1.5rem 2rem;
+  padding-right: 1rem;
   background: #fdfcf8;
-  min-height: calc(100vh - 70px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) { 
+    padding-right: 0;
+  }
+`
+
+export const EditorWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bn-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .bn-editor {
+    flex: 1;
+  }
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const NoteTitle = styled.h1`

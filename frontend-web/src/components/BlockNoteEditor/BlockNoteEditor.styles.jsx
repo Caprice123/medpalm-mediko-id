@@ -49,9 +49,17 @@ export const ModeButton = styled.button`
 
 export const EditorWrapper = styled.div`
   position: relative;
-  background: ${props => props.$isStructured ? '#fdfcf8' : '#f5f5f5'};
+  background: ${props => props.$isStructured
+    ? `
+      linear-gradient(to right, hsl(215.4 16.3% 46.9% / 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(215.4 16.3% 46.9% / 0.1) 1px, transparent 1px)
+    `
+    : '#f5f5f5'
+  };
+  background-size: ${props => props.$isStructured ? '24px 24px' : 'auto'};
+  background-position: ${props => props.$isStructured ? '-1px -1px' : '0 0'};
   border-radius: 12px;
-  padding: 0;
+  padding: ${props => props.$isStructured ? '1rem 0' : '0'};
   flex: 1;
   overflow: auto;
   display: flex;
