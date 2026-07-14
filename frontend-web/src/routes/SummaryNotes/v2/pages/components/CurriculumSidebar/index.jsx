@@ -11,6 +11,7 @@ import {
   FavoritesSection, RecentSection, SectionListArea,
   RecentHeader, RecentHeaderLabel, CollapseChevron, RecentNoteRow, EmptyHint,
   SearchNoteRow, SearchNoteInfo, SearchNoteTitle, SearchNotePath, FavoriteBtn,
+  MobileCloseBtn,
 } from './CurriculumSidebar.styles'
 
 function TreeNode({
@@ -112,7 +113,7 @@ function TreeNode({
   )
 }
 
-function CurriculumSidebar({ selectedNoteId, onSelectNote }) {
+function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
   const dispatch = useDispatch()
   const { nodeNotes, loading, recentlyViewed, searchResults, detail } = useSelector(s => s.summaryNotesV2)
   const { favoritedIds, favoriteItems, loading: favLoading } = useSelector(s => s.favorites)
@@ -307,10 +308,6 @@ function CurriculumSidebar({ selectedNoteId, onSelectNote }) {
           <SectionBlock>
             <SectionHeader>
               <SectionLabel>📖 Kurikulum</SectionLabel>
-              <TabGroup>
-                <Tab $active={treeMode === 'semester'} onClick={() => setTreeMode('semester')}>Semester</Tab>
-                <Tab $active={treeMode === 'subject'} onClick={handleSetSubjectMode}>Subject</Tab>
-              </TabGroup>
             </SectionHeader>
 
             {rootLoading ? (

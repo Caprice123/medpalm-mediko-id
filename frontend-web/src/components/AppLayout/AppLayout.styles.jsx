@@ -41,17 +41,18 @@ export const FloatingHamburger = styled.button`
     justify-content: center;
     gap: 5px;
     position: fixed;
-    top: 1rem;
-    left: 1rem;
     z-index: 210;
     width: 44px;
     height: 44px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: grab;
     padding: 10px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 
     span {
       display: block;
@@ -71,13 +72,6 @@ export const FloatingHamburger = styled.button`
 export const MobileOverlay = styled.div`
   display: none;
 
-  @media (max-width: 768px) {
-    display: ${props => props.$open ? 'block' : 'none'};
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 190;
-  }
 `
 
 export const Sidebar = styled.aside`

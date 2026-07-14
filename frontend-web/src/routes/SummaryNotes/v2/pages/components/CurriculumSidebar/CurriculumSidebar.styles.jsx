@@ -15,6 +15,28 @@ export const SearchBox = styled.div`
   border-bottom: 1px solid #f1f5f9;
 `
 
+export const MobileCloseBtn = styled.button`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f0fdfa;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0d9488;
+    cursor: pointer;
+    flex-shrink: 0;
+    &:hover { background: #ccfbf1; }
+  }
+`
+
 export const SearchInput = styled.input`
   flex: 1;
   border: none;

@@ -49,7 +49,7 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
     return (
       <EmptyPanel>
         <EmptyIcon>📖</EmptyIcon>
-        <EmptyText>Pilih ringkasan dari sidebar untuk mulai membaca</EmptyText>
+        <EmptyText>Pilih ringkasan untuk mulai membaca</EmptyText>
       </EmptyPanel>
     )
   }
