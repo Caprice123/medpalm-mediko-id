@@ -22,6 +22,8 @@ import {
   SidebarItem,
   SidebarItemIcon,
   SidebarItemName,
+  SidebarLockIcon,
+  SidebarTooltip,
   SidebarFooter,
   UserRow,
   UserAvatar,
@@ -57,6 +59,15 @@ import { ChallengeRoute } from '@routes/Challenge/routes'
 import { TopupRoute } from '@routes/Topup/routes'
 
 const HAMBURGER_POS_KEY = 'hamburger-btn-pos'
+const QUICK_ACCESS_KEY = 'medpal_recently_used'
+
+function trackFeatureVisit(entry) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUICK_ACCESS_KEY) || '[]')
+    const updated = [entry, ...saved.filter(f => f.sessionType !== entry.sessionType)].slice(0, 6)
+    localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(updated))
+  } catch {}
+}
 
 const SESSION_ROUTES = {
   flashcard: FlashcardRoute.moduleRoute,
@@ -87,6 +98,7 @@ function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
   const [collapsed, setCollapsed] = useState({ fitur: false, layanan: false, akun: false })
   const [detailOpen, setDetailOpen] = useState({ credits: false, subs: false })
+  const [lockTooltip, setLockTooltip] = useState(null)
 
   const currentPosRef = useRef({ top: 16, left: 16 })
   const dragRef = useRef(null)
@@ -98,10 +110,8 @@ function AppLayout() {
     if (!el) return
 
     // Restore saved position directly to DOM (bypasses React style prop)
-    try {
-      const saved = localStorage.getItem(HAMBURGER_POS_KEY)
-      if (saved) currentPosRef.current = JSON.parse(saved)
-    } catch {}
+    const saved = localStorage.getItem(HAMBURGER_POS_KEY)
+    if (saved) currentPosRef.current = JSON.parse(saved)
     el.style.top = currentPosRef.current.top + 'px'
     el.style.left = currentPosRef.current.left + 'px'
 
@@ -131,7 +141,7 @@ function AppLayout() {
       if (!dragRef.current) return
       wasDraggingRef.current = dragRef.current.isDragging
       if (dragRef.current.isDragging) {
-        try { localStorage.setItem(HAMBURGER_POS_KEY, JSON.stringify(currentPosRef.current)) } catch {}
+        localStorage.setItem(HAMBURGER_POS_KEY, JSON.stringify(currentPosRef.current))
       }
       dragRef.current = null
     }
@@ -165,14 +175,14 @@ function AppLayout() {
       el.removeEventListener('touchend', onTouchEnd)
       el.removeEventListener('mousedown', onMouseDown)
     }
-  }, [isNonUser])
+  }, [])
 
   useEffect(() => {
     if (features.length === 0) dispatch(fetchFeatures())
   }, [dispatch, features.length])
 
   useEffect(() => {
-    if (isUser) return
+    // if (isUser) return
     const isMobile = window.innerWidth <= 900
     if (isMobile && sidebarOpen) {
       document.body.style.overflow = 'hidden'
@@ -180,7 +190,7 @@ function AppLayout() {
       document.body.style.overflow = ''
     }
     return () => { document.body.style.overflow = '' }
-  }, [sidebarOpen, isUser])
+  }, [sidebarOpen])
 
   const activeFeatures = features.filter(f => f.isActive === true || f.isActive === 'true')
 
@@ -219,21 +229,17 @@ function AppLayout() {
 
   return (
     <LayoutWrapper>
-      {isNonUser && (
-        <>
-          <FloatingHamburger
+        <FloatingHamburger
             ref={hamburgerRef}
             $open={sidebarOpen}
             onClick={() => { if (!wasDraggingRef.current) setSidebarOpen(o => !o); wasDraggingRef.current = false }}
             style={{ touchAction: 'none' }}
-          >
-            <span /><span /><span />
-          </FloatingHamburger>
-          <MobileOverlay $open={sidebarOpen} onClick={() => setSidebarOpen(false)} />
-        </>
-      )}
+        >
+        <span /><span /><span />
+        </FloatingHamburger>
+        <MobileOverlay $open={sidebarOpen} onClick={() => setSidebarOpen(false)} />
 
-      {isNonUser && <SidebarOuter $open={sidebarOpen}>
+      <SidebarOuter $open={sidebarOpen}>
         <ToggleButton onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
           {sidebarOpen ? '◀' : '▶'}
         </ToggleButton>
@@ -252,14 +258,45 @@ function AppLayout() {
               <SidebarGroupItems $collapsed={collapsed.fitur}>
                 {activeFeatures.map(feature => {
                   const route = SESSION_ROUTES[feature.sessionType]
+                  let isLocked = false
+                  let lockReason = ''
+                //   if (isUser) {
+                    const userCredits = parseFloat(userStatus?.creditBalance || 0)
+                    const activeFeatureKeys = userStatus?.activeFeatureKeys || []
+                    const hasFeatureSubscription = activeFeatureKeys.some(f => f.feature === feature.sessionType)
+                    const needsSubscription = feature.accessType === 'subscription' || feature.accessType === 'subscription_and_credits'
+                    const needsCredits = feature.accessType === 'credits' || feature.accessType === 'subscription_and_credits'
+                    const isFree = feature.accessType === 'free'
+                    const subscriptionMet = !needsSubscription || hasFeatureSubscription
+                    const creditsMet = !needsCredits || userCredits >= (feature.cost || 0)
+                    const canUse = (subscriptionMet && creditsMet) || isFree || hasFeatureSubscription
+                    isLocked = !canUse && !isFree
+                    if (isLocked) {
+                      if (!subscriptionMet && !creditsMet) lockReason = `Perlu berlangganan & ${feature.cost} credits`
+                      else if (!subscriptionMet) lockReason = 'Perlu berlangganan'
+                      else lockReason = `Perlu ${feature.cost} credits`
+                    }
+                //   }
                   return (
                     <SidebarItem
                       key={feature.id}
                       $active={route ? isActive(route) : false}
-                      onClick={() => { if (route) navigateTo(route) }}
+                      onClick={() => {
+                        if (isLocked) return navigateTo(TopupRoute.moduleRoute)
+                        if (route) {
+                          trackFeatureVisit({ sessionType: feature.sessionType, icon: feature.icon, name: feature.name, route })
+                          navigateTo(route)
+                        }
+                      }}
+                      onMouseEnter={isLocked ? (e) => {
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        setLockTooltip({ text: lockReason, x: rect.right + 10, y: rect.top + rect.height / 2 })
+                      } : undefined}
+                      onMouseLeave={isLocked ? () => setLockTooltip(null) : undefined}
                     >
                       <SidebarItemIcon>{feature.icon}</SidebarItemIcon>
                       <SidebarItemName>{feature.name}</SidebarItemName>
+                      {isLocked && <SidebarLockIcon>🔒</SidebarLockIcon>}
                     </SidebarItem>
                   )
                 })}
@@ -372,11 +409,16 @@ function AppLayout() {
           </SidebarFooter>
         </SidebarInner>
       </Sidebar>
-      </SidebarOuter>}
+      </SidebarOuter>
 
       <ContentArea>
         <Outlet />
       </ContentArea>
+      {lockTooltip && (
+        <SidebarTooltip style={{ top: lockTooltip.y, left: lockTooltip.x }}>
+          {lockTooltip.text}
+        </SidebarTooltip>
+      )}
     </LayoutWrapper>
   )
 }

@@ -194,6 +194,30 @@ export const SidebarGroupItems = styled.div`
   transition: max-height 0.25s ease;
 `
 
+export const SidebarTooltip = styled.span`
+  position: fixed;
+  transform: translateY(-50%);
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: #1f2937;
+  }
+`
+
 export const SidebarItem = styled.button`
   display: flex;
   align-items: center;
@@ -225,6 +249,14 @@ export const SidebarItemIcon = styled.span`
 export const SidebarItemName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+`
+
+export const SidebarLockIcon = styled.span`
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  opacity: 0.6;
+  margin-left: auto;
 `
 
 export const SidebarFooter = styled.div`

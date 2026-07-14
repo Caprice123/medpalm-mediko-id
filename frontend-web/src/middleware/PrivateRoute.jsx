@@ -8,8 +8,8 @@ import { Navbar } from '../components/Navbar'
 const PrivateRoute = () => {
   const token = getToken()
   const dispatch = useDispatch()
-  const currentUser = getUserData()
-  const isUser = currentUser?.role === 'user'
+//   const currentUser = getUserData()
+//   const isUser = currentUser?.role === 'user'
 
   useEffect(() => {
     if (token) dispatch(fetchUserStatus())
@@ -26,7 +26,7 @@ const PrivateRoute = () => {
 
   return (
     <>
-      {isUser && <Navbar />}
+      {/* {isUser && <Navbar />} */}
       <Outlet />
     </>
   )

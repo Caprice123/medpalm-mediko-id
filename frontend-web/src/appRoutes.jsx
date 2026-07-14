@@ -22,11 +22,11 @@ import { webinarRoutes } from './routes/Webinar/routes';
 import { eventRoutes } from './routes/Event/routes';
 import { challengeRoutes } from './routes/Challenge/routes';
 import { profileRoutes } from './routes/Profile/routes';
+import { dashboardRoutes } from './routes/Dashboard/routes';
 
 // Lazy load components
 const Login = lazy(() => import('@routes/Auth/pages/Login'));
 const Home = lazy(() => import('@routes/Home'));
-const Dashboard = lazy(() => import('@routes/Dashboard'));
 const AdminPanel = lazy(() => import('@routes/Admin/AdminPanel'));
 const UITest = lazy(() => import('@routes/UITest'));
 const EditorTest = lazy(() => import('@routes/EditorTest'));
@@ -63,10 +63,7 @@ const appRoutes = [
                         path: "/",
                         element: <AppLayout />,
                         children: [
-                            {
-                                path: '/dashboard',
-                                element: withSuspense(<Dashboard />)
-                            },
+                            ...dashboardRoutes,
                             ...exerciseRoutes,
                             ...diagnosticQuizRoutes,
                             ...anatomyQuizRoutes,

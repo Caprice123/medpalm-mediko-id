@@ -107,8 +107,14 @@ export const MobileMenuBtn = styled.button`
   }
 `
 
+export const NoteHeaderSection = styled.div`
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 1px solid #f1f5f9;
+`
+
 export const PanelContent = styled.div`
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
   background: #fdfcf8;
   min-height: calc(100vh - 70px);
 `
@@ -169,27 +175,81 @@ export const SectionTitle = styled.h3`
   gap: 0.5rem;
 `
 
-export const ToggleButtons = styled.div`
+export const SectionRow = styled.div`
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 `
 
-export const ToggleButton = styled.button`
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1.5px solid ${p => p.$active ? '#0d9488' : '#e5e7eb'};
-  background: ${p => p.$active ? '#0d9488' : 'white'};
-  color: ${p => p.$active ? 'white' : '#6b7280'};
-  &:hover:not(:disabled) { border-color: #0d9488; }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+export const SectionLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #9ca3af;
+  white-space: nowrap;
 `
 
-export const ResourceGrid = styled.div`
+export const SectionLine = styled.div`
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+`
+
+export const LinkedGroup = styled.div`
+  margin-bottom: 1rem;
+
+  &:last-child { margin-bottom: 0; }
+`
+
+export const LinkedGroupLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: ${p => p.$type === 'mcq' ? '#7c3aed' : '#0d9488'};
+  margin-bottom: 0.5rem;
+`
+
+export const LinkedCards = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+`
+
+export const LinkedCard = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-left: 4px solid ${p => p.$type === 'mcq' ? '#7c3aed' : '#0d9488'};
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow 0.15s, background 0.15s;
+  width: 100%;
+
+  &:hover {
+    background: ${p => p.$type === 'mcq' ? '#faf5ff' : '#f0fdfa'};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+`
+
+export const LinkedCardTitle = styled.span`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+  flex: 1;
+  text-align: left;
+`
+
+export const LinkedCardArrow = styled.span`
+  font-size: 0.875rem;
+  color: #9ca3af;
+  flex-shrink: 0;
 `

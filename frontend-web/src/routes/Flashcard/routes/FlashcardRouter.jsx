@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import lazyWithRetry from '@utils/lazyWithRetry'
 import PageLoader from '@components/PageLoader'
-import { getUserData } from '@utils/authToken'
 
 const lazy = lazyWithRetry
 
@@ -21,17 +20,11 @@ const wrap = (Component) => (
 )
 
 export function FlashcardListRouter() {
-  const user = getUserData()
-  return user?.role === 'user'
-    ? wrap(<FlashcardV1ListPage />)
-    : wrap(<FlashcardV2ListPage />)
+  return wrap(<FlashcardV1ListPage />)
 }
 
 export function FlashcardDetailRouter() {
-  const user = getUserData()
-  return user?.role === 'user'
-    ? wrap(<FlashcardV1DetailPage />)
-    : wrap(<FlashcardV2DetailPage />)
+  return wrap(<FlashcardV1DetailPage />)
 }
 
 export function FlashcardReviewRouter() {

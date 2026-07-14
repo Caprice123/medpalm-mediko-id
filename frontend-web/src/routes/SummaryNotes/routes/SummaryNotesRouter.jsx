@@ -16,15 +16,9 @@ const wrap = (Component) => (
 )
 
 export function SummaryNotesListRouter() {
-  const user = getUserData()
-  return user?.role !== 'user'
-    ? wrap(<SummaryNotesV2Page />)
-    : wrap(<SummaryNotesV1List />)
+  return wrap(<SummaryNotesV2Page />)
 }
 
 export function SummaryNotesDetailRouter() {
-  const user = getUserData()
-  return user?.role !== 'user'
-    ? wrap(<SummaryNotesV2Page />)
-    : wrap(<SummaryNotesV1Detail />)
+  return wrap(<SummaryNotesV2Page />)
 }

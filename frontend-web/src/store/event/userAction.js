@@ -4,11 +4,14 @@ import { getWithToken, postWithToken } from '@utils/requestUtils'
 
 const { setLoading, setEvents, setPagination, setMyRegistrations } = actions
 
-export const fetchEvents = () => async (dispatch, getState) => {
+export const fetchEvents = (overrides = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListLoading', value: true }))
     const { filter, pagination } = getState().event
-    const queryParams = { page: pagination.page, perPage: pagination.perPage }
+    const queryParams = {
+      page: pagination.page,
+      perPage: overrides.perPage ?? pagination.perPage,
+    }
     if (filter.search) queryParams.search = filter.search
     if (filter.registrationStatus && filter.registrationStatus !== 'all') {
       queryParams.registrationStatus = filter.registrationStatus

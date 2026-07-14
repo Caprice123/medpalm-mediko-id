@@ -1,38 +1,30 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { fetchSummaryNoteDetailV2 } from '@store/summaryNotes/v2/userAction'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
-import { SummaryNoteDetailSkeleton } from '@components/common/SkeletonCard'
+import { NotePanelLoadingSkeleton } from './NotePanelLoadingSkeleton'
 import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
-import DeckCard from '@routes/Flashcard/v2/pages/List/components/DeckCard'
-import McqTopicCard from '@routes/SummaryNotes/pages/Detail/components/McqTopicCard'
 import {
   EmptyPanel, EmptyIcon, EmptyText,
   PanelContainer, TopBar, Breadcrumb, BreadcrumbItem, BreadcrumbSep, FullScreenBtn,
-  PanelContent, NoteTitle, NoteDescription, MetaRow, MetaChip,
-  ActionRow, Divider, SectionTitle, ToggleButtons, ToggleButton, ResourceGrid,
+  PanelContent, NoteTitle, NoteDescription,
+  ActionRow, Divider, SectionRow, SectionLabel, SectionLine,
+  LinkedGroup, LinkedGroupLabel, LinkedCards, LinkedCard, LinkedCardTitle, LinkedCardArrow,
 } from './NotePanel.styles'
 
 function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { detail, loading } = useSelector(s => s.summaryNotesV2)
-  const [activeResourceType, setActiveResourceType] = useState('flashcards')
 
   useEffect(() => {
     if (noteId) {
       dispatch(fetchSummaryNoteDetailV2(noteId))
     }
   }, [noteId, dispatch])
-
-  useEffect(() => {
-    if (detail?.flashcardDecks?.length === 0 && detail?.mcqTopics?.length > 0) {
-      setActiveResourceType('mcq')
-    } else {
-      setActiveResourceType('flashcards')
-    }
-  }, [detail?.id])
 
   const parsedContent = useMemo(() => {
     if (!detail?.content) return null
@@ -57,7 +49,7 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
   if (loading.isNoteDetailLoading || !detail) {
     return (
       <PanelContainer>
-        <SummaryNoteDetailSkeleton />
+        <NotePanelLoadingSkeleton />
       </PanelContainer>
     )
   }
@@ -85,23 +77,19 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
       </TopBar>
 
       <PanelContent>
+        <SectionRow>
+          <SectionLabel>📖 Ringkasan</SectionLabel>
+          <SectionLine />
+        </SectionRow>
         <NoteTitle>{detail.title}</NoteTitle>
-
         {detail.description && (
           <NoteDescription>{detail.description}</NoteDescription>
         )}
 
-        <MetaRow>
-          {detail.departmentTags?.map(tag => (
-            <MetaChip key={tag.id} $teal>🏥 {tag.name}</MetaChip>
-          ))}
-          {detail.semesterTags?.map(tag => (
-            <MetaChip key={tag.id}>📚 {tag.name}</MetaChip>
-          ))}
-          {detail.universityTags?.map(tag => (
-            <MetaChip key={tag.id}>🏛️ {tag.name}</MetaChip>
-          ))}
-        </MetaRow>
+        <SectionRow style={{ marginBottom: '1.25rem' }}>
+          <SectionLabel>📄 Konten</SectionLabel>
+          <SectionLine />
+        </SectionRow>
 
         {parsedContent?.some(block => block.type === 'embed') && <EmbedLoadingBanner />}
 
@@ -112,8 +100,10 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
 
         {detail.sourceDocument && (
           <>
-            <Divider />
-            <SectionTitle>📚 Referensi</SectionTitle>
+            <SectionRow>
+              <SectionLabel>📚 Referensi</SectionLabel>
+              <SectionLine />
+            </SectionRow>
             <FileUpload
               file={{
                 name: detail.sourceDocument.filename,
@@ -138,39 +128,45 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
 
         {hasLinkedResources && (
           <>
-            <Divider />
-            <SectionTitle>📚 Sumber Belajar Terkait</SectionTitle>
-            <ToggleButtons>
-              <ToggleButton
-                $active={activeResourceType === 'flashcards'}
-                onClick={() => setActiveResourceType('flashcards')}
-                disabled={!hasFlashcards}
-              >
-                🃏 Flashcards ({detail.flashcardDecks?.length || 0})
-              </ToggleButton>
-              <ToggleButton
-                $active={activeResourceType === 'mcq'}
-                onClick={() => setActiveResourceType('mcq')}
-                disabled={!hasMcq}
-              >
-                📝 MCQ ({detail.mcqTopics?.length || 0})
-              </ToggleButton>
-            </ToggleButtons>
+            <SectionRow>
+              <SectionLabel>📚 Sumber Belajar Terkait</SectionLabel>
+              <SectionLine />
+            </SectionRow>
 
-            {activeResourceType === 'flashcards' && hasFlashcards && (
-              <ResourceGrid>
-                {detail.flashcardDecks.map(deck => (
-                  <DeckCard key={deck.id} deck={deck} />
-                ))}
-              </ResourceGrid>
+            {hasFlashcards && (
+              <LinkedGroup>
+                <LinkedGroupLabel $type="flashcard">🃏 Flashcard</LinkedGroupLabel>
+                <LinkedCards>
+                  {detail.flashcardDecks.map(deck => (
+                    <LinkedCard
+                      key={deck.id}
+                      $type="flashcard"
+                      onClick={() => navigate(`/flashcards/${deck.uniqueId}`)}
+                    >
+                      <LinkedCardTitle>{deck.title}</LinkedCardTitle>
+                      <LinkedCardArrow>→</LinkedCardArrow>
+                    </LinkedCard>
+                  ))}
+                </LinkedCards>
+              </LinkedGroup>
             )}
 
-            {activeResourceType === 'mcq' && hasMcq && (
-              <ResourceGrid>
-                {detail.mcqTopics.map(topic => (
-                  <McqTopicCard key={topic.id} topic={topic} />
-                ))}
-              </ResourceGrid>
+            {hasMcq && (
+              <LinkedGroup>
+                <LinkedGroupLabel $type="mcq">📝 MCQ</LinkedGroupLabel>
+                <LinkedCards>
+                  {detail.mcqTopics.map(topic => (
+                    <LinkedCard
+                      key={topic.id}
+                      $type="mcq"
+                      onClick={() => navigate(`/multiple-choice/${topic.uniqueId}`)}
+                    >
+                      <LinkedCardTitle>{topic.title}</LinkedCardTitle>
+                      <LinkedCardArrow>→</LinkedCardArrow>
+                    </LinkedCard>
+                  ))}
+                </LinkedCards>
+              </LinkedGroup>
             )}
           </>
         )}

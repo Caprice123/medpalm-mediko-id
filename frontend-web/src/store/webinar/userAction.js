@@ -10,12 +10,15 @@ const {
   setMyRegistrations,
 } = actions
 
-export const fetchWebinars = () => async (dispatch, getState) => {
+export const fetchWebinars = (overrides = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListLoading', value: true }))
 
     const { filter, pagination } = getState().webinar
-    const queryParams = { page: pagination.page, perPage: pagination.perPage }
+    const queryParams = {
+      page: pagination.page,
+      perPage: overrides.perPage ?? pagination.perPage,
+    }
     if (filter.search) queryParams.search = filter.search
     if (filter.registrationStatus && filter.registrationStatus !== 'all') queryParams.registrationStatus = filter.registrationStatus
 
