@@ -10,6 +10,7 @@ router.use(authenticateToken)
 router.use(checkFeature('flashcard_is_active'))
 
 router.get('/', asyncHandler(flashcardV2UserController.getDecks.bind(flashcardV2UserController)))
+router.get('/:uniqueId/content-relations', asyncHandler(flashcardV2UserController.contentRelations.bind(flashcardV2UserController)))
 router.get('/:uniqueId', asyncHandler(flashcardV2UserController.getDeck.bind(flashcardV2UserController)))
 
 export default router

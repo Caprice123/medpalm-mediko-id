@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { submitRating } from '@store/review/userAction'
 import { fetchPublicConstants } from '@store/constant/userAction'
+import { fetchLinkedMcq, fetchLinkedSummaryNotes } from '@store/flashcard/v2/userAction'
+import Button from '@components/common/Button'
 import {
   Wrapper, BackBtn, DeckContainer, DeckHeader, DeckTitle,
   StatsRow, CardCounter, ReviewedCount,
@@ -35,6 +37,7 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const constants = useSelector(state => state.constant.constants)
+  const { linkedMcq, linkedMcqPagination, linkedSummaryNotes, linkedSummaryNotesPagination, loading } = useSelector(state => state.flashcard)
   const cards = deck.cards || []
 
   const [queue, setQueue] = useState(() => [...cards])
@@ -51,6 +54,13 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
   useEffect(() => {
     dispatch(fetchPublicConstants(['mcq_feature_title', 'summary_notes_feature_title']))
   }, [dispatch])
+
+  useEffect(() => {
+    if (done && deck.uniqueId) {
+      dispatch(fetchLinkedMcq(deck.uniqueId, 1))
+      dispatch(fetchLinkedSummaryNotes(deck.uniqueId, 1))
+    }
+  }, [done, deck.uniqueId, dispatch])
 
   const handleReveal = useCallback(() => {
     if (!revealed) setRevealed(true)
@@ -102,8 +112,6 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
       acc[r.key] = ratings.filter(x => x.rating === r.key).length
       return acc
     }, {})
-    const totalReviews = ratings.length
-    const uniqueCards = cards.length
 
     return (
       <Wrapper>
@@ -129,51 +137,69 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
                 <ShowAnswerBtn onClick={onBack} style={{ flex: 1 }}>Kembali ke Daftar</ShowAnswerBtn>
               </DoneActions>
 
-              {deck.relatedContent?.length > 0 && (() => {
-                const mcqItems = deck.relatedContent.filter(i => i.type === 'mcq_topic')
-                const snItems  = deck.relatedContent.filter(i => i.type === 'summary_note')
-                return (
-                  <RelatedSection>
-                    <RelatedSectionTitle>Pelajari Lebih Lanjut</RelatedSectionTitle>
+              {(linkedMcq.length > 0 || linkedSummaryNotes.length > 0) && (
+                <RelatedSection>
+                  <RelatedSectionTitle>Pelajari Lebih Lanjut</RelatedSectionTitle>
 
-                    {mcqItems.length > 0 && (
-                      <RelatedGroup>
-                        <RelatedGroupLabel $type="mcq_topic">{RELATED_ICONS['mcq_topic']} {constants?.mcq_feature_title || 'Soal MCQ'}</RelatedGroupLabel>
-                        <RelatedCards>
-                          {mcqItems.map(item => (
-                            <RelatedCard
-                              key={item.id}
-                              $type="mcq_topic"
-                              onClick={() => navigate(`${RELATED_ROUTES['mcq_topic']}/${item.uniqueId}`)}
-                            >
-                              <RelatedCardTitle>{item.title}</RelatedCardTitle>
-                              <RelatedCardArrow>→</RelatedCardArrow>
-                            </RelatedCard>
-                          ))}
-                        </RelatedCards>
-                      </RelatedGroup>
-                    )}
+                  {(linkedMcq.length > 0 || !linkedMcqPagination.isLastPage) && (
+                    <RelatedGroup>
+                      <RelatedGroupLabel $type="mcq_topic">{RELATED_ICONS['mcq_topic']} {constants?.mcq_feature_title || 'Soal MCQ'}</RelatedGroupLabel>
+                      <RelatedCards>
+                        {linkedMcq.map(item => (
+                          <RelatedCard
+                            key={item.id}
+                            $type="mcq_topic"
+                            onClick={() => navigate(`${RELATED_ROUTES['mcq_topic']}/${item.uniqueId}`)}
+                          >
+                            <RelatedCardTitle>{item.title}</RelatedCardTitle>
+                            <RelatedCardArrow>→</RelatedCardArrow>
+                          </RelatedCard>
+                        ))}
+                      </RelatedCards>
+                      {!linkedMcqPagination.isLastPage && (
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          disabled={loading.isLinkedMcqLoading}
+                          onClick={() => dispatch(fetchLinkedMcq(deck.uniqueId, linkedMcqPagination.page + 1))}
+                          style={{ marginTop: '0.75rem' }}
+                        >
+                          {loading.isLinkedMcqLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                        </Button>
+                      )}
+                    </RelatedGroup>
+                  )}
 
-                    {snItems.length > 0 && (
-                      <RelatedGroup>
-                        <RelatedGroupLabel $type="summary_note">{RELATED_ICONS['summary_note']} {constants?.summary_notes_feature_title || 'Ringkasan Materi'}</RelatedGroupLabel>
-                        <RelatedCards>
-                          {snItems.map(item => (
-                            <RelatedCard
-                              key={item.id}
-                              $type="summary_note"
-                              onClick={() => navigate(`${RELATED_ROUTES['summary_note']}/${item.uniqueId}`)}
-                            >
-                              <RelatedCardTitle>{item.title}</RelatedCardTitle>
-                              <RelatedCardArrow>→</RelatedCardArrow>
-                            </RelatedCard>
-                          ))}
-                        </RelatedCards>
-                      </RelatedGroup>
-                    )}
-                  </RelatedSection>
-                )
-              })()}
+                  {(linkedSummaryNotes.length > 0 || !linkedSummaryNotesPagination.isLastPage) && (
+                    <RelatedGroup>
+                      <RelatedGroupLabel $type="summary_note">{RELATED_ICONS['summary_note']} {constants?.summary_notes_feature_title || 'Ringkasan Materi'}</RelatedGroupLabel>
+                      <RelatedCards>
+                        {linkedSummaryNotes.map(item => (
+                          <RelatedCard
+                            key={item.id}
+                            $type="summary_note"
+                            onClick={() => navigate(`${RELATED_ROUTES['summary_note']}/${item.uniqueId}`)}
+                          >
+                            <RelatedCardTitle>{item.title}</RelatedCardTitle>
+                            <RelatedCardArrow>→</RelatedCardArrow>
+                          </RelatedCard>
+                        ))}
+                      </RelatedCards>
+                      {!linkedSummaryNotesPagination.isLastPage && (
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          disabled={loading.isLinkedSummaryNotesLoading}
+                          onClick={() => dispatch(fetchLinkedSummaryNotes(deck.uniqueId, linkedSummaryNotesPagination.page + 1))}
+                          style={{ marginTop: '0.75rem' }}
+                        >
+                          {loading.isLinkedSummaryNotesLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                        </Button>
+                      )}
+                    </RelatedGroup>
+                  )}
+                </RelatedSection>
+              )}
 
             </DoneBody>
           </DoneWrap>

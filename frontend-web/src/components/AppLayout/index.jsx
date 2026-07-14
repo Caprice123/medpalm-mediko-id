@@ -7,6 +7,28 @@ import { logout } from '@store/auth/action'
 import { formatLocalDate } from '@utils/dateUtils'
 import { ProfileRoute } from '@routes/Profile/routes'
 import {
+  PiBookOpenText, PiCube, PiChatText, PiStethoscope,
+  PiClipboardText, PiListNumbers, PiCards, PiFlask,
+  PiCalculator, PiMagnifyingGlass, PiFileText, PiTrophy,
+  PiVideoCamera, PiCalendarCheck, PiCreditCard, PiWrench,
+  PiUser, PiSignOut,
+} from 'react-icons/pi'
+
+const FEATURE_ICONS = {
+  summary_notes:   PiBookOpenText,
+  atlas:           PiCube,
+  chatbot:         PiChatText,
+  osce_practice:   PiStethoscope,
+  exercise:        PiClipboardText,
+  mcq:             PiListNumbers,
+  flashcard:       PiCards,
+  anatomy:         PiFlask,
+  calculator:      PiCalculator,
+  diagnostic:      PiMagnifyingGlass,
+  skripsi_builder: PiFileText,
+  challenge:       PiTrophy,
+}
+import {
   LayoutWrapper,
   FloatingHamburger,
   MobileCloseButton,
@@ -195,9 +217,9 @@ function AppLayout() {
   const activeFeatures = features.filter(f => f.isActive === true || f.isActive === 'true')
 
   const services = [
-    { icon: '🎓', name: 'Webinar', route: WebinarRoute.listRoute },
-    { icon: '🗓️', name: 'Events', route: EventRoute.listRoute },
-    ...(isNonUser ? [{ icon: '🏆', name: 'Challenge', route: ChallengeRoute.homeRoute }] : []),
+    { Icon: PiVideoCamera, name: 'Webinar', route: WebinarRoute.listRoute },
+    { Icon: PiCalendarCheck, name: 'Events', route: EventRoute.listRoute },
+    ...(isNonUser ? [{ Icon: PiTrophy, name: 'Challenge', route: ChallengeRoute.homeRoute }] : []),
   ]
 
   const navigateTo = (route) => {
@@ -277,6 +299,7 @@ function AppLayout() {
                       else lockReason = `Perlu ${feature.cost} credits`
                     }
                 //   }
+                  const FeatureIcon = FEATURE_ICONS[feature.sessionType]
                   return (
                     <SidebarItem
                       key={feature.id}
@@ -294,7 +317,9 @@ function AppLayout() {
                       } : undefined}
                       onMouseLeave={isLocked ? () => setLockTooltip(null) : undefined}
                     >
-                      <SidebarItemIcon>{feature.icon}</SidebarItemIcon>
+                      <SidebarItemIcon>
+                        {FeatureIcon ? <FeatureIcon size={18} /> : feature.icon}
+                      </SidebarItemIcon>
                       <SidebarItemName>{feature.name}</SidebarItemName>
                       {isLocked && <SidebarLockIcon>🔒</SidebarLockIcon>}
                     </SidebarItem>
@@ -309,10 +334,10 @@ function AppLayout() {
                 <ChevronIcon $collapsed={collapsed.layanan}>▼</ChevronIcon>
               </SidebarGroupHeader>
               <SidebarGroupItems $collapsed={collapsed.layanan}>
-                {services.map(service => (
-                  <SidebarItem key={service.name} $active={isActive(service.route)} onClick={() => navigateTo(service.route)}>
-                    <SidebarItemIcon>{service.icon}</SidebarItemIcon>
-                    <SidebarItemName>{service.name}</SidebarItemName>
+                {services.map(({ Icon, name, route }) => (
+                  <SidebarItem key={name} $active={isActive(route)} onClick={() => navigateTo(route)}>
+                    <SidebarItemIcon><Icon size={18} /></SidebarItemIcon>
+                    <SidebarItemName>{name}</SidebarItemName>
                   </SidebarItem>
                 ))}
               </SidebarGroupItems>
@@ -325,12 +350,12 @@ function AppLayout() {
               </SidebarGroupHeader>
               <SidebarGroupItems $collapsed={collapsed.akun}>
                 <SidebarItem $active={isActive(TopupRoute.moduleRoute)} onClick={() => navigateTo(TopupRoute.moduleRoute)}>
-                  <SidebarItemIcon>💳</SidebarItemIcon>
+                  <SidebarItemIcon><PiCreditCard size={18} /></SidebarItemIcon>
                   <SidebarItemName>Top Up Credits</SidebarItemName>
                 </SidebarItem>
                 {(currentUser?.role === 'admin' || currentUser?.role === 'superadmin') && (
                   <SidebarItem $active={isActive('/admin')} onClick={() => navigateTo('/admin')}>
-                    <SidebarItemIcon>🛠️</SidebarItemIcon>
+                    <SidebarItemIcon><PiWrench size={18} /></SidebarItemIcon>
                     <SidebarItemName>Admin Panel</SidebarItemName>
                   </SidebarItem>
                 )}
@@ -400,10 +425,10 @@ function AppLayout() {
             )}
             <FooterActions>
               <FooterActionButton onClick={() => navigateTo(ProfileRoute.setupRoute)}>
-                👤 Profil
+                <PiUser size={14} /> Profil
               </FooterActionButton>
               <FooterActionButton $danger onClick={handleLogout}>
-                🚪 Keluar
+                <PiSignOut size={14} /> Keluar
               </FooterActionButton>
             </FooterActions>
           </SidebarFooter>

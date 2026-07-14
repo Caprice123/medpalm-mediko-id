@@ -223,26 +223,32 @@ export const SidebarItem = styled.button`
   align-items: center;
   gap: 0.625rem;
   width: 100%;
-  padding: 0.3rem 1.25rem;
+  padding: 0.35rem 1rem;
+  margin: 0 0.25rem;
+  width: calc(100% - 0.5rem);
   border: none;
-  background: ${props => props.$active ? '#f0fdfa' : 'none'};
+  border-radius: 8px;
+  background: ${props => props.$active ? '#0f766e' : 'none'};
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: ${props => props.$active ? '600' : '400'};
-  color: ${props => props.$active ? '#06b6d4' : '#374151'};
+  color: ${props => props.$active ? '#ffffff' : '#374151'};
   text-align: left;
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
-  border-left: 3px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
 
   &:hover {
-    background: #f0fdfa;
-    color: #06b6d4;
+    background: ${props => props.$active ? '#0f766e' : '#f1f5f9'};
+    color: ${props => props.$active ? '#ffffff' : '#0f766e'};
   }
 `
 
 export const SidebarItemIcon = styled.span`
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 `
 
