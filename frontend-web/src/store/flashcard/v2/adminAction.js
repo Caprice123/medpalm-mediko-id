@@ -2,6 +2,10 @@ import { actions } from '@store/flashcard/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../../utils/requestUtils'
 
+export const attachSourcePdf = (uniqueId, blobId) => async () => {
+  await postWithToken(`${Endpoints.admin.flashcardsV2}/${uniqueId}/source-pdf`, { blobId })
+}
+
 const { setLoading, setDecks, appendDecks, setDetail, updatePagination } = actions
 
 export const fetchV2Decks = () => async (dispatch, getState) => {
@@ -64,4 +68,9 @@ export const deleteV2Deck = (uniqueId, onSuccess) => async (dispatch) => {
   } finally {
     dispatch(setLoading({ key: 'isDeletingDeck', value: false }))
   }
+}
+
+export const fetchPublishedFlashcardDecks = (params = {}) => async () => {
+  const res = await getWithToken(Endpoints.admin.flashcardsV2, { status: 'published', ...params })
+  return res.data
 }

@@ -54,13 +54,10 @@ export class GetReviewStatsService extends BaseService {
       const state = stateMap.get(card.id)
       stat.totalCards++
 
-      if (!state) {
-        stat.counts.new++
-        stat.dueCount++
-      } else {
-        const rk = state.last_rating
-        if (rk in stat.counts) stat.counts[rk]++
-        if (state.due_date <= now) stat.dueCount++
+      if (state) {
+          const rk = state.last_rating
+          if (rk in stat.counts) stat.counts[rk]++
+          if (state.due_date <= now) stat.dueCount++
       }
     })
 

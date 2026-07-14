@@ -2,13 +2,31 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetSummaryNotesListService extends BaseService {
-  static async call({ page = 1, perPage = 30, status, search, university, semester, department }) {
+  static async call({ page = 1, perPage = 30, status, search, university, semester, department, nodeId, unassigned }) {
     // Calculate pagination
     const limit = parseInt(perPage)
     const offset = (parseInt(page) - 1) * limit
 
     // Build where clause
     const where = { is_deleted: false }
+
+    // Filter by feature node (folder)
+    if (nodeId) {
+      const records = await prisma.feature_node_records.findMany({
+        where: { node_id: parseInt(nodeId), record_type: 'summary_note' },
+        select: { record_id: true },
+      })
+      where.id = { in: records.map(r => r.record_id) }
+    }
+
+    // Filter unassigned (not linked to any node)
+    if (unassigned === 'true' || unassigned === true) {
+      const records = await prisma.feature_node_records.findMany({
+        where: { record_type: 'summary_note' },
+        select: { record_id: true },
+      })
+      where.id = { notIn: records.map(r => r.record_id) }
+    }
 
     if (status) {
       where.status = status
@@ -77,7 +95,7 @@ export class GetSummaryNotesListService extends BaseService {
         }
       },
       orderBy: {
-        id: 'desc'
+        title: 'asc'
       },
       take: limit + 1,
       skip: offset

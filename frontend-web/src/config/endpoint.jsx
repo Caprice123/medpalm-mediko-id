@@ -38,6 +38,7 @@ export default {
         featureNodeRecords: "/admin/v1/feature-nodes/records",
         autoLinkFlashcardDecks: "/admin/v1/feature-nodes/auto-link/flashcard-decks",
         flashcardsV2: "/admin/v2/flashcards",
+        summaryNotesV2Admin: "/admin/v2/summary-notes",
         contentRelations: "/admin/v1/content-relations",
     },
     api: {
@@ -57,6 +58,9 @@ export default {
         atlas: "/api/v1/atlas",
         features: "/api/v1/features",
         summaryNotes: "/api/v1/summary-notes",
+        summaryNotesV2: "/api/v2/summary-notes",
+        recentlyViewed: "/api/v1/recently-viewed",
+        favorites: "/api/v1/favorites",
         uploadImage: `/api/v1/upload/image`,
         mcq: "/api/v1/mcq",
         chatbot: "/api/v1/chatbot",

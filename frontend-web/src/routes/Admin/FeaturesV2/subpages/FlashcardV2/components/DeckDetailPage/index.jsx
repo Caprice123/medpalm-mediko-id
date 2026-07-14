@@ -23,6 +23,7 @@ import {
   EmptyHint,
 } from './DeckDetailPage.styles'
 import { useAdminContentRelations } from '@routes/Admin/Features/subpages/Flashcard/hooks/subhooks/useAdminContentRelations'
+import GenerateFromPDFModal from '../GenerateFromPDFModal'
 
 function ContentItemCard({ item, linked, disabled, onToggle, type }) {
   const universityTags = item.universityTags || []
@@ -91,6 +92,7 @@ function DeckDetailPage({ deck, onBack }) {
 
   const [activeTab, setActiveTab] = useState('soal')
   const [cardModal, setCardModal] = useState({ open: false, mode: 'create', index: -1 })
+  const [generatePDFModal, setGeneratePDFModal] = useState(false)
   const [form, setForm] = useState({ front: '', back: '', imageBlobId: null, imagePreviewUrl: null, imageFilename: null })
 
   const {
@@ -226,13 +228,27 @@ function DeckDetailPage({ deck, onBack }) {
 
       {activeTab === 'soal' && (
         <TabContent>
+          {detail?.sourcePdf?.url && (
+            <div style={{ marginBottom: '0.75rem', padding: '0.625rem 0.875rem', background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+              <span style={{ fontSize: '0.8125rem', color: '#0f766e', fontWeight: 600 }}>PDF Sumber:</span>
+              <a href={detail.sourcePdf.url} target="_blank" rel="noreferrer" style={{ fontSize: '0.8125rem', color: '#0d9488', textDecoration: 'underline' }}>
+                {detail.sourcePdf.filename || 'Lihat PDF'}
+              </a>
+            </div>
+          )}
+
           <DeckSubHeader>
             <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
               {isLoading ? 'Memuat kartu...' : `${cards.length} kartu`}
             </span>
-            <Button variant="primary" onClick={openAdd} disabled={isLoading}>
-              + Tambah Kartu
-            </Button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <Button variant="secondary" onClick={() => setGeneratePDFModal(true)} disabled={isLoading}>
+                Generate dari PDF
+              </Button>
+              <Button variant="primary" onClick={openAdd} disabled={isLoading}>
+                + Tambah Kartu
+              </Button>
+            </div>
           </DeckSubHeader>
 
           <Table
@@ -323,6 +339,14 @@ function DeckDetailPage({ deck, onBack }) {
             )}
           </RelationSection>
         </TabContent>
+      )}
+
+      {generatePDFModal && (
+        <GenerateFromPDFModal
+          deck={deck}
+          existingCards={cards}
+          onClose={() => setGeneratePDFModal(false)}
+        />
       )}
 
       {cardModal.open && (

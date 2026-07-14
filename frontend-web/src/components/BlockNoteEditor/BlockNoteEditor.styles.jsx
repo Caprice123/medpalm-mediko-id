@@ -49,17 +49,9 @@ export const ModeButton = styled.button`
 
 export const EditorWrapper = styled.div`
   position: relative;
-  background: ${props => props.$isStructured
-    ? `
-      linear-gradient(to right, hsl(215.4 16.3% 46.9% / 0.1) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(215.4 16.3% 46.9% / 0.1) 1px, transparent 1px)
-    `
-    : '#f5f5f5'
-  };
-  background-size: ${props => props.$isStructured ? '24px 24px' : 'auto'};
-  background-position: ${props => props.$isStructured ? '-1px -1px' : '0 0'};
+  background: ${props => props.$isStructured ? '#fdfcf8' : '#f5f5f5'};
   border-radius: 12px;
-  padding: ${props => props.$isStructured ? '1rem 0' : '0'};
+  padding: 0;
   flex: 1;
   overflow: auto;
   display: flex;
@@ -67,7 +59,6 @@ export const EditorWrapper = styled.div`
 
   @media (max-width: 768px) {
     border-radius: 8px;
-    padding: ${props => props.$isStructured ? '0.75rem 0' : '0'};
   }
 
   /* Make BlockNote fill available space */
@@ -82,7 +73,7 @@ export const EditorWrapper = styled.div`
     overflow: auto;
   }
 
-  /* Structured mode - ensure all BlockNote elements are transparent to show grid */
+  /* Structured mode - ensure all BlockNote elements are transparent to show warm paper background */
   ${props => props.$isStructured && `
     .bn-container,
     .bn-editor,

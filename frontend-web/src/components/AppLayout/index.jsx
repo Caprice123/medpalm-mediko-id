@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { getUserData } from '@utils/authToken'
@@ -37,6 +37,7 @@ import {
   FooterActions,
   FooterActionButton,
   ContentArea,
+  SidebarOuter,
   ToggleButton,
 } from './AppLayout.styles'
 import { ExerciseRoute } from '@routes/Exercise/routes'
@@ -54,6 +55,8 @@ import { WebinarRoute } from '@routes/Webinar/routes'
 import { EventRoute } from '@routes/Event/routes'
 import { ChallengeRoute } from '@routes/Challenge/routes'
 import { TopupRoute } from '@routes/Topup/routes'
+
+const HAMBURGER_POS_KEY = 'hamburger-btn-pos'
 
 const SESSION_ROUTES = {
   flashcard: FlashcardRoute.moduleRoute,
@@ -84,6 +87,85 @@ function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
   const [collapsed, setCollapsed] = useState({ fitur: false, layanan: false, akun: false })
   const [detailOpen, setDetailOpen] = useState({ credits: false, subs: false })
+
+  const currentPosRef = useRef({ top: 16, left: 16 })
+  const dragRef = useRef(null)
+  const wasDraggingRef = useRef(false)
+  const hamburgerRef = useRef(null)
+
+  useEffect(() => {
+    const el = hamburgerRef.current
+    if (!el) return
+
+    // Restore saved position directly to DOM (bypasses React style prop)
+    try {
+      const saved = localStorage.getItem(HAMBURGER_POS_KEY)
+      if (saved) currentPosRef.current = JSON.parse(saved)
+    } catch {}
+    el.style.top = currentPosRef.current.top + 'px'
+    el.style.left = currentPosRef.current.left + 'px'
+
+    const startDrag = (x, y) => {
+      dragRef.current = {
+        startX: x, startY: y,
+        startTop: currentPosRef.current.top,
+        startLeft: currentPosRef.current.left,
+        isDragging: false,
+      }
+    }
+
+    const moveDrag = (x, y) => {
+      if (!dragRef.current) return
+      const dx = x - dragRef.current.startX
+      const dy = y - dragRef.current.startY
+      if (!dragRef.current.isDragging && Math.abs(dx) < 5 && Math.abs(dy) < 5) return
+      dragRef.current.isDragging = true
+      const newTop = Math.max(0, Math.min(window.innerHeight - 44, dragRef.current.startTop + dy))
+      const newLeft = Math.max(0, Math.min(window.innerWidth - 44, dragRef.current.startLeft + dx))
+      currentPosRef.current = { top: newTop, left: newLeft }
+      el.style.top = newTop + 'px'
+      el.style.left = newLeft + 'px'
+    }
+
+    const endDrag = () => {
+      if (!dragRef.current) return
+      wasDraggingRef.current = dragRef.current.isDragging
+      if (dragRef.current.isDragging) {
+        try { localStorage.setItem(HAMBURGER_POS_KEY, JSON.stringify(currentPosRef.current)) } catch {}
+      }
+      dragRef.current = null
+    }
+
+    // Touch handlers (real mobile)
+    const onTouchStart = (e) => startDrag(e.touches[0].clientX, e.touches[0].clientY)
+    const onTouchMove = (e) => { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY) }
+    const onTouchEnd = () => endDrag()
+
+    // Mouse handlers (desktop browser / DevTools simulation without touch conversion)
+    const onMouseDown = (e) => {
+      e.preventDefault()
+      startDrag(e.clientX, e.clientY)
+      const onMouseMove = (e) => moveDrag(e.clientX, e.clientY)
+      const onMouseUp = () => {
+        endDrag()
+        document.removeEventListener('mousemove', onMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+      }
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    el.addEventListener('touchend', onTouchEnd)
+    el.addEventListener('mousedown', onMouseDown)
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('mousedown', onMouseDown)
+    }
+  }, [isNonUser])
 
   useEffect(() => {
     if (features.length === 0) dispatch(fetchFeatures())
@@ -139,17 +221,23 @@ function AppLayout() {
     <LayoutWrapper>
       {isNonUser && (
         <>
-          <FloatingHamburger $open={sidebarOpen} onClick={() => setSidebarOpen(o => !o)}>
+          <FloatingHamburger
+            ref={hamburgerRef}
+            $open={sidebarOpen}
+            onClick={() => { if (!wasDraggingRef.current) setSidebarOpen(o => !o); wasDraggingRef.current = false }}
+            style={{ touchAction: 'none' }}
+          >
             <span /><span /><span />
           </FloatingHamburger>
           <MobileOverlay $open={sidebarOpen} onClick={() => setSidebarOpen(false)} />
-          <ToggleButton $open={sidebarOpen} onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
-            {sidebarOpen ? '◀' : '▶'}
-          </ToggleButton>
         </>
       )}
 
-      {isNonUser && <Sidebar $open={sidebarOpen}>
+      {isNonUser && <SidebarOuter $open={sidebarOpen}>
+        <ToggleButton onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
+          {sidebarOpen ? '◀' : '▶'}
+        </ToggleButton>
+        <Sidebar $open={sidebarOpen}>
         <SidebarInner>
           <MobileCloseButton onClick={() => setSidebarOpen(false)}>✕</MobileCloseButton>
           <SidebarLogo onClick={() => navigateTo('/dashboard')}>
@@ -283,7 +371,8 @@ function AppLayout() {
             </FooterActions>
           </SidebarFooter>
         </SidebarInner>
-      </Sidebar>}
+      </Sidebar>
+      </SidebarOuter>}
 
       <ContentArea>
         <Outlet />

@@ -41,17 +41,18 @@ export const FloatingHamburger = styled.button`
     justify-content: center;
     gap: 5px;
     position: fixed;
-    top: 1rem;
-    left: 1rem;
     z-index: 210;
     width: 44px;
     height: 44px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: grab;
     padding: 10px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 
     span {
       display: block;
@@ -71,13 +72,6 @@ export const FloatingHamburger = styled.button`
 export const MobileOverlay = styled.div`
   display: none;
 
-  @media (max-width: 768px) {
-    display: ${props => props.$open ? 'block' : 'none'};
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 190;
-  }
 `
 
 export const Sidebar = styled.aside`
@@ -85,8 +79,6 @@ export const Sidebar = styled.aside`
   min-width: ${props => props.$open ? '240px' : '0px'};
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -378,10 +370,19 @@ export const ContentArea = styled.div`
   min-width: 0;
 `
 
+export const SidebarOuter = styled.div`
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: visible;
+  flex-shrink: 0;
+  z-index: 10;
+`
+
 export const ToggleButton = styled.button`
-  position: fixed;
+  position: absolute;
   top: 50%;
-  left: ${props => props.$open ? '240px' : '0px'};
+  right: -28px;
   transform: translateY(-50%);
   z-index: 100;
   width: 28px;
@@ -396,7 +397,7 @@ export const ToggleButton = styled.button`
   justify-content: center;
   font-size: 0.75rem;
   color: #6b7280;
-  transition: left 0.25s ease, color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s;
   padding: 0;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
 

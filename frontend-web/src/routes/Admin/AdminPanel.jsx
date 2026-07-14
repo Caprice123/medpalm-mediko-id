@@ -73,6 +73,7 @@ const TabContainer = styled.div`
   gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
   overflow-x: auto;
+  overflow-y: hidden;
   flex-wrap: nowrap;
   padding-top: 0.5rem;
 `
