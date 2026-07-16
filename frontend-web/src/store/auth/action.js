@@ -4,6 +4,7 @@ import Endpoints from "@config/endpoint"
 import { removeToken, removeUser, setToken, setUser } from "@utils/authToken"
 import { postWithToken } from "@utils/requestUtils"
 import { handleApiError } from "@utils/errorUtils"
+import { setUser as setSentryUser, clearUser as clearSentryUser } from "@config/sentry"
 
 const { setLoading } = actions
 
@@ -18,6 +19,7 @@ export const login = (googleCredential, onSuccess) => async (dispatch) => {
         const response = await api.post(Endpoints.Login, requestBody)
         const { data } = response.data
         setUser(data.user)
+        setSentryUser(data.user)
 
         // Store new token structure with both access and refresh tokens
         const tokenData = {
@@ -43,6 +45,7 @@ export const logout = (onSuccess) => async (dispatch) => {
         await postWithToken(Endpoints.Logout)
         removeUser()
         removeToken()
+        clearSentryUser()
     } catch {
         // no need to handle anything because already handled in api.jsx
     } finally {
