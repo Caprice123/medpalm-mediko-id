@@ -2,7 +2,6 @@ import { actions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '../../utils/requestUtils'
 import axios from 'axios'
-import { captureException } from '../../config/sentry'
 import { handleApiError } from '@utils/errorUtils'
 const {
   setLoading,
@@ -53,12 +52,6 @@ export const fetchPricingPlans = (bundleType = null) => async (dispatch) => {
     dispatch(setPlans(response.data.data))
   } catch(err) {
     handleApiError(err, dispatch)
-    captureException(err, {
-        url: import.meta.env.VITE_API_BASE_URL + Endpoints.api.features,
-        status: err.response?.status,
-        responseData: err.response?.data,
-        method: err.config?.method,
-    })
   } finally {
     dispatch(setLoading({ key: 'isPlansLoading', value: false }))
   }

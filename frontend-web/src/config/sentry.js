@@ -7,13 +7,20 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
+const isDev = import.meta.env.MODE === 'development';
+
 /**
  * Initialize Sentry for error tracking in React
  */
 export const initSentry = () => {
+  if (isDev) {
+    console.log('%c[Error Tracking] DEV mode — Sentry disabled, errors logged to console', 'color: orange; font-weight: bold');
+    return;
+  }
+
   // Only initialize if DSN is provided
   if (!import.meta.env.VITE_SENTRY_DSN) {
-    console.warn('⚠️ Sentry DSN not configured. Error tracking is disabled.');
+    console.warn('%c[Error Tracking] No DSN configured — error tracking disabled', 'color: orange; font-weight: bold');
     return;
   }
 
@@ -52,6 +59,7 @@ export const initSentry = () => {
       'ResizeObserver loop limit exceeded',
       'Non-Error promise rejection captured',
       'NetworkError',
+      'Network Error',
       'Network request failed',
       'Failed to fetch',
       'AbortError',
@@ -59,7 +67,13 @@ export const initSentry = () => {
     ],
 
     // Strip sensitive data before sending to Sentry
-    beforeSend(event) {
+    beforeSend(event, hint) {
+      // Drop 401/403 — expected auth failures, not application bugs
+      const status = hint?.originalException?.response?.status;
+      if (status === 401 || status === 403) {
+        return null;
+      }
+
       if (event.request) {
         delete event.request.cookies;
         if (event.request.headers) {
@@ -71,32 +85,27 @@ export const initSentry = () => {
     },
   });
 
-  console.log('✅ Sentry initialized for error tracking');
+  console.log('%c[Error Tracking] Sentry active — errors will be sent to Sentry', 'color: green; font-weight: bold');
 };
 
-/**
- * Manually capture an exception
- * @param {Error} error
- * @param {Object} context - Additional context
- */
 export const captureException = (error, context = {}) => {
+  if (isDev) {
+    console.error('[Sentry captureException]', error, context);
+    return;
+  }
   Sentry.captureException(error, { extra: context });
 };
 
-/**
- * Manually capture a message
- * @param {string} message
- * @param {string} level - fatal | error | warning | info | debug
- */
-export const captureMessage = (message, level = 'info') => {
-  Sentry.captureMessage(message, level);
+export const captureMessage = (message, level = 'info', context = {}) => {
+  if (isDev) {
+    console.warn(`[Sentry captureMessage][${level}]`, message, context);
+    return;
+  }
+  Sentry.captureMessage(message, { level, extra: context });
 };
 
-/**
- * Set user context (call after login)
- * @param {Object} user
- */
 export const setUser = (user) => {
+  if (isDev) return;
   Sentry.setUser({
     id: user.id,
     email: user.email,
@@ -104,10 +113,8 @@ export const setUser = (user) => {
   });
 };
 
-/**
- * Clear user context (call after logout)
- */
 export const clearUser = () => {
+  if (isDev) return;
   Sentry.setUser(null);
 };
 

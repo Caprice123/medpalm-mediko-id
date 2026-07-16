@@ -4,7 +4,7 @@ import endpoints from '@config/endpoint';
 import { handleApiError } from '@utils/errorUtils';
 import { actions as creditActions } from '@store/credit/reducer';
 import { actions as pricingActions } from '@store/pricing/reducer';
-import { captureException } from '@config/sentry';
+import { captureException, captureMessage } from '@config/sentry';
 
 // Define sign-in route directly to avoid circular dependency
 const SIGN_IN_ROUTE = '/sign-in';
@@ -174,8 +174,16 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
             }
 
             if (error.response && error.response.status >= 400) {
-                // Redirect to dashboard
                 handleApiError(error, dispatch);
+                if (error.response.status === 400) {
+                    const message = error.response.data?.error?.message || 'Bad Request'
+                    captureMessage(message, 'warning', {
+                        url: error.config?.url,
+                        method: error.config?.method,
+                        status: 400,
+                        responseData: error.response.data,
+                    })
+                }
             }
 
             return Promise.reject(error);
