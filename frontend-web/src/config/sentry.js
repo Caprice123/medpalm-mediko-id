@@ -6,6 +6,7 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
+import { getUserData } from '@utils/authToken';
 
 /**
  * Initialize Sentry for error tracking in React
@@ -71,7 +72,13 @@ export const initSentry = () => {
     },
   });
 
-  console.log('✅ Sentry initialized for error tracking');
+  console.log('%c[Error Tracking] Sentry active — errors will be sent to Sentry', 'color: green; font-weight: bold');
+
+  // Restore user context on reload if already logged in
+  const user = getUserData();
+  if (user) {
+    Sentry.setUser({ id: user.id, email: user.email, username: user.name });
+  }
 };
 
 /**

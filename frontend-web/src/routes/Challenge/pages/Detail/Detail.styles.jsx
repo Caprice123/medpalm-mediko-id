@@ -11,7 +11,7 @@ const dotPulse = keyframes`
 `
 
 export const PageWrapper = styled.div`
-  min-height: calc(100vh - 90px);
+  min-height: 100vh;
   background: #f0fdfa;
 `
 

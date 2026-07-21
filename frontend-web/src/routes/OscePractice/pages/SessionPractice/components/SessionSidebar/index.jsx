@@ -78,6 +78,8 @@ function SessionSidebar({ onEndSession, isEndingSession }) {
         </div>
       </TaskSection>
 
+      <div style={{ flex: 1 }}></div>
+
       <DesktopButtonWrapper>
         <div style={{ margin: '1rem' }}>
             <Button
