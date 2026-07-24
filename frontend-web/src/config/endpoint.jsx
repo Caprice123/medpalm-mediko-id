@@ -45,6 +45,7 @@ export default {
         calculators: "/api/v1/calculators",
         flashcards: "/api/v1/flashcards",
         flashcardsV2: "/api/v2/flashcards",
+        flashcardNodes: "/api/v2-1/flashcards",
         reviewStats: "/api/v2/review/stats",
         reviewRate: "/api/v2/review/rate",
         reviewSession: "/api/v2/review/session",

@@ -1,8 +1,9 @@
-import { FlashcardListRouter, FlashcardDetailRouter, FlashcardReviewRouter, FlashcardReviewAllRouter, FlashcardReviewCustomRouter, FlashcardSessionRouter } from './FlashcardRouter'
+import { FlashcardListRouter } from './FlashcardRouter'
 
 export class FlashcardRoute {
   static moduleRoute = '/flashcards'
   static initialRoute = FlashcardRoute.moduleRoute
+  // kept for v1/v2 component references — not actively routed
   static detailRoute = FlashcardRoute.moduleRoute + '/:id'
   static reviewRoute = FlashcardRoute.moduleRoute + '/review'
   static reviewAllRoute = FlashcardRoute.moduleRoute + '/review/all'
@@ -12,10 +13,5 @@ export class FlashcardRoute {
 }
 
 export const flashcardRoutes = [
-  { path: FlashcardRoute.sessionRoutePath,  element: <FlashcardSessionRouter /> },
-  { path: FlashcardRoute.reviewAllRoute,    element: <FlashcardReviewAllRouter /> },
-  { path: FlashcardRoute.reviewCustomRoute, element: <FlashcardReviewCustomRouter /> },
-  { path: FlashcardRoute.reviewRoute,       element: <FlashcardReviewRouter /> },
-  { path: FlashcardRoute.initialRoute,      element: <FlashcardListRouter /> },
-  { path: FlashcardRoute.detailRoute,       element: <FlashcardDetailRouter /> },
+  { path: FlashcardRoute.initialRoute, element: <FlashcardListRouter /> },
 ]

@@ -8,7 +8,6 @@ import { TabBar, Tab, TabContent } from './NoteDetailPage.styles'
 import DetailTab from './components/DetailTab'
 import ContentTab from './components/ContentTab'
 import RelatedContentTab from './components/RelatedContentTab'
-import FolderTab from './components/FolderTab'
 
 function NoteDetailPage({ note, onBack }) {
   const dispatch = useDispatch()
@@ -41,7 +40,6 @@ function NoteDetailPage({ note, onBack }) {
         <Tab $active={activeTab === 'detail'} onClick={() => setActiveTab('detail')}>Detail</Tab>
         <Tab $active={activeTab === 'konten'} onClick={() => setActiveTab('konten')}>Konten</Tab>
         <Tab $active={activeTab === 'terkait'} onClick={() => setActiveTab('terkait')}>Konten Terkait</Tab>
-        <Tab $active={activeTab === 'folder'} onClick={() => setActiveTab('folder')}>Folder</Tab>
       </TabBar>
 
       {activeTab === 'detail' && (
@@ -73,11 +71,7 @@ function NoteDetailPage({ note, onBack }) {
         </TabContent>
       )}
 
-      {activeTab === 'folder' && (
-        <TabContent>
-          <FolderTab note={note} />
-        </TabContent>
-      )}
+
     </Container>
   )
 }

@@ -106,7 +106,7 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
     const uniqueCards = cards.length
 
     return (
-      <Wrapper>
+      <Wrapper >
         <DeckContainer>
           <DoneWrap>
             <DoneBanner>
@@ -183,7 +183,7 @@ export default function AnkiPlayer({ deck, onBack, recordType = 'flashcard_card'
   }
 
   return (
-    <Wrapper>
+    <Wrapper >
       <DeckContainer>
         <DeckHeader>
           <DeckTitle>{deck.title}</DeckTitle>

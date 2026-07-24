@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 `
 
 export const Header = styled.div`
@@ -29,21 +29,29 @@ export const Subtitle = styled.p`
   color: #6b7280;
 `
 
-export const SearchRow = styled.div`
+export const FilterRow = styled.div`
   display: flex;
   gap: 0.75rem;
   align-items: flex-end;
 `
 
-export const TreeWrapper = styled.div`
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
+export const TypeBadge = styled.span`
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: ${p => {
+    if (p.$type === 'department') return '#dbeafe'
+    if (p.$type === 'topic') return '#dcfce7'
+    return '#fef9c3'
+  }};
+  color: ${p => {
+    if (p.$type === 'department') return '#1d4ed8'
+    if (p.$type === 'topic') return '#15803d'
+    return '#a16207'
+  }};
 `
 
-export const EmptyText = styled.p`
-  text-align: center;
-  padding: 3rem;
-  color: #9ca3af;
-  font-size: 0.95rem;
-`

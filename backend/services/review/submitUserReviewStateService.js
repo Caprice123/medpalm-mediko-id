@@ -21,7 +21,7 @@ export class SubmitUserReviewStateService extends BaseService {
       rating,
     })
 
-    return prisma.user_review_states.upsert({
+    const reviewStateOp = prisma.user_review_states.upsert({
       where: { user_id_record_type_record_id: { user_id: userId, record_type: recordType, record_id: recordId } },
       create: {
         user_id: userId,
@@ -42,5 +42,56 @@ export class SubmitUserReviewStateService extends BaseService {
         updated_at: new Date(),
       },
     })
+
+    if (recordType !== 'flashcard_card') {
+      return reviewStateOp
+    }
+
+    const card = await prisma.flashcard_cards.findUnique({
+      where: { id: recordId },
+      select: { node_id: true },
+    })
+    const subtopic = card?.node_id
+      ? await prisma.feature_nodes.findUnique({ where: { id: card.node_id }, select: { parent_id: true } })
+      : null
+    const topicNodeId = subtopic?.parent_id
+
+    if (!topicNodeId) return reviewStateOp
+
+    const oldRating = existing?.last_rating
+    const progressOp = prisma.user_node_progress.upsert({
+      where: { user_id_node_id_feature_type: { user_id: userId, node_id: topicNodeId, feature_type: recordType } },
+      create: {
+        user_id: userId,
+        node_id: topicNodeId,
+        feature_type: recordType,
+        again_count: rating === 'again' ? 1 : 0,
+        hard_count: rating === 'hard' ? 1 : 0,
+        good_count: rating === 'good' ? 1 : 0,
+        easy_count: rating === 'easy' ? 1 : 0,
+      },
+      update: {
+        [`${rating}_count`]: { increment: 1 },
+        ...(oldRating && oldRating !== rating ? { [`${oldRating}_count`]: { increment: -1 } } : {}),
+        updated_at: new Date(),
+      },
+    })
+
+    const featureStatsOps = [
+      prisma.user_feature_statistics.upsert({
+        where: { user_id_feature_statistic_type: { user_id: userId, feature: recordType, statistic_type: rating } },
+        create: { user_id: userId, feature: recordType, statistic_type: rating, statistic_count: 1 },
+        update: { statistic_count: { increment: 1 } },
+      }),
+      ...(oldRating && oldRating !== rating ? [
+        prisma.user_feature_statistics.update({
+          where: { user_id_feature_statistic_type: { user_id: userId, feature: recordType, statistic_type: oldRating } },
+          data: { statistic_count: { decrement: 1 } },
+        }),
+      ] : []),
+    ]
+
+    const [reviewState] = await prisma.$transaction([reviewStateOp, progressOp, ...featureStatsOps])
+    return reviewState
   }
 }

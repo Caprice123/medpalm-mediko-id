@@ -9,6 +9,9 @@ export class FeatureNodesSerializer {
       parentId: node.parent_id,
       parentName: node.parent?.name ?? null,
       nodeType: node.node_type,
+      visibility: node.visibility,
+      classification: node.classification,
+      layer: node.layer,
       createdAt: toJakartaISO(node.created_at),
       updatedAt: toJakartaISO(node.updated_at),
     }

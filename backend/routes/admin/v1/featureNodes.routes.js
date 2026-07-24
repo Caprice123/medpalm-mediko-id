@@ -17,12 +17,11 @@ router.post('/', asyncHandler(featureNodesController.create.bind(featureNodesCon
 router.put('/:id', asyncHandler(featureNodesController.update.bind(featureNodesController)))
 router.delete('/:id', asyncHandler(featureNodesController.delete.bind(featureNodesController)))
 
-// Node records
-router.get('/records', asyncHandler(featureNodesController.getRecords.bind(featureNodesController)))
-router.post('/records', asyncHandler(featureNodesController.createRecord.bind(featureNodesController)))
-router.delete('/records/:id', asyncHandler(featureNodesController.deleteRecord.bind(featureNodesController)))
-
-// Auto-link
-router.post('/auto-link/flashcard-decks', asyncHandler(featureNodesController.autoLinkFlashcardDecks.bind(featureNodesController)))
+// Node cards (flashcard_cards linked via node_id)
+router.get('/:nodeId/cards', asyncHandler(featureNodesController.getNodeCards.bind(featureNodesController)))
+router.post('/:nodeId/cards', asyncHandler(featureNodesController.addNodeCard.bind(featureNodesController)))
+router.put('/:nodeId/cards/:cardId', asyncHandler(featureNodesController.updateNodeCard.bind(featureNodesController)))
+router.delete('/:nodeId/cards/:cardId', asyncHandler(featureNodesController.deleteNodeCard.bind(featureNodesController)))
+router.put('/:nodeId/cards/:cardId/move', asyncHandler(featureNodesController.moveNodeCard.bind(featureNodesController)))
 
 export default router
