@@ -49,8 +49,8 @@ export const Wrapper = styled.div`
 `
 
 export const Container = styled.div`
-  height: calc(100vh - 90px);
-  max-height: calc(100vh - 90px);
+  height: 100vh;
+  max-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;

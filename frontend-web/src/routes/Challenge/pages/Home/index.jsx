@@ -141,7 +141,7 @@ export default function ChallengeHomePage() {
     return 'Mulai →'
   }
 
-  if (!loaded) return <Loading text="Memuat Challenge Arena..." minHeight="calc(100vh - 90px)" />
+  if (!loaded) return <Loading text="Memuat Challenge Arena..." minHeight="100vh" />
 
   const featured = ongoing[currentIdx] || null
   const timeLeft = featured ? getTimeLeft(featured.endAt) : null

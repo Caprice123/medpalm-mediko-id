@@ -261,19 +261,23 @@ model flashcard_decks {
 }
 
 model flashcard_cards {
-  id         Int      @id @default(autoincrement())
-  deck_id    Int
+  id         Int            @id @default(autoincrement())
+  deck_id    Int?
+  node_id    Int?
   front      String
   back       String
   image_url  String?
-  order      Int      @default(0)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  order      Int            @default(0)
+  is_deleted Boolean        @default(false)
+  created_at DateTime       @default(now())
+  updated_at DateTime       @default(now())
 
-  flashcard_decks flashcard_decks @relation(fields: [deck_id], references: [id])
+  flashcard_decks flashcard_decks? @relation(fields: [deck_id], references: [id])
+  feature_nodes   feature_nodes?   @relation(fields: [node_id], references: [id], onDelete: Cascade)
 
   @@index([deck_id])
-  @@index([order])
+  @@index([node_id])
+  @@index([is_deleted])
 }
 
 model flashcard_deck_tags {
@@ -356,6 +360,17 @@ model user_review_states {
   @@index([user_id])
   @@index([due_date])
   @@index([record_type, record_id])
+  @@index([user_id, record_type, due_date, id])
+}
+
+model user_feature_statistics {
+  user_id         Int
+  feature         String
+  statistic_type  String
+  statistic_count Int      @default(0)
+  updated_at      DateTime @default(now()) @updatedAt
+
+  @@id([user_id, feature, statistic_type])
 }
 
 model user_review_custom_sessions {
@@ -467,21 +482,56 @@ model user_profiles {
 }
 
 model feature_nodes {
-  id        Int             @id @default(autoincrement())
-  name      String
-  slug      String          @unique
-  parent_id Int?
-  node_type String?
-  created_at DateTime       @default(now())
-  updated_at DateTime       @default(now())
+  id             Int             @id @default(autoincrement())
+  name           String
+  slug           String          @unique
+  parent_id      Int?
+  node_type      String?
+  visibility     String          @default("general")
+  classification String?
+  layer          Int?
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @default(now())
 
   parent   feature_nodes?  @relation("FeatureNodeChildren", fields: [parent_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   children feature_nodes[] @relation("FeatureNodeChildren")
 
-  feature_node_records feature_node_records[]
+  feature_node_records  feature_node_records[]
+  flashcard_cards       flashcard_cards[]
+  node_statistics       node_statistics[]
+  user_node_progress    user_node_progress[]
 
   @@index([parent_id])
   @@index([name])
+  @@index([layer])
+}
+
+model node_statistics {
+  node_id     Int
+  record_type String
+  total_count Int      @default(0)
+  updated_at  DateTime @default(now()) @updatedAt
+
+  feature_nodes feature_nodes @relation(fields: [node_id], references: [id], onDelete: Cascade)
+
+  @@id([node_id, record_type])
+}
+
+model user_node_progress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  node_id      Int
+  feature_type String
+  again_count  Int      @default(0)
+  hard_count   Int      @default(0)
+  good_count   Int      @default(0)
+  easy_count   Int      @default(0)
+  updated_at   DateTime @default(now())
+
+  feature_nodes feature_nodes @relation(fields: [node_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, node_id, feature_type])
+  @@index([user_id, feature_type])
 }
 
 model feature_node_records {

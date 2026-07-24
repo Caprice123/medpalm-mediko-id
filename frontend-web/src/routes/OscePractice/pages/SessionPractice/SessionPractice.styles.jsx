@@ -9,14 +9,14 @@ export const Content = styled.div`
     display: flex;
     margin: 0 auto;
     max-width: 1200px;
-    height: calc(100vh - 93px);
+    height: 100vh;
     background: #f0fdfa;
     overflow: hidden;
 
     @media (max-width: 768px) {
       flex-direction: column;
       height: auto;
-      min-height: calc(100vh - 93px);
+      min-height: 100vh;
     }
 `
 
@@ -324,8 +324,8 @@ export const MainContent = styled.div`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    min-height: calc(100vh - 93px);
-    height: calc(100vh - 93px);
+    min-height: 100vh;
+    height: 100vh;
   }
 `
 

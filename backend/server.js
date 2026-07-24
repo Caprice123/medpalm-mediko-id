@@ -62,6 +62,7 @@ import adminContentRelationRoutes from '#routes/admin/v1/contentRelation.routes'
 import adminV2FlashcardRoutes from '#routes/admin/v2/flashcard.routes';
 import adminV2SummaryNotesRoutes from '#routes/admin/v2/summaryNotes.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
+import apiV21FlashcardRoutes from '#routes/api/v2-1/flashcard.routes';
 import apiV2ReviewRoutes from '#routes/api/v2/review.routes';
 import apiV2SummaryNotesRoutes from '#routes/api/v2/summaryNotes.routes';
 import recentlyViewedRoutes from '#routes/api/v1/recentlyViewed.routes';
@@ -161,6 +162,7 @@ app.use('/api/v1/credit-plans', creditPlanRoutes);
 app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/flashcards', flashcardRoutes);
 app.use('/api/v2/flashcards', apiV2FlashcardRoutes);
+app.use('/api/v2-1/flashcards', apiV21FlashcardRoutes);
 app.use('/api/v2/review', apiV2ReviewRoutes);
 app.use('/api/v2/summary-notes', apiV2SummaryNotesRoutes);
 app.use('/api/v1/recently-viewed', recentlyViewedRoutes);

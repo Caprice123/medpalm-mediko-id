@@ -4,6 +4,12 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@uti
 
 const { setNodes, setNodeRecords, setLoading } = actions
 
+// Returns filtered nodes without touching Redux state — for pickers and dropdowns
+export const fetchFilteredNodes = (params = {}) => async () => {
+  const res = await getWithToken(Endpoints.admin.featureNodes, params)
+  return res.data.data || []
+}
+
 // Returns nodes without touching Redux state — for lazy tree loading
 export const fetchLazyNodes = (parentId = null) => async () => {
   const params = { parentId: parentId === null ? 'null' : parentId }
@@ -11,10 +17,18 @@ export const fetchLazyNodes = (parentId = null) => async () => {
   return res.data.data || []
 }
 
-export const fetchFeatureNodes = (params = {}) => async (dispatch) => {
+export const fetchFeatureNodes = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingNodes: true }))
-    const response = await getWithToken(Endpoints.admin.featureNodes, params)
+    const { filter } = getState().featureNodes
+    const queryParams = {}
+    if (filter.search) queryParams.search = filter.search
+    if (filter.nodeType) queryParams.nodeType = filter.nodeType
+    if (filter.visibility) queryParams.visibility = filter.visibility
+    if (filter.classification) queryParams.classification = filter.classification
+    if (filter.layer) queryParams.layer = filter.layer
+    if (filter.parentId) queryParams.parentId = filter.parentId
+    const response = await getWithToken(Endpoints.admin.featureNodes, queryParams)
     dispatch(setNodes(response.data.data || []))
   } finally {
     dispatch(setLoading({ isFetchingNodes: false }))

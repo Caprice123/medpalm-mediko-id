@@ -3,6 +3,14 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   nodes: [],
   nodeRecords: [],
+  filter: {
+    search: '',
+    nodeType: '',
+    visibility: '',
+    classification: '',
+    layer: '',
+    parentId: '',
+  },
   loading: {
     isFetchingNodes: false,
     isCreating: false,
@@ -21,6 +29,8 @@ const featureNodesSlice = createSlice({
   reducers: {
     setNodes(state, action) { state.nodes = action.payload },
     setNodeRecords(state, action) { state.nodeRecords = action.payload },
+    updateFilter(state, { payload: { key, value } }) { state.filter[key] = value },
+    resetFilter(state) { state.filter = initialState.filter },
     setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
     reset() { return initialState },
   },
