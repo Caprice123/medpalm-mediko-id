@@ -1,6 +1,6 @@
 import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
-import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
+import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWithToken } from '@utils/requestUtils'
 
 const { setCards, setPagination, setLoading } = actions
 
@@ -58,4 +58,26 @@ export const moveNodeCard = (nodeId, cardId, targetNodeId, onSuccess) => async (
   } finally {
     dispatch(setLoading({ isMovingCard: false }))
   }
+}
+
+export const importNodeCards = (nodeId, file, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isImportingCards: true }))
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await postWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/cards/import`, formData)
+    onSuccess?.(res.data.data)
+  } finally {
+    dispatch(setLoading({ isImportingCards: false }))
+  }
+}
+
+export const downloadCardsTemplate = () => async () => {
+  const res = await downloadWithToken(`${Endpoints.admin.featureNodes}/cards/template`)
+  const url = URL.createObjectURL(new Blob([res.data]))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'template-kartu-flashcard.xlsx'
+  a.click()
+  URL.revokeObjectURL(url)
 }

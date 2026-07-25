@@ -1,34 +1,40 @@
-import { useSelector } from 'react-redux'
+import { useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import Pagination from '@components/common/Pagination'
+import Modal from '@components/common/Modal'
 import CardFormModal from '../CardFormModal'
 import MoveCardModal from '../MoveCardModal'
+import { importNodeCards, downloadCardsTemplate } from '@store/nodeCards/adminAction'
 import { useCardsPage } from './hooks/useCardsPage'
 import { Container, Header, HeaderLeft, Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent, PageTitle } from '../../FlashcardV2.styles'
 import { ActionGroup } from './CardsPage.styles'
 
 export default function CardsPage({ node, parentNode, onBack }) {
+  const dispatch = useDispatch()
   const { cards, pagination, loading } = useSelector(state => state.nodeCards)
   const totalPages = pagination.isLastPage ? pagination.page : pagination.page + 1
+  const importRef = useRef(null)
+  const [importResult, setImportResult] = useState(null)
   const {
     modal, setModal,
     moveModal, setMoveModal,
     handleDelete, handlePageChange, handleCardSuccess, handleMoveSuccess,
   } = useCardsPage(node)
 
+  const handleImportFile = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    e.target.value = ''
+    dispatch(importNodeCards(node.id, file, (result) => {
+      setImportResult(result)
+      handleCardSuccess()
+    }))
+  }
+
   const columns = [
-    {
-      header: 'Front',
-      render: (c) => (
-        <div>
-          {c.imageUrl && (
-            <img src={c.imageUrl} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4, display: 'block', marginBottom: 4 }} />
-          )}
-          <span>{c.front}</span>
-        </div>
-      ),
-    },
+    { header: 'Front', render: (c) => c.front },
     { header: 'Back', render: (c) => c.back },
     {
       header: 'Aksi',
@@ -59,7 +65,18 @@ export default function CardsPage({ node, parentNode, onBack }) {
             <Button variant="secondary" onClick={onBack}>← Kembali</Button>
             <PageTitle>Kartu Flashcard</PageTitle>
           </HeaderLeft>
-          <Button variant="primary" onClick={() => setModal({ open: true, card: null })}>+ Tambah Kartu</Button>
+          <ActionGroup>
+            <Button variant="secondary" onClick={() => dispatch(downloadCardsTemplate())}>Unduh Template</Button>
+            <input ref={importRef} type="file" accept=".xlsx,.xls" style={{ display: 'none' }} onChange={handleImportFile} />
+            <Button
+              variant="secondary"
+              disabled={loading.isImportingCards}
+              onClick={() => importRef.current?.click()}
+            >
+              {loading.isImportingCards ? 'Mengimpor...' : 'Import Excel'}
+            </Button>
+            <Button variant="primary" onClick={() => setModal({ open: true, card: null })}>+ Tambah Kartu</Button>
+          </ActionGroup>
         </Header>
       </div>
 
@@ -95,6 +112,25 @@ export default function CardsPage({ node, parentNode, onBack }) {
           onClose={() => setMoveModal({ open: false, card: null })}
           onSuccess={handleMoveSuccess}
         />
+      )}
+
+      {importResult && (
+        <Modal title="Hasil Import" onClose={() => setImportResult(null)}>
+          <p style={{ marginBottom: 8 }}>Berhasil diimpor: <strong>{importResult.imported}</strong> kartu</p>
+          {importResult.errors.length > 0 && (
+            <>
+              <p style={{ marginBottom: 4, color: '#dc2626' }}>Gagal ({importResult.errors.length} baris):</p>
+              <ul style={{ paddingLeft: 16, margin: 0 }}>
+                {importResult.errors.map((e, i) => (
+                  <li key={i} style={{ fontSize: 13, color: '#dc2626' }}>Baris {e.row}: {e.message}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          <div style={{ marginTop: 16, textAlign: 'right' }}>
+            <Button onClick={() => setImportResult(null)}>Tutup</Button>
+          </div>
+        </Modal>
       )}
     </Container>
   )

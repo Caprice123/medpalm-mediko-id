@@ -13,6 +13,7 @@ const initialState = {
     isUpdatingCard: false,
     isDeletingCard: false,
     isMovingCard: false,
+    isImportingCards: false,
   },
 }
 

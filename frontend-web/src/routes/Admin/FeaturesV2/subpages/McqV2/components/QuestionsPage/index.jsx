@@ -39,14 +39,7 @@ export default function QuestionsPage({ node, parentNode, onBack }) {
   const columns = [
     {
       header: 'Pertanyaan',
-      render: (q) => (
-        <div>
-          {q.imageUrl && (
-            <img src={q.imageUrl} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4, display: 'block', marginBottom: 4 }} />
-          )}
-          <span style={{ fontWeight: 500 }}>{q.question}</span>
-        </div>
-      ),
+      render: (q) => <span style={{ fontWeight: 500 }}>{q.question}</span>,
     },
     {
       header: 'Jawaban Benar',
