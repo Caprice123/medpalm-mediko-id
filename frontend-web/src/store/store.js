@@ -35,6 +35,7 @@ import nodeQuestions from "./nodeQuestions/reducer";
 import unlinkedCards from "./unlinkedCards/reducer";
 import unlinkedQuestions from "./unlinkedQuestions/reducer";
 import flashcardNodes from "./flashcardNodes/reducer";
+import mcqNodes from "./mcqNodes/reducer";
 import review from "./review/reducer";
 
 export const rootReducer = combineReducers({
@@ -74,6 +75,7 @@ export const rootReducer = combineReducers({
     unlinkedCards,
     unlinkedQuestions,
     flashcardNodes,
+    mcqNodes,
 })
 
 export const store = configureStore({

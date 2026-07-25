@@ -55,6 +55,7 @@ export default {
         reviewSessions: "/api/v2/review/sessions",
         reviewSessionByUniqueId: (uid) => `/api/v2/review/sessions/${uid}`,
         featureNodes: "/api/v1/feature-nodes",
+        mcqNodes: "/api/v2/mcq",
         exercises: "/api/v1/exercises",
         diagnostic: "/api/v1/diagnostic",
         anatomy: "/api/v1/anatomy",

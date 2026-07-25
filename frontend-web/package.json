@@ -69,6 +69,7 @@
     "react-select": "^5.10.2",
     "react-server-dom-parcel": "^19.2.3",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.10.0",
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
