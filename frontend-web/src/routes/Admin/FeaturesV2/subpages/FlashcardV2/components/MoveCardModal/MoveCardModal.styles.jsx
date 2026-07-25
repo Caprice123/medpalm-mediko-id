@@ -28,8 +28,7 @@ export const NavSep = styled.span`color: #d1d5db;`
 export const FolderList = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 280px;
-  max-height: 420px;
+  height: 360px;
   overflow-y: auto;
 `
 

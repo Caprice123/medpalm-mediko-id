@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFeatureNodes, updateFilter } from '@store/featureNodes'
 import Button from '@components/common/Button'
@@ -7,6 +8,7 @@ import Dropdown from '@components/common/Dropdown'
 import FlashcardSettingsModal from '@routes/Admin/Features/subpages/Flashcard/components/FlashcardSettingsModal'
 import NodeFormModal from './components/NodeFormModal'
 import NodeDetailPage from './components/NodeDetailPage'
+import UnlinkedCardsPage from './components/UnlinkedCardsPage'
 import { useFlashcardAdmin } from './hooks/useFlashcardAdmin'
 import { Container, Header, HeaderLeft, Title, FilterRow, ClassificationBadge } from './FlashcardV2.styles'
 
@@ -24,6 +26,7 @@ const CLASSIFICATION_LABELS = {
 function FlashcardV2({ onBack }) {
   const dispatch = useDispatch()
   const { nodes, filter, loading } = useSelector(state => state.featureNodes)
+  const [view, setView] = useState('topics') // 'topics' | 'unlinked'
   const {
     selectedNode, setSelectedNode,
     modal, setModal,
@@ -62,6 +65,10 @@ function FlashcardV2({ onBack }) {
     return <NodeDetailPage parentNode={selectedNode} onBack={handleBack} />
   }
 
+  if (view === 'unlinked') {
+    return <UnlinkedCardsPage onBack={() => setView('topics')} />
+  }
+
   return (
     <Container>
       <Header>
@@ -70,6 +77,7 @@ function FlashcardV2({ onBack }) {
           <Title>Flashcard V2 — Topik</Title>
         </HeaderLeft>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Button variant="secondary" onClick={() => setView('unlinked')}>Kartu Tidak Terhubung</Button>
           <Button variant="secondary" onClick={() => setSettingsOpen(true)}>Pengaturan</Button>
           <Button variant="primary" onClick={() => setModal({ open: true, node: null })}>+ Tambah Topik</Button>
         </div>

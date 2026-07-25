@@ -31,6 +31,7 @@ import challenge from "./challenge";
 import profile from "./profile/reducer"
 import featureNodes from "./featureNodes/reducer";
 import nodeCards from "./nodeCards/reducer";
+import unlinkedCards from "./unlinkedCards/reducer";
 import flashcardNodes from "./flashcardNodes/reducer";
 import review from "./review/reducer";
 
@@ -67,6 +68,7 @@ export const rootReducer = combineReducers({
     profile,
     featureNodes,
     nodeCards,
+    unlinkedCards,
     flashcardNodes,
 })
 

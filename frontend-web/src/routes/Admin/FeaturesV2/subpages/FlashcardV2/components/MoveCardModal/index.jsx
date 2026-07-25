@@ -6,7 +6,7 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { Nav, NavLink, NavCurrent, NavSep, FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState } from './MoveCardModal.styles'
 
-export default function MoveCardModal({ card, currentNode, onClose, onSuccess }) {
+export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.nodeCards)
 
@@ -34,7 +34,7 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess })
       setCurrentParent(node)
       setSelectedNode(null)
       loadNodes('2', node.id)
-    } else if (node.id !== currentNode.id) {
+    } else if (!currentNode || node.id !== currentNode.id) {
       setSelectedNode(prev => prev?.id === node.id ? null : node)
     }
   }
@@ -47,14 +47,20 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess })
 
   const handleConfirm = () => {
     if (!selectedNode) return
-    dispatch(moveNodeCard(currentNode.id, card.id, selectedNode.id, onSuccess))
+    if (onMove) {
+      onMove(selectedNode.id, onSuccess)
+    } else {
+      dispatch(moveNodeCard(currentNode.id, card.id, selectedNode.id, onSuccess))
+    }
   }
+
+  const isMoving = isSavingOverride ?? loading.isMovingCard
 
   return (
     <Modal
       isOpen={true}
       onClose={onClose}
-      title="Pindah Kartu"
+      title={title || 'Pindah Kartu'}
       size="medium"
       footer={
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -62,9 +68,9 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess })
           <Button
             variant="primary"
             onClick={handleConfirm}
-            disabled={!selectedNode || loading.isMovingCard}
+            disabled={!selectedNode || isMoving}
           >
-            {loading.isMovingCard ? 'Memindahkan...' : 'Pindah ke Sini'}
+            {isMoving ? 'Memproses...' : 'Pindah ke Sini'}
           </Button>
         </div>
       }
@@ -90,7 +96,7 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess })
           ) : (
             nodes.map(node => {
               const isFolder = node.layer === 1
-              const isDisabled = node.id === currentNode.id
+              const isDisabled = currentNode && node.id === currentNode.id
               const isSelected = selectedNode?.id === node.id
 
               return (

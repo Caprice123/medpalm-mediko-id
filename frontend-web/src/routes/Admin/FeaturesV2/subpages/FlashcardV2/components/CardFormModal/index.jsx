@@ -7,7 +7,7 @@ import Button from '@components/common/Button'
 import Textarea from '@components/common/Textarea'
 import FileUpload from '@components/common/FileUpload'
 
-function CardFormModal({ nodeId, card, onClose, onSuccess }) {
+function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverride }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.nodeCards)
   const { loading: commonLoading } = useSelector(state => state.common)
@@ -48,14 +48,16 @@ function CardFormModal({ nodeId, card, onClose, onSuccess }) {
       return
     }
     const payload = { front: form.front, back: form.back, blobId: form.blobId }
-    if (isEdit) {
+    if (onSave) {
+      onSave(payload, onSuccess)
+    } else if (isEdit) {
       dispatch(updateNodeCard(nodeId, card.id, payload, onSuccess))
     } else {
       dispatch(addNodeCard(nodeId, payload, onSuccess))
     }
   }
 
-  const isSaving = isEdit ? loading.isUpdatingCard : loading.isAddingCard
+  const isSaving = isSavingOverride ?? (isEdit ? loading.isUpdatingCard : loading.isAddingCard)
   const isUploading = commonLoading?.isUploading
 
   return (
@@ -63,7 +65,7 @@ function CardFormModal({ nodeId, card, onClose, onSuccess }) {
       isOpen
       onClose={onClose}
       title={isEdit ? 'Edit Kartu' : 'Tambah Kartu Baru'}
-      size="small"
+      size="medium"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Batal</Button>

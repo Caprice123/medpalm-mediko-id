@@ -16,7 +16,6 @@ import EventAdmin from './Features/subpages/Event'
 import BannerAdmin from './Features/subpages/Banner'
 import Layanan from './Layanan'
 import FeaturesV2 from './FeaturesV2'
-import NodeStructure from './NodeStructure'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -151,7 +150,6 @@ const getAvailableTabs = (user) => {
     { key: 'users', label: 'Kelola User' },
     { key: 'globalSettings', label: 'Pengaturan Global' },
     { key: 'featuresV2', label: 'Fitur V2' },
-    { key: 'nodeStructure', label: 'Struktur Folder' },
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.key))
@@ -230,8 +228,6 @@ function AdminPanel() {
           {activeTab === 'globalSettings' && <GlobalSettings />}
 
           {activeTab === 'featuresV2' && <FeaturesV2 />}
-
-          {activeTab === 'nodeStructure' && <NodeStructure />}
         </ContentArea>
       </MainContent>
     </AdminContainer>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Wrap, SectionTitle, Description, Row, Col, FieldLabel,
   PresetsRow, PresetBtn, CountInput, StartButton,
@@ -11,11 +12,15 @@ const PRESETS = [5, 10, 15, 20]
 
 function SubtopicDropdown({ options, selected, onChange, isLoading }) {
   const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+  const [panelStyle, setPanelStyle] = useState({})
+  const triggerRef = useRef(null)
+  const panelRef = useRef(null)
 
   useEffect(() => {
     const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+      const inTrigger = triggerRef.current?.contains(e.target)
+      const inPanel = panelRef.current?.contains(e.target)
+      if (!inTrigger && !inPanel) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -25,45 +30,59 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
     onChange(selected.includes(value) ? selected.filter(v => v !== value) : [...selected, value])
   }
 
+  const handleToggleOpen = () => {
+    if (!open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      const base = { position: 'fixed', left: rect.left, width: rect.width, zIndex: 9999 }
+      if (window.innerHeight - rect.bottom < 300) {
+        setPanelStyle({ ...base, top: 'auto', bottom: window.innerHeight - rect.top + 4 })
+      } else {
+        setPanelStyle({ ...base, top: rect.bottom + 4 })
+      }
+    }
+    setOpen(o => !o)
+  }
+
   const triggerLabel = selected.length === 0
     ? 'Semua subtopik'
     : `${selected.length} subtopik dipilih`
 
+  const panel = open && !isLoading && (
+    <DropdownPanel ref={panelRef} style={panelStyle}>
+      <DropdownHeader>
+        <DropdownCount>{selected.length} / {options.length} dipilih</DropdownCount>
+        <DropdownActions>
+          <DropdownAction type="button" onClick={() => onChange(options.map(o => o.value))}>
+            Pilih semua
+          </DropdownAction>
+          <DropdownDivider>·</DropdownDivider>
+          <DropdownAction type="button" onClick={() => onChange([])}>
+            Kosongkan
+          </DropdownAction>
+        </DropdownActions>
+      </DropdownHeader>
+      <DropdownList>
+        {options.map(opt => {
+          const checked = selected.includes(opt.value)
+          return (
+            <DropdownItem key={opt.value} onClick={() => toggle(opt.value)}>
+              <CheckBox $checked={checked}>{checked && '✓'}</CheckBox>
+              <ItemName title={opt.label}>{opt.label}</ItemName>
+              <ItemCount>{opt.cardCount}</ItemCount>
+            </DropdownItem>
+          )
+        })}
+      </DropdownList>
+    </DropdownPanel>
+  )
+
   return (
-    <DropdownWrap ref={ref}>
-      <DropdownTrigger $open={open} onClick={() => setOpen(o => !o)} type="button">
+    <DropdownWrap ref={triggerRef}>
+      <DropdownTrigger $open={open} onClick={handleToggleOpen} type="button">
         <span>{isLoading ? 'Memuat...' : triggerLabel}</span>
         <TriggerChevron $open={open}>›</TriggerChevron>
       </DropdownTrigger>
-
-      {open && !isLoading && (
-        <DropdownPanel>
-          <DropdownHeader>
-            <DropdownCount>{selected.length} / {options.length} dipilih</DropdownCount>
-            <DropdownActions>
-              <DropdownAction type="button" onClick={() => onChange(options.map(o => o.value))}>
-                Pilih semua
-              </DropdownAction>
-              <DropdownDivider>·</DropdownDivider>
-              <DropdownAction type="button" onClick={() => onChange([])}>
-                Kosongkan
-              </DropdownAction>
-            </DropdownActions>
-          </DropdownHeader>
-          <DropdownList>
-            {options.map(opt => {
-              const checked = selected.includes(opt.value)
-              return (
-                <DropdownItem key={opt.value} onClick={() => toggle(opt.value)}>
-                  <CheckBox $checked={checked}>{checked && '✓'}</CheckBox>
-                  <ItemName title={opt.label}>{opt.label}</ItemName>
-                  <ItemCount>{opt.cardCount}</ItemCount>
-                </DropdownItem>
-              )
-            })}
-          </DropdownList>
-        </DropdownPanel>
-      )}
+      {createPortal(panel, document.body)}
     </DropdownWrap>
   )
 }
