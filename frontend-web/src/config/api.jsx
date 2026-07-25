@@ -87,7 +87,6 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                             isRefreshing = false;
                             refreshPromise = null;
                             handleApiError(error, dispatch)
-                            navigate(SIGN_IN_ROUTE);
                             throw error;
                         });
                 }

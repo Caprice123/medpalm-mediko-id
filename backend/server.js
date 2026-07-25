@@ -62,6 +62,7 @@ import adminContentRelationRoutes from '#routes/admin/v1/contentRelation.routes'
 import adminV2FlashcardRoutes from '#routes/admin/v2/flashcard.routes';
 import adminV2FlashcardCardsRoutes from '#routes/admin/v2/flashcardCards.routes';
 import adminV2SummaryNotesRoutes from '#routes/admin/v2/summaryNotes.routes';
+import adminV2McqQuestionsRoutes from '#routes/admin/v2/mcqQuestions.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
 import apiV21FlashcardRoutes from '#routes/api/v2-1/flashcard.routes';
 import apiV2ReviewRoutes from '#routes/api/v2/review.routes';
@@ -227,6 +228,7 @@ app.use('/admin/v1/content-relations', adminContentRelationRoutes);
 app.use('/admin/v2/flashcards', adminV2FlashcardRoutes);
 app.use('/admin/v2/flashcard-cards', adminV2FlashcardCardsRoutes);
 app.use('/admin/v2/summary-notes', adminV2SummaryNotesRoutes);
+app.use('/admin/v2/mcq-questions', adminV2McqQuestionsRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

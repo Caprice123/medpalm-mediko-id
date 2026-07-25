@@ -39,6 +39,7 @@ export default {
         autoLinkFlashcardDecks: "/admin/v1/feature-nodes/auto-link/flashcard-decks",
         flashcardsV2: "/admin/v2/flashcards",
         flashcardCardsUnlinked: "/admin/v2/flashcard-cards/unlinked",
+        mcqQuestionsUnlinked: "/admin/v2/mcq-questions/unlinked",
         summaryNotesV2Admin: "/admin/v2/summary-notes",
         contentRelations: "/admin/v1/content-relations",
     },

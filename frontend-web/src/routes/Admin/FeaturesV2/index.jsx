@@ -2,6 +2,7 @@ import { useState } from 'react'
 import FeaturesList from '../Features/components/FeaturesList'
 import FlashcardV2 from './subpages/FlashcardV2'
 import SummaryNotesV2 from './subpages/SummaryNotesV2'
+import McqV2 from './subpages/McqV2'
 import {
   Container,
   LoadingState,
@@ -27,7 +28,7 @@ const V2_FEATURES = [
     name: 'MCQ V2',
     icon: '📝',
     description: 'Soal pilihan ganda dengan sistem topik node dan statistik per-topik',
-    isActive: false,
+    isActive: true,
   },
 ]
 
@@ -42,6 +43,8 @@ function FeaturesV2() {
         return <FlashcardV2 onBack={handleBackToList} />
       case 'summary_notes_v2':
         return <SummaryNotesV2 onBack={handleBackToList} />
+      case 'mcq_v2':
+        return <McqV2 onBack={handleBackToList} />
       default:
         return null
     }
