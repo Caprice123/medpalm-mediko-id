@@ -10,9 +10,13 @@ export class DeleteNodeCardService extends BaseService {
     const card = await prisma.flashcard_cards.findUnique({ where: { id: parseInt(cardId) } })
     if (!card) throw new ValidationError('Kartu tidak ditemukan')
 
-    // Resolve topic id (parent of the card's subtopic) before deleting
-    const topicId = card.node_id
-      ? (await prisma.feature_nodes.findUnique({ where: { id: card.node_id }, select: { parent_id: true } }))?.parent_id ?? null
+    const fnRecord = await prisma.feature_node_records.findFirst({
+      where: { record_type: RECORD_TYPE, record_id: parseInt(cardId) },
+    })
+    const cardNodeId = fnRecord?.node_id ?? null
+
+    const topicId = cardNodeId
+      ? (await prisma.feature_nodes.findUnique({ where: { id: cardNodeId }, select: { parent_id: true } }))?.parent_id ?? null
       : null
 
     await attachmentService.detachAll({ recordType: RECORD_TYPE, recordId: card.id })
@@ -20,10 +24,14 @@ export class DeleteNodeCardService extends BaseService {
     await prisma.$transaction(async (tx) => {
       await tx.flashcard_cards.delete({ where: { id: parseInt(cardId) } })
 
-      if (card.node_id) {
+      if (fnRecord) {
+        await tx.feature_node_records.delete({ where: { id: fnRecord.id } })
+      }
+
+      if (cardNodeId) {
         await tx.node_statistics.upsert({
-          where: { node_id_record_type: { node_id: card.node_id, record_type: RECORD_TYPE } },
-          create: { node_id: card.node_id, record_type: RECORD_TYPE, total_count: 0 },
+          where: { node_id_record_type: { node_id: cardNodeId, record_type: RECORD_TYPE } },
+          create: { node_id: cardNodeId, record_type: RECORD_TYPE, total_count: 0 },
           update: { total_count: { decrement: 1 } },
         })
       }

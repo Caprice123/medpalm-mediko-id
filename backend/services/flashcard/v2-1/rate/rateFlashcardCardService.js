@@ -48,12 +48,12 @@ export class RateFlashcardCardService extends BaseService {
       },
     })
 
-    const card = await prisma.flashcard_cards.findUnique({
-      where: { id: recordId },
+    const fnRecord = await prisma.feature_node_records.findFirst({
+      where: { record_type: RECORD_TYPE, record_id: recordId },
       select: { node_id: true },
     })
-    const subtopic = card?.node_id
-      ? await prisma.feature_nodes.findUnique({ where: { id: card.node_id }, select: { parent_id: true } })
+    const subtopic = fnRecord?.node_id
+      ? await prisma.feature_nodes.findUnique({ where: { id: fnRecord.node_id }, select: { parent_id: true } })
       : null
     const topicNodeId = subtopic?.parent_id
 

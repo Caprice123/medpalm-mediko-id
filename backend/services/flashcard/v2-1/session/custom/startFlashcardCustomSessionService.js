@@ -9,14 +9,15 @@ export class StartFlashcardCustomSessionService extends BaseService {
 
     const parsedIds = nodeIds.map(id => parseInt(id))
 
-    const allRefs = await prisma.flashcard_cards.findMany({
-      where: { node_id: { in: parsedIds }, is_deleted: false },
-      select: { id: true },
+    const allRefs = await prisma.feature_node_records.findMany({
+      where: { node_id: { in: parsedIds }, record_type: 'flashcard_card' },
+      select: { record_id: true, node_id: true },
     })
 
     if (allRefs.length === 0) return []
 
-    const cardIds = allRefs.map(c => c.id)
+    const cardToNodeMap = new Map(allRefs.map(r => [r.record_id, r.node_id]))
+    const cardIds = allRefs.map(r => r.record_id)
 
     const seenStates = await prisma.user_review_states.findMany({
       where: { user_id: userId, record_type: 'flashcard_card', record_id: { in: cardIds } },
@@ -35,21 +36,16 @@ export class StartFlashcardCustomSessionService extends BaseService {
 
     const newIdSet = new Set(newIds)
 
-    const cards = await prisma.flashcard_cards.findMany({
-      where: { id: { in: selected } },
-      include: {
-        feature_nodes: {
-          select: {
-            id: true,
-            name: true,
-            parent: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-      },
-    })
+    const [cards, nodes] = await Promise.all([
+      prisma.flashcard_cards.findMany({ where: { id: { in: selected } } }),
+      prisma.feature_nodes.findMany({
+        where: { id: { in: parsedIds } },
+        select: { id: true, name: true, parent: { select: { id: true, name: true } } },
+      }),
+    ])
+
     const cardMap = new Map(cards.map(c => [c.id, c]))
+    const nodeMap = new Map(nodes.map(n => [n.id, n]))
     const orderedCards = selected.map(id => cardMap.get(id)).filter(Boolean)
 
     const attachments = await prisma.attachments.findMany({
@@ -82,14 +78,18 @@ export class StartFlashcardCustomSessionService extends BaseService {
     let idx = 0
     orderedCards.forEach(card => { if (cardBlobKeyMap.has(card.id)) urlMap.set(card.id, presignedUrls[idx++]) })
 
-    return orderedCards.map(card => ({
-      id: card.id,
-      front: card.front,
-      back: card.back,
-      imageUrl: urlMap.get(card.id) || null,
-      isNew: newIdSet.has(card.id),
-      subtopic: card.feature_nodes ? { id: card.feature_nodes.id, name: card.feature_nodes.name } : null,
-      topic: card.feature_nodes?.parent ? { id: card.feature_nodes.parent.id, name: card.feature_nodes.parent.name } : null,
-    }))
+    return orderedCards.map(card => {
+      const nId = cardToNodeMap.get(card.id)
+      const node = nId ? nodeMap.get(nId) : null
+      return {
+        id: card.id,
+        front: card.front,
+        back: card.back,
+        imageUrl: urlMap.get(card.id) || null,
+        isNew: newIdSet.has(card.id),
+        subtopic: node ? { id: node.id, name: node.name } : null,
+        topic: node?.parent ? { id: node.parent.id, name: node.parent.name } : null,
+      }
+    })
   }
 }

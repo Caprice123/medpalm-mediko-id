@@ -263,7 +263,6 @@ model flashcard_decks {
 model flashcard_cards {
   id         Int            @id @default(autoincrement())
   deck_id    Int?
-  node_id    Int?
   front      String
   back       String
   image_url  String?
@@ -273,10 +272,8 @@ model flashcard_cards {
   updated_at DateTime       @default(now())
 
   flashcard_decks flashcard_decks? @relation(fields: [deck_id], references: [id])
-  feature_nodes   feature_nodes?   @relation(fields: [node_id], references: [id], onDelete: Cascade)
 
   @@index([deck_id])
-  @@index([node_id])
   @@index([is_deleted])
 }
 
@@ -1334,7 +1331,7 @@ model mcq_topics {
 
 model mcq_questions {
   id             Int      @id @default(autoincrement())
-  topic_id       Int
+  topic_id       Int?
   question       String
   image_url      String?
   image_key      String?
@@ -1346,7 +1343,7 @@ model mcq_questions {
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
 
-  mcq_topic         mcq_topics          @relation(fields: [topic_id], references: [id])
+  mcq_topic         mcq_topics?         @relation(fields: [topic_id], references: [id])
   mcq_answers       mcq_answers[]
   user_mcq_progress user_mcq_progress[]
 

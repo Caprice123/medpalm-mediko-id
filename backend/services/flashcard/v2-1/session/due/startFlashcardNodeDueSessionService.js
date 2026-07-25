@@ -10,14 +10,14 @@ export class StartFlashcardNodeDueSessionService extends BaseService {
 
     const now = new Date()
 
-    const allCardRefs = await prisma.flashcard_cards.findMany({
-      where: { node_id: parseInt(nodeId) },
-      select: { id: true },
+    const allCardRefs = await prisma.feature_node_records.findMany({
+      where: { node_id: parseInt(nodeId), record_type: 'flashcard_card' },
+      select: { record_id: true },
     })
 
     if (allCardRefs.length === 0) return []
 
-    const cardIds = allCardRefs.map(c => c.id)
+    const cardIds = allCardRefs.map(r => r.record_id)
 
     const reviewStates = await prisma.user_review_states.findMany({
       where: { user_id: userId, record_type: 'flashcard_card', record_id: { in: cardIds } },

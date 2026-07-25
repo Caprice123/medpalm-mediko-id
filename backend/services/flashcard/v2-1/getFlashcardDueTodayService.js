@@ -18,9 +18,10 @@ export class GetFlashcardDueTodayService extends BaseService {
           parent.id     AS topic_id,
           parent.name   AS topic_name
         FROM user_review_states urs
-        JOIN flashcard_cards fc   ON fc.id     = urs.record_id
-        JOIN feature_nodes fn     ON fn.id     = fc.node_id
-        JOIN feature_nodes parent ON parent.id = fn.parent_id
+        JOIN flashcard_cards fc      ON fc.id          = urs.record_id
+        JOIN feature_node_records fnr ON fnr.record_type = 'flashcard_card' AND fnr.record_id = fc.id
+        JOIN feature_nodes fn         ON fn.id           = fnr.node_id
+        JOIN feature_nodes parent     ON parent.id       = fn.parent_id
         WHERE urs.user_id     = ${userId}
           AND urs.record_type = 'flashcard_card'
           AND urs.due_date   <= ${now}

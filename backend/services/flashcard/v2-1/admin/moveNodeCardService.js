@@ -12,9 +12,11 @@ export class MoveNodeCardService extends BaseService {
     const targetNode = await prisma.feature_nodes.findUnique({ where: { id: parseInt(targetNodeId) } })
     if (!targetNode) throw new ValidationError('Sub-topik tujuan tidak ditemukan')
 
-    const sourceNodeId = card.node_id
+    const record = await prisma.feature_node_records.findFirst({
+      where: { record_type: RECORD_TYPE, record_id: parseInt(cardId) },
+    })
+    const sourceNodeId = record?.node_id ?? null
 
-    // Resolve topic-level (parent) node ids for both source and target subtopics
     const [sourceSubtopic, targetSubtopic] = await Promise.all([
       sourceNodeId
         ? prisma.feature_nodes.findUnique({ where: { id: sourceNodeId }, select: { parent_id: true } })
@@ -27,11 +29,17 @@ export class MoveNodeCardService extends BaseService {
     const topicChanged = sourceTopicId !== targetTopicId
 
     await prisma.$transaction(async (tx) => {
-      // 1. Move the card
-      await tx.flashcard_cards.update({
-        where: { id: parseInt(cardId) },
-        data: { node_id: parseInt(targetNodeId) },
-      })
+      // 1. Move the record
+      if (record) {
+        await tx.feature_node_records.update({
+          where: { id: record.id },
+          data: { node_id: parseInt(targetNodeId) },
+        })
+      } else {
+        await tx.feature_node_records.create({
+          data: { node_id: parseInt(targetNodeId), record_type: RECORD_TYPE, record_id: parseInt(cardId) },
+        })
+      }
 
       // 2. Update node_statistics subtopic counts
       const statsOps = []
@@ -53,11 +61,9 @@ export class MoveNodeCardService extends BaseService {
       )
       await Promise.all(statsOps)
 
-      // 3. Adjust user_node_progress only when the topic changes
       if (!topicChanged) return
 
       if (sourceTopicId) {
-        // Decrement the rating bucket for every user who reviewed this card
         await tx.$executeRaw`
           UPDATE user_node_progress unp
           SET
@@ -76,7 +82,6 @@ export class MoveNodeCardService extends BaseService {
       }
 
       if (targetTopicId) {
-        // Upsert: create a row for new users, increment for existing ones
         await tx.$executeRaw`
           INSERT INTO user_node_progress (user_id, node_id, feature_type, again_count, hard_count, good_count, easy_count, updated_at)
           SELECT

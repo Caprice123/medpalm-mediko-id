@@ -3,18 +3,21 @@ import { BaseService } from '#services/baseService'
 
 export class DecrementNodeProgressOnDeleteService extends BaseService {
   static async call({ cardId }) {
-    const [card, reviewStates] = await Promise.all([
-      prisma.flashcard_cards.findUnique({ where: { id: cardId }, select: { node_id: true } }),
+    const [fnRecord, reviewStates] = await Promise.all([
+      prisma.feature_node_records.findFirst({
+        where: { record_type: 'flashcard_card', record_id: cardId },
+        select: { node_id: true },
+      }),
       prisma.user_review_states.findMany({
         where: { record_type: 'flashcard_card', record_id: cardId },
         select: { user_id: true, last_rating: true },
       }),
     ])
 
-    if (!card?.node_id || reviewStates.length === 0) return
+    if (!fnRecord?.node_id || reviewStates.length === 0) return
 
     const subtopic = await prisma.feature_nodes.findUnique({
-      where: { id: card.node_id },
+      where: { id: fnRecord.node_id },
       select: { parent_id: true },
     })
     const topicNodeId = subtopic?.parent_id

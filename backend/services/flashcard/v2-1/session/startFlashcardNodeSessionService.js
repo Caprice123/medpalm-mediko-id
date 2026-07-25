@@ -8,14 +8,14 @@ export class StartFlashcardNodeSessionService extends BaseService {
     const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
     if (!node) throw new ValidationError('Sub-topik tidak ditemukan')
 
-    const allRefs = await prisma.flashcard_cards.findMany({
-      where: { node_id: parseInt(nodeId) },
-      select: { id: true },
+    const allRefs = await prisma.feature_node_records.findMany({
+      where: { node_id: parseInt(nodeId), record_type: 'flashcard_card' },
+      select: { record_id: true },
     })
 
     if (allRefs.length === 0) return []
 
-    const cardIds = allRefs.map(c => c.id)
+    const cardIds = allRefs.map(r => r.record_id)
 
     const seenStates = await prisma.user_review_states.findMany({
       where: { user_id: userId, record_type: 'flashcard_card', record_id: { in: cardIds } },

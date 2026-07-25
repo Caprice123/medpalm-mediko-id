@@ -7,20 +7,24 @@ export class GetNodeCardsService extends BaseService {
     const skip = (parseInt(page) - 1) * parseInt(perPage)
     const take = parseInt(perPage) + 1
 
-    const rawCards = await prisma.flashcard_cards.findMany({
-      where: { node_id: parseInt(nodeId) },
+    const records = await prisma.feature_node_records.findMany({
+      where: { node_id: parseInt(nodeId), record_type: 'flashcard_card' },
       orderBy: { id: 'asc' },
       skip,
       take,
     })
 
-    const isLastPage = rawCards.length <= parseInt(perPage)
-    const cards = rawCards.slice(0, parseInt(perPage))
+    const isLastPage = records.length <= parseInt(perPage)
+    const pageRecords = records.slice(0, parseInt(perPage))
     const pagination = { page: parseInt(page), perPage: parseInt(perPage), isLastPage }
 
-    if (cards.length === 0) return { cards, pagination }
+    if (pageRecords.length === 0) return { cards: [], pagination }
 
-    const cardIds = cards.map(c => c.id)
+    const cardIds = pageRecords.map(r => r.record_id)
+    const rawCards = await prisma.flashcard_cards.findMany({ where: { id: { in: cardIds } } })
+    const cardMap = new Map(rawCards.map(c => [c.id, c]))
+    const cards = pageRecords.map(r => cardMap.get(r.record_id)).filter(Boolean)
+
     const attachments = await prisma.attachments.findMany({
       where: { record_type: 'flashcard_card', record_id: { in: cardIds }, name: 'image' },
     })
@@ -54,11 +58,7 @@ export class GetNodeCardsService extends BaseService {
     const enriched = cards.map(card => {
       const att = attachmentMap.get(card.id)
       const blob = att ? blobMap.get(att.blob_id) : null
-      return {
-        ...card,
-        imageUrl: urlMap.get(card.id) || null,
-        imageBlobId: blob?.id ?? null,
-      }
+      return { ...card, imageUrl: urlMap.get(card.id) || null, imageBlobId: blob?.id ?? null }
     })
 
     return { cards: enriched, pagination }

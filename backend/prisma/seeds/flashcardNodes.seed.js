@@ -208,22 +208,32 @@ async function seedFlashcardNodes() {
       })
       console.log(`  ✓ Subtopic: ${subNode.name} (id: ${subNode.id})`)
 
-      const existing = await prisma.flashcard_cards.count({ where: { node_id: subNode.id } })
+      const existing = await prisma.feature_node_records.count({
+        where: { node_id: subNode.id, record_type: 'flashcard_card' },
+      })
       if (existing > 0) {
-        console.log(`    ⊘ Skipped — ${existing} cards already exist`)
+        console.log(`    ⊘ Skipped — ${existing} cards already linked`)
         continue
       }
 
-      await prisma.flashcard_cards.createMany({
-        data: sub.cards.map((c, i) => ({
-          node_id: subNode.id,
-          front: c.front,
-          back: c.back,
-          order: i,
-          is_deleted: false,
-        })),
+      let count = 0
+      for (const [i, c] of sub.cards.entries()) {
+        const card = await prisma.flashcard_cards.create({
+          data: { front: c.front, back: c.back, order: i, is_deleted: false },
+        })
+        await prisma.feature_node_records.create({
+          data: { node_id: subNode.id, record_type: 'flashcard_card', record_id: card.id },
+        })
+        count++
+      }
+
+      await prisma.node_statistics.upsert({
+        where: { node_id_record_type: { node_id: subNode.id, record_type: 'flashcard_card' } },
+        create: { node_id: subNode.id, record_type: 'flashcard_card', total_count: count },
+        update: { total_count: count },
       })
-      console.log(`    ✓ Created ${sub.cards.length} cards`)
+
+      console.log(`    ✓ Created ${count} cards`)
     }
   }
 

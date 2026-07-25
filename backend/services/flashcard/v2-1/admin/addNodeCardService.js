@@ -12,12 +12,16 @@ export class AddNodeCardService extends BaseService {
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
     const card = await prisma.flashcard_cards.create({
-      data: { node_id: parseInt(nodeId), front: front.trim(), back: back.trim() },
+      data: { front: front.trim(), back: back.trim() },
     })
 
     if (blobId) {
       await attachmentService.attach({ blobId, recordType: 'flashcard_card', recordId: card.id, name: 'image' })
     }
+
+    await prisma.feature_node_records.create({
+      data: { node_id: parseInt(nodeId), record_type: 'flashcard_card', record_id: card.id },
+    })
 
     await prisma.node_statistics.upsert({
       where: { node_id_record_type: { node_id: parseInt(nodeId), record_type: 'flashcard_card' } },
