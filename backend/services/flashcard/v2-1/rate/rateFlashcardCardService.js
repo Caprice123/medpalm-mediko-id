@@ -102,6 +102,10 @@ export class RateFlashcardCardService extends BaseService {
       ] : []),
     ]
 
-    await prisma.$transaction([reviewStateOp, nodeProgressOp, ...featureStatsOps])
+    const learnedItemOp = prisma.user_learned_items.create({
+      data: { user_id: userId, item_type: 'flashcard_card', item_id: recordId, is_correct: null },
+    })
+
+    await prisma.$transaction([reviewStateOp, nodeProgressOp, ...featureStatsOps, learnedItemOp])
   }
 }

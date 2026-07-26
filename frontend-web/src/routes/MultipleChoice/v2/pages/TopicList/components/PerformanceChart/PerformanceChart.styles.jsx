@@ -8,6 +8,7 @@ export const EmptyChart = styled.div`
   font-size: 0.875rem;
 `
 
+
 export const Legend = styled.div`
   display: flex;
   align-items: center;

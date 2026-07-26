@@ -24,7 +24,9 @@ const selectStyles = {
     color: state.isSelected ? '#fff' : '#374151',
   }),
   placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '0.875rem' }),
-  singleValue: (base) => ({ ...base, fontSize: '0.875rem', color: '#374151' }),
+  multiValue: (base) => ({ ...base, background: '#e0f2fe', borderRadius: '6px' }),
+  multiValueLabel: (base) => ({ ...base, color: '#0369a1', fontSize: '0.8125rem' }),
+  multiValueRemove: (base) => ({ ...base, color: '#0369a1', ':hover': { background: '#bae6fd', color: '#075985' } }),
   menu: (base) => ({ ...base, borderRadius: '12px', overflow: 'hidden', zIndex: 50 }),
   menuList: (base) => ({ ...base, maxHeight: '200px', overflowY: 'auto' }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -34,15 +36,18 @@ export default function TopicSection({ index, item, topicOptions, subtopicsMap, 
   const subtopics = item.topicId ? (subtopicsMap[item.topicId] || []) : []
   const isLoadingSubs = item.topicId ? loadingTopics.has(item.topicId) : false
 
-  const subtopicOptions = [
-    { value: null, label: 'Semua subtopik' },
-    ...subtopics.map(s => ({ value: s.id, label: s.name, questionCount: s.questionCount })),
-  ]
+  const subtopicOptions = subtopics.map(s => ({ value: s.id, label: s.name, questionCount: s.questionCount }))
+
+  const selectedSubtopics = item.subtopicIds.length > 0
+    ? subtopicOptions.filter(o => item.subtopicIds.includes(o.value))
+    : []
 
   const available = item.topicId
-    ? item.subtopicId === null
+    ? item.subtopicIds.length === 0
       ? subtopics.reduce((s, sub) => s + sub.questionCount, 0)
-      : (subtopics.find(s => s.id === item.subtopicId)?.questionCount || 0)
+      : subtopicOptions
+          .filter(o => item.subtopicIds.includes(o.value))
+          .reduce((s, o) => s + o.questionCount, 0)
     : 0
 
   const [isCustom, setIsCustom] = useState(false)
@@ -68,7 +73,7 @@ export default function TopicSection({ index, item, topicOptions, subtopicsMap, 
           <Select
             options={topicOptions}
             value={topicOptions.find(o => o.value === item.topicId) || null}
-            onChange={opt => onUpdate({ topicId: opt?.value || null, subtopicId: null })}
+            onChange={opt => onUpdate({ topicId: opt?.value || null, subtopicIds: [] })}
             placeholder="Pilih topik..."
             isClearable
             styles={selectStyles}
@@ -80,8 +85,11 @@ export default function TopicSection({ index, item, topicOptions, subtopicsMap, 
           <FieldLabel>Subtopik</FieldLabel>
           <Select
             options={subtopicOptions}
-            value={subtopicOptions.find(o => o.value === item.subtopicId) ?? subtopicOptions[0]}
-            onChange={opt => onUpdate({ subtopicId: opt?.value ?? null })}
+            value={selectedSubtopics}
+            onChange={opts => onUpdate({ subtopicIds: (opts || []).map(o => o.value) })}
+            placeholder="Semua subtopik"
+            isMulti
+            isClearable
             isDisabled={!item.topicId}
             isLoading={isLoadingSubs}
             styles={selectStyles}

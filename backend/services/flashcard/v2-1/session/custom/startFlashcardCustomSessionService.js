@@ -19,11 +19,11 @@ export class StartFlashcardCustomSessionService extends BaseService {
     const cardToNodeMap = new Map(allRefs.map(r => [r.record_id, r.node_id]))
     const cardIds = allRefs.map(r => r.record_id)
 
-    const seenStates = await prisma.user_review_states.findMany({
-      where: { user_id: userId, record_type: 'flashcard_card', record_id: { in: cardIds } },
-      select: { record_id: true },
+    const seenLogs = await prisma.user_learned_items.findMany({
+      where: { user_id: userId, item_type: 'flashcard_card', item_id: { in: cardIds } },
+      select: { item_id: true },
     })
-    const seenIdSet = new Set(seenStates.map(s => s.record_id))
+    const seenIdSet = new Set(seenLogs.map(l => l.item_id))
 
     const newIds  = cardIds.filter(id => !seenIdSet.has(id))
     const seenIds = cardIds.filter(id =>  seenIdSet.has(id))

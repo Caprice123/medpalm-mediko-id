@@ -14,5 +14,6 @@ router.get('/topics/:topicId/subtopics', asyncHandler(mcqV2Controller.getSubtopi
 router.post('/session', asyncHandler(mcqV2Controller.startSession.bind(mcqV2Controller)))
 router.post('/custom-session', asyncHandler(mcqV2Controller.startCustomSession.bind(mcqV2Controller)))
 router.post('/submit', asyncHandler(mcqV2Controller.submitSession.bind(mcqV2Controller)))
+router.post('/answer', asyncHandler(mcqV2Controller.submitAnswer.bind(mcqV2Controller)))
 
 export default router

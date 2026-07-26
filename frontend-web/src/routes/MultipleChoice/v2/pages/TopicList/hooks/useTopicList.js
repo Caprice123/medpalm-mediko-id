@@ -5,8 +5,7 @@ import { fetchMcqTopics, fetchMcqSubtopicsRaw, startMcqCustomSession, actions } 
 export function useTopicList() {
   const dispatch = useDispatch()
   const { topics } = useSelector(s => s.mcqNodes)
-
-  const [openIds, setOpenIds] = useState(new Set())
+const [openId, setOpenId] = useState(null)
   const [subtopicsCache, setSubtopicsCache] = useState({})
   const [loadingIds, setLoadingIds] = useState(new Set())
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,11 +21,7 @@ export function useTopicList() {
   }
 
   const toggle = useCallback(async (topicId) => {
-    setOpenIds(prev => {
-      const next = new Set(prev)
-      next.has(topicId) ? next.delete(topicId) : next.add(topicId)
-      return next
-    })
+    setOpenId(prev => prev === topicId ? null : topicId)
     if (!subtopicsCache[topicId]) {
       setLoadingIds(prev => new Set(prev).add(topicId))
       try {
@@ -38,6 +33,11 @@ export function useTopicList() {
     }
   }, [dispatch, subtopicsCache])
 
+  const loadSubtopics = useCallback(async (topicId) => {
+    const data = await dispatch(fetchMcqSubtopicsRaw(topicId))
+    setSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
+  }, [dispatch])
+
   const handleStart = (nodeIds, count) => {
     dispatch(startMcqCustomSession(nodeIds, count))
   }
@@ -46,24 +46,19 @@ export function useTopicList() {
     ? topics.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : topics
 
-  const attempted = topics.filter(t => t.avgScore != null)
-  const overallAvg = attempted.length > 0
-    ? Math.round(attempted.reduce((sum, t) => sum + t.avgScore, 0) / attempted.length)
-    : null
-
   return {
     topics,
     filteredTopics,
-    openIds,
+    openId,
     subtopicsCache,
     loadingIds,
     searchQuery,
     setSearchQuery,
     customOpen,
     setCustomOpen,
-    overallAvg,
     handleCloseSession,
     toggle,
     handleStart,
+    loadSubtopics,
   }
 }

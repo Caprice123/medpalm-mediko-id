@@ -522,14 +522,27 @@ model user_node_progress {
   hard_count     Int      @default(0)
   good_count     Int      @default(0)
   easy_count     Int      @default(0)
-  total_sessions Int      @default(0)
-  total_score    Int      @default(0)
+  total_sessions  Int      @default(0)
+  total_questions Int      @default(0)
+  total_correct   Int      @default(0)
   updated_at     DateTime @default(now()) @updatedAt
 
   feature_nodes feature_nodes @relation(fields: [node_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, node_id, feature_type])
   @@index([user_id, feature_type])
+}
+
+model user_learned_items {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  item_type  String   // e.g. 'mcq_question', 'flashcard_card'
+  item_id    Int
+  is_correct Boolean? // null for non-scored interactions
+  created_at DateTime @default(now())
+
+  @@index([user_id, item_type, item_id])
+  @@index([user_id])
 }
 
 model feature_node_records {

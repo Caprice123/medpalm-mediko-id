@@ -24,40 +24,34 @@ export class GetMcqTopicsService extends BaseService {
     })
 
     const questionsByTopic = new Map()
-    const subtopicIdsByTopic = new Map()
     for (const s of subtopics) {
       const count = s.node_statistics[0]?.total_count ?? 0
       questionsByTopic.set(s.parent_id, (questionsByTopic.get(s.parent_id) ?? 0) + count)
-      if (!subtopicIdsByTopic.has(s.parent_id)) subtopicIdsByTopic.set(s.parent_id, [])
-      subtopicIdsByTopic.get(s.parent_id).push(s.id)
     }
 
-    const allSubtopicIds = subtopics.map(s => s.id)
     const progressRecords = userId ? await prisma.user_node_progress.findMany({
-      where: { user_id: userId, node_id: { in: allSubtopicIds }, feature_type: 'mcq' },
+      where: { user_id: userId, node_id: { in: topicIds }, feature_type: 'mcq' },
     }) : []
 
-    const progressByNode = new Map(progressRecords.map(p => [p.node_id, p]))
+    const progressByTopic = new Map(progressRecords.map(p => [p.node_id, p]))
 
     return topics.map(t => {
-      const subtopicIds = subtopicIdsByTopic.get(t.id) || []
-      let totalSessions = 0, totalScore = 0, sessionCount = 0
-      for (const sid of subtopicIds) {
-        const p = progressByNode.get(sid)
-        if (p) {
-          totalSessions += p.total_sessions
-          totalScore += p.total_score
-          sessionCount += p.total_sessions
-        }
-      }
-      const avgScore = sessionCount > 0 ? Math.round(totalScore / sessionCount) : null
+      const prog = progressByTopic.get(t.id)
+      const avgScore = prog && prog.total_questions > 0
+        ? Math.round((prog.total_correct / prog.total_questions) * 100)
+        : null
       return {
         id: t.id,
         name: t.name,
         questionCount: questionsByTopic.get(t.id) ?? 0,
-        totalSessions,
+        totalSessions: prog?.total_sessions ?? 0,
         avgScore,
       }
+    }).sort((a, b) => {
+      if (a.avgScore == null && b.avgScore == null) return 0
+      if (a.avgScore == null) return 1
+      if (b.avgScore == null) return -1
+      return b.avgScore - a.avgScore
     })
   }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { submitMcqSession } from '@store/mcqNodes'
+import { submitMcqSession, submitMcqAnswer } from '@store/mcqNodes'
 import {
   Wrapper, SessionContainer, SessionHeader, SessionTitle, CloseBtn,
   StatsRow, QuestionCounter, AnsweredCount,
@@ -39,6 +39,7 @@ export default function McqSession({ onClose }) {
       selectedIndex: optIdx,
       isCorrect,
     }])
+    dispatch(submitMcqAnswer(question.id, isCorrect))
   }
 
   const handleNext = () => {
@@ -61,7 +62,7 @@ export default function McqSession({ onClose }) {
     }
     const nodeResults = [...nodeMap.values()]
       .filter(r => r.nodeId)
-      .map(r => ({ nodeId: r.nodeId, score: Math.round((r.correct / r.total) * 100) }))
+      .map(r => ({ nodeId: r.nodeId, correct: r.correct, total: r.total }))
     if (nodeResults.length > 0) {
       dispatch(submitMcqSession(nodeResults, () => onClose(true)))
     } else {

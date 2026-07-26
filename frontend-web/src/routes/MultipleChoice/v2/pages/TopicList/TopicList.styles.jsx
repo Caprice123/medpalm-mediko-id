@@ -54,13 +54,22 @@ export const PanelCard = styled.div`
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   margin-bottom: 1.25rem;
   animation: ${fadeSlideUp} 0.4s ease both;
+  overflow: hidden;
 `
 
 export const PanelHeader = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+`
+
+export const PanelHeaderLeft = styled.div`
+  display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-bottom: 1rem;
+  min-width: 0;
 `
 
 export const PanelTitleRow = styled.div`
@@ -69,14 +78,19 @@ export const PanelTitleRow = styled.div`
   gap: 0.5rem;
 `
 
+export const PanelFilterWrap = styled.div`
+  width: 220px;
+  flex-shrink: 0;
+`
+
 export const PanelTitle = styled.span`
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 800;
   color: #111827;
 `
 
 export const PanelSubtitle = styled.span`
-  font-size: 0.8rem;
+  font-size: 0.9375rem;
   color: #6b7280;
 `
 
@@ -87,7 +101,7 @@ export const AverageScore = styled.div`
 `
 
 export const AverageLabel = styled.span`
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;

@@ -39,6 +39,14 @@ export const startMcqCustomSession = (nodeIds, count) => async (dispatch) => {
   }
 }
 
+export const submitMcqAnswer = (questionId, isCorrect) => async () => {
+  try {
+    await postWithToken(`${Endpoints.api.mcqNodes}/answer`, { questionId, isCorrect })
+  } catch {
+    // fire-and-forget — answer log failure should not block the user
+  }
+}
+
 export const submitMcqSession = (nodeResults, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ isSubmittingSession: true }))

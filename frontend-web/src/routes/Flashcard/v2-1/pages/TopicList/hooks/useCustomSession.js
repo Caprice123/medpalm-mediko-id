@@ -6,7 +6,7 @@ export function useCustomSession(onClose) {
   const dispatch = useDispatch()
   const { loading } = useSelector(s => s.flashcardNodes)
 
-  const [departmentList, setDepartmentList] = useState([{ id: 1, topicId: null, subtopicId: null, count: 5 }])
+  const [departmentList, setDepartmentList] = useState([{ id: 1, topicId: null, subtopicIds: [], count: 5 }])
   const [subtopicsMap, setSubtopicsMap] = useState({})
   const subtopicsMapRef = useRef({})
   const loadingRef = useRef(new Set())
@@ -32,7 +32,7 @@ export function useCustomSession(onClose) {
   }
 
   const addDepartment = () =>
-    setDepartmentList(prev => [...prev, { id: Date.now(), topicId: null, subtopicId: null, count: 5 }])
+    setDepartmentList(prev => [...prev, { id: Date.now(), topicId: null, subtopicIds: [], count: 5 }])
 
   const removeDepartment = (id) =>
     setDepartmentList(prev => prev.filter(d => d.id !== id))
@@ -44,8 +44,8 @@ export function useCustomSession(onClose) {
     for (const d of departmentList) {
       if (!d.topicId) continue
       const subs = subtopicsMapRef.current[d.topicId] || []
-      if (d.subtopicId === null) nodeIds.push(...subs.map(s => s.id))
-      else nodeIds.push(d.subtopicId)
+      if (d.subtopicIds.length === 0) nodeIds.push(...subs.map(s => s.id))
+      else nodeIds.push(...d.subtopicIds)
     }
     if (nodeIds.length === 0) return
     dispatch(startFlashcardCustomSession(nodeIds, totalCount, onClose))

@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
+import Dropdown from '@components/common/Dropdown'
 import { useTopicList } from './hooks/useTopicList'
 import PerformanceChart from './components/PerformanceChart'
 import QuickStartInline from './components/QuickStartInline'
@@ -7,34 +9,47 @@ import CustomSessionPanel from './components/CustomSessionPanel'
 import McqSession from './components/Session'
 import {
   Container, PageHeader, HeaderLeft, Title, Subtitle, EmptyWrap,
-  PanelCard, PanelHeader, PanelTitleRow, PanelTitle, PanelSubtitle, AverageScore, AverageLabel, AverageValue,
+  PanelCard, PanelHeader, PanelHeaderLeft, PanelTitleRow, PanelTitle, PanelSubtitle, PanelFilterWrap,
   TopikSection, TopikSectionHeader, TopikSectionTitle,
   TopikSearchWrap, TopikSearchIcon, TopikSearchInput,
   TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats,
-  TopikStatChip, TopikStatNum, TopikPct, TopikStartBtn, TopikChevron,
+  TopikStatChip, TopikStatNum, TopikStartBtn, TopikChevron,
   SkeletonBlock, SkeletonCircle, SkeletonTopikRow,
 } from './TopicList.styles'
-import { formatJakartaDateTimeFull } from '@utils/dateUtils'
 
 export default function BankSoalPage() {
   const { sessionQuestions, loading } = useSelector(s => s.mcqNodes)
   const mcqFeature = useSelector(s => s.feature.features.find(f => f.sessionType === 'mcq'))
   const {
     topics, filteredTopics,
-    openIds, subtopicsCache, loadingIds,
+    openId, subtopicsCache, loadingIds,
     searchQuery, setSearchQuery,
     customOpen, setCustomOpen,
-    overallAvg,
     handleCloseSession,
-    toggle, handleStart,
+    toggle, handleStart, loadSubtopics,
   } = useTopicList()
+
+  const [chartTopicId, setChartTopicId] = useState(null)
+
+  const attempted = topics.filter(t => t.avgScore != null)
+  const chartTopicOptions = [
+    { value: 'all', label: 'Semua Topik' },
+    ...attempted.map(t => ({ value: t.id, label: t.name })),
+  ]
+  const chartSelectedOption = chartTopicId
+    ? (chartTopicOptions.find(o => o.value === chartTopicId) ?? chartTopicOptions[0])
+    : chartTopicOptions[0]
+
+  const handleChartTopicChange = (opt) => {
+    setChartTopicId(!opt || opt.value === 'all' ? null : opt.value)
+  }
 
   return (
     <Container>
       <PageHeader>
         <HeaderLeft>
           <Title>{mcqFeature?.name || 'Bank Soal'}</Title>
-          <Subtitle>{formatJakartaDateTimeFull(new Date().toISOString())}</Subtitle>
+          {mcqFeature?.description && <Subtitle>{mcqFeature.description}</Subtitle>}
         </HeaderLeft>
         <Button variant="secondary" onClick={() => setCustomOpen(true)}>
           Sesi Kustom
@@ -43,19 +58,33 @@ export default function BankSoalPage() {
 
       <PanelCard>
         <PanelHeader>
-          <PanelTitleRow>
-            <span>📊</span>
-            <PanelTitle>Performa per Topik</PanelTitle>
-          </PanelTitleRow>
-          <PanelSubtitle>Rerata ketepatan jawaban. Klik topik untuk melihat subtopik.</PanelSubtitle>
-          {overallAvg != null && (
-            <AverageScore>
-              <AverageLabel>RERATA</AverageLabel>
-              <AverageValue $score={overallAvg}>{overallAvg}%</AverageValue>
-            </AverageScore>
+          <PanelHeaderLeft>
+            <PanelTitleRow>
+              <span>📊</span>
+              <PanelTitle>Performa per Topik</PanelTitle>
+            </PanelTitleRow>
+            <PanelSubtitle>Rerata ketepatan jawaban. Klik topik untuk melihat subtopik.</PanelSubtitle>
+          </PanelHeaderLeft>
+          {attempted.length > 0 && (
+            <PanelFilterWrap>
+              <Dropdown
+                options={chartTopicOptions}
+                value={chartSelectedOption}
+                onChange={handleChartTopicChange}
+                isClearable={false}
+                usePortal
+                placeholder="Pilih topik..."
+              />
+            </PanelFilterWrap>
           )}
         </PanelHeader>
-        <PerformanceChart topics={topics} />
+        <PerformanceChart
+          topics={topics}
+          subtopicsCache={subtopicsCache}
+          onRequestSubtopics={loadSubtopics}
+          selectedTopicId={chartTopicId}
+          onSelectTopic={setChartTopicId}
+        />
       </PanelCard>
 
       <TopikSection>
@@ -80,7 +109,6 @@ export default function BankSoalPage() {
                 </div>
                 <SkeletonBlock $w="3.5rem" $h="0.875rem" />
                 <SkeletonBlock $w="3rem" $h="0.875rem" />
-                <SkeletonBlock $w="2rem" $h="0.875rem" />
                 <SkeletonBlock $w="3.5rem" $h="1.75rem" $radius="8px" />
                 <SkeletonCircle $size="20px" />
               </SkeletonTopikRow>
@@ -91,7 +119,7 @@ export default function BankSoalPage() {
         ) : (
           <TopikList>
             {filteredTopics.map((topic, i) => {
-              const isOpen = openIds.has(topic.id)
+              const isOpen = openId === topic.id
               const isLoadingSubtopic = loadingIds.has(topic.id)
               const subtopics = subtopicsCache[topic.id] || []
               return (
@@ -105,9 +133,6 @@ export default function BankSoalPage() {
                       <TopikStatChip>
                         <TopikStatNum>{topic.questionCount}</TopikStatNum> soal
                       </TopikStatChip>
-                      <TopikPct $score={topic.avgScore}>
-                        {topic.avgScore != null ? `${topic.avgScore}%` : '—'}
-                      </TopikPct>
                       <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>
                         Mulai
                       </TopikStartBtn>

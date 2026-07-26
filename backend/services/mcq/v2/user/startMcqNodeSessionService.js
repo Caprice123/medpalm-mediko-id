@@ -48,14 +48,14 @@ export async function buildQuestionsResponse(selectedIds, questionToNodeMap, use
     : []
   const parentMap = new Map(parents.map(p => [p.id, p]))
 
-  // Determine which nodes are new for this user
-  const progressRecords = userId && nodeIds.length > 0
-    ? await prisma.user_node_progress.findMany({
-        where: { user_id: userId, node_id: { in: nodeIds }, feature_type: 'mcq' },
-        select: { node_id: true },
+  // Determine which questions the user has already answered
+  const seenLogs = userId && selectedIds.length > 0
+    ? await prisma.user_learned_items.findMany({
+        where: { user_id: userId, item_type: 'mcq_question', item_id: { in: selectedIds } },
+        select: { item_id: true },
       })
     : []
-  const attemptedNodeIds = new Set(progressRecords.map(p => p.node_id))
+  const seenQuestionIds = new Set(seenLogs.map(l => l.item_id))
 
   // Fetch images
   const attachments = await prisma.attachments.findMany({
@@ -95,7 +95,7 @@ export async function buildQuestionsResponse(selectedIds, questionToNodeMap, use
       imageUrl: urlMap.get(q.id) || null,
       subtopic: node ? node.name : null,
       topic: parent ? parent.name : null,
-      isNew: nodeId ? !attemptedNodeIds.has(nodeId) : false,
+      isNew: !seenQuestionIds.has(q.id),
     }
   })
 }
