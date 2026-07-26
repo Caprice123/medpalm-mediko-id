@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
+router.use(requireTabPermission('features'))
 router.use(requireFeaturePermission('diagnostic'))
 
 router.get('/unlinked', asyncHandler(diagnosticQuizController.getUnlinked.bind(diagnosticQuizController)))

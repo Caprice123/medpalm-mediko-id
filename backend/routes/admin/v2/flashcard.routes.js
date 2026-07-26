@@ -8,8 +8,8 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
-router.use(requireFeaturePermission('flashcardV2'))
+router.use(requireTabPermission('features'))
+router.use(requireFeaturePermission('flashcard'))
 
 router.get('/', asyncHandler(flashcardV2Controller.index.bind(flashcardV2Controller)))
 router.post('/', asyncHandler(flashcardV2Controller.create.bind(flashcardV2Controller)))

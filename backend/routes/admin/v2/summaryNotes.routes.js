@@ -8,8 +8,8 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
-router.use(requireFeaturePermission('summaryNotesV2'))
+router.use(requireTabPermission('features'))
+router.use(requireFeaturePermission('summaryNotes'))
 
 router.get('/', asyncHandler(summaryNotesV2AdminController.index.bind(summaryNotesV2AdminController)))
 router.post('/generate', asyncHandler(summaryNotesV2AdminController.generateFromDocument.bind(summaryNotesV2AdminController)))

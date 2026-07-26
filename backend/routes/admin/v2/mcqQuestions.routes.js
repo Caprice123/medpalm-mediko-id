@@ -8,8 +8,8 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
-router.use(requireFeaturePermission('mcqV2'))
+router.use(requireTabPermission('features'))
+router.use(requireFeaturePermission('mcq'))
 
 router.get('/unlinked', asyncHandler(mcqQuestionsController.getUnlinked.bind(mcqQuestionsController)))
 router.put('/unlinked/:questionId', asyncHandler(mcqQuestionsController.updateUnlinked.bind(mcqQuestionsController)))

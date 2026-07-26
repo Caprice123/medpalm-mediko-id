@@ -8,8 +8,8 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
-router.use(requireFeaturePermission('flashcardV2'))
+router.use(requireTabPermission('features'))
+router.use(requireFeaturePermission('flashcard'))
 
 router.get('/unlinked', asyncHandler(flashcardCardsController.getUnlinked.bind(flashcardCardsController)))
 router.put('/unlinked/:cardId', asyncHandler(flashcardCardsController.updateUnlinked.bind(flashcardCardsController)))
