@@ -22,48 +22,9 @@ const AdminContainer = styled.div`
   background: #f0fdfa;
 `
 
-const Header = styled.header`
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-`
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`
-
-
 const MainContent = styled.main`
   margin: 0 auto;
   padding: 2rem;
-`
-
-const PageTitle = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-`
-
-const PageSubtitle = styled.p`
-  color: #6b7280;
-  margin-bottom: 2rem;
-  font-size: 1.05rem;
 `
 
 const TabContainer = styled.div`
@@ -107,12 +68,6 @@ const ContentArea = styled.div`
   border: 1px solid #e5e7eb;
 `
 
-const EmptyState = styled.div`
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
-`
-
 // Helper function to check if user has permission to access a tab
 const hasTabPermission = (user, tab) => {
   // Superadmin always has all permissions
@@ -138,20 +93,20 @@ const hasTabPermission = (user, tab) => {
 // Get available tabs for user
 const getAvailableTabs = (user) => {
   const allTabs = [
-    { key: 'features', label: 'Kelola Fitur' },
-    { key: 'layanan', label: 'Layanan' },
-    { key: 'webinar', label: 'Webinar' },
-    { key: 'events', label: 'Events' },
-    { key: 'banners', label: 'Banner' },
-    { key: 'tags', label: 'Kelola Tag' },
-    { key: 'pricingPlans', label: 'Paket Harga' },
-    { key: 'transactions', label: 'Transaksi' },
-    { key: 'users', label: 'Kelola User' },
-    { key: 'globalSettings', label: 'Pengaturan Global' },
-    { key: 'featuresV2', label: 'Fitur V2' },
+    { key: 'features', label: 'Kelola Fitur', permission: 'features' },
+    { key: 'layanan', label: 'Layanan', permission: 'layanan' },
+    { key: 'webinar', label: 'Webinar', permission: 'webinar' },
+    { key: 'events', label: 'Events', permission: 'events' },
+    { key: 'banners', label: 'Banner', permission: 'banner' },
+    { key: 'tags', label: 'Kelola Tag', permission: 'tags' },
+    { key: 'pricingPlans', label: 'Paket Harga', permission: 'pricingPlans' },
+    { key: 'transactions', label: 'Transaksi', permission: 'transactions' },
+    { key: 'users', label: 'Kelola User', permission: 'users' },
+    { key: 'globalSettings', label: 'Pengaturan Global', permission: 'globalSettings' },
+    { key: 'featuresV2', label: 'Fitur V2', permission: 'features' },
   ]
 
-  return allTabs.filter(tab => hasTabPermission(user, tab.key))
+  return allTabs.filter(tab => hasTabPermission(user, tab.permission))
 }
 
 function AdminPanel() {
