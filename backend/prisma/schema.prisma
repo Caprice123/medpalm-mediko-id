@@ -1059,17 +1059,20 @@ model diagnostic_quizzes {
 }
 
 model diagnostic_questions {
-  id          Int      @id @default(autoincrement())
-  quiz_id     Int
-  question    String
-  answer      String
-  answer_type String   @default("text") // 'text' or 'multiple_choice'
-  choices     Json? // Array of choice options for multiple_choice questions
-  order       Int      @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  quiz_id       Int?
+  question      String
+  vignette      String?
+  image_caption String?
+  answer        String
+  answer_type   String   @default("text") // 'text' or 'multiple_choice'
+  choices       Json?
+  explanation   String?
+  order         Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
 
-  diagnostic_quiz         diagnostic_quizzes        @relation(fields: [quiz_id], references: [id])
+  diagnostic_quiz         diagnostic_quizzes?       @relation(fields: [quiz_id], references: [id])
   diagnostic_quiz_answers diagnostic_quiz_answers[]
 
   @@index([quiz_id])

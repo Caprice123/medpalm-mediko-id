@@ -3,6 +3,7 @@ import FeaturesList from '../Features/components/FeaturesList'
 import FlashcardV2 from './subpages/FlashcardV2'
 import SummaryNotesV2 from './subpages/SummaryNotesV2'
 import McqV2 from './subpages/McqV2'
+import DiagnosticV2 from './subpages/DiagnosticV2'
 import {
   Container,
   LoadingState,
@@ -30,6 +31,13 @@ const V2_FEATURES = [
     description: 'Soal pilihan ganda dengan sistem topik node dan statistik per-topik',
     isActive: true,
   },
+  {
+    sessionType: 'diagnostic_v2',
+    name: 'Diagnostik V2',
+    icon: '🩺',
+    description: 'Bank soal diagnostik dengan SRS Anki-style, vignette klinis, dan gambar radiologi',
+    isActive: true,
+  },
 ]
 
 function FeaturesV2() {
@@ -45,6 +53,8 @@ function FeaturesV2() {
         return <SummaryNotesV2 onBack={handleBackToList} />
       case 'mcq_v2':
         return <McqV2 onBack={handleBackToList} />
+      case 'diagnostic_v2':
+        return <DiagnosticV2 onBack={handleBackToList} />
       default:
         return null
     }

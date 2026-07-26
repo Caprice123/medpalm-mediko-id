@@ -119,6 +119,10 @@ function AppLayout() {
 
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
   const [collapsed, setCollapsed] = useState({ fitur: false, layanan: false, akun: false })
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-width', sidebarOpen ? '240px' : '0px')
+  }, [sidebarOpen])
   const [detailOpen, setDetailOpen] = useState({ credits: false, subs: false })
   const [lockTooltip, setLockTooltip] = useState(null)
 

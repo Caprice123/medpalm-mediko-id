@@ -63,7 +63,10 @@ import adminV2FlashcardRoutes from '#routes/admin/v2/flashcard.routes';
 import adminV2FlashcardCardsRoutes from '#routes/admin/v2/flashcardCards.routes';
 import adminV2SummaryNotesRoutes from '#routes/admin/v2/summaryNotes.routes';
 import adminV2McqQuestionsRoutes from '#routes/admin/v2/mcqQuestions.routes';
+import adminV2DiagnosticNodesRoutes from '#routes/admin/v2/diagnosticNodes.routes';
+import adminV2DiagnosticQuizRoutes from '#routes/admin/v2/diagnosticQuiz.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
+import apiV2DiagnosticRoutes from '#routes/api/v2/diagnostic.routes';
 import apiV21FlashcardRoutes from '#routes/api/v2-1/flashcard.routes';
 import apiV2ReviewRoutes from '#routes/api/v2/review.routes';
 import apiV2SummaryNotesRoutes from '#routes/api/v2/summaryNotes.routes';
@@ -169,6 +172,7 @@ app.use('/api/v2-1/flashcards', apiV21FlashcardRoutes);
 app.use('/api/v2/review', apiV2ReviewRoutes);
 app.use('/api/v2/summary-notes', apiV2SummaryNotesRoutes);
 app.use('/api/v2/mcq', apiV2McqRoutes);
+app.use('/api/v2/diagnostic', apiV2DiagnosticRoutes);
 app.use('/api/v1/recently-viewed', recentlyViewedRoutes);
 app.use('/api/v1/favorites', favoritesRoutes);
 app.use('/api/v1/feature-nodes', apiFeatureNodesRoutes);
@@ -231,6 +235,8 @@ app.use('/admin/v2/flashcards', adminV2FlashcardRoutes);
 app.use('/admin/v2/flashcard-cards', adminV2FlashcardCardsRoutes);
 app.use('/admin/v2/summary-notes', adminV2SummaryNotesRoutes);
 app.use('/admin/v2/mcq-questions', adminV2McqQuestionsRoutes);
+app.use('/admin/v2/diagnostic-nodes', adminV2DiagnosticNodesRoutes);
+app.use('/admin/v2/diagnostic-quiz', adminV2DiagnosticQuizRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

@@ -35,6 +35,7 @@ import nodeQuestions from "./nodeQuestions/reducer";
 import unlinkedCards from "./unlinkedCards/reducer";
 import unlinkedQuestions from "./unlinkedQuestions/reducer";
 import flashcardNodes from "./flashcardNodes/reducer";
+import diagnosticNodes from "./diagnosticNodes/reducer";
 import mcqNodes from "./mcqNodes/reducer";
 import review from "./review/reducer";
 
@@ -75,6 +76,7 @@ export const rootReducer = combineReducers({
     unlinkedCards,
     unlinkedQuestions,
     flashcardNodes,
+    diagnosticNodes,
     mcqNodes,
 })
 

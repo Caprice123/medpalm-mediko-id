@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FaChartBar } from 'react-icons/fa6'
-import { PanelCard, PanelHeader, PanelTitle, EmptyText } from '../../TopicList.styles'
+import { PanelCard, PanelHeader, PanelTitle, EmptyText } from '../../CategoryList.shared.styles'
 import {
   StackedBar, StackedSegment, ProgressLegend, LegendItem, LegendDot, LegendCount,
   PerTopicSection, PerTopicLabel, PerTopicRow, PerTopicName, MiniBar, TotalCount,
@@ -89,12 +89,10 @@ export default function ProgressPanel({ progress, isLoading }) {
           <PerTopicLabel>Per Topik</PerTopicLabel>
           {pageItems.map((t, i) => {
             const total = totalReviewed(t.counts)
-            const rowDelay = `${i * 0.07}s`
-            const barDelay = `${i * 0.07 + 0.18}s`
             return (
-              <PerTopicRow key={t.nodeId} $delay={rowDelay}>
+              <PerTopicRow key={t.nodeId} $delay={`${i * 0.07}s`}>
                 <PerTopicName title={t.nodeName}>{t.nodeName}</PerTopicName>
-                <MiniBar $delay={barDelay}>
+                <MiniBar $delay={`${i * 0.07 + 0.18}s`}>
                   {RATING_CONFIG.map(({ key, color }) => {
                     const pct = total ? ((t.counts[key] || 0) / total) * 100 : 0
                     return pct > 0 ? <StackedSegment key={key} $color={color} $pct={pct} /> : null
