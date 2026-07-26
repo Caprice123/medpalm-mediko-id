@@ -24,6 +24,7 @@ export class GetUnlinkedQuestionsService extends BaseService {
 
     const isLastPage = rawQuestions.length <= parseInt(perPage)
     const questions = rawQuestions.slice(0, parseInt(perPage))
+    console.log(rawQuestions)
     const pagination = { page: parseInt(page), perPage: parseInt(perPage), isLastPage }
 
     return { questions, pagination }

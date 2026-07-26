@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 export class GetMcqTopicsService extends BaseService {
   static async call({ userId }) {
     const topics = await prisma.feature_nodes.findMany({
-      where: { layer: 1 },
+      where: { layer: 1, visibility: 'general' },
       orderBy: { name: 'asc' },
     })
     if (topics.length === 0) return []
@@ -12,7 +12,7 @@ export class GetMcqTopicsService extends BaseService {
     const topicIds = topics.map(t => t.id)
 
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: { in: topicIds }, layer: 2 },
+      where: { parent_id: { in: topicIds }, layer: 2, visibility: 'general' },
       select: {
         id: true,
         parent_id: true,
