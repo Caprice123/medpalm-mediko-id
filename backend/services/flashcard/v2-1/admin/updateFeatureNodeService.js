@@ -1,9 +1,10 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateFeatureNodeService extends BaseService {
-  static async call({ id, name, slug, parentId, nodeType, visibility, classification, layer }) {
+  static async call({ id, name, slug, parentId, nodeType, visibility, classification, layer, icon, description, videoBlobId, videoExplanation }) {
     const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(id) } })
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
@@ -32,12 +33,25 @@ export class UpdateFeatureNodeService extends BaseService {
         ...(visibility !== undefined && { visibility }),
         classification: classification !== undefined ? (classification || null) : undefined,
         ...(layer !== undefined && { layer: layer ? parseInt(layer) : null }),
+        ...(icon !== undefined && { icon: icon || null }),
+        ...(description !== undefined && { description: description || null }),
+        ...(videoExplanation !== undefined && { video_explanation: videoExplanation || null }),
         updated_at: new Date(),
       },
       include: {
         _count: { select: { children: true } },
       },
     })
+
+    if (videoBlobId) {
+      await attachmentService.detachAll({ recordType: 'feature_node', recordId: updated.id }, true)
+      await attachmentService.attach({
+        blobId: parseInt(videoBlobId),
+        recordType: 'feature_node',
+        recordId: updated.id,
+        name: 'video',
+      })
+    }
 
     return updated
   }

@@ -487,6 +487,9 @@ model feature_nodes {
   visibility     String          @default("general")
   classification String?
   layer          Int?
+  icon              String?
+  description       String?
+  video_explanation String?
   created_at     DateTime        @default(now())
   updated_at     DateTime        @default(now())
 
@@ -1020,6 +1023,7 @@ model blobs {
   content_type String
   byte_size    Int
   checksum     String
+  provider     String   @default("idrive")
   uploaded_at  DateTime @default(now())
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())

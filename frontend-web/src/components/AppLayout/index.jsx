@@ -11,7 +11,7 @@ import {
   PiClipboardText, PiListNumbers, PiCards, PiFlask,
   PiCalculator, PiMagnifyingGlass, PiFileText, PiTrophy,
   PiVideoCamera, PiCalendarCheck, PiCreditCard, PiWrench,
-  PiUser, PiSignOut,
+  PiUser, PiSignOut, PiGridFour,
 } from 'react-icons/pi'
 
 const FEATURE_ICONS = {
@@ -79,6 +79,7 @@ import { WebinarRoute } from '@routes/Webinar/routes'
 import { EventRoute } from '@routes/Event/routes'
 import { ChallengeRoute } from '@routes/Challenge/routes'
 import { TopupRoute } from '@routes/Topup/routes'
+import { TopicHubRoute } from '@routes/TopicHub/routes'
 
 const HAMBURGER_POS_KEY = 'hamburger-btn-pos'
 const QUICK_ACCESS_KEY = 'medpal_recently_used'
@@ -282,6 +283,13 @@ function AppLayout() {
                 <ChevronIcon $collapsed={collapsed.fitur}>▼</ChevronIcon>
               </SidebarGroupHeader>
               <SidebarGroupItems $collapsed={collapsed.fitur}>
+                <SidebarItem
+                  $active={isActive(TopicHubRoute.moduleRoute)}
+                  onClick={() => navigateTo(TopicHubRoute.moduleRoute)}
+                >
+                  <SidebarItemIcon><PiGridFour size={18} /></SidebarItemIcon>
+                  <SidebarItemName>Materi</SidebarItemName>
+                </SidebarItem>
                 {activeFeatures.map(feature => {
                   const route = SESSION_ROUTES[feature.sessionType]
                   let isLocked = false

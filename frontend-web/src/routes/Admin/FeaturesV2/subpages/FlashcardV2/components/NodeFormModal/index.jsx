@@ -27,6 +27,8 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
         name: node.name,
         classification: node.classification ?? CLASSIFICATION_OPTIONS[0].value,
       })
+    } else {
+      setForm({ name: '', classification: CLASSIFICATION_OPTIONS[0].value })
     }
   }, [isEdit, node])
 

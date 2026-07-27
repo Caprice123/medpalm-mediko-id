@@ -37,6 +37,8 @@
     "db:seed:exercise": "node prisma/seeds/exerciseConstants.seed.js",
     "db:seed:flashcard": "node prisma/seeds/flashcardConstants.seed.js",
     "db:seed:home": "node prisma/seeds/homeConstants.seed.js",
+    "db:seed:flashcard-nodes": "node prisma/seeds/flashcardNodes.seed.js",
+    "db:seed:mcq-from-flashcards": "node prisma/seeds/mcqFromFlashcards.seed.js",
     "chromadb:start": "python -m chromadb.cli.cli run --path ./data/chromadb --port 8000",
     "embed:notes": "node scripts/embedAllSummaryNotes.js"
   },
@@ -50,6 +52,7 @@
     "@bull-board/api": "^6.16.2",
     "@bull-board/express": "^6.16.2",
     "@bull-board/ui": "^6.16.2",
+    "@bunny.net/storage-sdk": "^0.3.1",
     "@chroma-core/default-embed": "^0.1.9",
     "@google/genai": "^1.38.0",
     "@google/generative-ai": "^0.24.1",

@@ -1,7 +1,7 @@
 import { toJakartaISO } from '#utils/dateUtils'
 
-export class FeatureNodesSerializer {
-  static serialize(node, hasVideo = false, videoMeta = null) {
+export class UserFeatureNodesSerializer {
+  static serialize(node, videoEmbedUrl = null) {
     return {
       id: node.id,
       name: node.name,
@@ -14,21 +14,14 @@ export class FeatureNodesSerializer {
       layer: node.layer,
       icon: node.icon ?? null,
       description: node.description ?? null,
-      hasVideo,
-      videoUrl: videoMeta?.url ?? null,
-      videoFilename: videoMeta?.filename ?? null,
-      videoByteSize: videoMeta?.byteSize ?? null,
+      videoEmbedUrl,
       videoExplanation: node.video_explanation ?? null,
       createdAt: toJakartaISO(node.created_at),
       updatedAt: toJakartaISO(node.updated_at),
     }
   }
 
-  static serializeList(nodes) {
-    return nodes.map(n => {
-      const serialized = this.serialize(n)
-      const { hasVideo, videoExplanation, ...rest } = serialized
-      return rest
-    })
+  static serializeList(nodes, videoEmbedUrlMap = {}) {
+    return nodes.map(n => this.serialize(n, videoEmbedUrlMap[n.id] ?? null))
   }
 }

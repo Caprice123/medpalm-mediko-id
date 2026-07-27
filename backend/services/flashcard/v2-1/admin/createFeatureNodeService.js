@@ -1,9 +1,10 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateFeatureNodeService extends BaseService {
-  static async call({ name, slug, parentId, nodeType, visibility = 'general', classification, layer }) {
+  static async call({ name, slug, parentId, nodeType, visibility = 'general', classification, layer, icon, description, videoBlobId, videoExplanation }) {
     if (!name?.trim()) throw new ValidationError('Nama wajib diisi')
     if (!slug?.trim()) throw new ValidationError('Slug wajib diisi')
 
@@ -26,11 +27,23 @@ export class CreateFeatureNodeService extends BaseService {
         visibility,
         classification: classification || null,
         layer: parsedLayer,
+        icon: icon || null,
+        description: description || null,
+        video_explanation: videoExplanation || null,
       },
       include: {
         _count: { select: { children: true } },
       },
     })
+
+    if (videoBlobId) {
+      await attachmentService.attach({
+        blobId: parseInt(videoBlobId),
+        recordType: 'feature_node',
+        recordId: node.id,
+        name: 'video',
+      })
+    }
 
     return node
   }

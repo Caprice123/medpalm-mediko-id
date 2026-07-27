@@ -16,6 +16,7 @@ import EventAdmin from './Features/subpages/Event'
 import BannerAdmin from './Features/subpages/Banner'
 import Layanan from './Layanan'
 import FeaturesV2 from './FeaturesV2'
+import MateriAdmin from './MateriAdmin'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
@@ -83,7 +84,7 @@ const hasTabPermission = (user, tab) => {
   // Default permissions based on role
   if (user.role === 'admin') {
     // Admins by default have access to all tabs except 'users'
-    return ['features', 'layanan', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings', 'featuresV2', 'nodeStructure'].includes(tab)
+    return ['features', 'layanan', 'webinar', 'events', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings', 'featuresV2', 'nodeStructure', 'materi'].includes(tab)
   }
 
   // Other roles don't have admin panel access
@@ -104,6 +105,7 @@ const getAvailableTabs = (user) => {
     { key: 'users', label: 'Kelola User', permission: 'users' },
     { key: 'globalSettings', label: 'Pengaturan Global', permission: 'globalSettings' },
     { key: 'featuresV2', label: 'Fitur V2', permission: 'features' },
+    { key: 'materi', label: 'Materi', permission: 'materi' },
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.permission))
@@ -182,6 +184,8 @@ function AdminPanel() {
           {activeTab === 'globalSettings' && <GlobalSettings />}
 
           {activeTab === 'featuresV2' && <FeaturesV2 />}
+
+          {activeTab === 'materi' && <MateriAdmin />}
         </ContentArea>
       </MainContent>
     </AdminContainer>

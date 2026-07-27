@@ -23,8 +23,10 @@ import { eventRoutes } from './routes/Event/routes';
 import { challengeRoutes } from './routes/Challenge/routes';
 import { profileRoutes } from './routes/Profile/routes';
 import { dashboardRoutes } from './routes/Dashboard/routes';
+import { topicHubRoutes } from './routes/TopicHub/routes';
 
 // Lazy load components
+const EmbedVideoPage = lazy(() => import('@routes/EmbedVideo'));
 const Login = lazy(() => import('@routes/Auth/pages/Login'));
 const Home = lazy(() => import('@routes/Home'));
 const AdminPanel = lazy(() => import('@routes/Admin/AdminPanel'));
@@ -59,6 +61,8 @@ const appRoutes = [
                 path: "/",
                 element: <ProfileGuard />,
                 children: [
+                    // Embed pages — no AppLayout (no sidebar), rendered inside an <iframe>
+                    { path: '/embed/video', element: withSuspense(<EmbedVideoPage />) },
                     {
                         path: "/",
                         element: <AppLayout />,
@@ -79,6 +83,7 @@ const appRoutes = [
                             ...webinarRoutes,
                             ...eventRoutes,
                             ...challengeRoutes,
+                            ...topicHubRoutes,
                             {
                                 path: '/admin',
                                 element: withSuspense(<AdminPanel />)

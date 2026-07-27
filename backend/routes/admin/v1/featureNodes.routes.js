@@ -17,6 +17,7 @@ router.use(requireFeaturePermission('featureNodes'))
 // Nodes CRUD
 router.get('/', asyncHandler(featureNodesController.index.bind(featureNodesController)))
 router.post('/', asyncHandler(featureNodesController.create.bind(featureNodesController)))
+router.get('/:id', asyncHandler(featureNodesController.show.bind(featureNodesController)))
 router.put('/:id', asyncHandler(featureNodesController.update.bind(featureNodesController)))
 router.delete('/:id', asyncHandler(featureNodesController.delete.bind(featureNodesController)))
 

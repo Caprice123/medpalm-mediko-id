@@ -3,3 +3,4 @@ export default reducer
 export { actions }
 export const { updateFilter, resetFilter } = actions
 export * from './adminAction'
+export * from './userAction'

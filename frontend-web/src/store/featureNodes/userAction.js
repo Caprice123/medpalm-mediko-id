@@ -1,0 +1,46 @@
+import { actions } from './reducer'
+import Endpoints from '@config/endpoint'
+import { getWithToken } from '@utils/requestUtils'
+
+const { setUserTopics, setLoading } = actions
+
+export const fetchUserTopics = () => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isFetchingUserTopics: true }))
+    const [primaryRes, specialRes] = await Promise.all([
+      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, classification: 'sistem_blok', perPage: 100 }),
+      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, classification: 'ilmu_lintas_sistem', perPage: 100 }),
+    ])
+    dispatch(setUserTopics({
+      primary: primaryRes.data.data || [],
+      special: specialRes.data.data || [],
+    }))
+  } finally {
+    dispatch(setLoading({ isFetchingUserTopics: false }))
+  }
+}
+
+export const fetchUserSubtopics = (parentSlug) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, perPage: 100 })
+  return res.data.data || []
+}
+
+export const fetchUserTopicBySlug = (slug) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 1, perPage: 1 })
+  return (res.data.data || [])[0] ?? null
+}
+
+export const fetchUserSubtopicBySlug = (slug) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 2, perPage: 1 })
+  return (res.data.data || [])[0] ?? null
+}
+
+export const fetchNodeStats = (nodeId) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodeStats(nodeId))
+  return res.data.data
+}
+
+export const fetchNodePreview = (nodeId, type) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodePreview(nodeId), { type })
+  return res.data.data
+}
