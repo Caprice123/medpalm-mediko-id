@@ -1,21 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  fetchDiagnosticAdminNodes,
-  deleteDiagnosticNode,
   fetchDiagnosticAdminQuestions,
   addDiagnosticQuestion,
   updateDiagnosticQuestion,
   deleteDiagnosticQuestion,
   importDiagnosticQuestions,
   downloadDiagnosticTemplate,
+  moveLinkedDiagnosticQuestion,
 } from '@store/diagnosticNodes/adminAction'
+import { fetchFeatureNodes, updateFilter, deleteFeatureNode } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import Modal from '@components/common/Modal'
 import Pagination from '@components/common/Pagination'
 import NodeFormModal from './components/NodeFormModal'
 import QuestionFormModal from './components/QuestionFormModal'
+import MoveQuestionModal from './components/MoveQuestionModal'
 import UnlinkedQuestionsPage from './components/UnlinkedQuestionsPage'
 import DiagnosticSettingsModal from '@routes/Admin/Features/subpages/DiagnosticQuiz/components/DiagnosticSettingsModal'
 import {
@@ -38,6 +39,7 @@ export default function DiagnosticV2({ onBack }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [nodeModal, setNodeModal] = useState({ open: false, node: null })
   const [qModal, setQModal] = useState({ open: false, question: null })
+  const [moveModal, setMoveModal] = useState({ open: false, question: null })
   const [importResult, setImportResult] = useState(null)
   const importRef = useRef(null)
 
@@ -48,7 +50,10 @@ export default function DiagnosticV2({ onBack }) {
   useEffect(() => {
     if (showUnlinked) return
     if (!inQuestions) {
-      dispatch(fetchDiagnosticAdminNodes(currentLayer, parentNode?.id ?? null))
+      dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
+      dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
+      dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
+      dispatch(fetchFeatureNodes())
     } else {
       dispatch(fetchDiagnosticAdminQuestions(parentNode.id))
     }
@@ -59,9 +64,12 @@ export default function DiagnosticV2({ onBack }) {
 
   const handleDelete = (node) => {
     if (!window.confirm(`Hapus "${node.name}"? Semua data di dalamnya akan ikut terhapus.`)) return
-    dispatch(deleteDiagnosticNode(node.id, () =>
-      dispatch(fetchDiagnosticAdminNodes(currentLayer, parentNode?.id ?? null))
-    ))
+    dispatch(deleteFeatureNode(node.id, () => {
+      dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
+      dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
+      dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
+      dispatch(fetchFeatureNodes())
+    }))
   }
 
   const handleDeleteQuestion = (q) => {
@@ -148,10 +156,11 @@ export default function DiagnosticV2({ onBack }) {
     },
     {
       header: 'Aksi',
-      width: '180px',
+      width: '220px',
       align: 'right',
       render: (q) => (
         <ActionGroup>
+          <Button size="small" variant="secondary" onClick={() => setMoveModal({ open: true, question: q })}>Pindah</Button>
           <Button size="small" onClick={() => setQModal({ open: true, question: q })}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleDeleteQuestion(q)}>Hapus</Button>
         </ActionGroup>
@@ -260,7 +269,10 @@ export default function DiagnosticV2({ onBack }) {
           onClose={() => setNodeModal({ open: false, node: null })}
           onSuccess={() => {
             setNodeModal({ open: false, node: null })
-            dispatch(fetchDiagnosticAdminNodes(currentLayer, parentNode?.id ?? null))
+            dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
+            dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
+            dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
+            dispatch(fetchFeatureNodes())
           }}
         />
       )}
@@ -272,6 +284,21 @@ export default function DiagnosticV2({ onBack }) {
           onClose={() => setQModal({ open: false, question: null })}
           onSave={handleQSave}
           isSavingOverride={qModal.question ? qLoading.isUpdatingQuestion : qLoading.isAddingQuestion}
+        />
+      )}
+
+      {moveModal.open && (
+        <MoveQuestionModal
+          question={moveModal.question}
+          onClose={() => setMoveModal({ open: false, question: null })}
+          onSuccess={() => {
+            setMoveModal({ open: false, question: null })
+            dispatch(fetchDiagnosticAdminQuestions(parentNode.id))
+          }}
+          onMove={(targetNodeId, onSuccess) =>
+            dispatch(moveLinkedDiagnosticQuestion(moveModal.question.id, targetNodeId, onSuccess))
+          }
+          isSavingOverride={qLoading.isMovingQuestion}
         />
       )}
 

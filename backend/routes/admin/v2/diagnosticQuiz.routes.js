@@ -15,5 +15,6 @@ router.get('/unlinked', asyncHandler(diagnosticQuizController.getUnlinked.bind(d
 router.put('/unlinked/:questionId', asyncHandler(diagnosticQuizController.updateUnlinked.bind(diagnosticQuizController)))
 router.delete('/unlinked/:questionId', asyncHandler(diagnosticQuizController.deleteUnlinked.bind(diagnosticQuizController)))
 router.put('/unlinked/:questionId/assign', asyncHandler(diagnosticQuizController.assignToNode.bind(diagnosticQuizController)))
+router.put('/questions/:questionId/move', asyncHandler(diagnosticQuizController.moveQuestion.bind(diagnosticQuizController)))
 
 export default router

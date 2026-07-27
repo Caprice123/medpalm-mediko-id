@@ -139,6 +139,16 @@ export const moveUnlinkedDiagnosticQuestion = (questionId, nodeId, onSuccess) =>
   }
 }
 
+export const moveLinkedDiagnosticQuestion = (questionId, nodeId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(questionActions.setLoading({ isMovingQuestion: true }))
+    await putWithToken(`${QUIZ_BASE}/questions/${questionId}/move`, { nodeId })
+    onSuccess?.()
+  } finally {
+    dispatch(questionActions.setLoading({ isMovingQuestion: false }))
+  }
+}
+
 export const updateUnlinkedDiagnosticQuestion = (questionId, payload, onSuccess) => async (dispatch) => {
   try {
     dispatch(questionActions.setLoading({ isUpdatingQuestion: true }))

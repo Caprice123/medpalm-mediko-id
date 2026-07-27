@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchFilteredNodes } from '@store/featureNodes'
-import { moveNodeCard } from '@store/nodeCards'
+import { useDispatch } from 'react-redux'
+import { fetchFilteredNodes, createNodeRecord } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
-import { Nav, NavLink, NavCurrent, NavSep, FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState } from './MoveCardModal.styles'
+import {
+  Nav, NavLink, NavCurrent, NavSep,
+  FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState,
+} from './AssignNodeModal.styles'
 
-export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title }) {
+export default function AssignNodeModal({ note, onClose, onSuccess }) {
   const dispatch = useDispatch()
-  const { loading } = useSelector(state => state.nodeCards)
 
   const [nodes, setNodes] = useState([])
   const [loadingNodes, setLoadingNodes] = useState(false)
   const [currentParent, setCurrentParent] = useState(null)
   const [selectedNode, setSelectedNode] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
 
   const loadNodes = async (layer, parentId = null) => {
     setLoadingNodes(true)
@@ -34,7 +36,7 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
       setCurrentParent(node)
       setSelectedNode(null)
       loadNodes('2', node.id)
-    } else if (!currentNode || node.id !== currentNode.id) {
+    } else {
       setSelectedNode(prev => prev?.id === node.id ? null : node)
     }
   }
@@ -45,22 +47,22 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
     loadNodes('1')
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedNode) return
-    if (onMove) {
-      onMove(selectedNode.id, onSuccess)
-    } else {
-      dispatch(moveNodeCard(currentNode.id, card.id, selectedNode.id, onSuccess))
+    setSubmitting(true)
+    try {
+      await dispatch(createNodeRecord({ nodeId: selectedNode.id, recordType: 'summary_note', recordId: note.id }))
+      onSuccess()
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  const isMoving = isSavingOverride ?? loading.isMovingCard
-
   return (
     <Modal
-      isOpen={true}
+      isOpen
       onClose={onClose}
-      title={title || 'Pindah Kartu'}
+      title={`Pindahkan: ${note.title}`}
       size="medium"
       footer={
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -68,9 +70,9 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
           <Button
             variant="primary"
             onClick={handleConfirm}
-            disabled={!selectedNode || isMoving}
+            disabled={!selectedNode || submitting}
           >
-            {isMoving ? 'Memproses...' : 'Pindah ke Sini'}
+            {submitting ? 'Memproses...' : 'Pindah ke Sini'}
           </Button>
         </div>
       }
@@ -92,19 +94,17 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
           {loadingNodes ? (
             <EmptyState>Memuat...</EmptyState>
           ) : nodes.length === 0 ? (
-            <EmptyState>Tidak ada sub-topik</EmptyState>
+            <EmptyState>Tidak ada {currentParent ? 'sub-topik' : 'topik'} tersedia</EmptyState>
           ) : (
             nodes.map(node => {
               const isFolder = node.layer === 1
-              const isDisabled = currentNode && node.id === currentNode.id
               const isSelected = selectedNode?.id === node.id
 
               return (
                 <FolderRow
                   key={node.id}
                   $selected={isSelected}
-                  $disabled={isDisabled}
-                  onClick={() => !isDisabled && handleRowClick(node)}
+                  onClick={() => handleRowClick(node)}
                 >
                   <FolderIcon $isFolder={isFolder}>{isFolder ? '▶' : '—'}</FolderIcon>
                   <FolderName $bold={isFolder} $selected={isSelected}>{node.name}</FolderName>

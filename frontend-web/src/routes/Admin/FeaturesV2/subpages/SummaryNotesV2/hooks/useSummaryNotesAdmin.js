@@ -2,12 +2,11 @@ import { useState, useEffect, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchFeatureNodes, updateFilter } from '@store/featureNodes'
 
-export function useMcqV2Admin() {
+export function useSummaryNotesAdmin() {
   const dispatch = useDispatch()
 
   const [selectedNode, setSelectedNode] = useState(null)
   const [modal, setModal] = useState({ open: false, node: null })
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [search, setSearch] = useState('')
 
   const loadTopics = useCallback(() => {
@@ -33,14 +32,13 @@ export function useMcqV2Admin() {
   }
 
   const handleDelete = (node) => {
-    if (!window.confirm(`Hapus topik "${node.name}"? Semua sub-topik dan pertanyaan di dalamnya akan ikut terhapus.`)) return
-    alert('Hapus node belum diimplementasi di sini.')
+    if (!window.confirm(`Hapus topik "${node.name}"? Semua sub-topik dan ringkasan di dalamnya akan ikut terhapus.`)) return
+    alert('Hapus topik belum diimplementasi.')
   }
 
   return {
     selectedNode, setSelectedNode,
     modal, setModal,
-    settingsOpen, setSettingsOpen,
     search, setSearch,
     handleSearch, handleBack, handleDelete,
   }

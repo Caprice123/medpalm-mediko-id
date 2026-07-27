@@ -120,12 +120,3 @@ export const uploadNodeVideo = (file, provider = 'idrive') => async (dispatch) =
   }
 }
 
-export const autoLinkFlashcardDecks = (onSuccess) => async (dispatch) => {
-  try {
-    dispatch(setLoading({ isAutoLinking: true }))
-    const response = await postWithToken(Endpoints.admin.autoLinkFlashcardDecks, {})
-    onSuccess?.(response.data.data)
-  } finally {
-    dispatch(setLoading({ isAutoLinking: false }))
-  }
-}

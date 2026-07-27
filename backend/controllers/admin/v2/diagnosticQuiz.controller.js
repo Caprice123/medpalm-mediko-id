@@ -2,6 +2,7 @@ import { GetUnlinkedDiagnosticQuestionsService } from '#services/diagnostic/v2/a
 import { UpdateNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/updateNodeDiagnosticQuestionService'
 import { DeleteNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/deleteNodeDiagnosticQuestionService'
 import { MoveUnlinkedDiagnosticQuestionService } from '#services/diagnostic/v2/admin/moveUnlinkedDiagnosticQuestionService'
+import { MoveLinkedDiagnosticQuestionService } from '#services/diagnostic/v2/admin/moveLinkedDiagnosticQuestionService'
 import { DiagnosticQuestionsSerializer } from '#serializers/admin/v1/diagnosticQuestionsSerializer'
 
 class DiagnosticQuizController {
@@ -30,6 +31,13 @@ class DiagnosticQuizController {
     const { questionId } = req.params
     const { nodeId } = req.body
     await MoveUnlinkedDiagnosticQuestionService.call({ questionId, nodeId })
+    res.json({ success: true })
+  }
+
+  async moveQuestion(req, res) {
+    const { questionId } = req.params
+    const { nodeId } = req.body
+    await MoveLinkedDiagnosticQuestionService.call({ questionId, nodeId })
     res.json({ success: true })
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createDiagnosticNode, updateDiagnosticNode } from '@store/diagnosticNodes/adminAction'
+import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
@@ -36,9 +36,9 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
       ...(parentNode && { parentId: parentNode.id }),
     }
     if (isEdit) {
-      dispatch(updateDiagnosticNode(node.id, payload, onSuccess))
+      dispatch(updateFeatureNode(node.id, payload, onSuccess))
     } else {
-      dispatch(createDiagnosticNode(payload, onSuccess))
+      dispatch(createFeatureNode(payload, onSuccess))
     }
   }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDiagnosticNodesRaw, moveUnlinkedDiagnosticQuestion } from '@store/diagnosticNodes/adminAction'
+import { moveUnlinkedDiagnosticQuestion } from '@store/diagnosticNodes/adminAction'
+import { fetchFilteredNodes } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { Nav, NavLink, NavCurrent, NavSep, FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState } from './MoveQuestionModal.styles'
@@ -17,7 +18,9 @@ export default function MoveQuestionModal({ question, onClose, onSuccess, onMove
   const loadNodes = async (layer, parentId = null) => {
     setLoadingNodes(true)
     try {
-      const data = await dispatch(fetchDiagnosticNodesRaw(layer, parentId))
+      const params = { layer: String(layer), visibility: 'diagnostic' }
+      if (parentId !== null) params.parentId = parentId
+      const data = await dispatch(fetchFilteredNodes(params))
       setNodes(data)
     } finally {
       setLoadingNodes(false)

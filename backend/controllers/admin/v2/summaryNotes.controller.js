@@ -1,8 +1,8 @@
-import { CreateSummaryNoteService } from '#services/summaryNotes/admin/createSummaryNoteService'
-import { UpdateSummaryNoteService } from '#services/summaryNotes/admin/updateSummaryNoteService'
+import { CreateSummaryNoteV2Service } from '#services/summaryNotes/v2/admin/createSummaryNoteV2Service'
+import { UpdateSummaryNoteV2Service } from '#services/summaryNotes/v2/admin/updateSummaryNoteV2Service'
+import { DeleteSummaryNoteV2Service } from '#services/summaryNotes/v2/admin/deleteSummaryNoteV2Service'
 import { GetSummaryNotesListService } from '#services/summaryNotes/admin/getSummaryNotesListService'
 import { GetSummaryNoteDetailV2AdminService } from '#services/summaryNotes/v2/getSummaryNoteDetailV2AdminService'
-import { DeleteSummaryNoteService } from '#services/summaryNotes/admin/deleteSummaryNoteService'
 import { GenerateSummaryFromDocumentService } from '#services/summaryNotes/admin/generateSummaryFromDocumentService'
 import { GetEmbeddingsService } from '#services/embedding/getEmbeddingsService'
 import { SummaryNoteV2Serializer } from '#serializers/admin/v2/summaryNoteSerializer'
@@ -40,7 +40,7 @@ class SummaryNotesV2AdminController {
   async create(req, res) {
     const { title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
 
-    const summaryNote = await CreateSummaryNoteService.call({
+    const summaryNote = await CreateSummaryNoteV2Service.call({
       title,
       description,
       content,
@@ -61,7 +61,7 @@ class SummaryNotesV2AdminController {
     const { uniqueId } = req.params
     const { title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
 
-    await UpdateSummaryNoteService.call({
+    await UpdateSummaryNoteV2Service.call({
       id: uniqueId,
       title,
       description,
@@ -79,7 +79,7 @@ class SummaryNotesV2AdminController {
 
   async destroy(req, res) {
     const { uniqueId } = req.params
-    await DeleteSummaryNoteService.call({ id: uniqueId })
+    await DeleteSummaryNoteV2Service.call({ id: uniqueId })
     return res.status(200).json({ data: { success: true } })
   }
 

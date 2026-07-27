@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminSummaryNoteDetailV2 } from '@store/summaryNotes/v2/adminAction'
 import Button from '@components/common/Button'
@@ -6,26 +6,17 @@ import { useUpdateNoteV2 } from '../../hooks/useUpdateNoteV2'
 import { Container, Header, HeaderLeft, Title } from '../../SummaryNotesV2.styles'
 import { TabBar, Tab, TabContent } from './NoteDetailPage.styles'
 import DetailTab from './components/DetailTab'
-import ContentTab from './components/ContentTab'
 import RelatedContentTab from './components/RelatedContentTab'
 
 function NoteDetailPage({ note, onBack }) {
   const dispatch = useDispatch()
-  const [activeTab, setActiveTab] = useState('detail')
+  const [activeTab, setActiveTab] = useState('edit')
 
   const { loading } = useSelector(s => s.summaryNotesV2)
   const { loading: commonLoading } = useSelector(s => s.common)
 
   const { form, handleFileSelect, handleGenerate, handleRemoveFile, handleRemoveSourceFile, handleImageUpload } =
-    useUpdateNoteV2(() => {})
-
-  useEffect(() => {
-    dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId))
-  }, [note.uniqueId, dispatch])
-
-  const isSaving = loading?.isUpdating
-  const isUploading = commonLoading?.isUploading
-  const isLoading = loading?.isNoteDetailLoading
+    useUpdateNoteV2(() => dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId)))
 
   return (
     <Container>
@@ -37,29 +28,22 @@ function NoteDetailPage({ note, onBack }) {
       </Header>
 
       <TabBar>
-        <Tab $active={activeTab === 'detail'} onClick={() => setActiveTab('detail')}>Detail</Tab>
-        <Tab $active={activeTab === 'konten'} onClick={() => setActiveTab('konten')}>Konten</Tab>
+        <Tab $active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}>Edit</Tab>
         <Tab $active={activeTab === 'terkait'} onClick={() => setActiveTab('terkait')}>Konten Terkait</Tab>
       </TabBar>
 
-      {activeTab === 'detail' && (
+      {activeTab === 'edit' && (
         <TabContent>
-          <DetailTab form={form} isLoading={isLoading} isSaving={isSaving} />
-        </TabContent>
-      )}
-
-      {activeTab === 'konten' && (
-        <TabContent>
-          <ContentTab
+          <DetailTab
             form={form}
             handleFileSelect={handleFileSelect}
             handleGenerate={handleGenerate}
             handleRemoveFile={handleRemoveFile}
             handleRemoveSourceFile={handleRemoveSourceFile}
             handleImageUpload={handleImageUpload}
-            isLoading={isLoading}
-            isSaving={isSaving}
-            isUploading={isUploading}
+            isLoading={loading?.isNoteDetailLoading}
+            isSaving={loading?.isUpdating}
+            isUploading={commonLoading?.isUploading}
             loading={loading}
           />
         </TabContent>
@@ -70,8 +54,6 @@ function NoteDetailPage({ note, onBack }) {
           <RelatedContentTab noteId={note.id} />
         </TabContent>
       )}
-
-
     </Container>
   )
 }
