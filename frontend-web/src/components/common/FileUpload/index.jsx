@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { formatFileSize, getFileIcon } from '@utils/fileUtils'
 import {
   UploadSection,
@@ -12,20 +12,6 @@ import {
   ActionsContainer
 } from './FileUpload.styles'
 
-/**
- * Reusable File Upload Component
- * @param {Object} props
- * @param {File|Object} props.file - Uploaded file object {name, type, size, url}
- * @param {Function} props.onFileSelect - Callback when file is selected
- * @param {Function} props.onRemove - Callback to remove file
- * @param {React.ReactNode} props.actions - Action buttons as JSX components
- * @param {Array} props.acceptedTypes - Array of accepted MIME types
- * @param {string} props.acceptedTypesLabel - Label for accepted types (e.g., "PDF, PPTX, DOCX")
- * @param {number} props.maxSizeMB - Maximum file size in MB
- * @param {boolean} props.isUploading - Upload loading state
- * @param {string} props.uploadText - Custom upload area text
- * @param {boolean} props.multiple - Allow multiple file selection
- */
 const FileUpload = ({
   file,
   onFileSelect,
@@ -38,18 +24,30 @@ const FileUpload = ({
   uploadText = 'Click to upload file',
   multiple = false
 }) => {
-    const ref = useRef(null)
-  const handleFileChange = async (e) => {
-    let selectedFile = e.target.files[0]
-    if (multiple) {
-      selectedFile = e.target.files
-    }
+  const ref = useRef(null)
+  const [isDragging, setIsDragging] = useState(false)
 
-    if (selectedFile && onFileSelect) {
-      await onFileSelect(selectedFile)
-    }
-    // Reset input to allow re-selecting the same file
+  const handleFileChange = async (e) => {
+    let selectedFile = multiple ? e.target.files : e.target.files[0]
+    if (selectedFile && onFileSelect) await onFileSelect(selectedFile)
     e.target.value = ''
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
+  const handleDrop = async (e) => {
+    e.preventDefault()
+    setIsDragging(false)
+    const dropped = multiple ? e.dataTransfer.files : e.dataTransfer.files[0]
+    if (dropped && onFileSelect) await onFileSelect(dropped)
   }
 
   const acceptString = acceptedTypes.length > 0 ? acceptedTypes.join(',') : '*'
@@ -57,7 +55,15 @@ const FileUpload = ({
   return (
     <UploadSection className="file-upload-section">
       {!file ? (
-        <UploadArea className="file-input" onClick={() => ref.current.click()}>
+        <UploadArea
+          className="file-input"
+          $isDragging={isDragging}
+          onClick={() => !isUploading && ref.current.click()}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <input
             ref={ref}
             id="file-upload-input"
@@ -69,7 +75,7 @@ const FileUpload = ({
           />
           <UploadIcon>📤</UploadIcon>
           <UploadText>
-            {isUploading ? 'Uploading...' : uploadText}
+            {isUploading ? 'Uploading...' : isDragging ? 'Lepaskan file di sini' : uploadText}
           </UploadText>
           <UploadText style={{ fontSize: '0.85rem', color: '#9ca3af' }}>
             {acceptedTypesLabel} (max {maxSizeMB}MB)

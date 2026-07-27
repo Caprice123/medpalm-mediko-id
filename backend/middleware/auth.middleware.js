@@ -68,10 +68,27 @@ export const requireAdmin = authorize('admin', 'superadmin');
 // Helper middleware to require superadmin role
 export const requireSuperAdmin = authorize('superadmin');
 
+// Variant that also accepts JWT via ?token= query param (for browser-native <video> src requests)
+export const authenticateVideoToken = async (req, res, next) => {
+  try {
+    const token = req.query.token || req.headers.authorization?.replace('Bearer ', '')
+    if (!token) {
+      return res.status(401).json({ message: 'Authorization token is required' })
+    }
+    const { user, session } = await authService.verifyToken(token)
+    req.user = user
+    req.session = session
+    next()
+  } catch {
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' })
+  }
+}
+
 export default {
   authenticate,
   authorize,
   authenticateToken,
+  authenticateVideoToken,
   requireAdmin,
   requireSuperAdmin
 };

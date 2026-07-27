@@ -17,7 +17,7 @@ class BlobService {
    * @param {Object} blobData.metadata - Additional metadata (optional)
    * @returns {Promise<Object>} Created blob record
    */
-  async createBlob({ key, filename, contentType, byteSize, checksum, metadata = {} }) {
+  async createBlob({ key, filename, contentType, byteSize, checksum, metadata = {}, provider = 'idrive' }) {
     const blob = await prisma.blobs.create({
       data: {
         key,
@@ -26,6 +26,7 @@ class BlobService {
         byte_size: byteSize,
         checksum,
         metadata: JSON.stringify(metadata),
+        provider,
         uploaded_at: new Date()
       }
     });

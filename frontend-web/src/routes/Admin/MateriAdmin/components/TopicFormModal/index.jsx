@@ -1,0 +1,180 @@
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { createFeatureNode, updateFeatureNode, uploadNodeVideo } from '@store/featureNodes'
+import Modal from '@components/common/Modal'
+import Button from '@components/common/Button'
+import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
+import Dropdown from '@components/common/Dropdown'
+import FileUpload from '@components/common/FileUpload'
+
+const CLASSIFICATION_OPTIONS = [
+  { value: 'sistem_blok', label: 'Sistem Blok' },
+  { value: 'ilmu_lintas_sistem', label: 'Ilmu Lintas Sistem' },
+]
+
+const VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm', 'video/x-ms-wmv']
+
+function TopicFormModal({ topic, onClose, onSuccess }) {
+  const dispatch = useDispatch()
+  const { loading } = useSelector(s => s.featureNodes)
+  const isEdit = !!topic
+
+  const [form, setForm] = useState({
+    name: '',
+    classification: CLASSIFICATION_OPTIONS[0].value,
+    icon: '',
+    description: '',
+    videoExplanation: '',
+  })
+  const [videoUpload, setVideoUpload] = useState(null) // { blobId, filename, url }
+  const [videoFile, setVideoFile] = useState(null)
+  const [existingVideoUrl, setExistingVideoUrl] = useState(null)
+
+  useEffect(() => {
+    if (isEdit) {
+      setForm({
+        name: topic.name,
+        classification: topic.classification ?? CLASSIFICATION_OPTIONS[0].value,
+        icon: topic.icon ?? '',
+        description: topic.description ?? '',
+        videoExplanation: topic.videoExplanation ?? '',
+      })
+      setExistingVideoUrl(topic.videoUrl ? { url: topic.videoUrl, name: topic.videoFilename, size: topic.videoByteSize } : null)
+    } else {
+      setForm({ name: '', classification: CLASSIFICATION_OPTIONS[0].value, icon: '', description: '', videoExplanation: '' })
+      setExistingVideoUrl(null)
+    }
+    setVideoUpload(null)
+    setVideoFile(null)
+  }, [isEdit, topic])
+
+  const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
+
+  const handleVideoSelect = async (file) => {
+    setVideoFile(file)
+    const result = await dispatch(uploadNodeVideo(file))
+    if (result?.blobId) setVideoUpload(result)
+    setVideoFile(null)
+  }
+
+  const handleRemoveVideo = () => {
+    setVideoUpload(null)
+    setVideoFile(null)
+    setExistingVideoUrl(null)
+  }
+
+  const handleSubmit = () => {
+    const slug = form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    const payload = {
+      name: form.name,
+      slug: isEdit ? topic.slug : slug,
+      visibility: 'general',
+      layer: 1,
+      classification: form.classification,
+      icon: form.icon || null,
+      description: form.description || null,
+      videoExplanation: form.videoExplanation || null,
+      ...(videoUpload?.blobId && { videoBlobId: videoUpload.blobId }),
+    }
+    if (isEdit) {
+      dispatch(updateFeatureNode(topic.id, payload, onSuccess))
+    } else {
+      dispatch(createFeatureNode(payload, onSuccess))
+    }
+  }
+
+  const isSaving = isEdit ? loading.isUpdating : loading.isCreating
+
+  const activeVideo = videoUpload
+    ? { name: videoUpload.filename, url: videoUpload.url, size: null }
+    : existingVideoUrl ?? null
+
+  const videoFileForDisplay = activeVideo
+    ? { name: activeVideo.name, type: 'video/mp4', size: activeVideo.size }
+    : videoFile
+
+  return (
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={isEdit ? 'Edit Topik' : 'Tambah Topik Baru'}
+      size="medium"
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>Batal</Button>
+          <Button variant="primary" onClick={handleSubmit} disabled={!form.name.trim() || isSaving || loading.isUploadingVideo}>
+            {isSaving ? 'Menyimpan...' : 'Simpan'}
+          </Button>
+        </>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <TextInput
+          label="Nama Topik"
+          required
+          value={form.name}
+          onChange={e => set('name', e.target.value)}
+          placeholder="Contoh: Sistem Kardiovaskular"
+        />
+        <Dropdown
+          label="Klasifikasi"
+          options={CLASSIFICATION_OPTIONS}
+          value={CLASSIFICATION_OPTIONS.find(o => o.value === form.classification) ?? CLASSIFICATION_OPTIONS[0]}
+          onChange={opt => set('classification', opt?.value ?? CLASSIFICATION_OPTIONS[0].value)}
+        />
+        <TextInput
+          label="Ikon (emoji)"
+          value={form.icon}
+          onChange={e => set('icon', e.target.value)}
+          placeholder="Contoh: 🫀"
+        />
+        <Textarea
+          label="Deskripsi"
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="Deskripsi singkat topik ini..."
+          rows={3}
+        />
+
+        <div>
+          <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.5rem' }}>
+            Video Penjelasan
+          </div>
+          <FileUpload
+            file={videoFileForDisplay}
+            onFileSelect={handleVideoSelect}
+            onRemove={activeVideo ? handleRemoveVideo : undefined}
+            acceptedTypes={VIDEO_TYPES}
+            acceptedTypesLabel="MP4, MOV, AVI, WebM"
+            maxSizeMB={2048}
+            isUploading={loading.isUploadingVideo}
+            uploadText={loading.isUploadingVideo ? 'Mengunggah video...' : 'Klik atau seret video ke sini'}
+            actions={
+              activeVideo?.url && (
+                <Button
+                  size="small"
+                  variant="primary"
+                  type="button"
+                  onClick={() => window.open(activeVideo.url, '_blank')}
+                >
+                  👁️ Lihat
+                </Button>
+              )
+            }
+          />
+        </div>
+
+        <Textarea
+          label="Keterangan Video"
+          value={form.videoExplanation}
+          onChange={e => set('videoExplanation', e.target.value)}
+          placeholder="Jelaskan isi video ini..."
+          rows={3}
+        />
+      </div>
+    </Modal>
+  )
+}
+
+export default TopicFormModal

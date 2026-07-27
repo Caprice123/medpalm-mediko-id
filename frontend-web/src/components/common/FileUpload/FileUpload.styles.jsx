@@ -5,13 +5,13 @@ export const UploadSection = styled.div`
 `
 
 export const UploadArea = styled.div`
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed ${({ $isDragging }) => $isDragging ? '#3b82f6' : '#cbd5e1'};
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  background: #f8fafc;
+  background: ${({ $isDragging }) => $isDragging ? '#eff6ff' : '#f8fafc'};
 
   &:hover {
     border-color: #3b82f6;

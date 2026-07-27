@@ -132,12 +132,18 @@ class AttachmentService {
     }
 
     const attachment = attachments[0];
-    const presignedUrl = await idriveService.getSignedUrl(attachment.blob.key, expiresIn);
+    const metadata = attachment.blob.metadata ? JSON.parse(attachment.blob.metadata) : {};
+    let url;
+    if (attachment.blob.provider === 'bunny_stream') {
+      const { default: bunnyStreamService } = await import('#services/bunnyStream.service');
+      url = bunnyStreamService.embedUrl(attachment.blob.key);
+    } else if (attachment.blob.provider === 'bunny_storage' || metadata.storageType === 'bunny') {
+      url = metadata.cdnUrl;
+    } else {
+      url = await idriveService.getSignedUrl(attachment.blob.key, expiresIn);
+    }
 
-    return {
-      ...attachment,
-      url: presignedUrl
-    };
+    return { ...attachment, url };
   }
 
   /**
@@ -249,11 +255,11 @@ class AttachmentService {
     // Generate presigned URLs for all attachments
     const attachmentsWithUrls = await Promise.all(
       attachments.map(async (attachment) => {
-        const presignedUrl = await idriveService.getSignedUrl(attachment.blob.key, expiresIn);
-        return {
-          ...attachment,
-          url: presignedUrl
-        };
+        const metadata = attachment.blob.metadata ? JSON.parse(attachment.blob.metadata) : {};
+        const url = metadata.storageType === 'bunny'
+          ? metadata.cdnUrl
+          : await idriveService.getSignedUrl(attachment.blob.key, expiresIn);
+        return { ...attachment, url };
       })
     );
 
