@@ -1,7 +1,3 @@
-import { GetDiagnosticNodesService } from '#services/diagnostic/v2/admin/getDiagnosticNodesService'
-import { CreateDiagnosticNodeService } from '#services/diagnostic/v2/admin/createDiagnosticNodeService'
-import { UpdateDiagnosticNodeService } from '#services/diagnostic/v2/admin/updateDiagnosticNodeService'
-import { DeleteDiagnosticNodeService } from '#services/diagnostic/v2/admin/deleteDiagnosticNodeService'
 import { GetNodeDiagnosticQuestionsService } from '#services/diagnostic/v2/admin/getNodeDiagnosticQuestionsService'
 import { AddNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/addNodeDiagnosticQuestionService'
 import { UpdateNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/updateNodeDiagnosticQuestionService'
@@ -10,36 +6,6 @@ import { ImportDiagnosticQuestionsService } from '#services/diagnostic/v2/admin/
 import XLSX from 'xlsx'
 
 class DiagnosticNodesController {
-  async index(req, res) {
-    const { search, parentId, layer } = req.query
-    const nodes = await GetDiagnosticNodesService.call({
-      search,
-      parentId: parentId !== undefined ? (parentId === 'null' ? null : parentId) : undefined,
-      layer: layer !== undefined ? parseInt(layer) : undefined,
-    })
-    res.json({ success: true, data: nodes })
-  }
-
-  async create(req, res) {
-    const { name, slug, parentId, layer, classification } = req.body
-    const node = await CreateDiagnosticNodeService.call({ name, slug, parentId, layer, classification })
-    res.status(201).json({ success: true, data: node })
-  }
-
-  async update(req, res) {
-    const { id } = req.params
-    const { name, slug, classification } = req.body
-    const node = await UpdateDiagnosticNodeService.call({ id, name, slug, classification })
-    res.json({ success: true, data: node })
-  }
-
-  async destroy(req, res) {
-    const { id } = req.params
-    await DeleteDiagnosticNodeService.call({ id })
-    res.json({ success: true })
-  }
-
-  // Questions
   async getQuestions(req, res) {
     const { nodeId } = req.params
     const { page, perPage } = req.query

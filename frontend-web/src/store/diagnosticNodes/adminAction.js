@@ -1,51 +1,8 @@
-import { actions as nodeActions } from '@store/featureNodes/reducer'
 import { actions as questionActions } from '@store/nodeQuestions/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWithToken } from '@utils/requestUtils'
 
 const BASE = Endpoints.admin.diagnosticNodesV2
-
-export const fetchDiagnosticAdminNodes = (layer, parentId) => async (dispatch) => {
-  try {
-    dispatch(nodeActions.setLoading({ isFetchingNodes: true }))
-    const params = { layer }
-    if (parentId) params.parentId = parentId
-    const res = await getWithToken(BASE, params)
-    dispatch(nodeActions.setNodes(res.data.data || []))
-  } finally {
-    dispatch(nodeActions.setLoading({ isFetchingNodes: false }))
-  }
-}
-
-export const createDiagnosticNode = (payload, onSuccess) => async (dispatch) => {
-  try {
-    dispatch(nodeActions.setLoading({ isCreating: true }))
-    await postWithToken(BASE, payload)
-    onSuccess?.()
-  } finally {
-    dispatch(nodeActions.setLoading({ isCreating: false }))
-  }
-}
-
-export const updateDiagnosticNode = (id, payload, onSuccess) => async (dispatch) => {
-  try {
-    dispatch(nodeActions.setLoading({ isUpdating: true }))
-    await putWithToken(`${BASE}/${id}`, payload)
-    onSuccess?.()
-  } finally {
-    dispatch(nodeActions.setLoading({ isUpdating: false }))
-  }
-}
-
-export const deleteDiagnosticNode = (id, onSuccess) => async (dispatch) => {
-  try {
-    dispatch(nodeActions.setLoading({ isDeleting: true }))
-    await deleteWithToken(`${BASE}/${id}`)
-    onSuccess?.()
-  } finally {
-    dispatch(nodeActions.setLoading({ isDeleting: false }))
-  }
-}
 
 export const fetchDiagnosticAdminQuestions = (nodeId, overrides = {}) => async (dispatch, getState) => {
   try {
@@ -169,9 +126,3 @@ export const deleteUnlinkedDiagnosticQuestion = (questionId, onSuccess) => async
   }
 }
 
-export const fetchDiagnosticNodesRaw = (layer, parentId) => async () => {
-  const params = { layer }
-  if (parentId !== undefined && parentId !== null) params.parentId = parentId
-  const res = await getWithToken(BASE, params)
-  return res.data.data || []
-}

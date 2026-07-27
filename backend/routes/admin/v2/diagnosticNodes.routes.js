@@ -12,12 +12,6 @@ router.use(requireAdmin)
 router.use(requireTabPermission('features'))
 router.use(requireFeaturePermission('diagnostic'))
 
-// Nodes CRUD
-router.get('/', asyncHandler(diagnosticNodesController.index.bind(diagnosticNodesController)))
-router.post('/', asyncHandler(diagnosticNodesController.create.bind(diagnosticNodesController)))
-router.put('/:id', asyncHandler(diagnosticNodesController.update.bind(diagnosticNodesController)))
-router.delete('/:id', asyncHandler(diagnosticNodesController.destroy.bind(diagnosticNodesController)))
-
 // Questions template download
 router.get('/questions/template', diagnosticNodesController.downloadTemplate.bind(diagnosticNodesController))
 
