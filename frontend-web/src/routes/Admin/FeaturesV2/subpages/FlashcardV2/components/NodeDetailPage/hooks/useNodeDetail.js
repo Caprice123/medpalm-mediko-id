@@ -13,6 +13,7 @@ export function useNodeDetail(parentNode) {
     dispatch(updateFilter({ key: 'layer', value: '2' }))
     dispatch(updateFilter({ key: 'parentId', value: String(parentNode.id) }))
     dispatch(updateFilter({ key: 'visibility', value: parentNode.visibility }))
+    dispatch(updateFilter({ key: 'nodeType', value: 'subtopic' }))
     dispatch(updateFilter({ key: 'search', value: '' }))
     dispatch(fetchFeatureNodes())
   }, [dispatch, parentNode.id, parentNode.visibility])

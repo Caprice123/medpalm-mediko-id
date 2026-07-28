@@ -109,6 +109,7 @@ export default function CardsPage({ node, parentNode, onBack }) {
         <MoveCardModal
           card={moveModal.card}
           currentNode={node}
+          nodeTypeFilter="subtopic"
           onClose={() => setMoveModal({ open: false, card: null })}
           onSuccess={handleMoveSuccess}
         />

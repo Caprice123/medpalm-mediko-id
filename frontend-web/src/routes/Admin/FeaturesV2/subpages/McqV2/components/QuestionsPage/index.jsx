@@ -125,6 +125,7 @@ export default function QuestionsPage({ node, parentNode, onBack }) {
         <MoveCardModal
           card={moveModal.question}
           currentNode={node}
+          nodeTypeFilter="subtopic"
           onClose={() => setMoveModal({ open: false, question: null })}
           onSuccess={handleMoveSuccess}
           onMove={(targetNodeId, onSuccess) => dispatch(moveNodeQuestion(node.id, moveModal.question.id, targetNodeId, onSuccess))}

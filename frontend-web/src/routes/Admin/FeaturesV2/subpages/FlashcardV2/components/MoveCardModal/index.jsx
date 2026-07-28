@@ -6,7 +6,7 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import { Nav, NavLink, NavCurrent, NavSep, FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState } from './MoveCardModal.styles'
 
-export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title }) {
+export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title, nodeTypeFilter = null }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.nodeCards)
 
@@ -20,6 +20,7 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
     try {
       const params = { layer, visibility: 'general' }
       if (parentId) params.parentId = parentId
+      if (layer === '2' && nodeTypeFilter) params.nodeType = nodeTypeFilter
       const data = await dispatch(fetchFilteredNodes(params))
       setNodes(data)
     } finally {

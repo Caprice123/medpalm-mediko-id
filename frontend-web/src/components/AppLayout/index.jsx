@@ -219,7 +219,8 @@ function AppLayout() {
     return () => { document.body.style.overflow = '' }
   }, [sidebarOpen])
 
-  const activeFeatures = features.filter(f => f.isActive === true || f.isActive === 'true')
+  const HIDDEN_FEATURE_TYPES = new Set(['anatomy', 'atlas'])
+  const activeFeatures = features.filter(f => (f.isActive === true || f.isActive === 'true') && !HIDDEN_FEATURE_TYPES.has(f.sessionType))
 
   const services = [
     { Icon: PiVideoCamera, name: 'Webinar', route: WebinarRoute.listRoute },

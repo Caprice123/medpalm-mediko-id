@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 export class GetMcqSubtopicsService extends BaseService {
   static async call({ userId, topicId }) {
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: parseInt(topicId), layer: 2, visibility: 'general' },
+      where: { parent_id: parseInt(topicId), layer: 2, visibility: 'general', node_type: 'subtopic' },
       orderBy: { name: 'asc' },
       include: {
         node_statistics: {

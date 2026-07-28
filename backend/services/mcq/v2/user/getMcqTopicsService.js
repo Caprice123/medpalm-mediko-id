@@ -12,7 +12,7 @@ export class GetMcqTopicsService extends BaseService {
     const topicIds = topics.map(t => t.id)
 
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: { in: topicIds }, layer: 2, visibility: 'general' },
+      where: { parent_id: { in: topicIds }, layer: 2, visibility: 'general', node_type: 'subtopic' },
       select: {
         id: true,
         parent_id: true,

@@ -16,6 +16,7 @@ export function useMcqV2Admin() {
     dispatch(updateFilter({ key: 'search', value: '' }))
     dispatch(updateFilter({ key: 'classification', value: '' }))
     dispatch(updateFilter({ key: 'visibility', value: 'general' }))
+    dispatch(updateFilter({ key: 'nodeType', value: '' }))
     setSearch('')
     dispatch(fetchFeatureNodes())
   }, [dispatch])
