@@ -41,8 +41,8 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
       slug: isEdit ? node.slug : slug,
       visibility: 'general',
       layer,
-      ...(layer === 1 && { classification: form.classification }),
-      ...(layer === 2 && parentNode && { parentId: parentNode.id, nodeType: 'subtopik' }),
+      ...(layer === 1 && { classification: form.classification, nodeType: isEdit ? node.nodeType : 'topic' }),
+      ...(layer === 2 && parentNode && { parentId: parentNode.id, nodeType: isEdit ? node.nodeType : 'subtopic' }),
     }
 
     if (isEdit) {

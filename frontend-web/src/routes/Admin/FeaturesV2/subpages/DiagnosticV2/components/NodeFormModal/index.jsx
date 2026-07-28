@@ -32,8 +32,9 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
       slug: isEdit ? node.slug : slug,
       visibility: 'diagnostic',
       layer,
-      ...(layer === 1 && { classification }),
+      ...(layer === 1 && { classification, nodeType: isEdit ? node.nodeType : 'topic' }),
       ...(parentNode && { parentId: parentNode.id }),
+      ...(layer === 2 && { nodeType: isEdit ? node.nodeType : 'module' }),
     }
     if (isEdit) {
       dispatch(updateFeatureNode(node.id, payload, onSuccess))
