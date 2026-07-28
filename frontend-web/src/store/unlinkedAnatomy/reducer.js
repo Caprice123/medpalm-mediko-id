@@ -1,0 +1,25 @@
+import { createSlice } from '@reduxjs/toolkit'
+
+const initialState = {
+  quizzes: [],
+  pagination: { page: 1, perPage: 20, isLastPage: false },
+  loading: {
+    isFetchingQuizzes: false,
+    isDeletingQuiz: false,
+    isAssigningQuiz: false,
+  },
+}
+
+const unlinkedAnatomySlice = createSlice({
+  name: 'unlinkedAnatomy',
+  initialState,
+  reducers: {
+    setQuizzes(state, action) { state.quizzes = action.payload },
+    setPagination(state, action) { state.pagination = { ...state.pagination, ...action.payload } },
+    setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
+    reset() { return initialState },
+  },
+})
+
+export const { actions } = unlinkedAnatomySlice
+export default unlinkedAnatomySlice.reducer

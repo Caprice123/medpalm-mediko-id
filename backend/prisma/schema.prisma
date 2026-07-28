@@ -499,10 +499,26 @@ model feature_nodes {
   feature_node_records  feature_node_records[]
   node_statistics       node_statistics[]
   user_node_progress    user_node_progress[]
+  node_adjacency        node_adjacency?  @relation("NodeAdjacency")
+  prev_adjacencies      node_adjacency[] @relation("NodeAdjacencyPrev")
+  next_adjacencies      node_adjacency[] @relation("NodeAdjacencyNext")
 
   @@index([parent_id])
   @@index([name])
   @@index([layer])
+}
+
+model node_adjacency {
+  node_id      Int  @id
+  prev_node_id Int?
+  next_node_id Int?
+
+  node      feature_nodes  @relation("NodeAdjacency", fields: [node_id], references: [id], onDelete: Cascade)
+  prev_node feature_nodes? @relation("NodeAdjacencyPrev", fields: [prev_node_id], references: [id], onDelete: SetNull)
+  next_node feature_nodes? @relation("NodeAdjacencyNext", fields: [next_node_id], references: [id], onDelete: SetNull)
+
+  @@index([prev_node_id])
+  @@index([next_node_id])
 }
 
 model node_statistics {
@@ -1165,6 +1181,7 @@ model anatomy_quizzes {
   question_count Int      @default(0)
   embed_url      String?
   media_type     String   @default("2d") // '2d' | '3d'
+  version        Int      @default(1)
   created_by     Int
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
@@ -1269,22 +1286,26 @@ model user_anatomy_progress {
 // ============= Atlas Feature =============
 
 model atlas_models {
-  id          Int      @id @default(autoincrement())
-  unique_id   String   @unique @default(uuid())
-  title       String
-  description String?
+  id             Int      @id @default(autoincrement())
+  unique_id      String   @unique @default(uuid())
+  title          String
+  description    String?
   embed_url      String
   editor_content String?  @db.Text
   status         String   @default("draft")
-  created_by  Int
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  version        Int      @default(1)
+  is_deleted     Boolean  @default(false)
+  deleted_at     DateTime?
+  created_by     Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
 
   atlas_structures atlas_structures[]
   atlas_model_tags atlas_model_tags[]
 
   @@index([created_by])
   @@index([status])
+  @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "atlas_models_search_gin_idx")
 }
 

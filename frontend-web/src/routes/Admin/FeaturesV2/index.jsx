@@ -4,6 +4,7 @@ import FlashcardV2 from './subpages/FlashcardV2'
 import SummaryNotesV2 from './subpages/SummaryNotesV2'
 import McqV2 from './subpages/McqV2'
 import DiagnosticV2 from './subpages/DiagnosticV2'
+import AnatomyAtlasV2 from './subpages/AnatomyAtlasV2'
 import {
   Container,
   LoadingState,
@@ -38,6 +39,13 @@ const V2_FEATURES = [
     description: 'Bank soal diagnostik dengan SRS Anki-style, vignette klinis, dan gambar radiologi',
     isActive: true,
   },
+  {
+    sessionType: 'anatomy_atlas',
+    name: 'Anatomi & Atlas 3D',
+    icon: '🫁',
+    description: 'Kelola quiz anatomi dan model Atlas 3D dalam satu panel',
+    isActive: true,
+  },
 ]
 
 function FeaturesV2() {
@@ -55,6 +63,8 @@ function FeaturesV2() {
         return <McqV2 onBack={handleBackToList} />
       case 'diagnostic_v2':
         return <DiagnosticV2 onBack={handleBackToList} />
+      case 'anatomy_atlas':
+        return <AnatomyAtlasV2 onBack={handleBackToList} />
       default:
         return null
     }

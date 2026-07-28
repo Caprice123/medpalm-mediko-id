@@ -87,3 +87,13 @@ export const deleteAnatomyQuiz = (quizId) => async (dispatch) => {
     dispatch(setLoading({ key: 'isDeleteAnatomyQuizLoading', value: false }))
   }
 }
+
+export const createAnatomyQuizV2 = (quizData, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isCreateAnatomyQuizLoading', value: true }))
+    await postWithToken(Endpoints.admin.anatomyV2, quizData)
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isCreateAnatomyQuizLoading', value: false }))
+  }
+}

@@ -4,42 +4,22 @@ import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateAnatomyQuizService extends BaseService {
-  static async call({
-    quizId,
-    title,
-    description,
-    blobId,
-    embedUrl,
-    questionCount,
-    mediaType,
-    tags,
-    questions,
-    status
-  }) {
+  static async call({ quizId, title, description, blobId, embedUrl, questionCount, mediaType, tags, questions, status }) {
     this.validate({ quizId, title, embedUrl, questionCount, tags, questions })
 
-    // Check if quiz exists
-    const existingQuiz = await prisma.anatomy_quizzes.findUnique({
-      where: { unique_id: quizId }
-    })
+    const existingQuiz = await prisma.anatomy_quizzes.findUnique({ where: { unique_id: quizId } })
+    if (!existingQuiz) throw new ValidationError('Quiz tidak ditemukan')
 
-    if (!existingQuiz) {
-      throw new ValidationError('Quiz not found')
-    }
+    const hasTags = tags !== undefined && tags !== null
 
-    // Update quiz with questions and tags in a transaction
     const updatedQuiz = await prisma.$transaction(async tx => {
-      // Delete existing questions and tags
-      await tx.anatomy_questions.deleteMany({
-        where: { quiz_id: existingQuiz.id }
-      })
+      await tx.anatomy_questions.deleteMany({ where: { quiz_id: existingQuiz.id } })
 
-      await tx.anatomy_quiz_tags.deleteMany({
-        where: { quiz_id: existingQuiz.id }
-      })
+      if (hasTags) {
+        await tx.anatomy_quiz_tags.deleteMany({ where: { quiz_id: existingQuiz.id } })
+      }
 
-      // Update quiz with new data
-      const quiz = await tx.anatomy_quizzes.update({
+      return tx.anatomy_quizzes.update({
         where: { unique_id: quizId },
         data: {
           title,
@@ -54,115 +34,49 @@ export class UpdateAnatomyQuizService extends BaseService {
               answer: q.answer,
               answer_type: q.answerType || q.answer_type || 'text',
               choices: q.choices || null,
-              order: q.order !== undefined ? q.order : index
-            }))
+              order: q.order !== undefined ? q.order : index,
+            })),
           },
           question_count: embedUrl ? (questionCount || 0) : questions.length,
-          anatomy_quiz_tags: {
-            create: tags.map(tag => ({
-              tag_id: typeof tag === 'object' ? tag.id : tag
-            }))
-          }
+          ...(hasTags && tags.length > 0 ? {
+            anatomy_quiz_tags: {
+              create: tags.map(tag => ({ tag_id: typeof tag === 'object' ? tag.id : tag }))
+            }
+          } : {}),
         },
         include: {
-          anatomy_questions: {
-            orderBy: { order: 'asc' }
-          },
-          anatomy_quiz_tags: {
-            include: {
-              tags: true
-            }
-          }
-        }
+          anatomy_questions: { orderBy: { order: 'asc' } },
+          anatomy_quiz_tags: { include: { tags: true } },
+        },
       })
-
-      return quiz
     })
 
-    // Update attachment if new blob is provided
     if (blobId) {
-      // Unlink old attachment (don't delete the blob)
       const oldAttachment = await prisma.attachments.findFirst({
-        where: {
-          record_type: 'anatomy_quiz',
-          record_id: existingQuiz.id,
-          name: 'image'
-        }
+        where: { record_type: 'anatomy_quiz', record_id: existingQuiz.id, name: 'image' },
       })
-
-      if (oldAttachment) {
-        await attachmentService.deleteAttachment(oldAttachment.id, false)
-      }
-
-      // Create new attachment
-      await attachmentService.attach({
-        blobId,
-        recordType: 'anatomy_quiz',
-        recordId: updatedQuiz.id,
-        name: 'image'
-      })
+      if (oldAttachment) await attachmentService.deleteAttachment(oldAttachment.id, false)
+      await attachmentService.attach({ blobId, recordType: 'anatomy_quiz', recordId: updatedQuiz.id, name: 'image' })
     }
 
     return updatedQuiz
   }
 
-  static async validate({ quizId, title, embedUrl, questionCount, tags, questions }) {
-    if (!quizId || typeof quizId !== 'string') {
-      throw new ValidationError('Quiz ID is required')
-    }
+  static validate({ quizId, title, embedUrl, questionCount, tags, questions }) {
+    if (!quizId || typeof quizId !== 'string') throw new ValidationError('Quiz ID wajib diisi')
+    if (!title) throw new ValidationError('Judul wajib diisi')
+    if (!questions || !Array.isArray(questions)) throw new ValidationError('Array pertanyaan wajib ada')
+    if (!embedUrl && questions.length === 0) throw new ValidationError('Minimal satu pertanyaan diperlukan jika tidak menggunakan embed URL')
+    if (embedUrl && (!questionCount || questionCount < 1)) throw new ValidationError('Jumlah pertanyaan wajib diisi dan minimal 1 untuk kuis embed 3D')
 
-    if (!title) {
-      throw new ValidationError('Title is required')
-    }
-
-    if (!tags || tags.length === 0) {
-      throw new ValidationError('At least one tag is required')
-    }
-
-    if (!questions || !Array.isArray(questions)) {
-      throw new ValidationError('Questions array is required')
-    }
-
-    // Questions are only required when there is no embed URL
-    if (!embedUrl && questions.length === 0) {
-      throw new ValidationError('At least one question is required when not using an embed URL')
-    }
-
-    if (embedUrl && (!questionCount || questionCount < 1)) {
-      throw new ValidationError('Question count is required and must be at least 1 for 3D embed quizzes')
-    }
-
-    // Validate each question
     questions.forEach((q, index) => {
-      if (!q.question || typeof q.question !== 'string') {
-        throw new ValidationError(`Question ${index + 1}: question text is required`)
-      }
-      if (!q.answer || typeof q.answer !== 'string') {
-        throw new ValidationError(`Question ${index + 1}: answer is required`)
-      }
-
+      if (!q.question) throw new ValidationError(`Pertanyaan ${index + 1}: teks pertanyaan wajib diisi`)
+      if (!q.answer) throw new ValidationError(`Pertanyaan ${index + 1}: jawaban wajib diisi`)
       const answerType = q.answerType || q.answer_type || 'text'
       if (answerType === 'multiple_choice') {
-        if (!q.choices || !Array.isArray(q.choices) || q.choices.length < 2) {
-          throw new ValidationError(`Question ${index + 1}: multiple choice questions must have at least 2 choices`)
-        }
-        // Validate that the answer matches one of the choices
-        if (!q.choices.includes(q.answer)) {
-          throw new ValidationError(`Question ${index + 1}: answer must be one of the provided choices`)
-        }
+        if (!q.choices || q.choices.length < 2) throw new ValidationError(`Pertanyaan ${index + 1}: minimal 2 pilihan diperlukan`)
+        if (!q.choices.includes(q.answer)) throw new ValidationError(`Pertanyaan ${index + 1}: jawaban harus salah satu dari pilihan`)
       }
     })
-
-    // Validate tags exist
-    const tagIds = tags.map(t => (typeof t === 'object' ? t.id : t))
-    const existingTags = await prisma.tags.findMany({
-      where: {
-        id: { in: tagIds },
-      }
-    })
-
-    if (existingTags.length !== tagIds.length) {
-      throw new ValidationError('Some tags are invalid or inactive')
-    }
   }
 }

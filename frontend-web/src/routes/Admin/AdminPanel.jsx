@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { getUserData } from '@utils/authToken'
 import { resetAllState } from '@store/globalAction'
@@ -114,6 +114,7 @@ const getAvailableTabs = (user) => {
 function AdminPanel() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [searchParams] = useSearchParams()
   const [user, setUser] = useState(null)
   const [activeTab, setActiveTab] = useState(null)
   const [availableTabs, setAvailableTabs] = useState([])
@@ -133,11 +134,11 @@ function AdminPanel() {
     const tabs = getAvailableTabs(userData)
     setAvailableTabs(tabs)
 
-    // Set first available tab as active
-    if (tabs.length > 0) {
-      setActiveTab(tabs[0].key)
-    }
-  }, [navigate])
+    // Set tab from URL param if valid, otherwise default to first tab
+    const tabParam = searchParams.get('tab')
+    const initialTab = tabParam && tabs.find(t => t.key === tabParam) ? tabParam : tabs[0]?.key
+    if (initialTab) setActiveTab(initialTab)
+  }, [navigate, searchParams])
 
   useEffect(() => {
     if (activeTab) dispatch(resetAllState())

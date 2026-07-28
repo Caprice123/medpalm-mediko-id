@@ -65,6 +65,10 @@ import adminV2SummaryNotesRoutes from '#routes/admin/v2/summaryNotes.routes';
 import adminV2McqQuestionsRoutes from '#routes/admin/v2/mcqQuestions.routes';
 import adminV2DiagnosticNodesRoutes from '#routes/admin/v2/diagnosticNodes.routes';
 import adminV2DiagnosticQuizRoutes from '#routes/admin/v2/diagnosticQuiz.routes';
+import adminV2AtlasRoutes from '#routes/admin/v2/atlas.routes';
+import adminV2AnatomyRoutes from '#routes/admin/v2/anatomy.routes';
+import adminV2AtlasModelsRoutes from '#routes/admin/v2/atlasModels.routes';
+import adminV2AnatomyQuizzesRoutes from '#routes/admin/v2/anatomyQuizzes.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
 import apiV2DiagnosticRoutes from '#routes/api/v2/diagnostic.routes';
 import apiV21FlashcardRoutes from '#routes/api/v2-1/flashcard.routes';
@@ -237,6 +241,10 @@ app.use('/admin/v2/summary-notes', adminV2SummaryNotesRoutes);
 app.use('/admin/v2/mcq-questions', adminV2McqQuestionsRoutes);
 app.use('/admin/v2/diagnostic-nodes', adminV2DiagnosticNodesRoutes);
 app.use('/admin/v2/diagnostic-quiz', adminV2DiagnosticQuizRoutes);
+app.use('/admin/v2/atlas', adminV2AtlasRoutes);
+app.use('/admin/v2/anatomy', adminV2AnatomyRoutes);
+app.use('/admin/v2/atlas-models', adminV2AtlasModelsRoutes);
+app.use('/admin/v2/anatomy-quizzes', adminV2AnatomyQuizzesRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

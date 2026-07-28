@@ -14,7 +14,10 @@ export class DeleteAtlasModelService extends BaseService {
       throw new ValidationError('Atlas model not found')
     }
 
-    await prisma.$executeRaw`DELETE FROM atlas_models WHERE id = ${model.id}`
+    await prisma.atlas_models.update({
+      where: { id: model.id },
+      data: { is_deleted: true, deleted_at: new Date() },
+    })
   }
 
   static validate(modelId) {

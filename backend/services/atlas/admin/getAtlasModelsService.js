@@ -11,7 +11,7 @@ export class GetAtlasModelsService extends BaseService {
     const skip = (page - 1) * perPage
     const take = perPage + 1
 
-    const where = {}
+    const where = { is_deleted: false }
     const tagFilters = []
 
     if (filters.topic) {

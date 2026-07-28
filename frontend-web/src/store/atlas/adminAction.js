@@ -88,3 +88,13 @@ export const deleteAtlasModel = (modelId, onSuccess) => async (dispatch) => {
     dispatch(setLoading({ key: 'isDeleteAtlasLoading', value: false }))
   }
 }
+
+export const createAtlasModelV2 = (modelData, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isCreateAtlasLoading', value: true }))
+    await postWithToken(Endpoints.admin.atlasV2, modelData)
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isCreateAtlasLoading', value: false }))
+  }
+}

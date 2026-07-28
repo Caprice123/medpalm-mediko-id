@@ -15,7 +15,7 @@ export class GetAtlasModelDetailService extends BaseService {
       }
     })
 
-    if (!model) {
+    if (!model || model.is_deleted) {
       throw new ValidationError('Atlas model not found')
     }
 
