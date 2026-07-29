@@ -15,6 +15,7 @@ import {
   EmbedCard, EmbedFrame,
   SectionCard, SectionHeader, SectionTitle, SectionSubtitle,
   ModelsGrid, ModelItemCard, ModelItemTop, ModelItemIcon, ModelItemTitle, ModelItemSubtitle,
+  AdjacentNav, AdjacentCard, AdjacentCardEmpty, AdjacentLabel, AdjacentTitle,
 } from './AnatomyQuizDetail.styles'
 
 const DIFFICULTY_LABELS = { easy: 'Mudah', medium: 'Sedang', hard: 'Sulit' }
@@ -43,13 +44,30 @@ function AnatomyQuizDetailPage() {
   const atlasAccessible = canUseFeature('atlas', features, userStatus)
 
   const [linkedAtlasModels, setLinkedAtlasModels] = useState([])
+  const [prevQuiz, setPrevQuiz] = useState(null)
+  const [nextQuiz, setNextQuiz] = useState(null)
 
   useEffect(() => {
-    if (!detail || !atlasAccessible) return
+    if (!detail) return
+    setPrevQuiz(null)
+    setNextQuiz(null)
+    setLinkedAtlasModels([])
+  }, [detail?.quiz?.uniqueId])
+
+  useEffect(() => {
+    if (!detail) return
     const id = detail.quiz.uniqueId
 
-    dispatch(fetchUserContentRelations({ sourceType: 'anatomy_quiz', sourceUniqueId: id, targetType: 'atlas_model', relationType: 'feature_relation' }))
-      .then(links => setLinkedAtlasModels(links))
+    if (atlasAccessible) {
+      dispatch(fetchUserContentRelations({ sourceType: 'anatomy_quiz', sourceUniqueId: id, targetType: 'atlas_model', relationType: 'feature_relation' }))
+        .then(links => setLinkedAtlasModels(links))
+    }
+
+    dispatch(fetchUserContentRelations({ sourceType: 'anatomy_quiz', sourceUniqueId: id, targetType: 'anatomy_quiz' }))
+      .then(links => {
+        setPrevQuiz(links.find(l => l.relationType === 'prev') ?? null)
+        setNextQuiz(links.find(l => l.relationType === 'next') ?? null)
+      })
   }, [dispatch, detail?.quiz?.uniqueId, atlasAccessible])
 
   if (isLoading || !detail) return <Loading />
@@ -154,6 +172,26 @@ function AnatomyQuizDetailPage() {
             </ModelsGrid>
           </SectionCard>
         )}
+
+        <AdjacentNav>
+          {prevQuiz ? (
+            <AdjacentCard onClick={() => navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug, uniqueId: prevQuiz.linkedUniqueId }))}>
+              <AdjacentLabel>◀ Sebelumnya</AdjacentLabel>
+              <AdjacentTitle>{prevQuiz.linkedTitle}</AdjacentTitle>
+            </AdjacentCard>
+          ) : (
+            <AdjacentCardEmpty />
+          )}
+
+          {nextQuiz ? (
+            <AdjacentCard $right onClick={() => navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug, uniqueId: nextQuiz.linkedUniqueId }))}>
+              <AdjacentLabel>Berikutnya ▶</AdjacentLabel>
+              <AdjacentTitle>{nextQuiz.linkedTitle}</AdjacentTitle>
+            </AdjacentCard>
+          ) : (
+            <AdjacentCardEmpty $right />
+          )}
+        </AdjacentNav>
 
       </Inner>
     </PageWrapper>
