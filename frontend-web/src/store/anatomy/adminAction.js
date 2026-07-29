@@ -8,6 +8,8 @@ const {
   setQuizzes,
   setPagination,
   setDetail,
+  setQuizRelations,
+  setSearchedAnatomyQuizzes,
 } = actions
 
 export const fetchAdminAnatomyQuizzes = () => async (dispatch, getState) => {
@@ -95,5 +97,45 @@ export const createAnatomyQuizV2 = (quizData, onSuccess) => async (dispatch) => 
     if (onSuccess) onSuccess()
   } finally {
     dispatch(setLoading({ key: 'isCreateAnatomyQuizLoading', value: false }))
+  }
+}
+
+export const fetchAnatomyQuizRelations = (uniqueId) => async (dispatch) => {
+  dispatch(setLoading({ key: 'isFetchingQuizRelations', value: true }))
+  try {
+    const res = await getWithToken(Endpoints.admin.anatomyQuizRelations(uniqueId))
+    dispatch(setQuizRelations(res.data.data || []))
+  } finally {
+    dispatch(setLoading({ key: 'isFetchingQuizRelations', value: false }))
+  }
+}
+
+export const addAnatomyQuizRelation = (sourceUniqueId, targetUniqueId, onSuccess) => async (dispatch) => {
+  dispatch(setLoading({ key: 'isAddingQuizRelation', value: true }))
+  try {
+    await postWithToken(Endpoints.admin.anatomyQuizRelations(sourceUniqueId), { targetUniqueId })
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isAddingQuizRelation', value: false }))
+  }
+}
+
+export const removeAnatomyQuizRelation = (sourceUniqueId, relationId, onSuccess) => async (dispatch) => {
+  dispatch(setLoading({ key: 'isDeletingQuizRelation', value: true }))
+  try {
+    await deleteWithToken(Endpoints.admin.anatomyQuizRelations(sourceUniqueId) + `/${relationId}`)
+    if (onSuccess) onSuccess()
+  } finally {
+    dispatch(setLoading({ key: 'isDeletingQuizRelation', value: false }))
+  }
+}
+
+export const searchAnatomyQuizzesForRelation = (search) => async (dispatch) => {
+  dispatch(setLoading({ key: 'isSearchingAnatomyQuizzes', value: true }))
+  try {
+    const res = await getWithToken(Endpoints.admin.anatomy, { search, perPage: 10, page: 1 })
+    dispatch(setSearchedAnatomyQuizzes(res.data.data || []))
+  } finally {
+    dispatch(setLoading({ key: 'isSearchingAnatomyQuizzes', value: false }))
   }
 }

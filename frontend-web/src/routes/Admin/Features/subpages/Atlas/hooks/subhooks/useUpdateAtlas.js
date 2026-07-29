@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
-import { useMemo } from 'react'
-import { updateAtlasModel, fetchAdminAtlasModels } from '@store/atlas/adminAction'
+import { useMemo, useEffect } from 'react'
+import { updateAtlasModel, fetchAdminAtlasModels, fetchAtlasModelRelations } from '@store/atlas/adminAction'
 import { upload } from '@store/common/action'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
@@ -10,6 +10,12 @@ export const useUpdateAtlas = (closeCallback) => {
   const dispatch = useDispatch()
   const { detail: selectedModel } = useSelector(state => state.atlas)
   const { tags } = useSelector(state => state.tags)
+
+  useEffect(() => {
+    if (selectedModel?.uniqueId) {
+      dispatch(fetchAtlasModelRelations(selectedModel.uniqueId))
+    }
+  }, [dispatch, selectedModel?.uniqueId])
 
   const topicTags = useMemo(
     () => tags.find(t => t.name === 'atlas_topic')?.tags || [],

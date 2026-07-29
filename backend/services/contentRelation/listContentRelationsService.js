@@ -34,6 +34,22 @@ async function resolveTargetDetails(relations) {
     decks.forEach(d => { resolved[`flashcard_deck:${d.id}`] = d })
   }
 
+  if (byType.atlas_model?.length) {
+    const models = await prisma.atlas_models.findMany({
+      where: { id: { in: byType.atlas_model } },
+      select: { id: true, unique_id: true, title: true },
+    })
+    models.forEach(m => { resolved[`atlas_model:${m.id}`] = m })
+  }
+
+  if (byType.anatomy_quiz?.length) {
+    const quizzes = await prisma.anatomy_quizzes.findMany({
+      where: { id: { in: byType.anatomy_quiz } },
+      select: { id: true, unique_id: true, title: true },
+    })
+    quizzes.forEach(q => { resolved[`anatomy_quiz:${q.id}`] = q })
+  }
+
   return relations.map(rel => {
     const item = resolved[`${rel.target_type}:${rel.target_id}`]
     return {
@@ -44,17 +60,16 @@ async function resolveTargetDetails(relations) {
       targetId: rel.target_id,
       targetUniqueId: item?.unique_id || null,
       targetTitle: item?.title || null,
-      order: rel.order,
+      relationType: rel.relation_type ?? '',
     }
   })
 }
 
 export class ListContentRelationsService extends BaseService {
-  static async call({ sourceType, sourceId }) {
-    const relations = await prisma.content_relations.findMany({
-      where: { source_type: sourceType, source_id: Number(sourceId) },
-      orderBy: { order: 'asc' },
-    })
+  static async call({ sourceType, sourceId, targetType = null }) {
+    const where = { source_type: sourceType, source_id: Number(sourceId) }
+    if (targetType) where.target_type = targetType
+    const relations = await prisma.content_relations.findMany({ where, orderBy: { id: 'asc' } })
     return resolveTargetDetails(relations)
   }
 }

@@ -35,6 +35,24 @@ export const fetchFeatureNodes = () => async (dispatch, getState) => {
   }
 }
 
+export const fetchFeatureNodesWithStats = () => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading({ isFetchingNodes: true }))
+    const { filter } = getState().featureNodes
+    const queryParams = {}
+    if (filter.search) queryParams.search = filter.search
+    if (filter.nodeType) queryParams.nodeType = filter.nodeType
+    if (filter.visibility) queryParams.visibility = filter.visibility
+    if (filter.classification) queryParams.classification = filter.classification
+    if (filter.layer) queryParams.layer = filter.layer
+    if (filter.parentId) queryParams.parentId = filter.parentId
+    const response = await getWithToken(Endpoints.admin.featureNodesV2, queryParams)
+    dispatch(setNodes(response.data.data || []))
+  } finally {
+    dispatch(setLoading({ isFetchingNodes: false }))
+  }
+}
+
 export const createFeatureNode = (payload, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ isCreating: true }))

@@ -6,7 +6,6 @@ const initialState = {
   filter: {
     search: undefined,
     topic: undefined,
-    
     status: undefined
   },
   detail: undefined,
@@ -16,6 +15,8 @@ const initialState = {
     perPage: 20,
     isLastPage: false
   },
+  quizRelations: [],
+  searchedAnatomyQuizzes: [],
   loading: {
     isGetListAnatomyQuizLoading: false,
     isGetDetailAnatomyQuizLoading: false,
@@ -24,6 +25,10 @@ const initialState = {
     isDeleteAnatomyQuizLoading: false,
     isUploadingImage: false,
     isSubmitAnatomyQuizLoading: false,
+    isFetchingQuizRelations: false,
+    isAddingQuizRelation: false,
+    isDeletingQuizRelation: false,
+    isSearchingAnatomyQuizzes: false,
   },
   error: null
 }
@@ -52,7 +57,13 @@ const { reducer, actions } = createSlice({
     },
     updateFilter: (state, { payload: { key, value } }) => {
       state.filter[key] = value
-    }
+    },
+    setQuizRelations: (state, { payload }) => {
+      state.quizRelations = payload
+    },
+    setSearchedAnatomyQuizzes: (state, { payload }) => {
+      state.searchedAnatomyQuizzes = payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(resetAllState, (state) => ({

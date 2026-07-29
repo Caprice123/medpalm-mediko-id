@@ -3,7 +3,6 @@ import { UpdateAtlasModelService } from '#services/atlas/admin/updateAtlasModelS
 import { DeleteAtlasModelService } from '#services/atlas/admin/deleteAtlasModelService'
 import { AssignAtlasToNodeService } from '#services/atlas/v2/admin/assignAtlasToNodeService'
 import { AtlasModelListSerializer } from '#serializers/admin/v2/atlasModelListSerializer'
-
 class AtlasModelsController {
   async getUnlinked(req, res) {
     const { page = 1, perPage = 20, search = '' } = req.query

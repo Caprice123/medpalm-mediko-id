@@ -16,6 +16,8 @@ export function useQuizCreate(onSuccess, nodeId, quiz = null) {
       description: quiz?.description ?? '',
       embedUrl: quiz?.embedUrl ?? '',
       questionCount: quiz?.questionCount ?? '',
+      difficulty: quiz?.difficulty ?? 'medium',
+      estimatedMinutes: quiz?.estimatedMinutes ?? '',
     },
     onSubmit: (values, { resetForm }) => {
       const payload = {
@@ -23,6 +25,8 @@ export function useQuizCreate(onSuccess, nodeId, quiz = null) {
         description: values.description.trim(),
         embedUrl: values.embedUrl.trim(),
         questionCount: parseInt(values.questionCount) || 0,
+        difficulty: values.difficulty || 'medium',
+        estimatedMinutes: values.estimatedMinutes ? parseInt(values.estimatedMinutes) : null,
         tags: [],
         status: 'published',
       }

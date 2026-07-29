@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import {
     fetchAdminAnatomyQuizzes,
     updateAnatomyQuiz,
+    fetchAnatomyQuizRelations,
 } from '@store/anatomy/adminAction'
 import { useUploadAttachment } from './useUploadAttachment'
 
@@ -12,6 +13,12 @@ export const useUpdateQuiz = (closeCallback) => {
   const [showConfirmClose, setShowConfirmClose] = useState(false)
   const initialFormData = useRef(null)
   const { detail: selectedQuiz } = useSelector(state => state.anatomy)
+
+  useEffect(() => {
+    if (selectedQuiz?.uniqueId) {
+      dispatch(fetchAnatomyQuizRelations(selectedQuiz.uniqueId))
+    }
+  }, [dispatch, selectedQuiz?.uniqueId])
   const { tags } = useSelector(state => state.tags)
 
   // Get anatomy topic tags from Redux

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchFeatureNodes, updateFilter, deleteFeatureNode } from '@store/featureNodes'
+import { fetchFeatureNodesWithStats, updateFilter, deleteFeatureNode } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import NodeFormModal from './components/NodeFormModal'
@@ -34,7 +34,7 @@ export default function AnatomyAtlasV2({ onBack }) {
     dispatch(updateFilter({ key: 'parentId', value: parentId ? String(parentId) : '' }))
     dispatch(updateFilter({ key: 'visibility', value: VISIBILITY }))
     dispatch(updateFilter({ key: 'nodeType', value: layer === 2 ? 'module' : '' }))
-    dispatch(fetchFeatureNodes())
+    dispatch(fetchFeatureNodesWithStats())
   }
 
   useEffect(() => {
@@ -66,6 +66,23 @@ export default function AnatomyAtlasV2({ onBack }) {
     {
       header: LAYER_LABELS[currentLayer] ?? 'Node',
       render: (n) => <span style={{ fontWeight: 600, color: '#111827' }}>{n.name}</span>,
+    },
+    {
+      header: 'Klasifikasi',
+      width: '160px',
+      render: (n) => <span style={{ color: '#6b7280' }}>{n.classification ?? '-'}</span>,
+    },
+    {
+      header: 'Atlas 3D',
+      width: '90px',
+      align: 'center',
+      render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.atlasCount ?? 0}</span>,
+    },
+    {
+      header: 'Quiz',
+      width: '70px',
+      align: 'center',
+      render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.quizCount ?? 0}</span>,
     },
     {
       header: 'Aksi',

@@ -65,6 +65,32 @@ export default function QuizCreateModal({ nodeId, onSuccess, onClose, quiz = nul
         />
         <HelpText>Jumlah pertanyaan yang harus dijawab mahasiswa untuk model 3D ini</HelpText>
       </FormSection>
+
+      <FormSection>
+        <Label>Tingkat Kesulitan</Label>
+        <Input
+          as="select"
+          value={form.values.difficulty}
+          onChange={e => form.setFieldValue('difficulty', e.target.value)}
+        >
+          <option value="easy">Mudah</option>
+          <option value="medium">Sedang</option>
+          <option value="hard">Sulit</option>
+        </Input>
+      </FormSection>
+
+      <FormSection>
+        <Label>Estimasi Waktu (menit)</Label>
+        <Input
+          type="number"
+          min="1"
+          max="120"
+          value={form.values.estimatedMinutes}
+          onChange={e => form.setFieldValue('estimatedMinutes', e.target.value)}
+          placeholder="e.g., 10"
+        />
+        <HelpText>Perkiraan waktu yang dibutuhkan untuk menyelesaikan quiz ini</HelpText>
+      </FormSection>
     </Modal>
   )
 }

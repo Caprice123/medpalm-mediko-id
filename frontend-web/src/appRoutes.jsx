@@ -18,6 +18,7 @@ import { skripsiRoutes } from './routes/SkripsiBuilder/routes';
 import { topupRoutes } from './routes/Topup/routes';
 import { oscePracticeRoutes } from './routes/OscePractice/routes';
 import { atlasRoutes } from './routes/Atlas/routes';
+import { atlasQuizRoutes } from './routes/AtlasQuiz/routes';
 import { webinarRoutes } from './routes/Webinar/routes';
 import { eventRoutes } from './routes/Event/routes';
 import { challengeRoutes } from './routes/Challenge/routes';
@@ -80,6 +81,7 @@ const appRoutes = [
                             ...topupRoutes,
                             ...oscePracticeRoutes,
                             ...atlasRoutes,
+                            ...atlasQuizRoutes,
                             ...webinarRoutes,
                             ...eventRoutes,
                             ...challengeRoutes,

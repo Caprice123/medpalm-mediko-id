@@ -16,4 +16,5 @@ router.put('/unlinked/:uniqueId', asyncHandler(anatomyQuizzesController.updateUn
 router.delete('/unlinked/:uniqueId', asyncHandler(anatomyQuizzesController.deleteUnlinked.bind(anatomyQuizzesController)))
 router.put('/unlinked/:uniqueId/assign', asyncHandler(anatomyQuizzesController.assignToNode.bind(anatomyQuizzesController)))
 
+
 export default router

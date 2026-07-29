@@ -4,6 +4,7 @@ import TagSelector from '@components/common/TagSelector'
 import FileUpload from '@components/common/FileUpload'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
+import RelatedQuizzesSection from '../RelatedQuizzesSection'
 import {
   FormSection,
   Label,
@@ -31,7 +32,7 @@ import { useSelector } from 'react-redux'
 import { useUpdateQuiz } from '../../hooks/subhooks/useUpdateQuiz'
 
 const UpdateQuizModal = ({ onClose }) => {
-    const { loading } = useSelector(state => state.anatomy)
+    const { loading, detail: selectedQuiz } = useSelector(state => state.anatomy)
     const { tags } = useSelector(state => state.tags)
 
     const { form, handleAddQuestion, handleRemoveQuestion, handleAddOption, handleRemoveOption, handleImageSelect } = useUpdateQuiz(onClose)
@@ -188,6 +189,10 @@ const UpdateQuizModal = ({ onClose }) => {
             helpText="Pilih topik anatomi untuk mengorganisir quiz"
           />
         </FormSection>
+
+        {selectedQuiz?.uniqueId && (
+          <RelatedQuizzesSection quizUniqueId={selectedQuiz.uniqueId} />
+        )}
 
         {form.values.mediaType === 'upload' && <QuestionsSection>
           <QuestionsSectionHeader>

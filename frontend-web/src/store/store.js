@@ -42,6 +42,8 @@ import flashcardNodes from "./flashcardNodes/reducer";
 import diagnosticNodes from "./diagnosticNodes/reducer";
 import mcqNodes from "./mcqNodes/reducer";
 import review from "./review/reducer";
+import atlasQuiz from "./atlasQuiz/reducer";
+import featureV2 from "./featureV2/reducer";
 
 export const rootReducer = combineReducers({
     auth,
@@ -86,6 +88,8 @@ export const rootReducer = combineReducers({
     flashcardNodes,
     diagnosticNodes,
     mcqNodes,
+    atlasQuiz,
+    featureV2,
 })
 
 export const store = configureStore({

@@ -2,10 +2,10 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const VALID_TYPES = ['flashcard_deck', 'mcq_topic', 'summary_note']
+const VALID_TYPES = ['flashcard_deck', 'mcq_topic', 'summary_note', 'atlas_model', 'anatomy_quiz']
 
 export class CreateContentRelationService extends BaseService {
-  static async call({ sourceType, sourceId, targetType, targetId }) {
+  static async call({ sourceType, sourceId, targetType, targetId, relationType = '' }) {
     if (!VALID_TYPES.includes(sourceType)) throw new ValidationError('Tipe sumber tidak valid')
     if (!VALID_TYPES.includes(targetType)) throw new ValidationError('Tipe target tidak valid')
     if (!sourceId) throw new ValidationError('ID sumber wajib diisi')
@@ -19,6 +19,7 @@ export class CreateContentRelationService extends BaseService {
           source_id: Number(sourceId),
           target_type: targetType,
           target_id: Number(targetId),
+          relation_type: relationType,
         },
       })
       return relation

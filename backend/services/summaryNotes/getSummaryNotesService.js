@@ -14,7 +14,7 @@ export class GetSummaryNotesService extends BaseService {
     // Fetch perPage + 1 to determine if there's a next page
     const take = perPage + 1
 
-    const where = { is_deleted: false }
+    const where = { is_deleted: false, version: 1 }
 
     if (filters.userRole === 'user') {
       where.status = 'published'

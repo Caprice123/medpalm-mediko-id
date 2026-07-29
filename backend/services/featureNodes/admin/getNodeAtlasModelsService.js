@@ -22,7 +22,7 @@ export class GetNodeAtlasModelsService extends BaseService {
       include: {
         atlas_model_tags: { include: { tags: { include: { tag_group: true } } } },
       },
-      orderBy: { created_at: 'desc' },
+      orderBy: { title: 'asc' },
       skip: (page - 1) * perPage,
       take: perPage + 1,
     })

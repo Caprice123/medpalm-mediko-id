@@ -24,7 +24,7 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
         anatomy_quiz_tags: { include: { tags: { include: { tag_group: true } } } },
         anatomy_questions: { orderBy: { order: 'asc' } },
       },
-      orderBy: { created_at: 'desc' },
+      orderBy: { title: 'asc' },
       skip: (page - 1) * perPage,
       take: perPage + 1,
     })

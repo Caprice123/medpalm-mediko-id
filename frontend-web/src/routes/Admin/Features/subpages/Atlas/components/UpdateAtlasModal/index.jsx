@@ -5,6 +5,7 @@ import Button from '@components/common/Button'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import { useSelector } from 'react-redux'
 import { useUpdateAtlas } from '../../hooks/subhooks/useUpdateAtlas'
+import RelatedModelsSection from '../RelatedModelsSection'
 import {
   FormSection,
   Label,
@@ -19,7 +20,7 @@ import {
 } from './UpdateAtlasModal.styles'
 
 function UpdateAtlasModal({ onClose }) {
-  const { loading } = useSelector(state => state.atlas)
+  const { loading, detail: selectedModel } = useSelector(state => state.atlas)
   const { tags } = useSelector(state => state.tags)
 
   const { form, handleImageUpload } = useUpdateAtlas(onClose)
@@ -118,6 +119,10 @@ function UpdateAtlasModal({ onClose }) {
           helpText="Pilih subtopik untuk mengorganisir model"
         />
       </FormSection>
+
+      {selectedModel?.uniqueId && (
+        <RelatedModelsSection modelUniqueId={selectedModel.uniqueId} />
+      )}
 
       <FormSection>
         <Label>Status</Label>

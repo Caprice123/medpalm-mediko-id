@@ -16,4 +16,5 @@ router.put('/unlinked/:uniqueId', asyncHandler(atlasModelsController.updateUnlin
 router.delete('/unlinked/:uniqueId', asyncHandler(atlasModelsController.deleteUnlinked.bind(atlasModelsController)))
 router.put('/unlinked/:uniqueId/assign', asyncHandler(atlasModelsController.assignToNode.bind(atlasModelsController)))
 
+
 export default router

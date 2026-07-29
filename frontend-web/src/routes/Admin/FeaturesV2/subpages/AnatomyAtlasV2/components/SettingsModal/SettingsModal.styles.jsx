@@ -19,6 +19,20 @@ export const HintText = styled.div`
   line-height: 1.4;
 `
 
+export const SectionDivider = styled.div`
+  border-top: 1.5px solid #e5e7eb;
+  margin: 1.5rem 0;
+  padding-top: 1.25rem;
+
+  h4 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1.25rem 0;
+    letter-spacing: 0.01em;
+  }
+`
+
 export const ToggleSwitch = styled.label`
   position: relative;
   display: inline-block;

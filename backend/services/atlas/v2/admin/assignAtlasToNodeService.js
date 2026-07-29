@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { incrementNodeStat } from '#utils/nodeStatisticsHelper'
 
 export class AssignAtlasToNodeService extends BaseService {
   static async call({ uniqueId, nodeId }) {
@@ -12,11 +13,13 @@ export class AssignAtlasToNodeService extends BaseService {
     })
     if (existing) throw new ValidationError('Model atlas ini sudah terhubung ke modul')
 
-    const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
+    const parsedNodeId = parseInt(nodeId)
+    const node = await prisma.feature_nodes.findUnique({ where: { id: parsedNodeId } })
     if (!node) throw new ValidationError('Modul tidak ditemukan')
 
     await prisma.feature_node_records.create({
-      data: { node_id: parseInt(nodeId), record_type: '3d_atlas', record_id: model.id },
+      data: { node_id: parsedNodeId, record_type: '3d_atlas', record_id: model.id },
     })
+    await incrementNodeStat(parsedNodeId, '3d_atlas')
   }
 }

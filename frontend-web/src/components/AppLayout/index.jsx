@@ -22,7 +22,7 @@ const FEATURE_ICONS = {
   exercise:        PiClipboardText,
   mcq:             PiListNumbers,
   flashcard:       PiCards,
-  anatomy:         PiFlask,
+  anatomy_atlas:   PiFlask,
   calculator:      PiCalculator,
   diagnostic:      PiMagnifyingGlass,
   skripsi_builder: PiFileText,
@@ -75,6 +75,7 @@ import { ChatbotRoute } from '@routes/Chatbot/routes'
 import { SkripsiRoute } from '@routes/SkripsiBuilder/routes'
 import { OscePracticeRoute } from '@routes/OscePractice/routes'
 import { AtlasRoute } from '@routes/Atlas/routes'
+import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { WebinarRoute } from '@routes/Webinar/routes'
 import { EventRoute } from '@routes/Event/routes'
 import { ChallengeRoute } from '@routes/Challenge/routes'
@@ -104,6 +105,7 @@ const SESSION_ROUTES = {
   skripsi_builder: SkripsiRoute.moduleRoute,
   osce_practice: OscePracticeRoute.moduleRoute,
   atlas: AtlasRoute.moduleRoute,
+  anatomy_atlas: AtlasQuizRoute.moduleRoute,
   challenge: ChallengeRoute.moduleRoute,
 }
 
@@ -115,7 +117,7 @@ function AppLayout() {
   const isUser = currentUser?.role === 'user'
   const isNonUser = !isUser
 
-  const { features } = useSelector(state => state.feature)
+  const { features: v1Features } = useSelector(state => state.feature)
   const { userStatus } = useSelector(state => state.pricing)
 
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
@@ -205,8 +207,8 @@ function AppLayout() {
   }, [])
 
   useEffect(() => {
-    if (features.length === 0) dispatch(fetchFeatures())
-  }, [dispatch, features.length])
+    if (v1Features.length === 0) dispatch(fetchFeatures())
+  }, [dispatch, v1Features.length])
 
   useEffect(() => {
     // if (isUser) return
@@ -219,8 +221,31 @@ function AppLayout() {
     return () => { document.body.style.overflow = '' }
   }, [sidebarOpen])
 
-  const HIDDEN_FEATURE_TYPES = new Set(['anatomy', 'atlas'])
-  const activeFeatures = features.filter(f => (f.isActive === true || f.isActive === 'true') && !HIDDEN_FEATURE_TYPES.has(f.sessionType))
+  const activeFeatures = (() => {
+    const active = v1Features.filter(f => f.isActive === true || f.isActive === 'true')
+    const result = []
+    let anatomyAtlasAdded = false
+    for (const f of active) {
+      if (f.sessionType === 'atlas' || f.sessionType === 'anatomy') {
+        if (!anatomyAtlasAdded) {
+          const atlasF = active.find(x => x.sessionType === 'atlas')
+          const anatomyF = active.find(x => x.sessionType === 'anatomy')
+          result.push({
+            id: 'anatomy_atlas_combined',
+            sessionType: 'anatomy_atlas',
+            name: `${atlasF?.name || 'Atlas 3D'} & ${anatomyF?.name || 'Quiz Anatomi'}`,
+            accessType: atlasF?.accessType || anatomyF?.accessType || 'subscription',
+            cost: 0,
+            isAnatomyAtlas: true,
+          })
+          anatomyAtlasAdded = true
+        }
+      } else {
+        result.push(f)
+      }
+    }
+    return result
+  })()
 
   const services = [
     { Icon: PiVideoCamera, name: 'Webinar', route: WebinarRoute.listRoute },
@@ -248,7 +273,7 @@ function AppLayout() {
   const hasExpiringWarning = expiringBuckets.some(b => b.daysRemaining <= 7)
   const hasCreditDetails = expiringBuckets.length > 0 || parseFloat(permanentBalance) > 0
 
-  const featureLabels = Object.fromEntries(features.map(f => [f.sessionType, f.name]))
+  const featureLabels = Object.fromEntries(v1Features.map(f => [f.sessionType, f.name]))
   const activeSubs = (userStatus?.activeFeatureKeys ?? []).filter(({ feature }) => featureLabels[feature])
   const hasSubWarning = activeSubs.some(s => {
     if (!s.endDate) return false
@@ -293,12 +318,16 @@ function AppLayout() {
                 </SidebarItem>
                 {activeFeatures.map(feature => {
                   const route = SESSION_ROUTES[feature.sessionType]
+                  const displayName = feature.name
+
                   let isLocked = false
                   let lockReason = ''
                 //   if (isUser) {
                     const userCredits = parseFloat(userStatus?.creditBalance || 0)
                     const activeFeatureKeys = userStatus?.activeFeatureKeys || []
-                    const hasFeatureSubscription = activeFeatureKeys.some(f => f.feature === feature.sessionType)
+                    const hasFeatureSubscription = feature.isAnatomyAtlas
+                      ? activeFeatureKeys.some(f => f.feature === 'atlas' || f.feature === 'anatomy')
+                      : activeFeatureKeys.some(f => f.feature === feature.sessionType)
                     const needsSubscription = feature.accessType === 'subscription' || feature.accessType === 'subscription_and_credits'
                     const needsCredits = feature.accessType === 'credits' || feature.accessType === 'subscription_and_credits'
                     const isFree = feature.accessType === 'free'
@@ -320,7 +349,7 @@ function AppLayout() {
                       onClick={() => {
                         if (isLocked) return navigateTo(TopupRoute.moduleRoute)
                         if (route) {
-                          trackFeatureVisit({ sessionType: feature.sessionType, icon: feature.icon, name: feature.name, route })
+                          trackFeatureVisit({ sessionType: feature.sessionType, icon: feature.icon, name: displayName, route })
                           navigateTo(route)
                         }
                       }}
@@ -333,7 +362,7 @@ function AppLayout() {
                       <SidebarItemIcon>
                         {FeatureIcon ? <FeatureIcon size={18} /> : feature.icon}
                       </SidebarItemIcon>
-                      <SidebarItemName>{feature.name}</SidebarItemName>
+                      <SidebarItemName>{displayName}</SidebarItemName>
                       {isLocked && <SidebarLockIcon>🔒</SidebarLockIcon>}
                     </SidebarItem>
                   )

@@ -580,16 +580,16 @@ model feature_node_records {
 }
 
 model content_relations {
-  id          Int      @id @default(autoincrement())
-  source_type String
-  source_id   Int
-  target_type String
-  target_id   Int
-  order       Int      @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  source_type   String
+  source_id     Int
+  target_type   String
+  target_id     Int
+  relation_type String   @default("")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
 
-  @@unique([source_type, source_id, target_type, target_id])
+  @@unique([source_type, source_id, target_type, target_id, relation_type])
   @@index([source_type, source_id])
   @@index([target_type, target_id])
 }

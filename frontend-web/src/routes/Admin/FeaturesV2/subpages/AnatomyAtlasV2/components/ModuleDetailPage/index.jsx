@@ -1,9 +1,14 @@
+import { useState } from 'react'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import Pagination from '@components/common/Pagination'
 import AtlasCreateModal from './components/AtlasCreateModal'
 import QuizCreateModal from './components/QuizCreateModal'
 import MoveContentModal from './components/MoveContentModal'
+import AtlasLinkModal from './components/AtlasLinkModal'
+import AtlasQuizLinkModal from './components/AtlasQuizLinkModal'
+import QuizLinkModal from './components/QuizLinkModal'
+import QuizAtlasLinkModal from './components/QuizAtlasLinkModal'
 import { useModuleDetail } from './hooks/useModuleDetail'
 import {
   SectionsContainer, SectionCard, SectionHeader, SectionTitle,
@@ -11,6 +16,11 @@ import {
 } from './ModuleDetailPage.styles'
 
 export default function ModuleDetailPage({ module }) {
+  const [atlasLinkModal, setAtlasLinkModal] = useState({ open: false, item: null })
+  const [atlasQuizLinkModal, setAtlasQuizLinkModal] = useState({ open: false, item: null })
+  const [quizLinkModal, setQuizLinkModal] = useState({ open: false, item: null })
+  const [quizAtlasLinkModal, setQuizAtlasLinkModal] = useState({ open: false, item: null })
+
   const {
     models, atlasPagination, atlasLoading,
     quizzes, quizPagination, quizLoading,
@@ -33,9 +43,11 @@ export default function ModuleDetailPage({ module }) {
     { header: 'Deskripsi', render: n => <Description>{n.description || '—'}</Description> },
     { header: 'Versi', width: '70px', render: n => `v${n.version ?? 1}` },
     {
-      header: 'Aksi', width: '200px', align: 'right',
+      header: 'Aksi', width: '320px', align: 'right',
       render: n => (
         <ActionGroup>
+          <Button size="small" variant="secondary" onClick={() => setAtlasLinkModal({ open: true, item: n })}>Link Atlas</Button>
+          <Button size="small" variant="secondary" onClick={() => setAtlasQuizLinkModal({ open: true, item: n })}>Link Quiz</Button>
           <Button size="small" variant="secondary" onClick={() => setAtlasMoveModal({ open: true, item: n })}>Pindah</Button>
           <Button size="small" onClick={() => setAtlasEditModal({ open: true, item: n })}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleUnlinkAtlas(n)}>Lepas</Button>
@@ -49,9 +61,11 @@ export default function ModuleDetailPage({ module }) {
     { header: 'Deskripsi', render: n => <Description>{n.description || '—'}</Description> },
     { header: 'Versi', width: '70px', render: n => `v${n.version ?? 1}` },
     {
-      header: 'Aksi', width: '200px', align: 'right',
+      header: 'Aksi', width: '320px', align: 'right',
       render: n => (
         <ActionGroup>
+          <Button size="small" variant="secondary" onClick={() => setQuizLinkModal({ open: true, item: n })}>Link Quiz</Button>
+          <Button size="small" variant="secondary" onClick={() => setQuizAtlasLinkModal({ open: true, item: n })}>Link Atlas</Button>
           <Button size="small" variant="secondary" onClick={() => setQuizMoveModal({ open: true, item: n })}>Pindah</Button>
           <Button size="small" onClick={() => setQuizEditModal({ open: true, item: n })}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleUnlinkQuiz(n)}>Lepas</Button>
@@ -144,6 +158,30 @@ export default function ModuleDetailPage({ module }) {
           onClose={() => setAtlasMoveModal({ open: false, item: null })}
           onSuccess={handleAtlasMoveSuccess}
           isSaving={atlasLoading.isMovingModel}
+        />
+      )}
+      {atlasLinkModal.open && (
+        <AtlasLinkModal
+          atlas={atlasLinkModal.item}
+          onClose={() => setAtlasLinkModal({ open: false, item: null })}
+        />
+      )}
+      {atlasQuizLinkModal.open && (
+        <AtlasQuizLinkModal
+          atlas={atlasQuizLinkModal.item}
+          onClose={() => setAtlasQuizLinkModal({ open: false, item: null })}
+        />
+      )}
+      {quizLinkModal.open && (
+        <QuizLinkModal
+          quiz={quizLinkModal.item}
+          onClose={() => setQuizLinkModal({ open: false, item: null })}
+        />
+      )}
+      {quizAtlasLinkModal.open && (
+        <QuizAtlasLinkModal
+          quiz={quizAtlasLinkModal.item}
+          onClose={() => setQuizAtlasLinkModal({ open: false, item: null })}
         />
       )}
 

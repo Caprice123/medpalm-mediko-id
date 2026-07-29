@@ -8,9 +8,6 @@ const {
   setLoading,
 } = actions
 
-/**
- * Fetch all active features (public endpoint for user panel)
- */
 export const fetchFeatures = () => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isLoadingFeatures', value: true }))

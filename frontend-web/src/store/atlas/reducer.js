@@ -15,12 +15,18 @@ const initialState = {
     perPage: 20,
     isLastPage: false
   },
+  modelRelations: [],
+  searchedAtlasModels: [],
   loading: {
     isGetListAtlasLoading: false,
     isGetDetailAtlasLoading: false,
     isCreateAtlasLoading: false,
     isUpdateAtlasLoading: false,
     isDeleteAtlasLoading: false,
+    isFetchingModelRelations: false,
+    isAddingModelRelation: false,
+    isDeletingModelRelation: false,
+    isSearchingAtlasModels: false,
   },
   error: null
 }
@@ -46,7 +52,13 @@ const { reducer, actions } = createSlice({
     },
     updateFilter: (state, { payload: { key, value } }) => {
       state.filter[key] = value
-    }
+    },
+    setModelRelations: (state, { payload }) => {
+      state.modelRelations = payload
+    },
+    setSearchedAtlasModels: (state, { payload }) => {
+      state.searchedAtlasModels = payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(resetAllState, (state) => ({
