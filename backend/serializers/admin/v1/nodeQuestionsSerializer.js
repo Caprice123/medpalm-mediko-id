@@ -9,6 +9,7 @@ export class NodeQuestionsSerializer {
       options: question.options,
       correctIndex: question.correct_answer,
       explanation: question.explanation ?? null,
+      version: question.version ?? 1,
       imageUrl: question.imageUrl ?? null,
       imageBlobId: question.imageBlobId ?? null,
       createdAt: toJakartaISO(question.created_at),

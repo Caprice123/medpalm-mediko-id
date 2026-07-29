@@ -12,11 +12,12 @@ export class GetUnlinkedQuestionsService extends BaseService {
       : Prisma.empty
 
     const rawQuestions = await prisma.$queryRaw`
-      SELECT mq.id, mq.topic_id, mq.question, mq.options, mq.correct_answer, mq.explanation, mq.order, mq.created_at, mq.updated_at
+      SELECT mq.id, mq.topic_id, mq.question, mq.options, mq.correct_answer, mq.explanation, mq.order, mq.version, mq.created_at, mq.updated_at
       FROM mcq_questions mq
       LEFT JOIN feature_node_records fnr
         ON fnr.record_type = 'mcq_question' AND fnr.record_id = mq.id
       WHERE fnr.id IS NULL
+        AND mq.version = 1
         ${searchFilter}
       ORDER BY mq.id DESC
       LIMIT ${take} OFFSET ${skip}

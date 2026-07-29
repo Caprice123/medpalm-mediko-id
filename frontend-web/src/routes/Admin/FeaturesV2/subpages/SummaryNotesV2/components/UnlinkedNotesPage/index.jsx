@@ -83,6 +83,11 @@ export default function UnlinkedNotesPage({ onBack }) {
       render: (note) => <NoteStatusBadge $status={note.status}>{note.status}</NoteStatusBadge>,
     },
     {
+      header: 'Versi',
+      width: '70px',
+      render: (note) => `v${note.version ?? 1}`,
+    },
+    {
       header: 'Aksi',
       width: '200px',
       render: (note) => (

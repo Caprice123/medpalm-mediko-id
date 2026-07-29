@@ -46,6 +46,11 @@ export default function UnlinkedQuestionsPage({ onBack }) {
       ),
     },
     {
+      header: 'Versi',
+      width: '70px',
+      render: (q) => `v${q.version ?? 1}`,
+    },
+    {
       header: 'Aksi',
       width: '220px',
       align: 'right',

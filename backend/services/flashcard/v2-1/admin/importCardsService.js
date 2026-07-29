@@ -21,7 +21,7 @@ export class ImportCardsService extends BaseService {
 
       try {
         const card = await prisma.flashcard_cards.create({
-          data: { front, back, is_deleted: false },
+          data: { front, back, is_deleted: false, version: nodeId ? 2 : 1 },
         })
 
         if (nodeId) {

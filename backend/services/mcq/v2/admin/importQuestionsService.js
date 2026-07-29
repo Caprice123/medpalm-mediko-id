@@ -35,7 +35,7 @@ export class ImportQuestionsService extends BaseService {
 
       try {
         const q = await prisma.mcq_questions.create({
-          data: { question, options, correct_answer: correctIndex, explanation },
+          data: { question, options, correct_answer: correctIndex, explanation, version: nodeId ? 2 : 1 },
         })
 
         if (nodeId) {

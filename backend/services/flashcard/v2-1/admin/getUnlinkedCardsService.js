@@ -12,12 +12,13 @@ export class GetUnlinkedCardsService extends BaseService {
       : Prisma.empty
 
     const rawCards = await prisma.$queryRaw`
-      SELECT fc.id, fc.front, fc.back, fc.is_deleted, fc.created_at, fc.updated_at
+      SELECT fc.id, fc.front, fc.back, fc.version, fc.is_deleted, fc.created_at, fc.updated_at
       FROM flashcard_cards fc
       LEFT JOIN feature_node_records fnr
         ON fnr.record_type = 'flashcard_card' AND fnr.record_id = fc.id
       WHERE fnr.id IS NULL
         AND fc.is_deleted = false
+        AND fc.version = 1
         ${searchFilter}
       ORDER BY fc.id DESC
       LIMIT ${take} OFFSET ${skip}

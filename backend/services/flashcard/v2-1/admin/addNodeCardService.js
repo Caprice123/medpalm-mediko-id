@@ -12,7 +12,7 @@ export class AddNodeCardService extends BaseService {
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
     const card = await prisma.flashcard_cards.create({
-      data: { front: front.trim(), back: back.trim() },
+      data: { front: front.trim(), back: back.trim(), version: 2 },
     })
 
     if (blobId) {

@@ -23,6 +23,7 @@ export class CreateSummaryNoteV2Service extends BaseService {
           markdown_content: markdownContent || null,
           status: status || 'draft',
           created_by: createdBy,
+          version: 2,
         },
       })
 

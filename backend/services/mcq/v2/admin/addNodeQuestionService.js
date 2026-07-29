@@ -19,6 +19,7 @@ export class AddNodeQuestionService extends BaseService {
         options,
         correct_answer: parseInt(correctIndex) ?? 0,
         explanation: explanation?.trim() || null,
+        version: 2,
       },
     })
 

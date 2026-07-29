@@ -37,6 +37,11 @@ export default function UnlinkedCardsPage({ onBack }) {
     },
     { header: 'Back', render: (c) => c.back },
     {
+      header: 'Versi',
+      width: '70px',
+      render: (c) => `v${c.version ?? 1}`,
+    },
+    {
       header: 'Aksi',
       width: '220px',
       align: 'right',

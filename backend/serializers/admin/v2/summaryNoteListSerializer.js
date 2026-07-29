@@ -17,6 +17,7 @@ export class SummaryNoteListV2Serializer {
         title: note.title,
         description: note.description,
         status: note.status,
+        version: note.version ?? 1,
         universityTags: allTags.filter(t => t.tagGroupName === 'university'),
         semesterTags: allTags.filter(t => t.tagGroupName === 'semester'),
         departmentTags: allTags.filter(t => t.tagGroupName === 'department'),
