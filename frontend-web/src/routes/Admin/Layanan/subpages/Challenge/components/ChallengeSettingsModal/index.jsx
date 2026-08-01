@@ -8,7 +8,7 @@ import { FormGroup, Label, HintText } from './ChallengeSettingsModal.styles'
 import {
   ToggleSwitch,
   ToggleSlider,
-} from '../../../SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
+} from '../../../../../Features/subpages/SummaryNotes/components/SummaryNotesSettingsModal/SummaryNotesSettingsModal.styles'
 
 const ACCESS_TYPE_OPTIONS = [
   { value: 'free', label: 'Gratis' },

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import ChallengeAdminPage from '../Features/subpages/Challenge'
-import WebinarAdminPage from '../Features/subpages/Webinar'
-import EventAdminPage from '../Features/subpages/Event'
-import BannerAdminPage from '../Features/subpages/Banner'
+import ChallengeAdminPage from './subpages/Challenge'
+import WebinarAdminPage from './subpages/Webinar'
+import EventAdminPage from './subpages/Event'
+import BannerAdminPage from './subpages/Banner'
 import Button from '@components/common/Button'
 import styled from 'styled-components'
 

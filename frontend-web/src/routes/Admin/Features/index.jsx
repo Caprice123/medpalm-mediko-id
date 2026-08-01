@@ -23,7 +23,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import OscePracticeAdminPage from './subpages/OscePractice'
 import Atlas from './subpages/Atlas'
-import Event from './subpages/Event'
 
 function Features() {
   const { features, loading } = useSelector(state => state.feature)
@@ -96,8 +95,6 @@ function Features() {
             return <OscePracticeAdminPage onBack={handleBackToList} />
         case "atlas":
             return <Atlas onBack={handleBackToList} />
-        case "events":
-            return <Event onBack={handleBackToList} />
         default:
             return null
     }
