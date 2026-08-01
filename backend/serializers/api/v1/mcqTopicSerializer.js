@@ -31,6 +31,7 @@ export class McqTopicSerializer {
         if (includeAnswers) {
           question.correct_answer = q.correct_answer
           question.explanation = q.explanation
+          question.references = q.references ?? []
         }
 
         return question

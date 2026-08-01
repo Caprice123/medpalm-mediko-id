@@ -139,6 +139,7 @@ export class UpdateMcqTopicService extends BaseService {
               options: q.options,
               correct_answer: q.correct_answer,
               explanation: q.explanation || null,
+              references: Array.isArray(q.references) ? q.references : [],
               order: q.order !== undefined ? q.order : i
             }
           })

@@ -92,6 +92,7 @@ export async function buildQuestionsResponse(selectedIds, questionToNodeMap, use
       options: q.options,
       correctIndex: q.correct_answer,
       explanation: q.explanation ?? null,
+      references: q.references ?? [],
       imageUrl: urlMap.get(q.id) || null,
       subtopic: node ? node.name : null,
       topic: parent ? parent.name : null,

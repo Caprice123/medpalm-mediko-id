@@ -29,6 +29,7 @@ export class UpdateFlashcardCardsService extends BaseService {
                     front: card.front,
                     back: card.back,
                     image_url: card.image_url || null,
+                    references: Array.isArray(card.references) ? card.references : [],
                     order: card.order !== undefined ? card.order : index
                 }))
             })

@@ -27,7 +27,7 @@ import {
   Container, Header, TabsContainer, Tab,
   SubHeader, SubTitle, Table, Th, Td, Tr, ActionCell,
   Badge, ScoringBadge, EmptyRow, FormGrid, FormGroup, Label,
-  OptionRow, OptionLabel, CorrectBtn, BadgeImagePreview,
+  OptionsList, OptionContainer, OptionBadge, OptionInput, AddOptionButton, RemoveOptionButton, BadgeImagePreview,
   BadgeCardGrid, BadgeCard, BadgeCardImage, BadgeCardPlaceholder,
   BadgeCardName, BadgeCardRank, BadgeCardDesc, BadgeCardActions,
 } from '../../Challenge.styles'
@@ -51,6 +51,7 @@ const defaultQuestionForm = {
   ],
   correctOptionIndex: 0,
   isSpecial: false,
+  references: [],
 }
 
 const defaultBadgeForm = {
@@ -151,6 +152,7 @@ function SoalTab({ challenge }) {
       })),
       correctOptionIndex: q.correctOptionIndex,
       isSpecial: q.isSpecial || false,
+      references: Array.isArray(q.references) ? q.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
     })
     setModal({ open: true, mode: 'edit', target: q })
   }
@@ -190,6 +192,39 @@ function SoalTab({ challenge }) {
     })
   }
 
+  const handleAddOption = () => {
+    setForm(prev => ({ ...prev, options: [...prev.options, { text: '', imageBlobId: null, imagePreviewUrl: null }] }))
+  }
+
+  const handleRemoveOption = (idx) => {
+    if (form.options.length <= 2) return
+    setForm(prev => {
+      const options = prev.options.filter((_, i) => i !== idx)
+      const correctOptionIndex = prev.correctOptionIndex === idx
+        ? 0
+        : prev.correctOptionIndex > idx
+          ? prev.correctOptionIndex - 1
+          : prev.correctOptionIndex
+      return { ...prev, options, correctOptionIndex }
+    })
+  }
+
+  const addReference = () => {
+    setForm(prev => ({ ...prev, references: [...prev.references, { label: '', url: '' }] }))
+  }
+
+  const setReference = (idx, key, val) => {
+    setForm(prev => {
+      const references = [...prev.references]
+      references[idx] = { ...references[idx], [key]: val }
+      return { ...prev, references }
+    })
+  }
+
+  const removeReference = (idx) => {
+    setForm(prev => ({ ...prev, references: prev.references.filter((_, i) => i !== idx) }))
+  }
+
   const handleSave = async () => {
     const payload = {
       question: form.question || null,
@@ -199,6 +234,9 @@ function SoalTab({ challenge }) {
       order: modal.mode === 'create' ? orderedQuestions.length : undefined,
       questionImageBlobId: form.questionImageBlobId || null,
       optionImageBlobIds: form.options.map(o => o.imageBlobId || null),
+      references: form.references
+        .filter(r => r.label.trim() || r.url.trim())
+        .map(r => ({ label: r.label.trim(), url: r.url.trim() || undefined })),
     }
     const onSuccess = () => {
       setModal({ open: false, mode: 'create', target: null })
@@ -384,6 +422,7 @@ function SoalTab({ challenge }) {
           onClose={() => setModal({ open: false, mode: 'create', target: null })}
           title={modal.mode === 'create' ? 'Tambah Soal' : 'Edit Soal'}
           footer={<Button variant="primary" onClick={handleSave} disabled={loading.isQuestionMutating}>{loading.isQuestionMutating ? 'Menyimpan...' : 'Simpan'}</Button>}
+          size="large"
         >
           <FormGrid>
             <FormGroup style={{ gridColumn: '1 / -1' }}>
@@ -426,41 +465,71 @@ function SoalTab({ challenge }) {
 
           <FormGroup style={{ marginTop: '1rem' }}>
             <Label>Opsi Jawaban *</Label>
-            {form.options.map((opt, idx) => (
-              <div key={idx} style={{ marginBottom: '0.75rem', padding: '0.75rem', border: `1px solid ${form.correctOptionIndex === idx ? '#6EE7B7' : '#E5E7EB'}`, borderRadius: 6, background: form.correctOptionIndex === idx ? '#F0FDF4' : '#FAFAFA' }}>
-                <OptionRow>
-                  <OptionLabel $correct={form.correctOptionIndex === idx}>{OPTION_LABELS[idx]}.</OptionLabel>
-                  <TextInput
-                    value={opt.text}
-                    onChange={e => setOptionText(idx, e)}
-                    placeholder={`Teks opsi ${OPTION_LABELS[idx]} (opsional jika ada gambar)`}
-                  />
-                  <CorrectBtn
-                    type="button"
-                    $active={form.correctOptionIndex === idx}
-                    onClick={() => setForm(prev => ({ ...prev, correctOptionIndex: idx }))}
-                  >
-                    {form.correctOptionIndex === idx ? '✓ Benar' : 'Set Benar'}
-                  </CorrectBtn>
-                </OptionRow>
-                <div style={{ marginTop: '0.5rem', marginLeft: '1.5rem' }}>
-                  <FileUpload
-                    file={opt.imagePreviewUrl ? { name: `Gambar opsi ${OPTION_LABELS[idx]}`, type: 'image/jpeg' } : null}
-                    onFileSelect={file => handleOptionImageSelect(file, idx)}
-                    onRemove={() => handleClearOptionImage(idx)}
-                    acceptedTypes={['image/*']}
-                    acceptedTypesLabel="PNG, JPG, GIF"
-                    maxSizeMB={5}
-                    uploadText="Klik untuk upload gambar"
-                    actions={
-                      opt.imagePreviewUrl
-                        ? <Button variant="primary" size="small" onClick={() => window.open(opt.imagePreviewUrl, '_blank')}>Lihat</Button>
-                        : null
-                    }
-                  />
+            <OptionsList>
+              {form.options.map((opt, idx) => {
+                const optLabel = String.fromCharCode(65 + idx)
+                const selected = form.correctOptionIndex === idx
+                return (
+                  <div key={idx}>
+                    <OptionContainer
+                      $selected={selected}
+                      onClick={() => setForm(prev => ({ ...prev, correctOptionIndex: idx }))}
+                    >
+                      <OptionBadge $selected={selected}>{optLabel}</OptionBadge>
+                      <OptionInput
+                        type="text"
+                        value={opt.text}
+                        onChange={e => { e.stopPropagation(); setOptionText(idx, e) }}
+                        onClick={e => e.stopPropagation()}
+                        placeholder={`Teks opsi ${optLabel} (opsional jika ada gambar)`}
+                      />
+                      {form.options.length > 2 && (
+                        <RemoveOptionButton
+                          type="button"
+                          onClick={e => { e.stopPropagation(); handleRemoveOption(idx) }}
+                        >
+                          Hapus
+                        </RemoveOptionButton>
+                      )}
+                    </OptionContainer>
+                    <div style={{ marginTop: '0.5rem', marginLeft: '2.5rem' }}>
+                      <FileUpload
+                        file={opt.imagePreviewUrl ? { name: `Gambar opsi ${optLabel}`, type: 'image/jpeg' } : null}
+                        onFileSelect={file => handleOptionImageSelect(file, idx)}
+                        onRemove={() => handleClearOptionImage(idx)}
+                        acceptedTypes={['image/*']}
+                        acceptedTypesLabel="PNG, JPG, GIF"
+                        maxSizeMB={5}
+                        uploadText="Klik untuk upload gambar"
+                        actions={
+                          opt.imagePreviewUrl
+                            ? <Button variant="primary" size="small" onClick={() => window.open(opt.imagePreviewUrl, '_blank')}>Lihat</Button>
+                            : null
+                        }
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+
+              <AddOptionButton type="button" onClick={handleAddOption}>
+                + Tambah Opsi
+              </AddOptionButton>
+            </OptionsList>
+          </FormGroup>
+
+          <FormGroup style={{ marginTop: '1rem' }}>
+            <Label>Referensi (Opsional)</Label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {form.references.map((ref, i) => (
+                <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <TextInput value={ref.label} onChange={e => setReference(i, 'label', e.target.value)} placeholder="Nama sumber" />
+                  <TextInput value={ref.url} onChange={e => setReference(i, 'url', e.target.value)} placeholder="Link (opsional)" />
+                  <Button variant="danger" onClick={() => removeReference(i)}>Hapus</Button>
                 </div>
-              </div>
-            ))}
+              ))}
+              <Button onClick={addReference}>+ Tambah Referensi</Button>
+            </div>
           </FormGroup>
         </Modal>
       )}

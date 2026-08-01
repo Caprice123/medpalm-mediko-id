@@ -54,6 +54,7 @@ export class StartFlashcardDueSessionService extends BaseService {
       id: card.id,
       front: card.front,
       back: card.back,
+      references: card.references ?? [],
       imageUrl: urlMap.get(card.id) || null,
     }))
   }

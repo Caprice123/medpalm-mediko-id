@@ -9,6 +9,7 @@ export class NodeQuestionsSerializer {
       options: question.options,
       correctIndex: question.correct_answer,
       explanation: question.explanation ?? null,
+      references: question.references ?? [],
       version: question.version ?? 1,
       imageUrl: question.imageUrl ?? null,
       imageBlobId: question.imageBlobId ?? null,

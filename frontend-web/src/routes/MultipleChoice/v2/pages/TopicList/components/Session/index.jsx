@@ -7,7 +7,7 @@ import {
   ProgressBar, ProgressFill,
   QuestionCard, QuestionMeta, NodePath, NewBadge, QuestionImage, QuestionText,
   OptionsList, OptionButton, OptionLabel, OptionText,
-  ExplanationBox, ActionRow, NextButton,
+  ExplanationBox, ReferencesBox, ReferencesLabel, ReferencesList, ReferenceLink, ActionRow, NextButton,
   ResultCard, ResultScore, ResultLabel, ResultStats,
   ResultStat, ResultStatNum, ResultStatLabel,
   ResultActions, SecondaryButton,
@@ -166,6 +166,21 @@ export default function McqSession({ onClose }) {
             <ExplanationBox>
               <strong>Penjelasan:</strong> {question.explanation}
             </ExplanationBox>
+          )}
+
+          {isAnswered && question.references?.length > 0 && (
+            <ReferencesBox>
+              <ReferencesLabel>Referensi</ReferencesLabel>
+              <ReferencesList>
+                {question.references.map((ref, i) => (
+                  <li key={i}>
+                    {ref.url
+                      ? <ReferenceLink href={ref.url} target="_blank" rel="noopener noreferrer">{ref.label || ref.url}</ReferenceLink>
+                      : <span>{ref.label}</span>}
+                  </li>
+                ))}
+              </ReferencesList>
+            </ReferencesBox>
           )}
         </QuestionCard>
 

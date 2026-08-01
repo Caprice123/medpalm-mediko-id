@@ -5,6 +5,7 @@ import { upload } from '@store/common/action'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import Textarea from '@components/common/Textarea'
+import TextInput from '@components/common/TextInput'
 import FileUpload from '@components/common/FileUpload'
 import {
   FormSection,
@@ -33,6 +34,7 @@ function QuestionFormModal({ nodeId, question, onClose, onSuccess, onSave, isSav
     blobId: null,
     imagePreviewUrl: null,
     imageFilename: null,
+    references: [],
   })
   const [errors, setErrors] = useState({})
 
@@ -46,11 +48,21 @@ function QuestionFormModal({ nodeId, question, onClose, onSuccess, onSave, isSav
         blobId: question.imageBlobId ?? null,
         imagePreviewUrl: question.imageUrl ?? null,
         imageFilename: null,
+        references: Array.isArray(question.references) ? question.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
       })
     }
   }, [isEdit, question])
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
+
+  const addReference = () => setForm(f => ({ ...f, references: [...f.references, { label: '', url: '' }] }))
+  const setReference = (index, key, val) =>
+    setForm(f => {
+      const references = [...f.references]
+      references[index] = { ...references[index], [key]: val }
+      return { ...f, references }
+    })
+  const removeReference = (index) => setForm(f => ({ ...f, references: f.references.filter((_, i) => i !== index) }))
 
   const setOption = (index, val) =>
     setForm(f => {
@@ -97,6 +109,9 @@ function QuestionFormModal({ nodeId, question, onClose, onSuccess, onSave, isSav
       correctIndex: form.correctIndex,
       explanation: form.explanation,
       blobId: form.blobId,
+      references: form.references
+        .filter(r => r.label.trim() || r.url.trim())
+        .map(r => ({ label: r.label.trim(), url: r.url.trim() || undefined })),
     }
     if (onSave) {
       onSave(payload, onSuccess)
@@ -201,6 +216,20 @@ function QuestionFormModal({ nodeId, question, onClose, onSuccess, onSave, isSav
           placeholder="Jelaskan mengapa jawaban tersebut benar..."
           rows={3}
         />
+      </FormSection>
+
+      <FormSection>
+        <Label>Referensi (Opsional)</Label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {form.references.map((ref, i) => (
+            <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <TextInput value={ref.label} onChange={e => setReference(i, 'label', e.target.value)} placeholder="Nama sumber" />
+              <TextInput value={ref.url} onChange={e => setReference(i, 'url', e.target.value)} placeholder="Link (opsional)" />
+              <Button variant="danger" onClick={() => removeReference(i)}>Hapus</Button>
+            </div>
+          ))}
+          <Button onClick={addReference}>+ Tambah Referensi</Button>
+        </div>
       </FormSection>
     </Modal>
   )

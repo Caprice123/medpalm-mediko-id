@@ -31,6 +31,7 @@ export class McqTopicSerializer {
         options: q.options || [],
         correct_answer: q.correct_answer,
         explanation: q.explanation || '',
+        references: q.references ?? [],
         image: q.image || null,
         order: q.order !== undefined ? q.order : index
       })),

@@ -7,6 +7,7 @@ export class NodeCardsSerializer {
       nodeId: card.node_id,
       front: card.front,
       back: card.back,
+      references: card.references ?? [],
       version: card.version ?? 1,
       imageUrl: card.imageUrl ?? null,
       imageBlobId: card.imageBlobId ?? null,

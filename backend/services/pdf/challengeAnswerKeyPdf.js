@@ -62,9 +62,9 @@ function measureCardHeight(doc, q) {
   if (refs.length) {
     doc.font('Helvetica').fontSize(9)
     refH = 14
-    for (const r of refs) {
-      refH += doc.heightOfString(`- ${r.label}`, { width: CW - 40 }) + 2
-    }
+    refs.forEach((r, i) => {
+      refH += doc.heightOfString(`${i + 1}. ${r.label}`, { width: CW - 40 }) + 2
+    })
     refH += 12
   }
 
@@ -252,8 +252,8 @@ export function generateChallengeAnswerKeyPdf({ userName, challengeTitle, score,
           .text('Referensi:', MARGIN + 10, cy)
         cy += 14
         doc.font('Helvetica').fontSize(9).fillColor(C.text)
-        for (const r of refs) {
-          const line = `- ${r.label}`
+        refs.forEach((r, i) => {
+          const line = `${i + 1}. ${r.label}`
           const lineH = doc.heightOfString(line, { width: CW - 40 })
           if (r.url) {
             doc.fillColor(C.primary).text(line, MARGIN + 18, cy, { width: CW - 40, link: r.url, underline: true })
@@ -261,7 +261,7 @@ export function generateChallengeAnswerKeyPdf({ userName, challengeTitle, score,
             doc.fillColor(C.text).text(line, MARGIN + 18, cy, { width: CW - 40 })
           }
           cy += lineH + 2
-        }
+        })
         cy += 12
       }
 

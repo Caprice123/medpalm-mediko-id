@@ -6,7 +6,7 @@ import {
   StatsRow, CardCounter, ReviewedCount,
   ProgressBar, ProgressFill,
   FlipArea, FlipCard, CardFront, CardBack, CardLabel, CardText, CardImage, FlipHint,
-  NewBadge, CardNodePath,
+  NewBadge, CardNodePath, CardReferences, CardReferencesLabel, CardReferencesList, CardReferenceLink, CardReferenceText,
   ActionRow, RatingBtn,
 } from './AnkiPlayer.styles'
 
@@ -103,6 +103,21 @@ export default function AnkiPlayer({ deck, onBack }) {
             </CardBack>
           </FlipCard>
         </FlipArea>
+
+        {revealed && card.references?.length > 0 && (
+          <CardReferences>
+            <CardReferencesLabel>Referensi</CardReferencesLabel>
+            <CardReferencesList>
+              {card.references.map((ref, i) => (
+                <li key={i}>
+                  {ref.url
+                    ? <CardReferenceLink href={ref.url} target="_blank" rel="noopener noreferrer">{ref.label || ref.url}</CardReferenceLink>
+                    : <CardReferenceText>{ref.label}</CardReferenceText>}
+                </li>
+              ))}
+            </CardReferencesList>
+          </CardReferences>
+        )}
 
         {revealed && (
           <ActionRow>

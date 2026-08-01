@@ -15,6 +15,7 @@ export class FlashcardDeckSerializer {
         front: card.front,
         back: card.back,
         imageUrl: card.image_url || null,
+        references: card.references ?? [],
         order: card.order !== undefined ? card.order : index
       }))
     }

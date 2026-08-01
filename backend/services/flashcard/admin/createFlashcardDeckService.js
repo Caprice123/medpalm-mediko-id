@@ -24,6 +24,7 @@ export class CreateFlashcardDeckService extends BaseService {
                         create: cards.map((card, index) => ({
                             front: card.front,
                             back: card.back,
+                            references: Array.isArray(card.references) ? card.references : [],
                             order: card.order !== undefined ? card.order : index
                         }))
                     },

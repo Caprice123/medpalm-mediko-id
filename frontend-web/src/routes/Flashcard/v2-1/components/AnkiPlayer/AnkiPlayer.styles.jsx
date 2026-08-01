@@ -168,6 +168,43 @@ export const CardImage = styled.img`
   flex-shrink: 0;
 `
 
+export const CardReferences = styled.div`
+  background: #f0f9ff;
+  border: 1.5px solid #bae6fd;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+`
+
+export const CardReferencesLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #0369a1;
+  margin-bottom: 0.375rem;
+`
+
+export const CardReferencesList = styled.ol`
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`
+
+export const CardReferenceLink = styled.a`
+  font-size: 0.8125rem;
+  color: #0369a1;
+  text-decoration: underline;
+  word-break: break-word;
+`
+
+export const CardReferenceText = styled.span`
+  font-size: 0.8125rem;
+  color: #374151;
+  word-break: break-word;
+`
+
 export const CardNodePath = styled.div`
   position: absolute;
   top: 0.875rem;

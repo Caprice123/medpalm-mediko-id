@@ -85,6 +85,7 @@ export class StartFlashcardCustomSessionService extends BaseService {
         id: card.id,
         front: card.front,
         back: card.back,
+        references: card.references ?? [],
         imageUrl: urlMap.get(card.id) || null,
         isNew: newIdSet.has(card.id),
         subtopic: node ? { id: node.id, name: node.name } : null,

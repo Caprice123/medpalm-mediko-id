@@ -17,15 +17,15 @@ class NodeQuestionsController {
 
   async addNodeQuestion(req, res) {
     const { nodeId } = req.params
-    const { question, options, correctIndex, explanation, blobId } = req.body
-    const created = await AddNodeQuestionService.call({ nodeId, question, options, correctIndex, explanation, blobId })
+    const { question, options, correctIndex, explanation, references, blobId } = req.body
+    const created = await AddNodeQuestionService.call({ nodeId, question, options, correctIndex, explanation, references, blobId })
     return res.status(201).json({ data: NodeQuestionsSerializer.serialize(created) })
   }
 
   async updateNodeQuestion(req, res) {
     const { questionId } = req.params
-    const { question, options, correctIndex, explanation, blobId } = req.body
-    const updated = await UpdateNodeQuestionService.call({ questionId, question, options, correctIndex, explanation, blobId })
+    const { question, options, correctIndex, explanation, references, blobId } = req.body
+    const updated = await UpdateNodeQuestionService.call({ questionId, question, options, correctIndex, explanation, references, blobId })
     return res.status(200).json({ data: NodeQuestionsSerializer.serialize(updated) })
   }
 

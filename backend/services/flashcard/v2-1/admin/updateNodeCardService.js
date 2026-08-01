@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateNodeCardService extends BaseService {
-  static async call({ cardId, front, back, blobId }) {
+  static async call({ cardId, front, back, blobId, references }) {
     if (front !== undefined && !front?.trim()) throw new ValidationError('Front wajib diisi')
     if (back !== undefined && !back?.trim()) throw new ValidationError('Back wajib diisi')
 
@@ -16,6 +16,7 @@ export class UpdateNodeCardService extends BaseService {
       data: {
         ...(front !== undefined && { front: front.trim() }),
         ...(back !== undefined && { back: back.trim() }),
+        ...(references !== undefined && { references: Array.isArray(references) ? references : [] }),
         updated_at: new Date(),
       },
     })

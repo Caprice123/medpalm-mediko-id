@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class AddNodeCardService extends BaseService {
-  static async call({ nodeId, front, back, blobId }) {
+  static async call({ nodeId, front, back, blobId, references }) {
     if (!front?.trim()) throw new ValidationError('Front wajib diisi')
     if (!back?.trim()) throw new ValidationError('Back wajib diisi')
 
@@ -12,7 +12,7 @@ export class AddNodeCardService extends BaseService {
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
     const card = await prisma.flashcard_cards.create({
-      data: { front: front.trim(), back: back.trim(), version: 2 },
+      data: { front: front.trim(), back: back.trim(), references: Array.isArray(references) ? references : [], version: 2 },
     })
 
     if (blobId) {
