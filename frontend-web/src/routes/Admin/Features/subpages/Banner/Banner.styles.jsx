@@ -7,8 +7,15 @@ export const Container = styled.div`
 export const Header = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
+`
+
+export const HeaderContent = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 export const TitleSection = styled.div``
@@ -60,33 +67,10 @@ export const FilterActions = styled.div`
   justify-content: flex-end;
 `
 
-export const BannerGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-export const BannerCard = styled.div`
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-`
-
-export const CardPreview = styled.div`
-  height: 120px;
+export const ThumbCell = styled.div`
+  width: 80px;
+  height: 48px;
+  border-radius: 6px;
   position: relative;
   background: ${props => props.$gradientStart && props.$gradientEnd
     ? `linear-gradient(135deg, ${props.$gradientStart} 0%, ${props.$gradientEnd} 100%)`
@@ -101,19 +85,15 @@ export const CardPreview = styled.div`
   }
 `
 
-export const CardBody = styled.div`
-  padding: 1rem 1.25rem;
+export const TitleCell = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
 `
 
-export const CardHeader = styled.div`
+export const ActionCell = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.5rem;
 `
 
 export const CardTitle = styled.h3`
@@ -154,10 +134,3 @@ export const CardDescription = styled.p`
   overflow: hidden;
 `
 
-export const CardFooter = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
-`

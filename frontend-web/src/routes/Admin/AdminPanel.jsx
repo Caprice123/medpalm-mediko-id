@@ -11,7 +11,6 @@ import Users from './Users'
 import TransactionList from './Transactions/components/Table'
 import Transactions from './Transactions'
 import GlobalSettings from './GlobalSettings'
-import BannerAdmin from './Features/subpages/Banner'
 import Layanan from './Layanan'
 import FeaturesV2 from './FeaturesV2'
 import MateriAdmin from './MateriAdmin'
@@ -82,7 +81,7 @@ const hasTabPermission = (user, tab) => {
   // Default permissions based on role
   if (user.role === 'admin') {
     // Admins by default have access to all tabs except 'users'
-    return ['features', 'layanan', 'banners', 'tags', 'pricingPlans', 'transactions', 'globalSettings', 'featuresV2', 'nodeStructure', 'materi'].includes(tab)
+    return ['features', 'layanan', 'tags', 'pricingPlans', 'transactions', 'globalSettings', 'featuresV2', 'nodeStructure', 'materi'].includes(tab)
   }
 
   // Other roles don't have admin panel access
@@ -94,7 +93,6 @@ const getAvailableTabs = (user) => {
   const allTabs = [
     { key: 'features', label: 'Kelola Fitur', permission: 'features' },
     { key: 'layanan', label: 'Layanan', permission: 'layanan' },
-    { key: 'banners', label: 'Banner', permission: 'banner' },
     { key: 'tags', label: 'Kelola Tag', permission: 'tags' },
     { key: 'pricingPlans', label: 'Paket Harga', permission: 'pricingPlans' },
     { key: 'transactions', label: 'Transaksi', permission: 'transactions' },
@@ -163,8 +161,6 @@ function AdminPanel() {
           {activeTab === 'features' && <Features />}
 
           {activeTab === 'layanan' && <Layanan />}
-
-          {activeTab === 'banners' && <BannerAdmin />}
 
           {activeTab === 'tags' && <Tags />}
 

@@ -3,18 +3,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
-import Loading from '@components/common/Loading'
-import EmptyState from '@components/common/EmptyState'
 import Pagination from '@components/common/Pagination'
+import Table from '@components/common/Table'
 import { fetchAdminBanners, updateBanner } from '@store/banner/adminAction'
 import { actions } from '@store/banner/reducer'
 import BannerFormModal from './components/BannerFormModal'
 import BannerOrderModal from './components/BannerOrderModal'
 import {
-  Container, Header, TitleSection, Title, Subtitle,
+  Container, Header, HeaderContent, TitleSection, Title, Subtitle,
   FilterCard, FilterGrid, FilterField, FilterLabel, FilterActions,
-  BannerGrid, BannerCard, CardPreview, CardBody, CardHeader,
-  CardTitle, ActiveBadge, CardMeta, CardDescription, CardFooter,
+  ThumbCell, TitleCell, ActionCell,
+  CardTitle, ActiveBadge, CardMeta, CardDescription,
 } from './Banner.styles'
 
 const ACTIVE_OPTIONS = [
@@ -23,7 +22,7 @@ const ACTIVE_OPTIONS = [
   { label: 'Nonaktif', value: 'false' },
 ]
 
-function BannerAdmin() {
+function BannerAdmin({ onBack = null }) {
   const dispatch = useDispatch()
   const { banners, filter, pagination, loading } = useSelector(state => state.banner)
 
@@ -62,17 +61,68 @@ function BannerAdmin() {
     }, () => dispatch(fetchAdminBanners())))
   }
 
+  const bannerColumns = [
+    {
+      header: 'Banner',
+      render: (b) => (
+        <TitleCell>
+          <ThumbCell $gradientStart={b.gradientStart} $gradientEnd={b.gradientEnd}>
+            {b.image?.url && <img src={b.image.url} alt={b.title} />}
+          </ThumbCell>
+          <div>
+            <CardTitle>{b.title}</CardTitle>
+            {b.description && <CardDescription>{b.description}</CardDescription>}
+          </div>
+        </TitleCell>
+      ),
+    },
+    {
+      key: 'redirectUrl',
+      header: 'Link',
+      render: (url) => <CardMeta style={{ maxWidth: 220 }}>🔗 {url}</CardMeta>,
+    },
+    {
+      key: 'isActive',
+      header: 'Status',
+      align: 'center',
+      render: (active) => <ActiveBadge $active={active}>{active ? 'Aktif' : 'Nonaktif'}</ActiveBadge>,
+    },
+    {
+      key: 'order',
+      header: 'Urutan',
+      align: 'center',
+    },
+    {
+      header: 'Aksi',
+      render: (b) => (
+        <ActionCell>
+          <Button onClick={() => setEditTarget(b)}>Edit</Button>
+          <Button
+            variant="primary"
+            onClick={() => handleToggleActive(b)}
+            disabled={loading.isUpdateLoading}
+          >
+            {b.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+          </Button>
+        </ActionCell>
+      ),
+    },
+  ]
+
   return (
     <Container>
       <Header>
-        <TitleSection>
-          <Title>Kelola Banner</Title>
-          <Subtitle>Banner ditampilkan sebagai slideshow di halaman dashboard pengguna</Subtitle>
-        </TitleSection>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Button variant="outline" onClick={() => setShowOrder(true)}>Atur Urutan</Button>
-          <Button variant="primary" onClick={() => setShowCreate(true)}>+ Tambah Banner</Button>
-        </div>
+        {onBack && <Button variant="secondary" onClick={onBack}>← Kembali</Button>}
+        <HeaderContent>
+          <TitleSection>
+            <Title>Kelola Banner</Title>
+            <Subtitle>Banner ditampilkan sebagai slideshow di halaman dashboard pengguna</Subtitle>
+          </TitleSection>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <Button variant="outline" onClick={() => setShowOrder(true)}>Atur Urutan</Button>
+            <Button variant="primary" onClick={() => setShowCreate(true)}>+ Tambah Banner</Button>
+          </div>
+        </HeaderContent>
       </Header>
 
       <FilterCard>
@@ -102,56 +152,13 @@ function BannerAdmin() {
         </FilterActions>
       </FilterCard>
 
-      {loading.isGetListLoading ? (
-        <Loading />
-      ) : banners.length === 0 ? (
-        <EmptyState
-          icon="🖼️"
-          title="Belum ada banner"
-          description="Tambah banner untuk ditampilkan di dashboard pengguna"
-        />
-      ) : (
-        <BannerGrid>
-          {banners.map(banner => (
-            <BannerCard key={banner.uniqueId}>
-              <CardPreview
-                $gradientStart={banner.gradientStart}
-                $gradientEnd={banner.gradientEnd}
-              >
-                {banner.image?.url && (
-                  <img src={banner.image.url} alt={banner.title} />
-                )}
-              </CardPreview>
-              <CardBody>
-                <CardHeader>
-                  <CardTitle>{banner.title}</CardTitle>
-                  <ActiveBadge $active={banner.isActive}>
-                    {banner.isActive ? 'Aktif' : 'Nonaktif'}
-                  </ActiveBadge>
-                </CardHeader>
-                {banner.description && (
-                  <CardDescription>{banner.description}</CardDescription>
-                )}
-                <CardMeta>🔗 {banner.redirectUrl}</CardMeta>
-                <div style={{ flex: 1 }} />
-                <CardFooter>
-                  <Button fullWidth onClick={() => setEditTarget(banner)}>
-                    Edit
-                  </Button>
-                  <Button
-                    variant="primary"
-                    fullWidth
-                    onClick={() => handleToggleActive(banner)}
-                    disabled={loading.isUpdateLoading}
-                  >
-                    {banner.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                  </Button>
-                </CardFooter>
-              </CardBody>
-            </BannerCard>
-          ))}
-        </BannerGrid>
-      )}
+      <Table
+        columns={bannerColumns}
+        data={banners}
+        loading={loading.isGetListLoading}
+        emptyText="Belum ada banner"
+        emptySubtext="Tambah banner untuk ditampilkan di dashboard pengguna"
+      />
 
       <Pagination
         page={pagination.page}
