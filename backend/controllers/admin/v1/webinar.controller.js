@@ -96,13 +96,14 @@ class AdminWebinarController {
 
   async listRegistrations(req, res) {
     const { uniqueId } = req.params
-    const { page, perPage, status } = req.query
+    const { page, perPage, status, search } = req.query
 
     const result = await GetRegistrationsService.call({
       webinarUniqueId: uniqueId,
       page,
       perPage,
       status,
+      search,
     })
 
     return res.status(200).json({

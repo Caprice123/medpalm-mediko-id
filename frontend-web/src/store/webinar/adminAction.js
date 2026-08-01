@@ -110,6 +110,7 @@ export const fetchWebinarRegistrations = (webinarUniqueId, params = {}) => async
       perPage: params.perPage || registrationPagination.perPage,
     }
     if (params.status) queryParams.status = params.status
+    if (params.search) queryParams.search = params.search
 
     const response = await getWithToken(
       `${Endpoints.admin.webinars}/${webinarUniqueId}/registrations`,

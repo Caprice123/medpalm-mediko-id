@@ -4,7 +4,7 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import Textarea from '@components/common/Textarea'
 import Loading from '@components/common/Loading'
-import { fetchRegistrationDetail, reviewRegistration, fetchAllWebinarRegistrations } from '@store/webinar/adminAction'
+import { fetchRegistrationDetail, reviewRegistration } from '@store/webinar/adminAction'
 import { formatJakartaDateTimeFull, formatJakartaDateLong } from '@utils/dateUtils'
 import {
   DetailSection, SectionTitle, DetailGrid, DetailItem, DetailLabel, DetailValue,
@@ -14,7 +14,7 @@ import {
 
 const STATUS_LABEL = { pending: 'Menunggu', approved: 'Disetujui', rejected: 'Ditolak' }
 
-function RegistrationDetailModal({ registrationUniqueId, onClose }) {
+function RegistrationDetailModal({ registrationUniqueId, onClose, onReviewed = () => {} }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.webinar)
   const [registration, setRegistration] = useState(null)
@@ -34,7 +34,7 @@ function RegistrationDetailModal({ registrationUniqueId, onClose }) {
         registrationUniqueId,
         { status, adminNotes: notes || undefined },
         () => {
-          dispatch(fetchAllWebinarRegistrations())
+          onReviewed()
           onClose()
         }
       )
