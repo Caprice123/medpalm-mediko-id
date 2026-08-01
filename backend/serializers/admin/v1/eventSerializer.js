@@ -5,6 +5,8 @@ export class EventSerializer {
       code: event.code,
       title: event.title,
       description: event.description,
+      startAt: event.start_at,
+      endAt: event.end_at,
       registrationStartAt: event.registration_start_at,
       registrationEndAt: event.registration_end_at,
       status: event.status,

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ChallengeAdminPage from '../Features/subpages/Challenge'
 import WebinarAdminPage from '../Features/subpages/Webinar'
+import EventAdminPage from '../Features/subpages/Event'
 import Button from '@components/common/Button'
 import styled from 'styled-components'
 
@@ -90,6 +91,12 @@ const LAYANAN_LIST = [
     description: 'Kelola webinar, jadwal, dan registrasi peserta.',
     icon: '🎓',
   },
+  {
+    key: 'event',
+    name: 'Event',
+    description: 'Kelola event, periode pendaftaran, dan registrasi peserta.',
+    icon: '🗓️',
+  },
 ]
 
 function Layanan() {
@@ -100,6 +107,7 @@ function Layanan() {
   if (selected) {
     if (selected.key === 'challenge') return <ChallengeAdminPage onBack={handleBack} />
     if (selected.key === 'webinar') return <WebinarAdminPage onBack={handleBack} />
+    if (selected.key === 'event') return <EventAdminPage onBack={handleBack} />
     return null
   }
 

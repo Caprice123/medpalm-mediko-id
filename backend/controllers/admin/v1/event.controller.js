@@ -50,8 +50,8 @@ class AdminEventController {
 
   async listRegistrations(req, res) {
     const { code } = req.params
-    const { page, perPage, status } = req.query
-    const result = await GetRegistrationsService.call({ eventCode: code, page, perPage, status })
+    const { page, perPage, status, search } = req.query
+    const result = await GetRegistrationsService.call({ eventCode: code, page, perPage, status, search })
     return res.status(200).json({ data: EventRegistrationSerializer.serializeList(result.data), pagination: result.pagination })
   }
 

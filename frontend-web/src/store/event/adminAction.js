@@ -100,6 +100,28 @@ export const fetchAllEventRegistrations = () => async (dispatch, getState) => {
   }
 }
 
+export const fetchEventRegistrations = (eventCode, params = {}) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading({ key: 'isGetRegistrationsLoading', value: true }))
+    const { registrationPagination } = getState().event
+    const queryParams = {
+      page: params.page || registrationPagination.page,
+      perPage: params.perPage || registrationPagination.perPage,
+    }
+    if (params.status) queryParams.status = params.status
+    if (params.search) queryParams.search = params.search
+
+    const response = await getWithToken(
+      `${Endpoints.admin.events}/${eventCode}/registrations`,
+      queryParams
+    )
+    dispatch(setRegistrations(response.data.data || []))
+    dispatch(setRegistrationPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
+  } finally {
+    dispatch(setLoading({ key: 'isGetRegistrationsLoading', value: false }))
+  }
+}
+
 export const reviewRegistration = (registrationUniqueId, data, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isReviewLoading', value: true }))

@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class GetRegistrationsService {
-  static async call({ eventCode, page = 1, perPage = 20, status }) {
+  static async call({ eventCode, page = 1, perPage = 20, status, search }) {
     const pageNum = parseInt(page)
     const perPageNum = parseInt(perPage)
     const skip = (pageNum - 1) * perPageNum
@@ -13,6 +13,19 @@ export class GetRegistrationsService {
 
     const where = { event_id: event.id, is_deleted: false }
     if (status) where.status = status
+
+    if (search) {
+      const matchedUsers = await prisma.users.findMany({
+        where: {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true },
+      })
+      where.user_id = { in: matchedUsers.map(u => u.id) }
+    }
 
     const registrations = await prisma.event_registrations.findMany({
       where,
