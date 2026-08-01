@@ -1,16 +1,5 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
-import PageLoader from '@components/PageLoader';
-
-const SkripsiList = lazy(() => import('../pages/List'));
-const SkripsiEditor = lazy(() => import('../pages/Editor'));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading..." />}>
-        {Component}
-    </Suspense>
-);
+import SkripsiList from '../pages/List';
+import SkripsiEditor from '../pages/Editor';
 
 export class SkripsiRoute {
     static moduleRoute = "/sets"
@@ -19,6 +8,6 @@ export class SkripsiRoute {
 }
 
 export const skripsiRoutes = [
-    { path: SkripsiRoute.initialRoute, element: withSuspense(<SkripsiList />) },
-    { path: SkripsiRoute.editorRoute, element: withSuspense(<SkripsiEditor />) },
+    { path: SkripsiRoute.initialRoute, element: <SkripsiList /> },
+    { path: SkripsiRoute.editorRoute, element: <SkripsiEditor /> },
 ]

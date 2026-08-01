@@ -14,7 +14,7 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
   const { loading } = useSelector(s => s.featureNodes)
   const isEdit = !!subtopic
 
-  const [form, setForm] = useState({ name: '', videoExplanation: '' })
+  const [form, setForm] = useState({ name: '', description: '', videoExplanation: '' })
   const [videoUpload, setVideoUpload] = useState(null) // { blobId, filename, url }
   const [videoFile, setVideoFile] = useState(null)
   const [existingVideoUrl, setExistingVideoUrl] = useState(null)
@@ -24,11 +24,12 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
     if (isEdit) {
       setForm({
         name: subtopic.name,
+        description: subtopic.description ?? '',
         videoExplanation: subtopic.videoExplanation ?? '',
       })
       setExistingVideoUrl(subtopic.videoUrl ? { url: subtopic.videoUrl, name: subtopic.videoFilename, size: subtopic.videoByteSize } : null)
     } else {
-      setForm({ name: '', videoExplanation: '' })
+      setForm({ name: '', description: '', videoExplanation: '' })
       setExistingVideoUrl(null)
     }
     setVideoUpload(null)
@@ -61,6 +62,7 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
       layer: 2,
       parentId: parentTopic.id,
       nodeType: 'subtopik',
+      description: form.description || null,
       videoExplanation: form.videoExplanation || null,
       ...(videoUpload?.blobId && { videoBlobId: videoUpload.blobId }),
     }
@@ -103,6 +105,14 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
           value={form.name}
           onChange={e => set('name', e.target.value)}
           placeholder="Contoh: Anatomi Jantung"
+        />
+
+        <Textarea
+          label="Deskripsi"
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="Deskripsi singkat sub-topik ini..."
+          rows={3}
         />
 
         <div>

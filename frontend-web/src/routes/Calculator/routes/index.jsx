@@ -1,16 +1,5 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
-import PageLoader from '@components/PageLoader';
-
-const CalculatorTopicList = lazy(() => import("../pages/List"));
-const CalculatorTopicDetail = lazy(() => import("../pages/Detail"));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading..." />}>
-        {Component}
-    </Suspense>
-);
+import CalculatorTopicList from "../pages/List";
+import CalculatorTopicDetail from "../pages/Detail";
 
 export class CalculatorRoute {
     static moduleRoute = "/calculators"
@@ -19,6 +8,6 @@ export class CalculatorRoute {
 }
 
 export const calculatorRoutes = [
-    { path: CalculatorRoute.initialRoute, element: withSuspense(<CalculatorTopicList />) },
-    { path: CalculatorRoute.detailRoute, element: withSuspense(<CalculatorTopicDetail />) },
+    { path: CalculatorRoute.initialRoute, element: <CalculatorTopicList /> },
+    { path: CalculatorRoute.detailRoute, element: <CalculatorTopicDetail /> },
 ];

@@ -6,8 +6,10 @@ import IDriveService from '#services/idrive.service'
 
 class FeatureNodesController {
   async index(req, res) {
-    const { nodeType, parentId, parentSlug, slug, visibility, classification, layer, page, perPage } = req.query
+    const { id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, page, perPage } = req.query
     const result = await GetUserFeatureNodesService.call({
+      id,
+      name,
       nodeType,
       parentId: parentId !== undefined ? (parentId === 'null' ? null : parentId) : undefined,
       parentSlug,
@@ -32,7 +34,7 @@ class FeatureNodesController {
     await Promise.all(videoAttachments.map(async (att) => {
       if (!att.blob) return
       if (att.blob.provider === 'bunny_stream') {
-        videoEmbedUrlMap[att.record_id] = bunnyStreamService.embedUrl(att.blob.key, { autoplay: true })
+        videoEmbedUrlMap[att.record_id] = bunnyStreamService.embedUrl(att.blob.key, { autoplay: process.env.NODE_ENV === 'production' })
       } else {
         videoEmbedUrlMap[att.record_id] = await IDriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
       }
@@ -114,6 +116,40 @@ class FeatureNodesController {
         mcqQuestions: map['mcq_question'] ?? 0,
       },
     })
+  }
+
+  async nodeAtlasModels(req, res) {
+    const nodeId = parseInt(req.params.id)
+    const records = await prisma.feature_node_records.findMany({
+      where: { node_id: nodeId, record_type: '3d_atlas' },
+      select: { record_id: true },
+    })
+    const ids = records.map(r => r.record_id)
+    if (!ids.length) return res.json({ data: [] })
+
+    const models = await prisma.atlas_models.findMany({
+      where: { id: { in: ids }, status: 'published', is_deleted: false },
+      select: { unique_id: true, title: true, description: true },
+      orderBy: { title: 'asc' },
+    })
+    return res.json({ data: models.map(m => ({ uniqueId: m.unique_id, title: m.title, description: m.description ?? null })) })
+  }
+
+  async nodeAnatomyQuizzes(req, res) {
+    const nodeId = parseInt(req.params.id)
+    const records = await prisma.feature_node_records.findMany({
+      where: { node_id: nodeId, record_type: 'anatomy_quiz' },
+      select: { record_id: true },
+    })
+    const ids = records.map(r => r.record_id)
+    if (!ids.length) return res.json({ data: [] })
+
+    const quizzes = await prisma.anatomy_quizzes.findMany({
+      where: { id: { in: ids }, status: 'published', is_deleted: false },
+      select: { unique_id: true, title: true, description: true },
+      orderBy: { title: 'asc' },
+    })
+    return res.json({ data: quizzes.map(q => ({ uniqueId: q.unique_id, title: q.title, description: q.description ?? null })) })
   }
 }
 

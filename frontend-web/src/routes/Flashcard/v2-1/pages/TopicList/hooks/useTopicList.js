@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 import {
   fetchFlashcardTopics,
   fetchFlashcardSubtopicsRaw,
@@ -8,10 +9,15 @@ import {
   startFlashcardDueSession,
   actions,
 } from '@store/flashcardNodes'
+import { fetchUserNodeByName } from '@store/featureNodes'
 
 export function useTopicList() {
   const dispatch = useDispatch()
   const { topics, sessionCards, progress } = useSelector(s => s.flashcardNodes)
+  const [searchParams] = useSearchParams()
+  const deepLinkSubtopicName = searchParams.get('subtopic')
+  const [resolvedDeepLinkSubtopicId, setResolvedDeepLinkSubtopicId] = useState(null)
+  const consumedDeepLinkRef = useRef(false)
 
   const [openIds, setOpenIds] = useState(new Set())
   const [subtopicsCache, setSubtopicsCache] = useState({})
@@ -24,6 +30,20 @@ export function useTopicList() {
     dispatch(fetchFlashcardDueToday())
     dispatch(fetchFlashcardProgress())
   }, [dispatch])
+
+  // deep link — e.g. /flashcards?subtopic=Aritmia from a related-content link.
+  // Resolve the subtopic's parent topic so we know which one to auto-expand.
+  useEffect(() => {
+    if (consumedDeepLinkRef.current || !deepLinkSubtopicName || topics.length === 0) return
+    consumedDeepLinkRef.current = true
+    dispatch(fetchUserNodeByName(deepLinkSubtopicName)).then(node => {
+      if (node?.parentId && topics.some(t => t.id === node.parentId)) {
+        setResolvedDeepLinkSubtopicId(node.id)
+        toggle(node.parentId)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deepLinkSubtopicName, topics])
 
   const handleStartAllDue = () => dispatch(startFlashcardDueSession(null))
 
@@ -70,5 +90,6 @@ export function useTopicList() {
     toggle,
     statsMap,
     filteredTopics,
+    deepLinkSubtopicId: resolvedDeepLinkSubtopicId,
   }
 }

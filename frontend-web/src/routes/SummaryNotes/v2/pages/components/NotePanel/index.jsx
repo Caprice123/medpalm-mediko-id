@@ -1,8 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { fetchSummaryNoteDetailV2, fetchLinkedFlashcards, fetchLinkedMcq } from '@store/summaryNotes/v2/userAction'
+import { useNavigate, generatePath } from 'react-router-dom'
+import { fetchSummaryNoteDetailV2, fetchNoteAnatomyQuizRelations } from '@store/summaryNotes/v2/userAction'
+import { fetchNodeStats } from '@store/featureNodes'
 import { fetchPublicConstants } from '@store/constant/userAction'
+import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
+import { FlashcardRoute } from '@routes/Flashcard/routes'
+import { MultipleChoiceRoute } from '@routes/MultipleChoice/routes'
 import BlockNoteEditor from '@components/BlockNoteEditor'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
@@ -12,15 +16,19 @@ import {
   EmptyPanel, EmptyIcon, EmptyText,
   PanelContainer, TopBar, Breadcrumb, BreadcrumbItem, BreadcrumbSep, FullScreenBtn,
   PanelContent, NoteTitle, NoteDescription, EditorWrapper,
-  ActionRow, Divider, SectionRow, SectionLabel, SectionLine,
-  LinkedGroup, LinkedGroupLabel, LinkedCards, LinkedCard, LinkedCardTitle, LinkedCardArrow,
+  SectionRow, SectionLabel, SectionLine,
+  LinkedGroup, LinkedGroupLabel, LinkedGroupHint,
+  RelatedList, RelatedRow, RelatedIcon, RelatedInfo, RelatedTitle, RelatedSubtitle, RelatedBadge, RelatedArrow,
 } from './NotePanel.styles'
 
-function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
+function NotePanel({ noteId, emptyNodeName, isFullScreen, onToggleFullScreen }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { detail, loading, linkedFlashcards, linkedFlashcardsPagination, linkedMcq, linkedMcqPagination } = useSelector(s => s.summaryNotesV2)
+  const { detail, loading } = useSelector(s => s.summaryNotesV2)
   const constants = useSelector(s => s.constant.constants)
+
+  const [nodeStats, setNodeStats] = useState(null)
+  const [anatomyQuizzes, setAnatomyQuizzes] = useState([])
 
   useEffect(() => {
     dispatch(fetchPublicConstants(['flashcard_feature_title', 'mcq_feature_title']))
@@ -29,10 +37,33 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
   useEffect(() => {
     if (noteId) {
       dispatch(fetchSummaryNoteDetailV2(noteId))
-      dispatch(fetchLinkedFlashcards(noteId, 1))
-      dispatch(fetchLinkedMcq(noteId, 1))
     }
   }, [noteId, dispatch])
+
+  const nodeInfo = detail?.nodes?.[0] ?? null
+  const nodeId = nodeInfo?.nodeId ?? null
+  const topicSlug = nodeInfo?.path?.[0]?.slug ?? null
+  const topicName = nodeInfo?.path?.[0]?.name ?? null
+  const subtopicSlug = nodeInfo?.nodeSlug ?? null
+  const subtopicName = nodeInfo?.nodeName ?? null
+
+  useEffect(() => {
+    if (!nodeId) {
+      setNodeStats(null)
+      return
+    }
+    dispatch(fetchNodeStats(nodeId)).then(setNodeStats)
+  }, [nodeId, dispatch])
+
+  // Anatomy quiz links live on the summary note itself (content_relations),
+  // not on the node — matches what's editable in the admin's "Konten Terkait" tab.
+  useEffect(() => {
+    if (!detail?.uniqueId) {
+      setAnatomyQuizzes([])
+      return
+    }
+    dispatch(fetchNoteAnatomyQuizRelations(detail.uniqueId)).then(setAnatomyQuizzes)
+  }, [detail?.uniqueId, dispatch])
 
   const parsedContent = useMemo(() => {
     if (!detail?.content) return null
@@ -43,13 +74,17 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
     }
   }, [detail?.content])
 
-  const breadcrumbPath = detail?.nodes?.[0]?.path || []
+  const breadcrumbPath = nodeInfo?.path || []
 
   if (!noteId) {
     return (
       <EmptyPanel>
-        <EmptyIcon>📖</EmptyIcon>
-        <EmptyText>Pilih ringkasan untuk mulai membaca</EmptyText>
+        <EmptyIcon>{emptyNodeName ? '📭' : '📖'}</EmptyIcon>
+        <EmptyText>
+          {emptyNodeName
+            ? `Belum ada ringkasan materi untuk "${emptyNodeName}"`
+            : 'Pilih ringkasan untuk mulai membaca'}
+        </EmptyText>
       </EmptyPanel>
     )
   }
@@ -65,9 +100,15 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
   const flashcardLabel = constants?.flashcard_feature_title || 'Flashcard'
   const mcqLabel = constants?.mcq_feature_title || 'MCQ'
 
-  const hasFlashcards = linkedFlashcards.length > 0 || !linkedFlashcardsPagination.isLastPage
-  const hasMcq = linkedMcq.length > 0 || !linkedMcqPagination.isLastPage
-  const hasLinkedResources = hasFlashcards || hasMcq
+  const goToSubtopic = () => {
+    if (topicSlug && subtopicSlug) navigate(`/topik/${topicSlug}/${subtopicSlug}`)
+  }
+
+  const hasTopic = !!topicName
+  const hasFlashcards = (nodeStats?.flashcardCards ?? 0) > 0
+  const hasMcq = (nodeStats?.mcqQuestions ?? 0) > 0
+  const hasAnatomyQuizzes = anatomyQuizzes.length > 0
+  const hasLinkedResources = hasTopic || hasFlashcards || hasMcq || hasAnatomyQuizzes
 
   return (
     <PanelContainer>
@@ -142,65 +183,89 @@ function NotePanel({ noteId, isFullScreen, onToggleFullScreen }) {
         {hasLinkedResources && (
           <>
             <SectionRow>
-              <SectionLabel>📚 Sumber Belajar Terkait</SectionLabel>
+              <SectionLabel>📚 Terkait</SectionLabel>
               <SectionLine />
             </SectionRow>
 
+            {hasTopic && (
+              <LinkedGroup>
+                <LinkedGroupLabel>Topik Terkait</LinkedGroupLabel>
+                <LinkedGroupHint>Lihat materi subtopik ini di halaman Materi.</LinkedGroupHint>
+                <RelatedList>
+                  <RelatedRow $type="topic" onClick={goToSubtopic}>
+                    <RelatedIcon>📁</RelatedIcon>
+                    <RelatedInfo>
+                      <RelatedTitle>{topicName}</RelatedTitle>
+                    </RelatedInfo>
+                    <RelatedBadge $type="topic">Topik</RelatedBadge>
+                    <RelatedArrow>→</RelatedArrow>
+                  </RelatedRow>
+                </RelatedList>
+              </LinkedGroup>
+            )}
+
             {hasFlashcards && (
               <LinkedGroup>
-                <LinkedGroupLabel $type="flashcard">🃏 {flashcardLabel}</LinkedGroupLabel>
-                <LinkedCards>
-                  {linkedFlashcards.map(deck => (
-                    <LinkedCard
-                      key={deck.id}
-                      $type="flashcard"
-                      onClick={() => navigate(`/flashcards/${deck.uniqueId}`)}
-                    >
-                      <LinkedCardTitle>{deck.title}</LinkedCardTitle>
-                      <LinkedCardArrow>→</LinkedCardArrow>
-                    </LinkedCard>
-                  ))}
-                </LinkedCards>
-                {!linkedFlashcardsPagination.isLastPage && (
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    disabled={loading.isLinkedFlashcardsLoading}
-                    onClick={() => dispatch(fetchLinkedFlashcards(noteId, linkedFlashcardsPagination.page + 1))}
-                    style={{ marginTop: '0.75rem' }}
+                <LinkedGroupLabel>Related Flashcards</LinkedGroupLabel>
+                <LinkedGroupHint>Kartu-kartu terkait untuk membantu retensi jangka panjang.</LinkedGroupHint>
+                <RelatedList>
+                  <RelatedRow
+                    $type="flashcard"
+                    onClick={() => navigate(`${FlashcardRoute.moduleRoute}?subtopic=${encodeURIComponent(subtopicName)}`)}
                   >
-                    {loading.isLinkedFlashcardsLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
-                  </Button>
-                )}
+                    <RelatedIcon>🃏</RelatedIcon>
+                    <RelatedInfo>
+                      <RelatedTitle>{subtopicName}</RelatedTitle>
+                      <RelatedSubtitle>{nodeStats.flashcardCards} kartu</RelatedSubtitle>
+                    </RelatedInfo>
+                    <RelatedBadge $type="flashcard">{flashcardLabel}</RelatedBadge>
+                    <RelatedArrow>→</RelatedArrow>
+                  </RelatedRow>
+                </RelatedList>
               </LinkedGroup>
             )}
 
             {hasMcq && (
               <LinkedGroup>
-                <LinkedGroupLabel $type="mcq">📝 {mcqLabel}</LinkedGroupLabel>
-                <LinkedCards>
-                  {linkedMcq.map(topic => (
-                    <LinkedCard
-                      key={topic.id}
-                      $type="mcq"
-                      onClick={() => navigate(`/multiple-choice/${topic.uniqueId}`)}
-                    >
-                      <LinkedCardTitle>{topic.title}</LinkedCardTitle>
-                      <LinkedCardArrow>→</LinkedCardArrow>
-                    </LinkedCard>
-                  ))}
-                </LinkedCards>
-                {!linkedMcqPagination.isLastPage && (
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    disabled={loading.isLinkedMcqLoading}
-                    onClick={() => dispatch(fetchLinkedMcq(noteId, linkedMcqPagination.page + 1))}
-                    style={{ marginTop: '0.75rem' }}
+                <LinkedGroupLabel>Related Preclinical Questions</LinkedGroupLabel>
+                <LinkedGroupHint>Soal-soal {mcqLabel} untuk uji pemahamanmu.</LinkedGroupHint>
+                <RelatedList>
+                  <RelatedRow
+                    $type="mcq"
+                    onClick={() => navigate(`${MultipleChoiceRoute.moduleRoute}?subtopic=${encodeURIComponent(subtopicName)}`)}
                   >
-                    {loading.isLinkedMcqLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
-                  </Button>
-                )}
+                    <RelatedIcon>📝</RelatedIcon>
+                    <RelatedInfo>
+                      <RelatedTitle>{subtopicName}</RelatedTitle>
+                      <RelatedSubtitle>{nodeStats.mcqQuestions} soal</RelatedSubtitle>
+                    </RelatedInfo>
+                    <RelatedBadge $type="mcq">{mcqLabel}</RelatedBadge>
+                    <RelatedArrow>→</RelatedArrow>
+                  </RelatedRow>
+                </RelatedList>
+              </LinkedGroup>
+            )}
+
+            {hasAnatomyQuizzes && (
+              <LinkedGroup>
+                <LinkedGroupLabel>Related 3D Anatomy Quizzes</LinkedGroupLabel>
+                <LinkedGroupHint>Latihan identifikasi struktur pada model 3D anatomi.</LinkedGroupHint>
+                <RelatedList>
+                  {anatomyQuizzes.map(quiz => (
+                    <RelatedRow
+                      key={quiz.linkedUniqueId}
+                      $type="anatomy"
+                      onClick={() => navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug: topicSlug, uniqueId: quiz.linkedUniqueId }))}
+                    >
+                      <RelatedIcon>🧠</RelatedIcon>
+                      <RelatedInfo>
+                        <RelatedTitle>{quiz.linkedTitle}</RelatedTitle>
+                        {quiz.description && <RelatedSubtitle>{quiz.description}</RelatedSubtitle>}
+                      </RelatedInfo>
+                      <RelatedArrow>→</RelatedArrow>
+                    </RelatedRow>
+                  ))}
+                </RelatedList>
               </LinkedGroup>
             )}
           </>

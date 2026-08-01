@@ -10,10 +10,21 @@ function SummaryNotesV2Page() {
   const { id: initialId } = useParams()
   const dispatch = useDispatch()
   const [selectedNoteId, setSelectedNoteId] = useState(initialId || null)
+  const [emptySubtopic, setEmptySubtopic] = useState(null)
   const [isFullScreen, setIsFullScreen] = useState(false)
   useEffect(() => {
     dispatch(fetchRecentlyViewed())
   }, [dispatch])
+
+  const handleSelectNote = (noteId) => {
+    setEmptySubtopic(null)
+    setSelectedNoteId(noteId)
+  }
+
+  const handleSelectEmptyNode = (node) => {
+    setSelectedNoteId(null)
+    setEmptySubtopic(node)
+  }
 
   return (
     <PageWrapper>
@@ -21,13 +32,16 @@ function SummaryNotesV2Page() {
         <SidebarWrapper>
           <CurriculumSidebar
             selectedNoteId={selectedNoteId}
-            onSelectNote={setSelectedNoteId}
+            selectedEmptyNodeId={emptySubtopic?.id ?? null}
+            onSelectNote={handleSelectNote}
+            onSelectEmptyNode={handleSelectEmptyNode}
           />
         </SidebarWrapper>
       )}
       <PanelWrapper>
         <NotePanel
           noteId={selectedNoteId}
+          emptyNodeName={emptySubtopic?.name ?? null}
           isFullScreen={isFullScreen}
           onToggleFullScreen={() => setIsFullScreen(p => !p)}
         />

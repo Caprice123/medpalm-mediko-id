@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchFeatureNodes, fetchFeatureNodeDetail, deleteFeatureNode, actions } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import TextInput from '@components/common/TextInput'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import TopicFormModal from './components/TopicFormModal'
 import SubtopicListPage from './components/SubtopicListPage'
-import { Container, Header, HeaderLeft, Title, ClassificationBadge, IconPreview } from './MateriAdmin.styles'
+import { Container, Header, HeaderLeft, Title, SearchRow, ClassificationBadge, IconPreview } from './MateriAdmin.styles'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -18,10 +19,13 @@ function MateriAdmin() {
   const { nodes, loading } = useSelector(s => s.featureNodes)
   const [modal, setModal] = useState({ type: null, topic: null })
   const [selectedTopic, setSelectedTopic] = useState(null)
+  const [search, setSearch] = useState('')
 
   const load = () => {
     dispatch(actions.updateFilter({ key: 'layer', value: '1' }))
     dispatch(actions.updateFilter({ key: 'visibility', value: 'general' }))
+    dispatch(actions.updateFilter({ key: 'parentId', value: '' }))
+    dispatch(actions.updateFilter({ key: 'search', value: search.trim() }))
     dispatch(fetchFeatureNodes())
   }
 
@@ -47,7 +51,7 @@ function MateriAdmin() {
     return (
       <SubtopicListPage
         topic={selectedTopic}
-        onBack={() => setSelectedTopic(null)}
+        onBack={() => { setSelectedTopic(null); load() }}
       />
     )
   }
@@ -94,11 +98,21 @@ function MateriAdmin() {
         </Button>
       </Header>
 
+      <SearchRow>
+        <TextInput
+          placeholder="Cari topik..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && load()}
+        />
+        <Button variant="secondary" onClick={load}>Cari</Button>
+      </SearchRow>
+
       <Table
         columns={columns}
         data={nodes}
-        isLoading={loading.isFetchingNodes}
-        emptyMessage="Belum ada topik."
+        loading={loading.isFetchingNodes}
+        emptyText="Belum ada topik."
       />
 
       {(modal.type === 'create' || modal.type === 'edit') && (

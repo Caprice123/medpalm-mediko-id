@@ -1,58 +1,103 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSummaryNotesByNode, fetchLazyUserNodes, searchSummaryNotesV2 } from '@store/summaryNotes/v2/userAction'
+import { fetchUserTopics } from '@store/featureNodes'
 import { fetchFavorites, toggleFavorite } from '@store/favorites/userAction'
 
 import {
   SidebarContainer, SearchBox, SearchIcon, SearchInput,
-  ScrollArea, SectionBlock, SectionHeader, SectionLabel, TabGroup, Tab,
-  NodeRow, ChevronIcon, NodeIcon, NodeLabel,
-  NoteRow, NoteIcon, NoteLabel, LoadingRow,
+  ScrollArea, SectionBlock, SectionHeader, SectionLabel,
+  NodeRow, ChevronIcon, NodeIcon, NodeLabel, LoadingRow,
   FavoritesSection, RecentSection, SectionListArea,
   RecentHeader, RecentHeaderLabel, CollapseChevron, RecentNoteRow, EmptyHint,
   SearchNoteRow, SearchNoteInfo, SearchNoteTitle, SearchNotePath, FavoriteBtn,
-  MobileCloseBtn,
 } from './CurriculumSidebar.styles'
 
+const FAV_OPEN_KEY = 'summaryNotesV2_favOpen'
+const RECENT_OPEN_KEY = 'summaryNotesV2_recentOpen'
+
+function readStoredOpen(key) {
+  try {
+    const v = localStorage.getItem(key)
+    return v === null ? true : v === 'true'
+  } catch {
+    return true
+  }
+}
+
+function useStoredOpen(key) {
+  const [open, setOpen] = useState(() => readStoredOpen(key))
+  const toggle = useCallback(() => {
+    setOpen(prev => {
+      const next = !prev
+      try { localStorage.setItem(key, String(next)) } catch {}
+      return next
+    })
+  }, [key])
+  return [open, toggle]
+}
+
+// Layer 1 = topic (folder, always has subtopic children).
+// Layer 2 = subtopic (always a leaf, bound to at most one summary note) — this is a
+// fixed convention used app-wide (see e.g. FlashcardV2's MoveCardModal), so we can tell
+// folder vs. article apart from `node.layer` alone, no fetch needed.
 function TreeNode({
-  node, depth, selectedNoteId,
+  node, depth, selectedNoteId, selectedEmptyNodeId,
   nodeNotes, expandedNodes, loadingNodeIds, childrenMap, childrenPagination,
   favoritedIds,
-  onToggleNode, onSelectNote, onLoadMoreChildren, onLoadMoreNotes, onToggleFavorite,
+  onToggleNode, onToggleFavorite, onLoadMoreChildren,
 }) {
-  const isOpen = expandedNodes.has(node.id)
+  const isLeaf = node.layer !== 1
+  const isOpen = !isLeaf && expandedNodes.has(node.id)
   const children = childrenMap[node.id] || []
   const isNodeLoading = loadingNodeIds.has(node.id)
   const childrenLoaded = node.id in childrenMap
   const nodeData = nodeNotes[node.id]
   const notes = nodeData?.notes || []
-  const isNotesLoading = nodeData?.isLoading
-  const isLoadingMoreNotes = nodeData?.isLoadingMore
-  const showChevron = isNodeLoading || !childrenLoaded || children.length > 0 || isOpen || notes.length > 0
   const canLoadMoreChildren = isOpen && childrenLoaded && childrenPagination[node.id]?.isLastPage === false && !isNodeLoading
-  const canLoadMoreNotes = isOpen && nodeData?.isLoaded && !nodeData?.isLastPage && !isNotesLoading
+
+  const hasNote = isLeaf && nodeData?.isLoaded && notes.length > 0
+  const isKnownEmpty = isLeaf && nodeData?.isLoaded && notes.length === 0
+  const isSelected = (hasNote && notes[0].uniqueId === selectedNoteId) || (isKnownEmpty && node.id === selectedEmptyNodeId)
+  const isFavNote = hasNote && favoritedIds.includes(notes[0].id)
 
   return (
     <>
-      <NodeRow $depth={depth} $clickable onClick={() => onToggleNode(node.id)}>
-        {showChevron ? (
+      <NodeRow $depth={depth} $clickable $selected={isSelected} onClick={() => onToggleNode(node)}>
+        {isLeaf ? (
+          <NodeIcon>📄</NodeIcon>
+        ) : (
           <ChevronIcon $open={isOpen}>
             {isNodeLoading ? '…' : '▶'}
           </ChevronIcon>
-        ) : (
-          <span style={{ width: '0.75rem', flexShrink: 0 }} />
         )}
-        <NodeLabel>{node.name}</NodeLabel>
+        <NodeLabel $selected={isSelected}>{node.name}</NodeLabel>
+        {hasNote && (
+          <FavoriteBtn
+            $active={isFavNote}
+            onClick={e => onToggleFavorite(e, notes[0].id, { uniqueId: notes[0].uniqueId, title: notes[0].title })}
+            title={isFavNote ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+          >
+            ★
+          </FavoriteBtn>
+        )}
       </NodeRow>
 
       {isOpen && (
         <>
+          {isNodeLoading && !childrenLoaded && (
+            <LoadingRow $depth={depth + 1}>Memuat...</LoadingRow>
+          )}
+          {childrenLoaded && children.length === 0 && (
+            <LoadingRow $depth={depth + 1}>Belum ada subtopik</LoadingRow>
+          )}
           {children.map(child => (
             <TreeNode
               key={child.id}
               node={child}
               depth={depth + 1}
               selectedNoteId={selectedNoteId}
+              selectedEmptyNodeId={selectedEmptyNodeId}
               nodeNotes={nodeNotes}
               expandedNodes={expandedNodes}
               loadingNodeIds={loadingNodeIds}
@@ -60,52 +105,14 @@ function TreeNode({
               childrenPagination={childrenPagination}
               favoritedIds={favoritedIds}
               onToggleNode={onToggleNode}
-              onSelectNote={onSelectNote}
-              onLoadMoreChildren={onLoadMoreChildren}
-              onLoadMoreNotes={onLoadMoreNotes}
               onToggleFavorite={onToggleFavorite}
+              onLoadMoreChildren={onLoadMoreChildren}
             />
           ))}
           {canLoadMoreChildren && (
             <LoadingRow $depth={depth + 1} $clickable onClick={() => onLoadMoreChildren(node.id)}>
-              Muat folder lainnya
+              Muat subtopik lainnya
             </LoadingRow>
-          )}
-          {isNotesLoading && (
-            <LoadingRow $depth={depth + 1}>Memuat...</LoadingRow>
-          )}
-          {!isNotesLoading && notes.map(note => {
-            const isFav = favoritedIds.includes(note.id)
-            return (
-              <NoteRow
-                key={note.id}
-                $depth={depth + 1}
-                $selected={note.uniqueId === selectedNoteId}
-                onClick={() => onSelectNote(note.uniqueId)}
-              >
-                <NoteIcon>📄</NoteIcon>
-                <NoteLabel $selected={note.uniqueId === selectedNoteId}>{note.title}</NoteLabel>
-                <FavoriteBtn
-                  $active={isFav}
-                  onClick={e => onToggleFavorite(e, note.id, { uniqueId: note.uniqueId, title: note.title })}
-                  title={isFav ? 'Hapus dari favorit' : 'Tambah ke favorit'}
-                >
-                  ★
-                </FavoriteBtn>
-              </NoteRow>
-            )
-          })}
-          {canLoadMoreNotes && (
-            <LoadingRow
-              $depth={depth + 1}
-              $clickable={!isLoadingMoreNotes}
-              onClick={() => !isLoadingMoreNotes && onLoadMoreNotes(node.id, (nodeData.page ?? 1) + 1)}
-            >
-              {isLoadingMoreNotes ? 'Memuat...' : 'Muat ringkasan lainnya'}
-            </LoadingRow>
-          )}
-          {!isNotesLoading && nodeData?.isLoaded && notes.length === 0 && childrenLoaded && children.length === 0 && (
-            <LoadingRow $depth={depth + 1}>Tidak ada ringkasan</LoadingRow>
           )}
         </>
       )}
@@ -113,33 +120,49 @@ function TreeNode({
   )
 }
 
-function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
+function TopicClassificationSection({ label, topics, isLoading, emptyText, ...treeNodeProps }) {
+  return (
+    <SectionBlock>
+      <SectionHeader>
+        <SectionLabel>{label}</SectionLabel>
+      </SectionHeader>
+
+      {isLoading ? (
+        <EmptyHint>Memuat...</EmptyHint>
+      ) : topics.length === 0 ? (
+        <EmptyHint>{emptyText}</EmptyHint>
+      ) : topics.map(node => (
+        <TreeNode key={node.id} node={node} depth={0} {...treeNodeProps} />
+      ))}
+    </SectionBlock>
+  )
+}
+
+function CurriculumSidebar({ selectedNoteId, selectedEmptyNodeId, onSelectNote, onSelectEmptyNode, onClose }) {
   const dispatch = useDispatch()
   const { nodeNotes, loading, recentlyViewed, searchResults, detail } = useSelector(s => s.summaryNotesV2)
+  const { userTopics, loading: topicsLoading } = useSelector(s => s.featureNodes)
   const { favoritedIds, favoriteItems, loading: favLoading } = useSelector(s => s.favorites)
   const favoritedSummaryNoteIds = favoritedIds['summary_note'] || []
   const favoriteSummaryNotes = favoriteItems['summary_note'] || []
 
-  const [treeMode, setTreeMode] = useState('semester')
-  const [rootNodes, setRootNodes] = useState([])
   const [childrenMap, setChildrenMap] = useState({})
   const [childrenPagination, setChildrenPagination] = useState({})
   const [expandedNodes, setExpandedNodes] = useState(new Set())
   const [loadingNodeIds, setLoadingNodeIds] = useState(new Set())
-  const [rootLoading, setRootLoading] = useState(false)
 
   const [search, setSearch] = useState('')
   const debounceRef = useRef(null)
-  const [isFavOpen, setIsFavOpen] = useState(true)
-  const [isRecentOpen, setIsRecentOpen] = useState(true)
+  const [isFavOpen, toggleFavOpen] = useStoredOpen(FAV_OPEN_KEY)
+  const [isRecentOpen, toggleRecentOpen] = useStoredOpen(RECENT_OPEN_KEY)
 
-  const pendingRevealIdRef = useRef(null)
+  // Seeded with whatever note the sidebar mounts already selected (e.g. a direct
+  // /summary-notes/:id URL) so that note's first detail load also triggers reveal,
+  // not just ones selected via search/favorites/recently-viewed clicks.
+  const pendingRevealIdRef = useRef(selectedNoteId || null)
 
   useEffect(() => {
-    setRootLoading(true)
-    dispatch(fetchLazyUserNodes(null))
-      .then(({ data }) => setRootNodes(data))
-      .finally(() => setRootLoading(false))
+    dispatch(fetchUserTopics())
     dispatch(fetchFavorites('summary_note'))
   }, [dispatch])
 
@@ -181,7 +204,6 @@ function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
       setExpandedNodes(prev => new Set([...prev, ancestor.id]))
     }
     const leaf = path[path.length - 1]
-    setExpandedNodes(prev => new Set([...prev, leaf.id]))
     await fetchNotesUntilFound(leaf.id, noteDetail.id)
   }, [childrenMap, fetchChildren, fetchNotesUntilFound])
 
@@ -197,45 +219,42 @@ function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
     onSelectNote(uniqueId)
   }, [onSelectNote])
 
-  const handleToggleNode = useCallback(async (nodeId) => {
-    const isExpanding = !expandedNodes.has(nodeId)
-    setExpandedNodes(prev => {
-      const next = new Set(prev)
-      isExpanding ? next.add(nodeId) : next.delete(nodeId)
-      return next
-    })
-    if (!isExpanding) return
-    const { data: children, isLastPage } = await fetchChildren(nodeId)
-    if (children.length === 0 && isLastPage && !nodeNotes[nodeId]?.isLoaded) {
-      dispatch(fetchSummaryNotesByNode(nodeId))
+  // Subtopic (layer 2) click — always a leaf. Opens its bound note directly,
+  // or the "no note yet" empty state in the panel if it has none.
+  const openLeafNode = useCallback(async (node) => {
+    const nodeId = node.id
+    let nodeData = nodeNotes[nodeId]
+    if (!nodeData?.isLoaded) {
+      const result = await dispatch(fetchSummaryNotesByNode(nodeId))
+      nodeData = { notes: result?.notes || [] }
     }
-  }, [expandedNodes, fetchChildren, nodeNotes, dispatch])
+    if (nodeData.notes?.length > 0) {
+      onSelectNote(nodeData.notes[0].uniqueId)
+    } else {
+      onSelectEmptyNode({ id: nodeId, name: node.name })
+    }
+  }, [nodeNotes, dispatch, onSelectNote, onSelectEmptyNode])
+
+  const handleToggleNode = useCallback(async (node) => {
+    if (node.layer !== 1) {
+      await openLeafNode(node)
+      return
+    }
+
+    const nodeId = node.id
+    const isExpanding = !expandedNodes.has(nodeId)
+    if (!isExpanding) {
+      setExpandedNodes(prev => { const next = new Set(prev); next.delete(nodeId); return next })
+      return
+    }
+    setExpandedNodes(prev => new Set([...prev, nodeId]))
+    await fetchChildren(nodeId)
+  }, [expandedNodes, fetchChildren, openLeafNode])
 
   const handleLoadMoreChildren = useCallback(async (nodeId) => {
     const page = childrenPagination[nodeId]?.page ?? 1
     await fetchChildren(nodeId, page + 1)
   }, [childrenPagination, fetchChildren])
-
-  const handleLoadMoreNotes = useCallback((nodeId, page) => {
-    dispatch(fetchSummaryNotesByNode(nodeId, page))
-  }, [dispatch])
-
-  const handleSetSubjectMode = useCallback(async () => {
-    setTreeMode('subject')
-    for (const node of rootNodes) {
-      if (!expandedNodes.has(node.id)) {
-        setExpandedNodes(prev => new Set([...prev, node.id]))
-      }
-      if (!(node.id in childrenMap)) {
-        setLoadingNodeIds(prev => new Set([...prev, node.id]))
-        dispatch(fetchLazyUserNodes(node.id, 1)).then(({ data: children, pagination }) => {
-          setChildrenMap(prev => ({ ...prev, [node.id]: children }))
-          setChildrenPagination(prev => ({ ...prev, [node.id]: pagination }))
-          setLoadingNodeIds(prev => { const s = new Set(prev); s.delete(node.id); return s })
-        })
-      }
-    }
-  }, [rootNodes, expandedNodes, childrenMap, dispatch])
 
   const handleSearchChange = useCallback((value) => {
     setSearch(value)
@@ -251,10 +270,6 @@ function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
     e.stopPropagation()
     dispatch(toggleFavorite('summary_note', noteId, metadata))
   }, [dispatch])
-
-  const displayedRootNodes = treeMode === 'subject'
-    ? rootNodes.flatMap(n => childrenMap[n.id] || [])
-    : rootNodes
 
   const isSearching = search.trim().length > 0
 
@@ -305,81 +320,84 @@ function CurriculumSidebar({ selectedNoteId, onSelectNote, onClose }) {
             })}
           </SectionBlock>
         ) : (
-          <SectionBlock>
-            <SectionHeader>
-              <SectionLabel>📖 Kurikulum</SectionLabel>
-            </SectionHeader>
+          <>
+            <TopicClassificationSection
+              label="🧩 Sistem Blok"
+              topics={userTopics.primary}
+              isLoading={topicsLoading.isFetchingUserTopics}
+              emptyText="Belum ada topik sistem blok"
+              selectedNoteId={selectedNoteId}
+              selectedEmptyNodeId={selectedEmptyNodeId}
+              nodeNotes={nodeNotes}
+              expandedNodes={expandedNodes}
+              loadingNodeIds={loadingNodeIds}
+              childrenMap={childrenMap}
+              childrenPagination={childrenPagination}
+              favoritedIds={favoritedSummaryNoteIds}
+              onToggleNode={handleToggleNode}
+              onToggleFavorite={handleToggleFavorite}
+              onLoadMoreChildren={handleLoadMoreChildren}
+            />
+            <TopicClassificationSection
+              label="🔬 Ilmu Lintas Sistem"
+              topics={userTopics.special}
+              isLoading={topicsLoading.isFetchingUserTopics}
+              emptyText="Belum ada topik lintas sistem"
+              selectedNoteId={selectedNoteId}
+              selectedEmptyNodeId={selectedEmptyNodeId}
+              nodeNotes={nodeNotes}
+              expandedNodes={expandedNodes}
+              loadingNodeIds={loadingNodeIds}
+              childrenMap={childrenMap}
+              childrenPagination={childrenPagination}
+              favoritedIds={favoritedSummaryNoteIds}
+              onToggleNode={handleToggleNode}
+              onToggleFavorite={handleToggleFavorite}
+              onLoadMoreChildren={handleLoadMoreChildren}
+            />
 
-            {rootLoading ? (
-              <EmptyHint>Memuat kurikulum...</EmptyHint>
-            ) : displayedRootNodes.length === 0 ? (
-              <EmptyHint>
-                {treeMode === 'subject' && loadingNodeIds.size > 0
-                  ? 'Memuat...'
-                  : 'Belum ada folder kurikulum'}
-              </EmptyHint>
-            ) : displayedRootNodes.map(node => (
-              <TreeNode
-                key={node.id}
-                node={node}
-                depth={0}
-                selectedNoteId={selectedNoteId}
-                nodeNotes={nodeNotes}
-                expandedNodes={expandedNodes}
-                loadingNodeIds={loadingNodeIds}
-                childrenMap={childrenMap}
-                childrenPagination={childrenPagination}
-                favoritedIds={favoritedSummaryNoteIds}
-                onToggleNode={handleToggleNode}
-                onSelectNote={onSelectNote}
-                onLoadMoreChildren={handleLoadMoreChildren}
-                onLoadMoreNotes={handleLoadMoreNotes}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
-          </SectionBlock>
+            {favoriteSummaryNotes.length > 0 && (
+              <FavoritesSection>
+                <RecentHeader onClick={toggleFavOpen}>
+                  <RecentHeaderLabel>⭐ Favorit</RecentHeaderLabel>
+                  <CollapseChevron $open={isFavOpen}>▶</CollapseChevron>
+                </RecentHeader>
+                <SectionListArea $open={isFavOpen}>
+                  {favoriteSummaryNotes.map(item => (
+                    <RecentNoteRow
+                      key={item.record_id}
+                      $selected={item.metadata?.uniqueId === selectedNoteId}
+                      onClick={() => handleSelectAndReveal(item.metadata?.uniqueId)}
+                    >
+                      {item.metadata?.title}
+                    </RecentNoteRow>
+                  ))}
+                </SectionListArea>
+              </FavoritesSection>
+            )}
+
+            {recentlyViewed.length > 0 && (
+              <RecentSection>
+                <RecentHeader onClick={toggleRecentOpen}>
+                  <RecentHeaderLabel>🕐 Terakhir Dilihat</RecentHeaderLabel>
+                  <CollapseChevron $open={isRecentOpen}>▶</CollapseChevron>
+                </RecentHeader>
+                <SectionListArea $open={isRecentOpen}>
+                  {recentlyViewed.map(item => (
+                    <RecentNoteRow
+                      key={item.id}
+                      $selected={item.metadata?.uniqueId === selectedNoteId}
+                      onClick={() => handleSelectAndReveal(item.metadata?.uniqueId)}
+                    >
+                      {item.metadata?.title}
+                    </RecentNoteRow>
+                  ))}
+                </SectionListArea>
+              </RecentSection>
+            )}
+          </>
         )}
       </ScrollArea>
-
-      {favoriteSummaryNotes.length > 0 && !isSearching && (
-        <FavoritesSection>
-          <RecentHeader onClick={() => setIsFavOpen(p => !p)}>
-            <RecentHeaderLabel>⭐ Favorit</RecentHeaderLabel>
-            <CollapseChevron $open={isFavOpen}>▶</CollapseChevron>
-          </RecentHeader>
-          <SectionListArea $open={isFavOpen}>
-            {favoriteSummaryNotes.map(item => (
-              <RecentNoteRow
-                key={item.record_id}
-                $selected={item.metadata?.uniqueId === selectedNoteId}
-                onClick={() => handleSelectAndReveal(item.metadata?.uniqueId)}
-              >
-                {item.metadata?.title}
-              </RecentNoteRow>
-            ))}
-          </SectionListArea>
-        </FavoritesSection>
-      )}
-
-      {recentlyViewed.length > 0 && !isSearching && (
-        <RecentSection>
-          <RecentHeader onClick={() => setIsRecentOpen(p => !p)}>
-            <RecentHeaderLabel>🕐 Terakhir Dilihat</RecentHeaderLabel>
-            <CollapseChevron $open={isRecentOpen}>▶</CollapseChevron>
-          </RecentHeader>
-          <SectionListArea $open={isRecentOpen}>
-            {recentlyViewed.map(item => (
-              <RecentNoteRow
-                key={item.id}
-                $selected={item.metadata?.uniqueId === selectedNoteId}
-                onClick={() => handleSelectAndReveal(item.metadata?.uniqueId)}
-              >
-                {item.metadata?.title}
-              </RecentNoteRow>
-            ))}
-          </SectionListArea>
-        </RecentSection>
-      )}
     </SidebarContainer>
   )
 }

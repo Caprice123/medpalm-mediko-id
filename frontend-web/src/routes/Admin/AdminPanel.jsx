@@ -105,7 +105,7 @@ const getAvailableTabs = (user) => {
     { key: 'users', label: 'Kelola User', permission: 'users' },
     { key: 'globalSettings', label: 'Pengaturan Global', permission: 'globalSettings' },
     { key: 'featuresV2', label: 'Fitur V2', permission: 'features' },
-    { key: 'materi', label: 'Materi', permission: 'materi' },
+    { key: 'materi', label: 'Materi', permission: 'features' },
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.permission))

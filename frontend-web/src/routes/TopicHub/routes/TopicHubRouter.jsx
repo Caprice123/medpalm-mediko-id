@@ -1,19 +1,15 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-import PageLoader from '@components/PageLoader'
-
-const TopicHubPage = lazyWithRetry(() => import('../pages/TopicHub'))
-const TopicDetailPage = lazyWithRetry(() => import('../pages/TopicDetail'))
-const SubtopicDetailPage = lazyWithRetry(() => import('../pages/SubtopicDetail'))
+import TopicHubPage from '../pages/TopicHub'
+import TopicDetailPage from '../pages/TopicDetail'
+import SubtopicDetailPage from '../pages/SubtopicDetail'
 
 export function TopicHubRouter() {
-  return <Suspense fallback={<PageLoader />}><TopicHubPage /></Suspense>
+  return <TopicHubPage />
 }
 
 export function TopicDetailRouter() {
-  return <Suspense fallback={<PageLoader />}><TopicDetailPage /></Suspense>
+  return <TopicDetailPage />
 }
 
 export function SubtopicDetailRouter() {
-  return <Suspense fallback={<PageLoader />}><SubtopicDetailPage /></Suspense>
+  return <SubtopicDetailPage />
 }

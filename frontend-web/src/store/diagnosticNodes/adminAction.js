@@ -9,7 +9,9 @@ export const fetchDiagnosticAdminQuestions = (nodeId, overrides = {}) => async (
     dispatch(questionActions.setLoading({ isFetchingQuestions: true }))
     const { pagination } = getState().nodeQuestions
     const page = overrides.page ?? pagination.page
-    const res = await getWithToken(`${BASE}/${nodeId}/questions`, { page, perPage: pagination.perPage })
+    const params = { page, perPage: pagination.perPage }
+    if (overrides.search) params.search = overrides.search
+    const res = await getWithToken(`${BASE}/${nodeId}/questions`, params)
     dispatch(questionActions.setQuestions(res.data.questions || []))
     if (res.data.pagination) dispatch(questionActions.setPagination(res.data.pagination))
   } finally {

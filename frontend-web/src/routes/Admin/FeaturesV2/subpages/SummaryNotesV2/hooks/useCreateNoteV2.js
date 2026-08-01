@@ -1,7 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { useFormik } from 'formik'
 import { createSummaryNoteV2, generateSummaryFromDocumentV2 } from '@store/summaryNotes/v2/adminAction'
-import { createNodeRecord } from '@store/featureNodes'
 import { upload } from '@store/common/action'
 import { actions } from '@store/summaryNotes/reducer'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
@@ -11,35 +10,23 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 const { setError } = actions
 
-export function useCreateNoteV2(nodeId, onClose) {
+export function useCreateNoteV2(nodeId, nodeName, onClose) {
   const dispatch = useDispatch()
 
   const form = useFormik({
     initialValues: {
-      title: '',
+      title: nodeName || '',
       description: '',
       content: null,
-      status: 'draft',
-      universityTags: [],
-      semesterTags: [],
-      departmentTags: [],
       uploadedFile: null,
       blobId: null,
-      selectedFlashcards: [],
-      selectedMcqTopics: [],
     },
     validate: (values) => {
       const errors = {}
-      if (!values.title?.trim()) errors.title = 'Judul harus diisi'
+      if (!nodeId && !values.title?.trim()) errors.title = 'Judul harus diisi'
       return errors
     },
     onSubmit: async (values) => {
-      const allTags = [
-        ...values.universityTags,
-        ...values.semesterTags,
-        ...values.departmentTags,
-      ]
-
       let contentString = JSON.stringify([])
       let markdownContent = ''
       if (values.content && values.content.length > 0) {
@@ -52,17 +39,11 @@ export function useCreateNoteV2(nodeId, onClose) {
         description: values.description.trim(),
         content: contentString,
         markdownContent,
-        status: values.status,
+        status: 'published',
         isActive: true,
-        tagIds: allTags.map(t => t.id),
         blobId: values.blobId || null,
-        flashcardDeckIds: values.selectedFlashcards.map(f => f.id),
-        mcqTopicIds: values.selectedMcqTopics.map(m => m.id),
+        nodeId: nodeId || null,
       }))
-
-      if (nodeId && note?.id) {
-        await dispatch(createNodeRecord({ nodeId, recordType: 'summary_note', recordId: note.id }))
-      }
 
       onClose(note)
     },

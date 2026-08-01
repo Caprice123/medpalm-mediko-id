@@ -11,7 +11,7 @@ import {
   PiClipboardText, PiListNumbers, PiCards, PiFlask,
   PiCalculator, PiMagnifyingGlass, PiFileText, PiTrophy,
   PiVideoCamera, PiCalendarCheck, PiCreditCard, PiWrench,
-  PiUser, PiSignOut, PiGridFour,
+  PiUser, PiSignOut, PiGridFour, PiSidebarSimple,
 } from 'react-icons/pi'
 
 const FEATURE_ICONS = {
@@ -61,8 +61,10 @@ import {
   FooterActions,
   FooterActionButton,
   ContentArea,
+  PageOutlet,
   SidebarOuter,
-  ToggleButton,
+  TopBar,
+  SidebarToggleButton,
 } from './AppLayout.styles'
 import { ExerciseRoute } from '@routes/Exercise/routes'
 import { FlashcardRoute } from '@routes/Flashcard/routes'
@@ -293,13 +295,10 @@ function AppLayout() {
         <MobileOverlay $open={sidebarOpen} onClick={() => setSidebarOpen(false)} />
 
       <SidebarOuter $open={sidebarOpen}>
-        <ToggleButton onClick={() => setSidebarOpen(o => !o)} title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}>
-          {sidebarOpen ? '◀' : '▶'}
-        </ToggleButton>
         <Sidebar $open={sidebarOpen}>
         <SidebarInner>
           <MobileCloseButton onClick={() => setSidebarOpen(false)}>✕</MobileCloseButton>
-          <SidebarLogo onClick={() => navigateTo('/dashboard')}>
+          <SidebarLogo onClick={() => navigateTo(TopicHubRoute.moduleRoute)}>
             <img src="/icon.png" alt="MedPal" />
           </SidebarLogo>
           <SidebarNav>
@@ -479,7 +478,17 @@ function AppLayout() {
       </SidebarOuter>
 
       <ContentArea>
-        <Outlet />
+        <TopBar>
+          <SidebarToggleButton
+            onClick={() => setSidebarOpen(o => !o)}
+            title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}
+          >
+            <PiSidebarSimple size={20} />
+          </SidebarToggleButton>
+        </TopBar>
+        <PageOutlet>
+          <Outlet />
+        </PageOutlet>
       </ContentArea>
       {lockTooltip && (
         <SidebarTooltip style={{ top: lockTooltip.y, left: lockTooltip.x }}>

@@ -81,4 +81,22 @@ export const generateSummaryFromDocumentV2 = (blobId) => async (dispatch) => {
   }
 }
 
+// summary_note → anatomy_quiz content_relations — fire-and-return, no Redux state
+export const fetchNoteAnatomyQuizRelations = (uniqueId) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelationsV2, {
+    sourceType: 'summary_note', sourceUniqueId: uniqueId, targetType: 'anatomy_quiz',
+  })
+  return res.data.data || []
+}
+
+export const addNoteAnatomyQuizRelation = (uniqueId, quizUniqueId) => async () => {
+  await postWithToken(Endpoints.admin.contentRelationsV2, {
+    sourceType: 'summary_note', sourceUniqueId: uniqueId, targetType: 'anatomy_quiz', targetUniqueId: quizUniqueId,
+  })
+}
+
+export const removeNoteAnatomyQuizRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelationsV2}/${relationId}`)
+}
+
 export { upload }

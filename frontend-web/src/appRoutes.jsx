@@ -1,10 +1,6 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
 import PrivateRoute from '@middleware/PrivateRoute';
 import ProfileGuard from '@middleware/ProfileGuard';
 import AppLayout from '@components/AppLayout';
-import PageLoader from '@components/PageLoader';
 import { AuthRoute } from './routes/Auth/routes';
 import { calculatorRoutes } from './routes/Calculator/routes';
 import { diagnosticQuizRoutes } from './routes/DiagnosticQuiz/routes';
@@ -26,31 +22,24 @@ import { profileRoutes } from './routes/Profile/routes';
 import { dashboardRoutes } from './routes/Dashboard/routes';
 import { topicHubRoutes } from './routes/TopicHub/routes';
 
-// Lazy load components
-const EmbedVideoPage = lazy(() => import('@routes/EmbedVideo'));
-const Login = lazy(() => import('@routes/Auth/pages/Login'));
-const Home = lazy(() => import('@routes/Home'));
-const AdminPanel = lazy(() => import('@routes/Admin/AdminPanel'));
-const UITest = lazy(() => import('@routes/UITest'));
-const EditorTest = lazy(() => import('@routes/EditorTest'));
-const SentryTest = lazy(() => import('@routes/SentryTest/SentryTest'));
-const HtmlToDocxExample = lazy(() => import('@components/HtmlToDocxExample'));
-const ExcalidrawBuilderMockup = lazy(() => import('@mockups/ExcalidrawBuilder/ExcalidrawBuilderMockup'));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading..." size={200} />}>
-        {Component}
-    </Suspense>
-);
+import EmbedVideoPage from '@routes/EmbedVideo';
+import Login from '@routes/Auth/pages/Login';
+import Home from '@routes/Home';
+import AdminPanel from '@routes/Admin/AdminPanel';
+import UITest from '@routes/UITest';
+import EditorTest from '@routes/EditorTest';
+import SentryTest from '@routes/SentryTest/SentryTest';
+import HtmlToDocxExample from '@components/HtmlToDocxExample';
+import ExcalidrawBuilderMockup from '@mockups/ExcalidrawBuilder/ExcalidrawBuilderMockup';
 
 const appRoutes = [
-    { path: '/', element: withSuspense(<Home />) },
-    { path: AuthRoute.signInRoute, element: withSuspense(<Login />) },
-    { path: '/ui-test', element: withSuspense(<UITest />) },
-    { path: '/sentry-test', element: withSuspense(<SentryTest />) },
-    { path: '/editor-test', element: withSuspense(<EditorTest />) },
-    { path: '/docx-test', element: withSuspense(<HtmlToDocxExample />) },
-    { path: '/excalidraw-mockup', element: withSuspense(<ExcalidrawBuilderMockup />) },
+    { path: '/', element: <Home /> },
+    { path: AuthRoute.signInRoute, element: <Login /> },
+    { path: '/ui-test', element: <UITest /> },
+    { path: '/sentry-test', element: <SentryTest /> },
+    { path: '/editor-test', element: <EditorTest /> },
+    { path: '/docx-test', element: <HtmlToDocxExample /> },
+    { path: '/excalidraw-mockup', element: <ExcalidrawBuilderMockup /> },
     {
         path: "/",
         element: <PrivateRoute />,
@@ -63,7 +52,7 @@ const appRoutes = [
                 element: <ProfileGuard />,
                 children: [
                     // Embed pages — no AppLayout (no sidebar), rendered inside an <iframe>
-                    { path: '/embed/video', element: withSuspense(<EmbedVideoPage />) },
+                    { path: '/embed/video', element: <EmbedVideoPage /> },
                     {
                         path: "/",
                         element: <AppLayout />,
@@ -88,7 +77,7 @@ const appRoutes = [
                             ...topicHubRoutes,
                             {
                                 path: '/admin',
-                                element: withSuspense(<AdminPanel />)
+                                element: <AdminPanel />
                             },
                         ]
                     }

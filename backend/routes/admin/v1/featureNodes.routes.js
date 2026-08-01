@@ -4,6 +4,7 @@ import nodeCardsController from '#controllers/admin/v1/nodeCards.controller'
 import nodeQuestionsController from '#controllers/admin/v1/nodeQuestions.controller'
 import nodeAtlasController from '#controllers/admin/v1/nodeAtlas.controller'
 import nodeAnatomyController from '#controllers/admin/v1/nodeAnatomy.controller'
+import nodeRecordsController from '#controllers/admin/v1/nodeRecords.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
@@ -22,6 +23,9 @@ router.post('/', asyncHandler(featureNodesController.create.bind(featureNodesCon
 router.get('/:id', asyncHandler(featureNodesController.show.bind(featureNodesController)))
 router.put('/:id', asyncHandler(featureNodesController.update.bind(featureNodesController)))
 router.delete('/:id', asyncHandler(featureNodesController.delete.bind(featureNodesController)))
+
+// Node records (generic feature_node_records link, e.g. summary_note)
+router.post('/records', asyncHandler(nodeRecordsController.create.bind(nodeRecordsController)))
 
 // Node cards (flashcard_cards linked via feature_node_records)
 router.get('/cards/template', nodeCardsController.downloadTemplate.bind(nodeCardsController))

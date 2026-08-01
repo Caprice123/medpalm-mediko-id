@@ -20,15 +20,9 @@ export const useUpdateNoteV2 = (onClose) => {
       title: '',
       description: '',
       content: null,
-      status: 'draft',
-      universityTags: [],
-      semesterTags: [],
-      departmentTags: [],
       uploadedFile: null,
       blobId: null,
-      sourceFileInfo: null,
-      selectedFlashcards: [],
-      selectedMcqTopics: []
+      sourceFileInfo: null
     },
     validate: (values) => {
       const errors = {}
@@ -39,12 +33,6 @@ export const useUpdateNoteV2 = (onClose) => {
     },
     onSubmit: async (values) => {
       if (!detail) return
-
-      const allTags = [
-        ...values.universityTags,
-        ...values.semesterTags,
-        ...values.departmentTags
-      ]
 
       let contentString
       let markdownContent
@@ -57,11 +45,8 @@ export const useUpdateNoteV2 = (onClose) => {
         title: values.title.trim(),
         description: values.description.trim(),
         ...(contentString !== undefined && { content: contentString, markdownContent }),
-        status: values.status,
-        tagIds: allTags.map(t => t.id),
-        blobId: values.blobId || null,
-        flashcardDeckIds: values.selectedFlashcards.map(f => f.id),
-        mcqTopicIds: values.selectedMcqTopics.map(m => m.id)
+        status: 'published',
+        blobId: values.blobId || null
       }
 
       await dispatch(updateSummaryNoteV2(detail.uniqueId, payload))
@@ -87,15 +72,9 @@ export const useUpdateNoteV2 = (onClose) => {
         title: detail.title || '',
         description: detail.description || '',
         content: parsedContent,
-        status: detail.status || 'draft',
-        universityTags: detail.universityTags || [],
-        semesterTags: detail.semesterTags || [],
-        departmentTags: detail.departmentTags || [],
         uploadedFile: null,
         blobId: null,
-        sourceFileInfo: null,
-        selectedFlashcards: detail.flashcardDecks || [],
-        selectedMcqTopics: detail.mcqTopics || []
+        sourceFileInfo: null
       }
 
       if (detail.blob) {
@@ -179,6 +158,7 @@ export const useUpdateNoteV2 = (onClose) => {
 
   return {
     form,
+    detail,
     handleFileSelect,
     handleGenerate,
     handleRemoveFile,

@@ -9,6 +9,10 @@ async function resolveId(type, uniqueId) {
     const r = await prisma.anatomy_quizzes.findFirst({ where: { unique_id: uniqueId }, select: { id: true } })
     return r?.id ?? null
   }
+  if (type === 'summary_note') {
+    const r = await prisma.summary_notes.findFirst({ where: { unique_id: uniqueId }, select: { id: true } })
+    return r?.id ?? null
+  }
   return null
 }
 
@@ -19,7 +23,7 @@ async function resolveLinkedItems(relations, linkedType, idField) {
   if (linkedType === 'anatomy_quiz') {
     const quizzes = await prisma.anatomy_quizzes.findMany({
       where: { id: { in: ids }, status: 'published', is_deleted: false },
-      select: { id: true, unique_id: true, title: true, difficulty: true, question_count: true, estimated_minutes: true },
+      select: { id: true, unique_id: true, title: true, description: true, difficulty: true, question_count: true, estimated_minutes: true },
     })
     const map = Object.fromEntries(quizzes.map(q => [q.id, q]))
     return relations
@@ -32,6 +36,7 @@ async function resolveLinkedItems(relations, linkedType, idField) {
           linkedType: 'anatomy_quiz',
           linkedUniqueId: q.unique_id,
           linkedTitle: q.title,
+          description: q.description,
           difficulty: q.difficulty || 'medium',
           questionCount: q.question_count,
           estimatedMinutes: q.estimated_minutes || null,

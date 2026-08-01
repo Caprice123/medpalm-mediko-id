@@ -23,6 +23,16 @@ export const Title = styled.h2`
   margin: 0;
 `
 
+export const SearchRow = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+
+  > *:first-child {
+    flex: 1;
+  }
+`
+
 export const ClassificationBadge = styled.span`
   display: inline-flex;
   align-items: center;

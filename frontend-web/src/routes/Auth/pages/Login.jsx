@@ -33,6 +33,7 @@ import {
 } from './Login.styles'
 import { login } from '@store/auth/action'
 import { fetchPublicConstants } from '@store/constant/userAction'
+import { TopicHubRoute } from '@routes/TopicHub/routes'
 
 const LOGIN_CONSTANT_KEYS = [
   'home_hero_badge',
@@ -70,7 +71,7 @@ export function Login() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     const onSuccess = () => {
-        navigate('/dashboard')
+        navigate(TopicHubRoute.moduleRoute)
     }
 
     await dispatch(login(credentialResponse.credential, onSuccess))

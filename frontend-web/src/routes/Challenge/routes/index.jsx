@@ -1,19 +1,8 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-const lazy = lazyWithRetry
-import PageLoader from '@components/PageLoader'
-
-const ChallengeHomePage = lazy(() => import('../pages/Home'))
-const ChallengePage = lazy(() => import('../pages/List'))
-const ChallengeDetailPage = lazy(() => import('../pages/Detail'))
-const ChallengeSessionPage = lazy(() => import('../pages/Session'))
-const ChallengeResultPage = lazy(() => import('../pages/Result'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading..." />}>
-    {Component}
-  </Suspense>
-)
+import ChallengeHomePage from '../pages/Home'
+import ChallengePage from '../pages/List'
+import ChallengeDetailPage from '../pages/Detail'
+import ChallengeSessionPage from '../pages/Session'
+import ChallengeResultPage from '../pages/Result'
 
 export class ChallengeRoute {
   static moduleRoute = '/challenge'
@@ -25,9 +14,9 @@ export class ChallengeRoute {
 }
 
 export const challengeRoutes = [
-  { path: ChallengeRoute.homeRoute, element: withSuspense(<ChallengeHomePage />) },
-  { path: ChallengeRoute.listRoute, element: withSuspense(<ChallengePage />) },
-  { path: `${ChallengeRoute.moduleRoute}/:uniqueId`, element: withSuspense(<ChallengeDetailPage />) },
-  { path: `${ChallengeRoute.moduleRoute}/:uniqueId/session`, element: withSuspense(<ChallengeSessionPage />) },
-  { path: `${ChallengeRoute.moduleRoute}/:uniqueId/result`, element: withSuspense(<ChallengeResultPage />) },
+  { path: ChallengeRoute.homeRoute, element: <ChallengeHomePage /> },
+  { path: ChallengeRoute.listRoute, element: <ChallengePage /> },
+  { path: `${ChallengeRoute.moduleRoute}/:uniqueId`, element: <ChallengeDetailPage /> },
+  { path: `${ChallengeRoute.moduleRoute}/:uniqueId/session`, element: <ChallengeSessionPage /> },
+  { path: `${ChallengeRoute.moduleRoute}/:uniqueId/result`, element: <ChallengeResultPage /> },
 ]

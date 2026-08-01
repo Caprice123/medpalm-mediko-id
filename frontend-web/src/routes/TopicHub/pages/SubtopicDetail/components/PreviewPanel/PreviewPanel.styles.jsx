@@ -9,7 +9,7 @@ export const Backdrop = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
-  z-index: 200;
+  z-index: 300;
 `
 
 export const Drawer = styled.aside`
@@ -21,10 +21,15 @@ export const Drawer = styled.aside`
   max-width: 100vw;
   background: #fff;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-  z-index: 201;
+  z-index: 301;
   display: flex;
   flex-direction: column;
   animation: ${slideIn} 0.22s ease both;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+  }
 `
 
 export const DrawerHeader = styled.div`
@@ -158,26 +163,10 @@ export const NoteExtLink = styled.span`
 export const NoteDetailHeader = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
-`
-
-export const NoteBackBtn = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6b7280;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-shrink: 0;
-  &:hover { background: #f3f4f6; color: #374151; }
 `
 
 export const OpenFullBtn = styled.a`

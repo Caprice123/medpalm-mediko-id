@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserSubtopicBySlug, fetchUserTopicBySlug, fetchUserTopics, fetchUserSubtopics, fetchNodeStats } from '@store/featureNodes'
+import { fetchUserSubtopicBySlug, fetchUserTopicBySlug, fetchUserTopics, fetchUserSubtopics, fetchNodeStats, fetchNodeAtlasModels } from '@store/featureNodes'
 import { TopupRoute } from '@routes/Topup/routes'
+import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
+import { generatePath } from 'react-router-dom'
+import { PiCube } from 'react-icons/pi'
 import PreviewPanel from './components/PreviewPanel'
 import {
   Container, Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent,
@@ -11,6 +14,7 @@ import {
   ExplanationSection, SectionLabel, ExplanationText,
   RelatedSection, RelatedSubtitle, RelatedGrid, RelatedCard,
   RelatedIconBox, RelatedInfo, RelatedLabel, RelatedCount, RelatedAction,
+  AtlasSection, AtlasSectionSubtitle, AtlasGrid, AtlasCard, AtlasCardIcon, AtlasCardTitle, AtlasCardArrow,
   NavRow, NavButton, NavDirection, NavTitle,
   SkeletonTitle, SkeletonSubtitle, SkeletonVideo, SkeletonBlock,
 } from './SubtopicDetail.styles'
@@ -51,6 +55,7 @@ export default function SubtopicDetailPage() {
   const [subtopic, setSubtopic] = useState(null)
   const [siblings, setSiblings] = useState([])
   const [stats, setStats] = useState(null)
+  const [atlasModels, setAtlasModels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [panelTab, setPanelTab] = useState(null)
 
@@ -78,6 +83,7 @@ export default function SubtopicDetailPage() {
     setIsLoading(true)
     setSubtopic(null)
     setStats(null)
+    setAtlasModels([])
     dispatch(fetchUserSubtopicBySlug(subtopicSlug))
       .then(data => {
         setSubtopic(data)
@@ -85,6 +91,15 @@ export default function SubtopicDetailPage() {
       })
       .finally(() => setIsLoading(false))
   }, [dispatch, subtopicSlug])
+
+  useEffect(() => {
+    if (!subtopic?.id || !features.length) return
+    const atlasLock = checkFeatureLock('atlas', features, userStatus)
+    const anatomyLock = checkFeatureLock('anatomy', features, userStatus)
+    const atlasAccessible = !atlasLock.isLocked || !anatomyLock.isLocked
+    if (!atlasAccessible) return
+    dispatch(fetchNodeAtlasModels(subtopic.id)).then(setAtlasModels)
+  }, [dispatch, subtopic?.id, features, userStatus])
 
   const currentIndex = siblings.findIndex(s => s.slug === subtopicSlug)
   const prevSubtopic = currentIndex > 0 ? siblings[currentIndex - 1] : null
@@ -94,6 +109,7 @@ export default function SubtopicDetailPage() {
   const goTo = (slug) => navigate(`${TOPIC_ROUTE}/${topicSlug}/${slug}`)
 
   return (
+    <>
     <Container>
       <Breadcrumb>
         <BreadcrumbLink onClick={() => navigate(TOPIC_ROUTE)}>Topik</BreadcrumbLink>
@@ -129,7 +145,7 @@ export default function SubtopicDetailPage() {
             <VideoFrame
               src={embedSrc}
               title={subtopic?.name}
-              allow="autoplay; fullscreen"
+              allow={import.meta.env.PROD ? 'autoplay; fullscreen' : 'fullscreen'}
               allowFullScreen
             />
           </VideoWrapper>
@@ -147,24 +163,24 @@ export default function SubtopicDetailPage() {
 
       {!isLoading && stats && (() => {
         const RELATED = [
-          { sessionType: 'flashcard',    route: `/flashcards?nodeId=${subtopic.id}`,      count: stats.flashcardCards, unit: 'kartu' },
-          { sessionType: 'mcq',          route: `/multiple-choice?nodeId=${subtopic.id}`, count: stats.mcqQuestions,   unit: 'soal' },
-          { sessionType: 'summary_notes',route: `/summary-notes?nodeId=${subtopic.id}`,   count: stats.summaryNotes,   unit: 'catatan' },
+          { sessionType: 'flashcard',     icon: '🗂️', label: 'Flashcard',  count: stats.flashcardCards, unit: 'kartu'   },
+          { sessionType: 'mcq',           icon: '📝', label: 'Bank Soal',  count: stats.mcqQuestions,   unit: 'soal'    },
+          { sessionType: 'summary_notes', icon: '📖', label: 'Artikel',    count: stats.summaryNotes,   unit: 'catatan' },
         ]
+        const visibleRelated = RELATED.filter(r => r.count > 0)
+        if (!visibleRelated.length) return null
         return (
           <RelatedSection>
             <SectionLabel>Pembelajaran Terkait</SectionLabel>
-            <RelatedSubtitle>Flashcard, bank soal, dan ringkasan seputar {subtopic?.name}.</RelatedSubtitle>
+            <RelatedSubtitle>Flashcard, bank soal, dan artikel seputar {subtopic?.name}.</RelatedSubtitle>
             <RelatedGrid>
-              {RELATED.map(({ sessionType, route, count, unit }) => {
-                const feature = features.find(f => f.sessionType === sessionType)
-                if (!feature) return null
+              {visibleRelated.map(({ sessionType, icon, label, count, unit }) => {
                 const lock = checkFeatureLock(sessionType, features, userStatus)
                 return (
                   <RelatedCard key={sessionType} $locked={lock.isLocked} onClick={() => lock.isLocked ? navigate(TopupRoute.moduleRoute) : setPanelTab(sessionType)}>
-                    <RelatedIconBox>{feature.icon}</RelatedIconBox>
+                    <RelatedIconBox>{icon}</RelatedIconBox>
                     <RelatedInfo>
-                      <RelatedLabel>{feature.name}</RelatedLabel>
+                      <RelatedLabel>{label}</RelatedLabel>
                       <RelatedCount>{count} {unit}</RelatedCount>
                     </RelatedInfo>
                     <RelatedAction>{lock.isLocked ? '🔒' : '↗'}</RelatedAction>
@@ -175,6 +191,25 @@ export default function SubtopicDetailPage() {
           </RelatedSection>
         )
       })()}
+
+      {!isLoading && atlasModels.length > 0 && (
+        <AtlasSection>
+          <SectionLabel>Model 3D Anatomi</SectionLabel>
+          <AtlasSectionSubtitle>Model 3D dibuka di halaman baru dengan navigasi kembali. Setiap model disertai kuis 3D terkait di bagian bawah.</AtlasSectionSubtitle>
+          <AtlasGrid>
+            {atlasModels.map(model => (
+              <AtlasCard
+                key={model.uniqueId}
+                onClick={() => navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug: topicSlug, uniqueId: model.uniqueId }))}
+              >
+                <AtlasCardIcon><PiCube size={16} /></AtlasCardIcon>
+                <AtlasCardTitle>{model.title}</AtlasCardTitle>
+                <AtlasCardArrow>→</AtlasCardArrow>
+              </AtlasCard>
+            ))}
+          </AtlasGrid>
+        </AtlasSection>
+      )}
 
       {!isLoading && (prevSubtopic || nextSubtopic) && (
         <NavRow>
@@ -188,15 +223,16 @@ export default function SubtopicDetailPage() {
           </NavButton>
         </NavRow>
       )}
-      <PreviewPanel
-        open={panelTab !== null}
-        onClose={() => setPanelTab(null)}
-        activeTab={panelTab}
-        onTabChange={setPanelTab}
-        subtopic={subtopic}
-        stats={stats}
-        features={features}
-      />
     </Container>
+    <PreviewPanel
+      open={panelTab !== null}
+      onClose={() => setPanelTab(null)}
+      activeTab={panelTab}
+      onTabChange={setPanelTab}
+      subtopic={subtopic}
+      stats={stats}
+      features={features}
+    />
+    </>
   )
 }

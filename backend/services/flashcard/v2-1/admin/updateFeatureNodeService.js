@@ -53,6 +53,18 @@ export class UpdateFeatureNodeService extends BaseService {
       })
     }
 
+    if (name && name.trim() !== node.name) {
+      const linkedNoteRecord = await prisma.feature_node_records.findFirst({
+        where: { node_id: updated.id, record_type: 'summary_note' },
+      })
+      if (linkedNoteRecord) {
+        await prisma.summary_notes.update({
+          where: { id: linkedNoteRecord.record_id },
+          data: { title: updated.name },
+        })
+      }
+    }
+
     return updated
   }
 }

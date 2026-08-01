@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
@@ -27,9 +27,17 @@ export default function BankSoalPage() {
     customOpen, setCustomOpen,
     handleCloseSession,
     toggle, handleStart, loadSubtopics,
+    deepLinkSubtopicId,
   } = useTopicList()
 
   const [chartTopicId, setChartTopicId] = useState(null)
+
+  // scroll the deep-linked, now-expanded topic into view
+  useEffect(() => {
+    if (!deepLinkSubtopicId || !openId) return
+    const el = document.getElementById(`topic-row-${openId}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [deepLinkSubtopicId, openId])
 
   const attempted = topics.filter(t => t.avgScore != null)
   const chartTopicOptions = [
@@ -123,7 +131,7 @@ export default function BankSoalPage() {
               const isLoadingSubtopic = loadingIds.has(topic.id)
               const subtopics = subtopicsCache[topic.id] || []
               return (
-                <TopikRowWrap key={topic.id} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
+                <TopikRowWrap id={`topic-row-${topic.id}`} key={topic.id} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
                   <TopikRowHeader $open={isOpen} onClick={() => toggle(topic.id)}>
                     <TopikName>{topic.name}</TopikName>
                     <TopikStats>
@@ -146,6 +154,7 @@ export default function BankSoalPage() {
                       isLoadingSubtopics={isLoadingSubtopic}
                       onStart={handleStart}
                       isStarting={loading.isStartingSession}
+                      initialSelectedSubtopicId={deepLinkSubtopicId}
                     />
                   )}
                 </TopikRowWrap>

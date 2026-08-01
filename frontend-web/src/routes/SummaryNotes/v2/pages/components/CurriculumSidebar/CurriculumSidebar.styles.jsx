@@ -74,7 +74,7 @@ export const SectionLabel = styled.span`
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: #374151;
 `
@@ -106,11 +106,12 @@ export const NodeRow = styled.div`
   cursor: ${p => p.$clickable ? 'pointer' : 'default'};
   border-radius: 0;
   user-select: none;
-  &:hover { background: ${p => p.$clickable ? '#f1f5f9' : 'transparent'}; }
+  background: ${p => p.$selected ? '#ccfbf1' : 'transparent'};
+  &:hover { background: ${p => p.$selected ? '#99f6e4' : (p.$clickable ? '#f1f5f9' : 'transparent')}; }
 `
 
 export const ChevronIcon = styled.span`
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   color: #9ca3af;
   width: 0.75rem;
   flex-shrink: 0;
@@ -120,13 +121,14 @@ export const ChevronIcon = styled.span`
 `
 
 export const NodeIcon = styled.span`
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   flex-shrink: 0;
 `
 
 export const NodeLabel = styled.span`
-  font-size: 0.8125rem;
-  color: #374151;
+  font-size: 0.9375rem;
+  color: ${p => p.$selected ? '#0f766e' : '#374151'};
+  font-weight: ${p => p.$selected ? '600' : '400'};
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -145,13 +147,13 @@ export const NoteRow = styled.div`
 `
 
 export const NoteIcon = styled.span`
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #6b7280;
   flex-shrink: 0;
 `
 
 export const NoteLabel = styled.span`
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   color: ${p => p.$selected ? '#0f766e' : '#4b5563'};
   font-weight: ${p => p.$selected ? '600' : '400'};
   flex: 1;

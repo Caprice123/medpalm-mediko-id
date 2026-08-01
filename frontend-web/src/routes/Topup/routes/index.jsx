@@ -1,15 +1,4 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-const lazy = lazyWithRetry
-import PageLoader from '@components/PageLoader'
-
-const TopupPage = lazy(() => import('../pages'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading Top Up..." />}>
-    {Component}
-  </Suspense>
-)
+import TopupPage from '../pages'
 
 export class TopupRoute {
   static moduleRoute = '/topup'
@@ -17,5 +6,5 @@ export class TopupRoute {
 }
 
 export const topupRoutes = [
-  { path: TopupRoute.initialRoute, element: withSuspense(<TopupPage />) }
+  { path: TopupRoute.initialRoute, element: <TopupPage /> }
 ]

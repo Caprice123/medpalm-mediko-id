@@ -2,13 +2,15 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetUserFeatureNodesService extends BaseService {
-  static async call({ nodeType, parentId, parentSlug, slug, visibility, classification, layer, page = 1, perPage = 30 } = {}) {
+  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, page = 1, perPage = 30 } = {}) {
     const currentPage = Math.max(1, parseInt(page) || 1)
     const currentPerPage = Math.min(100, Math.max(1, parseInt(perPage) || 30))
     const skip = (currentPage - 1) * currentPerPage
     const take = currentPerPage + 1
 
     const where = {}
+    if (id) where.id = parseInt(id)
+    if (name) where.name = name
     if (nodeType) where.node_type = nodeType
     if (visibility) where.visibility = visibility
     if (classification) where.classification = classification

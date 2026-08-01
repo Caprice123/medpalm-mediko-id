@@ -1,19 +1,8 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-const lazy = lazyWithRetry
-import PageLoader from '@components/PageLoader'
-
-const SessionHistory = lazy(() => import('../pages/SessionHistory'))
-const TopicSelection = lazy(() => import('../pages/TopicSelection'))
-const SessionPreparation = lazy(() => import('../pages/SessionPreparation'))
-const SessionPractice = lazy(() => import('../pages/SessionPractice'))
-const SessionResult = lazy(() => import('../pages/SessionResult'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading..." />}>
-    {Component}
-  </Suspense>
-)
+import SessionHistory from '../pages/SessionHistory'
+import TopicSelection from '../pages/TopicSelection'
+import SessionPreparation from '../pages/SessionPreparation'
+import SessionPractice from '../pages/SessionPractice'
+import SessionResult from '../pages/SessionResult'
 
 export class OscePracticeRoute {
   static moduleRoute = '/osce-practice'
@@ -29,9 +18,9 @@ export class OscePracticeRoute {
 }
 
 export const oscePracticeRoutes = [
-  { path: OscePracticeRoute.initialRoute, element: withSuspense(<SessionHistory />) },
-  { path: OscePracticeRoute.topicsRoute, element: withSuspense(<TopicSelection />) },
-  { path: OscePracticeRoute.sessionPreparationRoute, element: withSuspense(<SessionPreparation />) },
-  { path: OscePracticeRoute.sessionPracticeRoute, element: withSuspense(<SessionPractice />) },
-  { path: OscePracticeRoute.sessionResultRoute, element: withSuspense(<SessionResult />) },
+  { path: OscePracticeRoute.initialRoute, element: <SessionHistory /> },
+  { path: OscePracticeRoute.topicsRoute, element: <TopicSelection /> },
+  { path: OscePracticeRoute.sessionPreparationRoute, element: <SessionPreparation /> },
+  { path: OscePracticeRoute.sessionPracticeRoute, element: <SessionPractice /> },
+  { path: OscePracticeRoute.sessionResultRoute, element: <SessionResult /> },
 ]

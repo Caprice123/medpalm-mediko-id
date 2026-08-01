@@ -38,7 +38,7 @@ class SummaryNotesV2AdminController {
   }
 
   async create(req, res) {
-    const { title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, tagIds, nodeId } = req.body
 
     const summaryNote = await CreateSummaryNoteV2Service.call({
       title,
@@ -48,9 +48,8 @@ class SummaryNotesV2AdminController {
       blobId,
       status,
       tagIds,
-      flashcardDeckIds,
-      mcqTopicIds,
       createdBy: req.user.id,
+      nodeId,
     })
 
     const detail = await GetSummaryNoteDetailV2AdminService.call({ id: summaryNote.unique_id })
@@ -59,7 +58,7 @@ class SummaryNotesV2AdminController {
 
   async update(req, res) {
     const { uniqueId } = req.params
-    const { title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds } = req.body
+    const { title, description, content, markdownContent, blobId, status, tagIds } = req.body
 
     await UpdateSummaryNoteV2Service.call({
       id: uniqueId,
@@ -70,8 +69,6 @@ class SummaryNotesV2AdminController {
       blobId,
       status,
       tagIds,
-      flashcardDeckIds,
-      mcqTopicIds,
     })
 
     return res.status(200).json({ data: { success: 'ok' } })

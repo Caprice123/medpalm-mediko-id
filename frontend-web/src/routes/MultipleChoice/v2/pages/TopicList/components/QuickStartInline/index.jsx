@@ -80,8 +80,8 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
   )
 }
 
-export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics, onStart, isStarting }) {
-  const [selected, setSelected] = useState([])
+export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics, onStart, isStarting, initialSelectedSubtopicId }) {
+  const [selected, setSelected] = useState(initialSelectedSubtopicId ? [initialSelectedSubtopicId] : [])
   const [preset, setPreset] = useState(10)
   const [isCustom, setIsCustom] = useState(false)
   const [customVal, setCustomVal] = useState('10')

@@ -48,38 +48,6 @@ export const ErrorText = styled.div`
   margin-top: 0.375rem;
 `
 
-export const StatusToggle = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.25rem;
-  background: #f1f5f9;
-  border-radius: 8px;
-`
-
-export const StatusOption = styled.label`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem 1rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 6px;
-  transition: all 0.2s;
-  color: ${p => p.$checked ? '#0ea5e9' : '#64748b'};
-  background: ${p => p.$checked ? 'white' : 'transparent'};
-  box-shadow: ${p => p.$checked ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'};
-
-  &:hover {
-    color: ${p => p.$checked ? '#0ea5e9' : '#475569'};
-  }
-
-  input[type='radio'] {
-    display: none;
-  }
-`
-
 export const EditorContainer = styled.div`
   border: 2px solid #e2e8f0;
   border-radius: 8px;

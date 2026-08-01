@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { startFlashcardCustomSession, startFlashcardNodeDueSession } from '@store/flashcardNodes'
 import Button from '@components/common/Button'
@@ -28,7 +29,16 @@ export default function TopicListPage() {
     searchQuery, setSearchQuery,
     handleStartAllDue, handleCloseSession,
     toggle, statsMap, filteredTopics,
+    deepLinkSubtopicId,
   } = useTopicList()
+
+  // scroll the deep-linked, now-expanded topic into view
+  useEffect(() => {
+    if (!deepLinkSubtopicId || openIds.size === 0) return
+    const topicId = [...openIds][0]
+    const el = document.getElementById(`topic-row-${topicId}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [deepLinkSubtopicId, openIds])
 
   return (
     <Container>
@@ -97,7 +107,7 @@ export default function TopicListPage() {
               const subtopics = subtopicsCache[topic.id] || []
 
               return (
-                <TopikRowWrap key={topic.id} $open={isOpen} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
+                <TopikRowWrap id={`topic-row-${topic.id}`} key={topic.id} $open={isOpen} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
                   <TopikRowHeader $open={isOpen} onClick={() => toggle(topic.id)}>
                     <TopikName>{topic.name}</TopikName>
                     <TopikStats>
@@ -117,6 +127,7 @@ export default function TopicListPage() {
                       isLoadingSubtopics={isLoadingSubtopic}
                       onStart={(nodeIds, count) => dispatch(startFlashcardCustomSession(nodeIds, count))}
                       isStarting={loading.isStartingSession}
+                      initialSelectedSubtopicId={deepLinkSubtopicId}
                     />
                   )}
                 </TopikRowWrap>

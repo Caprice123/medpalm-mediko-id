@@ -1,15 +1,4 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-const lazy = lazyWithRetry
-import PageLoader from '@components/PageLoader'
-
-const EventPage = lazy(() => import('../pages/List'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading..." />}>
-    {Component}
-  </Suspense>
-)
+import EventPage from '../pages/List'
 
 export class EventRoute {
   static moduleRoute = '/events'
@@ -17,5 +6,5 @@ export class EventRoute {
 }
 
 export const eventRoutes = [
-  { path: EventRoute.listRoute, element: withSuspense(<EventPage />) },
+  { path: EventRoute.listRoute, element: <EventPage /> },
 ]

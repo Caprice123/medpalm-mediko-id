@@ -1,15 +1,4 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-const lazy = lazyWithRetry
-import PageLoader from '@components/PageLoader'
-
-const WebinarPage = lazy(() => import('../pages/List'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading..." />}>
-    {Component}
-  </Suspense>
-)
+import WebinarPage from '../pages/List'
 
 export class WebinarRoute {
   static moduleRoute = '/webinar'
@@ -17,5 +6,5 @@ export class WebinarRoute {
 }
 
 export const webinarRoutes = [
-  { path: WebinarRoute.listRoute, element: withSuspense(<WebinarPage />) },
+  { path: WebinarRoute.listRoute, element: <WebinarPage /> },
 ]

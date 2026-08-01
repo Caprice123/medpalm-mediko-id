@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchFeatureNodes, fetchFeatureNodeDetail, deleteFeatureNode, actions } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import TextInput from '@components/common/TextInput'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import SubtopicFormModal from '../SubtopicFormModal'
-import { Header, HeaderLeft, Title, ClassificationBadge, IconPreview } from '../../MateriAdmin.styles'
+import { Header, HeaderLeft, Title, SearchRow, ClassificationBadge, IconPreview } from '../../MateriAdmin.styles'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -16,17 +17,20 @@ function SubtopicListPage({ topic, onBack }) {
   const dispatch = useDispatch()
   const { nodes, loading } = useSelector(s => s.featureNodes)
   const [modal, setModal] = useState({ type: null, subtopic: null })
+  const [search, setSearch] = useState('')
 
   const load = () => {
     dispatch(actions.updateFilter({ key: 'layer', value: '2' }))
     dispatch(actions.updateFilter({ key: 'parentId', value: String(topic.id) }))
     dispatch(actions.updateFilter({ key: 'visibility', value: 'general' }))
+    dispatch(actions.updateFilter({ key: 'search', value: search.trim() }))
     dispatch(fetchFeatureNodes())
   }
 
   useEffect(() => {
     load()
-    return () => { dispatch(actions.resetFilter()) }
+    // No cleanup-driven resetFilter here — MateriAdmin's onBack already
+    // re-establishes the layer-1 filter and refetches when returning.
   }, [topic.id])
 
   const handleEdit = async (sub) => {
@@ -78,11 +82,21 @@ function SubtopicListPage({ topic, onBack }) {
         </Button>
       </Header>
 
+      <SearchRow>
+        <TextInput
+          placeholder="Cari sub-topik..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && load()}
+        />
+        <Button variant="secondary" onClick={load}>Cari</Button>
+      </SearchRow>
+
       <Table
         columns={columns}
         data={nodes}
-        isLoading={loading.isFetchingNodes}
-        emptyMessage="Belum ada sub-topik."
+        loading={loading.isFetchingNodes}
+        emptyText="Belum ada sub-topik."
       />
 
       {(modal.type === 'create' || modal.type === 'edit') && (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { LoaderWrapper, LogoContainer, LogoImage, SpinnerRing, LoaderText } from './PageLoader.styles';
 
-const PageLoader = ({ fullScreen = true, text = 'Loading...', size = 80 }) => {
+const PageLoader = ({ fullScreen = false, text = 'Loading...', size = 80 }) => {
   return (
     <LoaderWrapper fullScreen={fullScreen}>
       <LogoContainer>

@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote, queueDeleteSummaryNoteEmbedding } from '#jobs/queues/summaryNotesQueue'
 
 export class UpdateSummaryNoteV2Service extends BaseService {
-  static async call({ id, title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds }) {
+  static async call({ id, title, description, content, markdownContent, blobId, status, tagIds }) {
     if (!id) throw new ValidationError('ID ringkasan wajib diisi')
 
     const existing = await prisma.summary_notes.findUnique({ where: { unique_id: id } })
@@ -49,44 +49,6 @@ export class UpdateSummaryNoteV2Service extends BaseService {
               record_id: existing.id,
               blob_id: parseInt(blobId),
             },
-          })
-        }
-      }
-
-      if (flashcardDeckIds !== undefined) {
-        await tx.summary_note_flashcard_decks.deleteMany({ where: { summary_note_id: summaryNote.id } })
-        await tx.content_relations.deleteMany({
-          where: { source_type: 'summary_note', source_id: summaryNote.id, target_type: 'flashcard_deck' },
-        })
-        if (flashcardDeckIds.length > 0) {
-          await tx.summary_note_flashcard_decks.createMany({
-            data: flashcardDeckIds.map(deckId => ({ summary_note_id: summaryNote.id, flashcard_deck_id: parseInt(deckId) })),
-          })
-          await tx.content_relations.createMany({
-            data: flashcardDeckIds.map((deckId, i) => ({
-              source_type: 'summary_note', source_id: summaryNote.id,
-              target_type: 'flashcard_deck', target_id: parseInt(deckId), order: i,
-            })),
-            skipDuplicates: true,
-          })
-        }
-      }
-
-      if (mcqTopicIds !== undefined) {
-        await tx.summary_note_mcq_topics.deleteMany({ where: { summary_note_id: summaryNote.id } })
-        await tx.content_relations.deleteMany({
-          where: { source_type: 'summary_note', source_id: summaryNote.id, target_type: 'mcq_topic' },
-        })
-        if (mcqTopicIds.length > 0) {
-          await tx.summary_note_mcq_topics.createMany({
-            data: mcqTopicIds.map(topicId => ({ summary_note_id: summaryNote.id, mcq_topic_id: parseInt(topicId) })),
-          })
-          await tx.content_relations.createMany({
-            data: mcqTopicIds.map((topicId, i) => ({
-              source_type: 'summary_note', source_id: summaryNote.id,
-              target_type: 'mcq_topic', target_id: parseInt(topicId), order: i,
-            })),
-            skipDuplicates: true,
           })
         }
       }

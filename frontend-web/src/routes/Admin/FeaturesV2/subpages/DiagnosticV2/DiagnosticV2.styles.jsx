@@ -58,6 +58,15 @@ export const BreadcrumbCurrent = styled.span`
   font-weight: 600;
 `
 
+export const SearchRow = styled.div`
+  display: flex;
+  gap: 0.75rem;
+
+  > *:first-child {
+    flex: 1;
+  }
+`
+
 export const ActionGroup = styled.div`
   display: flex;
   align-items: center;

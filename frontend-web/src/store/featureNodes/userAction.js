@@ -30,6 +30,21 @@ export const fetchUserTopicBySlug = (slug) => async () => {
   return (res.data.data || [])[0] ?? null
 }
 
+export const fetchUserNodeById = (id) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { id, perPage: 1 })
+  return (res.data.data || [])[0] ?? null
+}
+
+export const fetchUserNodeBySlug = (slug) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { slug, perPage: 1 })
+  return (res.data.data || [])[0] ?? null
+}
+
+export const fetchUserNodeByName = (name) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodes, { name, layer: 2, perPage: 1 })
+  return (res.data.data || [])[0] ?? null
+}
+
 export const fetchUserSubtopicBySlug = (slug) => async () => {
   const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 2, perPage: 1 })
   return (res.data.data || [])[0] ?? null
@@ -43,4 +58,14 @@ export const fetchNodeStats = (nodeId) => async () => {
 export const fetchNodePreview = (nodeId, type) => async () => {
   const res = await getWithToken(Endpoints.api.featureNodePreview(nodeId), { type })
   return res.data.data
+}
+
+export const fetchNodeAtlasModels = (nodeId) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodeAtlasModels(nodeId))
+  return res.data.data || []
+}
+
+export const fetchNodeAnatomyQuizzes = (nodeId) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodeAnatomyQuizzes(nodeId))
+  return res.data.data || []
 }

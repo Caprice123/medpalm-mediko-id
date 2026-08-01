@@ -1,16 +1,5 @@
-import { Suspense } from 'react';
-import lazyWithRetry from '@utils/lazyWithRetry';
-const lazy = lazyWithRetry;
-import PageLoader from '@components/PageLoader';
-
-const ExerciseListPage = lazy(() => import('../pages/List'));
-const ExerciseDetailPage = lazy(() => import('../pages/Detail'));
-
-const withSuspense = (Component) => (
-    <Suspense fallback={<PageLoader text="Loading..." />}>
-        {Component}
-    </Suspense>
-);
+import ExerciseListPage from '../pages/List';
+import ExerciseDetailPage from '../pages/Detail';
 
 export class ExerciseRoute {
     static moduleRoute = "/fill-in-the-blank"
@@ -19,6 +8,6 @@ export class ExerciseRoute {
 }
 
 export const exerciseRoutes = [
-    { path: ExerciseRoute.initialRoute, element: withSuspense(<ExerciseListPage />) },
-    { path: ExerciseRoute.detailRoute, element: withSuspense(<ExerciseDetailPage />) },
+    { path: ExerciseRoute.initialRoute, element: <ExerciseListPage /> },
+    { path: ExerciseRoute.detailRoute, element: <ExerciseDetailPage /> },
 ];

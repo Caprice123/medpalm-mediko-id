@@ -15,8 +15,9 @@ function NoteDetailPage({ note, onBack }) {
   const { loading } = useSelector(s => s.summaryNotesV2)
   const { loading: commonLoading } = useSelector(s => s.common)
 
-  const { form, handleFileSelect, handleGenerate, handleRemoveFile, handleRemoveSourceFile, handleImageUpload } =
+  const { form, detail, handleFileSelect, handleGenerate, handleRemoveFile, handleRemoveSourceFile, handleImageUpload } =
     useUpdateNoteV2(() => dispatch(fetchAdminSummaryNoteDetailV2(note.uniqueId)))
+  const linkedNodeName = detail?.nodes?.[0]?.nodeName ?? null
 
   return (
     <Container>
@@ -36,6 +37,7 @@ function NoteDetailPage({ note, onBack }) {
         <TabContent>
           <DetailTab
             form={form}
+            linkedNodeName={linkedNodeName}
             handleFileSelect={handleFileSelect}
             handleGenerate={handleGenerate}
             handleRemoveFile={handleRemoveFile}
@@ -51,7 +53,7 @@ function NoteDetailPage({ note, onBack }) {
 
       {activeTab === 'terkait' && (
         <TabContent>
-          <RelatedContentTab noteId={note.id} />
+          <RelatedContentTab noteUniqueId={note.uniqueId} />
         </TabContent>
       )}
     </Container>

@@ -10,6 +10,10 @@ async function resolveId(type, uniqueId) {
     const r = await prisma.anatomy_quizzes.findFirst({ where: { unique_id: uniqueId }, select: { id: true } })
     return r?.id ?? null
   }
+  if (type === 'summary_note') {
+    const r = await prisma.summary_notes.findFirst({ where: { unique_id: uniqueId }, select: { id: true } })
+    return r?.id ?? null
+  }
   return null
 }
 

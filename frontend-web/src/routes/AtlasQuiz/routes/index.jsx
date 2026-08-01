@@ -1,19 +1,7 @@
-import { Suspense } from 'react'
-import lazyWithRetry from '@utils/lazyWithRetry'
-import PageLoader from '@components/PageLoader'
-
-const lazy = lazyWithRetry
-
-const AtlasQuizHome = lazy(() => import('../pages/Home'))
-const TopicDetailPage = lazy(() => import('../pages/TopicDetail'))
-const AtlasModelDetailPage = lazy(() => import('../pages/AtlasModelDetail'))
-const AnatomyQuizDetailPage = lazy(() => import('../pages/AnatomyQuizDetail'))
-
-const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader text="Loading..." />}>
-    {Component}
-  </Suspense>
-)
+import AtlasQuizHome from '../pages/Home'
+import TopicDetailPage from '../pages/TopicDetail'
+import AtlasModelDetailPage from '../pages/AtlasModelDetail'
+import AnatomyQuizDetailPage from '../pages/AnatomyQuizDetail'
 
 export class AtlasQuizRoute {
   static moduleRoute = '/atlas-quiz'
@@ -24,8 +12,8 @@ export class AtlasQuizRoute {
 }
 
 export const atlasQuizRoutes = [
-  { path: AtlasQuizRoute.homeRoute, element: withSuspense(<AtlasQuizHome />) },
-  { path: AtlasQuizRoute.detailRoute, element: withSuspense(<TopicDetailPage />) },
-  { path: AtlasQuizRoute.atlasModelRoute, element: withSuspense(<AtlasModelDetailPage />) },
-  { path: AtlasQuizRoute.anatomyQuizRoute, element: withSuspense(<AnatomyQuizDetailPage />) },
+  { path: AtlasQuizRoute.homeRoute, element: <AtlasQuizHome /> },
+  { path: AtlasQuizRoute.detailRoute, element: <TopicDetailPage /> },
+  { path: AtlasQuizRoute.atlasModelRoute, element: <AtlasModelDetailPage /> },
+  { path: AtlasQuizRoute.anatomyQuizRoute, element: <AnatomyQuizDetailPage /> },
 ]

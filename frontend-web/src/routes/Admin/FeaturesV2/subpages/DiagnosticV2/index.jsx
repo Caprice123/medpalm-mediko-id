@@ -12,6 +12,7 @@ import {
 import { fetchFeatureNodes, updateFilter, deleteFeatureNode } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import TextInput from '@components/common/TextInput'
 import Modal from '@components/common/Modal'
 import Pagination from '@components/common/Pagination'
 import NodeFormModal from './components/NodeFormModal'
@@ -22,7 +23,7 @@ import DiagnosticSettingsModal from '@routes/Admin/Features/subpages/DiagnosticQ
 import {
   Container, Header, HeaderLeft, Title, PageTitle,
   Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent,
-  ActionGroup, ClassificationBadge,
+  ActionGroup, ClassificationBadge, SearchRow,
 } from './DiagnosticV2.styles'
 
 const LAYER_LABELS = { 1: 'Topik', 2: 'Sub-topik' }
@@ -41,6 +42,7 @@ export default function DiagnosticV2({ onBack }) {
   const [qModal, setQModal] = useState({ open: false, question: null })
   const [moveModal, setMoveModal] = useState({ open: false, question: null })
   const [importResult, setImportResult] = useState(null)
+  const [search, setSearch] = useState('')
   const importRef = useRef(null)
 
   const currentLayer = path.length + 1  // 1=topics, 2=subtopics
@@ -48,16 +50,27 @@ export default function DiagnosticV2({ onBack }) {
   const inQuestions = path.length === 2
 
   useEffect(() => {
+    setSearch('')
     if (showUnlinked) return
     if (!inQuestions) {
       dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
       dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
       dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
+      dispatch(updateFilter({ key: 'search', value: '' }))
       dispatch(fetchFeatureNodes())
     } else {
       dispatch(fetchDiagnosticAdminQuestions(parentNode.id))
     }
   }, [path, showUnlinked])
+
+  const handleSearch = () => {
+    if (inQuestions) {
+      dispatch(fetchDiagnosticAdminQuestions(parentNode.id, { page: 1, search: search.trim() }))
+    } else {
+      dispatch(updateFilter({ key: 'search', value: search.trim() }))
+      dispatch(fetchFeatureNodes())
+    }
+  }
 
   const navigate = (node) => setPath(prev => [...prev, node])
   const navigateTo = (index) => setPath(prev => prev.slice(0, index))
@@ -102,7 +115,7 @@ export default function DiagnosticV2({ onBack }) {
   }
 
   const handlePageChange = (page) => {
-    dispatch(fetchDiagnosticAdminQuestions(parentNode.id, { page }))
+    dispatch(fetchDiagnosticAdminQuestions(parentNode.id, { page, search: search.trim() }))
   }
 
   if (showUnlinked) {
@@ -233,6 +246,16 @@ export default function DiagnosticV2({ onBack }) {
           )}
         </ActionGroup>
       </Header>
+
+      <SearchRow>
+        <TextInput
+          placeholder={inQuestions ? 'Cari pertanyaan atau vignette...' : `Cari ${LAYER_LABELS[currentLayer]?.toLowerCase()}...`}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSearch()}
+        />
+        <Button variant="secondary" onClick={handleSearch}>Cari</Button>
+      </SearchRow>
 
       {inQuestions ? (
         <>

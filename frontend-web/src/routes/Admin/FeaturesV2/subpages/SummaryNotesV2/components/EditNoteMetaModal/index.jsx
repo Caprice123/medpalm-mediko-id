@@ -5,7 +5,6 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
-import { StatusToggle, StatusOption } from '../NoteDetailPage/NoteDetailPage.styles'
 
 function EditNoteMetaModal({ note, onClose }) {
   const dispatch = useDispatch()
@@ -13,9 +12,6 @@ function EditNoteMetaModal({ note, onClose }) {
 
   const [title, setTitle] = useState(note.title || '')
   const [description, setDescription] = useState(note.description || '')
-  const [status, setStatus] = useState(
-    note.isActive === false ? 'inactive' : (note.status || 'draft')
-  )
   const [titleError, setTitleError] = useState('')
 
   const handleSave = async () => {
@@ -28,8 +24,8 @@ function EditNoteMetaModal({ note, onClose }) {
     await dispatch(updateSummaryNoteV2(note.uniqueId, {
       title: title.trim(),
       description: description.trim(),
-      status: status === 'inactive' ? 'draft' : status,
-      isActive: status !== 'inactive',
+      status: 'published',
+      isActive: true,
     }))
 
     dispatch(fetchAdminSummaryNotesV2({ perPage: 500 }))
@@ -69,26 +65,6 @@ function EditNoteMetaModal({ note, onClose }) {
           placeholder="Deskripsi singkat tentang ringkasan ini"
           rows={3}
         />
-
-        <div>
-          <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', color: '#374151', marginBottom: '0.375rem' }}>
-            Status
-          </label>
-          <StatusToggle>
-            {['draft', 'testing', 'published'].map(s => (
-              <StatusOption key={s} $checked={status === s}>
-                <input
-                  type="radio"
-                  name="edit-note-meta-status"
-                  value={s}
-                  checked={status === s}
-                  onChange={() => setStatus(s)}
-                />
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </StatusOption>
-            ))}
-          </StatusToggle>
-        </div>
       </div>
     </Modal>
   )

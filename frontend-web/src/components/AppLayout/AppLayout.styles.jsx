@@ -41,7 +41,7 @@ export const FloatingHamburger = styled.button`
     justify-content: center;
     gap: 5px;
     position: fixed;
-    z-index: 210;
+    z-index: 160;
     width: 44px;
     height: 44px;
     background: #ffffff;
@@ -92,7 +92,7 @@ export const Sidebar = styled.aside`
     width: 100vw;
     min-width: 100vw;
     height: 100vh;
-    z-index: 200;
+    z-index: 150;
     overflow: hidden;
     transform: ${props => props.$open ? 'translateX(0)' : 'translateX(-100%)'};
     transition: transform 0.25s ease;
@@ -408,6 +408,69 @@ export const ContentArea = styled.div`
   min-width: 0;
 `
 
+/* Explicit single wrapper around <Outlet/> — reserves room for the fixed
+   TopBar with padding (page's own background fills it, no gap). Using a real
+   wrapper instead of a `:last-child` CSS selector so it holds regardless of
+   whether a routed page renders one root node or several top-level siblings
+   (e.g. a page + a slide-out panel). Global box-sizing: border-box means this
+   doesn't add to any height:100vh page's total size. Not needed on mobile,
+   where TopBar is hidden and FloatingHamburger is used instead. */
+export const PageOutlet = styled.div`
+  position: relative;
+  min-height: 100%;
+  padding-top: 44px;
+
+  @media (max-width: 768px) {
+    padding-top: 0;
+  }
+`
+
+export const TopBar = styled.div`
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width, 240px);
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 0.75rem;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+  transition: left 0.25s ease;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`
+
+export const SidebarToggleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 1.1rem;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    background: #f0fdfa;
+    color: #06b6d4;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`
+
 export const SidebarOuter = styled.div`
   position: sticky;
   top: 0;
@@ -417,35 +480,3 @@ export const SidebarOuter = styled.div`
   z-index: 10;
 `
 
-export const ToggleButton = styled.button`
-  position: absolute;
-  top: 50%;
-  right: -28px;
-  transform: translateY(-50%);
-  z-index: 100;
-  width: 28px;
-  height: 64px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-left: none;
-  border-radius: 0 8px 8px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: #6b7280;
-  transition: color 0.15s, background 0.15s;
-  padding: 0;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
-
-  &:hover {
-    background: #f0fdfa;
-    color: #06b6d4;
-    border-color: #06b6d4;
-  }
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`

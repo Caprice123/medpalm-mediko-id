@@ -10,7 +10,7 @@ import {
   Backdrop, Drawer, DrawerHeader, DrawerTitle, CloseBtn,
   TabBar, TabBtn, PanelContent,
   NoteItem, NoteIcon, NoteInfo, NoteTitle, NoteReadTime, NoteExtLink,
-  NoteDetailHeader, NoteBackBtn, OpenFullBtn, NoteDetailTitle, NoteEditorWrap,
+  NoteDetailHeader, OpenFullBtn, NoteDetailTitle, NoteEditorWrap,
   CountLabel, SessionRow, CountInput, StartButton,
   PlayerHeader, PlayerStats, PlayerCounter, PlayerBackBtn,
   PlayerProgress, PlayerFill,
@@ -34,12 +34,12 @@ const MAX_LAGI = 2
 const MCQ_LABELS = ['A', 'B', 'C', 'D', 'E']
 
 const TABS = [
-  { key: 'flashcard',     statKey: 'flashcardCards', unit: 'kartu' },
-  { key: 'mcq',          statKey: 'mcqQuestions',   unit: 'soal' },
-  { key: 'summary_notes', statKey: 'summaryNotes',   unit: 'catatan' },
+  { key: 'flashcard',     statKey: 'flashcardCards', unit: 'kartu',   label: 'Flashcard' },
+  { key: 'mcq',          statKey: 'mcqQuestions',   unit: 'soal',    label: 'Bank Soal' },
+  { key: 'summary_notes', statKey: 'summaryNotes',   unit: 'catatan', label: 'Artikel'   },
 ]
 
-export default function PreviewPanel({ open, onClose, activeTab, onTabChange, subtopic, stats, features }) {
+export default function PreviewPanel({ open, onClose, activeTab, onTabChange, subtopic, stats }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { sessionCards, loading: fcLoading } = useSelector(s => s.flashcardNodes)
@@ -95,12 +95,39 @@ export default function PreviewPanel({ open, onClose, activeTab, onTabChange, su
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mcqPlaying])
 
-  // fetch summary notes list
+  // fetch summary notes list — a subtopic has at most one summary note, so
+  // when there's exactly one, open it directly instead of showing a list to click.
   useEffect(() => {
     if (!open || !subtopic?.id || activeTab !== 'summary_notes') return
     setNotes([])
-    dispatch(fetchNodePreview(subtopic.id, 'summary_note')).then(data => setNotes(data || []))
+    dispatch(fetchNodePreview(subtopic.id, 'summary_note')).then(data => {
+      const list = data || []
+      setNotes(list)
+      if (list.length === 1) {
+        const note = list[0]
+        setSelectedNote(note)
+        setNoteDetail(null)
+        setNoteDetailLoading(true)
+        dispatch(fetchSummaryNoteDetailV2(note.uniqueId)).then(detail => {
+          setNoteDetail(detail)
+          setNoteDetailLoading(false)
+        })
+      }
+    })
   }, [open, activeTab, subtopic?.id, dispatch])
+
+  // lock the body while the drawer is open so the page underneath can't scroll
+  useEffect(() => {
+    if (!open) return
+    const prevHeight = document.body.style.height
+    const prevOverflow = document.body.style.overflow
+    document.body.style.height = '100vh'
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.height = prevHeight
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open])
 
   const handleReveal = useCallback(() => setRevealed(true), [])
 
@@ -200,14 +227,11 @@ export default function PreviewPanel({ open, onClose, activeTab, onTabChange, su
         </DrawerHeader>
 
         <TabBar>
-          {visibleTabs.map(({ key }) => {
-            const feat = features.find(f => f.sessionType === key)
-            return (
-              <TabBtn key={key} $active={activeTab === key} onClick={() => onTabChange(key)}>
-                {feat?.icon} {feat?.name ?? key}
-              </TabBtn>
-            )
-          })}
+          {visibleTabs.map(({ key, label }) => (
+            <TabBtn key={key} $active={activeTab === key} onClick={() => onTabChange(key)}>
+              {label}
+            </TabBtn>
+          ))}
         </TabBar>
 
         <PanelContent>
@@ -231,9 +255,6 @@ export default function PreviewPanel({ open, onClose, activeTab, onTabChange, su
           {activeTab === 'summary_notes' && selectedNote && (
             <>
               <NoteDetailHeader>
-                <NoteBackBtn onClick={() => { setSelectedNote(null); setNoteDetail(null) }}>
-                  ← Kembali
-                </NoteBackBtn>
                 <OpenFullBtn href={`/summary-notes/${selectedNote.uniqueId}`} target="_blank" rel="noopener noreferrer">
                   Buka Penuh ↗
                 </OpenFullBtn>

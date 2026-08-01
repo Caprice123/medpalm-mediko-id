@@ -1,11 +1,18 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 import { fetchMcqTopics, fetchMcqSubtopicsRaw, startMcqCustomSession, actions } from '@store/mcqNodes'
+import { fetchUserNodeByName } from '@store/featureNodes'
 
 export function useTopicList() {
   const dispatch = useDispatch()
   const { topics } = useSelector(s => s.mcqNodes)
-const [openId, setOpenId] = useState(null)
+  const [searchParams] = useSearchParams()
+  const deepLinkSubtopicName = searchParams.get('subtopic')
+  const [resolvedDeepLinkSubtopicId, setResolvedDeepLinkSubtopicId] = useState(null)
+  const consumedDeepLinkRef = useRef(false)
+
+  const [openId, setOpenId] = useState(null)
   const [subtopicsCache, setSubtopicsCache] = useState({})
   const [loadingIds, setLoadingIds] = useState(new Set())
   const [searchQuery, setSearchQuery] = useState('')
@@ -14,6 +21,20 @@ const [openId, setOpenId] = useState(null)
   useEffect(() => {
     dispatch(fetchMcqTopics())
   }, [dispatch])
+
+  // deep link — e.g. /multiple-choice?subtopic=Aritmia from a related-content link.
+  // Resolve the subtopic's parent topic so we know which one to auto-expand.
+  useEffect(() => {
+    if (consumedDeepLinkRef.current || !deepLinkSubtopicName || topics.length === 0) return
+    consumedDeepLinkRef.current = true
+    dispatch(fetchUserNodeByName(deepLinkSubtopicName)).then(node => {
+      if (node?.parentId && topics.some(t => t.id === node.parentId)) {
+        setResolvedDeepLinkSubtopicId(node.id)
+        toggle(node.parentId)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deepLinkSubtopicName, topics])
 
   const handleCloseSession = (submitted) => {
     dispatch(actions.setSessionQuestions([]))
@@ -60,5 +81,6 @@ const [openId, setOpenId] = useState(null)
     toggle,
     handleStart,
     loadSubtopics,
+    deepLinkSubtopicId: resolvedDeepLinkSubtopicId,
   }
 }

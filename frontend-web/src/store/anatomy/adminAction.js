@@ -6,31 +6,38 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@uti
 const {
   setLoading,
   setQuizzes,
+  appendQuizzes,
   setPagination,
   setDetail,
   setQuizRelations,
   setSearchedAnatomyQuizzes,
 } = actions
 
-export const fetchAdminAnatomyQuizzes = () => async (dispatch, getState) => {
+export const fetchAdminAnatomyQuizzes = (overrides = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isGetListAnatomyQuizLoading', value: true }))
 
     const { filter, pagination } = getState().anatomy
 
     const queryParams = {}
-    if (filter.topic) queryParams.topic = filter.topic
-    
-    if (filter.status) queryParams.status = filter.status
-    if (filter.name) queryParams.search = filter.name
+    const activeStatus = overrides.status ?? filter.status
+    if (activeStatus) queryParams.status = activeStatus
+    if (!overrides.status) {
+      if (filter.topic) queryParams.topic = filter.topic
+      if (filter.name) queryParams.search = filter.name
+    }
 
-    queryParams.page = pagination.page
-    queryParams.perPage = pagination.perPage
+    queryParams.page = overrides.page ?? pagination.page
+    queryParams.perPage = overrides.perPage ?? pagination.perPage
 
     const route = Endpoints.admin.anatomy
     const response = await getWithToken(route, queryParams)
 
-    dispatch(setQuizzes(response.data.data || []))
+    if (overrides.append) {
+      dispatch(appendQuizzes(response.data.data || []))
+    } else {
+      dispatch(setQuizzes(response.data.data || []))
+    }
     dispatch(setPagination(response.data.pagination || { page: 1, perPage: 20, isLastPage: false }))
   } finally {
     dispatch(setLoading({ key: 'isGetListAnatomyQuizLoading', value: false }))
