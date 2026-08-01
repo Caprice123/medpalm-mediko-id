@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class CreateQuestionService {
-  static async call({ challengeUniqueId, question, options, correctOptionIndex, explanation, order, isSpecial, questionImageBlobId, optionImageBlobIds }) {
+  static async call({ challengeUniqueId, question, options, correctOptionIndex, explanation, references, order, isSpecial, questionImageBlobId, optionImageBlobIds }) {
     const challenge = await prisma.challenges.findUnique({ where: { unique_id: challengeUniqueId } })
     if (!challenge || challenge.is_deleted) throw new ValidationError('Challenge not found')
 
@@ -20,6 +20,7 @@ export class CreateQuestionService {
           options,
           correct_option_index: parseInt(correctOptionIndex),
           explanation: explanation || null,
+          references: Array.isArray(references) ? references : [],
           order: order != null ? parseInt(order) : 0,
           is_special: Boolean(isSpecial),
         },

@@ -31,6 +31,20 @@ const C = {
   lightGray:     '#e5e7eb',
 }
 
+function normalizeReferences(references) {
+  if (!Array.isArray(references)) return []
+  return references
+    .map(r => {
+      if (!r) return null
+      if (typeof r === 'string') return { label: r, url: null }
+      const label = t(r.label) || t(r.url) || ''
+      const url = r.url || null
+      if (!label && !url) return null
+      return { label: label || url, url }
+    })
+    .filter(Boolean)
+}
+
 function measureCardHeight(doc, q) {
   const qTextW = CW - 88
 
@@ -41,6 +55,17 @@ function measureCardHeight(doc, q) {
   if (q.explanation) {
     doc.font('Helvetica').fontSize(10)
     expH = 14 + doc.heightOfString(t(q.explanation), { width: CW - 36 }) + 16
+  }
+
+  const refs = normalizeReferences(q.references)
+  let refH = 0
+  if (refs.length) {
+    doc.font('Helvetica').fontSize(9)
+    refH = 14
+    for (const r of refs) {
+      refH += doc.heightOfString(`- ${r.label}`, { width: CW - 40 }) + 2
+    }
+    refH += 12
   }
 
   let h = 24                                     // top + bottom padding
@@ -54,6 +79,7 @@ function measureCardHeight(doc, q) {
     }
   }
   h += expH
+  h += refH
 
   return Math.ceil(h) + 8                        // small safety buffer
 }
@@ -217,6 +243,26 @@ export function generateChallengeAnswerKeyPdf({ userName, challengeTitle, score,
         doc.font('Helvetica').fontSize(10).fillColor(C.text)
           .text(expText, MARGIN + 18, cy, { width: CW - 36 })
         cy += expH + 8
+      }
+
+      // References list
+      const refs = normalizeReferences(q.references)
+      if (refs.length) {
+        doc.font('Helvetica-Bold').fontSize(9).fillColor(C.purple)
+          .text('Referensi:', MARGIN + 10, cy)
+        cy += 14
+        doc.font('Helvetica').fontSize(9).fillColor(C.text)
+        for (const r of refs) {
+          const line = `- ${r.label}`
+          const lineH = doc.heightOfString(line, { width: CW - 40 })
+          if (r.url) {
+            doc.fillColor(C.primary).text(line, MARGIN + 18, cy, { width: CW - 40, link: r.url, underline: true })
+          } else {
+            doc.fillColor(C.text).text(line, MARGIN + 18, cy, { width: CW - 40 })
+          }
+          cy += lineH + 2
+        }
+        cy += 12
       }
 
       y += cardH + 12

@@ -3,7 +3,7 @@ import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class UpdateQuestionService {
-  static async call({ uniqueId, question, options, correctOptionIndex, explanation, order, isSpecial, questionImageBlobId, optionImageBlobIds }) {
+  static async call({ uniqueId, question, options, correctOptionIndex, explanation, references, order, isSpecial, questionImageBlobId, optionImageBlobIds }) {
     const q = await prisma.challenge_questions.findUnique({ where: { unique_id: uniqueId } })
     if (!q) throw new ValidationError('Question not found')
 
@@ -24,6 +24,7 @@ export class UpdateQuestionService {
         options: newOptions,
         correct_option_index: newCorrect,
         explanation: explanation !== undefined ? explanation : q.explanation,
+        references: references !== undefined ? (Array.isArray(references) ? references : []) : q.references,
         order: order != null ? parseInt(order) : q.order,
         is_special: isSpecial !== undefined ? Boolean(isSpecial) : q.is_special,
         updated_at: new Date(),

@@ -30,6 +30,14 @@ export class GetAdminLeaderboardService {
     })
     const userMap = Object.fromEntries(users.map(u => [u.id, u]))
 
+    const profiles = userIds.length
+      ? await prisma.user_profiles.findMany({
+          where: { user_id: { in: userIds } },
+          select: { user_id: true, university: true },
+        })
+      : []
+    const universityMap = Object.fromEntries(profiles.map(p => [p.user_id, p.university]))
+
     const offset = (p - 1) * pp
     const data = sliced.map((session, idx) => ({
       rank: offset + idx + 1,
@@ -41,6 +49,7 @@ export class GetAdminLeaderboardService {
         id: userMap[session.user_id].id,
         name: userMap[session.user_id].name,
         email: userMap[session.user_id].email,
+        university: universityMap[session.user_id] || null,
       } : null,
     }))
 

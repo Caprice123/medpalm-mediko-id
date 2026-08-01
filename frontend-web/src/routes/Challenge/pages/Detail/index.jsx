@@ -21,7 +21,7 @@ import {
   MyResultBox, MyResultHeader, MyResultTitle, MyResultBadge, MyResultStats, Stat, StatValue, StatLabel, ShareBtn,
   TabsRow, TabBtn, TabPanel,
   Panel, PanelTitle, LeaderboardHeader, RefreshCountdown,
-  LeaderRow, RankNum, MedalIcon, LeaderName, LeaderScore, EmptyLeader,
+  LeaderRow, RankNum, MedalIcon, LeaderNameCol, LeaderName, LeaderUniversity, LeaderScore, EmptyLeader,
   BadgeCardGrid, BadgeCard, BadgeCardImg, BadgeCardPlaceholder,
   BadgeCardName, BadgeCardRankLabel, BadgeEarnedTag,
   BadgeInfoBanner, BadgeInfoIcon,
@@ -433,9 +433,12 @@ export default function ChallengeDetailPage() {
                       {MEDALS[entry.rank]
                         ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
                         : <RankNum $rank={entry.rank}>#{entry.rank}</RankNum>}
-                      <LeaderName $isMe={entry.isMe}>
-                        {entry.userName}{entry.isMe && ' (Kamu)'}
-                      </LeaderName>
+                      <LeaderNameCol>
+                        <LeaderName $isMe={entry.isMe}>
+                          {entry.userName}{entry.isMe && ' (Kamu)'}
+                        </LeaderName>
+                        {entry.university && <LeaderUniversity>{entry.university}</LeaderUniversity>}
+                      </LeaderNameCol>
                       <LeaderScore>
                         {entry.score?.toFixed(0)} pts
                       </LeaderScore>

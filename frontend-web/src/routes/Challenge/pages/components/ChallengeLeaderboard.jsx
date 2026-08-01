@@ -66,13 +66,24 @@ const RankNum = styled.span`
   min-width: 2.25rem;
 `
 
-const Name = styled.span`
+const NameCol = styled.div`
   flex: 1;
   min-width: 0;
+  padding: 0 0.625rem;
+`
+
+const Name = styled.div`
   font-size: 0.875rem;
   color: ${p => p.$isMe ? '#0e7490' : '#374151'};
   font-weight: ${p => p.$isMe ? 700 : 500};
-  padding: 0 0.625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const University = styled.div`
+  font-size: 0.75rem;
+  color: #9ca3af;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -112,9 +123,12 @@ export default function ChallengeLeaderboard({ entries = [], loading = false, co
             {MEDALS[entry.rank]
               ? <Medal>{MEDALS[entry.rank]}</Medal>
               : <RankNum>#{entry.rank}</RankNum>}
-            <Name $isMe={entry.isMe}>
-              {entry.userName}{entry.isMe && ' (Kamu)'}
-            </Name>
+            <NameCol>
+              <Name $isMe={entry.isMe}>
+                {entry.userName}{entry.isMe && ' (Kamu)'}
+              </Name>
+              {entry.university && <University>{entry.university}</University>}
+            </NameCol>
             <Score>{entry.score?.toFixed(0)} pts</Score>
           </Row>
         ))

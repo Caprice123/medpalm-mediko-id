@@ -20,7 +20,7 @@ import {
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
 
 const defaultForm = {
-  question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '',
+  question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '', references: [],
 }
 
 export default function QuestionsTab() {
@@ -45,12 +45,20 @@ export default function QuestionsTab() {
       options: [...q.options],
       correctOptionIndex: q.correctOptionIndex,
       explanation: q.explanation || '',
+      references: Array.isArray(q.references) ? q.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
     })
     setModal({ open: true, mode: 'edit', target: q })
   }
 
   const handleSave = async () => {
-    const payload = { ...form, options: form.options.filter(o => o.trim()), correctOptionIndex: form.correctOptionIndex }
+    const payload = {
+      ...form,
+      options: form.options.filter(o => o.trim()),
+      correctOptionIndex: form.correctOptionIndex,
+      references: form.references
+        .filter(r => r.label.trim() || r.url.trim())
+        .map(r => ({ label: r.label.trim(), url: r.url.trim() || undefined })),
+    }
     const onSuccess = () => {
       setModal({ open: false, mode: 'create', target: null })
       dispatch(fetchAdminQuestions(selectedChallenge.value))
@@ -73,6 +81,22 @@ export default function QuestionsTab() {
       opts[idx] = val
       return { ...prev, options: opts }
     })
+  }
+
+  const addReference = () => {
+    setForm(prev => ({ ...prev, references: [...prev.references, { label: '', url: '' }] }))
+  }
+
+  const setReference = (idx, key, val) => {
+    setForm(prev => {
+      const refs = [...prev.references]
+      refs[idx] = { ...refs[idx], [key]: val }
+      return { ...prev, references: refs }
+    })
+  }
+
+  const removeReference = (idx) => {
+    setForm(prev => ({ ...prev, references: prev.references.filter((_, i) => i !== idx) }))
   }
 
   const handlePageChange = (page) => {
@@ -180,6 +204,26 @@ export default function QuestionsTab() {
           <FormGroup style={{ marginTop: '1rem' }}>
             <Label>Penjelasan (opsional)</Label>
             <Textarea value={form.explanation} onChange={v => setForm(prev => ({ ...prev, explanation: v }))} placeholder="Penjelasan jawaban..." rows={2} />
+          </FormGroup>
+
+          <FormGroup style={{ marginTop: '1rem' }}>
+            <Label>Referensi (opsional)</Label>
+            {form.references.map((ref, idx) => (
+              <OptionRow key={idx}>
+                <TextInput
+                  value={ref.label}
+                  onChange={v => setReference(idx, 'label', v)}
+                  placeholder="Nama sumber (mis. Harrison's Ch. 42)"
+                />
+                <TextInput
+                  value={ref.url}
+                  onChange={v => setReference(idx, 'url', v)}
+                  placeholder="Link (opsional)"
+                />
+                <Button variant="danger" onClick={() => removeReference(idx)}>Hapus</Button>
+              </OptionRow>
+            ))}
+            <Button onClick={addReference}>+ Tambah Referensi</Button>
           </FormGroup>
 
         </Modal>

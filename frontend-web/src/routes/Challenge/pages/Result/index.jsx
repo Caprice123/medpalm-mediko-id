@@ -8,7 +8,7 @@ import {
   HeroCard, HeroTitle, HeroSub, StatsRow, Stat, StatValue, StatLabel,
   EmailNotice,
   Panel, PanelHeader, PanelTitle, RefreshCountdown,
-  LeaderRow, RankNum, MedalIcon, LeaderName, LeaderScore, EmptyLeader,
+  LeaderRow, RankNum, MedalIcon, LeaderNameCol, LeaderName, LeaderUniversity, LeaderScore, EmptyLeader,
   DetailBtn,
 } from './Result.styles'
 
@@ -100,9 +100,12 @@ export default function ChallengeResultPage() {
                 {MEDALS[entry.rank]
                   ? <MedalIcon>{MEDALS[entry.rank]}</MedalIcon>
                   : <RankNum>#{entry.rank}</RankNum>}
-                <LeaderName $isMe={entry.isMe}>
-                  {entry.userName}{entry.isMe && ' (Kamu)'}
-                </LeaderName>
+                <LeaderNameCol>
+                  <LeaderName $isMe={entry.isMe}>
+                    {entry.userName}{entry.isMe && ' (Kamu)'}
+                  </LeaderName>
+                  {entry.university && <LeaderUniversity>{entry.university}</LeaderUniversity>}
+                </LeaderNameCol>
                 <LeaderScore>
                   {entry.score?.toFixed(0)} pts
                 </LeaderScore>

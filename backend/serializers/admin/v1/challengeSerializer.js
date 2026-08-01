@@ -36,6 +36,7 @@ export class AdminChallengeSerializer {
       options: q.options,
       correctOptionIndex: q.correct_option_index,
       explanation: q.explanation,
+      references: q.references ?? [],
       order: q.order,
       isSpecial: q.is_special,
       questionImage: q.questionImage

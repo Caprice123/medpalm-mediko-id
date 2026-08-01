@@ -700,13 +700,24 @@ export const MedalIcon = styled.span`
   text-align: left;
 `
 
-export const LeaderName = styled.span`
+export const LeaderNameCol = styled.div`
   flex: 1;
   min-width: 0;
+  padding: 0 0.625rem;
+`
+
+export const LeaderName = styled.div`
   font-size: 0.875rem;
   color: ${props => props.$isMe ? '#0e7490' : '#374151'};
   font-weight: ${props => props.$isMe ? 700 : 500};
-  padding: 0 0.625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const LeaderUniversity = styled.div`
+  font-size: 0.75rem;
+  color: #9ca3af;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

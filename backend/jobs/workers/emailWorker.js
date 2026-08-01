@@ -60,6 +60,7 @@ async function buildChallengeAnswerKeyPayload({ sessionId }) {
         correctOption: `${OPTION_LABELS[q.correct_option_index] ?? q.correct_option_index}. ${options[q.correct_option_index] ?? ''}`,
         isCorrect: a.is_correct,
         explanation: q.explanation || null,
+        references: Array.isArray(q.references) ? q.references : [],
         questionImageBuffer,
         optionImageBuffers,
       }

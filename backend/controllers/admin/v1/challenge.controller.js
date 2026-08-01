@@ -68,9 +68,9 @@ class AdminChallengeController {
 
   async createQuestion(req, res) {
     const { uniqueId } = req.params
-    const { question, options, correctOptionIndex, explanation, order, isSpecial, questionImageBlobId, optionImageBlobIds } = req.body
+    const { question, options, correctOptionIndex, explanation, references, order, isSpecial, questionImageBlobId, optionImageBlobIds } = req.body
     const q = await CreateQuestionService.call({
-      challengeUniqueId: uniqueId, question, options, correctOptionIndex, explanation, order,
+      challengeUniqueId: uniqueId, question, options, correctOptionIndex, explanation, references, order,
       isSpecial, questionImageBlobId, optionImageBlobIds,
     })
     return res.status(201).json({ data: AdminChallengeSerializer.serializeQuestion(q) })
@@ -78,9 +78,9 @@ class AdminChallengeController {
 
   async updateQuestion(req, res) {
     const { questionUniqueId } = req.params
-    const { question, options, correctOptionIndex, explanation, order, isSpecial, questionImageBlobId, optionImageBlobIds } = req.body
+    const { question, options, correctOptionIndex, explanation, references, order, isSpecial, questionImageBlobId, optionImageBlobIds } = req.body
     const q = await UpdateQuestionService.call({
-      uniqueId: questionUniqueId, question, options, correctOptionIndex, explanation, order,
+      uniqueId: questionUniqueId, question, options, correctOptionIndex, explanation, references, order,
       isSpecial, questionImageBlobId, optionImageBlobIds,
     })
     return res.status(200).json({ data: AdminChallengeSerializer.serializeQuestion(q) })

@@ -884,6 +884,7 @@ function SesiTab({ challenge }) {
     { header: 'Rank', key: 'rank', width: '60px' },
     { header: 'Nama', render: (s) => s.user?.name || '-' },
     { header: 'Email', render: (s) => s.user?.email || '-' },
+    { header: 'Universitas', render: (s) => s.user?.university || '-' },
     { header: 'Skor', key: 'score' },
     { header: 'Benar', render: (s) => s.correctCount ?? '-' },
     { header: 'Waktu', render: (s) => formatTime(s.totalTimeSeconds) },

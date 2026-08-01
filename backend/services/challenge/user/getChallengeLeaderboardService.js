@@ -29,6 +29,7 @@ export class GetChallengeLeaderboardService {
         select: { id: true, name: true },
       })
       const userMap = Object.fromEntries(users.map(u => [u.id, u]))
+      const universityMap = await this.getUniversityMap(userIds)
 
       leaderboard = allSessions.map(session => ({
         rank: session.final_rank,
@@ -37,6 +38,7 @@ export class GetChallengeLeaderboardService {
         totalTimeSeconds: session.total_time_seconds,
         isMe: session.user_id === userId,
         userName: userMap[session.user_id]?.name || 'Pengguna',
+        university: universityMap[session.user_id] || null,
       }))
 
       mySessionData = allSessions.find(s => s.user_id === userId)
@@ -82,6 +84,7 @@ export class GetChallengeLeaderboardService {
           ? await prisma.users.findMany({ where: { id: { in: userIds } }, select: { id: true, name: true } })
           : []
         const userMap = Object.fromEntries(users.map(u => [u.id, u]))
+        const universityMap = await this.getUniversityMap(userIds)
 
         leaderboard = cachedEntries.map(entry => ({
           rank: entry.rank,
@@ -90,6 +93,7 @@ export class GetChallengeLeaderboardService {
           totalTimeSeconds: entry.totalTime,
           isMe: entry.userId === userId,
           userName: userMap[entry.userId]?.name || 'Pengguna',
+          university: universityMap[entry.userId] || null,
         }))
 
         myRank = await LeaderboardCacheService.getRank({ challengeId: challenge.id, userId })
@@ -135,6 +139,7 @@ export class GetChallengeLeaderboardService {
       ? await prisma.users.findMany({ where: { id: { in: userIds } }, select: { id: true, name: true } })
       : []
     const userMap = Object.fromEntries(users.map(u => [u.id, u]))
+    const universityMap = await this.getUniversityMap(userIds)
 
     let rank = 1
     return sessions.map((s, idx) => {
@@ -146,7 +151,17 @@ export class GetChallengeLeaderboardService {
         totalTimeSeconds: s.total_time_seconds,
         isMe: s.user_id === userId,
         userName: userMap[s.user_id]?.name || 'Pengguna',
+        university: universityMap[s.user_id] || null,
       }
     })
+  }
+
+  static async getUniversityMap(userIds) {
+    if (!userIds.length) return {}
+    const profiles = await prisma.user_profiles.findMany({
+      where: { user_id: { in: userIds } },
+      select: { user_id: true, university: true },
+    })
+    return Object.fromEntries(profiles.map(p => [p.user_id, p.university]))
   }
 }
