@@ -8,8 +8,8 @@ import XLSX from 'xlsx'
 class DiagnosticNodesController {
   async getQuestions(req, res) {
     const { nodeId } = req.params
-    const { page, perPage } = req.query
-    const result = await GetNodeDiagnosticQuestionsService.call({ nodeId, page, perPage })
+    const { page, perPage, search } = req.query
+    const result = await GetNodeDiagnosticQuestionsService.call({ nodeId, page, perPage, search })
     res.json({ success: true, ...result })
   }
 
