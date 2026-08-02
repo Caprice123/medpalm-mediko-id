@@ -1,19 +1,27 @@
 import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken } from '@utils/requestUtils'
+import { fetchNodeStats } from '@store/featureNodes'
 
 const NOTES_PER_PAGE = 20
 
-// Returns { primary, special } — root-level topics, split by classification.
+// Root-level topics, split by classification, into state.userTopics.
 // Only returns topics whose subtopics actually have a summary note (backend-filtered).
-export const fetchSummaryNoteTopics = () => async () => {
-  const [primaryRes, specialRes] = await Promise.all([
-    getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'sistem_blok' }),
-    getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'ilmu_lintas_sistem' }),
-  ])
-  return {
-    primary: primaryRes.data.data || [],
-    special: specialRes.data.data || [],
+export const fetchSummaryNoteTopics = () => async (dispatch) => {
+  try {
+    dispatch(actions.setLoading({ isFetchingUserTopics: true }))
+    const [primaryRes, specialRes] = await Promise.all([
+      getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'sistem_blok' }),
+      getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'ilmu_lintas_sistem' }),
+    ])
+    const userTopics = {
+      primary: primaryRes.data.data || [],
+      special: specialRes.data.data || [],
+    }
+    dispatch(actions.setUserTopics(userTopics))
+    return userTopics
+  } finally {
+    dispatch(actions.setLoading({ isFetchingUserTopics: false }))
   }
 }
 
@@ -72,13 +80,26 @@ export const searchSummaryNotesV2 = (search) => async (dispatch) => {
   }
 }
 
-export const fetchNoteAnatomyQuizRelations = (noteUniqueId) => async () => {
+export const fetchNoteNodeStats = (nodeId) => async (dispatch) => {
+  if (!nodeId) {
+    dispatch(actions.setNodeStats(null))
+    return
+  }
+  const stats = await dispatch(fetchNodeStats(nodeId))
+  dispatch(actions.setNodeStats(stats))
+}
+
+export const fetchNoteAnatomyQuizRelations = (noteUniqueId) => async (dispatch) => {
+  if (!noteUniqueId) {
+    dispatch(actions.setAnatomyQuizzes([]))
+    return
+  }
   const res = await getWithToken(Endpoints.api.userContentRelations, {
     sourceType: 'summary_note',
     sourceUniqueId: noteUniqueId,
     targetType: 'anatomy_quiz',
   })
-  return res.data.data || []
+  dispatch(actions.setAnatomyQuizzes(res.data.data || []))
 }
 
 export const fetchRecentlyViewed = () => async (dispatch) => {

@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { useNotesSidebar } from './hooks/useNotesSidebar'
 import TopicTree from './components/TopicTree'
 import SearchResults from './components/SearchResults'
@@ -5,11 +6,11 @@ import CollapsibleNoteSection from './components/CollapsibleNoteSection'
 import { SidebarContainer, SearchBox, SearchIcon, SearchInput, ScrollArea } from './NotesSidebar.styles'
 
 export default function NotesSidebar({ selectedNoteId, selectedEmptyNodeId, onSelectNote, onSelectEmptyNode }) {
+  const { userTopics, loading } = useSelector(s => s.summaryNotesV2)
   const {
-    userTopics, topicsLoading,
     nodeNotes, childrenMap, childrenPagination, expandedNodes, loadingNodeIds,
     handleToggleNode, handleLoadMoreChildren,
-    search, isSearching, handleSearchChange, searchResults, isSearchLoading,
+    search, isSearching, handleSearchChange,
     handleSelectAndReveal,
   } = useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode)
 
@@ -27,17 +28,15 @@ export default function NotesSidebar({ selectedNoteId, selectedEmptyNodeId, onSe
       <ScrollArea>
         {isSearching ? (
           <SearchResults
-            results={searchResults}
-            isLoading={isSearchLoading}
             selectedNoteId={selectedNoteId}
             onSelectNote={handleSelectAndReveal}
           />
         ) : (
           <>
             <TopicTree
-              label="🧩 Sistem Blok"
+              label="Sistem Blok"
               topics={userTopics.primary}
-              isLoading={topicsLoading.isFetchingUserTopics}
+              isLoading={loading.isFetchingUserTopics}
               emptyText="Belum ada topik sistem blok"
               selectedNoteId={selectedNoteId}
               selectedEmptyNodeId={selectedEmptyNodeId}
@@ -50,9 +49,9 @@ export default function NotesSidebar({ selectedNoteId, selectedEmptyNodeId, onSe
               onLoadMoreChildren={handleLoadMoreChildren}
             />
             <TopicTree
-              label="🔬 Ilmu Lintas Sistem"
+              label="Ilmu Lintas Sistem"
               topics={userTopics.special}
-              isLoading={topicsLoading.isFetchingUserTopics}
+              isLoading={loading.isFetchingUserTopics}
               emptyText="Belum ada topik lintas sistem"
               selectedNoteId={selectedNoteId}
               selectedEmptyNodeId={selectedEmptyNodeId}

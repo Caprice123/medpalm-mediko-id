@@ -5,6 +5,9 @@ const initialState = {
   nodeNotes: {},      // { [nodeId]: { notes: [], isLoaded: false, isLoading: false } }
   detail: null,       // currently viewed note detail (shared admin + user)
   searchResults: [],
+  userTopics: { primary: [], special: [] },
+  nodeStats: null,
+  anatomyQuizzes: [],
   loading: {
     isNodesLoading: false,
     isNoteDetailLoading: false,
@@ -14,6 +17,7 @@ const initialState = {
     isCreating: false,
     isDeleting: false,
     isGenerating: false,
+    isFetchingUserTopics: false,
   },
   recentlyViewed: [], // [{ id, recordType, recordId, metadata: { title, uniqueId }, viewedAt }]
   // Admin list state
@@ -53,6 +57,15 @@ const summaryNotesV2Slice = createSlice({
     },
     setSearchResults(state, { payload }) {
       state.searchResults = payload
+    },
+    setUserTopics(state, { payload }) {
+      state.userTopics = payload
+    },
+    setNodeStats(state, { payload }) {
+      state.nodeStats = payload
+    },
+    setAnatomyQuizzes(state, { payload }) {
+      state.anatomyQuizzes = payload
     },
     setLoading(state, { payload }) {
       state.loading = { ...state.loading, ...payload }

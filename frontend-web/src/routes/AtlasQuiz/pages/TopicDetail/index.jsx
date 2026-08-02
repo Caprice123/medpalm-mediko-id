@@ -1,4 +1,5 @@
 import { useNavigate, useParams, generatePath } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import Loading from '@components/common/Loading'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { useTopicDetail } from './hooks/useTopicDetail'
@@ -9,11 +10,8 @@ import { PageWrapper, Inner } from './TopicDetail.styles'
 function TopicDetailPage() {
   const navigate = useNavigate()
   const { slug } = useParams()
+  const isLoadingTopic = useSelector(s => s.atlasQuiz.loading.isFetchingTopicDetail)
   const {
-    topic, modules, modulesPagination,
-    quizzes, quizzesPagination,
-    moduleOptions,
-    isLoadingTopic, isLoadingModules, isLoadingQuizzes,
     handleModuleFilterChange, handleLoadMoreModules,
     handleQuizModuleFilterChange, handleLoadMoreQuizzes,
   } = useTopicDetail(slug)
@@ -32,11 +30,6 @@ function TopicDetailPage() {
     <PageWrapper>
       <Inner>
         <ModulesPanel
-          topic={topic}
-          modules={modules}
-          modulesPagination={modulesPagination}
-          moduleOptions={moduleOptions}
-          isLoadingModules={isLoadingModules}
           onModuleFilterChange={handleModuleFilterChange}
           onLoadMoreModules={handleLoadMoreModules}
           onModuleClick={handleModuleClick}
@@ -44,10 +37,6 @@ function TopicDetailPage() {
         />
 
         <QuizzesPanel
-          quizzes={quizzes}
-          quizzesPagination={quizzesPagination}
-          moduleOptions={moduleOptions}
-          isLoadingQuizzes={isLoadingQuizzes}
           onQuizModuleFilterChange={handleQuizModuleFilterChange}
           onLoadMoreQuizzes={handleLoadMoreQuizzes}
           onQuizClick={handleQuizClick}

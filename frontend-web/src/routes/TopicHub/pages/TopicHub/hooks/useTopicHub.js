@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { fetchUserTopics } from '@store/featureNodes'
 
 const LAST_TOPIC_KEY = 'topichub_last_topic'
@@ -23,16 +23,12 @@ export function getLastTopic() {
 
 export function useTopicHub() {
   const dispatch = useDispatch()
-  const { userTopics, loading } = useSelector(s => s.featureNodes)
 
   useEffect(() => {
     dispatch(fetchUserTopics())
   }, [dispatch])
 
   return {
-    primaryTopics: userTopics.primary,
-    specialTopics: userTopics.special,
     lastTopic: getLastTopic(),
-    isLoading: loading.isFetchingUserTopics,
   }
 }

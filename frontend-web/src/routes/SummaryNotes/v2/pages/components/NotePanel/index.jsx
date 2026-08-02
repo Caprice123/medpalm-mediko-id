@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { NotePanelLoadingSkeleton } from './NotePanelLoadingSkeleton'
 import { useNotePanel } from './hooks/useNotePanel'
 import NoteEmptyState from './components/NoteEmptyState'
@@ -7,17 +8,15 @@ import NoteReferenceSection from './components/NoteReferenceSection'
 import LinkedResourcesSection from './components/LinkedResourcesSection'
 import { PanelContainer, PanelContent } from './NotePanel.styles'
 
-function NotePanel({ noteId, emptyNodeName, isFullScreen, onToggleFullScreen }) {
+function NotePanel({ noteId, isEmptySubtopic, isFullScreen, onToggleFullScreen }) {
+  const isLoading = useSelector(s => s.summaryNotesV2.loading.isNoteDetailLoading)
   const {
-    detail, isLoading, parsedContent, breadcrumbPath,
+    detail, parsedContent, breadcrumbPath,
     topicSlug, topicName, subtopicSlug, subtopicName,
-    nodeStats, anatomyQuizzes,
-    flashcardLabel, mcqLabel,
-    hasTopic, hasFlashcards, hasMcq, hasAnatomyQuizzes, hasLinkedResources,
   } = useNotePanel(noteId)
 
   if (!noteId) {
-    return <NoteEmptyState emptyNodeName={emptyNodeName} />
+    return <NoteEmptyState isEmptySubtopic={isEmptySubtopic} />
   }
 
   if (isLoading || !detail) {
@@ -42,22 +41,12 @@ function NotePanel({ noteId, emptyNodeName, isFullScreen, onToggleFullScreen }) 
 
         <NoteReferenceSection sourceDocument={detail.sourceDocument} />
 
-        {hasLinkedResources && (
-          <LinkedResourcesSection
-            topicSlug={topicSlug}
-            topicName={topicName}
-            subtopicSlug={subtopicSlug}
-            subtopicName={subtopicName}
-            nodeStats={nodeStats}
-            anatomyQuizzes={anatomyQuizzes}
-            flashcardLabel={flashcardLabel}
-            mcqLabel={mcqLabel}
-            hasTopic={hasTopic}
-            hasFlashcards={hasFlashcards}
-            hasMcq={hasMcq}
-            hasAnatomyQuizzes={hasAnatomyQuizzes}
-          />
-        )}
+        <LinkedResourcesSection
+          topicSlug={topicSlug}
+          topicName={topicName}
+          subtopicSlug={subtopicSlug}
+          subtopicName={subtopicName}
+        />
       </PanelContent>
     </PanelContainer>
   )

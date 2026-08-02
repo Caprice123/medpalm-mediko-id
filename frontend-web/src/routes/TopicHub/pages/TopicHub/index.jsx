@@ -10,7 +10,7 @@ import { TopicHubRoute } from '../../routes'
 export default function TopicHubPage() {
   const navigate = useNavigate()
   const user = getUserData()
-  const { primaryTopics, specialTopics, lastTopic, isLoading } = useTopicHub()
+  const { lastTopic } = useTopicHub()
 
   const goToTopic = (topic) => navigate(generatePath(TopicHubRoute.detailRoute, { topicSlug: topic.slug }))
 
@@ -26,20 +26,18 @@ export default function TopicHubPage() {
       <LastSession topic={lastTopic} onClick={() => goToTopic(lastTopic)} />
 
       <TopicGroupSection
+        classification="primary"
         tag="Sistem Blok"
         title="Topik berbasis sistem organ"
         description="Setiap sistem dipecah menjadi subtopik terurut dari embriologi, anatomi, fisiologi, hingga aplikasi klinis."
-        topics={primaryTopics}
-        isLoading={isLoading}
         onTopicClick={handleTopicClick}
       />
 
       <TopicGroupSection
+        classification="special"
         tag="Ilmu Lintas Sistem"
         title="Topik lintas-sistem"
         description="Materi preklinik yang tidak terikat pada satu sistem organ."
-        topics={specialTopics}
-        isLoading={isLoading}
         onTopicClick={handleTopicClick}
         colorOffset={5}
       />

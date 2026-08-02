@@ -1,5 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import bunnyStreamService from '#services/bunnyStream.service'
+import IDriveService from '#services/idrive.service'
 
 // Content types that count as "this subtopic/topic has data" for the shared Materi/TopicHub
 // tree — deliberately excludes diagnostic_question, which lives under a separate visibility.
@@ -51,9 +53,34 @@ export class GetUserFeatureNodesService extends BaseService {
     })
 
     const isLastPage = nodes.length <= currentPerPage
+    const data = nodes.slice(0, currentPerPage)
+
     return {
-      data: nodes.slice(0, currentPerPage),
+      data,
       pagination: { page: currentPage, perPage: currentPerPage, isLastPage },
+      videoEmbedUrlMap: await this.buildVideoEmbedUrlMap(data),
     }
+  }
+
+  // Bulk-fetch video attachments for all nodes in one query
+  static async buildVideoEmbedUrlMap(nodes) {
+    const nodeIds = nodes.map(n => n.id)
+    if (!nodeIds.length) return {}
+
+    const videoAttachments = await prisma.attachments.findMany({
+      where: { record_type: 'feature_node', record_id: { in: nodeIds }, name: 'video' },
+      include: { blob: true },
+    })
+
+    const videoEmbedUrlMap = {}
+    await Promise.all(videoAttachments.map(async (att) => {
+      if (!att.blob) return
+      if (att.blob.provider === 'bunny_stream') {
+        videoEmbedUrlMap[att.record_id] = bunnyStreamService.embedUrl(att.blob.key, { autoplay: process.env.NODE_ENV === 'production' })
+      } else {
+        videoEmbedUrlMap[att.record_id] = await IDriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
+      }
+    }))
+    return videoEmbedUrlMap
   }
 }

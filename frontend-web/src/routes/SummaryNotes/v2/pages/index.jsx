@@ -4,26 +4,26 @@ import { useDispatch } from 'react-redux'
 import { fetchRecentlyViewed } from '@store/summaryNotes/v2/userAction'
 import NotesSidebar from './components/NotesSidebar'
 import NotePanel from './components/NotePanel'
-import { PageWrapper, SidebarWrapper, PanelWrapper, MobileOverlay } from './index.styles'
+import { PageWrapper, SidebarWrapper, PanelWrapper } from './index.styles'
 
 function SummaryNotesV2Page() {
   const { id: initialId } = useParams()
   const dispatch = useDispatch()
   const [selectedNoteId, setSelectedNoteId] = useState(initialId || null)
-  const [emptySubtopic, setEmptySubtopic] = useState(null)
+  const [emptySubtopicId, setEmptySubtopicId] = useState(null)
   const [isFullScreen, setIsFullScreen] = useState(false)
   useEffect(() => {
     dispatch(fetchRecentlyViewed())
   }, [dispatch])
 
   const handleSelectNote = (noteId) => {
-    setEmptySubtopic(null)
+    setEmptySubtopicId(null)
     setSelectedNoteId(noteId)
   }
 
-  const handleSelectEmptyNode = (node) => {
+  const handleSelectEmptyNode = (nodeId) => {
     setSelectedNoteId(null)
-    setEmptySubtopic(node)
+    setEmptySubtopicId(nodeId)
   }
 
   return (
@@ -32,7 +32,7 @@ function SummaryNotesV2Page() {
         <SidebarWrapper>
           <NotesSidebar
             selectedNoteId={selectedNoteId}
-            selectedEmptyNodeId={emptySubtopic?.id ?? null}
+            selectedEmptyNodeId={emptySubtopicId}
             onSelectNote={handleSelectNote}
             onSelectEmptyNode={handleSelectEmptyNode}
           />
@@ -41,7 +41,7 @@ function SummaryNotesV2Page() {
       <PanelWrapper>
         <NotePanel
           noteId={selectedNoteId}
-          emptyNodeName={emptySubtopic?.name ?? null}
+          isEmptySubtopic={!!emptySubtopicId}
           isFullScreen={isFullScreen}
           onToggleFullScreen={() => setIsFullScreen(p => !p)}
         />

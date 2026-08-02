@@ -1,4 +1,5 @@
 import { useNavigate, useParams, generatePath } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import Loading from '@components/common/Loading'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { useAtlasModelDetail } from './hooks/useAtlasModelDetail'
@@ -12,7 +13,8 @@ import { PageWrapper, Inner } from './AtlasModelDetail.styles'
 function AtlasModelDetailPage() {
   const navigate = useNavigate()
   const { slug, uniqueId } = useParams()
-  const { detail, isLoading, allQuizzes, prevModel, nextModel } = useAtlasModelDetail(slug, uniqueId)
+  const isLoading = useSelector(s => s.atlasQuiz.loading.isFetchingAtlasModelDetail)
+  const { atlasModelDetail, allQuizzes, prevModel, nextModel } = useAtlasModelDetail(slug, uniqueId)
 
   const handleRelatedModelClick = (relUniqueId) => {
     navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug, uniqueId: relUniqueId }))
@@ -22,9 +24,9 @@ function AtlasModelDetailPage() {
     navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug, uniqueId: quiz.uniqueId }))
   }
 
-  if (isLoading || !detail) return <Loading />
+  if (isLoading || !atlasModelDetail) return <Loading />
 
-  const { model, module: mod, topicName } = detail
+  const { model, module: mod, topicName } = atlasModelDetail
 
   return (
     <PageWrapper>

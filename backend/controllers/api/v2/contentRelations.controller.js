@@ -37,9 +37,9 @@ async function resolveLinkedItems(relations, linkedType, idField) {
         return {
           id: r.id,
           relationType: r.relation_type ?? '',
-          linkedType: 'anatomy_quiz',
-          linkedUniqueId: q.unique_id,
-          linkedTitle: q.title,
+          type: 'anatomy_quiz',
+          uniqueId: q.unique_id,
+          title: q.title,
           description: q.description,
           difficulty: q.difficulty || 'medium',
           questionCount: q.question_count,
@@ -61,9 +61,9 @@ async function resolveLinkedItems(relations, linkedType, idField) {
         return {
           id: r.id,
           relationType: r.relation_type ?? '',
-          linkedType: 'atlas_model',
-          linkedUniqueId: m.unique_id,
-          linkedTitle: m.title,
+          type: 'atlas_model',
+          uniqueId: m.unique_id,
+          title: m.title,
           description: m.description,
         }
       })

@@ -1,12 +1,12 @@
 import { EmptyPanel, EmptyIcon, EmptyText } from './NoteEmptyState.styles'
 
-export default function NoteEmptyState({ emptyNodeName }) {
+export default function NoteEmptyState({ isEmptySubtopic }) {
   return (
     <EmptyPanel>
-      <EmptyIcon>{emptyNodeName ? '📭' : '📖'}</EmptyIcon>
+      <EmptyIcon>{isEmptySubtopic ? '📭' : '📖'}</EmptyIcon>
       <EmptyText>
-        {emptyNodeName
-          ? `Belum ada ringkasan materi untuk "${emptyNodeName}"`
+        {isEmptySubtopic
+          ? 'Belum ada ringkasan materi'
           : 'Pilih ringkasan untuk mulai membaca'}
       </EmptyText>
     </EmptyPanel>

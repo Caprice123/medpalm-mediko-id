@@ -1,12 +1,14 @@
 import { actions } from '@store/atlasQuiz/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken } from '@utils/requestUtils'
 
 const {
-  setSistemBlokTopics, appendSistemBlokTopics,
-  setIlmuLintasSistemTopics, appendIlmuLintasSistemTopics,
-  setTopicDetail, setAtlasModelDetail, setAnatomyQuizDetail, setModuleOptions,
+  appendSistemBlokTopics,
+  appendIlmuLintasSistemTopics,
+  setTopicDetail,
+  setAtlasModelDetail, setAtlasModelRelatedQuizzes, setAtlasModelPrevNext,
+  setAnatomyQuizDetail, setAnatomyQuizRelatedModels, setAnatomyQuizPrevNext,
+  setModuleOptions,
   setTopicModules, appendTopicModules, setModulesFilter,
   setTopicAnatomyQuizzes, appendTopicAnatomyQuizzes, setQuizzesFilter,
   setLoading,
@@ -16,9 +18,7 @@ export const fetchSistemBlokTopics = (page = 1) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isFetchingSistemBlok', value: true }))
     const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'sistem_blok', page })
-    dispatch(page > 1 ? appendSistemBlokTopics(response.data) : setSistemBlokTopics(response.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
+    dispatch(appendSistemBlokTopics(response.data))
   } finally {
     dispatch(setLoading({ key: 'isFetchingSistemBlok', value: false }))
   }
@@ -28,12 +28,22 @@ export const fetchIlmuLintasSistemTopics = (page = 1) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isFetchingIlmuLintasSistem', value: true }))
     const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'ilmu_lintas_sistem', page })
-    dispatch(page > 1 ? appendIlmuLintasSistemTopics(response.data) : setIlmuLintasSistemTopics(response.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
+    dispatch(appendIlmuLintasSistemTopics(response.data))
   } finally {
     dispatch(setLoading({ key: 'isFetchingIlmuLintasSistem', value: false }))
   }
+}
+
+export const loadMoreSistemBlokTopics = () => (dispatch, getState) => {
+  const { sistemBlokPagination } = getState().atlasQuiz
+  if (sistemBlokPagination.isLastPage) return
+  dispatch(fetchSistemBlokTopics(sistemBlokPagination.page + 1))
+}
+
+export const loadMoreIlmuLintasSistemTopics = () => (dispatch, getState) => {
+  const { ilmuLintasSistemPagination } = getState().atlasQuiz
+  if (ilmuLintasSistemPagination.isLastPage) return
+  dispatch(fetchIlmuLintasSistemTopics(ilmuLintasSistemPagination.page + 1))
 }
 
 export const fetchAtlasQuizTopicDetail = (slug) => async (dispatch) => {
@@ -41,16 +51,9 @@ export const fetchAtlasQuizTopicDetail = (slug) => async (dispatch) => {
     dispatch(setLoading({ key: 'isFetchingTopicDetail', value: true }))
     const response = await getWithToken(Endpoints.api.atlasQuizTopic(slug))
     dispatch(setTopicDetail(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingTopicDetail', value: false }))
   }
-}
-
-export const fetchUserContentRelations = (params) => async () => {
-  const res = await getWithToken(Endpoints.api.userContentRelations, params)
-  return res.data.data || []
 }
 
 export const fetchAtlasQuizAtlasModelDetail = (slug, uniqueId) => async (dispatch) => {
@@ -58,11 +61,27 @@ export const fetchAtlasQuizAtlasModelDetail = (slug, uniqueId) => async (dispatc
     dispatch(setLoading({ key: 'isFetchingAtlasModelDetail', value: true }))
     const response = await getWithToken(Endpoints.api.atlasQuizAtlasModelDetail(slug, uniqueId))
     dispatch(setAtlasModelDetail(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingAtlasModelDetail', value: false }))
   }
+}
+
+export const fetchAtlasModelRelatedQuizzes = (sourceUniqueId) => async (dispatch) => {
+  const res = await getWithToken(Endpoints.api.userContentRelations, {
+    sourceType: 'atlas_model', sourceUniqueId, targetType: 'anatomy_quiz', relationType: 'feature_relation',
+  })
+  dispatch(setAtlasModelRelatedQuizzes(res.data.data || []))
+}
+
+export const fetchAtlasModelAdjacent = (sourceUniqueId) => async (dispatch) => {
+  const res = await getWithToken(Endpoints.api.userContentRelations, {
+    sourceType: 'atlas_model', sourceUniqueId, targetType: 'atlas_model',
+  })
+  const links = res.data.data || []
+  dispatch(setAtlasModelPrevNext({
+    prev: links.find(l => l.relationType === 'prev') ?? null,
+    next: links.find(l => l.relationType === 'next') ?? null,
+  }))
 }
 
 export const fetchAtlasQuizAnatomyQuizDetail = (slug, uniqueId) => async (dispatch) => {
@@ -70,21 +89,33 @@ export const fetchAtlasQuizAnatomyQuizDetail = (slug, uniqueId) => async (dispat
     dispatch(setLoading({ key: 'isFetchingAnatomyQuizDetail', value: true }))
     const response = await getWithToken(Endpoints.api.atlasQuizAnatomyQuizDetail(slug, uniqueId))
     dispatch(setAnatomyQuizDetail(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingAnatomyQuizDetail', value: false }))
   }
 }
 
+export const fetchAnatomyQuizRelatedModels = (sourceUniqueId) => async (dispatch) => {
+  const res = await getWithToken(Endpoints.api.userContentRelations, {
+    sourceType: 'anatomy_quiz', sourceUniqueId, targetType: 'atlas_model', relationType: 'feature_relation',
+  })
+  dispatch(setAnatomyQuizRelatedModels(res.data.data || []))
+}
+
+export const fetchAnatomyQuizAdjacent = (sourceUniqueId) => async (dispatch) => {
+  const res = await getWithToken(Endpoints.api.userContentRelations, {
+    sourceType: 'anatomy_quiz', sourceUniqueId, targetType: 'anatomy_quiz',
+  })
+  const links = res.data.data || []
+  dispatch(setAnatomyQuizPrevNext({
+    prev: links.find(l => l.relationType === 'prev') ?? null,
+    next: links.find(l => l.relationType === 'next') ?? null,
+  }))
+}
+
 
 export const fetchAtlasQuizModuleOptions = (slug) => async (dispatch) => {
-  try {
-    const response = await getWithToken(Endpoints.api.atlasQuizTopicModuleOptions(slug))
-    dispatch(setModuleOptions(response.data.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
-  }
+  const response = await getWithToken(Endpoints.api.atlasQuizTopicModuleOptions(slug))
+  dispatch(setModuleOptions(response.data.data))
 }
 
 export const fetchAtlasQuizModules = (slug) => async (dispatch, getState) => {
@@ -96,8 +127,6 @@ export const fetchAtlasQuizModules = (slug) => async (dispatch, getState) => {
     const response = await getWithToken(Endpoints.api.atlasQuizTopicAtlasModels(slug), params)
     const isAppend = modulesFilter.page > 1
     dispatch(isAppend ? appendTopicModules(response.data) : setTopicModules(response.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingModules', value: false }))
   }
@@ -124,8 +153,6 @@ export const fetchAtlasQuizAnatomyQuizzes = (slug) => async (dispatch, getState)
     const response = await getWithToken(Endpoints.api.atlasQuizTopicAnatomyQuizzes(slug), params)
     const isAppend = quizzesFilter.page > 1
     dispatch(isAppend ? appendTopicAnatomyQuizzes(response.data) : setTopicAnatomyQuizzes(response.data))
-  } catch (err) {
-    handleApiError(err, dispatch)
   } finally {
     dispatch(setLoading({ key: 'isFetchingAnatomyQuizzes', value: false }))
   }

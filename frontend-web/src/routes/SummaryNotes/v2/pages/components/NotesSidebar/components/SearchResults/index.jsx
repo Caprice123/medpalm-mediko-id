@@ -3,8 +3,10 @@ import { toggleFavorite } from '@store/favorites/userAction'
 import { SectionBlock, EmptyHint, FavoriteBtn } from '../../NotesSidebar.styles'
 import { SearchNoteRow, SearchNoteInfo, SearchNoteTitle, SearchNotePath } from './SearchResults.styles'
 
-export default function SearchResults({ results, isLoading, selectedNoteId, onSelectNote }) {
+export default function SearchResults({ selectedNoteId, onSelectNote }) {
   const dispatch = useDispatch()
+  const searchResults = useSelector(s => s.summaryNotesV2.searchResults)
+  const isSearchLoading = useSelector(s => s.summaryNotesV2.loading.isSearchLoading)
   const { favoritedIds } = useSelector(s => s.favorites)
   const favLoading = useSelector(s => s.favorites.loading)
   const favoritedSummaryNoteIds = favoritedIds['summary_note'] || []
@@ -16,11 +18,11 @@ export default function SearchResults({ results, isLoading, selectedNoteId, onSe
 
   return (
     <SectionBlock>
-      {isLoading ? (
+      {isSearchLoading ? (
         <EmptyHint>Mencari...</EmptyHint>
-      ) : results.length === 0 ? (
+      ) : searchResults.length === 0 ? (
         <EmptyHint>Tidak ada hasil</EmptyHint>
-      ) : results.map(note => {
+      ) : searchResults.map(note => {
         const isFav = favoritedSummaryNoteIds.includes(note.id)
         return (
           <SearchNoteRow

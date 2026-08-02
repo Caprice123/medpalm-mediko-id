@@ -7,6 +7,5 @@ export class SubmitMcqAnswerService extends BaseService {
       data: [{ user_id: userId, item_type: 'mcq_question', item_id: parseInt(questionId) }],
       skipDuplicates: true,
     })
-    return { ok: true }
   }
 }

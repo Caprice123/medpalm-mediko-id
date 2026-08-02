@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import {
   TopicSection, TopicSectionTag, TopicSectionTitle, TopicSectionDesc,
   TopicGrid, TopicPill, TopicPillIcon, TopicPillArrow,
@@ -11,7 +12,11 @@ const ICON_BG_PALETTE = [
   '#ede9fe', '#d1fae5', '#e0e7ff', '#fef3c7', '#e0f2fe',
 ]
 
-export default function TopicGroupSection({ tag, title, description, topics, isLoading, onTopicClick, colorOffset = 0 }) {
+export default function TopicGroupSection({ classification, tag, title, description, onTopicClick, colorOffset = 0 }) {
+  const { userTopics, loading } = useSelector(s => s.featureNodes)
+  const topics = classification === 'primary' ? userTopics.primary : userTopics.special
+  const isLoading = loading.isFetchingUserTopics
+
   if (!isLoading && topics.length === 0) return null
 
   return (

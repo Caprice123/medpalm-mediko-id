@@ -5,10 +5,8 @@ import { fetchFavorites } from '@store/favorites/userAction'
 
 export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode) {
   const dispatch = useDispatch()
-  const { nodeNotes, loading, searchResults, detail } = useSelector(s => s.summaryNotesV2)
+  const { nodeNotes, detail } = useSelector(s => s.summaryNotesV2)
 
-  const [userTopics, setUserTopics] = useState({ primary: [], special: [] })
-  const [topicsLoading, setTopicsLoading] = useState({ isFetchingUserTopics: true })
   const [childrenMap, setChildrenMap] = useState({})
   const [childrenPagination, setChildrenPagination] = useState({})
   const [expandedNodes, setExpandedNodes] = useState(new Set())
@@ -23,10 +21,7 @@ export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode)
   const pendingRevealIdRef = useRef(selectedNoteId || null)
 
   useEffect(() => {
-    setTopicsLoading({ isFetchingUserTopics: true })
     dispatch(fetchSummaryNoteTopics())
-      .then(setUserTopics)
-      .finally(() => setTopicsLoading({ isFetchingUserTopics: false }))
     dispatch(fetchFavorites('summary_note'))
   }, [dispatch])
 
@@ -95,7 +90,7 @@ export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode)
     if (nodeData.notes?.length > 0) {
       onSelectNote(nodeData.notes[0].uniqueId)
     } else {
-      onSelectEmptyNode({ id: nodeId, name: node.name })
+      onSelectEmptyNode(nodeId)
     }
   }, [nodeNotes, dispatch, onSelectNote, onSelectEmptyNode])
 
@@ -133,10 +128,9 @@ export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode)
   const isSearching = search.trim().length > 0
 
   return {
-    userTopics, topicsLoading,
     nodeNotes, childrenMap, childrenPagination, expandedNodes, loadingNodeIds,
     handleToggleNode, handleLoadMoreChildren,
-    search, isSearching, handleSearchChange, searchResults, isSearchLoading: loading.isSearchLoading,
+    search, isSearching, handleSearchChange,
     handleSelectAndReveal,
   }
 }

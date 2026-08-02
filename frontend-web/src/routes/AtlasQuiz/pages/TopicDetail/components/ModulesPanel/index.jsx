@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { PiClock, PiCube } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
@@ -17,11 +18,14 @@ import {
 } from './ModulesPanel.styles'
 
 export default function ModulesPanel({
-  topic, modules, modulesPagination, moduleOptions,
-  isLoadingModules, onModuleFilterChange, onLoadMoreModules,
+  onModuleFilterChange, onLoadMoreModules,
   onModuleClick, onBack,
 }) {
-  const { search, setSearch, filteredModules } = useModulesPanel(modules)
+  const topic = useSelector(s => s.atlasQuiz.topicDetail)
+  const modulesPagination = useSelector(s => s.atlasQuiz.modulesPagination)
+  const moduleOptions = useSelector(s => s.atlasQuiz.moduleOptions)
+  const isLoadingModules = useSelector(s => s.atlasQuiz.loading.isFetchingModules)
+  const { search, setSearch, filteredModules } = useModulesPanel()
 
   return (
     <ModulesCard>

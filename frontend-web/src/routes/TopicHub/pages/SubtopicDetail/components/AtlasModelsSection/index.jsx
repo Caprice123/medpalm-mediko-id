@@ -13,9 +13,9 @@ export default function AtlasModelsSection({ atlasModels, isLoading, onSelectMod
       <AtlasSectionSubtitle>Model 3D dibuka di halaman baru dengan navigasi kembali. Setiap model disertai kuis 3D terkait di bagian bawah.</AtlasSectionSubtitle>
       <AtlasGrid>
         {atlasModels.map(model => (
-          <AtlasCard key={model.linkedUniqueId} onClick={() => onSelectModel(model.linkedUniqueId)}>
+          <AtlasCard key={model.uniqueId} onClick={() => onSelectModel(model.uniqueId)}>
             <AtlasCardIcon><PiCube size={16} /></AtlasCardIcon>
-            <AtlasCardTitle>{model.linkedTitle}</AtlasCardTitle>
+            <AtlasCardTitle>{model.title}</AtlasCardTitle>
             <AtlasCardArrow>→</AtlasCardArrow>
           </AtlasCard>
         ))}

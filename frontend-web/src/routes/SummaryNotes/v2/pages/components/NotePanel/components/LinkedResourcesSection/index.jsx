@@ -4,6 +4,7 @@ import { FlashcardRoute } from '@routes/Flashcard/routes'
 import { MultipleChoiceRoute } from '@routes/MultipleChoice/routes'
 import { TopicHubRoute } from '@routes/TopicHub/routes'
 import { SectionRow, SectionLabel, SectionLine } from '../../NotePanel.styles'
+import { useLinkedResourcesSection } from './hooks/useLinkedResourcesSection'
 import {
   LinkedGroup, LinkedGroupLabel, LinkedGroupHint,
   RelatedList, RelatedRow, RelatedIcon, RelatedInfo, RelatedTitle, RelatedSubtitle, RelatedBadge, RelatedArrow,
@@ -11,11 +12,15 @@ import {
 
 export default function LinkedResourcesSection({
   topicSlug, topicName, subtopicSlug, subtopicName,
-  nodeStats, anatomyQuizzes,
-  flashcardLabel, mcqLabel,
-  hasTopic, hasFlashcards, hasMcq, hasAnatomyQuizzes,
 }) {
   const navigate = useNavigate()
+  const {
+    nodeStats, anatomyQuizzes, flashcardLabel, mcqLabel,
+    hasFlashcards, hasMcq, hasAnatomyQuizzes,
+  } = useLinkedResourcesSection()
+  const hasTopic = !!topicName
+
+  if (!hasTopic && !hasFlashcards && !hasMcq && !hasAnatomyQuizzes) return null
 
   const goToSubtopic = () => {
     if (topicSlug && subtopicSlug) {
@@ -96,13 +101,13 @@ export default function LinkedResourcesSection({
           <RelatedList>
             {anatomyQuizzes.map(quiz => (
               <RelatedRow
-                key={quiz.linkedUniqueId}
+                key={quiz.uniqueId}
                 $type="anatomy"
-                onClick={() => navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug: topicSlug, uniqueId: quiz.linkedUniqueId }))}
+                onClick={() => navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug: topicSlug, uniqueId: quiz.uniqueId }))}
               >
                 <RelatedIcon>🧠</RelatedIcon>
                 <RelatedInfo>
-                  <RelatedTitle>{quiz.linkedTitle}</RelatedTitle>
+                  <RelatedTitle>{quiz.title}</RelatedTitle>
                   {quiz.description && <RelatedSubtitle>{quiz.description}</RelatedSubtitle>}
                 </RelatedInfo>
                 <RelatedArrow>→</RelatedArrow>

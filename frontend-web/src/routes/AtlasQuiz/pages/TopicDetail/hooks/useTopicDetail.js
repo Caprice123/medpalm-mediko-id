@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   fetchAtlasQuizTopicDetail,
   fetchAtlasQuizModules,
@@ -14,11 +14,6 @@ const { resetTopicDetail, setModulesFilter, setQuizzesFilter } = actions
 
 export function useTopicDetail(slug) {
   const dispatch = useDispatch()
-  const {
-    topicDetail, topicModules, modulesPagination,
-    topicAnatomyQuizzes, quizzesPagination,
-    moduleOptions, loading,
-  } = useSelector(s => s.atlasQuiz)
 
   useEffect(() => {
     if (!slug) return
@@ -48,15 +43,6 @@ export function useTopicDetail(slug) {
   }
 
   return {
-    topic: topicDetail,
-    modules: topicModules,
-    modulesPagination,
-    quizzes: topicAnatomyQuizzes,
-    quizzesPagination,
-    isLoadingTopic: loading.isFetchingTopicDetail,
-    isLoadingModules: loading.isFetchingModules,
-    isLoadingQuizzes: loading.isFetchingAnatomyQuizzes,
-    moduleOptions,
     handleModuleFilterChange,
     handleLoadMoreModules,
     handleQuizModuleFilterChange,

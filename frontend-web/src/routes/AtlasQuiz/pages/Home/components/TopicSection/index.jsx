@@ -15,8 +15,7 @@ const CARD_ICON_BG = [
 ]
 
 export default function TopicSection({ group, title, subtitle, onTopicClick, colorOffset = 0 }) {
-  const { topics, pagination, isLoading, handleLoadMore } = useAtlasTopicSection(group)
-  const hasMore = pagination.page < pagination.totalPages
+  const { topics, hasMore, isLoading, handleLoadMore } = useAtlasTopicSection(group)
 
   if (!isLoading && topics.length === 0) return null
 

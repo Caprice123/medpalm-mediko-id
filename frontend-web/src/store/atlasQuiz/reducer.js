@@ -3,12 +3,16 @@ import { resetAllState } from '../globalAction'
 
 const initialState = {
   sistemBlokTopics: [],
-  sistemBlokPagination: { page: 1, perPage: 9, total: 0, totalPages: 1 },
+  sistemBlokPagination: { page: 1, perPage: 9, isLastPage: true },
   ilmuLintasSistemTopics: [],
-  ilmuLintasSistemPagination: { page: 1, perPage: 9, total: 0, totalPages: 1 },
+  ilmuLintasSistemPagination: { page: 1, perPage: 9, isLastPage: true },
   topicDetail: null,
   atlasModelDetail: null,
+  atlasModelRelatedQuizzes: [],
+  atlasModelPrevNext: { prev: null, next: null },
   anatomyQuizDetail: null,
+  anatomyQuizRelatedModels: [],
+  anatomyQuizPrevNext: { prev: null, next: null },
   topicModules: [],
   moduleOptions: [],
   modulesFilter: { module: null, page: 1 },
@@ -55,8 +59,20 @@ const atlasQuizSlice = createSlice({
     setAtlasModelDetail: (state, action) => {
       state.atlasModelDetail = action.payload
     },
+    setAtlasModelRelatedQuizzes: (state, action) => {
+      state.atlasModelRelatedQuizzes = action.payload
+    },
+    setAtlasModelPrevNext: (state, action) => {
+      state.atlasModelPrevNext = action.payload
+    },
     setAnatomyQuizDetail: (state, action) => {
       state.anatomyQuizDetail = action.payload
+    },
+    setAnatomyQuizRelatedModels: (state, action) => {
+      state.anatomyQuizRelatedModels = action.payload
+    },
+    setAnatomyQuizPrevNext: (state, action) => {
+      state.anatomyQuizPrevNext = action.payload
     },
     setModuleOptions: (state, action) => {
       state.moduleOptions = action.payload

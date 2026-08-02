@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { PiMedal } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
@@ -15,10 +16,12 @@ import {
 } from './QuizzesPanel.styles'
 
 export default function QuizzesPanel({
-  quizzes, quizzesPagination, moduleOptions,
-  isLoadingQuizzes, onQuizModuleFilterChange, onLoadMoreQuizzes, onQuizClick,
+  onQuizModuleFilterChange, onLoadMoreQuizzes, onQuizClick,
 }) {
-  const { searchQuiz, setSearchQuiz, filteredQuizzes } = useQuizzesPanel(quizzes)
+  const quizzesPagination = useSelector(s => s.atlasQuiz.quizzesPagination)
+  const moduleOptions = useSelector(s => s.atlasQuiz.moduleOptions)
+  const isLoadingQuizzes = useSelector(s => s.atlasQuiz.loading.isFetchingAnatomyQuizzes)
+  const { searchQuiz, setSearchQuiz, filteredQuizzes } = useQuizzesPanel()
 
   return (
     <QuizSection>

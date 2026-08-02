@@ -1,4 +1,5 @@
 import { useNavigate, useParams, generatePath } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import Loading from '@components/common/Loading'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { useAnatomyQuizDetail } from './hooks/useAnatomyQuizDetail'
@@ -12,7 +13,8 @@ import { PageWrapper, Inner } from './AnatomyQuizDetail.styles'
 function AnatomyQuizDetailPage() {
   const navigate = useNavigate()
   const { slug, uniqueId } = useParams()
-  const { detail, isLoading, allAtlasModels, prevQuiz, nextQuiz } = useAnatomyQuizDetail(slug, uniqueId)
+  const isLoading = useSelector(s => s.atlasQuiz.loading.isFetchingAnatomyQuizDetail)
+  const { anatomyQuizDetail, allAtlasModels, prevQuiz, nextQuiz } = useAnatomyQuizDetail(slug, uniqueId)
 
   const handleModelClick = (model) => {
     navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug, uniqueId: model.uniqueId }))
@@ -22,9 +24,9 @@ function AnatomyQuizDetailPage() {
     navigate(generatePath(AtlasQuizRoute.anatomyQuizRoute, { slug, uniqueId: relUniqueId }))
   }
 
-  if (isLoading || !detail) return <Loading />
+  if (isLoading || !anatomyQuizDetail) return <Loading />
 
-  const { quiz, module: mod, topicName } = detail
+  const { quiz, module: mod, topicName } = anatomyQuizDetail
 
   return (
     <PageWrapper>
