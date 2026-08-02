@@ -24,7 +24,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
   const { loading } = useSelector(state => state.featureNodes)
   const isEdit = !!node
   const classificationOptions = layer === 1 ? TOPIC_CLASSIFICATION_OPTIONS : MODULE_CLASSIFICATION_OPTIONS
-  const [form, setForm] = useState({ name: '', description: '', classification: classificationOptions[0].value })
+  const [form, setForm] = useState({ name: '', description: '', classification: classificationOptions[0].value, icon: '' })
 
   useEffect(() => {
     if (isEdit) {
@@ -32,9 +32,10 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
         name: node.name,
         description: node.description ?? '',
         classification: node.classification ?? classificationOptions[0].value,
+        icon: node.icon ?? '',
       })
     } else {
-      setForm({ name: '', description: '', classification: classificationOptions[0].value })
+      setForm({ name: '', description: '', classification: classificationOptions[0].value, icon: '' })
     }
   }, [isEdit, node])
 
@@ -50,6 +51,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
       layer,
       nodeType: isEdit ? node.nodeType : (layer === 1 ? 'topic' : 'module'),
       classification: form.classification,
+      ...(layer === 1 && { icon: form.icon || null }),
       ...(parentNode && { parentId: parentNode.id }),
     }
     if (isEdit) {
@@ -67,7 +69,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
       isOpen
       onClose={onClose}
       title={isEdit ? `Edit ${label}` : `Tambah ${label} Baru`}
-      size="small"
+      size="medium"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Batal</Button>
@@ -93,12 +95,20 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
           rows={3}
         />
         {layer === 1 && (
-          <Dropdown
-            label="Klasifikasi"
-            options={classificationOptions}
-            value={classificationOptions.find(o => o.value === form.classification) ?? classificationOptions[0]}
-            onChange={opt => set('classification', opt?.value ?? classificationOptions[0].value)}
-          />
+          <>
+            <Dropdown
+              label="Klasifikasi"
+              options={classificationOptions}
+              value={classificationOptions.find(o => o.value === form.classification) ?? classificationOptions[0]}
+              onChange={opt => set('classification', opt?.value ?? classificationOptions[0].value)}
+            />
+            <TextInput
+              label="Ikon (emoji)"
+              value={form.icon}
+              onChange={e => set('icon', e.target.value)}
+              placeholder="Contoh: 🫀"
+            />
+          </>
         )}
       </div>
     </Modal>

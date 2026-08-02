@@ -1,72 +1,19 @@
-import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
-
-const CLASSIFICATION_OPTIONS = [
-  { value: 'sistem_blok', label: 'Sistem Blok' },
-  { value: 'ilmu_lintas_sistem', label: 'Ilmu Lintas Sistem' },
-]
+import { useNodeFormModal, CLASSIFICATION_OPTIONS } from './hooks/useNodeFormModal'
 
 function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
-  const dispatch = useDispatch()
-  const { loading } = useSelector(state => state.featureNodes)
-
-  const isEdit = !!node
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    classification: CLASSIFICATION_OPTIONS[0].value,
-  })
-
-  useEffect(() => {
-    if (isEdit) {
-      setForm({
-        name: node.name,
-        description: node.description ?? '',
-        classification: node.classification ?? CLASSIFICATION_OPTIONS[0].value,
-      })
-    } else {
-      setForm({ name: '', description: '', classification: CLASSIFICATION_OPTIONS[0].value })
-    }
-  }, [isEdit, node])
-
-  const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
-
-  const handleSubmit = () => {
-    const slug = form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-    const payload = {
-      name: form.name,
-      description: form.description,
-      slug: isEdit ? node.slug : slug,
-      visibility: 'general',
-      layer,
-      ...(layer === 1 && { classification: form.classification, nodeType: isEdit ? node.nodeType : 'topic' }),
-      ...(layer === 2 && parentNode && { parentId: parentNode.id, nodeType: isEdit ? node.nodeType : 'subtopic' }),
-    }
-
-    if (isEdit) {
-      dispatch(updateFeatureNode(node.id, payload, onSuccess))
-    } else {
-      dispatch(createFeatureNode(payload, onSuccess))
-    }
-  }
-
-  const isSaving = isEdit ? loading.isUpdating : loading.isCreating
-  const title = layer === 1
-    ? (isEdit ? 'Edit Topik' : 'Tambah Topik Baru')
-    : (isEdit ? 'Edit Sub-topik' : 'Tambah Sub-topik Baru')
+  const { form, set, handleSubmit, isSaving, title } = useNodeFormModal({ layer, node, parentNode, onSuccess })
 
   return (
     <Modal
       isOpen
       onClose={onClose}
       title={title}
-      size="small"
+      size="medium"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Batal</Button>
@@ -92,12 +39,20 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
           rows={3}
         />
         {layer === 1 && (
-          <Dropdown
-            label="Klasifikasi"
-            options={CLASSIFICATION_OPTIONS}
-            value={CLASSIFICATION_OPTIONS.find(o => o.value === form.classification) ?? CLASSIFICATION_OPTIONS[0]}
-            onChange={opt => set('classification', opt?.value ?? CLASSIFICATION_OPTIONS[0].value)}
-          />
+          <>
+            <Dropdown
+              label="Klasifikasi"
+              options={CLASSIFICATION_OPTIONS}
+              value={CLASSIFICATION_OPTIONS.find(o => o.value === form.classification) ?? CLASSIFICATION_OPTIONS[0]}
+              onChange={opt => set('classification', opt?.value ?? CLASSIFICATION_OPTIONS[0].value)}
+            />
+            <TextInput
+              label="Ikon (emoji)"
+              value={form.icon}
+              onChange={e => set('icon', e.target.value)}
+              placeholder="Contoh: 🫀"
+            />
+          </>
         )}
       </div>
     </Modal>
