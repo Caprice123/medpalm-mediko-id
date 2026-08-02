@@ -9,12 +9,18 @@ import {
   TopicGrid, TopicPill, TopicPillIcon, TopicPillArrow,
   SkeletonPill,
 } from './TopicHub.styles'
-
-const TOPIC_ROUTE = '/topik'
+import { TopicHubRoute } from '../../routes'
 
 const SKELETON_WIDTHS = ['8rem', '11rem', '7rem', '13rem', '9rem', '10rem', '7.5rem', '11.5rem', '9.5rem', '8.5rem']
 
-function TopicGroupSection({ tag, title, description, topics, isLoading, onTopicClick }) {
+const ICON_BG_PALETTE = [
+  '#dbeafe', '#fce7f3', '#fee2e2', '#ccfbf1', '#ffedd5',
+  '#ede9fe', '#d1fae5', '#e0e7ff', '#fef3c7', '#e0f2fe',
+]
+
+function TopicGroupSection({ tag, title, description, topics, isLoading, onTopicClick, colorOffset = 0 }) {
+  if (!isLoading && topics.length === 0) return null
+
   return (
     <TopicSection>
       <TopicSectionTag>{tag}</TopicSectionTag>
@@ -23,9 +29,11 @@ function TopicGroupSection({ tag, title, description, topics, isLoading, onTopic
       <TopicGrid>
         {isLoading
           ? SKELETON_WIDTHS.map((w, i) => <SkeletonPill key={i} $w={w} />)
-          : topics.map(topic => (
+          : topics.map((topic, i) => (
             <TopicPill key={topic.id} onClick={() => onTopicClick(topic)}>
-              <TopicPillIcon>{topic.icon || '📚'}</TopicPillIcon>
+              <TopicPillIcon $bg={ICON_BG_PALETTE[(i + colorOffset) % ICON_BG_PALETTE.length]}>
+                {topic.icon || '📚'}
+              </TopicPillIcon>
               {topic.name}
               <TopicPillArrow>→</TopicPillArrow>
             </TopicPill>
@@ -43,7 +51,7 @@ export default function TopicHubPage() {
 
   const handleTopicClick = (topic) => {
     saveLastTopic(topic)
-    navigate(`${TOPIC_ROUTE}/${topic.slug}`)
+    navigate(`${TopicHubRoute.moduleRoute}/${topic.slug}`)
   }
 
   return (
@@ -58,7 +66,7 @@ export default function TopicHubPage() {
       {lastTopic && (
         <LastSessionSection>
           <SectionLabel>Sesi Terakhir</SectionLabel>
-          <LastSessionCard onClick={() => navigate(`${TOPIC_ROUTE}/${lastTopic.slug}`)}>
+          <LastSessionCard onClick={() => navigate(`${TopicHubRoute.moduleRoute}/${lastTopic.slug}`)}>
             <LastSessionIcon>{lastTopic.icon || '🕐'}</LastSessionIcon>
             <LastSessionText>
               <LastSessionName>{lastTopic.name}</LastSessionName>
@@ -85,6 +93,7 @@ export default function TopicHubPage() {
         topics={specialTopics}
         isLoading={isLoading}
         onTopicClick={handleTopicClick}
+        colorOffset={5}
       />
     </Container>
   )

@@ -1,36 +1,26 @@
 import { useNavigate } from 'react-router-dom'
-import { PiCube, PiMedal, PiBrain } from 'react-icons/pi'
+import { PiCube, PiMedal } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
-import EmptyState from '@components/common/EmptyState'
 import Button from '@components/common/Button'
 import { useAtlasQuizHome } from './hooks/useAtlasQuizHome'
 import {
   Container,
-  Hero, HeroTop, HeroIcon, HeroTitle, HeroSubtitle, HeroPills, HeroPill,
+  PageHeader, PageHeaderIcon, PageHeaderTitle, PageHeaderSubtitle,
   Section, SectionHeader, SectionTitle, SectionSubtitle,
-  TopicsGrid, TopicCard, CardAccent, CardBody,
+  TopicsGrid, TopicCard, CardBody,
   CardTop, CardIconWrapper, CardTitleBlock, CardTitle, CardDescription,
-  CardFooter, CardStats, StatBadge, CardArrow,
+  CardDivider, CardFooter, CardStats, StatBadge, CardArrow,
 } from './Home.styles'
-
-const CARD_ACCENTS = [
-  'linear-gradient(90deg, #6366f1, #0ea5e9)',
-  'linear-gradient(90deg, #0ea5e9, #06b6d4)',
-  'linear-gradient(90deg, #ec4899, #8b5cf6)',
-  'linear-gradient(90deg, #10b981, #06b6d4)',
-  'linear-gradient(90deg, #f59e0b, #ef4444)',
-  'linear-gradient(90deg, #8b5cf6, #6366f1)',
-  'linear-gradient(90deg, #14b8a6, #0ea5e9)',
-  'linear-gradient(90deg, #f43f5e, #ec4899)',
-]
 
 const CARD_ICON_BG = [
   '#ede9fe', '#e0f2fe', '#fce7f3', '#d1fae5',
   '#fef3c7', '#fee2e2', '#e0e7ff', '#f0fdf4',
 ]
 
-function TopicSection({ title, subtitle, topics, pagination, isLoading, onTopicClick, onLoadMore, accentOffset = 0 }) {
+function TopicSection({ title, subtitle, topics, pagination, isLoading, onTopicClick, onLoadMore, colorOffset = 0 }) {
   const hasMore = pagination.page < pagination.totalPages
+
+  if (!isLoading && topics.length === 0) return null
 
   return (
     <Section>
@@ -40,16 +30,13 @@ function TopicSection({ title, subtitle, topics, pagination, isLoading, onTopicC
       </SectionHeader>
       {isLoading && topics.length === 0 ? (
         <Loading />
-      ) : topics.length === 0 ? (
-        <EmptyState icon="📂" title="Belum ada topik" />
       ) : (
         <>
           <TopicsGrid>
             {topics.map((topic, i) => {
-              const idx = (i + accentOffset) % CARD_ACCENTS.length
+              const idx = (i + colorOffset) % CARD_ICON_BG.length
               return (
                 <TopicCard key={topic.id} onClick={() => onTopicClick(topic.slug)}>
-                  <CardAccent $bg={CARD_ACCENTS[idx]} />
                   <CardBody>
                     <CardTop>
                       <CardIconWrapper $bg={CARD_ICON_BG[idx]}>
@@ -62,18 +49,15 @@ function TopicSection({ title, subtitle, topics, pagination, isLoading, onTopicC
                         )}
                       </CardTitleBlock>
                     </CardTop>
+                    <CardDivider />
                     <CardFooter>
                       <CardStats>
-                        {topic.atlasModelCount > 0 && (
-                          <StatBadge $type="atlas">
-                            <PiCube size={11} /> {topic.atlasModelCount} Model 3D
-                          </StatBadge>
-                        )}
-                        {topic.quizCount > 0 && (
-                          <StatBadge $type="quiz">
-                            <PiMedal size={11} /> {topic.quizCount} Quiz
-                          </StatBadge>
-                        )}
+                        <StatBadge>
+                          <PiCube size={11} /> {topic.atlasModelCount} model
+                        </StatBadge>
+                        <StatBadge>
+                          <PiMedal size={11} /> {topic.quizCount} quiz
+                        </StatBadge>
                       </CardStats>
                       <CardArrow>→</CardArrow>
                     </CardFooter>
@@ -111,49 +95,36 @@ function AtlasQuizHome() {
 
   const handleTopicClick = (slug) => navigate(`/atlas-quiz/${slug}`)
 
-  const totalAtlas = [...sistemBlokTopics, ...ilmuLintasSistemTopics]
-    .reduce((sum, t) => sum + (t.atlasModelCount || 0), 0)
-  const totalQuiz = [...sistemBlokTopics, ...ilmuLintasSistemTopics]
-    .reduce((sum, t) => sum + (t.quizCount || 0), 0)
-  const totalTopics = sistemBlokPagination.total + ilmuLintasSistemPagination.total
-
   return (
     <Container>
-      <Hero>
-        <HeroTop>
-          <HeroIcon>🧬</HeroIcon>
-          <div>
-            <HeroTitle>Atlas 3D &amp; Quiz Anatomi</HeroTitle>
-            <HeroSubtitle>Eksplorasi model anatomi 3D interaktif dan uji pemahamanmu lewat quiz berbasis struktur.</HeroSubtitle>
-          </div>
-        </HeroTop>
-        <HeroPills>
-          <HeroPill><PiBrain size={13} /> {totalTopics} Topik</HeroPill>
-          <HeroPill><PiCube size={13} /> {totalAtlas} Model 3D</HeroPill>
-          <HeroPill><PiMedal size={13} /> {totalQuiz} Quiz Anatomi</HeroPill>
-        </HeroPills>
-      </Hero>
+      <PageHeader>
+        <PageHeaderIcon><PiCube size={22} /></PageHeaderIcon>
+        <div>
+          <PageHeaderTitle>Atlas 3D &amp; Quiz Anatomi</PageHeaderTitle>
+          <PageHeaderSubtitle>Eksplorasi atlas 3D dan latihan quiz anatomi interaktif.</PageHeaderSubtitle>
+        </div>
+      </PageHeader>
 
       <TopicSection
-        title="Sistem Blok"
-        subtitle="Dikelompokkan berdasarkan sistem tubuh."
+        title="Sistem"
+        subtitle="Atlas 3D dan quiz anatomi yang dikelompokkan berdasarkan sistem tubuh."
         topics={sistemBlokTopics}
         pagination={sistemBlokPagination}
         isLoading={isLoadingSistemBlok}
         onTopicClick={handleTopicClick}
         onLoadMore={handleLoadMoreSistemBlok}
-        accentOffset={0}
+        colorOffset={0}
       />
 
       <TopicSection
-        title="Ilmu Lintas Sistem"
-        subtitle="Topik yang mencakup lebih dari satu sistem tubuh."
+        title="Topik Lintas-Sistem"
+        subtitle="Topik penunjang lintas-sistem yang memiliki model 3D anatomi terkait."
         topics={ilmuLintasSistemTopics}
         pagination={ilmuLintasSistemPagination}
         isLoading={isLoadingIlmuLintasSistem}
         onTopicClick={handleTopicClick}
         onLoadMore={handleLoadMoreIlmuLintasSistem}
-        accentOffset={4}
+        colorOffset={4}
       />
     </Container>
   )

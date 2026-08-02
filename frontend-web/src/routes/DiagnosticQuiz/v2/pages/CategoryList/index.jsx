@@ -24,7 +24,7 @@ function TopicSection({ title, topics, isLoading, searchValue, onSearchChange, o
         <TopikSearchWrap>
           <TopikSearchIcon>🔍</TopikSearchIcon>
           <TopikSearchInput
-            placeholder="Cari topik..."
+            placeholder="Cari modul..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
           />
@@ -46,7 +46,7 @@ function TopicSection({ title, topics, isLoading, searchValue, onSearchChange, o
           ))}
         </TopikList>
       ) : topics.length === 0 ? (
-        <EmptyWrap>Belum ada topik tersedia.</EmptyWrap>
+        <EmptyWrap>Belum ada modul tersedia.</EmptyWrap>
       ) : (
         <TopikList>
           {topics.map((topic, i) => {
@@ -130,7 +130,7 @@ export default function CategoryListPage() {
       </DashboardRow>
 
       <TopicSection
-        title="Topik Primer"
+        title="Modul Primer"
         topics={filteredPrimary}
         isLoading={isLoading}
         searchValue={primarySearch}
@@ -146,7 +146,7 @@ export default function CategoryListPage() {
       />
 
       <TopicSection
-        title="Topik Spesialis"
+        title="Modul Spesialis"
         topics={filteredSpecial}
         isLoading={isLoading}
         searchValue={specialSearch}

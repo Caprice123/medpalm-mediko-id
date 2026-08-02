@@ -33,7 +33,7 @@ export default function AnatomyAtlasV2({ onBack }) {
     dispatch(updateFilter({ key: 'layer', value: String(layer) }))
     dispatch(updateFilter({ key: 'parentId', value: parentId ? String(parentId) : '' }))
     dispatch(updateFilter({ key: 'visibility', value: VISIBILITY }))
-    dispatch(updateFilter({ key: 'nodeType', value: layer === 2 ? 'module' : '' }))
+    dispatch(updateFilter({ key: 'nodeType', value: layer === 2 ? 'module' : 'topic' }))
     dispatch(fetchFeatureNodesWithStats())
   }
 

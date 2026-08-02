@@ -6,7 +6,7 @@ const RECORD_TYPE = 'diagnostic_question'
 
 export class GetDiagnosticCategoriesService extends BaseService {
   static async call({ classification } = {}) {
-    const topicWhere = { layer: 1, visibility: VISIBILITY }
+    const topicWhere = { layer: 1, visibility: VISIBILITY, node_type: 'module' }
     if (classification) topicWhere.classification = classification
 
     const topics = await prisma.feature_nodes.findMany({
@@ -19,7 +19,13 @@ export class GetDiagnosticCategoriesService extends BaseService {
     const topicIds = topics.map(t => t.id)
 
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: { in: topicIds }, layer: 2, visibility: VISIBILITY },
+      where: {
+        parent_id: { in: topicIds },
+        layer: 2,
+        visibility: VISIBILITY,
+        node_type: 'submodule',
+        node_statistics: { some: { record_type: RECORD_TYPE, total_count: { gt: 0 } } },
+      },
       select: {
         id: true,
         parent_id: true,
@@ -38,10 +44,12 @@ export class GetDiagnosticCategoriesService extends BaseService {
       questionCountByTopic.set(pid, (questionCountByTopic.get(pid) ?? 0) + (s.node_statistics[0]?.total_count ?? 0))
     }
 
-    return topics.map(t => ({
-      ...t,
-      subtopicCount: subtopicCountByTopic.get(t.id) ?? 0,
-      questionCount: questionCountByTopic.get(t.id) ?? 0,
-    }))
+    return topics
+      .filter(t => questionCountByTopic.has(t.id))
+      .map(t => ({
+        ...t,
+        subtopicCount: subtopicCountByTopic.get(t.id) ?? 0,
+        questionCount: questionCountByTopic.get(t.id) ?? 0,
+      }))
   }
 }

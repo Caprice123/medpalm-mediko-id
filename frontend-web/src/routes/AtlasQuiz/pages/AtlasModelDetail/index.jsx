@@ -7,6 +7,7 @@ import EmptyState from '@components/common/EmptyState'
 import { fetchAtlasQuizAtlasModelDetail, fetchUserContentRelations } from '@store/atlasQuiz/userAction'
 import { actions } from '@store/atlasQuiz/reducer'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
+import Breadcrumb from '@components/common/Breadcrumb'
 
 function canUseFeature(sessionType, features, userStatus) {
   const feature = features.find(f => f.sessionType === sessionType)
@@ -17,7 +18,6 @@ function canUseFeature(sessionType, features, userStatus) {
 import {
   PageWrapper, Inner,
   TopBar, Brand, BrandIcon, BrandTitle, BrandSubtitle, BackButton,
-  Breadcrumb, BreadcrumbItem,
   ModelCard, ModelMeta, MetaTag, ModelTitle, ModelDescription,
   EmbedCard, EmbedFrame,
   SectionCard, SectionHeader, SectionTitle, SectionSubtitle,
@@ -110,23 +110,12 @@ function AtlasModelDetailPage() {
           </BackButton>
         </TopBar>
 
-        <Breadcrumb>
-          <BreadcrumbItem $clickable onClick={() => navigate(AtlasQuizRoute.homeRoute)}>
-            Atlas Quiz
-          </BreadcrumbItem>
-          <span>/</span>
-          <BreadcrumbItem $clickable onClick={() => navigate(generatePath(AtlasQuizRoute.detailRoute, { slug }))}>
-            {topicName}
-          </BreadcrumbItem>
-          {mod && (
-            <>
-              <span>/</span>
-              <BreadcrumbItem>{mod.name}</BreadcrumbItem>
-            </>
-          )}
-          <span>/</span>
-          <BreadcrumbItem $active>{model.title}</BreadcrumbItem>
-        </Breadcrumb>
+        <Breadcrumb style={{ marginBottom: '1.25rem' }} items={[
+          { label: 'Atlas Quiz', onClick: () => navigate(AtlasQuizRoute.homeRoute) },
+          { label: topicName, onClick: () => navigate(generatePath(AtlasQuizRoute.detailRoute, { slug })) },
+          ...(mod ? [{ label: mod.name }] : []),
+          { label: model.title },
+        ]} />
 
         <ModelCard>
           {mod && (

@@ -8,8 +8,8 @@ export const fetchUserTopics = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingUserTopics: true }))
     const [primaryRes, specialRes] = await Promise.all([
-      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, classification: 'sistem_blok', perPage: 100 }),
-      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, classification: 'ilmu_lintas_sistem', perPage: 100 }),
+      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok', perPage: 100 }),
+      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem', perPage: 100 }),
     ])
     dispatch(setUserTopics({
       primary: primaryRes.data.data || [],
@@ -21,12 +21,12 @@ export const fetchUserTopics = () => async (dispatch) => {
 }
 
 export const fetchUserSubtopics = (parentSlug) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, perPage: 100 })
+  const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true, perPage: 100 })
   return res.data.data || []
 }
 
 export const fetchUserTopicBySlug = (slug) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 1, perPage: 1 })
+  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 1, nodeType: 'topic', perPage: 1 })
   return (res.data.data || [])[0] ?? null
 }
 
@@ -41,7 +41,7 @@ export const fetchUserNodeBySlug = (slug) => async () => {
 }
 
 export const fetchUserNodeByName = (name) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodes, { name, layer: 2, perPage: 1 })
+  const res = await getWithToken(Endpoints.api.featureNodes, { name, layer: 2, nodeType: 'subtopic', perPage: 1 })
   return (res.data.data || [])[0] ?? null
 }
 
@@ -60,12 +60,15 @@ export const fetchNodePreview = (nodeId, type) => async () => {
   return res.data.data
 }
 
-export const fetchNodeAtlasModels = (nodeId) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodeAtlasModels(nodeId))
+export const fetchTopicAtlasModels = (topicId) => async () => {
+  const res = await getWithToken(Endpoints.api.featureNodeTopicAtlasModels(topicId))
   return res.data.data || []
 }
 
-export const fetchNodeAnatomyQuizzes = (nodeId) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodeAnatomyQuizzes(nodeId))
+// node (subtopic) ↔ atlas model content_relations
+export const fetchNodeAtlasModelRelations = (slug) => async () => {
+  const res = await getWithToken(Endpoints.api.contentRelationsV2, {
+    sourceType: 'feature_node', sourceUniqueId: slug, targetType: 'atlas_model',
+  })
   return res.data.data || []
 }

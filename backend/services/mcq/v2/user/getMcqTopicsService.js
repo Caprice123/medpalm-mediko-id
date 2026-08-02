@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 export class GetMcqTopicsService extends BaseService {
   static async call({ userId }) {
     const topics = await prisma.feature_nodes.findMany({
-      where: { layer: 1, visibility: 'general' },
+      where: { layer: 1, visibility: 'general', node_type: 'topic' },
       orderBy: { name: 'asc' },
     })
     if (topics.length === 0) return []
@@ -12,7 +12,13 @@ export class GetMcqTopicsService extends BaseService {
     const topicIds = topics.map(t => t.id)
 
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: { in: topicIds }, layer: 2, visibility: 'general', node_type: 'subtopic' },
+      where: {
+        parent_id: { in: topicIds },
+        layer: 2,
+        visibility: 'general',
+        node_type: 'subtopic',
+        node_statistics: { some: { record_type: 'mcq_question', total_count: { gt: 0 } } },
+      },
       select: {
         id: true,
         parent_id: true,
@@ -35,7 +41,7 @@ export class GetMcqTopicsService extends BaseService {
 
     const progressByTopic = new Map(progressRecords.map(p => [p.node_id, p]))
 
-    return topics.map(t => {
+    return topics.filter(t => questionsByTopic.has(t.id)).map(t => {
       const prog = progressByTopic.get(t.id)
       const avgScore = prog && prog.total_questions > 0
         ? Math.round((prog.total_correct / prog.total_questions) * 100)

@@ -11,6 +11,7 @@ export function useSummaryNotesAdmin() {
 
   const loadTopics = useCallback(() => {
     dispatch(updateFilter({ key: 'layer', value: '1' }))
+    dispatch(updateFilter({ key: 'nodeType', value: 'topic' }))
     dispatch(updateFilter({ key: 'parentId', value: '' }))
     dispatch(updateFilter({ key: 'search', value: '' }))
     dispatch(updateFilter({ key: 'classification', value: '' }))

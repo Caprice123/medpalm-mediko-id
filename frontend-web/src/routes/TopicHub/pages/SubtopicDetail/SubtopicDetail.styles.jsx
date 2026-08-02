@@ -10,37 +10,6 @@ export const Container = styled.div`
   animation: ${fadeUp} 0.3s ease both;
 `
 
-/* ── Breadcrumb ── */
-export const Breadcrumb = styled.nav`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-`
-
-export const BreadcrumbLink = styled.button`
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: inherit;
-  color: #10b981;
-  cursor: pointer;
-  font-weight: 500;
-  &:hover { text-decoration: underline; }
-`
-
-export const BreadcrumbSep = styled.span`
-  color: #d1d5db;
-`
-
-export const BreadcrumbCurrent = styled.span`
-  color: #374151;
-  font-weight: 500;
-`
-
 /* ── Header ── */
 export const PageHeader = styled.div`
   margin-bottom: 0.5rem;

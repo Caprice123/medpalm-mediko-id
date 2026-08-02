@@ -26,7 +26,7 @@ import {
   ActionGroup, ClassificationBadge, SearchRow,
 } from './DiagnosticV2.styles'
 
-const LAYER_LABELS = { 1: 'Topik', 2: 'Sub-topik' }
+const LAYER_LABELS = { 1: 'Modul', 2: 'Sub-modul' }
 const CLASSIFICATION_LABELS = { primary: 'Utama', special: 'Khusus' }
 
 export default function DiagnosticV2({ onBack }) {
@@ -54,6 +54,7 @@ export default function DiagnosticV2({ onBack }) {
     if (showUnlinked) return
     if (!inQuestions) {
       dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
+      dispatch(updateFilter({ key: 'nodeType', value: currentLayer === 1 ? 'module' : 'submodule' }))
       dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
       dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
       dispatch(updateFilter({ key: 'search', value: '' }))
@@ -79,6 +80,7 @@ export default function DiagnosticV2({ onBack }) {
     if (!window.confirm(`Hapus "${node.name}"? Semua data di dalamnya akan ikut terhapus.`)) return
     dispatch(deleteFeatureNode(node.id, () => {
       dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
+      dispatch(updateFilter({ key: 'nodeType', value: currentLayer === 1 ? 'module' : 'submodule' }))
       dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
       dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
       dispatch(fetchFeatureNodes())

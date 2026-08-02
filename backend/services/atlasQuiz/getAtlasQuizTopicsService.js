@@ -4,7 +4,20 @@ import { AtlasQuizTopicSerializer } from '#serializers/api/v2/atlasQuizTopicSeri
 
 export class GetAtlasQuizTopicsService extends BaseService {
   static async call({ classification, page = 1, perPage = 9 } = {}) {
-    const where = { layer: 1, visibility: 'general', parent_id: null }
+    const where = {
+      layer: 1,
+      visibility: 'general',
+      parent_id: null,
+      node_type: 'topic',
+      children: {
+        some: {
+          layer: 2,
+          node_statistics: {
+            some: { record_type: { in: ['3d_atlas', 'anatomy_quiz'] }, total_count: { gt: 0 } },
+          },
+        },
+      },
+    }
     if (classification) where.classification = classification
 
     const currentPage = Math.max(1, parseInt(page) || 1)

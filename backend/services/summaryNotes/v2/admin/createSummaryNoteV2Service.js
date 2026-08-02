@@ -44,6 +44,11 @@ export class CreateSummaryNoteV2Service extends BaseService {
         await tx.feature_node_records.create({
           data: { node_id: node.id, record_type: 'summary_note', record_id: summaryNote.id },
         })
+        await tx.node_statistics.upsert({
+          where: { node_id_record_type: { node_id: node.id, record_type: 'summary_note' } },
+          create: { node_id: node.id, record_type: 'summary_note', total_count: 1 },
+          update: { total_count: { increment: 1 } },
+        })
       }
 
       if (tagIds?.length > 0) {

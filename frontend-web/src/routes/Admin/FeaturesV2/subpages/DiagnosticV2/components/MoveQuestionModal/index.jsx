@@ -60,7 +60,7 @@ export default function MoveQuestionModal({ question, onClose, onSuccess, onMove
     <Modal
       isOpen
       onClose={onClose}
-      title="Pindah ke Sub-topik"
+      title="Pindah ke Sub-modul"
       size="medium"
       footer={
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -75,12 +75,12 @@ export default function MoveQuestionModal({ question, onClose, onSuccess, onMove
         <Nav>
           {currentParent ? (
             <>
-              <NavLink onClick={handleBackToRoot}>Semua Topik</NavLink>
+              <NavLink onClick={handleBackToRoot}>Semua Modul</NavLink>
               <NavSep>›</NavSep>
               <NavCurrent>{currentParent.name}</NavCurrent>
             </>
           ) : (
-            <NavCurrent>Semua Topik</NavCurrent>
+            <NavCurrent>Semua Modul</NavCurrent>
           )}
         </Nav>
 

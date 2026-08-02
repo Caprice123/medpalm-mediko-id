@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, generatePath } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { PiStackSimple } from 'react-icons/pi'
-import { fetchUserSubtopics, fetchUserTopics, fetchUserTopicBySlug } from '@store/featureNodes'
+import { PiStackSimple, PiCube } from 'react-icons/pi'
+import { fetchUserSubtopics, fetchUserTopics, fetchUserTopicBySlug, fetchTopicAtlasModels } from '@store/featureNodes'
+import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
+import Breadcrumb from '@components/common/Breadcrumb'
 import {
-  Container, Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent,
+  Container,
   TopicHeader, TopicHeaderLeft, TopicIconBox, TopicMeta,
   ClassificationBadge, TopicName, TopicDescription, BackButton,
   SubtopicsHeader, SubtopicsTitle, SubtopicsIcon, SubtopicsCount, SubtopicsSubtitle,
   SubtopicGrid, SubtopicCard, SubtopicNumber, SubtopicName, SubtopicArrow,
+  AtlasSection, AtlasSectionHeader, AtlasSectionTitle, AtlasSectionIcon, AtlasSectionSubtitle,
+  AtlasModuleGroup, AtlasModuleHeader, AtlasModuleTag, AtlasModuleTitle,
+  AtlasGrid, AtlasCard, AtlasCardIcon, AtlasCardTitle, AtlasCardArrow,
   SkeletonCard, EmptyState,
 } from './TopicDetail.styles'
 
-const TOPIC_ROUTE = '/topik'
+const TOPIC_ROUTE = '/topic'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -23,32 +28,15 @@ export default function TopicDetailPage() {
   const { topicSlug } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { userTopics } = useSelector(s => s.featureNodes)
   const [topic, setTopic] = useState(null)
   const [subtopics, setSubtopics] = useState([])
-  const [isLoadingTopic, setIsLoadingTopic] = useState(true)
+  const [atlasGroups, setAtlasGroups] = useState([])
   const [isLoadingSubtopics, setIsLoadingSubtopics] = useState(true)
 
   useEffect(() => {
-    const allTopics = [...(userTopics.primary || []), ...(userTopics.special || [])]
-    const cached = allTopics.find(t => t.slug === topicSlug)
-
-    if (cached) {
-      setTopic(cached)
-      setIsLoadingTopic(false)
-    } else {
-      setIsLoadingTopic(true)
       dispatch(fetchUserTopicBySlug(topicSlug))
         .then(data => setTopic(data))
-        .finally(() => setIsLoadingTopic(false))
-    }
-  }, [dispatch, topicSlug, userTopics.primary.length, userTopics.special.length])
-
-  useEffect(() => {
-    if (!userTopics.primary.length && !userTopics.special.length) {
-      dispatch(fetchUserTopics())
-    }
-  }, [dispatch, userTopics.primary.length, userTopics.special.length])
+  }, [dispatch, topicSlug])
 
   useEffect(() => {
     setIsLoadingSubtopics(true)
@@ -57,15 +45,22 @@ export default function TopicDetailPage() {
       .finally(() => setIsLoadingSubtopics(false))
   }, [dispatch, topicSlug])
 
+  useEffect(() => {
+    if (!topic?.id) return
+    dispatch(fetchTopicAtlasModels(topic.id)).then(data => setAtlasGroups(data || []))
+  }, [dispatch, topic?.id])
+
   const isLoading = isLoadingSubtopics
 
   return (
     <Container>
-      <Breadcrumb>
-        <BreadcrumbLink onClick={() => navigate(TOPIC_ROUTE)}>Topik</BreadcrumbLink>
-        <BreadcrumbSep>/</BreadcrumbSep>
-        <BreadcrumbCurrent>{topic?.name ?? topicSlug}</BreadcrumbCurrent>
-      </Breadcrumb>
+      <Breadcrumb
+        style={{ marginBottom: '1.75rem' }}
+        items={[
+          { label: 'Topik', onClick: () => navigate(TOPIC_ROUTE) },
+          { label: topic?.name ?? topicSlug },
+        ]}
+      />
 
       <TopicHeader>
         <TopicHeaderLeft>
@@ -110,6 +105,40 @@ export default function TopicDetailPage() {
             ))
         }
       </SubtopicGrid>
+
+      {atlasGroups.length > 0 && (
+        <AtlasSection>
+          <AtlasSectionHeader>
+            <AtlasSectionTitle>
+              <AtlasSectionIcon><PiCube size={20} /></AtlasSectionIcon>
+              Model 3D Anatomi
+            </AtlasSectionTitle>
+          </AtlasSectionHeader>
+          <AtlasSectionSubtitle>
+            Model 3D dibuka di halaman baru dengan navigasi kembali. Setiap model disertai kuis 3D terkait di bagian bawah.
+          </AtlasSectionSubtitle>
+
+          {atlasGroups.map(group => (
+            <AtlasModuleGroup key={group.moduleId}>
+              <AtlasModuleHeader>
+                <AtlasModuleTitle>3D Model {group.moduleName}</AtlasModuleTitle>
+              </AtlasModuleHeader>
+              <AtlasGrid>
+                {group.models.map(model => (
+                  <AtlasCard
+                    key={model.uniqueId}
+                    onClick={() => navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug: topicSlug, uniqueId: model.uniqueId }))}
+                  >
+                    <AtlasCardIcon><PiCube size={16} /></AtlasCardIcon>
+                    <AtlasCardTitle>{model.title}</AtlasCardTitle>
+                    <AtlasCardArrow>→</AtlasCardArrow>
+                  </AtlasCard>
+                ))}
+              </AtlasGrid>
+            </AtlasModuleGroup>
+          ))}
+        </AtlasSection>
+      )}
     </Container>
   )
 }

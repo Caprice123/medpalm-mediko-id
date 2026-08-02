@@ -1,12 +1,26 @@
 import { GetSummaryNotesByNodeService } from '#services/summaryNotes/v2/getSummaryNotesByNodeService'
 import { GetSummaryNoteDetailV2Service } from '#services/summaryNotes/v2/getSummaryNoteDetailV2Service'
 import { GetSummaryNoteContentRelationsService } from '#services/summaryNotes/v2/getSummaryNoteContentRelationsService'
+import { GetSummaryNoteTopicsService } from '#services/summaryNotes/v2/getSummaryNoteTopicsService'
+import { GetSummaryNoteSubtopicsService } from '#services/summaryNotes/v2/getSummaryNoteSubtopicsService'
 import { SummaryNoteListV2Serializer } from '#serializers/api/v2/summaryNoteListV2Serializer'
 import { SummaryNoteV2Serializer } from '#serializers/api/v2/summaryNoteV2Serializer'
 import { FlashcardDeckListSerializer } from '#serializers/api/v1/flashcardDeckListSerializer'
 import { McqTopicListSerializer } from '#serializers/api/v1/mcqTopicListSerializer'
 
 class SummaryNotesV2Controller {
+  async getTopics(req, res) {
+    const { classification } = req.query
+    const topics = await GetSummaryNoteTopicsService.call({ classification })
+    return res.json({ data: topics })
+  }
+
+  async getSubtopics(req, res) {
+    const { topicId } = req.params
+    const subtopics = await GetSummaryNoteSubtopicsService.call({ topicId })
+    return res.json({ data: subtopics })
+  }
+
   async index(req, res) {
     const { nodeId, search, page, perPage } = req.query
     const result = await GetSummaryNotesByNodeService.call({ nodeId, search, page, perPage })

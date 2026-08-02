@@ -6,6 +6,7 @@ import Table from '@components/common/Table'
 import TextInput from '@components/common/TextInput'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import SubtopicFormModal from '../SubtopicFormModal'
+import SubtopicAtlasModelModal from '../SubtopicAtlasModelModal'
 import { Header, HeaderLeft, Title, SearchRow, ClassificationBadge, IconPreview } from '../../MateriAdmin.styles'
 
 const CLASSIFICATION_LABELS = {
@@ -17,10 +18,12 @@ function SubtopicListPage({ topic, onBack }) {
   const dispatch = useDispatch()
   const { nodes, loading } = useSelector(s => s.featureNodes)
   const [modal, setModal] = useState({ type: null, subtopic: null })
+  const [atlasModalSubtopic, setAtlasModalSubtopic] = useState(null)
   const [search, setSearch] = useState('')
 
   const load = () => {
     dispatch(actions.updateFilter({ key: 'layer', value: '2' }))
+    dispatch(actions.updateFilter({ key: 'nodeType', value: 'subtopic' }))
     dispatch(actions.updateFilter({ key: 'parentId', value: String(topic.id) }))
     dispatch(actions.updateFilter({ key: 'visibility', value: 'general' }))
     dispatch(actions.updateFilter({ key: 'search', value: search.trim() }))
@@ -57,6 +60,7 @@ function SubtopicListPage({ topic, onBack }) {
       align: 'right',
       render: (sub) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
+          <Button size="small" variant="secondary" onClick={() => setAtlasModalSubtopic(sub)}>Model 3D Atlas</Button>
           <Button size="small" onClick={() => handleEdit(sub)} disabled={loading.isFetchingDetail}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleDelete(sub)}>Hapus</Button>
         </div>
@@ -116,6 +120,13 @@ function SubtopicListPage({ topic, onBack }) {
           onConfirm={handleConfirmDelete}
           onCancel={() => setModal({ type: null, subtopic: null })}
           isLoading={loading.isDeleting}
+        />
+      )}
+
+      {atlasModalSubtopic && (
+        <SubtopicAtlasModelModal
+          subtopic={atlasModalSubtopic}
+          onClose={() => setAtlasModalSubtopic(null)}
         />
       )}
     </>

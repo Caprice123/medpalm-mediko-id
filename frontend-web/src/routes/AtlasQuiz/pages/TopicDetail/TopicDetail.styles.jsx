@@ -6,43 +6,6 @@ export const PageWrapper = styled.div`
 
 export const Inner = styled.div``
 
-export const PageTopBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-`
-
-export const PageBrand = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-`
-
-export const PageBrandIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-`
-
-export const PageBrandText = styled.div``
-
-export const PageBrandTitle = styled.div`
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0f172a;
-`
-
-export const PageBrandSubtitle = styled.div`
-  font-size: 0.8rem;
-  color: #64748b;
-`
-
 export const BackButton = styled.button`
   display: flex;
   align-items: center;
@@ -54,15 +17,19 @@ export const BackButton = styled.button`
   color: #475569;
   padding: 0.4rem 0.75rem;
   border-radius: 8px;
+  flex-shrink: 0;
   transition: background 0.15s;
   &:hover { background: #e2e8f0; }
 `
 
-export const TopicCard = styled.div`
-  background: #fff;
-  border-radius: 16px;
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 1.25rem;
+export const TopicSection = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
 `
 
 export const ClassificationLabel = styled.div`
@@ -133,11 +100,13 @@ export const ModulesGrid = styled.div`
 export const ModuleCard = styled.div`
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  padding: 1rem 1.125rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 100%;
   transition: box-shadow 0.15s, border-color 0.15s;
   &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #94a3b8; }
 `
@@ -149,8 +118,8 @@ export const ModuleCardTop = styled.div`
 `
 
 export const ModuleIconBox = styled.div`
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   background: #d1fae5;
   display: flex;
@@ -162,11 +131,16 @@ export const ModuleIconBox = styled.div`
 `
 
 export const ModuleTitle = styled.div`
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #0f172a;
   line-height: 1.4;
   flex: 1;
+`
+
+export const ModuleCardDivider = styled.div`
+  border-top: 1px solid #f1f5f9;
+  margin: 0 -1.125rem;
 `
 
 export const ModuleCardBottom = styled.div`
@@ -248,11 +222,13 @@ export const QuizGrid = styled.div`
 export const QuizCard = styled.div`
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  padding: 1rem 1.125rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 100%;
   transition: box-shadow 0.15s, border-color 0.15s;
   &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #94a3b8; }
 `
@@ -264,8 +240,8 @@ export const QuizCardTop = styled.div`
 `
 
 export const QuizIconBox = styled.div`
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   background: #fef3c7;
   display: flex;
@@ -277,7 +253,7 @@ export const QuizIconBox = styled.div`
 `
 
 export const QuizTitle = styled.div`
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #0f172a;
   line-height: 1.4;
@@ -286,6 +262,11 @@ export const QuizTitle = styled.div`
 export const QuizModuleName = styled.div`
   font-size: 0.78rem;
   color: #64748b;
+`
+
+export const QuizCardDivider = styled.div`
+  border-top: 1px solid #f1f5f9;
+  margin: 0 -1.125rem;
 `
 
 export const QuizCardBottom = styled.div`

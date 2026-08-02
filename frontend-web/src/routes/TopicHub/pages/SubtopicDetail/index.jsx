@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserSubtopicBySlug, fetchUserTopicBySlug, fetchUserTopics, fetchUserSubtopics, fetchNodeStats, fetchNodeAtlasModels } from '@store/featureNodes'
+import { fetchUserSubtopicBySlug, fetchUserTopicBySlug, fetchUserTopics, fetchUserSubtopics, fetchNodeStats, fetchNodeAtlasModelRelations } from '@store/featureNodes'
 import { TopupRoute } from '@routes/Topup/routes'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { generatePath } from 'react-router-dom'
 import { PiCube } from 'react-icons/pi'
 import PreviewPanel from './components/PreviewPanel'
+import Breadcrumb from '@components/common/Breadcrumb'
 import {
-  Container, Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent,
+  Container,
   PageHeader, SubtopicName, ProgressLabel,
   VideoSection, VideoWrapper, VideoFrame,
   ExplanationSection, SectionLabel, ExplanationText,
@@ -19,7 +20,7 @@ import {
   SkeletonTitle, SkeletonSubtitle, SkeletonVideo, SkeletonBlock,
 } from './SubtopicDetail.styles'
 
-const TOPIC_ROUTE = '/topik'
+const TOPIC_ROUTE = '/topic'
 
 function checkFeatureLock(sessionType, features, userStatus) {
   const feature = features.find(f => f.sessionType === sessionType)
@@ -98,8 +99,8 @@ export default function SubtopicDetailPage() {
     const anatomyLock = checkFeatureLock('anatomy', features, userStatus)
     const atlasAccessible = !atlasLock.isLocked || !anatomyLock.isLocked
     if (!atlasAccessible) return
-    dispatch(fetchNodeAtlasModels(subtopic.id)).then(setAtlasModels)
-  }, [dispatch, subtopic?.id, features, userStatus])
+    dispatch(fetchNodeAtlasModelRelations(subtopicSlug)).then(setAtlasModels)
+  }, [dispatch, subtopic?.id, subtopicSlug, features, userStatus])
 
   const currentIndex = siblings.findIndex(s => s.slug === subtopicSlug)
   const prevSubtopic = currentIndex > 0 ? siblings[currentIndex - 1] : null
@@ -111,15 +112,14 @@ export default function SubtopicDetailPage() {
   return (
     <>
     <Container>
-      <Breadcrumb>
-        <BreadcrumbLink onClick={() => navigate(TOPIC_ROUTE)}>Topik</BreadcrumbLink>
-        <BreadcrumbSep>/</BreadcrumbSep>
-        <BreadcrumbLink onClick={() => navigate(`${TOPIC_ROUTE}/${topicSlug}`)}>
-          {topic?.name ?? topicSlug}
-        </BreadcrumbLink>
-        <BreadcrumbSep>/</BreadcrumbSep>
-        <BreadcrumbCurrent>{subtopic?.name ?? subtopicSlug}</BreadcrumbCurrent>
-      </Breadcrumb>
+      <Breadcrumb
+        style={{ marginBottom: '1.5rem' }}
+        items={[
+          { label: 'Topik', onClick: () => navigate(TOPIC_ROUTE) },
+          { label: topic?.name ?? topicSlug, onClick: () => navigate(`${TOPIC_ROUTE}/${topicSlug}`) },
+          { label: subtopic?.name ?? subtopicSlug },
+        ]}
+      />
 
       <PageHeader>
         {isLoading ? (
@@ -199,11 +199,11 @@ export default function SubtopicDetailPage() {
           <AtlasGrid>
             {atlasModels.map(model => (
               <AtlasCard
-                key={model.uniqueId}
-                onClick={() => navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug: topicSlug, uniqueId: model.uniqueId }))}
+                key={model.linkedUniqueId}
+                onClick={() => navigate(generatePath(AtlasQuizRoute.atlasModelRoute, { slug: topicSlug, uniqueId: model.linkedUniqueId }))}
               >
                 <AtlasCardIcon><PiCube size={16} /></AtlasCardIcon>
-                <AtlasCardTitle>{model.title}</AtlasCardTitle>
+                <AtlasCardTitle>{model.linkedTitle}</AtlasCardTitle>
                 <AtlasCardArrow>→</AtlasCardArrow>
               </AtlasCard>
             ))}

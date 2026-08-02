@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 export class GetFlashcardTopicsService extends BaseService {
   static async call() {
     const topics = await prisma.feature_nodes.findMany({
-      where: { layer: 1, visibility: 'general' },
+      where: { layer: 1, visibility: 'general', node_type: 'topic' },
       orderBy: { name: 'asc' },
     })
 
@@ -12,7 +12,13 @@ export class GetFlashcardTopicsService extends BaseService {
     if (topicIds.length === 0) return []
 
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: { in: topicIds }, layer: 2, visibility: 'general' },
+      where: {
+        parent_id: { in: topicIds },
+        layer: 2,
+        visibility: 'general',
+        node_type: 'subtopic',
+        node_statistics: { some: { record_type: 'flashcard_card', total_count: { gt: 0 } } },
+      },
       select: {
         id: true,
         parent_id: true,
@@ -29,6 +35,8 @@ export class GetFlashcardTopicsService extends BaseService {
       cardsByTopic.set(s.parent_id, (cardsByTopic.get(s.parent_id) ?? 0) + count)
     }
 
-    return topics.map(t => ({ ...t, cardCount: cardsByTopic.get(t.id) ?? 0 }))
+    return topics
+      .filter(t => cardsByTopic.has(t.id))
+      .map(t => ({ ...t, cardCount: cardsByTopic.get(t.id) ?? 0 }))
   }
 }

@@ -88,11 +88,9 @@ const HAMBURGER_POS_KEY = 'hamburger-btn-pos'
 const QUICK_ACCESS_KEY = 'medpal_recently_used'
 
 function trackFeatureVisit(entry) {
-  try {
     const saved = JSON.parse(localStorage.getItem(QUICK_ACCESS_KEY) || '[]')
     const updated = [entry, ...saved.filter(f => f.sessionType !== entry.sessionType)].slice(0, 6)
     localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(updated))
-  } catch {}
 }
 
 const SESSION_ROUTES = {
@@ -123,7 +121,7 @@ function AppLayout() {
   const { userStatus } = useSelector(state => state.pricing)
 
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 900)
-  const [collapsed, setCollapsed] = useState({ fitur: false, layanan: false, akun: false })
+  const [collapsed, setCollapsed] = useState({ topik: false, fitur: false, layanan: false, akun: false })
 
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', sidebarOpen ? '240px' : '0px')
@@ -303,18 +301,27 @@ function AppLayout() {
           </SidebarLogo>
           <SidebarNav>
             <SidebarGroup>
-              <SidebarGroupHeader onClick={() => toggleGroup('fitur')}>
-                <span>Fitur Pembelajaran</span>
-                <ChevronIcon $collapsed={collapsed.fitur}>▼</ChevronIcon>
+              <SidebarGroupHeader onClick={() => toggleGroup('topik')}>
+                <span>Complete Study</span>
+                <ChevronIcon $collapsed={collapsed.topik}>▼</ChevronIcon>
               </SidebarGroupHeader>
-              <SidebarGroupItems $collapsed={collapsed.fitur}>
+              <SidebarGroupItems $collapsed={collapsed.topik}>
                 <SidebarItem
                   $active={isActive(TopicHubRoute.moduleRoute)}
                   onClick={() => navigateTo(TopicHubRoute.moduleRoute)}
                 >
                   <SidebarItemIcon><PiGridFour size={18} /></SidebarItemIcon>
-                  <SidebarItemName>Materi</SidebarItemName>
+                  <SidebarItemName>Topik & Video</SidebarItemName>
                 </SidebarItem>
+              </SidebarGroupItems>
+            </SidebarGroup>
+
+            <SidebarGroup>
+              <SidebarGroupHeader onClick={() => toggleGroup('fitur')}>
+                <span>Fitur Pembelajaran</span>
+                <ChevronIcon $collapsed={collapsed.fitur}>▼</ChevronIcon>
+              </SidebarGroupHeader>
+              <SidebarGroupItems $collapsed={collapsed.fitur}>
                 {activeFeatures.map(feature => {
                   const route = SESSION_ROUTES[feature.sessionType]
                   const displayName = feature.name

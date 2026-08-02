@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSummaryNotesByNode, fetchLazyUserNodes, searchSummaryNotesV2 } from '@store/summaryNotes/v2/userAction'
-import { fetchUserTopics } from '@store/featureNodes'
+import { fetchSummaryNotesByNode, fetchLazyUserNodes, fetchSummaryNoteTopics, searchSummaryNotesV2 } from '@store/summaryNotes/v2/userAction'
 import { fetchFavorites, toggleFavorite } from '@store/favorites/userAction'
 
 import {
@@ -141,11 +140,12 @@ function TopicClassificationSection({ label, topics, isLoading, emptyText, ...tr
 function CurriculumSidebar({ selectedNoteId, selectedEmptyNodeId, onSelectNote, onSelectEmptyNode, onClose }) {
   const dispatch = useDispatch()
   const { nodeNotes, loading, recentlyViewed, searchResults, detail } = useSelector(s => s.summaryNotesV2)
-  const { userTopics, loading: topicsLoading } = useSelector(s => s.featureNodes)
   const { favoritedIds, favoriteItems, loading: favLoading } = useSelector(s => s.favorites)
   const favoritedSummaryNoteIds = favoritedIds['summary_note'] || []
   const favoriteSummaryNotes = favoriteItems['summary_note'] || []
 
+  const [userTopics, setUserTopics] = useState({ primary: [], special: [] })
+  const [topicsLoading, setTopicsLoading] = useState({ isFetchingUserTopics: true })
   const [childrenMap, setChildrenMap] = useState({})
   const [childrenPagination, setChildrenPagination] = useState({})
   const [expandedNodes, setExpandedNodes] = useState(new Set())
@@ -162,7 +162,10 @@ function CurriculumSidebar({ selectedNoteId, selectedEmptyNodeId, onSelectNote, 
   const pendingRevealIdRef = useRef(selectedNoteId || null)
 
   useEffect(() => {
-    dispatch(fetchUserTopics())
+    setTopicsLoading({ isFetchingUserTopics: true })
+    dispatch(fetchSummaryNoteTopics())
+      .then(setUserTopics)
+      .finally(() => setTopicsLoading({ isFetchingUserTopics: false }))
     dispatch(fetchFavorites('summary_note'))
   }, [dispatch])
 

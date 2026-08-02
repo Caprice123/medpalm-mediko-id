@@ -86,7 +86,7 @@ export default function ProgressPanel({ progress, isLoading }) {
 
       {reviewedTopics.length > 0 && (
         <PerTopicSection>
-          <PerTopicLabel>Per Topik</PerTopicLabel>
+          <PerTopicLabel>Per Modul</PerTopicLabel>
           {pageItems.map((t, i) => {
             const total = totalReviewed(t.counts)
             return (

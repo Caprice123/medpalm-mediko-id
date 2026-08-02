@@ -4,6 +4,7 @@ import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
 
 const CLASSIFICATION_OPTIONS = [
@@ -18,6 +19,7 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
 
   const [form, setForm] = useState({
     name: '',
+    description: '',
     classification: CLASSIFICATION_OPTIONS[0].value,
     icon: '',
   })
@@ -26,11 +28,12 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
     if (isEdit) {
       setForm({
         name: topic.name,
+        description: topic.description ?? '',
         classification: topic.classification ?? CLASSIFICATION_OPTIONS[0].value,
         icon: topic.icon ?? '',
       })
     } else {
-      setForm({ name: '', classification: CLASSIFICATION_OPTIONS[0].value, icon: '' })
+      setForm({ name: '', description: '', classification: CLASSIFICATION_OPTIONS[0].value, icon: '' })
     }
   }, [isEdit, topic])
 
@@ -40,9 +43,11 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
     const slug = form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const payload = {
       name: form.name,
+      description: form.description || null,
       slug: isEdit ? topic.slug : slug,
       visibility: 'general',
       layer: 1,
+      nodeType: 'topic',
       classification: form.classification,
       icon: form.icon || null,
     }
@@ -77,6 +82,13 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
           value={form.name}
           onChange={e => set('name', e.target.value)}
           placeholder="Contoh: Sistem Kardiovaskular"
+        />
+        <Textarea
+          label="Deskripsi"
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="Deskripsi singkat topik ini..."
+          rows={3}
         />
         <Dropdown
           label="Klasifikasi"

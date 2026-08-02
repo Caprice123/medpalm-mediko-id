@@ -4,7 +4,13 @@ import { BaseService } from '#services/baseService'
 export class GetFlashcardSubtopicsService extends BaseService {
   static async call({ topicId }) {
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: parseInt(topicId), layer: 2, visibility: 'general', node_type: 'subtopic' },
+      where: {
+        parent_id: parseInt(topicId),
+        layer: 2,
+        visibility: 'general',
+        node_type: 'subtopic',
+        node_statistics: { some: { record_type: 'flashcard_card', total_count: { gt: 0 } } },
+      },
       orderBy: { name: 'asc' },
       include: {
         node_statistics: {

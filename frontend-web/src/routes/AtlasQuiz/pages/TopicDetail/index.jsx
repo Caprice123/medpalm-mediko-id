@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams, generatePath } from 'react-router-dom'
-import { PiCube, PiMedal } from 'react-icons/pi'
+import { PiCube, PiMedal, PiClock, PiPulse, PiWarning } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
 import TextInput from '@components/common/TextInput'
@@ -10,13 +10,13 @@ import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
 import { useTopicDetail } from './hooks/useTopicDetail'
 import {
   PageWrapper, Inner,
-  PageTopBar, PageBrand, PageBrandIcon, PageBrandText, PageBrandTitle, PageBrandSubtitle, BackButton,
-  TopicCard, ClassificationLabel, TopicRow, TopicIconBox, TopicName, TopicDescription,
+  BackButton,
+  TopicSection, ClassificationLabel, TopicRow, TopicIconBox, TopicName, TopicDescription,
   ModulesCard, FilterRow,
-  ModulesGrid, ModuleCard, ModuleCardTop, ModuleIconBox, ModuleTitle, ModuleSubtitle, ModuleCardBottom,
+  ModulesGrid, ModuleCard, ModuleCardTop, ModuleIconBox, ModuleTitle, ModuleSubtitle, ModuleCardDivider, ModuleCardBottom,
   TagRow, ClassificationTag, QuizCountTag, ArrowIcon,
   QuizSection, QuizSectionHeader, QuizSectionTitle, QuizSectionSubtitle,
-  QuizGrid, QuizCard, QuizCardTop, QuizIconBox, QuizTitle, QuizModuleName, QuizCardBottom, QuizMeta,
+  QuizGrid, QuizCard, QuizCardTop, QuizIconBox, QuizTitle, QuizModuleName, QuizCardDivider, QuizCardBottom, QuizMeta,
   DifficultyTag,
 } from './TopicDetail.styles'
 
@@ -37,6 +37,10 @@ function classificationLabel(val) {
 function classificationType(val) {
   if (!val) return 'default'
   return val.toLowerCase() === 'patologi' ? 'patologi' : 'fisiologi'
+}
+
+function ClassificationIcon({ type, size = 11 }) {
+  return type === 'patologi' ? <PiWarning size={size} /> : <PiPulse size={size} />
 }
 
 function TopicDetailPage() {
@@ -71,36 +75,28 @@ function TopicDetailPage() {
   return (
     <PageWrapper>
       <Inner>
-        <PageTopBar>
-          <PageBrand>
-            <PageBrandIcon>🧬</PageBrandIcon>
-            <PageBrandText>
-              <PageBrandTitle>Atlas 3D &amp; Quiz Anatomi</PageBrandTitle>
-              <PageBrandSubtitle>Eksplorasi atlas 3D dan latihan quiz anatomi interaktif.</PageBrandSubtitle>
-            </PageBrandText>
-          </PageBrand>
-          <BackButton onClick={() => navigate(AtlasQuizRoute.moduleRoute)}>
-            ← Kembali
-          </BackButton>
-        </PageTopBar>
-
-        {topic && (
-          <TopicCard>
-            {topic.classification && (
-              <ClassificationLabel>{classificationLabel(topic.classification)}</ClassificationLabel>
-            )}
-            <TopicRow>
-              <TopicIconBox>{topic.icon || '🧠'}</TopicIconBox>
-              <div>
-                <TopicName>{topic.name}</TopicName>
-                {topic.description && <TopicDescription>{topic.description}</TopicDescription>}
-              </div>
-            </TopicRow>
-          </TopicCard>
-        )}
-
-        {/* Modules */}
+        {/* Topic + Modules */}
         <ModulesCard>
+          {topic && (
+            <TopicSection>
+              <div>
+                {topic.classification && (
+                  <ClassificationLabel>{classificationLabel(topic.classification)}</ClassificationLabel>
+                )}
+                <TopicRow>
+                  <TopicIconBox>{topic.icon || '🧠'}</TopicIconBox>
+                  <div>
+                    <TopicName>{topic.name}</TopicName>
+                    {topic.description && <TopicDescription>{topic.description}</TopicDescription>}
+                  </div>
+                </TopicRow>
+              </div>
+              <BackButton onClick={() => navigate(AtlasQuizRoute.moduleRoute)}>
+                ← Kembali
+              </BackButton>
+            </TopicSection>
+          )}
+
           <FilterRow>
             <div style={{ flex: 1 }}>
               <TextInput
@@ -134,15 +130,16 @@ function TopicDetailPage() {
                       {mod.moduleName && <ModuleSubtitle>{mod.moduleName}</ModuleSubtitle>}
                     </div>
                   </ModuleCardTop>
+                  <ModuleCardDivider />
                   <ModuleCardBottom>
                     <TagRow>
                       {mod.classification && (
                         <ClassificationTag $type={classificationType(mod.classification)}>
-                          {classificationLabel(mod.classification)}
+                          <ClassificationIcon type={classificationType(mod.classification)} /> {classificationLabel(mod.classification)}
                         </ClassificationTag>
                       )}
                       {mod.quizCount > 0 && (
-                        <QuizCountTag>⊙ {mod.quizCount} quiz</QuizCountTag>
+                        <QuizCountTag><PiClock size={11} /> {mod.quizCount} quiz</QuizCountTag>
                       )}
                     </TagRow>
                     <ArrowIcon>→</ArrowIcon>
@@ -211,11 +208,12 @@ function TopicDetailPage() {
                       <QuizModuleName>Model: {quiz.module.name}</QuizModuleName>
                     </div>
                   </QuizCardTop>
+                  <QuizCardDivider />
                   <QuizCardBottom>
                     <TagRow>
                       {quiz.module.classification && (
                         <ClassificationTag $type={classificationType(quiz.module.classification)}>
-                          {classificationLabel(quiz.module.classification)}
+                          <ClassificationIcon type={classificationType(quiz.module.classification)} /> {classificationLabel(quiz.module.classification)}
                         </ClassificationTag>
                       )}
                       {quiz.difficulty && (

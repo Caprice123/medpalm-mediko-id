@@ -1,25 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchFilteredNodes } from '@store/featureNodes'
-import { fetchQuizzesForNode } from '@store/nodeAnatomy/adminAction'
-import {
-  fetchNoteAnatomyQuizRelations,
-  addNoteAnatomyQuizRelation,
-  removeNoteAnatomyQuizRelation,
-} from '@store/summaryNotes/v2/adminAction'
+import { fetchAtlasModelsForNode, fetchNodeAtlasRelations, addNodeAtlasRelation, removeNodeAtlasRelation } from '@store/nodeAtlas/adminAction'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
-import { RelationSection, RelationSectionTitle, RelationSectionCount } from '../../NoteDetailPage.styles'
 import {
   LinkedList, LinkedItem, LinkedTitle, EmptyLinked, AddRow,
   Nav, NavLink, NavCurrent, NavSep,
   FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState,
-} from './AnatomyQuizLinkSection.styles'
+} from './SubtopicAtlasModelModal.styles'
 
-function AnatomyQuizLinkSection({ noteUniqueId }) {
+export default function SubtopicAtlasModelModal({ subtopic, onClose }) {
   const dispatch = useDispatch()
 
-  const [linkedQuizzes, setLinkedQuizzes] = useState([])
+  const [linkedModels, setLinkedModels] = useState([])
   const [loadingRelations, setLoadingRelations] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -33,14 +27,14 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
   const loadRelations = async () => {
     setLoadingRelations(true)
     try {
-      const data = await dispatch(fetchNoteAnatomyQuizRelations(noteUniqueId))
-      setLinkedQuizzes(data)
+      const data = await dispatch(fetchNodeAtlasRelations(subtopic.slug))
+      setLinkedModels(data)
     } finally {
       setLoadingRelations(false)
     }
   }
 
-  useEffect(() => { if (noteUniqueId) loadRelations() }, [noteUniqueId])
+  useEffect(() => { loadRelations() }, [subtopic.slug])
 
   const loadPickerLevel = async (lvl, nodeId = null) => {
     setLoadingNodes(true)
@@ -51,8 +45,8 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
       } else if (lvl === 'modules') {
         const data = await dispatch(fetchFilteredNodes({ layer: '2', visibility: 'general', nodeType: 'module', parentId: nodeId }))
         setNodes(data)
-      } else if (lvl === 'quizzes') {
-        const data = await dispatch(fetchQuizzesForNode(nodeId))
+      } else if (lvl === 'models') {
+        const data = await dispatch(fetchAtlasModelsForNode(nodeId))
         setNodes(data)
       }
     } finally {
@@ -77,8 +71,8 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
 
   const handleModuleClick = (mod) => {
     setSelectedModule(mod)
-    setLevel('quizzes')
-    loadPickerLevel('quizzes', mod.id)
+    setLevel('models')
+    loadPickerLevel('models', mod.id)
   }
 
   const handleBackToTopics = () => {
@@ -94,10 +88,10 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
     loadPickerLevel('modules', selectedTopic.id)
   }
 
-  const handleLinkQuiz = async (quiz) => {
+  const handleLinkModel = async (model) => {
     setIsSaving(true)
     try {
-      await dispatch(addNoteAnatomyQuizRelation(noteUniqueId, quiz.uniqueId))
+      await dispatch(addNodeAtlasRelation(subtopic.slug, model.uniqueId))
       await loadRelations()
       setPickerOpen(false)
     } finally {
@@ -108,32 +102,35 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
   const handleUnlink = async (relation) => {
     setIsSaving(true)
     try {
-      await dispatch(removeNoteAnatomyQuizRelation(relation.id))
-      setLinkedQuizzes(prev => prev.filter(r => r.id !== relation.id))
+      await dispatch(removeNodeAtlasRelation(relation.id))
+      setLinkedModels(prev => prev.filter(r => r.id !== relation.id))
     } finally {
       setIsSaving(false)
     }
   }
 
-  const isAlreadyLinked = (node) => linkedQuizzes.some(r => r.targetUniqueId === node.uniqueId)
-  const isLeaf = level === 'quizzes'
+  const isAlreadyLinked = (node) => linkedModels.some(r => r.targetUniqueId === node.uniqueId)
+  const isLeaf = level === 'models'
 
   return (
-    <RelationSection>
-      <RelationSectionTitle>
-        Anatomy Quiz
-        {linkedQuizzes.length > 0 && (
-          <RelationSectionCount>{linkedQuizzes.length} terpilih</RelationSectionCount>
-        )}
-      </RelationSectionTitle>
-
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={`Model 3D Atlas — ${subtopic.name}`}
+      size="medium"
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="secondary" onClick={onClose}>Tutup</Button>
+        </div>
+      }
+    >
       <LinkedList>
         {loadingRelations ? (
           <EmptyLinked>Memuat...</EmptyLinked>
-        ) : linkedQuizzes.length === 0 ? (
-          <EmptyLinked>Belum ada anatomy quiz yang ditautkan.</EmptyLinked>
+        ) : linkedModels.length === 0 ? (
+          <EmptyLinked>Belum ada model 3D Atlas yang ditautkan.</EmptyLinked>
         ) : (
-          linkedQuizzes.map(rel => (
+          linkedModels.map(rel => (
             <LinkedItem key={rel.id}>
               <LinkedTitle>{rel.targetTitle}</LinkedTitle>
               <Button size="small" variant="danger" disabled={isSaving} onClick={() => handleUnlink(rel)}>Hapus</Button>
@@ -144,7 +141,7 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
 
       <AddRow>
         <Button size="small" variant="secondary" disabled={isSaving || loadingRelations} onClick={openPicker}>
-          + Tambah Anatomy Quiz
+          + Tambah Model 3D Atlas
         </Button>
       </AddRow>
 
@@ -152,7 +149,7 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
         <Modal
           isOpen
           onClose={() => setPickerOpen(false)}
-          title="Pilih Anatomy Quiz"
+          title="Pilih Model 3D Atlas"
           size="medium"
           footer={
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -188,7 +185,7 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
                       if (disabled) return
                       if (level === 'topics') handleTopicClick(node)
                       else if (level === 'modules') handleModuleClick(node)
-                      else handleLinkQuiz(node)
+                      else handleLinkModel(node)
                     }}
                   >
                     <FolderIcon $isFolder={isFolder}>{isFolder ? '▶' : '◆'}</FolderIcon>
@@ -206,8 +203,6 @@ function AnatomyQuizLinkSection({ noteUniqueId }) {
           </FolderList>
         </Modal>
       )}
-    </RelationSection>
+    </Modal>
   )
 }
-
-export default AnatomyQuizLinkSection

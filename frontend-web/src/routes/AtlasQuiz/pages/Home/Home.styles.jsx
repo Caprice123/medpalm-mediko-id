@@ -4,90 +4,40 @@ export const Container = styled.div`
   padding: 2rem 1.5rem;
 `
 
-// ── Hero ─────────────────────────────────────────────────────────────────────
+// ── Page header ──────────────────────────────────────────────────────────────
 
-export const Hero = styled.div`
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #0e7490 100%);
-  border-radius: 20px;
-  padding: 2.5rem 2.5rem 2rem;
-  margin-bottom: 2.5rem;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.04);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -60px;
-    right: 120px;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.03);
-  }
-`
-
-export const HeroTop = styled.div`
+export const PageHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 0.75rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
 `
 
-export const HeroIcon = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.12);
+export const PageHeaderIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.9rem;
+  font-size: 1.4rem;
   flex-shrink: 0;
+  color: #047857;
 `
 
-export const HeroTitle = styled.h1`
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #fff;
+export const PageHeaderTitle = styled.h1`
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0 0 0.2rem 0;
   line-height: 1.2;
 `
 
-export const HeroSubtitle = styled.p`
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.65);
+export const PageHeaderSubtitle = styled.p`
+  font-size: 0.875rem;
+  color: #64748b;
   margin: 0;
-`
-
-export const HeroPills = styled.div`
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin-top: 1.25rem;
-`
-
-export const HeroPill = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.85);
-  font-weight: 500;
 `
 
 // ── Section ───────────────────────────────────────────────────────────────────
@@ -130,33 +80,31 @@ export const TopicsGrid = styled.div`
 export const TopicCard = styled.div`
   background: #fff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 0;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s;
+  transition: box-shadow 0.18s, border-color 0.18s;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-    border-color: #93c5fd;
-    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-color: #a7f3d0;
   }
 `
 
-export const CardAccent = styled.div`
-  height: 5px;
-  background: ${({ $bg }) => $bg || 'linear-gradient(90deg, #6366f1, #0ea5e9)'};
-  border-radius: 0;
-`
-
 export const CardBody = styled.div`
-  padding: 1.25rem 1.25rem 1rem;
+  padding: 1.125rem 1.25rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   flex: 1;
+`
+
+export const CardDivider = styled.div`
+  border-top: 1px solid #f1f5f9;
+  margin: 0 -1.25rem;
 `
 
 export const CardTop = styled.div`
@@ -215,29 +163,25 @@ export const CardStats = styled.div`
 export const StatBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
   font-size: 0.75rem;
-  font-weight: 600;
-  background: ${({ $type }) => $type === 'atlas' ? '#dbeafe' : '#fef3c7'};
-  color: ${({ $type }) => $type === 'atlas' ? '#1d4ed8' : '#92400e'};
+  font-weight: 500;
+  background: #f8fafc;
+  color: #64748b;
 `
 
 export const CardArrow = styled.div`
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #475569;
-  font-size: 0.9rem;
-  transition: background 0.15s, color 0.15s;
+  color: #94a3b8;
+  font-size: 1rem;
+  transition: color 0.15s, transform 0.15s;
 
   ${TopicCard}:hover & {
-    background: #0ea5e9;
-    color: #fff;
+    color: #10b981;
+    transform: translateX(2px);
   }
 `

@@ -12,9 +12,10 @@ import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
 import { NotePanelLoadingSkeleton } from './NotePanelLoadingSkeleton'
 import EmbedLoadingBanner from '@components/common/EmbedLoadingBanner'
+import Breadcrumb from '@components/common/Breadcrumb'
 import {
   EmptyPanel, EmptyIcon, EmptyText,
-  PanelContainer, TopBar, Breadcrumb, BreadcrumbItem, BreadcrumbSep, FullScreenBtn,
+  PanelContainer, TopBar, FullScreenBtn,
   PanelContent, NoteTitle, NoteDescription, EditorWrapper,
   SectionRow, SectionLabel, SectionLine,
   LinkedGroup, LinkedGroupLabel, LinkedGroupHint,
@@ -101,7 +102,7 @@ function NotePanel({ noteId, emptyNodeName, isFullScreen, onToggleFullScreen }) 
   const mcqLabel = constants?.mcq_feature_title || 'MCQ'
 
   const goToSubtopic = () => {
-    if (topicSlug && subtopicSlug) navigate(`/topik/${topicSlug}/${subtopicSlug}`)
+    if (topicSlug && subtopicSlug) navigate(`/topic/${topicSlug}/${subtopicSlug}`)
   }
 
   const hasTopic = !!topicName
@@ -113,16 +114,10 @@ function NotePanel({ noteId, emptyNodeName, isFullScreen, onToggleFullScreen }) 
   return (
     <PanelContainer>
       <TopBar>
-        <Breadcrumb>
-          {breadcrumbPath.map((crumb, i) => (
-            <span key={crumb.id} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-              {i > 0 && <BreadcrumbSep>/</BreadcrumbSep>}
-              <BreadcrumbItem>{crumb.name}</BreadcrumbItem>
-            </span>
-          ))}
-          {breadcrumbPath.length > 0 && <BreadcrumbSep>/</BreadcrumbSep>}
-          <BreadcrumbItem>{detail.title}</BreadcrumbItem>
-        </Breadcrumb>
+        <Breadcrumb items={[
+          ...breadcrumbPath.map(crumb => ({ label: crumb.name, key: crumb.id })),
+          { label: detail.title },
+        ]} />
         <FullScreenBtn onClick={onToggleFullScreen}>
           {isFullScreen ? '⊠ Keluar Layar Penuh' : '⊡ Layar Penuh'}
         </FullScreenBtn>

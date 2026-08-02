@@ -4,9 +4,10 @@ import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
 
-const LAYER_LABELS = { 1: 'Topik', 2: 'Sub-topik' }
+const LAYER_LABELS = { 1: 'Modul', 2: 'Sub-modul' }
 
 const CLASSIFICATION_OPTIONS = [
   { value: 'primary', label: 'Modalitas Utama' },
@@ -18,10 +19,12 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
   const { loading } = useSelector(state => state.featureNodes)
   const isEdit = !!node
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [classification, setClassification] = useState(CLASSIFICATION_OPTIONS[0].value)
 
   useEffect(() => {
     setName(isEdit ? node.name : '')
+    setDescription(isEdit ? (node.description ?? '') : '')
     setClassification(isEdit ? (node.classification ?? CLASSIFICATION_OPTIONS[0].value) : CLASSIFICATION_OPTIONS[0].value)
   }, [isEdit, node])
 
@@ -29,12 +32,13 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const payload = {
       name,
+      description,
       slug: isEdit ? node.slug : slug,
       visibility: 'diagnostic',
       layer,
-      ...(layer === 1 && { classification, nodeType: isEdit ? node.nodeType : 'topic' }),
+      ...(layer === 1 && { classification, nodeType: isEdit ? node.nodeType : 'module' }),
       ...(parentNode && { parentId: parentNode.id }),
-      ...(layer === 2 && { nodeType: isEdit ? node.nodeType : 'module' }),
+      ...(layer === 2 && { nodeType: isEdit ? node.nodeType : 'submodule' }),
     }
     if (isEdit) {
       dispatch(updateFeatureNode(node.id, payload, onSuccess))
@@ -68,6 +72,13 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder={`Nama ${label.toLowerCase()}...`}
+        />
+        <Textarea
+          label="Deskripsi"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="Deskripsi singkat (opsional)..."
+          rows={3}
         />
         {layer === 1 && (
           <Dropdown

@@ -4,6 +4,7 @@ import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
 
 const CLASSIFICATION_OPTIONS = [
@@ -18,6 +19,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
   const isEdit = !!node
   const [form, setForm] = useState({
     name: '',
+    description: '',
     classification: CLASSIFICATION_OPTIONS[0].value,
   })
 
@@ -25,10 +27,11 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
     if (isEdit) {
       setForm({
         name: node.name,
+        description: node.description ?? '',
         classification: node.classification ?? CLASSIFICATION_OPTIONS[0].value,
       })
     } else {
-      setForm({ name: '', classification: CLASSIFICATION_OPTIONS[0].value })
+      setForm({ name: '', description: '', classification: CLASSIFICATION_OPTIONS[0].value })
     }
   }, [isEdit, node])
 
@@ -38,6 +41,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
     const slug = form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const payload = {
       name: form.name,
+      description: form.description,
       slug: isEdit ? node.slug : slug,
       visibility: 'general',
       layer,
@@ -79,6 +83,13 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
           value={form.name}
           onChange={e => set('name', e.target.value)}
           placeholder={layer === 1 ? 'Contoh: Sistem Kardiovaskular' : 'Contoh: Anatomi Jantung'}
+        />
+        <Textarea
+          label="Deskripsi"
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="Deskripsi singkat (opsional)..."
+          rows={3}
         />
         {layer === 1 && (
           <Dropdown

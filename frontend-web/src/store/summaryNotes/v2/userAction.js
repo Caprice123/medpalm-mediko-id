@@ -3,15 +3,27 @@ import Endpoints from '@config/endpoint'
 import { getWithToken } from '@utils/requestUtils'
 
 const NOTES_PER_PAGE = 20
-const NODES_PER_PAGE = 30
 
-// Returns { data, pagination } — for lazy tree loading
-export const fetchLazyUserNodes = (parentId = null, page = 1) => async () => {
-  const params = { parentId: parentId === null ? 'null' : parentId, page, perPage: NODES_PER_PAGE }
-  const res = await getWithToken(Endpoints.api.featureNodes, params)
+// Returns { primary, special } — root-level topics, split by classification.
+// Only returns topics whose subtopics actually have a summary note (backend-filtered).
+export const fetchSummaryNoteTopics = () => async () => {
+  const [primaryRes, specialRes] = await Promise.all([
+    getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'sistem_blok' }),
+    getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'ilmu_lintas_sistem' }),
+  ])
+  return {
+    primary: primaryRes.data.data || [],
+    special: specialRes.data.data || [],
+  }
+}
+
+// Returns { data, pagination } — for lazy tree loading of a topic's subtopics.
+// Only returns subtopics that actually have a summary note (backend-filtered).
+export const fetchLazyUserNodes = (parentId) => async () => {
+  const res = await getWithToken(Endpoints.api.summaryNotesV2Subtopics(parentId))
   return {
     data: res.data.data || [],
-    pagination: res.data.pagination || { page: 1, isLastPage: true },
+    pagination: { page: 1, isLastPage: true },
   }
 }
 

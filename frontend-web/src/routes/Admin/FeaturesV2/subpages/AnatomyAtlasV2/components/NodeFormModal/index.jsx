@@ -4,6 +4,7 @@ import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
+import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
 
 const LAYER_LABELS = { 1: 'Topik', 2: 'Modul' }
@@ -23,16 +24,17 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
   const { loading } = useSelector(state => state.featureNodes)
   const isEdit = !!node
   const classificationOptions = layer === 1 ? TOPIC_CLASSIFICATION_OPTIONS : MODULE_CLASSIFICATION_OPTIONS
-  const [form, setForm] = useState({ name: '', classification: classificationOptions[0].value })
+  const [form, setForm] = useState({ name: '', description: '', classification: classificationOptions[0].value })
 
   useEffect(() => {
     if (isEdit) {
       setForm({
         name: node.name,
+        description: node.description ?? '',
         classification: node.classification ?? classificationOptions[0].value,
       })
     } else {
-      setForm({ name: '', classification: classificationOptions[0].value })
+      setForm({ name: '', description: '', classification: classificationOptions[0].value })
     }
   }, [isEdit, node])
 
@@ -42,6 +44,7 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
     const slug = form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const payload = {
       name: form.name,
+      description: form.description,
       slug: isEdit ? node.slug : slug,
       visibility: 'general',
       layer,
@@ -81,6 +84,13 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
           value={form.name}
           onChange={e => set('name', e.target.value)}
           placeholder={`Nama ${label.toLowerCase()}...`}
+        />
+        <Textarea
+          label="Deskripsi"
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="Deskripsi singkat (opsional)..."
+          rows={3}
         />
         {layer === 1 && (
           <Dropdown

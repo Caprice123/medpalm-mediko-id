@@ -1,7 +1,7 @@
 import { TopicHubRouter, TopicDetailRouter, SubtopicDetailRouter } from './TopicHubRouter'
 
 export class TopicHubRoute {
-  static moduleRoute = '/topik'
+  static moduleRoute = '/topic'
   static initialRoute = TopicHubRoute.moduleRoute
   static detailRoute = TopicHubRoute.moduleRoute + '/:topicSlug'
   static subtopicRoute = TopicHubRoute.moduleRoute + '/:topicSlug/:subtopicSlug'

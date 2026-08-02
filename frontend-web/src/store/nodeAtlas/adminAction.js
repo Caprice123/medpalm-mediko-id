@@ -84,3 +84,21 @@ export const addAtlasModelQuizRelation = (uniqueId, targetUniqueId) => async () 
 export const removeAtlasModelQuizRelation = (uniqueId, relationId) => async () => {
   await deleteWithToken(`${Endpoints.admin.contentRelationsV2}/${relationId}`)
 }
+
+// feature_node (subtopic) ↔ atlas model content_relations — fire-and-return, no Redux state
+export const fetchNodeAtlasRelations = (slug) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelationsV2, {
+    sourceType: 'feature_node', sourceUniqueId: slug, targetType: 'atlas_model',
+  })
+  return res.data.data || []
+}
+
+export const addNodeAtlasRelation = (slug, atlasUniqueId) => async () => {
+  await postWithToken(Endpoints.admin.contentRelationsV2, {
+    sourceType: 'feature_node', sourceUniqueId: slug, targetType: 'atlas_model', targetUniqueId: atlasUniqueId,
+  })
+}
+
+export const removeNodeAtlasRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelationsV2}/${relationId}`)
+}

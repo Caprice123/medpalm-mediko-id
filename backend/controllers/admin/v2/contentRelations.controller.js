@@ -14,6 +14,10 @@ async function resolveId(type, uniqueId) {
     const r = await prisma.summary_notes.findFirst({ where: { unique_id: uniqueId }, select: { id: true } })
     return r?.id ?? null
   }
+  if (type === 'feature_node') {
+    const r = await prisma.feature_nodes.findFirst({ where: { slug: uniqueId }, select: { id: true } })
+    return r?.id ?? null
+  }
   return null
 }
 

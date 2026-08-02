@@ -61,7 +61,7 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
       visibility: 'general',
       layer: 2,
       parentId: parentTopic.id,
-      nodeType: 'subtopik',
+      nodeType: 'subtopic',
       description: form.description || null,
       videoExplanation: form.videoExplanation || null,
       ...(videoUpload?.blobId && { videoBlobId: videoUpload.blobId }),

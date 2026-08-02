@@ -51,24 +51,6 @@ export const TopBar = styled.div`
   z-index: 10;
 `
 
-export const Breadcrumb = styled.nav`
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  flex-wrap: wrap;
-  font-size: 0.8125rem;
-`
-
-export const BreadcrumbItem = styled.span`
-  color: #6b7280;
-  cursor: default;
-  &:last-child { color: #374151; font-weight: 500; }
-`
-
-export const BreadcrumbSep = styled.span`
-  color: #d1d5db;
-`
-
 export const FullScreenBtn = styled.button`
   display: flex;
   align-items: center;

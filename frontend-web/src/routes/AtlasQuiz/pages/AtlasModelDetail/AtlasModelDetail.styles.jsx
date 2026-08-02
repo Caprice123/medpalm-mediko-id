@@ -56,23 +56,6 @@ export const BackButton = styled.button`
   &:hover { background: #e2e8f0; }
 `
 
-export const Breadcrumb = styled.div`
-  font-size: 0.8rem;
-  color: #94a3b8;
-  margin-bottom: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-`
-
-export const BreadcrumbItem = styled.span`
-  color: ${({ $active }) => $active ? '#0f172a' : '#94a3b8'};
-  font-weight: ${({ $active }) => $active ? '600' : '400'};
-  cursor: ${({ $clickable }) => $clickable ? 'pointer' : 'default'};
-  &:hover { color: ${({ $clickable }) => $clickable ? '#475569' : 'inherit'}; }
-`
-
 export const ModelCard = styled.div`
   background: #fff;
   border-radius: 16px;

@@ -23,6 +23,7 @@ function MateriAdmin() {
 
   const load = () => {
     dispatch(actions.updateFilter({ key: 'layer', value: '1' }))
+    dispatch(actions.updateFilter({ key: 'nodeType', value: 'topic' }))
     dispatch(actions.updateFilter({ key: 'visibility', value: 'general' }))
     dispatch(actions.updateFilter({ key: 'parentId', value: '' }))
     dispatch(actions.updateFilter({ key: 'search', value: search.trim() }))

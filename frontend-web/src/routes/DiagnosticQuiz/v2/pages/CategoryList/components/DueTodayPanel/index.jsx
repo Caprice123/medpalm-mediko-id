@@ -57,7 +57,7 @@ export default function DueTodayPanel({ dueToday, onStartAll, onStartNode, isSta
       {subtopics.length > 0 ? (
         <>
           <SubtitleText>
-            Soal dikelompokkan per sub-topik. Selesaikan satu sub-topik sebelum lanjut.
+            Soal dikelompokkan per sub-modul. Selesaikan satu sub-modul sebelum lanjut.
           </SubtitleText>
           <DueList>
             {pageItems.map((s, i) => (

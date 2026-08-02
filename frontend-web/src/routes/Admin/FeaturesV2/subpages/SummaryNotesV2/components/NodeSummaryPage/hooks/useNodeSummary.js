@@ -11,6 +11,7 @@ export function useNodeSummary(parentNode) {
 
   useEffect(() => {
     dispatch(updateFilter({ key: 'layer', value: '2' }))
+    dispatch(updateFilter({ key: 'nodeType', value: 'subtopic' }))
     dispatch(updateFilter({ key: 'parentId', value: String(parentNode.id) }))
     dispatch(updateFilter({ key: 'search', value: '' }))
     dispatch(fetchFeatureNodes())

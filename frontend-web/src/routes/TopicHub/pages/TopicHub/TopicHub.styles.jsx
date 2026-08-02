@@ -153,9 +153,9 @@ export const TopicPill = styled.button`
   white-space: nowrap;
 
   &:hover {
-    border-color: #a7f3d0;
-    background: #f0fdf4;
-    box-shadow: 0 1px 6px rgba(16, 185, 129, 0.1);
+    border-color: #6ee7b7;
+    background: #ecfdf5;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     color: #065f46;
   }
 `
@@ -169,7 +169,7 @@ export const TopicPillIcon = styled.span`
   width: 1.875rem;
   height: 1.875rem;
   border-radius: 50%;
-  background: #f3f4f6;
+  background: ${({ $bg }) => $bg || '#f3f4f6'};
   flex-shrink: 0;
 `
 

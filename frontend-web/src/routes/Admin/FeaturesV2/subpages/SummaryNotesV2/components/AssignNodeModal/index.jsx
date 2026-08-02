@@ -20,7 +20,7 @@ export default function AssignNodeModal({ note, onClose, onSuccess }) {
   const loadNodes = async (layer, parentId = null) => {
     setLoadingNodes(true)
     try {
-      const params = { layer, visibility: 'general' }
+      const params = { layer, visibility: 'general', nodeType: layer === '1' ? 'topic' : 'subtopic' }
       if (parentId) params.parentId = parentId
       const data = await dispatch(fetchFilteredNodes(params))
       setNodes(data)

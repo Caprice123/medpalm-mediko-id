@@ -23,7 +23,7 @@ export default function CustomSessionPanel({ topics, onClose }) {
       title={`Buat Sesi Custom — Total ${totalCount} soal`}
       footer={
         <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
-          <Button variant="secondary" onClick={addDepartment}>+ Tambah topik lain</Button>
+          <Button variant="secondary" onClick={addDepartment}>+ Tambah modul lain</Button>
           <StartButton onClick={handleStart} disabled={!canStart} style={{ flex: 1 }}>
             {loading.isStartingSession ? 'Menyiapkan...' : `→ Mulai Sesi (${totalCount} soal)`}
           </StartButton>

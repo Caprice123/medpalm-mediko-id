@@ -44,8 +44,8 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
   }
 
   const triggerLabel = selected.length === 0
-    ? 'Semua subtopik'
-    : `${selected.length} subtopik dipilih`
+    ? 'Semua submodul'
+    : `${selected.length} submodul dipilih`
 
   const panel = open && !isLoading && (
     <DropdownPanel ref={panelRef} style={panelStyle}>
@@ -105,11 +105,11 @@ export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics,
     <Wrap>
       <SectionTitle>Quick Start — {topic.name}</SectionTitle>
       <Description>
-        Pilih satu atau beberapa subtopik. Kosongkan untuk mengambil dari semua subtopik.
+        Pilih satu atau beberapa submodul. Kosongkan untuk mengambil dari semua submodul.
       </Description>
       <Row>
         <Col style={{ flex: 1, minWidth: 220 }}>
-          <FieldLabel>Subtopik (pilih, {subtopics.length} tersedia)</FieldLabel>
+          <FieldLabel>Submodul (pilih, {subtopics.length} tersedia)</FieldLabel>
           <SubtopicDropdown
             options={options}
             selected={selected}

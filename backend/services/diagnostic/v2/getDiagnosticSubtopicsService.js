@@ -7,7 +7,12 @@ const RECORD_TYPE = 'diagnostic_question'
 export class GetDiagnosticSubtopicsService extends BaseService {
   static async call({ topicId }) {
     const subtopics = await prisma.feature_nodes.findMany({
-      where: { parent_id: parseInt(topicId), layer: 2, visibility: VISIBILITY },
+      where: {
+        parent_id: parseInt(topicId),
+        layer: 2,
+        visibility: VISIBILITY,
+        node_statistics: { some: { record_type: RECORD_TYPE, total_count: { gt: 0 } } },
+      },
       include: {
         node_statistics: {
           where: { record_type: RECORD_TYPE },

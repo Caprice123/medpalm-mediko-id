@@ -47,7 +47,7 @@ export default function AtlasQuizLinkModal({ atlas, onClose }) {
     setLoadingNodes(true)
     try {
       if (lvl === 'topics') {
-        const data = await dispatch(fetchFilteredNodes({ layer: '1', visibility: 'general' }))
+        const data = await dispatch(fetchFilteredNodes({ layer: '1', visibility: 'general', nodeType: 'topic' }))
         setNodes(data)
       } else if (lvl === 'modules') {
         const data = await dispatch(fetchFilteredNodes({ layer: '2', visibility: 'general', nodeType: 'module', parentId: nodeId }))
