@@ -1,11 +1,11 @@
-import { GetDiagnosticSubtopicsService } from '#services/diagnostic/v2/getDiagnosticSubtopicsService'
+import { GetDiagnosticSubmodulesService } from '#services/diagnostic/v2/getDiagnosticSubmodulesService'
 
-class SubtopicsController {
+class SubmodulesController {
   async index(req, res) {
-    const { topicId } = req.params
-    const data = await GetDiagnosticSubtopicsService.call({ topicId })
+    const { moduleId } = req.params
+    const data = await GetDiagnosticSubmodulesService.call({ moduleId })
     res.json({ success: true, data })
   }
 }
 
-export default new SubtopicsController()
+export default new SubmodulesController()
