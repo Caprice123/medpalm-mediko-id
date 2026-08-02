@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { FaChartBar } from 'react-icons/fa6'
 import { PanelCard, PanelHeader, PanelTitle, EmptyText } from '../../CategoryList.shared.styles'
 import {
@@ -56,10 +57,11 @@ function ProgressSkeleton() {
   )
 }
 
-export default function ProgressPanel({ progress, isLoading }) {
+export default function ProgressPanel() {
   const [page, setPage] = useState(0)
+  const { progress, loading } = useSelector(s => s.diagnosticNodes)
 
-  if (isLoading || !progress) return <ProgressSkeleton />
+  if (loading.isFetchingProgress || !progress) return <ProgressSkeleton />
 
   const { totalCounts, topics } = progress
   const reviewedTopics = topics.filter(t => totalReviewed(t.counts) > 0)

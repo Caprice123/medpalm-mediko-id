@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 const RECORD_TYPE = 'flashcard_card'
 
@@ -42,26 +43,20 @@ export class MoveNodeCardService extends BaseService {
       }
 
       // 2. Update node_statistics subtopic counts
-      const statsOps = []
       if (sourceNodeId) {
-        statsOps.push(
-          tx.node_statistics.upsert({
-            where: { node_id_record_type: { node_id: sourceNodeId, record_type: RECORD_TYPE } },
-            create: { node_id: sourceNodeId, record_type: RECORD_TYPE, total_count: 0 },
-            update: { total_count: { decrement: 1 } },
-          })
-        )
+        await bumpNodeStat(tx, sourceNodeId, RECORD_TYPE, -1)
       }
-      statsOps.push(
-        tx.node_statistics.upsert({
-          where: { node_id_record_type: { node_id: parseInt(targetNodeId), record_type: RECORD_TYPE } },
-          create: { node_id: parseInt(targetNodeId), record_type: RECORD_TYPE, total_count: 1 },
-          update: { total_count: { increment: 1 } },
-        })
-      )
-      await Promise.all(statsOps)
+      await bumpNodeStat(tx, parseInt(targetNodeId), RECORD_TYPE, 1)
 
       if (!topicChanged) return
+
+      // 3. Update node_statistics topic counts
+      if (sourceTopicId) {
+        await bumpNodeStat(tx, sourceTopicId, RECORD_TYPE, -1)
+      }
+      if (targetTopicId) {
+        await bumpNodeStat(tx, targetTopicId, RECORD_TYPE, 1)
+      }
 
       if (sourceTopicId) {
         await tx.$executeRaw`

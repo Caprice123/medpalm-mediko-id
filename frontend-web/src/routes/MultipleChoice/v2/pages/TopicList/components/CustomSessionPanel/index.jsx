@@ -3,8 +3,10 @@ import Modal from '@components/common/Modal'
 import { useCustomSession } from '../../hooks/useCustomSession'
 import TopicSection from '../TopicSection'
 import { StartButton } from './CustomSessionPanel.styles'
+import { useSelector } from 'react-redux'
 
-export default function CustomSessionPanel({ topics, onClose }) {
+export default function CustomSessionPanel({ onClose }) {
+    const { topics } = useSelector(state => state.mcqNodes)
   const {
     sectionList, subtopicsMap, loadingTopics,
     updateSection, addSection, removeSection,

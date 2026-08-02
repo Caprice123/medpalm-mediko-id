@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import FeaturesList from '../Features/components/FeaturesList'
 import FlashcardV2 from './subpages/FlashcardV2'
 import SummaryNotesV2 from './subpages/SummaryNotesV2'
@@ -10,46 +11,63 @@ import {
   LoadingState,
 } from '../Features/Features.styles'
 
-const V2_FEATURES = [
+// routeKey drives which subpage renders below; matchSessionType looks up the
+// real feature record (title/description/isActive) configured in Kelola Fitur
+// so the two stay in sync instead of duplicating the copy here.
+const V2_FEATURE_DEFS = [
   {
-    sessionType: 'flashcard_v2',
-    name: 'Flashcard V2',
+    routeKey: 'flashcard_v2',
+    matchSessionType: 'flashcard',
     icon: '🃏',
-    description: 'Sistem flashcard Anki-style dengan spaced repetition (again / hard / good / easy)',
-    isActive: true,
+    fallbackName: 'Flashcard V2',
+    fallbackDescription: 'Sistem flashcard Anki-style dengan spaced repetition (again / hard / good / easy)',
   },
   {
-    sessionType: 'summary_notes_v2',
-    name: 'Summary Notes V2',
+    routeKey: 'summary_notes_v2',
+    matchSessionType: 'summary_notes',
     icon: '📄',
-    description: 'Ringkasan materi dengan navigasi kurikulum berbasis folder/node',
-    isActive: true,
+    fallbackName: 'Summary Notes V2',
+    fallbackDescription: 'Ringkasan materi dengan navigasi kurikulum berbasis folder/node',
   },
   {
-    sessionType: 'mcq_v2',
-    name: 'MCQ V2',
+    routeKey: 'mcq_v2',
+    matchSessionType: 'mcq',
     icon: '📝',
-    description: 'Soal pilihan ganda dengan sistem topik node dan statistik per-topik',
-    isActive: true,
+    fallbackName: 'MCQ V2',
+    fallbackDescription: 'Soal pilihan ganda dengan sistem topik node dan statistik per-topik',
   },
   {
-    sessionType: 'diagnostic_v2',
-    name: 'Diagnostik V2',
+    routeKey: 'diagnostic_v2',
+    matchSessionType: 'diagnostic',
     icon: '🩺',
-    description: 'Bank soal diagnostik dengan SRS Anki-style, vignette klinis, dan gambar radiologi',
-    isActive: true,
+    fallbackName: 'Diagnostik V2',
+    fallbackDescription: 'Bank soal diagnostik dengan SRS Anki-style, vignette klinis, dan gambar radiologi',
   },
   {
-    sessionType: 'anatomy_atlas',
-    name: 'Anatomi & Atlas 3D',
+    // Combines two separate features (Anatomi + Atlas) into one admin panel,
+    // so there's no single real feature record to match against.
+    routeKey: 'anatomy_atlas',
+    matchSessionType: null,
     icon: '🫁',
-    description: 'Kelola quiz anatomi dan model Atlas 3D dalam satu panel',
-    isActive: true,
+    fallbackName: 'Anatomi & Atlas 3D',
+    fallbackDescription: 'Kelola quiz anatomi dan model Atlas 3D dalam satu panel',
   },
 ]
 
 function FeaturesV2() {
   const [selectedFeature, setSelectedFeature] = useState(null)
+  const realFeatures = useSelector(s => s.feature.features)
+
+  const v2Features = V2_FEATURE_DEFS.map(def => {
+    const real = def.matchSessionType ? realFeatures.find(f => f.sessionType === def.matchSessionType) : null
+    return {
+      sessionType: def.routeKey,
+      name: real?.name || def.fallbackName,
+      description: real?.description || def.fallbackDescription,
+      icon: def.icon,
+      isActive: real ? real.isActive : true,
+    }
+  })
 
   const handleBackToList = () => setSelectedFeature(null)
 
@@ -74,7 +92,7 @@ function FeaturesV2() {
     <Container>
       {!selectedFeature ? (
         <FeaturesList
-          features={V2_FEATURES}
+          features={v2Features}
           onFeatureClick={setSelectedFeature}
         />
       ) : (

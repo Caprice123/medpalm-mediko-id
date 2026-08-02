@@ -1,5 +1,5 @@
 import express from 'express'
-import summaryNotesV2AdminController from '#controllers/admin/v2/summaryNotes.controller'
+import notesController from '#controllers/admin/v2/summaryNotes/notes.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
@@ -11,11 +11,11 @@ router.use(requireAdmin)
 router.use(requireTabPermission('features'))
 router.use(requireFeaturePermission('summaryNotes'))
 
-router.get('/', asyncHandler(summaryNotesV2AdminController.index.bind(summaryNotesV2AdminController)))
-router.post('/generate', asyncHandler(summaryNotesV2AdminController.generateFromDocument.bind(summaryNotesV2AdminController)))
-router.get('/:uniqueId', asyncHandler(summaryNotesV2AdminController.show.bind(summaryNotesV2AdminController)))
-router.post('/', asyncHandler(summaryNotesV2AdminController.create.bind(summaryNotesV2AdminController)))
-router.put('/:uniqueId', asyncHandler(summaryNotesV2AdminController.update.bind(summaryNotesV2AdminController)))
-router.delete('/:uniqueId', asyncHandler(summaryNotesV2AdminController.destroy.bind(summaryNotesV2AdminController)))
+router.get('/', asyncHandler(notesController.index.bind(notesController)))
+router.post('/generate', asyncHandler(notesController.generateFromDocument.bind(notesController)))
+router.get('/:uniqueId', asyncHandler(notesController.show.bind(notesController)))
+router.post('/', asyncHandler(notesController.create.bind(notesController)))
+router.put('/:uniqueId', asyncHandler(notesController.update.bind(notesController)))
+router.delete('/:uniqueId', asyncHandler(notesController.destroy.bind(notesController)))
 
 export default router

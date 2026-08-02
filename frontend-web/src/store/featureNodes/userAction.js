@@ -2,7 +2,7 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken } from '@utils/requestUtils'
 
-const { setUserTopics, setLoading } = actions
+const { setUserTopics, setTopic, setSubtopics, setAtlasGroups, setLoading } = actions
 
 export const fetchUserTopics = () => async (dispatch) => {
   try {
@@ -20,14 +20,23 @@ export const fetchUserTopics = () => async (dispatch) => {
   }
 }
 
-export const fetchUserSubtopics = (parentSlug) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true, perPage: 100 })
-  return res.data.data || []
+export const fetchUserSubtopics = (parentSlug) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isFetchingSubtopics: true }))
+    const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true, perPage: 100 })
+    const subtopics = res.data.data || []
+    dispatch(setSubtopics(subtopics))
+    return subtopics
+  } finally {
+    dispatch(setLoading({ isFetchingSubtopics: false }))
+  }
 }
 
-export const fetchUserTopicBySlug = (slug) => async () => {
+export const fetchUserTopicBySlug = (slug) => async (dispatch) => {
   const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 1, nodeType: 'topic', perPage: 1 })
-  return (res.data.data || [])[0] ?? null
+  const topic = (res.data.data || [])[0] ?? null
+  dispatch(setTopic(topic))
+  return topic
 }
 
 export const fetchUserNodeById = (id) => async () => {
@@ -60,9 +69,11 @@ export const fetchNodePreview = (nodeId, type) => async () => {
   return res.data.data
 }
 
-export const fetchTopicAtlasModels = (topicId) => async () => {
+export const fetchTopicAtlasModels = (topicId) => async (dispatch) => {
   const res = await getWithToken(Endpoints.api.featureNodeTopicAtlasModels(topicId))
-  return res.data.data || []
+  const atlasGroups = res.data.data || []
+  dispatch(setAtlasGroups(atlasGroups))
+  return atlasGroups
 }
 
 // node (subtopic) ↔ atlas model content_relations

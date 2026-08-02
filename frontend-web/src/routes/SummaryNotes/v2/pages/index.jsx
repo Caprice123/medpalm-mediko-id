@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { fetchRecentlyViewed } from '@store/summaryNotes/v2/userAction'
-import CurriculumSidebar from './components/CurriculumSidebar'
+import NotesSidebar from './components/NotesSidebar'
 import NotePanel from './components/NotePanel'
 import { PageWrapper, SidebarWrapper, PanelWrapper, MobileOverlay } from './index.styles'
 
@@ -30,7 +30,7 @@ function SummaryNotesV2Page() {
     <PageWrapper>
       {!isFullScreen && (
         <SidebarWrapper>
-          <CurriculumSidebar
+          <NotesSidebar
             selectedNoteId={selectedNoteId}
             selectedEmptyNodeId={emptySubtopic?.id ?? null}
             onSelectNote={handleSelectNote}

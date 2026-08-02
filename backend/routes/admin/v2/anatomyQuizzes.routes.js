@@ -1,5 +1,5 @@
 import express from 'express'
-import anatomyQuizzesController from '#controllers/admin/v2/anatomyQuizzes.controller'
+import anatomyQuizzesController from '#controllers/admin/v2/atlas-quiz/unlinkedQuizzes.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'

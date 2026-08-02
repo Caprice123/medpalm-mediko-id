@@ -1,5 +1,5 @@
 import express from 'express'
-import diagnosticQuizController from '#controllers/admin/v2/diagnosticQuiz.controller'
+import diagnosticQuizController from '#controllers/admin/v2/diagnostic/unlinkedQuestions.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'

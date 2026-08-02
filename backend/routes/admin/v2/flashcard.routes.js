@@ -1,5 +1,5 @@
 import express from 'express'
-import flashcardV2Controller from '#controllers/admin/v2/flashcard.controller'
+import flashcardV2Controller from '#controllers/admin/v2/flashcard/decks.controller'
 import { authenticateToken, requireAdmin } from '#middleware/auth.middleware'
 import { requireTabPermission, requireFeaturePermission } from '#middleware/permission.middleware'
 import { asyncHandler } from '#utils/asyncHandler'

@@ -48,8 +48,9 @@ export class RateDiagnosticQuestionService extends BaseService {
 
     const oldRating = existing?.last_rating
 
-    const learnedItemOp = prisma.user_learned_items.create({
-      data: { user_id: userId, item_type: RECORD_TYPE, item_id: recordId, is_correct: null },
+    const learnedItemOp = prisma.user_learned_items.createMany({
+      data: [{ user_id: userId, item_type: RECORD_TYPE, item_id: recordId }],
+      skipDuplicates: true,
     })
 
     if (!topicNodeId) {

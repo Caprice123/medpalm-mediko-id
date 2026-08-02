@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   topics: [],
   subtopics: [],
+  subtopicsByTopic: {},
   sessionCards: [],
   sessionIndex: 0,
   dueToday: null,
@@ -23,6 +24,7 @@ const flashcardNodesSlice = createSlice({
   reducers: {
     setTopics(state, action) { state.topics = action.payload },
     setSubtopics(state, action) { state.subtopics = action.payload },
+    setSubtopicsForTopic(state, action) { state.subtopicsByTopic[action.payload.topicId] = action.payload.subtopics },
     setSessionCards(state, action) { state.sessionCards = action.payload; state.sessionIndex = 0 },
     setSessionIndex(state, action) { state.sessionIndex = action.payload },
     setDueToday(state, action) { state.dueToday = action.payload },

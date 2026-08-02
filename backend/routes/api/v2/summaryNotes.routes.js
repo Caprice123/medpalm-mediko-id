@@ -2,17 +2,19 @@ import express from 'express'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import { checkFeature } from '#middleware/checkFeature.middleware'
-import summaryNotesV2Controller from '#controllers/api/v2/summaryNotes.controller'
+import topicsController from '#controllers/api/v2/summaryNotes/topics.controller'
+import subtopicsController from '#controllers/api/v2/summaryNotes/subtopics.controller'
+import notesController from '#controllers/api/v2/summaryNotes/notes.controller'
 
 const router = express.Router()
 
 router.use(authenticateToken)
 router.use(checkFeature('summary_notes_is_active'))
 
-router.get('/', asyncHandler(summaryNotesV2Controller.index.bind(summaryNotesV2Controller)))
-router.get('/topics', asyncHandler(summaryNotesV2Controller.getTopics.bind(summaryNotesV2Controller)))
-router.get('/topics/:topicId/subtopics', asyncHandler(summaryNotesV2Controller.getSubtopics.bind(summaryNotesV2Controller)))
-router.get('/:id/content-relations', asyncHandler(summaryNotesV2Controller.contentRelations.bind(summaryNotesV2Controller)))
-router.get('/:id', asyncHandler(summaryNotesV2Controller.show.bind(summaryNotesV2Controller)))
+router.get('/', asyncHandler(notesController.index.bind(notesController)))
+router.get('/topics', asyncHandler(topicsController.getTopics.bind(topicsController)))
+router.get('/topics/:topicId/subtopics', asyncHandler(subtopicsController.getSubtopics.bind(subtopicsController)))
+router.get('/:id/content-relations', asyncHandler(notesController.contentRelations.bind(notesController)))
+router.get('/:id', asyncHandler(notesController.show.bind(notesController)))
 
 export default router

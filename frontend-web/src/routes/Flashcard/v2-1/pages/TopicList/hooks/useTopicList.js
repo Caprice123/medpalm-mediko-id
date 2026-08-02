@@ -11,19 +11,19 @@ import {
 } from '@store/flashcardNodes'
 import { fetchUserNodeByName } from '@store/featureNodes'
 
+export const DUE_SESSION_BATCH_SIZE = 20
+
 export function useTopicList() {
   const dispatch = useDispatch()
-  const { topics, sessionCards, progress } = useSelector(s => s.flashcardNodes)
+  const { topics, subtopicsByTopic } = useSelector(s => s.flashcardNodes)
   const [searchParams] = useSearchParams()
   const deepLinkSubtopicName = searchParams.get('subtopic')
   const [resolvedDeepLinkSubtopicId, setResolvedDeepLinkSubtopicId] = useState(null)
   const consumedDeepLinkRef = useRef(false)
 
-  const [openIds, setOpenIds] = useState(new Set())
-  const [subtopicsCache, setSubtopicsCache] = useState({})
-  const [loadingIds, setLoadingIds] = useState(new Set())
+  const [openTopicId, setOpenTopicId] = useState(null)
+  const [loadingTopicId, setLoadingTopicId] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     dispatch(fetchFlashcardTopics())
@@ -45,7 +45,7 @@ export function useTopicList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLinkSubtopicName, topics])
 
-  const handleStartAllDue = () => dispatch(startFlashcardDueSession(null))
+  const handleStartAllDue = () => dispatch(startFlashcardDueSession(DUE_SESSION_BATCH_SIZE))
 
   const handleCloseSession = () => {
     dispatch(actions.setSessionCards([]))
@@ -54,42 +54,25 @@ export function useTopicList() {
   }
 
   const toggle = useCallback(async (topicId) => {
-    setOpenIds(prev => {
-      const next = new Set(prev)
-      next.has(topicId) ? next.delete(topicId) : next.add(topicId)
-      return next
-    })
-    if (!subtopicsCache[topicId]) {
-      setLoadingIds(prev => new Set(prev).add(topicId))
+    setOpenTopicId(prev => (prev === topicId ? null : topicId))
+    if (!subtopicsByTopic[topicId]) {
+      setLoadingTopicId(topicId)
       try {
-        const data = await dispatch(fetchFlashcardSubtopicsRaw(topicId))
-        setSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
+        await dispatch(fetchFlashcardSubtopicsRaw(topicId))
       } finally {
-        setLoadingIds(prev => { const n = new Set(prev); n.delete(topicId); return n })
+        setLoadingTopicId(prev => (prev === topicId ? null : prev))
       }
     }
-  }, [dispatch, subtopicsCache])
-
-  const statsMap = new Map((progress?.topics || []).map(t => [t.nodeId, t]))
-
-  const filteredTopics = searchQuery.trim()
-    ? topics.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : topics
+  }, [dispatch, subtopicsByTopic])
 
   return {
-    topics,
-    openIds,
-    subtopicsCache,
-    loadingIds,
+    openTopicId,
+    loadingTopicId,
     customOpen,
     setCustomOpen,
-    searchQuery,
-    setSearchQuery,
     handleStartAllDue,
     handleCloseSession,
     toggle,
-    statsMap,
-    filteredTopics,
     deepLinkSubtopicId: resolvedDeepLinkSubtopicId,
   }
 }

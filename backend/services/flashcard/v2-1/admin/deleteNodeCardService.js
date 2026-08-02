@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 const RECORD_TYPE = 'flashcard_card'
 
@@ -29,14 +30,12 @@ export class DeleteNodeCardService extends BaseService {
       }
 
       if (cardNodeId) {
-        await tx.node_statistics.upsert({
-          where: { node_id_record_type: { node_id: cardNodeId, record_type: RECORD_TYPE } },
-          create: { node_id: cardNodeId, record_type: RECORD_TYPE, total_count: 0 },
-          update: { total_count: { decrement: 1 } },
-        })
+        await bumpNodeStat(tx, cardNodeId, RECORD_TYPE, -1)
       }
 
       if (topicId) {
+        await bumpNodeStat(tx, topicId, RECORD_TYPE, -1)
+
         await tx.$executeRaw`
           UPDATE user_node_progress unp
           SET

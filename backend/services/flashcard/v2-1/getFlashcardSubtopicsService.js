@@ -23,7 +23,6 @@ export class GetFlashcardSubtopicsService extends BaseService {
     return subtopics.map(s => ({
       ...s,
       cardCount: s.node_statistics[0]?.total_count ?? 0,
-      node_statistics: undefined,
     }))
   }
 }

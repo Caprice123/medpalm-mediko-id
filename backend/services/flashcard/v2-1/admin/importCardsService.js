@@ -1,6 +1,7 @@
 import XLSX from 'xlsx'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 export class ImportCardsService extends BaseService {
   static async call({ nodeId, buffer }) {
@@ -37,11 +38,12 @@ export class ImportCardsService extends BaseService {
     }
 
     if (nodeId && results.imported > 0) {
-      await prisma.node_statistics.upsert({
-        where: { node_id_record_type: { node_id: parseInt(nodeId), record_type: 'flashcard_card' } },
-        create: { node_id: parseInt(nodeId), record_type: 'flashcard_card', total_count: results.imported },
-        update: { total_count: { increment: results.imported } },
-      })
+      await bumpNodeStat(prisma, parseInt(nodeId), 'flashcard_card', results.imported)
+
+      const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) }, select: { parent_id: true } })
+      if (node?.parent_id) {
+        await bumpNodeStat(prisma, node.parent_id, 'flashcard_card', results.imported)
+      }
     }
 
     return results

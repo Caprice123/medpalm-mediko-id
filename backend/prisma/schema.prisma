@@ -559,10 +559,9 @@ model user_learned_items {
   user_id    Int
   item_type  String   // e.g. 'mcq_question', 'flashcard_card'
   item_id    Int
-  is_correct Boolean? // null for non-scored interactions
   created_at DateTime @default(now())
 
-  @@index([user_id, item_type, item_id])
+  @@unique([user_id, item_type, item_id], map: "user_learned_items_user_type_item_key")
   @@index([user_id])
 }
 

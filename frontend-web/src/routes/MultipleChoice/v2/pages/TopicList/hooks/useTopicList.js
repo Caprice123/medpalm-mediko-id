@@ -15,7 +15,6 @@ export function useTopicList() {
   const [openId, setOpenId] = useState(null)
   const [subtopicsCache, setSubtopicsCache] = useState({})
   const [loadingIds, setLoadingIds] = useState(new Set())
-  const [searchQuery, setSearchQuery] = useState('')
   const [customOpen, setCustomOpen] = useState(false)
 
   useEffect(() => {
@@ -63,18 +62,10 @@ export function useTopicList() {
     dispatch(startMcqCustomSession(nodeIds, count))
   }
 
-  const filteredTopics = searchQuery.trim()
-    ? topics.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : topics
-
   return {
-    topics,
-    filteredTopics,
     openId,
     subtopicsCache,
     loadingIds,
-    searchQuery,
-    setSearchQuery,
     customOpen,
     setCustomOpen,
     handleCloseSession,

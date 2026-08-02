@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 export class AssignCardToNodeService extends BaseService {
   static async call({ cardId, nodeId }) {
@@ -19,10 +20,9 @@ export class AssignCardToNodeService extends BaseService {
       data: { node_id: parseInt(nodeId), record_type: 'flashcard_card', record_id: parseInt(cardId) },
     })
 
-    await prisma.node_statistics.upsert({
-      where: { node_id_record_type: { node_id: parseInt(nodeId), record_type: 'flashcard_card' } },
-      create: { node_id: parseInt(nodeId), record_type: 'flashcard_card', total_count: 1 },
-      update: { total_count: { increment: 1 } },
-    })
+    await bumpNodeStat(prisma, parseInt(nodeId), 'flashcard_card', 1)
+    if (node.parent_id) {
+      await bumpNodeStat(prisma, node.parent_id, 'flashcard_card', 1)
+    }
   }
 }

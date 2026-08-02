@@ -6,7 +6,7 @@ export function useCustomSession(onClose) {
   const dispatch = useDispatch()
   const { loading } = useSelector(s => s.diagnosticNodes)
 
-  const [departmentList, setDepartmentList] = useState([{ id: 1, topicId: null, subtopicIds: [], count: 5 }])
+  const [topicFilters, setTopicFilters] = useState([{ id: 1, topicId: null, subtopicIds: [], count: 5 }])
   const [subtopicsMap, setSubtopicsMap] = useState({})
   const subtopicsMapRef = useRef({})
   const loadingRef = useRef(new Set())
@@ -26,32 +26,42 @@ export function useCustomSession(onClose) {
     }
   }, [dispatch])
 
-  const updateDepartment = (id, updates) => {
-    setDepartmentList(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d))
+  const updateTopicFilter = (id, updates) => {
+    setTopicFilters(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f))
     if (updates.topicId) loadSubtopics(updates.topicId)
   }
 
-  const addDepartment = () =>
-    setDepartmentList(prev => [...prev, { id: Date.now(), topicId: null, subtopicIds: [], count: 5 }])
+  const addTopicFilter = () =>
+    setTopicFilters(prev => [...prev, { id: Date.now(), topicId: null, subtopicIds: [], count: 5 }])
 
-  const removeDepartment = (id) =>
-    setDepartmentList(prev => prev.filter(d => d.id !== id))
+  const removeTopicFilter = (id) =>
+    setTopicFilters(prev => prev.filter(f => f.id !== id))
 
-  const totalCount = departmentList.reduce((sum, d) => sum + d.count, 0)
+  const totalCount = topicFilters.reduce((sum, f) => sum + f.count, 0)
 
   const handleStart = () => {
     const nodeIds = []
-    for (const d of departmentList) {
-      if (!d.topicId) continue
-      const subs = subtopicsMapRef.current[d.topicId] || []
-      if (d.subtopicIds.length === 0) nodeIds.push(...subs.map(s => s.id))
-      else nodeIds.push(...d.subtopicIds)
+    for (const f of topicFilters) {
+      if (!f.topicId) continue
+      const subs = subtopicsMapRef.current[f.topicId] || []
+      if (f.subtopicIds.length === 0) nodeIds.push(...subs.map(s => s.id))
+      else nodeIds.push(...f.subtopicIds)
     }
     if (nodeIds.length === 0) return
     dispatch(startDiagnosticCustomSession(nodeIds, totalCount, onClose))
   }
 
-  const canStart = departmentList.some(d => d.topicId !== null) && !loading.isStartingSession
+  const canStart = topicFilters.some(f => f.topicId !== null) && !loading.isStartingSession
 
-  return { departmentList, subtopicsMap, loadingTopics, updateDepartment, addDepartment, removeDepartment, totalCount, handleStart, canStart }
+  return {
+    topicFilters,
+    subtopicsMap,
+    loadingTopics,
+    updateTopicFilter,
+    addTopicFilter,
+    removeTopicFilter,
+    totalCount,
+    handleStart,
+    canStart,
+  }
 }

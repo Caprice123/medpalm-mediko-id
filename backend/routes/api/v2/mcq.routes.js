@@ -2,18 +2,26 @@ import express from 'express'
 import { authenticateToken } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 import { checkFeature } from '#middleware/checkFeature.middleware'
-import mcqV2Controller from '#controllers/api/v2/mcq.controller'
+import topicsController from '#controllers/api/v2/mcq/topics.controller'
+import subtopicsController from '#controllers/api/v2/mcq/subtopics.controller'
+import sessionController from '#controllers/api/v2/mcq/session.controller'
+import answerController from '#controllers/api/v2/mcq/answer.controller'
 
 const router = express.Router()
 
 router.use(authenticateToken)
 router.use(checkFeature('mcq_is_active'))
 
-router.get('/topics', asyncHandler(mcqV2Controller.getTopics.bind(mcqV2Controller)))
-router.get('/topics/:topicId/subtopics', asyncHandler(mcqV2Controller.getSubtopics.bind(mcqV2Controller)))
-router.post('/session', asyncHandler(mcqV2Controller.startSession.bind(mcqV2Controller)))
-router.post('/custom-session', asyncHandler(mcqV2Controller.startCustomSession.bind(mcqV2Controller)))
-router.post('/submit', asyncHandler(mcqV2Controller.submitSession.bind(mcqV2Controller)))
-router.post('/answer', asyncHandler(mcqV2Controller.submitAnswer.bind(mcqV2Controller)))
+// Topics
+router.get('/topics',                    asyncHandler(topicsController.getTopics.bind(topicsController)))
+router.get('/topics/:topicId/subtopics', asyncHandler(subtopicsController.getSubtopics.bind(subtopicsController)))
+
+// Sessions
+router.post('/session',                  asyncHandler(sessionController.startSession.bind(sessionController)))
+router.post('/custom-session',           asyncHandler(sessionController.startCustomSession.bind(sessionController)))
+router.post('/submit',                   asyncHandler(sessionController.submitSession.bind(sessionController)))
+
+// Answer
+router.post('/answer',                   asyncHandler(answerController.create.bind(answerController)))
 
 export default router

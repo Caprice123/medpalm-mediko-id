@@ -2,11 +2,16 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
-const { setPrimaryTopics, setSpecialTopics, setSessionCards, setDueToday, setProgress, setLoading } = actions
+const { setPrimaryTopics, setSpecialTopics, setSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
 
-export const fetchDiagnosticSubmodulesRaw = (moduleId) => async () => {
+export const fetchDiagnosticSubmodulesRaw = (moduleId) => async (dispatch, getState) => {
+  const cached = getState().diagnosticNodes.subtopicsByTopic[moduleId]
+  if (cached) return cached
+
   const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/modules/${moduleId}/submodules`)
-  return res.data.data || []
+  const subtopics = res.data.data || []
+  dispatch(setSubtopicsForTopic({ topicId: moduleId, subtopics }))
+  return subtopics
 }
 
 export const fetchDiagnosticCategories = () => async (dispatch) => {

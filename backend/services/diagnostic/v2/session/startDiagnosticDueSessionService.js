@@ -16,7 +16,18 @@ export class StartDiagnosticDueSessionService extends BaseService {
     if (dueStates.length === 0) return []
 
     const dueIds = dueStates.map(s => s.record_id)
-    const shuffled = [...dueIds].sort(() => Math.random() - 0.5)
+
+    // dueStates can reference questions that no longer exist or were detached
+    // from their node — filter those out before sampling so `count` is
+    // honored against the same pool GetDiagnosticDueTodayService reports.
+    const [existingQuestions, linkedRecords] = await Promise.all([
+      prisma.diagnostic_questions.findMany({ where: { id: { in: dueIds } }, select: { id: true } }),
+      prisma.feature_node_records.findMany({ where: { record_type: RECORD_TYPE, record_id: { in: dueIds } }, select: { record_id: true } }),
+    ])
+    const linkedIds = new Set(linkedRecords.map(r => r.record_id))
+    const validIds = existingQuestions.map(q => q.id).filter(id => linkedIds.has(id))
+
+    const shuffled = [...validIds].sort(() => Math.random() - 0.5)
     const limit = count ? Math.min(parseInt(count), shuffled.length) : shuffled.length
     const selected = shuffled.slice(0, limit)
 

@@ -92,14 +92,14 @@ const hasTabPermission = (user, tab) => {
 const getAvailableTabs = (user) => {
   const allTabs = [
     { key: 'features', label: 'Kelola Fitur', permission: 'features' },
+    { key: 'featuresV2', label: 'Fitur V2', permission: 'features' },
+    { key: 'materi', label: 'Materi', permission: 'features' },
     { key: 'layanan', label: 'Layanan', permission: 'layanan' },
     { key: 'tags', label: 'Kelola Tag', permission: 'tags' },
     { key: 'pricingPlans', label: 'Paket Harga', permission: 'pricingPlans' },
     { key: 'transactions', label: 'Transaksi', permission: 'transactions' },
     { key: 'users', label: 'Kelola User', permission: 'users' },
     { key: 'globalSettings', label: 'Pengaturan Global', permission: 'globalSettings' },
-    { key: 'featuresV2', label: 'Fitur V2', permission: 'features' },
-    { key: 'materi', label: 'Materi', permission: 'features' },
   ]
 
   return allTabs.filter(tab => hasTabPermission(user, tab.permission))

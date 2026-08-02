@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { PanelCard, EmptyText } from '../../TopicList.styles'
 import {
   HeaderRow, CountBlock, CountNumber, CountLabel, SubtitleText,
   DueList, DueItem, ItemNumber, ItemContent, ItemTitle, ItemSub,
   ItemRight, ItemCount,
+  StartAllBtn,
   PaginationRow, PaginationBtn, PaginationInfo,
   SkeletonBlock, SkeletonCircle, SkeletonDueItem,
 } from './DueTodayPanel.styles'
@@ -32,12 +34,14 @@ function DueTodaySkeleton() {
   )
 }
 
-export default function DueTodayPanel({ dueToday, onStartAll, onStartNode, isStarting, isLoading }) {
+export default function DueTodayPanel({ onStartAll, onStartNode, isStarting, batchSize }) {
   const [page, setPage] = useState(0)
+  const { dueToday, loading } = useSelector(s => s.flashcardNodes)
 
-  if (isLoading) return <DueTodaySkeleton />
+  if (loading.isFetchingDueToday) return <DueTodaySkeleton />
 
   const subtopics = dueToday?.subtopics ?? []
+  const startCount = Math.min(dueToday?.total ?? 0, batchSize)
   const totalPages = Math.ceil(subtopics.length / PAGE_SIZE)
   const pageItems = subtopics.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   const pageOffset = page * PAGE_SIZE
@@ -51,6 +55,11 @@ export default function DueTodayPanel({ dueToday, onStartAll, onStartNode, isSta
             <CountNumber>{dueToday.total}</CountNumber>
             <CountLabel>kartu</CountLabel>
           </CountBlock>
+        )}
+        {subtopics.length > 0 && (
+          <StartAllBtn onClick={onStartAll} disabled={isStarting}>
+            {isStarting ? 'Memulai...' : `Mulai ${startCount} Kartu`}
+          </StartAllBtn>
         )}
       </HeaderRow>
 

@@ -2,11 +2,16 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
-const { setTopics, setSubtopics, setSessionCards, setDueToday, setProgress, setLoading } = actions
+const { setTopics, setSubtopics, setSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
 
-export const fetchFlashcardSubtopicsRaw = (topicId) => async () => {
+export const fetchFlashcardSubtopicsRaw = (topicId) => async (dispatch, getState) => {
+  const cached = getState().flashcardNodes.subtopicsByTopic[topicId]
+  if (cached) return cached
+
   const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`)
-  return res.data.data || []
+  const subtopics = res.data.data || []
+  dispatch(setSubtopicsForTopic({ topicId, subtopics }))
+  return subtopics
 }
 
 export const fetchFlashcardTopics = () => async (dispatch) => {

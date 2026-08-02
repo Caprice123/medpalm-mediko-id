@@ -9,16 +9,15 @@ import {
   actions,
 } from '@store/diagnosticNodes'
 
+export const DUE_SESSION_BATCH_SIZE = 20
+
 export function useCategoryList() {
   const dispatch = useDispatch()
-  const { primaryTopics, specialTopics, progress } = useSelector(s => s.diagnosticNodes)
+  const { subtopicsByTopic } = useSelector(s => s.diagnosticNodes)
 
-  const [openIds, setOpenIds] = useState(new Set())
-  const [subtopicsCache, setSubtopicsCache] = useState({})
-  const [loadingIds, setLoadingIds] = useState(new Set())
+  const [openTopicId, setOpenTopicId] = useState(null)
+  const [loadingTopicId, setLoadingTopicId] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
-  const [primarySearch, setPrimarySearch] = useState('')
-  const [specialSearch, setSpecialSearch] = useState('')
 
   useEffect(() => {
     dispatch(fetchDiagnosticCategories())
@@ -26,7 +25,7 @@ export function useCategoryList() {
     dispatch(fetchDiagnosticProgress())
   }, [dispatch])
 
-  const handleStartAllDue = () => dispatch(startDiagnosticDueSession(null))
+  const handleStartAllDue = () => dispatch(startDiagnosticDueSession(DUE_SESSION_BATCH_SIZE))
 
   const handleCloseSession = () => {
     dispatch(actions.setSessionCards([]))
@@ -35,51 +34,24 @@ export function useCategoryList() {
   }
 
   const toggle = useCallback(async (topicId) => {
-    setOpenIds(prev => {
-      if (prev.has(topicId)) return new Set()
-      return new Set([topicId])
-    })
-    if (!subtopicsCache[topicId]) {
-      setLoadingIds(prev => new Set(prev).add(topicId))
+    setOpenTopicId(prev => (prev === topicId ? null : topicId))
+    if (!subtopicsByTopic[topicId]) {
+      setLoadingTopicId(topicId)
       try {
-        const data = await dispatch(fetchDiagnosticSubmodulesRaw(topicId))
-        setSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
+        await dispatch(fetchDiagnosticSubmodulesRaw(topicId))
       } finally {
-        setLoadingIds(prev => { const n = new Set(prev); n.delete(topicId); return n })
+        setLoadingTopicId(prev => (prev === topicId ? null : prev))
       }
     }
-  }, [dispatch, subtopicsCache])
-
-  const statsMap = new Map((progress?.topics || []).map(t => [t.nodeId, t]))
-
-  const allTopics = [...primaryTopics, ...specialTopics]
-
-  const filteredPrimary = primarySearch.trim()
-    ? primaryTopics.filter(t => t.name.toLowerCase().includes(primarySearch.toLowerCase()))
-    : primaryTopics
-
-  const filteredSpecial = specialSearch.trim()
-    ? specialTopics.filter(t => t.name.toLowerCase().includes(specialSearch.toLowerCase()))
-    : specialTopics
+  }, [dispatch, subtopicsByTopic])
 
   return {
-    primaryTopics,
-    specialTopics,
-    filteredPrimary,
-    filteredSpecial,
-    openIds,
-    subtopicsCache,
-    loadingIds,
+    openTopicId,
+    loadingTopicId,
     customOpen,
     setCustomOpen,
-    primarySearch,
-    setPrimarySearch,
-    specialSearch,
-    setSpecialSearch,
     handleStartAllDue,
     handleCloseSession,
     toggle,
-    statsMap,
-    allTopics,
   }
 }
