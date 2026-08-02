@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDiagnosticSubtopicsRaw, startDiagnosticCustomSession } from '@store/diagnosticNodes'
+import { fetchDiagnosticSubmodulesRaw, startDiagnosticCustomSession } from '@store/diagnosticNodes'
 
 export function useCustomSession(onClose) {
   const dispatch = useDispatch()
@@ -17,7 +17,7 @@ export function useCustomSession(onClose) {
     loadingRef.current.add(topicId)
     setLoadingTopics(new Set(loadingRef.current))
     try {
-      const data = await dispatch(fetchDiagnosticSubtopicsRaw(topicId))
+      const data = await dispatch(fetchDiagnosticSubmodulesRaw(topicId))
       subtopicsMapRef.current[topicId] = data
       setSubtopicsMap({ ...subtopicsMapRef.current })
     } finally {

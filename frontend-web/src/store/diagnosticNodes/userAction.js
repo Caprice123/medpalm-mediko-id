@@ -4,8 +4,8 @@ import { getWithToken, postWithToken } from '@utils/requestUtils'
 
 const { setPrimaryTopics, setSpecialTopics, setSessionCards, setDueToday, setProgress, setLoading } = actions
 
-export const fetchDiagnosticSubtopicsRaw = (topicId) => async () => {
-  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/topics/${topicId}/subtopics`)
+export const fetchDiagnosticSubmodulesRaw = (moduleId) => async () => {
+  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/modules/${moduleId}/submodules`)
   return res.data.data || []
 }
 
@@ -80,14 +80,16 @@ export const fetchDiagnosticDueToday = () => async (dispatch) => {
 export const fetchDiagnosticProgress = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingProgress: true }))
-    const [summaryRes, topicsRes] = await Promise.all([
+    const [summaryRes, modulesRes] = await Promise.all([
       getWithToken(`${Endpoints.api.diagnosticNodes}/progress/summary`),
-      getWithToken(`${Endpoints.api.diagnosticNodes}/progress/topics`),
+      getWithToken(`${Endpoints.api.diagnosticNodes}/progress/modules`),
     ])
     const totalCounts = summaryRes.data.data || { again: 0, hard: 0, good: 0, easy: 0 }
-    const topics = topicsRes.data.data?.topics || []
-    const totalQuestions = topics.reduce((sum, t) => sum + (t.totalQuestions ?? 0), 0)
-    dispatch(setProgress({ totalQuestions, totalCounts, topics }))
+    const modules = modulesRes.data.data?.modules || []
+    const totalQuestions = modules.reduce((sum, t) => sum + (t.totalQuestions ?? 0), 0)
+    // Note: Redux state field stays `topics` here — ProgressPanel/useCategoryList (out of this
+    // rename's scope) still read `progress.topics`. Only the API-call construction was renamed.
+    dispatch(setProgress({ totalQuestions, totalCounts, topics: modules }))
   } finally {
     dispatch(setLoading({ isFetchingProgress: false }))
   }

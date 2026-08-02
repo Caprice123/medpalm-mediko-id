@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchDiagnosticCategories,
-  fetchDiagnosticSubtopicsRaw,
+  fetchDiagnosticSubmodulesRaw,
   fetchDiagnosticDueToday,
   fetchDiagnosticProgress,
   startDiagnosticDueSession,
@@ -42,7 +42,7 @@ export function useCategoryList() {
     if (!subtopicsCache[topicId]) {
       setLoadingIds(prev => new Set(prev).add(topicId))
       try {
-        const data = await dispatch(fetchDiagnosticSubtopicsRaw(topicId))
+        const data = await dispatch(fetchDiagnosticSubmodulesRaw(topicId))
         setSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
       } finally {
         setLoadingIds(prev => { const n = new Set(prev); n.delete(topicId); return n })

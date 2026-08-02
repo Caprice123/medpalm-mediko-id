@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 const RECORD_TYPE = 'diagnostic_question'
 const VISIBILITY = 'diagnostic'
 
-export class GetDiagnosticProgressTopicsService extends BaseService {
+export class GetDiagnosticProgressModulesService extends BaseService {
   static async call({ userId }) {
     const rows = await prisma.user_node_progress.findMany({
       where: { user_id: userId, feature_type: RECORD_TYPE },
@@ -19,7 +19,9 @@ export class GetDiagnosticProgressTopicsService extends BaseService {
             id: true,
             name: true,
             visibility: true,
+            node_type: true,
             children: {
+              where: { node_type: 'submodule' },
               select: {
                 node_statistics: {
                   where: { record_type: RECORD_TYPE },
@@ -32,8 +34,8 @@ export class GetDiagnosticProgressTopicsService extends BaseService {
       },
     })
 
-    const topics = rows
-      .filter(r => r.feature_nodes?.visibility === VISIBILITY)
+    const modules = rows
+      .filter(r => r.feature_nodes?.visibility === VISIBILITY && r.feature_nodes?.node_type === 'module')
       .map(r => {
         const node = r.feature_nodes
         const totalQuestions = node.children.reduce(
@@ -54,6 +56,6 @@ export class GetDiagnosticProgressTopicsService extends BaseService {
       })
       .sort((a, b) => a.nodeName.localeCompare(b.nodeName, 'id'))
 
-    return { topics }
+    return { modules }
   }
 }
