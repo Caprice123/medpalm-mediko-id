@@ -1,6 +1,6 @@
 import { GetDiagnosticDueTodayService } from '#services/diagnostic/v2/getDiagnosticDueTodayService'
 import { GetDiagnosticProgressSummaryService } from '#services/diagnostic/v2/getDiagnosticProgressSummaryService'
-import { GetDiagnosticProgressTopicsService } from '#services/diagnostic/v2/getDiagnosticProgressTopicsService'
+import { GetDiagnosticProgressModulesService } from '#services/diagnostic/v2/getDiagnosticProgressModulesService'
 
 class ProgressController {
   async getDueToday(req, res) {
@@ -13,8 +13,8 @@ class ProgressController {
     res.json({ success: true, data })
   }
 
-  async getProgressTopics(req, res) {
-    const data = await GetDiagnosticProgressTopicsService.call({ userId: req.user.id })
+  async getProgressModules(req, res) {
+    const data = await GetDiagnosticProgressModulesService.call({ userId: req.user.id })
     res.json({ success: true, data })
   }
 }
