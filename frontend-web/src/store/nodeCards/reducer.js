@@ -22,6 +22,7 @@ const nodeCardsSlice = createSlice({
   initialState,
   reducers: {
     setCards(state, action) { state.cards = action.payload },
+    appendCards(state, action) { state.cards = [...state.cards, ...action.payload] },
     setPagination(state, action) { state.pagination = { ...state.pagination, ...action.payload } },
     setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
     reset() { return initialState },

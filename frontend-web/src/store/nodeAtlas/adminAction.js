@@ -2,22 +2,28 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setModels, setPagination, setLoading } = actions
+const { setModels, appendModels, setPagination, setLoading } = actions
 
-export const fetchNodeAtlasModels = (nodeId, overrides = {}) => async (dispatch, getState) => {
+export const fetchNodeAtlasModels = (nodeId, { append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingModels: true }))
     const { pagination } = getState().nodeAtlas
-    const page = overrides.page ?? pagination.page
     const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/atlas-models`, {
-      page,
+      page: pagination.page,
       perPage: pagination.perPage,
     })
-    dispatch(setModels(res.data.data || []))
+    dispatch(append ? appendModels(res.data.data || []) : setModels(res.data.data || []))
     if (res.data.pagination) dispatch(setPagination(res.data.pagination))
   } finally {
     dispatch(setLoading({ isFetchingModels: false }))
   }
+}
+
+export const loadMoreNodeAtlasModels = (nodeId) => (dispatch, getState) => {
+  const { pagination } = getState().nodeAtlas
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchNodeAtlasModels(nodeId, { append: true }))
 }
 
 export const unlinkNodeAtlasModel = (nodeId, modelId, onSuccess) => async (dispatch) => {

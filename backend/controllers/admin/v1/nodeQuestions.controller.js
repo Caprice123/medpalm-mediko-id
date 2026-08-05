@@ -51,10 +51,19 @@ class NodeQuestionsController {
   downloadTemplate(req, res) {
     const wb = XLSX.utils.book_new()
     const ws = XLSX.utils.aoa_to_sheet([
-      ['Pertanyaan', 'Opsi A', 'Opsi B', 'Opsi C', 'Opsi D', 'Jawaban Benar', 'Penjelasan'],
-      ['Berapa ruang jantung manusia?', '2 ruang', '3 ruang', '4 ruang', '5 ruang', 'C', 'Jantung memiliki 4 ruang'],
+      [
+        'Pertanyaan', 'Opsi A', 'Opsi B', 'Opsi C', 'Opsi D', 'Jawaban Benar', 'Penjelasan',
+        'Referensi 1 Judul', 'Referensi 1 Link', 'Referensi 2 Judul', 'Referensi 2 Link', 'Referensi 3 Judul', 'Referensi 3 Link',
+      ],
+      [
+        'Berapa ruang jantung manusia?', '2 ruang', '3 ruang', '4 ruang', '5 ruang', 'C', 'Jantung memiliki 4 ruang',
+        'Guyton and Hall Physiology', 'https://example.com/guyton', '', '', '', '',
+      ],
     ])
-    ws['!cols'] = [{ wch: 40 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 16 }, { wch: 40 }]
+    ws['!cols'] = [
+      { wch: 40 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 16 }, { wch: 40 },
+      { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 },
+    ]
     XLSX.utils.book_append_sheet(wb, ws, 'Template Soal MCQ')
     const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
     res.setHeader('Content-Disposition', 'attachment; filename="template-soal-mcq.xlsx"')

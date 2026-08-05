@@ -4,19 +4,25 @@ import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWit
 
 const BASE = Endpoints.admin.diagnosticNodesV2
 
-export const fetchDiagnosticAdminQuestions = (nodeId, overrides = {}) => async (dispatch, getState) => {
+export const fetchDiagnosticAdminQuestions = (nodeId, { search = '', append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(questionActions.setLoading({ isFetchingQuestions: true }))
     const { pagination } = getState().nodeQuestions
-    const page = overrides.page ?? pagination.page
-    const params = { page, perPage: pagination.perPage }
-    if (overrides.search) params.search = overrides.search
+    const params = { page: pagination.page, perPage: pagination.perPage }
+    if (search) params.search = search
     const res = await getWithToken(`${BASE}/${nodeId}/questions`, params)
-    dispatch(questionActions.setQuestions(res.data.questions || []))
+    dispatch(append ? questionActions.appendQuestions(res.data.questions || []) : questionActions.setQuestions(res.data.questions || []))
     if (res.data.pagination) dispatch(questionActions.setPagination(res.data.pagination))
   } finally {
     dispatch(questionActions.setLoading({ isFetchingQuestions: false }))
   }
+}
+
+export const loadMoreDiagnosticAdminQuestions = (nodeId, search = '') => (dispatch, getState) => {
+  const { pagination } = getState().nodeQuestions
+  if (pagination.isLastPage) return
+  dispatch(questionActions.setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchDiagnosticAdminQuestions(nodeId, { search, append: true }))
 }
 
 export const addDiagnosticQuestion = (nodeId, payload, onSuccess) => async (dispatch) => {
@@ -73,19 +79,25 @@ export const downloadDiagnosticTemplate = () => async () => {
 
 const QUIZ_BASE = Endpoints.admin.diagnosticQuizV2
 
-export const fetchUnlinkedDiagnosticQuestions = (overrides = {}) => async (dispatch, getState) => {
+export const fetchUnlinkedDiagnosticQuestions = ({ search = '', append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(questionActions.setLoading({ isFetchingQuestions: true }))
     const { pagination } = getState().nodeQuestions
-    const page = overrides.page ?? 1
-    const params = { page, perPage: pagination.perPage }
-    if (overrides.search) params.search = overrides.search
+    const params = { page: pagination.page, perPage: pagination.perPage }
+    if (search) params.search = search
     const res = await getWithToken(`${QUIZ_BASE}/unlinked`, params)
-    dispatch(questionActions.setQuestions(res.data.data || []))
+    dispatch(append ? questionActions.appendQuestions(res.data.data || []) : questionActions.setQuestions(res.data.data || []))
     if (res.data.pagination) dispatch(questionActions.setPagination(res.data.pagination))
   } finally {
     dispatch(questionActions.setLoading({ isFetchingQuestions: false }))
   }
+}
+
+export const loadMoreUnlinkedDiagnosticQuestions = (search = '') => (dispatch, getState) => {
+  const { pagination } = getState().nodeQuestions
+  if (pagination.isLastPage) return
+  dispatch(questionActions.setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchUnlinkedDiagnosticQuestions({ search, append: true }))
 }
 
 export const moveUnlinkedDiagnosticQuestion = (questionId, nodeId, onSuccess) => async (dispatch) => {

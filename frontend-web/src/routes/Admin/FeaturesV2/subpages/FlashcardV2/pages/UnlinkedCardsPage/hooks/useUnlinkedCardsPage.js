@@ -1,43 +1,47 @@
 import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchUnlinkedCards, deleteUnlinkedCard } from '@store/unlinkedCards'
+import { useDispatch } from 'react-redux'
+import { actions, fetchUnlinkedCards, loadMoreUnlinkedCards, deleteUnlinkedCard } from '@store/unlinkedCards'
+
+const { setPagination } = actions
 
 export function useUnlinkedCardsPage() {
   const dispatch = useDispatch()
-  const { pagination } = useSelector(state => state.unlinkedCards)
 
   const [editModal, setEditModal] = useState({ open: false, card: null })
   const [assignModal, setAssignModal] = useState({ open: false, card: null })
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
-    dispatch(fetchUnlinkedCards({ page: 1 }))
-  }, [dispatch])
+  const reload = () => {
+    dispatch(setPagination({ page: 1 }))
+    dispatch(fetchUnlinkedCards({ search: search.trim() }))
+  }
 
-  const handleSearch = () => dispatch(fetchUnlinkedCards({ page: 1, search: search.trim() }))
+  useEffect(reload, [dispatch])
 
-  const handlePageChange = (page) => dispatch(fetchUnlinkedCards({ page, search: search.trim() }))
+  const handleSearch = () => reload()
+
+  const handleLoadMore = () => dispatch(loadMoreUnlinkedCards(search.trim()))
 
   const handleDelete = (card) => {
     if (!window.confirm('Hapus kartu ini?')) return
-    dispatch(deleteUnlinkedCard(card.id, () => dispatch(fetchUnlinkedCards({ page: pagination.page, search: search.trim() }))))
+    dispatch(deleteUnlinkedCard(card.id, reload))
   }
 
   const handleEditSuccess = () => {
     setEditModal({ open: false, card: null })
-    dispatch(fetchUnlinkedCards({ page: pagination.page, search: search.trim() }))
+    reload()
   }
 
   const handleAssignSuccess = () => {
     setAssignModal({ open: false, card: null })
-    dispatch(fetchUnlinkedCards({ page: 1, search: search.trim() }))
+    reload()
   }
 
   return {
     editModal, setEditModal,
     assignModal, setAssignModal,
     search, setSearch,
-    handleSearch, handlePageChange, handleDelete,
+    handleSearch, handleLoadMore, handleDelete,
     handleEditSuccess, handleAssignSuccess,
   }
 }

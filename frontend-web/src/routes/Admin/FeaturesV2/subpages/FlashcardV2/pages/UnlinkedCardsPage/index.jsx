@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
-import Pagination from '@components/common/Pagination'
 import TextInput from '@components/common/TextInput'
 import CardFormModal from '../../components/CardFormModal'
 import MoveCardModal from '../../components/MoveCardModal'
@@ -13,13 +12,12 @@ import { ActionGroup } from '../CardsPage/CardsPage.styles'
 export default function UnlinkedCardsPage({ onBack }) {
   const dispatch = useDispatch()
   const { cards, pagination, loading } = useSelector(state => state.unlinkedCards)
-  const totalPages = pagination.isLastPage ? pagination.page : pagination.page + 1
 
   const {
     editModal, setEditModal,
     assignModal, setAssignModal,
     search, setSearch,
-    handleSearch, handlePageChange, handleDelete,
+    handleSearch, handleLoadMore, handleDelete,
     handleEditSuccess, handleAssignSuccess,
   } = useUnlinkedCardsPage()
 
@@ -85,13 +83,16 @@ export default function UnlinkedCardsPage({ onBack }) {
         emptySubtext="Semua kartu sudah terhubung ke sub-topik."
       />
 
-      <Pagination
-        currentPage={pagination.page}
-        totalPages={totalPages}
-        totalItems={pagination.isLastPage ? (pagination.page - 1) * pagination.perPage + cards.length : undefined}
-        itemsPerPage={pagination.perPage}
-        onPageChange={handlePageChange}
-      />
+      {!pagination.isLastPage && (
+        <Button
+          variant="secondary"
+          onClick={handleLoadMore}
+          disabled={loading.isFetchingCards}
+          style={{ margin: '0 auto' }}
+        >
+          {loading.isFetchingCards ? 'Memuat...' : 'Muat Lebih Banyak'}
+        </Button>
+      )}
 
       {editModal.open && (
         <CardFormModal

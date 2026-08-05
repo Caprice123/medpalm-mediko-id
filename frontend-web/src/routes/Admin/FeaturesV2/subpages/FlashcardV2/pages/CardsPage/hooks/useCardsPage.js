@@ -1,37 +1,40 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchNodeCards, deleteNodeCard } from '@store/nodeCards'
+import { useDispatch } from 'react-redux'
+import { actions, fetchNodeCards, loadMoreNodeCards, deleteNodeCard } from '@store/nodeCards'
 import { importNodeCards } from '@store/nodeCards/adminAction'
+
+const { setPagination } = actions
 
 export function useCardsPage(node) {
   const dispatch = useDispatch()
-  // pagination.page is needed inside handlers to know the current page
-  const { pagination } = useSelector(state => state.nodeCards)
 
   const [modal, setModal] = useState({ open: false, card: null })
   const [moveModal, setMoveModal] = useState({ open: false, card: null })
   const importRef = useRef(null)
   const [importResult, setImportResult] = useState(null)
 
-  useEffect(() => {
-    dispatch(fetchNodeCards(node.id, { page: 1 }))
-  }, [dispatch, node.id])
+  const reload = () => {
+    dispatch(setPagination({ page: 1 }))
+    dispatch(fetchNodeCards(node.id))
+  }
+
+  useEffect(reload, [dispatch, node.id])
 
   const handleDelete = (card) => {
     if (!window.confirm('Hapus kartu ini?')) return
-    dispatch(deleteNodeCard(node.id, card.id, () => dispatch(fetchNodeCards(node.id, { page: pagination.page }))))
+    dispatch(deleteNodeCard(node.id, card.id, reload))
   }
 
-  const handlePageChange = (page) => dispatch(fetchNodeCards(node.id, { page }))
+  const handleLoadMore = () => dispatch(loadMoreNodeCards(node.id))
 
   const handleCardSuccess = () => {
     setModal({ open: false, card: null })
-    dispatch(fetchNodeCards(node.id, { page: pagination.page }))
+    reload()
   }
 
   const handleMoveSuccess = () => {
     setMoveModal({ open: false, card: null })
-    dispatch(fetchNodeCards(node.id, { page: pagination.page }))
+    reload()
   }
 
   const handleImportFile = (e) => {
@@ -48,6 +51,6 @@ export function useCardsPage(node) {
     modal, setModal,
     moveModal, setMoveModal,
     importRef, importResult, setImportResult,
-    handleDelete, handlePageChange, handleCardSuccess, handleMoveSuccess, handleImportFile,
+    handleDelete, handleLoadMore, handleCardSuccess, handleMoveSuccess, handleImportFile,
   }
 }

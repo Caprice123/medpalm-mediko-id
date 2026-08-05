@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
-import Pagination from '@components/common/Pagination'
 import Modal from '@components/common/Modal'
 import Breadcrumb from '@components/common/Breadcrumb'
 import MoveCardModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/MoveCardModal'
@@ -17,12 +16,11 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D']
 export default function QuestionsPage({ node, parentNode, onBack }) {
   const dispatch = useDispatch()
   const { questions, pagination, loading } = useSelector(state => state.nodeQuestions)
-  const totalPages = pagination.isLastPage ? pagination.page : pagination.page + 1
   const {
     modal, setModal,
     moveModal, setMoveModal,
     importRef, importResult, setImportResult,
-    handleDelete, handlePageChange, handleQuestionSuccess, handleMoveSuccess, handleImportFile,
+    handleDelete, handleLoadMore, handleQuestionSuccess, handleMoveSuccess, handleImportFile,
   } = useQuestionsPage(node)
 
   const columns = [
@@ -92,14 +90,15 @@ export default function QuestionsPage({ node, parentNode, onBack }) {
         emptySubtext='Klik "+ Tambah Pertanyaan" untuk memulai.'
       />
 
-      {(questions.length > 0 || pagination.page > 1) && (
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={totalPages}
-          totalItems={pagination.isLastPage ? (pagination.page - 1) * pagination.perPage + questions.length : undefined}
-          itemsPerPage={pagination.perPage}
-          onPageChange={handlePageChange}
-        />
+      {!pagination.isLastPage && (
+        <Button
+          variant="secondary"
+          onClick={handleLoadMore}
+          disabled={loading.isFetchingQuestions}
+          style={{ margin: '0 auto' }}
+        >
+          {loading.isFetchingQuestions ? 'Memuat...' : 'Muat Lebih Banyak'}
+        </Button>
       )}
 
       {modal.open && (

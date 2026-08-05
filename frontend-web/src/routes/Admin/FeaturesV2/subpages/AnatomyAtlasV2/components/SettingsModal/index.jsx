@@ -3,7 +3,7 @@ import Modal from '@components/common/Modal'
 import TextInput from '@components/common/TextInput'
 import Dropdown from '@components/common/Dropdown'
 import Button from '@components/common/Button'
-import { useAnatomyAtlasSetting } from '../../hooks/useAnatomyAtlasSetting'
+import { useAnatomyAtlasSetting } from './hooks/useAnatomyAtlasSetting'
 import { FormGroup, Label, HintText, SectionDivider, ToggleSwitch, ToggleSlider } from './SettingsModal.styles'
 
 const ACCESS_TYPE_OPTIONS = [

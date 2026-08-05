@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
-import Pagination from '@components/common/Pagination'
 import Modal from '@components/common/Modal'
 import Breadcrumb from '@components/common/Breadcrumb'
 import CardFormModal from '../../components/CardFormModal'
@@ -14,12 +13,11 @@ import { ActionGroup } from './CardsPage.styles'
 export default function CardsPage({ node, parentNode, onBack }) {
   const dispatch = useDispatch()
   const { cards, pagination, loading } = useSelector(state => state.nodeCards)
-  const totalPages = pagination.isLastPage ? pagination.page : pagination.page + 1
   const {
     modal, setModal,
     moveModal, setMoveModal,
     importRef, importResult, setImportResult,
-    handleDelete, handlePageChange, handleCardSuccess, handleMoveSuccess, handleImportFile,
+    handleDelete, handleLoadMore, handleCardSuccess, handleMoveSuccess, handleImportFile,
   } = useCardsPage(node)
 
   const columns = [
@@ -78,13 +76,16 @@ export default function CardsPage({ node, parentNode, onBack }) {
         emptySubtext='Klik "+ Tambah Kartu" untuk memulai.'
       />
 
-      <Pagination
-        currentPage={pagination.page}
-        totalPages={totalPages}
-        totalItems={pagination.isLastPage ? (pagination.page - 1) * pagination.perPage + cards.length : undefined}
-        itemsPerPage={pagination.perPage}
-        onPageChange={handlePageChange}
-      />
+      {!pagination.isLastPage && (
+        <Button
+          variant="secondary"
+          onClick={handleLoadMore}
+          disabled={loading.isFetchingCards}
+          style={{ margin: '0 auto' }}
+        >
+          {loading.isFetchingCards ? 'Memuat...' : 'Muat Lebih Banyak'}
+        </Button>
+      )}
 
       {modal.open && (
         <CardFormModal

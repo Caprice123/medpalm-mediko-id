@@ -22,6 +22,7 @@ const nodeQuestionsSlice = createSlice({
   initialState,
   reducers: {
     setQuestions(state, action) { state.questions = action.payload },
+    appendQuestions(state, action) { state.questions = [...state.questions, ...action.payload] },
     setPagination(state, action) { state.pagination = { ...state.pagination, ...action.payload } },
     setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
     reset() { return initialState },

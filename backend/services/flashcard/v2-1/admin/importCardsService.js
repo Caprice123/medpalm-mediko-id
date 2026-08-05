@@ -17,12 +17,19 @@ export class ImportCardsService extends BaseService {
       const front = String(row['Depan'] || '').trim()
       const back = String(row['Belakang'] || '').trim()
 
+      const references = []
+      for (let n = 1; n <= 3; n++) {
+        const label = String(row[`Referensi ${n} Judul`] || '').trim()
+        const url = String(row[`Referensi ${n} Link`] || '').trim()
+        if (label || url) references.push({ label, url: url || undefined })
+      }
+
       if (!front) { results.errors.push({ row: rowNum, message: 'Kolom Depan kosong' }); continue }
       if (!back) { results.errors.push({ row: rowNum, message: 'Kolom Belakang kosong' }); continue }
 
       try {
         const card = await prisma.flashcard_cards.create({
-          data: { front, back, is_deleted: false, version: nodeId ? 2 : 1 },
+          data: { front, back, references, is_deleted: false, version: nodeId ? 2 : 1 },
         })
 
         if (nodeId) {

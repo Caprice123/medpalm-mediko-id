@@ -15,6 +15,7 @@ const unlinkedAtlasSlice = createSlice({
   initialState,
   reducers: {
     setModels(state, action) { state.models = action.payload },
+    appendModels(state, action) { state.models = [...state.models, ...action.payload] },
     setPagination(state, action) { state.pagination = { ...state.pagination, ...action.payload } },
     setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
     reset() { return initialState },

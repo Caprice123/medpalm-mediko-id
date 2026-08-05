@@ -2,22 +2,28 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWithToken } from '@utils/requestUtils'
 
-const { setCards, setPagination, setLoading } = actions
+const { setCards, appendCards, setPagination, setLoading } = actions
 
-export const fetchNodeCards = (nodeId, overrides = {}) => async (dispatch, getState) => {
+export const fetchNodeCards = (nodeId, { append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingCards: true }))
     const { pagination } = getState().nodeCards
-    const page = overrides.page ?? pagination.page
     const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/cards`, {
-      page,
+      page: pagination.page,
       perPage: pagination.perPage,
     })
-    dispatch(setCards(res.data.data || []))
+    dispatch(append ? appendCards(res.data.data || []) : setCards(res.data.data || []))
     if (res.data.pagination) dispatch(setPagination(res.data.pagination))
   } finally {
     dispatch(setLoading({ isFetchingCards: false }))
   }
+}
+
+export const loadMoreNodeCards = (nodeId) => (dispatch, getState) => {
+  const { pagination } = getState().nodeCards
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchNodeCards(nodeId, { append: true }))
 }
 
 export const addNodeCard = (nodeId, payload, onSuccess) => async (dispatch) => {

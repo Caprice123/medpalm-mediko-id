@@ -1,36 +1,40 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchNodeQuestions, deleteNodeQuestion } from '@store/nodeQuestions'
+import { useDispatch } from 'react-redux'
+import { actions, fetchNodeQuestions, loadMoreNodeQuestions, deleteNodeQuestion } from '@store/nodeQuestions'
 import { importNodeQuestions } from '@store/nodeQuestions/adminAction'
+
+const { setPagination } = actions
 
 export function useQuestionsPage(node) {
   const dispatch = useDispatch()
-  const { pagination } = useSelector(state => state.nodeQuestions)
 
   const [modal, setModal] = useState({ open: false, question: null })
   const [moveModal, setMoveModal] = useState({ open: false, question: null })
   const importRef = useRef(null)
   const [importResult, setImportResult] = useState(null)
 
-  useEffect(() => {
-    dispatch(fetchNodeQuestions(node.id, { page: 1 }))
-  }, [dispatch, node.id])
+  const reload = () => {
+    dispatch(setPagination({ page: 1 }))
+    dispatch(fetchNodeQuestions(node.id))
+  }
+
+  useEffect(reload, [dispatch, node.id])
 
   const handleDelete = (question) => {
     if (!window.confirm('Hapus pertanyaan ini?')) return
-    dispatch(deleteNodeQuestion(node.id, question.id, () => dispatch(fetchNodeQuestions(node.id, { page: pagination.page }))))
+    dispatch(deleteNodeQuestion(node.id, question.id, reload))
   }
 
-  const handlePageChange = (page) => dispatch(fetchNodeQuestions(node.id, { page }))
+  const handleLoadMore = () => dispatch(loadMoreNodeQuestions(node.id))
 
   const handleQuestionSuccess = () => {
     setModal({ open: false, question: null })
-    dispatch(fetchNodeQuestions(node.id, { page: pagination.page }))
+    reload()
   }
 
   const handleMoveSuccess = () => {
     setMoveModal({ open: false, question: null })
-    dispatch(fetchNodeQuestions(node.id, { page: pagination.page }))
+    reload()
   }
 
   const handleImportFile = (e) => {
@@ -47,6 +51,6 @@ export function useQuestionsPage(node) {
     modal, setModal,
     moveModal, setMoveModal,
     importRef, importResult, setImportResult,
-    handleDelete, handlePageChange, handleQuestionSuccess, handleMoveSuccess, handleImportFile,
+    handleDelete, handleLoadMore, handleQuestionSuccess, handleMoveSuccess, handleImportFile,
   }
 }

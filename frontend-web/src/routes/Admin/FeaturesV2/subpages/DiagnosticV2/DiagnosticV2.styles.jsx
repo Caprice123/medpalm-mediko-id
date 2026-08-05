@@ -34,30 +34,6 @@ export const PageTitle = styled.h3`
   margin: 0;
 `
 
-export const Breadcrumb = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-`
-
-export const BreadcrumbLink = styled.span`
-  color: #3b82f6;
-  cursor: pointer;
-  &:hover { text-decoration: underline; }
-`
-
-export const BreadcrumbSep = styled.span`
-  color: #d1d5db;
-`
-
-export const BreadcrumbCurrent = styled.span`
-  color: #374151;
-  font-weight: 600;
-`
-
 export const SearchRow = styled.div`
   display: flex;
   gap: 0.75rem;

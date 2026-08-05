@@ -2,20 +2,25 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setCards, setPagination, setLoading } = actions
+const { setCards, appendCards, setPagination, setLoading } = actions
 
-export const fetchUnlinkedCards = (overrides = {}) => async (dispatch, getState) => {
+export const fetchUnlinkedCards = ({ search = '', append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingCards: true }))
     const { pagination } = getState().unlinkedCards
-    const page = overrides.page ?? pagination.page
-    const search = overrides.search ?? ''
-    const res = await getWithToken(Endpoints.admin.flashcardCardsUnlinked, { page, perPage: pagination.perPage, search })
-    dispatch(setCards(res.data.data || []))
+    const res = await getWithToken(Endpoints.admin.flashcardCardsUnlinked, { page: pagination.page, perPage: pagination.perPage, search })
+    dispatch(append ? appendCards(res.data.data || []) : setCards(res.data.data || []))
     if (res.data.pagination) dispatch(setPagination(res.data.pagination))
   } finally {
     dispatch(setLoading({ isFetchingCards: false }))
   }
+}
+
+export const loadMoreUnlinkedCards = (search = '') => (dispatch, getState) => {
+  const { pagination } = getState().unlinkedCards
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchUnlinkedCards({ search, append: true }))
 }
 
 export const updateUnlinkedCard = (cardId, payload, onSuccess) => async (dispatch, getState) => {

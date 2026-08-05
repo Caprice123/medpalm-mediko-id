@@ -2,22 +2,28 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWithToken } from '@utils/requestUtils'
 
-const { setQuestions, setPagination, setLoading } = actions
+const { setQuestions, appendQuestions, setPagination, setLoading } = actions
 
-export const fetchNodeQuestions = (nodeId, overrides = {}) => async (dispatch, getState) => {
+export const fetchNodeQuestions = (nodeId, { append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingQuestions: true }))
     const { pagination } = getState().nodeQuestions
-    const page = overrides.page ?? pagination.page
     const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/questions`, {
-      page,
+      page: pagination.page,
       perPage: pagination.perPage,
     })
-    dispatch(setQuestions(res.data.data || []))
+    dispatch(append ? appendQuestions(res.data.data || []) : setQuestions(res.data.data || []))
     if (res.data.pagination) dispatch(setPagination(res.data.pagination))
   } finally {
     dispatch(setLoading({ isFetchingQuestions: false }))
   }
+}
+
+export const loadMoreNodeQuestions = (nodeId) => (dispatch, getState) => {
+  const { pagination } = getState().nodeQuestions
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchNodeQuestions(nodeId, { append: true }))
 }
 
 export const addNodeQuestion = (nodeId, payload, onSuccess) => async (dispatch) => {

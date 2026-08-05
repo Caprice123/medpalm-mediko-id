@@ -51,10 +51,10 @@ class NodeCardsController {
   downloadTemplate(req, res) {
     const wb = XLSX.utils.book_new()
     const ws = XLSX.utils.aoa_to_sheet([
-      ['Depan', 'Belakang'],
-      ['Apa fungsi jantung?', 'Memompa darah ke seluruh tubuh'],
+      ['Depan', 'Belakang', 'Referensi 1 Judul', 'Referensi 1 Link', 'Referensi 2 Judul', 'Referensi 2 Link', 'Referensi 3 Judul', 'Referensi 3 Link'],
+      ['Apa fungsi jantung?', 'Memompa darah ke seluruh tubuh', 'Guyton and Hall Physiology', 'https://example.com/guyton', '', '', '', ''],
     ])
-    ws['!cols'] = [{ wch: 40 }, { wch: 40 }]
+    ws['!cols'] = [{ wch: 40 }, { wch: 40 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }]
     XLSX.utils.book_append_sheet(wb, ws, 'Template Kartu Flashcard')
     const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
     res.setHeader('Content-Disposition', 'attachment; filename="template-kartu-flashcard.xlsx"')

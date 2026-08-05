@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
-import Pagination from '@components/common/Pagination'
 import TextInput from '@components/common/TextInput'
 import MoveCardModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/MoveCardModal'
 import QuestionFormModal from '../../components/QuestionFormModal'
@@ -15,12 +14,11 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D']
 export default function UnlinkedQuestionsPage({ onBack }) {
   const dispatch = useDispatch()
   const { questions, pagination, loading } = useSelector(state => state.unlinkedQuestions)
-  const totalPages = pagination.isLastPage ? pagination.page : pagination.page + 1
   const {
     editModal, setEditModal,
     assignModal, setAssignModal,
     search, setSearch,
-    handleSearch, handlePageChange, handleDelete,
+    handleSearch, handleLoadMore, handleDelete,
     handleEditSuccess, handleAssignSuccess,
   } = useUnlinkedQuestionsPage()
 
@@ -92,14 +90,15 @@ export default function UnlinkedQuestionsPage({ onBack }) {
         emptySubtext="Semua pertanyaan sudah terhubung ke sub-topik."
       />
 
-      {(questions.length > 0 || pagination.page > 1) && (
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={totalPages}
-          totalItems={pagination.isLastPage ? (pagination.page - 1) * pagination.perPage + questions.length : undefined}
-          itemsPerPage={pagination.perPage}
-          onPageChange={handlePageChange}
-        />
+      {!pagination.isLastPage && (
+        <Button
+          variant="secondary"
+          onClick={handleLoadMore}
+          disabled={loading.isFetchingQuestions}
+          style={{ margin: '0 auto' }}
+        >
+          {loading.isFetchingQuestions ? 'Memuat...' : 'Muat Lebih Banyak'}
+        </Button>
       )}
 
       {editModal.open && (

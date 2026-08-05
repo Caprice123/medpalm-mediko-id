@@ -2,22 +2,28 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setQuizzes, setPagination, setLoading } = actions
+const { setQuizzes, appendQuizzes, setPagination, setLoading } = actions
 
-export const fetchNodeAnatomyQuizzes = (nodeId, overrides = {}) => async (dispatch, getState) => {
+export const fetchNodeAnatomyQuizzes = (nodeId, { append = false } = {}) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ isFetchingQuizzes: true }))
     const { pagination } = getState().nodeAnatomy
-    const page = overrides.page ?? pagination.page
     const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/anatomy-quizzes`, {
-      page,
+      page: pagination.page,
       perPage: pagination.perPage,
     })
-    dispatch(setQuizzes(res.data.data || []))
+    dispatch(append ? appendQuizzes(res.data.data || []) : setQuizzes(res.data.data || []))
     if (res.data.pagination) dispatch(setPagination(res.data.pagination))
   } finally {
     dispatch(setLoading({ isFetchingQuizzes: false }))
   }
+}
+
+export const loadMoreNodeAnatomyQuizzes = (nodeId) => (dispatch, getState) => {
+  const { pagination } = getState().nodeAnatomy
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchNodeAnatomyQuizzes(nodeId, { append: true }))
 }
 
 export const unlinkNodeAnatomyQuiz = (nodeId, quizId, onSuccess) => async (dispatch) => {
