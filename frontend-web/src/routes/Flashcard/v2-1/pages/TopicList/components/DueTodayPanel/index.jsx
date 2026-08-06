@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { PanelCard } from '../../TopicList.styles'
 import {
-  HeaderRow, CountBlock, CountNumber, CountLabel, SubtitleText,
+  HeaderRow, PanelTitle, CountBlock, CountNumber, CountLabel, SubtitleText,
   DueList, DueItem, ItemNumber, ItemContent, ItemTitle, ItemSub,
   ItemRight, ItemCount,
   StartAllBtn,
@@ -51,9 +51,9 @@ export default function DueTodayPanel({ onStartAll, onStartNode, isStarting, bat
   return (
     <PanelCard>
       <HeaderRow>
-        <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827' }}>Due Today</span>
+        <PanelTitle>Due Today</PanelTitle>
         {dueToday && (
-          <CountBlock style={{ marginLeft: 'auto' }}>
+          <CountBlock>
             <CountNumber>{dueToday.total}</CountNumber>
             <CountLabel>kartu</CountLabel>
           </CountBlock>

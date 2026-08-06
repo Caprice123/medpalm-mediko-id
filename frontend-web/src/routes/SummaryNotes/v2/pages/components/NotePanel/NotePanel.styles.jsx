@@ -3,12 +3,16 @@ import styled from 'styled-components'
 export const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 100vh;
   margin-left: -1rem;
 
   .bn-editor {
     padding-left: 1rem;
     padding-inline: 0;
+  }
+
+  @media (max-width: 768px) {
+     min-height: 100vh;
   }
 `
 

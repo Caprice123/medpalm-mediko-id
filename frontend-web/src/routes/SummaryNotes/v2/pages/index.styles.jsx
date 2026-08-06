@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const PageWrapper = styled.div`
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 44px);
   overflow: hidden;
   background: #f5f3ee;
 

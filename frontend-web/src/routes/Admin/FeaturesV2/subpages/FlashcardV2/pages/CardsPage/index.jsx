@@ -7,8 +7,9 @@ import CardFormModal from '../../components/CardFormModal'
 import MoveCardModal from '../../components/MoveCardModal'
 import { downloadCardsTemplate } from '@store/nodeCards/adminAction'
 import { useCardsPage } from './hooks/useCardsPage'
+import { getCardFrontPreview, CARD_TYPE_LABELS } from '../../utils/cardPreview'
 import { Container, Header, HeaderLeft, PageTitle } from '../../FlashcardV2.styles'
-import { ActionGroup } from './CardsPage.styles'
+import { ActionGroup, TypeBadge } from './CardsPage.styles'
 
 export default function CardsPage({ node, parentNode, onBack }) {
   const dispatch = useDispatch()
@@ -21,8 +22,16 @@ export default function CardsPage({ node, parentNode, onBack }) {
   } = useCardsPage(node)
 
   const columns = [
-    { header: 'Front', render: (c) => c.front },
-    { header: 'Back', render: (c) => c.back },
+    {
+      header: 'Front',
+      render: (c) => (
+        <div>
+          <TypeBadge $type={c.type}>{CARD_TYPE_LABELS[c.type] || 'Basic'}</TypeBadge>
+          <div>{getCardFrontPreview(c)}</div>
+        </div>
+      ),
+    },
+    { header: 'Back', render: (c) => (c.type === 'basic' ? c.back : '—') },
     {
       header: 'Aksi',
       width: '200px',

@@ -157,7 +157,6 @@ export const FormTextarea = styled.textarea`
   border-radius: 6px;
   font-size: 14px;
   color: #1f2937;
-  font-family: inherit;
   resize: vertical;
   min-height: 120px;
   transition: all 0.2s;

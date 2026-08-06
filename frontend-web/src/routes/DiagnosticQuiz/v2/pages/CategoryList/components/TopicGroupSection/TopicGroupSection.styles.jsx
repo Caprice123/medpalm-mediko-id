@@ -98,6 +98,8 @@ export const TopikRowWrap = styled.div`
 export const TopikRowHeader = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.625rem;
   gap: 1rem;
   padding: 1rem 1.25rem 0.875rem;
   cursor: pointer;
@@ -115,12 +117,42 @@ export const TopikName = styled.span`
   flex: 1;
   min-width: 0;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    flex-basis: 100%;
+    white-space: normal;
+  }
 `
 
 export const TopikStats = styled.div`
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    justify-content: space-between;
+  }
+`
+
+export const TopikStatsGroup = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  row-gap: 0.375rem;
+`
+
+export const TopikActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
   flex-shrink: 0;
 `
 
@@ -143,14 +175,14 @@ export const TopikStartBtn = styled.button`
   padding: 0.35rem 1rem;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: opacity 0.15s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(13,148,136,0.3);
+  box-shadow: 0 2px 8px rgba(107,185,232,0.35);
 
   &:hover { opacity: 0.9; transform: translateY(-1px); }
   &:active { transform: translateY(0); }

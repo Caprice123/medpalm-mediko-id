@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
+import { resolveFeatureNodeSlug } from '#utils/featureNodeSlugResolver'
 
 export class UpdateFeatureNodeService extends BaseService {
   static async call({ id, name, slug, parentId, nodeType, visibility, classification, layer, icon, description, videoBlobId, videoExplanation }) {
@@ -11,10 +12,15 @@ export class UpdateFeatureNodeService extends BaseService {
     if (!name?.trim()) throw new ValidationError('Nama wajib diisi')
     if (!slug?.trim()) throw new ValidationError('Slug wajib diisi')
 
-    if (slug !== node.slug) {
-      const existing = await prisma.feature_nodes.findUnique({ where: { slug } })
-      if (existing) throw new ValidationError('Slug sudah digunakan')
-    }
+    const finalSlug = slug.trim() === node.slug
+      ? node.slug
+      : await resolveFeatureNodeSlug({
+        slug,
+        nodeType: nodeType ?? node.node_type,
+        visibility: visibility !== undefined ? visibility : node.visibility,
+        layer: layer !== undefined ? layer : node.layer,
+        excludeId: parseInt(id),
+      })
 
     if (parentId) {
       const parsedParentId = parseInt(parentId)
@@ -27,7 +33,7 @@ export class UpdateFeatureNodeService extends BaseService {
       where: { id: parseInt(id) },
       data: {
         name: name.trim(),
-        slug: slug.trim(),
+        slug: finalSlug,
         parent_id: parentId ? parseInt(parentId) : null,
         node_type: nodeType || null,
         ...(visibility !== undefined && { visibility }),

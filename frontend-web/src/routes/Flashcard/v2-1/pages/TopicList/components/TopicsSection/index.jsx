@@ -6,7 +6,7 @@ import {
   EmptyWrap,
   TopikSection, TopikSectionHeader, TopikSectionTitle,
   TopikSearchWrap, TopikSearchIcon, TopikSearchInput,
-  TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats,
+  TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats, TopikStatsGroup, TopikActions,
   TopikStatChip, TopikStatNum, TopikPct, TopikStartBtn, TopikChevron,
   SkeletonBlock, SkeletonCircle, SkeletonTopikRow,
 } from './TopicsSection.styles'
@@ -72,13 +72,17 @@ export default function TopicsSection({
                 <TopikRowHeader $open={isOpen} onClick={() => toggle(topic.id)}>
                   <TopikName>{topic.name}</TopikName>
                   <TopikStats>
-                    <TopikStatChip><TopikStatNum>{selesai}</TopikStatNum> selesai</TopikStatChip>
-                    <TopikStatChip><TopikStatNum>{totalCards}</TopikStatNum> kartu</TopikStatChip>
-                    <TopikPct>{pct}%</TopikPct>
-                    <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>
-                      Mulai
-                    </TopikStartBtn>
-                    <TopikChevron $open={isOpen}>›</TopikChevron>
+                    <TopikStatsGroup>
+                      <TopikStatChip><TopikStatNum>{selesai}</TopikStatNum> selesai</TopikStatChip>
+                      <TopikStatChip><TopikStatNum>{totalCards}</TopikStatNum> kartu</TopikStatChip>
+                      <TopikPct>{pct}%</TopikPct>
+                    </TopikStatsGroup>
+                    <TopikActions>
+                      <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>
+                        Mulai
+                      </TopikStartBtn>
+                      <TopikChevron $open={isOpen}>›</TopikChevron>
+                    </TopikActions>
                   </TopikStats>
                 </TopikRowHeader>
                 {isOpen && (

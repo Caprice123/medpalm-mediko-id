@@ -261,17 +261,20 @@ model flashcard_decks {
 }
 
 model flashcard_cards {
-  id         Int            @id @default(autoincrement())
-  deck_id    Int?
-  front      String
-  back       String
-  image_url  String?
-  references Json?
-  order      Int            @default(0)
-  is_deleted Boolean        @default(false)
-  version    Int            @default(1)
-  created_at DateTime       @default(now())
-  updated_at DateTime       @default(now())
+  id                Int            @id @default(autoincrement())
+  deck_id           Int?
+  front             String?
+  back              String?
+  image_url         String?
+  references        Json?
+  order             Int            @default(0)
+  is_deleted        Boolean        @default(false)
+  version           Int            @default(1)
+  type              String         @default("basic")
+  cloze_answers     Json?
+  occlusion_regions Json?
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now())
 
   flashcard_decks flashcard_decks? @relation(fields: [deck_id], references: [id])
 

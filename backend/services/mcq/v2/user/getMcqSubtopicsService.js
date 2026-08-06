@@ -5,9 +5,10 @@ const DEFAULT_LIMIT = 50
 
 export class GetMcqSubtopicsService extends BaseService {
   static async call({ userId, topicId, cursor = null, limit = DEFAULT_LIMIT, sortBy = 'name' }) {
+    const parsedTopicId = parseInt(topicId)
     return sortBy === 'avgScore'
-      ? this.callSortedByAvgScore({ userId, topicId, cursor, limit })
-      : this.callSortedByName({ topicId, cursor, limit })
+      ? this.callSortedByAvgScore({ userId, topicId: parsedTopicId, cursor, limit })
+      : this.callSortedByName({ topicId: parsedTopicId, cursor, limit })
   }
 
   // Used by the Quick Start subtopic picker — a plain, cheap query. No join needed since
@@ -17,7 +18,7 @@ export class GetMcqSubtopicsService extends BaseService {
 
     const rows = await prisma.feature_nodes.findMany({
       where: {
-        parent_id: parseInt(topicId),
+        parent_id: topicId,
         layer: 2,
         visibility: 'general',
         node_type: 'subtopic',

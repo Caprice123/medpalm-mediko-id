@@ -18,15 +18,34 @@ const skeletonBg = `
 export const HeaderRow = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
   gap: 0.75rem;
 `
 
+export const PanelTitle = styled.span`
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+
+  @media (max-width: 768px) {
+    flex-basis: 100%;
+  }
+`
+
 export const CountBlock = styled.div`
+
   display: flex;
   flex-direction: row;
   align-items: baseline;
   gap: 0.3rem;
   flex-shrink: 0;
+  margin-left: auto;
+
+  
+  @media (max-width: 768px) {
+     margin-left: 0;
+  }
 `
 
 export const CountNumber = styled.span`

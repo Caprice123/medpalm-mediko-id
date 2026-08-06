@@ -79,7 +79,6 @@ export const DomainCard = styled.button`
   padding: 0.625rem 0.75rem;
   border-radius: 8px;
   font-size: 0.8125rem;
-  font-family: monospace;
   text-align: left;
   word-break: break-all;
   background: ${({ $checked, $disabled }) => $checked ? '#eff6ff' : $disabled ? '#f3f4f6' : '#f9fafb'};
@@ -181,7 +180,6 @@ export const AdminDomainChip = styled.div`
   border: 1px solid #bfdbfe;
   border-radius: 99px;
   font-size: 0.75rem;
-  font-family: monospace;
   color: #1d4ed8;
 
   button {
@@ -221,7 +219,6 @@ export const CustomDomainInput = styled.input`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   font-size: 0.8125rem;
-  font-family: monospace;
   color: #111827;
   outline: none;
 
@@ -244,7 +241,6 @@ export const CustomDomainChip = styled.div`
   border: 1px solid #fde68a;
   border-radius: 99px;
   font-size: 0.75rem;
-  font-family: monospace;
   color: #92400e;
 
   button {

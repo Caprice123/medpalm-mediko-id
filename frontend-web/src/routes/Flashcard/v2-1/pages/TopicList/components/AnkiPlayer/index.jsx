@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { submitFlashcardRating } from '@store/flashcardNodes/userAction'
+import ClozeCard from './components/ClozeCard'
+import OcclusionCard from './components/OcclusionCard'
 import {
   Wrapper, DeckContainer, DeckHeader, DeckTitle, BackBtn,
   StatsRow, CardCounter, ReviewedCount,
@@ -39,11 +41,13 @@ export default function AnkiPlayer({ deck, onBack }) {
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.code === 'Space') { e.preventDefault(); handleReveal() }
+      if (e.code === 'Space' && card?.type !== 'cloze' && card?.type !== 'occlusion') {
+        e.preventDefault(); handleReveal()
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [handleReveal])
+  }, [handleReveal, card])
 
   const handleRate = (ratingKey) => {
     dispatch(submitFlashcardRating(card.id, ratingKey))
@@ -83,26 +87,36 @@ export default function AnkiPlayer({ deck, onBack }) {
           <ProgressFill $progress={progress} />
         </ProgressBar>
 
-        <FlipArea $clickable={!revealed} onClick={!revealed ? handleReveal : undefined}>
-          <FlipCard $flipped={revealed}>
-            <CardFront>
-              {card.isNew && <NewBadge>Baru</NewBadge>}
-              {(card.topic || card.subtopic) && (
-                <CardNodePath>
-                  {card.topic?.name}{card.topic && card.subtopic && ' › '}{card.subtopic?.name}
-                </CardNodePath>
-              )}
-              <CardLabel>Pertanyaan</CardLabel>
-              <CardText>{card.front}</CardText>
-              {card.imageUrl && <CardImage src={card.imageUrl} alt="" />}
-              <FlipHint>Klik kartu atau tekan spasi untuk flip</FlipHint>
-            </CardFront>
-            <CardBack>
-              <CardLabel>Jawaban</CardLabel>
-              <CardText>{card.back}</CardText>
-            </CardBack>
-          </FlipCard>
-        </FlipArea>
+        {card.type === 'cloze' && (
+          <ClozeCard key={card.id} text={card.front} answers={card.clozeAnswers} onFullyRevealed={handleReveal} />
+        )}
+
+        {card.type === 'occlusion' && (
+          <OcclusionCard key={card.id} imageUrl={card.imageUrl} regions={card.occlusionRegions} onFullyRevealed={handleReveal} />
+        )}
+
+        {(!card.type || card.type === 'basic') && (
+          <FlipArea $clickable={!revealed} onClick={!revealed ? handleReveal : undefined}>
+            <FlipCard $flipped={revealed}>
+              <CardFront>
+                {card.isNew && <NewBadge>Baru</NewBadge>}
+                {(card.topic || card.subtopic) && (
+                  <CardNodePath>
+                    {card.topic?.name}{card.topic && card.subtopic && ' › '}{card.subtopic?.name}
+                  </CardNodePath>
+                )}
+                <CardLabel>Pertanyaan</CardLabel>
+                <CardText>{card.front}</CardText>
+                {card.imageUrl && <CardImage src={card.imageUrl} alt="" />}
+                <FlipHint>Klik kartu atau tekan spasi untuk flip</FlipHint>
+              </CardFront>
+              <CardBack>
+                <CardLabel>Jawaban</CardLabel>
+                <CardText>{card.back}</CardText>
+              </CardBack>
+            </FlipCard>
+          </FlipArea>
+        )}
 
         {revealed && card.references?.length > 0 && (
           <CardReferences>

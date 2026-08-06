@@ -6,6 +6,7 @@ import CardFormModal from '../../components/CardFormModal'
 import MoveCardModal from '../../components/MoveCardModal'
 import { updateUnlinkedCard, assignCardToNode } from '@store/unlinkedCards'
 import { useUnlinkedCardsPage } from './hooks/useUnlinkedCardsPage'
+import { getCardFrontPreview } from '../../utils/cardPreview'
 import { Container, Header, HeaderLeft, PageTitle } from '../../FlashcardV2.styles'
 import { ActionGroup } from '../CardsPage/CardsPage.styles'
 
@@ -29,7 +30,7 @@ export default function UnlinkedCardsPage({ onBack }) {
           {c.imageUrl && (
             <img src={c.imageUrl} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4, display: 'block', marginBottom: 4 }} />
           )}
-          <span>{c.front}</span>
+          <span>{getCardFrontPreview(c)}</span>
         </div>
       ),
     },

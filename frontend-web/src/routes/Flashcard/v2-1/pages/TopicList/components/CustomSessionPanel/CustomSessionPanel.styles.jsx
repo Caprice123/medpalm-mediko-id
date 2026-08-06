@@ -1,5 +1,17 @@
 import styled from 'styled-components'
 
+export const Footer = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+
+    > * { flex: 1 1 100%; }
+  }
+`
+
 export const StartButton = styled.button`
   padding: 0.6rem 2rem;
   background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);

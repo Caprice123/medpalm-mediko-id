@@ -7,6 +7,7 @@ export const PillBadge = styled.span`
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  text-align: center;
   background: ${p => p.$bg || '#ede9fe'};
   color: ${p => p.$color || '#6d28d9'};
 `
@@ -19,6 +20,7 @@ export const SquareBadge = styled.span`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-align: center;
   background: ${p => p.$bg || '#dbeafe'};
   color: ${p => p.$color || '#1d4ed8'};
 `

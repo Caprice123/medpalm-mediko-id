@@ -19,7 +19,6 @@ export const HeadContent = styled.div`
 `
 
 export const Title = styled.h2`
-    font-family: "Inter";
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
@@ -30,7 +29,6 @@ export const BodyContent = styled.div`
 `
 
 export const Message = styled.p`
-    font-family: "Inter";
     font-style: normal;
     font-weight: 400;
     font-size: 14px;

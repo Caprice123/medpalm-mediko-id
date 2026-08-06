@@ -3,7 +3,7 @@ import Button from '@components/common/Button'
 import Modal from '@components/common/Modal'
 import { useCustomSession } from '../../hooks/useCustomSession'
 import TopicFilterCard from '@routes/Flashcard/v2-1/pages/TopicList/components/TopicFilterCard'
-import { StartButton } from './CustomSessionPanel.styles'
+import { Footer, StartButton } from './CustomSessionPanel.styles'
 
 export default function CustomSessionPanel({ onClose }) {
   const { primaryTopics, specialTopics, loading } = useSelector(s => s.diagnosticNodes)
@@ -22,12 +22,12 @@ export default function CustomSessionPanel({ onClose }) {
       size="large"
       title={`Buat Sesi Custom — Total ${totalCount} soal`}
       footer={
-        <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
+        <Footer>
           <Button variant="secondary" onClick={addTopicFilter}>+ Tambah modul lain</Button>
           <StartButton onClick={handleStart} disabled={!canStart} style={{ flex: 1 }}>
             {loading.isStartingSession ? 'Menyiapkan...' : `→ Mulai Sesi (${totalCount} soal)`}
           </StartButton>
-        </div>
+        </Footer>
       }
     >
       {topicFilters.map((f, i) => (

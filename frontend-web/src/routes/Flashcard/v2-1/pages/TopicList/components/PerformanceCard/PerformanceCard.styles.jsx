@@ -13,12 +13,18 @@ export const PanelCard = styled.div`
   margin-bottom: 1.25rem;
   animation: ${fadeSlideUp} 0.4s ease both;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `
 
 export const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 0.75rem;
   gap: 1rem;
   margin-bottom: 1rem;
 `
@@ -39,6 +45,10 @@ export const PanelTitleRow = styled.div`
 export const PanelFilterWrap = styled.div`
   width: 220px;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `
 
 export const PanelTitle = styled.span`

@@ -6,7 +6,7 @@ import {
   EmptyWrap,
   TopikSection, TopikSectionHeader, TopikSectionTitle,
   TopikSearchWrap, TopikSearchIcon, TopikSearchInput,
-  TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats,
+  TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats, TopikStatsGroup, TopikActions,
   TopikStatChip, TopikStatNum, TopikStartBtn, TopikChevron,
   SkeletonBlock, SkeletonCircle, SkeletonTopikRow,
 } from './TopicGroupSection.styles'
@@ -71,12 +71,16 @@ export default function TopicGroupSection({
                 <TopikRowHeader $open={isOpen} onClick={() => toggle(topic.id)}>
                   <TopikName>{topic.name}</TopikName>
                   <TopikStats>
-                    <TopikStatChip><TopikStatNum>{done}</TopikStatNum> selesai</TopikStatChip>
-                    <TopikStatChip><TopikStatNum>{totalQuestions}</TopikStatNum> soal</TopikStatChip>
-                    <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>
-                      Mulai
-                    </TopikStartBtn>
-                    <TopikChevron $open={isOpen}>›</TopikChevron>
+                    <TopikStatsGroup>
+                      <TopikStatChip><TopikStatNum>{done}</TopikStatNum> selesai</TopikStatChip>
+                      <TopikStatChip><TopikStatNum>{totalQuestions}</TopikStatNum> soal</TopikStatChip>
+                    </TopikStatsGroup>
+                    <TopikActions>
+                      <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>
+                        Mulai
+                      </TopikStartBtn>
+                      <TopikChevron $open={isOpen}>›</TopikChevron>
+                    </TopikActions>
                   </TopikStats>
                 </TopikRowHeader>
                 {isOpen && (

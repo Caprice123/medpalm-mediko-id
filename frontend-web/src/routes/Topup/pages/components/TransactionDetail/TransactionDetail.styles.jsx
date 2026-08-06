@@ -275,7 +275,6 @@ export const BankInfoValue = styled.div`
   color: #1e3a8a;
   font-weight: 700;
   text-align: right;
-  font-family: ${props => props.$mono ? 'monospace' : 'inherit'};
   letter-spacing: ${props => props.$mono ? '0.05em' : 'inherit'};
 `
 

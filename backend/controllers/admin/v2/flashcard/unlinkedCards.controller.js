@@ -13,8 +13,8 @@ class UnlinkedCardsController {
 
   async updateUnlinked(req, res) {
     const { cardId } = req.params
-    const { front, back, blobId } = req.body
-    const card = await UpdateNodeCardService.call({ cardId, front, back, blobId })
+    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions } = req.body
+    const card = await UpdateNodeCardService.call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions })
     return res.status(200).json({ data: NodeCardsSerializer.serialize(card) })
   }
 

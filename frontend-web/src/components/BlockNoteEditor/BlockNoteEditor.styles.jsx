@@ -69,11 +69,17 @@ export const EditorWrapper = styled.div`
     border-radius: 8px;
   }
 
-  /* Make BlockNote fill available space */
+  /* Make BlockNote fill available space, and use the app's global font
+     (BlockNote ships its own Inter font-family by default) */
   .bn-container {
     height: 100%;
     display: flex;
     flex-direction: column;
+    font-family: inherit;
+  }
+
+  .bn-default-styles {
+    font-family: inherit;
   }
 
   .bn-editor {
@@ -116,7 +122,6 @@ export const EditorWrapper = styled.div`
   ${props => !props.$isStructured && `
     /* Headings with yellow highlight */
     .bn-block-content[data-content-type="heading"] {
-      font-family: 'Pacifico', cursive;
       color: #1e293b;
       background: linear-gradient(180deg, transparent 50%, #fef08a 50%);
       display: inline;
@@ -125,7 +130,6 @@ export const EditorWrapper = styled.div`
     }
 
     .bn-block-content {
-      font-family: 'Patrick Hand', cursive;
       color: #334155;
       font-size: 1.05rem;
       line-height: 1.8;

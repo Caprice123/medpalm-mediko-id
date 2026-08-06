@@ -51,37 +51,37 @@ export const PresetsRow = styled.div`
 export const PresetBtn = styled.button`
   padding: 0.4rem 0.9rem;
   border-radius: 8px;
-  border: 1.5px solid ${p => p.$active ? '#0d9488' : '#e5e7eb'};
-  background: ${p => p.$active ? 'linear-gradient(135deg, #0d9488 0%, #059669 100%)' : '#fff'};
+  border: 1.5px solid ${p => p.$active ? '#6BB9E8' : '#e5e7eb'};
+  background: ${p => p.$active ? 'linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%)' : '#fff'};
   color: ${p => p.$active ? '#fff' : '#374151'};
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
-  box-shadow: ${p => p.$active ? '0 2px 6px rgba(13,148,136,0.35)' : 'none'};
+  box-shadow: ${p => p.$active ? '0 2px 6px rgba(107,185,232,0.35)' : 'none'};
 
   &:hover {
-    border-color: #0d9488;
-    ${p => !p.$active && 'color: #0d9488;'}
+    border-color: #6BB9E8;
+    ${p => !p.$active && 'color: #6BB9E8;'}
   }
 `
 
 export const CountInput = styled.input`
   width: 72px;
   padding: 0.4rem 0.6rem;
-  border: 1.5px solid #0d9488;
+  border: 1.5px solid #6BB9E8;
   border-radius: 8px;
   font-size: 0.875rem;
   color: #374151;
   outline: none;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
+  box-shadow: 0 0 0 3px rgba(107,185,232,0.1);
 `
 
 export const StartButton = styled.button`
   padding: 0.6rem 2rem;
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -91,7 +91,7 @@ export const StartButton = styled.button`
   white-space: nowrap;
   transition: opacity 0.15s, transform 0.15s;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(13,148,136,0.4);
+  box-shadow: 0 4px 14px rgba(107, 185, 232, 0.4);
   letter-spacing: 0.01em;
 
   &:hover { opacity: 0.92; transform: translateY(-1px); }
@@ -114,17 +114,17 @@ export const DropdownTrigger = styled.button`
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.5rem 0.875rem;
-  border: 1.5px solid ${p => p.$open ? '#0d9488' : '#e5e7eb'};
+  border: 1.5px solid ${p => p.$open ? '#6BB9E8' : '#e5e7eb'};
   border-radius: 10px;
   background: #fff;
   font-size: 0.875rem;
   color: #374151;
   cursor: pointer;
   text-align: left;
-  box-shadow: ${p => p.$open ? '0 0 0 3px rgba(13,148,136,0.15)' : 'none'};
+  box-shadow: ${p => p.$open ? '0 0 0 3px rgba(107,185,232,0.15)' : 'none'};
   transition: border-color 0.15s, box-shadow 0.15s;
 
-  &:hover { border-color: #0d9488; }
+  &:hover { border-color: #6BB9E8; }
 `
 
 export const TriggerChevron = styled.span`

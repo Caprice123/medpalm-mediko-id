@@ -28,14 +28,29 @@ function CustomTooltip({ active, payload }) {
   )
 }
 
+// foreignObject embeds a real HTML node inside the SVG, so the browser's own CSS
+// text layout does the wrapping/clamping — no manual char-count guessing needed.
 function CustomTick({ x, y, payload }) {
-  const label = payload.value
-  const maxLen = 12
-  const display = label.length > maxLen ? label.slice(0, maxLen) + '…' : label
   return (
-    <text x={x} y={y + 10} textAnchor="middle" fontSize={13} fill="#6b7280" fontWeight={500}>
-      {display}
-    </text>
+    <foreignObject x={x - BAR_SIZE / 2} y={y} width={BAR_SIZE} height={36}>
+      <div
+        xmlns="http://www.w3.org/1999/xhtml"
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: '#6b7280',
+          textAlign: 'center',
+          lineHeight: '15px',
+          wordBreak: 'break-word',
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
+        {payload.value}
+      </div>
+    </foreignObject>
   )
 }
 
@@ -77,7 +92,7 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
       ) : (
         <div style={{ width: '100%', overflowX: 'auto' }}>
           <div style={{ minWidth: minChartWidth }}>
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={232}>
               <BarChart
                 data={displayData}
                 barSize={BAR_SIZE}
@@ -91,6 +106,7 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
                   axisLine={false}
                   tickLine={false}
                   interval={0}
+                  height={40}
                 />
                 <YAxis
                   domain={[0, 100]}

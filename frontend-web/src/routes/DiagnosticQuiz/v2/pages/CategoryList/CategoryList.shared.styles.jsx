@@ -16,6 +16,10 @@ export const PanelCard = styled.div`
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   animation: ${fadeSlideUp} 0.4s ease both;
   margin-bottom: 1.75rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `
 
 export const PanelHeader = styled.div`

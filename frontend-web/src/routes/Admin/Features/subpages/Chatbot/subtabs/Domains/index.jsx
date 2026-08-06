@@ -63,7 +63,6 @@ const DomainName = styled.span`
   flex: 1;
   word-break: break-all;
   color: #111827;
-  font-family: monospace;
 `
 
 const JournalRow = styled.div`

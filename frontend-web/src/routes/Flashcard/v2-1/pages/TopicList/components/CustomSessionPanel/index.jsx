@@ -3,7 +3,7 @@ import Button from '@components/common/Button'
 import Modal from '@components/common/Modal'
 import { useCustomSession } from '../../hooks/useCustomSession'
 import TopicFilterCard from '../TopicFilterCard'
-import { StartButton } from './CustomSessionPanel.styles'
+import { Footer, StartButton } from './CustomSessionPanel.styles'
 
 export default function CustomSessionPanel({ onClose }) {
   const { topics, loading } = useSelector(s => s.flashcardNodes)
@@ -22,12 +22,12 @@ export default function CustomSessionPanel({ onClose }) {
       size="large"
       title={`Buat Sesi Custom — Total ${totalCount} kartu`}
       footer={
-        <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
+        <Footer>
           <Button variant="secondary" onClick={addTopicFilter}>+ Tambah bidang lain</Button>
           <StartButton onClick={handleStart} disabled={!canStart} style={{ flex: 1 }}>
             {loading.isStartingSession ? 'Menyiapkan...' : `→ Mulai Sesi (${totalCount} kartu)`}
           </StartButton>
-        </div>
+        </Footer>
       }
     >
       {topicFilters.map((f, i) => (

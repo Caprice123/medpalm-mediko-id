@@ -618,7 +618,6 @@ export const ExampleBox = styled.div`
   border-radius: 6px;
   padding: 0.75rem;
   margin-top: 0.5rem;
-  font-family: 'Courier New', monospace;
   font-size: 0.75rem;
   color: #374151;
 `
@@ -704,7 +703,6 @@ export const JsonEditorWrapper = styled.div`
 export const JsonTextarea = styled.textarea`
   width: 100%;
   min-height: 420px;
-  font-family: 'Courier New', Courier, monospace;
   font-size: 13px;
   line-height: 1.6;
   padding: 1rem;

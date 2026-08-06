@@ -17,15 +17,15 @@ class NodeCardsController {
 
   async addNodeCard(req, res) {
     const { nodeId } = req.params
-    const { front, back, blobId, references } = req.body
-    const card = await AddNodeCardService.call({ nodeId, front, back, blobId, references })
+    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions } = req.body
+    const card = await AddNodeCardService.call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions })
     return res.status(201).json({ data: NodeCardsSerializer.serialize(card) })
   }
 
   async updateNodeCard(req, res) {
     const { cardId } = req.params
-    const { front, back, blobId, references } = req.body
-    const card = await UpdateNodeCardService.call({ cardId, front, back, blobId, references })
+    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions } = req.body
+    const card = await UpdateNodeCardService.call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions })
     return res.status(200).json({ data: NodeCardsSerializer.serialize(card) })
   }
 

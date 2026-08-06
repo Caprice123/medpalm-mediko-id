@@ -308,7 +308,6 @@ export const DomainCard = styled.div`
 
 export const DomainCardName = styled.div`
   font-size: 0.8125rem;
-  font-family: monospace;
   color: #1f2937;
   word-break: break-all;
   flex: 1;

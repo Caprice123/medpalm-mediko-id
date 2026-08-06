@@ -53,8 +53,8 @@ export const FavoriteBtn = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.1rem 0.2rem;
-  font-size: 0.875rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 1.25rem;
   line-height: 1;
   color: ${p => p.$active ? '#f59e0b' : '#d1d5db'};
   &:hover { color: ${p => p.$active ? '#d97706' : '#9ca3af'}; }

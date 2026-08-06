@@ -6,6 +6,11 @@ export const Card = styled.div`
   border: 1.5px solid #e5e7eb;
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
+
+  @media (max-width: 768px) {
+    margin: 0.875rem 0;
+    padding: 1rem;
+  }
 `
 
 export const SectionLabel = styled.div`
@@ -22,6 +27,10 @@ export const FieldGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 export const FieldLabel = styled.div`

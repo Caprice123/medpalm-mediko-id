@@ -54,6 +54,9 @@ export class StartFlashcardDueSessionService extends BaseService {
       id: card.id,
       front: card.front,
       back: card.back,
+      type: card.type ?? 'basic',
+      clozeAnswers: card.cloze_answers ?? [],
+      occlusionRegions: card.occlusion_regions ?? [],
       references: card.references ?? [],
       imageUrl: urlMap.get(card.id) || null,
     }))

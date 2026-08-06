@@ -121,6 +121,8 @@ export const TopikRowWrap = styled.div`
 export const TopikRowHeader = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.625rem;
   gap: 1rem;
   padding: 1rem 1.25rem 0.875rem;
   cursor: pointer;
@@ -138,12 +140,42 @@ export const TopikName = styled.span`
   flex: 1;
   min-width: 0;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    flex-basis: 100%;
+    white-space: normal;
+  }
 `
 
 export const TopikStats = styled.div`
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    justify-content: space-between;
+  }
+`
+
+export const TopikStatsGroup = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  row-gap: 0.375rem;
+`
+
+export const TopikActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
   flex-shrink: 0;
 `
 

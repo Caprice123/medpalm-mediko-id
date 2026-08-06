@@ -252,7 +252,6 @@ export const MessageBubble = styled.div`
     color: ${props => props.$sender === 'user' ? 'white' : '#ef4444'};
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
     font-size: 0.9em;
   }
 
@@ -419,7 +418,6 @@ export const EditorContent = styled.div`
     background: #f3f4f6;
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
     font-size: 0.9em;
     color: #ef4444;
   }

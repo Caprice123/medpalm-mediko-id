@@ -417,7 +417,7 @@ export const ContentArea = styled.div`
    where TopBar is hidden and FloatingHamburger is used instead. */
 export const PageOutlet = styled.div`
   position: relative;
-  min-height: 100%;
+  min-height: calc(100vh - 44px);
   padding-top: 44px;
 
   @media (max-width: 768px) {

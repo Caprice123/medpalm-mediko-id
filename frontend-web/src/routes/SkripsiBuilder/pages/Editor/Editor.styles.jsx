@@ -476,7 +476,6 @@ export const MessageContent = styled.div`
     background: rgba(0, 0, 0, 0.05);
     padding: 0.125rem 0.375rem;
     border-radius: 3px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.875em;
   }
 
@@ -655,7 +654,6 @@ export const ChatInput = styled.textarea`
   resize: vertical;
   min-height: 42px;
   max-height: 120px;
-  font-family: inherit;
   line-height: 1.5;
 
   &:focus {
