@@ -3,6 +3,7 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Table from '@components/common/Table'
 import NodeFormModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/NodeFormModal'
+import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
 import NoteListPage from '../NoteListPage'
 import { useNodeSummary } from './hooks/useNodeSummary'
 import {
@@ -10,7 +11,7 @@ import {
   Breadcrumb, BreadcrumbLink, BreadcrumbSep, BreadcrumbCurrent,
   PageTitle,
 } from '../../SummaryNotesV2.styles'
-import { SearchRow } from './NodeSummaryPage.styles'
+import { SearchRow, TabRow, TabButton } from './NodeSummaryPage.styles'
 
 export default function NodeSummaryPage({ parentNode, onBack }) {
   const { nodes, loading } = useSelector(state => state.featureNodes)
@@ -18,7 +19,9 @@ export default function NodeSummaryPage({ parentNode, onBack }) {
     selectedSubNode, setSelectedSubNode,
     modal, setModal,
     search, setSearch,
-    handleSearch, handleDelete, handleSuccess,
+    tab, handleTabChange,
+    orderModal, setOrderModal,
+    handleSearch, handleDelete, handleSuccess, handleOrderChanged,
   } = useNodeSummary(parentNode)
 
   const columns = [
@@ -28,12 +31,13 @@ export default function NodeSummaryPage({ parentNode, onBack }) {
     },
     {
       header: 'Aksi',
-      width: '220px',
+      width: '280px',
       align: 'right',
       render: (n) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
           <Button size="small" variant="primary" onClick={() => setSelectedSubNode(n)}>Detail</Button>
           <Button size="small" onClick={() => setModal({ open: true, node: n })}>Edit</Button>
+          <Button size="small" variant="secondary" onClick={() => setOrderModal({ open: true, node: n })}>Tukar Posisi</Button>
           <Button size="small" variant="danger" onClick={() => handleDelete(n)}>Hapus</Button>
         </div>
       ),
@@ -68,6 +72,11 @@ export default function NodeSummaryPage({ parentNode, onBack }) {
         </Header>
       </div>
 
+      <TabRow>
+        <TabButton $active={tab === 'ordered'} onClick={() => handleTabChange('ordered')}>Terurut</TabButton>
+        <TabButton $active={tab === 'all'} onClick={() => handleTabChange('all')}>Semua Subtopik</TabButton>
+      </TabRow>
+
       <SearchRow>
         <TextInput
           placeholder="Cari nama sub-topik..."
@@ -94,6 +103,14 @@ export default function NodeSummaryPage({ parentNode, onBack }) {
           parentNode={parentNode}
           onClose={() => setModal({ open: false, node: null })}
           onSuccess={handleSuccess}
+        />
+      )}
+
+      {orderModal.open && (
+        <SwapNodeOrderModal
+          node={orderModal.node}
+          onClose={() => setOrderModal({ open: false, node: null })}
+          onSwapped={handleOrderChanged}
         />
       )}
     </Container>

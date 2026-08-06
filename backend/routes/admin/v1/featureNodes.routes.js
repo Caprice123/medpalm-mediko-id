@@ -23,6 +23,7 @@ router.post('/', asyncHandler(featureNodesController.create.bind(featureNodesCon
 router.get('/:id', asyncHandler(featureNodesController.show.bind(featureNodesController)))
 router.put('/:id', asyncHandler(featureNodesController.update.bind(featureNodesController)))
 router.delete('/:id', asyncHandler(featureNodesController.delete.bind(featureNodesController)))
+router.put('/:id/swap-order', asyncHandler(featureNodesController.swapOrder.bind(featureNodesController)))
 
 // Node records (generic feature_node_records link, e.g. summary_note)
 router.post('/records', asyncHandler(nodeRecordsController.create.bind(nodeRecordsController)))
@@ -49,10 +50,12 @@ router.put('/:nodeId/questions/:questionId/move', asyncHandler(nodeQuestionsCont
 router.get('/:nodeId/atlas-models', asyncHandler(nodeAtlasController.index.bind(nodeAtlasController)))
 router.delete('/:nodeId/atlas-models/:modelId', asyncHandler(nodeAtlasController.destroy.bind(nodeAtlasController)))
 router.put('/:nodeId/atlas-models/:modelId/move', asyncHandler(nodeAtlasController.move.bind(nodeAtlasController)))
+router.put('/:nodeId/atlas-models/:modelId/swap-order', asyncHandler(nodeAtlasController.swapOrder.bind(nodeAtlasController)))
 
 // Node anatomy quizzes (anatomy_quiz linked via feature_node_records)
 router.get('/:nodeId/anatomy-quizzes', asyncHandler(nodeAnatomyController.index.bind(nodeAnatomyController)))
 router.delete('/:nodeId/anatomy-quizzes/:quizId', asyncHandler(nodeAnatomyController.destroy.bind(nodeAnatomyController)))
 router.put('/:nodeId/anatomy-quizzes/:quizId/move', asyncHandler(nodeAnatomyController.move.bind(nodeAnatomyController)))
+router.put('/:nodeId/anatomy-quizzes/:quizId/swap-order', asyncHandler(nodeAnatomyController.swapOrder.bind(nodeAnatomyController)))
 
 export default router

@@ -11,9 +11,15 @@ export class CreateFeatureNodeService extends BaseService {
     const existing = await prisma.feature_nodes.findUnique({ where: { slug } })
     if (existing) throw new ValidationError('Slug sudah digunakan')
 
+    let order = null
     if (parentId) {
       const parent = await prisma.feature_nodes.findUnique({ where: { id: parseInt(parentId) } })
       if (!parent) throw new ValidationError('Node induk tidak ditemukan')
+      const { _max } = await prisma.feature_nodes.aggregate({
+        where: { parent_id: parseInt(parentId) },
+        _max: { order: true },
+      })
+      order = (_max.order ?? -1) + 1
     }
 
     const parsedLayer = layer ? parseInt(layer) : null
@@ -27,6 +33,7 @@ export class CreateFeatureNodeService extends BaseService {
         visibility,
         classification: classification || null,
         layer: parsedLayer,
+        order,
         icon: icon || null,
         description: description || null,
         video_explanation: videoExplanation || null,

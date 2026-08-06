@@ -62,18 +62,15 @@ export const fetchQuizzesForNode = (nodeId) => async () => {
   return res.data.data || []
 }
 
-// anatomy quiz content_relations — fire-and-return, no Redux state
-export const fetchQuizRelations = (uniqueId) => async () => {
-  const res = await getWithToken(Endpoints.admin.contentRelationsV2, { sourceType: 'anatomy_quiz', sourceUniqueId: uniqueId, targetType: 'anatomy_quiz' })
-  return res.data.data || []
-}
-
-export const addQuizRelation = (uniqueId, targetUniqueId, relationType = '') => async () => {
-  await postWithToken(Endpoints.admin.contentRelationsV2, { sourceType: 'anatomy_quiz', sourceUniqueId: uniqueId, targetType: 'anatomy_quiz', targetUniqueId, relationType })
-}
-
-export const removeQuizRelation = (uniqueId, relationId) => async () => {
-  await deleteWithToken(`${Endpoints.admin.contentRelationsV2}/${relationId}`)
+// anatomy quiz ordering within a node — swaps two siblings' order directly
+export const swapAnatomyQuizOrder = (nodeId, quizId, withQuizId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isSwappingOrder: true }))
+    await putWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/anatomy-quizzes/${quizId}/swap-order`, { withQuizId })
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ isSwappingOrder: false }))
+  }
 }
 
 // anatomy quiz → atlas model explicit links — fire-and-return, no Redux state

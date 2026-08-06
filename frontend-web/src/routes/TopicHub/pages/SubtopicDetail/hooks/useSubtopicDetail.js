@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchUserSubtopicBySlug, fetchUserTopicBySlug, fetchUserTopics,
-  fetchUserSubtopics, fetchNodeStats, fetchNodeAtlasModelRelations,
+  fetchNodeStats, fetchNodeAtlasModelRelations,
 } from '@store/featureNodes'
 import { checkFeatureLock } from '../utils/checkFeatureLock'
 
@@ -16,7 +16,6 @@ export function useSubtopicDetail() {
 
   const [topic, setTopic] = useState(null)
   const [subtopic, setSubtopic] = useState(null)
-  const [siblings, setSiblings] = useState([])
   const [stats, setStats] = useState(null)
   const [atlasModels, setAtlasModels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -37,10 +36,6 @@ export function useSubtopicDetail() {
       dispatch(fetchUserTopicBySlug(topicSlug)).then(data => setTopic(data))
     }
   }, [dispatch, topicSlug, userTopics.primary.length, userTopics.special.length])
-
-  useEffect(() => {
-    dispatch(fetchUserSubtopics(topicSlug)).then(data => setSiblings(data || []))
-  }, [dispatch, topicSlug])
 
   useEffect(() => {
     setIsLoading(true)
@@ -64,15 +59,14 @@ export function useSubtopicDetail() {
     dispatch(fetchNodeAtlasModelRelations(subtopicSlug)).then(setAtlasModels)
   }, [dispatch, subtopic?.id, subtopicSlug, features, userStatus])
 
-  const currentIndex = siblings.findIndex(s => s.slug === subtopicSlug)
-  const prevSubtopic = currentIndex > 0 ? siblings[currentIndex - 1] : null
-  const nextSubtopic = currentIndex >= 0 && currentIndex < siblings.length - 1 ? siblings[currentIndex + 1] : null
+  const prevSubtopic = subtopic?.prevSubtopic ?? null
+  const nextSubtopic = subtopic?.nextSubtopic ?? null
   const embedSrc = subtopic?.videoEmbedUrl ?? null
 
   return {
     topicSlug, subtopicSlug,
-    topic, subtopic, siblings, stats, atlasModels, isLoading,
+    topic, subtopic, stats, atlasModels, isLoading,
     panelTab, setPanelTab,
-    currentIndex, prevSubtopic, nextSubtopic, embedSrc,
+    prevSubtopic, nextSubtopic, embedSrc,
   }
 }

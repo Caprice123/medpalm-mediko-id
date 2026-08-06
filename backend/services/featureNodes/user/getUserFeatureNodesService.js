@@ -7,35 +7,46 @@ import IDriveService from '#services/idrive.service'
 // tree — deliberately excludes diagnostic_question, which lives under a separate visibility.
 const ANY_CONTENT_RECORD_TYPES = ['flashcard_card', 'mcq_question', 'summary_note', '3d_atlas', 'anatomy_quiz']
 
+function buildContentFilter(hasContent, layer) {
+  if (!(hasContent === true || hasContent === 'true')) return {}
+  const parsedLayer = parseInt(layer)
+  if (parsedLayer === 2) {
+    return { node_statistics: { some: { record_type: { in: ANY_CONTENT_RECORD_TYPES }, total_count: { gt: 0 } } } }
+  }
+  if (parsedLayer === 1) {
+    return {
+      children: {
+        some: {
+          layer: 2,
+          node_statistics: { some: { record_type: { in: ANY_CONTENT_RECORD_TYPES }, total_count: { gt: 0 } } },
+        },
+      },
+    }
+  }
+  return {}
+}
+
+function buildNodeFilter({ nodeType, visibility, classification, layer, hasContent }) {
+  const where = {}
+  if (nodeType) where.node_type = nodeType
+  if (visibility) where.visibility = visibility
+  if (classification) where.classification = classification
+  if (layer !== undefined && layer !== '') where.layer = parseInt(layer)
+  Object.assign(where, buildContentFilter(hasContent, layer))
+  return where
+}
+
 export class GetUserFeatureNodesService extends BaseService {
-  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, page = 1, perPage = 30 } = {}) {
+  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page = 1, perPage = 30 } = {}) {
     const currentPage = Math.max(1, parseInt(page) || 1)
     const currentPerPage = Math.min(100, Math.max(1, parseInt(perPage) || 30))
     const skip = (currentPage - 1) * currentPerPage
     const take = currentPerPage + 1
 
-    const where = {}
+    const where = buildNodeFilter({ nodeType, visibility, classification, layer, hasContent })
     if (id) where.id = parseInt(id)
     if (name) where.name = name
-    if (nodeType) where.node_type = nodeType
-    if (visibility) where.visibility = visibility
-    if (classification) where.classification = classification
     if (slug) where.slug = slug
-    if (layer !== undefined && layer !== '') where.layer = parseInt(layer)
-
-    if (hasContent === true || hasContent === 'true') {
-      const parsedLayer = parseInt(layer)
-      if (parsedLayer === 2) {
-        where.node_statistics = { some: { record_type: { in: ANY_CONTENT_RECORD_TYPES }, total_count: { gt: 0 } } }
-      } else if (parsedLayer === 1) {
-        where.children = {
-          some: {
-            layer: 2,
-            node_statistics: { some: { record_type: { in: ANY_CONTENT_RECORD_TYPES }, total_count: { gt: 0 } } },
-          },
-        }
-      }
-    }
 
     if (parentSlug) {
       const parent = await prisma.feature_nodes.findUnique({ where: { slug: parentSlug } })
@@ -47,7 +58,7 @@ export class GetUserFeatureNodesService extends BaseService {
     const nodes = await prisma.feature_nodes.findMany({
       where,
       include: { parent: true },
-      orderBy: { name: 'asc' },
+      orderBy: [{ order: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
       skip,
       take,
     })
@@ -59,7 +70,38 @@ export class GetUserFeatureNodesService extends BaseService {
       data,
       pagination: { page: currentPage, perPage: currentPerPage, isLastPage },
       videoEmbedUrlMap: await this.buildVideoEmbedUrlMap(data),
+      adjacentMap: (includeAdjacent === true || includeAdjacent === 'true')
+        ? await this.buildAdjacentMap(data, { nodeType, visibility, classification, layer, hasContent })
+        : {},
     }
+  }
+
+  // Prev/next sibling (closest by `order`, nulls excluded) for each node, keyed by node id.
+  // Reuses the exact same filter the list query itself was built with (nodeType, visibility,
+  // classification, hasContent) — so prev/next only ever point at a sibling the student could
+  // have actually seen in that same filtered list — plus order gt/lt (with closest-first sort,
+  // not exact order±1) so it still finds the right neighbor even if the sequence has a gap.
+  static async buildAdjacentMap(nodes, siblingFilters = {}) {
+    const baseWhere = buildNodeFilter(siblingFilters)
+    const adjacentMap = {}
+
+    await Promise.all(nodes.map(async (node) => {
+      if (node.order === null) return
+      const [prevNode, nextNode] = await Promise.all([
+        prisma.feature_nodes.findFirst({
+          where: { ...baseWhere, parent_id: node.parent_id, order: { lt: node.order } },
+          orderBy: { order: 'desc' },
+          select: { slug: true, name: true },
+        }),
+        prisma.feature_nodes.findFirst({
+          where: { ...baseWhere, parent_id: node.parent_id, order: { gt: node.order } },
+          orderBy: { order: 'asc' },
+          select: { slug: true, name: true },
+        }),
+      ])
+      adjacentMap[node.id] = { prev: prevNode ?? null, next: nextNode ?? null }
+    }))
+    return adjacentMap
   }
 
   // Bulk-fetch video attachments for all nodes in one query

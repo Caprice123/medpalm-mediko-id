@@ -3,6 +3,7 @@ import { GetFeatureNodesService } from '#services/flashcard/v2-1/admin/getFeatur
 import { CreateFeatureNodeService } from '#services/flashcard/v2-1/admin/createFeatureNodeService'
 import { UpdateFeatureNodeService } from '#services/flashcard/v2-1/admin/updateFeatureNodeService'
 import { DeleteFeatureNodeService } from '#services/flashcard/v2-1/admin/deleteFeatureNodeService'
+import { SwapNodeOrderService } from '#services/featureNodes/admin/swapNodeOrderService'
 import { FeatureNodesSerializer } from '#serializers/admin/v1/featureNodesSerializer'
 import attachmentService from '#services/attachment/attachmentService'
 
@@ -17,7 +18,7 @@ async function buildHasVideoSet(nodeIds) {
 
 class FeatureNodesController {
   async index(req, res) {
-    const { search, nodeType, parentId, layer, visibility, classification } = req.query
+    const { search, nodeType, parentId, layer, visibility, classification, sortBy } = req.query
     const nodes = await GetFeatureNodesService.call({
       search,
       nodeType,
@@ -25,6 +26,7 @@ class FeatureNodesController {
       layer,
       visibility,
       classification,
+      sortBy,
     })
     return res.status(200).json({ data: FeatureNodesSerializer.serializeList(nodes) })
   }
@@ -59,6 +61,13 @@ class FeatureNodesController {
   async delete(req, res) {
     const { id } = req.params
     await DeleteFeatureNodeService.call({ id })
+    return res.status(200).json({ data: { success: true } })
+  }
+
+  async swapOrder(req, res) {
+    const { id } = req.params
+    const { withNodeId } = req.body
+    await SwapNodeOrderService.call({ nodeId: parseInt(id), withNodeId: parseInt(withNodeId) })
     return res.status(200).json({ data: { success: true } })
   }
 }

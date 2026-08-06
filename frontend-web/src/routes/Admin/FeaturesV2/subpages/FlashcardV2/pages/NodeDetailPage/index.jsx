@@ -4,10 +4,11 @@ import TextInput from '@components/common/TextInput'
 import Table from '@components/common/Table'
 import Breadcrumb from '@components/common/Breadcrumb'
 import NodeFormModal from '../../components/NodeFormModal'
+import SwapNodeOrderModal from '../../components/SwapNodeOrderModal'
 import CardsPage from '../CardsPage'
 import { useNodeDetail } from './hooks/useNodeDetail'
 import { Container, Header, HeaderLeft, PageTitle } from '../../FlashcardV2.styles'
-import { SearchRow } from './NodeDetailPage.styles'
+import { SearchRow, TabRow, TabButton } from './NodeDetailPage.styles'
 
 export default function NodeDetailPage({ parentNode, onBack }) {
   const { nodes, loading } = useSelector(state => state.featureNodes)
@@ -15,7 +16,9 @@ export default function NodeDetailPage({ parentNode, onBack }) {
     selectedSubNode, setSelectedSubNode,
     modal, setModal,
     search, setSearch,
-    handleSearch, handleDelete, handleSuccess,
+    tab, handleTabChange,
+    orderModal, setOrderModal,
+    handleSearch, handleDelete, handleSuccess, handleOrderChanged,
   } = useNodeDetail(parentNode)
 
   const columns = [
@@ -25,12 +28,13 @@ export default function NodeDetailPage({ parentNode, onBack }) {
     },
     {
       header: 'Aksi',
-      width: '220px',
+      width: '280px',
       align: 'right',
       render: (n) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
           <Button size="small" variant="primary" onClick={() => setSelectedSubNode(n)}>Detail</Button>
           <Button size="small" onClick={() => setModal({ open: true, node: n })}>Edit</Button>
+          <Button size="small" variant="secondary" onClick={() => setOrderModal({ open: true, node: n })}>Tukar Posisi</Button>
           <Button size="small" variant="danger" onClick={() => handleDelete(n)}>Hapus</Button>
         </div>
       ),
@@ -66,6 +70,11 @@ export default function NodeDetailPage({ parentNode, onBack }) {
         </Header>
       </div>
 
+      <TabRow>
+        <TabButton $active={tab === 'ordered'} onClick={() => handleTabChange('ordered')}>Terurut</TabButton>
+        <TabButton $active={tab === 'all'} onClick={() => handleTabChange('all')}>Semua Subtopik</TabButton>
+      </TabRow>
+
       <SearchRow>
         <TextInput
           placeholder="Cari nama sub-topik..."
@@ -92,6 +101,14 @@ export default function NodeDetailPage({ parentNode, onBack }) {
           parentNode={parentNode}
           onClose={() => setModal({ open: false, node: null })}
           onSuccess={handleSuccess}
+        />
+      )}
+
+      {orderModal.open && (
+        <SwapNodeOrderModal
+          node={orderModal.node}
+          onClose={() => setOrderModal({ open: false, node: null })}
+          onSwapped={handleOrderChanged}
         />
       )}
     </Container>

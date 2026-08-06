@@ -20,6 +20,58 @@ async function resolveId(type, uniqueId) {
   return null
 }
 
+const ORDER_RECORD_TYPE = { atlas_model: '3d_atlas', anatomy_quiz: 'anatomy_quiz' }
+const ORDER_MODEL_NAME = { atlas_model: 'atlas_models', anatomy_quiz: 'anatomy_quizzes' }
+const ORDER_SELECT = {
+  atlas_model: { id: true, unique_id: true, title: true, description: true },
+  anatomy_quiz: { id: true, unique_id: true, title: true, description: true, difficulty: true, question_count: true, estimated_minutes: true },
+}
+
+function serializeOrderItem(type, recordId, item) {
+  if (type === 'atlas_model') {
+    return { id: recordId, type, uniqueId: item.unique_id, title: item.title, description: item.description }
+  }
+  return {
+    id: recordId, type, uniqueId: item.unique_id, title: item.title, description: item.description,
+    difficulty: item.difficulty || 'medium', questionCount: item.question_count, estimatedMinutes: item.estimated_minutes || null,
+  }
+}
+
+// Prev/next among siblings linked to the same feature_node, ordered by feature_node_records.order.
+// Skips over any candidate that isn't published (or was deleted) rather than stopping at the first gap.
+async function getOrderAdjacent(sourceType, sourceId) {
+  const recordType = ORDER_RECORD_TYPE[sourceType]
+  const modelName = ORDER_MODEL_NAME[sourceType]
+
+  const link = await prisma.feature_node_records.findFirst({ where: { record_type: recordType, record_id: sourceId } })
+  if (!link || link.order === null) return []
+
+  const directions = [
+    { relationType: 'prev', where: { lt: link.order }, sort: 'desc' },
+    { relationType: 'next', where: { gt: link.order }, sort: 'asc' },
+  ]
+
+  const results = []
+  for (const { relationType, where, sort } of directions) {
+    const candidates = await prisma.feature_node_records.findMany({
+      where: { node_id: link.node_id, record_type: recordType, order: where },
+      orderBy: { order: sort },
+      take: 20,
+    })
+    for (const candidate of candidates) {
+      const item = await prisma[modelName].findFirst({
+        where: { id: candidate.record_id, status: 'published', is_deleted: false },
+        select: ORDER_SELECT[sourceType],
+      })
+      if (item) {
+        results.push({ relationType, ...serializeOrderItem(sourceType, candidate.id, item) })
+        break
+      }
+    }
+  }
+  return results
+}
+
 async function resolveLinkedItems(relations, linkedType, idField) {
   const ids = relations.map(r => r[idField])
   if (!ids.length) return []
@@ -79,6 +131,11 @@ class UserContentRelationsController {
     if (sourceUniqueId) {
       const sourceId = await resolveId(sourceType, sourceUniqueId)
       if (!sourceId) return res.status(404).json({ message: 'Sumber tidak ditemukan' })
+
+      if (sourceType === targetType && ORDER_RECORD_TYPE[sourceType]) {
+        const resolved = await getOrderAdjacent(sourceType, sourceId)
+        return res.status(200).json({ data: resolved })
+      }
 
       const where = { source_type: sourceType, source_id: sourceId }
       if (targetType) where.target_type = targetType

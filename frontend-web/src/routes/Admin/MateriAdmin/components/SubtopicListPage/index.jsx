@@ -56,7 +56,7 @@ function SubtopicListPage({ topic, onBack }) {
     },
     {
       header: 'Aksi',
-      width: '160px',
+      width: '260px',
       align: 'right',
       render: (sub) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>

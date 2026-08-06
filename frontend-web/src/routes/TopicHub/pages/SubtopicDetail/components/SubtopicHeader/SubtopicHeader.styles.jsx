@@ -24,12 +24,6 @@ export const SubtopicName = styled.h1`
   line-height: 1.3;
 `
 
-export const ProgressLabel = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0 0 1.5rem;
-`
-
 export const SkeletonTitle = styled(SkeletonBase)`
   height: 2rem;
   width: 55%;

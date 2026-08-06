@@ -3,7 +3,7 @@ import { UserFeatureNodesSerializer } from '#serializers/api/v1/userFeatureNodes
 
 class NodesController {
   async index(req, res) {
-    const { id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, page, perPage } = req.query
+    const { id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page, perPage } = req.query
     const result = await GetUserFeatureNodesService.call({
       id,
       name,
@@ -15,12 +15,13 @@ class NodesController {
       classification,
       layer,
       hasContent,
+      includeAdjacent,
       page,
       perPage,
     })
 
     res.json({
-      data: UserFeatureNodesSerializer.serializeList(result.data, result.videoEmbedUrlMap),
+      data: UserFeatureNodesSerializer.serializeList(result.data, result.videoEmbedUrlMap, result.adjacentMap),
       pagination: result.pagination,
     })
   }

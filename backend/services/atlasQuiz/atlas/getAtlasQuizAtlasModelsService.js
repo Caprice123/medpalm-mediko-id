@@ -51,7 +51,7 @@ export class GetAtlasQuizAtlasModelsService extends BaseService {
       WHERE fn.parent_id = ${topicId}
         AND fn.layer = 2
         ${filterClause}
-      ORDER BY fn.name ASC, am.title ASC
+      ORDER BY fn.name ASC, fnr.order ASC NULLS LAST, am.title ASC
       LIMIT ${perPage + 1} OFFSET ${offset}
     `
   }

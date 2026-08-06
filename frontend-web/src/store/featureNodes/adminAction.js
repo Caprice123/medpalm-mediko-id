@@ -28,6 +28,7 @@ export const fetchFeatureNodes = () => async (dispatch, getState) => {
     if (filter.classification) queryParams.classification = filter.classification
     if (filter.layer) queryParams.layer = filter.layer
     if (filter.parentId) queryParams.parentId = filter.parentId
+    if (filter.sortBy) queryParams.sortBy = filter.sortBy
     const response = await getWithToken(Endpoints.admin.featureNodes, queryParams)
     dispatch(setNodes(response.data.data || []))
   } finally {
@@ -46,6 +47,7 @@ export const fetchFeatureNodesWithStats = () => async (dispatch, getState) => {
     if (filter.classification) queryParams.classification = filter.classification
     if (filter.layer) queryParams.layer = filter.layer
     if (filter.parentId) queryParams.parentId = filter.parentId
+    if (filter.sortBy) queryParams.sortBy = filter.sortBy
     const response = await getWithToken(Endpoints.admin.featureNodesV2, queryParams)
     dispatch(setNodes(response.data.data || []))
   } finally {
@@ -121,6 +123,17 @@ export const deleteNodeRecord = (id, onSuccess) => async (dispatch) => {
     onSuccess?.()
   } finally {
     dispatch(setLoading({ isDeletingRecord: false }))
+  }
+}
+
+// Subtopic/module ordering — swaps two siblings' order values directly
+export const swapNodeOrder = (nodeId, withNodeId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isSwappingOrder: true }))
+    await putWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/swap-order`, { withNodeId })
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ isSwappingOrder: false }))
   }
 }
 

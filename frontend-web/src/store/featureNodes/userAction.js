@@ -55,7 +55,7 @@ export const fetchUserNodeByName = (name) => async () => {
 }
 
 export const fetchUserSubtopicBySlug = (slug) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 2, perPage: 1 })
+  const res = await getWithToken(Endpoints.api.featureNodes, { slug, layer: 2, nodeType: 'subtopic', perPage: 1, hasContent: true, includeAdjacent: true })
   return (res.data.data || [])[0] ?? null
 }
 

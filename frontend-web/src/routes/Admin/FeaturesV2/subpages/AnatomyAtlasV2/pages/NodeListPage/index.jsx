@@ -1,13 +1,25 @@
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import NodeFormModal from '../../components/NodeFormModal'
+import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
 import { useNodeListPage } from './hooks/useNodeListPage'
-import { ActionGroup } from '../../AnatomyAtlasV2.styles'
+import { ActionGroup, ClassificationBadge } from '../../AnatomyAtlasV2.styles'
+import { TabRow, TabButton } from './NodeListPage.styles'
 
 const LAYER_LABELS = { 1: 'Topik', 2: 'Modul' }
+const CLASSIFICATION_LABELS = {
+  sistem_blok: 'Sistem Blok',
+  ilmu_lintas_sistem: 'Ilmu Lintas Sistem',
+  fisiologi: 'Fisiologi',
+  patologi: 'Patologi',
+}
 
 export default function NodeListPage({ currentLayer, parentNode, onNavigateInto, nodeModal, setNodeModal }) {
-  const { nodes, isLoading, handleDelete, reload } = useNodeListPage(currentLayer, parentNode)
+  const {
+    nodes, isLoading, tab, handleTabChange,
+    orderModal, setOrderModal,
+    handleDelete, handleOrderChanged, reload,
+  } = useNodeListPage(currentLayer, parentNode)
 
   const handleModalSuccess = () => {
     setNodeModal({ open: false, node: null })
@@ -22,7 +34,9 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
     {
       header: 'Klasifikasi',
       width: '160px',
-      render: (n) => <span style={{ color: '#6b7280' }}>{n.classification ?? '-'}</span>,
+      render: (n) => n.classification
+        ? <ClassificationBadge>{CLASSIFICATION_LABELS[n.classification] ?? n.classification}</ClassificationBadge>
+        : <span style={{ color: '#d1d5db' }}>—</span>,
     },
     {
       header: 'Atlas 3D',
@@ -38,7 +52,7 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
     },
     {
       header: 'Aksi',
-      width: '220px',
+      width: currentLayer === 2 ? '300px' : '220px',
       align: 'right',
       render: (n) => (
         <ActionGroup>
@@ -46,6 +60,9 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
             Detail
           </Button>
           <Button size="small" onClick={() => setNodeModal({ open: true, node: n })}>Edit</Button>
+          {currentLayer === 2 && (
+            <Button size="small" variant="secondary" onClick={() => setOrderModal({ open: true, node: n })}>Tukar Posisi</Button>
+          )}
           <Button size="small" variant="danger" onClick={() => handleDelete(n)}>Hapus</Button>
         </ActionGroup>
       ),
@@ -54,6 +71,13 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
 
   return (
     <>
+      {currentLayer === 2 && (
+        <TabRow>
+          <TabButton $active={tab === 'ordered'} onClick={() => handleTabChange('ordered')}>Terurut</TabButton>
+          <TabButton $active={tab === 'all'} onClick={() => handleTabChange('all')}>Semua Modul</TabButton>
+        </TabRow>
+      )}
+
       <Table
         columns={columns}
         data={nodes}
@@ -69,6 +93,14 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
           parentNode={parentNode}
           onClose={() => setNodeModal({ open: false, node: null })}
           onSuccess={handleModalSuccess}
+        />
+      )}
+
+      {orderModal.open && (
+        <SwapNodeOrderModal
+          node={orderModal.node}
+          onClose={() => setOrderModal({ open: false, node: null })}
+          onSwapped={handleOrderChanged}
         />
       )}
     </>

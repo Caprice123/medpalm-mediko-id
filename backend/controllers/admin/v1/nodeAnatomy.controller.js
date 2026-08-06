@@ -1,6 +1,7 @@
 import { GetNodeAnatomyQuizzesService } from '#services/featureNodes/admin/getNodeAnatomyQuizzesService'
 import { UnlinkNodeAnatomyQuizService } from '#services/featureNodes/admin/unlinkNodeAnatomyQuizService'
 import { MoveNodeAnatomyQuizService } from '#services/featureNodes/admin/moveNodeAnatomyQuizService'
+import { SwapNodeAnatomyQuizOrderService } from '#services/featureNodes/admin/swapNodeAnatomyQuizOrderService'
 import { AnatomyQuizListSerializer } from '#serializers/admin/v1/anatomyQuizListSerializer'
 
 class NodeAnatomyController {
@@ -24,6 +25,13 @@ class NodeAnatomyController {
     const { nodeId, quizId } = req.params
     const { targetNodeId } = req.body
     await MoveNodeAnatomyQuizService.call({ nodeId, quizId, targetNodeId })
+    return res.status(200).json({ data: { success: true } })
+  }
+
+  async swapOrder(req, res) {
+    const { nodeId, quizId } = req.params
+    const { withQuizId } = req.body
+    await SwapNodeAnatomyQuizOrderService.call({ nodeId, quizId, withQuizId })
     return res.status(200).json({ data: { success: true } })
   }
 }

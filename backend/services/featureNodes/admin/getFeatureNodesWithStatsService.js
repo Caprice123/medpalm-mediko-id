@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetFeatureNodesWithStatsService extends BaseService {
-  static async call({ search, nodeType, parentId, layer, visibility, classification } = {}) {
+  static async call({ search, nodeType, parentId, layer, visibility, classification, sortBy } = {}) {
     const where = {}
 
     if (nodeType) where.node_type = nodeType
@@ -27,7 +27,9 @@ export class GetFeatureNodesWithStatsService extends BaseService {
         parent: true,
         node_statistics: true,
       },
-      orderBy: { name: 'asc' },
+      orderBy: sortBy === 'order'
+        ? [{ order: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }]
+        : { name: 'asc' },
     })
 
     return nodes

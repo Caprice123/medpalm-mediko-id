@@ -9,6 +9,8 @@ export function useNodeListPage(currentLayer, parentNode) {
   const [search, setSearch] = useState('')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [nodeModal, setNodeModal] = useState({ open: false, node: null })
+  const [tab, setTab] = useState('ordered')
+  const [orderModal, setOrderModal] = useState({ open: false, node: null })
 
   const loadNodes = () => {
     dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
@@ -16,6 +18,7 @@ export function useNodeListPage(currentLayer, parentNode) {
     dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
     dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
     dispatch(updateFilter({ key: 'search', value: '' }))
+    dispatch(updateFilter({ key: 'sortBy', value: currentLayer === 2 && tab === 'ordered' ? 'order' : '' }))
     dispatch(fetchFeatureNodes())
   }
 
@@ -23,7 +26,9 @@ export function useNodeListPage(currentLayer, parentNode) {
     setSearch('')
     loadNodes()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLayer, parentNode?.id])
+  }, [currentLayer, parentNode?.id, tab])
+
+  const handleTabChange = (value) => setTab(value)
 
   const handleSearch = () => {
     dispatch(updateFilter({ key: 'search', value: search.trim() }))
@@ -40,11 +45,15 @@ export function useNodeListPage(currentLayer, parentNode) {
     loadNodes()
   }
 
+  const handleOrderChanged = () => loadNodes()
+
   return {
     nodes, isLoading: loading.isFetchingNodes,
     search, setSearch, handleSearch,
     settingsOpen, setSettingsOpen,
     nodeModal, setNodeModal,
-    handleDelete, handleModalSuccess,
+    tab, handleTabChange,
+    orderModal, setOrderModal,
+    handleDelete, handleModalSuccess, handleOrderChanged,
   }
 }

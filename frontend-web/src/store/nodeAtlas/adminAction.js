@@ -62,19 +62,15 @@ export const fetchAtlasModelsForNode = (nodeId) => async () => {
   return res.data.data || []
 }
 
-// atlas model content_relations — fire-and-return, no Redux state
-export const fetchAtlasModelRelations = (uniqueId) => async () => {
-  const res = await getWithToken(Endpoints.admin.contentRelationsV2, { sourceType: 'atlas_model', sourceUniqueId: uniqueId, targetType: 'atlas_model' })
-  return res.data.data || []
-}
-
-export const addAtlasModelRelation = (uniqueId, targetUniqueId, relationType = '') => async () => {
-  const res = await postWithToken(Endpoints.admin.contentRelationsV2, { sourceType: 'atlas_model', sourceUniqueId: uniqueId, targetType: 'atlas_model', targetUniqueId, relationType })
-  return res.data.data
-}
-
-export const removeAtlasModelRelation = (uniqueId, relationId) => async () => {
-  await deleteWithToken(`${Endpoints.admin.contentRelationsV2}/${relationId}`)
+// atlas model ordering within a node — swaps two siblings' order directly
+export const swapAtlasModelOrder = (nodeId, modelId, withModelId, onSuccess) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isSwappingOrder: true }))
+    await putWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/atlas-models/${modelId}/swap-order`, { withModelId })
+    onSuccess?.()
+  } finally {
+    dispatch(setLoading({ isSwappingOrder: false }))
+  }
 }
 
 // atlas model → anatomy quiz explicit links — fire-and-return, no Redux state

@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { decrementNodeStat } from '#utils/nodeStatisticsHelper'
+import { closeOrderGap } from '#utils/nodeRecordOrderHelper'
 
 export class UnlinkNodeAnatomyQuizService extends BaseService {
   static async call({ nodeId, quizId }) {
@@ -10,6 +11,7 @@ export class UnlinkNodeAnatomyQuizService extends BaseService {
     })
     if (!record) throw new ValidationError('Konten tidak ditemukan di modul ini')
     await prisma.feature_node_records.delete({ where: { id: record.id } })
+    await closeOrderGap({ nodeId: record.node_id, recordType: 'anatomy_quiz', removedOrder: record.order })
     await decrementNodeStat(record.node_id, 'anatomy_quiz')
   }
 }

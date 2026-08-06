@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { decrementNodeStat } from '#utils/nodeStatisticsHelper'
+import { closeOrderGap } from '#utils/nodeRecordOrderHelper'
 
 export class DeleteAnatomyQuizV2Service extends BaseService {
   static async call(quizId) {
@@ -21,6 +22,7 @@ export class DeleteAnatomyQuizV2Service extends BaseService {
 
     if (record) {
       await prisma.feature_node_records.delete({ where: { id: record.id } })
+      await closeOrderGap({ nodeId: record.node_id, recordType: 'anatomy_quiz', removedOrder: record.order })
       await decrementNodeStat(record.node_id, 'anatomy_quiz')
     }
   }

@@ -17,9 +17,9 @@ export default function SubtopicDetailPage() {
   const navigate = useNavigate()
   const {
     topicSlug, subtopicSlug,
-    topic, subtopic, siblings, stats, atlasModels, isLoading,
+    topic, subtopic, stats, atlasModels, isLoading,
     panelTab, setPanelTab,
-    currentIndex, prevSubtopic, nextSubtopic, embedSrc,
+    prevSubtopic, nextSubtopic, embedSrc,
   } = useSubtopicDetail()
 
   const goTo = (slug) => navigate(generatePath(TopicHubRoute.subtopicRoute, { topicSlug, subtopicSlug: slug }))
@@ -39,8 +39,6 @@ export default function SubtopicDetailPage() {
         <SubtopicHeader
           subtopic={subtopic}
           subtopicSlug={subtopicSlug}
-          currentIndex={currentIndex}
-          siblingsCount={siblings.length}
           isLoading={isLoading}
         />
 

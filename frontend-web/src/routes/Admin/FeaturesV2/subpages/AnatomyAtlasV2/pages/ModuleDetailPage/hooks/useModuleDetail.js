@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { actions as atlasActions } from '@store/nodeAtlas/reducer'
-import { fetchNodeAtlasModels, loadMoreNodeAtlasModels, unlinkNodeAtlasModel, moveNodeAtlasModel } from '@store/nodeAtlas/adminAction'
+import { fetchNodeAtlasModels, loadMoreNodeAtlasModels, unlinkNodeAtlasModel, moveNodeAtlasModel, swapAtlasModelOrder } from '@store/nodeAtlas/adminAction'
 import { actions as anatomyActions } from '@store/nodeAnatomy/reducer'
-import { fetchNodeAnatomyQuizzes, loadMoreNodeAnatomyQuizzes, unlinkNodeAnatomyQuiz, moveNodeAnatomyQuiz } from '@store/nodeAnatomy/adminAction'
+import { fetchNodeAnatomyQuizzes, loadMoreNodeAnatomyQuizzes, unlinkNodeAnatomyQuiz, moveNodeAnatomyQuiz, swapAnatomyQuizOrder } from '@store/nodeAnatomy/adminAction'
 
 export function useModuleDetail(nodeId) {
   const dispatch = useDispatch()
@@ -16,9 +16,9 @@ export function useModuleDetail(nodeId) {
   const [atlasMoveModal, setAtlasMoveModal] = useState({ open: false, item: null })
   const [quizEditModal, setQuizEditModal] = useState({ open: false, item: null })
   const [quizMoveModal, setQuizMoveModal] = useState({ open: false, item: null })
-  const [atlasLinkModal, setAtlasLinkModal] = useState({ open: false, item: null })
+  const [atlasOrderModal, setAtlasOrderModal] = useState({ open: false, item: null })
   const [atlasQuizLinkModal, setAtlasQuizLinkModal] = useState({ open: false, item: null })
-  const [quizLinkModal, setQuizLinkModal] = useState({ open: false, item: null })
+  const [quizOrderModal, setQuizOrderModal] = useState({ open: false, item: null })
   const [quizAtlasLinkModal, setQuizAtlasLinkModal] = useState({ open: false, item: null })
 
   const reloadAtlas = () => {
@@ -88,6 +88,20 @@ export function useModuleDetail(nodeId) {
   const handleAtlasLoadMore = () => dispatch(loadMoreNodeAtlasModels(nodeId))
   const handleQuizLoadMore = () => dispatch(loadMoreNodeAnatomyQuizzes(nodeId))
 
+  const handleAtlasSwap = (withModelId) => {
+    dispatch(swapAtlasModelOrder(nodeId, atlasOrderModal.item.id, withModelId, () => {
+      setAtlasOrderModal({ open: false, item: null })
+      reloadAtlas()
+    }))
+  }
+
+  const handleQuizSwap = (withQuizId) => {
+    dispatch(swapAnatomyQuizOrder(nodeId, quizOrderModal.item.id, withQuizId, () => {
+      setQuizOrderModal({ open: false, item: null })
+      reloadQuizzes()
+    }))
+  }
+
   return {
     models, atlasPagination, atlasLoading,
     quizzes, quizPagination, quizLoading,
@@ -97,9 +111,9 @@ export function useModuleDetail(nodeId) {
     atlasMoveModal, setAtlasMoveModal,
     quizEditModal, setQuizEditModal,
     quizMoveModal, setQuizMoveModal,
-    atlasLinkModal, setAtlasLinkModal,
+    atlasOrderModal, setAtlasOrderModal,
     atlasQuizLinkModal, setAtlasQuizLinkModal,
-    quizLinkModal, setQuizLinkModal,
+    quizOrderModal, setQuizOrderModal,
     quizAtlasLinkModal, setQuizAtlasLinkModal,
     handleUnlinkAtlas, handleUnlinkQuiz,
     handleAtlasSuccess, handleQuizSuccess,
@@ -107,5 +121,6 @@ export function useModuleDetail(nodeId) {
     handleAtlasMoveConfirm, handleAtlasMoveSuccess,
     handleQuizMoveConfirm, handleQuizMoveSuccess,
     handleAtlasLoadMore, handleQuizLoadMore,
+    handleAtlasSwap, handleQuizSwap,
   }
 }

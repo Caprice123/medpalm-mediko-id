@@ -1,7 +1,7 @@
 import { toJakartaISO } from '#utils/dateUtils'
 
 export class UserFeatureNodesSerializer {
-  static serialize(node, videoEmbedUrl = null) {
+  static serialize(node, videoEmbedUrl = null, adjacent = null) {
     return {
       id: node.id,
       name: node.name,
@@ -16,12 +16,14 @@ export class UserFeatureNodesSerializer {
       description: node.description ?? null,
       videoEmbedUrl,
       videoExplanation: node.video_explanation ?? null,
+      prevSubtopic: adjacent?.prev ? { slug: adjacent.prev.slug, name: adjacent.prev.name } : null,
+      nextSubtopic: adjacent?.next ? { slug: adjacent.next.slug, name: adjacent.next.name } : null,
       createdAt: toJakartaISO(node.created_at),
       updatedAt: toJakartaISO(node.updated_at),
     }
   }
 
-  static serializeList(nodes, videoEmbedUrlMap = {}) {
-    return nodes.map(n => this.serialize(n, videoEmbedUrlMap[n.id] ?? null))
+  static serializeList(nodes, videoEmbedUrlMap = {}, adjacentMap = {}) {
+    return nodes.map(n => this.serialize(n, videoEmbedUrlMap[n.id] ?? null, adjacentMap[n.id] ?? null))
   }
 }

@@ -3,9 +3,8 @@ import Table from '@components/common/Table'
 import AtlasCreateModal from './components/AtlasCreateModal'
 import QuizCreateModal from './components/QuizCreateModal'
 import MoveContentModal from './components/MoveContentModal'
-import AtlasLinkModal from './components/AtlasLinkModal'
+import ContentSwapOrderModal from './components/ContentSwapOrderModal'
 import AtlasQuizLinkModal from './components/AtlasQuizLinkModal'
-import QuizLinkModal from './components/QuizLinkModal'
 import QuizAtlasLinkModal from './components/QuizAtlasLinkModal'
 import { useModuleDetail } from './hooks/useModuleDetail'
 import {
@@ -23,9 +22,9 @@ export default function ModuleDetailPage({ module }) {
     atlasMoveModal, setAtlasMoveModal,
     quizEditModal, setQuizEditModal,
     quizMoveModal, setQuizMoveModal,
-    atlasLinkModal, setAtlasLinkModal,
+    atlasOrderModal, setAtlasOrderModal,
     atlasQuizLinkModal, setAtlasQuizLinkModal,
-    quizLinkModal, setQuizLinkModal,
+    quizOrderModal, setQuizOrderModal,
     quizAtlasLinkModal, setQuizAtlasLinkModal,
     handleUnlinkAtlas, handleUnlinkQuiz,
     handleAtlasSuccess, handleQuizSuccess,
@@ -33,6 +32,7 @@ export default function ModuleDetailPage({ module }) {
     handleAtlasMoveConfirm, handleAtlasMoveSuccess,
     handleQuizMoveConfirm, handleQuizMoveSuccess,
     handleAtlasLoadMore, handleQuizLoadMore,
+    handleAtlasSwap, handleQuizSwap,
   } = useModuleDetail(module.id)
 
   const atlasColumns = [
@@ -43,7 +43,7 @@ export default function ModuleDetailPage({ module }) {
       header: 'Aksi', width: '320px', align: 'right',
       render: n => (
         <ActionGroup>
-          <Button size="small" variant="secondary" onClick={() => setAtlasLinkModal({ open: true, item: n })}>Link Atlas</Button>
+          <Button size="small" variant="secondary" onClick={() => setAtlasOrderModal({ open: true, item: n })}>Tukar Posisi</Button>
           <Button size="small" variant="secondary" onClick={() => setAtlasQuizLinkModal({ open: true, item: n })}>Link Quiz</Button>
           <Button size="small" variant="secondary" onClick={() => setAtlasMoveModal({ open: true, item: n })}>Pindah</Button>
           <Button size="small" onClick={() => setAtlasEditModal({ open: true, item: n })}>Edit</Button>
@@ -61,7 +61,7 @@ export default function ModuleDetailPage({ module }) {
       header: 'Aksi', width: '320px', align: 'right',
       render: n => (
         <ActionGroup>
-          <Button size="small" variant="secondary" onClick={() => setQuizLinkModal({ open: true, item: n })}>Link Quiz</Button>
+          <Button size="small" variant="secondary" onClick={() => setQuizOrderModal({ open: true, item: n })}>Tukar Posisi</Button>
           <Button size="small" variant="secondary" onClick={() => setQuizAtlasLinkModal({ open: true, item: n })}>Link Atlas</Button>
           <Button size="small" variant="secondary" onClick={() => setQuizMoveModal({ open: true, item: n })}>Pindah</Button>
           <Button size="small" onClick={() => setQuizEditModal({ open: true, item: n })}>Edit</Button>
@@ -159,10 +159,13 @@ export default function ModuleDetailPage({ module }) {
           isSaving={atlasLoading.isMovingModel}
         />
       )}
-      {atlasLinkModal.open && (
-        <AtlasLinkModal
-          atlas={atlasLinkModal.item}
-          onClose={() => setAtlasLinkModal({ open: false, item: null })}
+      {atlasOrderModal.open && (
+        <ContentSwapOrderModal
+          title={`Tukar Posisi — ${atlasOrderModal.item.title}`}
+          options={models.filter(m => m.id !== atlasOrderModal.item.id).map(m => ({ value: m.id, label: m.title }))}
+          onSwap={handleAtlasSwap}
+          isSwapping={atlasLoading.isSwappingOrder}
+          onClose={() => setAtlasOrderModal({ open: false, item: null })}
         />
       )}
       {atlasQuizLinkModal.open && (
@@ -171,10 +174,13 @@ export default function ModuleDetailPage({ module }) {
           onClose={() => setAtlasQuizLinkModal({ open: false, item: null })}
         />
       )}
-      {quizLinkModal.open && (
-        <QuizLinkModal
-          quiz={quizLinkModal.item}
-          onClose={() => setQuizLinkModal({ open: false, item: null })}
+      {quizOrderModal.open && (
+        <ContentSwapOrderModal
+          title={`Tukar Posisi — ${quizOrderModal.item.title}`}
+          options={quizzes.filter(q => q.id !== quizOrderModal.item.id).map(q => ({ value: q.id, label: q.title }))}
+          onSwap={handleQuizSwap}
+          isSwapping={quizLoading.isSwappingOrder}
+          onClose={() => setQuizOrderModal({ open: false, item: null })}
         />
       )}
       {quizAtlasLinkModal.open && (

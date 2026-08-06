@@ -20,7 +20,7 @@ export class GetDiagnosticSubmodulesService extends BaseService {
           select: { total_count: true },
         },
       },
-      orderBy: { name: 'asc' },
+      orderBy: [{ order: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
     })
 
     return submodules.map(s => ({

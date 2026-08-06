@@ -3,7 +3,7 @@ import { FeatureNodesV2Serializer } from '#serializers/admin/v2/featureNodesSeri
 
 class FeatureNodesV2Controller {
   async index(req, res) {
-    const { search, nodeType, parentId, layer, visibility, classification } = req.query
+    const { search, nodeType, parentId, layer, visibility, classification, sortBy } = req.query
     const nodes = await GetFeatureNodesWithStatsService.call({
       search,
       nodeType,
@@ -11,6 +11,7 @@ class FeatureNodesV2Controller {
       layer,
       visibility,
       classification,
+      sortBy,
     })
     return res.status(200).json({ data: FeatureNodesV2Serializer.serializeList(nodes) })
   }

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   quizzes: [],
   pagination: { page: 1, perPage: 20, isLastPage: false },
-  loading: { isFetchingQuizzes: false, isUnlinkingQuiz: false, isUpdatingQuiz: false, isMovingQuiz: false },
+  loading: { isFetchingQuizzes: false, isUnlinkingQuiz: false, isUpdatingQuiz: false, isMovingQuiz: false, isSwappingOrder: false },
 }
 
 const nodeAnatomySlice = createSlice({

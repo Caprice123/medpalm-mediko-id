@@ -51,7 +51,7 @@ export class GetAtlasQuizAnatomyQuizzesService extends BaseService {
         AND fn.layer = 2
         AND fn.node_type = 'module'
         ${filterClause}
-      ORDER BY fn.name ASC, aq.title ASC
+      ORDER BY fn.name ASC, fnr.order ASC NULLS LAST, aq.title ASC
       LIMIT ${perPage + 1} OFFSET ${offset}
     `
   }

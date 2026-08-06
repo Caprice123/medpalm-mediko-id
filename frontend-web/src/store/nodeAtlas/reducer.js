@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   models: [],
   pagination: { page: 1, perPage: 20, isLastPage: false },
-  loading: { isFetchingModels: false, isUnlinkingModel: false, isUpdatingModel: false, isMovingModel: false },
+  loading: { isFetchingModels: false, isUnlinkingModel: false, isUpdatingModel: false, isMovingModel: false, isSwappingOrder: false },
 }
 
 const nodeAtlasSlice = createSlice({

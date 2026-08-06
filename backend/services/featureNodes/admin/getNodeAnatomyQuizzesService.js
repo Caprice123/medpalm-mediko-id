@@ -9,10 +9,15 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
 
     const records = await prisma.feature_node_records.findMany({
       where: { node_id: parseInt(nodeId), record_type: 'anatomy_quiz' },
+      orderBy: [{ order: { sort: 'asc', nulls: 'last' } }, { created_at: 'asc' }],
       select: { record_id: true },
+      skip: (page - 1) * perPage,
+      take: perPage + 1,
     })
 
-    const quizIds = records.map(r => r.record_id)
+    const isLastPage = records.length <= perPage
+    const pageRecords = isLastPage ? records : records.slice(0, perPage)
+    const quizIds = pageRecords.map(r => r.record_id)
 
     if (!quizIds.length) {
       return { data: [], attachmentMap: new Map(), pagination: { page, perPage, isLastPage: true } }
@@ -24,20 +29,19 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
         anatomy_quiz_tags: { include: { tags: { include: { tag_group: true } } } },
         anatomy_questions: { orderBy: { order: 'asc' } },
       },
-      orderBy: { title: 'asc' },
-      skip: (page - 1) * perPage,
-      take: perPage + 1,
     })
 
-    const isLastPage = quizzes.length <= perPage
-    const paginatedQuizzes = isLastPage ? quizzes : quizzes.slice(0, perPage)
+    // findMany({ id: { in } }) does not preserve input order — resort to match
+    // the feature_node_records order the pagination above was actually built on.
+    const quizzesById = new Map(quizzes.map(q => [q.id, q]))
+    const orderedQuizzes = quizIds.map(id => quizzesById.get(id)).filter(Boolean)
 
     const attachmentMap = await attachmentService.getBulkAttachmentsWithUrls(
-      paginatedQuizzes.map(quiz => ({ recordType: 'anatomy_quiz', recordId: quiz.id, name: 'image' }))
+      orderedQuizzes.map(quiz => ({ recordType: 'anatomy_quiz', recordId: quiz.id, name: 'image' }))
     )
 
     return {
-      data: paginatedQuizzes,
+      data: orderedQuizzes,
       attachmentMap,
       pagination: { page, perPage, isLastPage },
     }

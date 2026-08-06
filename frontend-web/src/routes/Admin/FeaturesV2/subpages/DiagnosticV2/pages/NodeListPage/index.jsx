@@ -3,12 +3,14 @@ import Table from '@components/common/Table'
 import TextInput from '@components/common/TextInput'
 import Breadcrumb from '@components/common/Breadcrumb'
 import NodeFormModal from '../../components/NodeFormModal'
+import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
 import DiagnosticSettingsModal from '@routes/Admin/Features/subpages/DiagnosticQuiz/components/DiagnosticSettingsModal'
 import { useNodeListPage } from './hooks/useNodeListPage'
 import {
   Container, Header, HeaderLeft, Title, PageTitle,
   ActionGroup, ClassificationBadge, SearchRow,
 } from '../../DiagnosticV2.styles'
+import { TabRow, TabButton } from './NodeListPage.styles'
 
 const LAYER_LABELS = { 1: 'Modul', 2: 'Sub-modul' }
 const CLASSIFICATION_LABELS = { primary: 'Utama', special: 'Khusus' }
@@ -22,7 +24,9 @@ export default function NodeListPage({
     search, setSearch, handleSearch,
     settingsOpen, setSettingsOpen,
     nodeModal, setNodeModal,
-    handleDelete, handleModalSuccess,
+    tab, handleTabChange,
+    orderModal, setOrderModal,
+    handleDelete, handleModalSuccess, handleOrderChanged,
   } = useNodeListPage(currentLayer, parentNode)
 
   const isRoot = path.length === 0
@@ -41,7 +45,7 @@ export default function NodeListPage({
     }] : []),
     {
       header: 'Aksi',
-      width: '220px',
+      width: currentLayer === 2 ? '300px' : '220px',
       align: 'right',
       render: (n) => (
         <ActionGroup>
@@ -49,6 +53,9 @@ export default function NodeListPage({
             {currentLayer === 1 ? 'Detail' : 'Soal'}
           </Button>
           <Button size="small" onClick={() => setNodeModal({ open: true, node: n })}>Edit</Button>
+          {currentLayer === 2 && (
+            <Button size="small" variant="secondary" onClick={() => setOrderModal({ open: true, node: n })}>Tukar Posisi</Button>
+          )}
           <Button size="small" variant="danger" onClick={() => handleDelete(n)}>Hapus</Button>
         </ActionGroup>
       ),
@@ -89,6 +96,13 @@ export default function NodeListPage({
         </ActionGroup>
       </Header>
 
+      {currentLayer === 2 && (
+        <TabRow>
+          <TabButton $active={tab === 'ordered'} onClick={() => handleTabChange('ordered')}>Terurut</TabButton>
+          <TabButton $active={tab === 'all'} onClick={() => handleTabChange('all')}>Semua Sub-modul</TabButton>
+        </TabRow>
+      )}
+
       <SearchRow>
         <TextInput
           placeholder={`Cari ${LAYER_LABELS[currentLayer]?.toLowerCase()}...`}
@@ -114,6 +128,14 @@ export default function NodeListPage({
           parentNode={parentNode}
           onClose={() => setNodeModal({ open: false, node: null })}
           onSuccess={handleModalSuccess}
+        />
+      )}
+
+      {orderModal.open && (
+        <SwapNodeOrderModal
+          node={orderModal.node}
+          onClose={() => setOrderModal({ open: false, node: null })}
+          onSwapped={handleOrderChanged}
         />
       )}
 

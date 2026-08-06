@@ -489,6 +489,7 @@ model feature_nodes {
   visibility     String          @default("general")
   classification String?
   layer          Int?
+  order          Int?
   icon              String?
   description       String?
   video_explanation String?
@@ -508,6 +509,7 @@ model feature_nodes {
   @@index([parent_id])
   @@index([name])
   @@index([layer])
+  @@index([parent_id, order])
 }
 
 model node_adjacency {
@@ -570,6 +572,7 @@ model feature_node_records {
   node_id     Int
   record_type String
   record_id   Int
+  order       Int?
   created_at  DateTime      @default(now())
   updated_at  DateTime      @default(now())
 
@@ -577,6 +580,7 @@ model feature_node_records {
 
   @@unique([node_id, record_type, record_id])
   @@index([record_type, record_id])
+  @@index([node_id, record_type, order])
 }
 
 model content_relations {

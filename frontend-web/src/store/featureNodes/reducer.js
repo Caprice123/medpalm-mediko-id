@@ -14,6 +14,7 @@ const initialState = {
     classification: '',
     layer: '',
     parentId: '',
+    sortBy: '',
   },
   loading: {
     isFetchingNodes: false,
@@ -28,6 +29,7 @@ const initialState = {
     isUploadingVideo: false,
     isFetchingDetail: false,
     isFetchingSubtopics: false,
+    isSwappingOrder: false,
   },
 }
 

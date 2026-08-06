@@ -1,6 +1,6 @@
-import { PageHeader, SubtopicName, ProgressLabel, SkeletonTitle, SkeletonSubtitle } from './SubtopicHeader.styles'
+import { PageHeader, SubtopicName, SkeletonTitle, SkeletonSubtitle } from './SubtopicHeader.styles'
 
-export default function SubtopicHeader({ subtopic, subtopicSlug, currentIndex, siblingsCount, isLoading }) {
+export default function SubtopicHeader({ subtopic, subtopicSlug, isLoading }) {
   return (
     <PageHeader>
       {isLoading ? (
@@ -9,12 +9,7 @@ export default function SubtopicHeader({ subtopic, subtopicSlug, currentIndex, s
           <SkeletonSubtitle />
         </>
       ) : (
-        <>
-          <SubtopicName>{subtopic?.name ?? subtopicSlug}</SubtopicName>
-          {siblingsCount > 0 && currentIndex >= 0 && (
-            <ProgressLabel>Subtopik {currentIndex + 1} dari {siblingsCount}</ProgressLabel>
-          )}
-        </>
+        <SubtopicName>{subtopic?.name ?? subtopicSlug}</SubtopicName>
       )}
     </PageHeader>
   )

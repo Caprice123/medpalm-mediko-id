@@ -17,6 +17,7 @@ export class FeatureNodesV2Serializer {
       visibility: node.visibility,
       classification: node.classification,
       layer: node.layer,
+      order: node.order ?? null,
       icon: node.icon ?? null,
       description: node.description ?? null,
       atlasCount: statsMap['3d_atlas'] ?? 0,

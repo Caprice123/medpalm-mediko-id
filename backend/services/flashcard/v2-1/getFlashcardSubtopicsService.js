@@ -11,7 +11,7 @@ export class GetFlashcardSubtopicsService extends BaseService {
         node_type: 'subtopic',
         node_statistics: { some: { record_type: 'flashcard_card', total_count: { gt: 0 } } },
       },
-      orderBy: { name: 'asc' },
+      orderBy: [{ order: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
       include: {
         node_statistics: {
           where: { record_type: 'flashcard_card' },
