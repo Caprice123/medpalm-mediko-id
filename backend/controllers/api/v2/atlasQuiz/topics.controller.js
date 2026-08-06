@@ -15,7 +15,8 @@ class TopicsController {
   }
 
   async moduleOptions(req, res) {
-    const data = await GetAtlasQuizModuleOptionsService.call({ slug: req.params.slug })
+    const { page, perPage } = req.query
+    const data = await GetAtlasQuizModuleOptionsService.call({ slug: req.params.slug, page, perPage })
     return res.status(200).json({ data })
   }
 }

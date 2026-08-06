@@ -1,3 +1,5 @@
+import { useDispatch } from 'react-redux'
+import { loadMoreDiagnosticSubmodules } from '@store/diagnosticNodes'
 import QuickStartInline from '../QuickStartInline'
 import { useTopicGroupSection } from './hooks/useTopicGroupSection'
 import {
@@ -14,6 +16,7 @@ export default function TopicGroupSection({
   openTopicId, loadingTopicId, toggle,
   onStartCustomSession, isStartingSession,
 }) {
+  const dispatch = useDispatch()
   const {
     filteredTopics, subtopicsByTopic, statsMap, isLoading,
     searchQuery, setSearchQuery,
@@ -59,7 +62,9 @@ export default function TopicGroupSection({
             const totalQuestions = topic.questionCount
             const isOpen = openTopicId === topic.id
             const isLoadingSubtopic = loadingTopicId === topic.id
-            const subtopics = subtopicsByTopic[topic.id] || []
+            const subtopicsEntry = subtopicsByTopic[topic.id]
+            const subtopics = subtopicsEntry?.items || []
+            const hasMoreSubtopics = !!subtopicsEntry?.nextCursor
 
             return (
               <TopikRowWrap key={topic.id} $open={isOpen} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
@@ -79,6 +84,8 @@ export default function TopicGroupSection({
                     topic={topic}
                     subtopics={subtopics}
                     isLoadingSubtopics={isLoadingSubtopic}
+                    hasMoreSubtopics={hasMoreSubtopics}
+                    onLoadMoreSubtopics={() => dispatch(loadMoreDiagnosticSubmodules(topic.id))}
                     onStart={onStartCustomSession}
                     isStarting={isStartingSession}
                   />

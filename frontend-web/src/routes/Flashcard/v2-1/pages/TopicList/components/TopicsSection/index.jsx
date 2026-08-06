@@ -1,3 +1,5 @@
+import { useDispatch } from 'react-redux'
+import { loadMoreFlashcardSubtopics } from '@store/flashcardNodes'
 import QuickStartInline from '../QuickStartInline'
 import { useTopicsSection } from './hooks/useTopicsSection'
 import {
@@ -13,6 +15,7 @@ export default function TopicsSection({
   openTopicId, loadingTopicId, toggle,
   onStartCustomSession, isStartingSession, deepLinkSubtopicId,
 }) {
+  const dispatch = useDispatch()
   const {
     topics, filteredTopics, subtopicsByTopic, statsMap, isLoading,
     searchQuery, setSearchQuery,
@@ -60,7 +63,9 @@ export default function TopicsSection({
             const pct = totalCards > 0 ? Math.round((selesai / totalCards) * 100) : 0
             const isOpen = openTopicId === topic.id
             const isLoadingSubtopic = loadingTopicId === topic.id
-            const subtopics = subtopicsByTopic[topic.id] || []
+            const subtopicsEntry = subtopicsByTopic[topic.id]
+            const subtopics = subtopicsEntry?.items || []
+            const hasMoreSubtopics = !!subtopicsEntry?.nextCursor
 
             return (
               <TopikRowWrap id={`topic-row-${topic.id}`} key={topic.id} $open={isOpen} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
@@ -81,6 +86,8 @@ export default function TopicsSection({
                     topic={topic}
                     subtopics={subtopics}
                     isLoadingSubtopics={isLoadingSubtopic}
+                    hasMoreSubtopics={hasMoreSubtopics}
+                    onLoadMoreSubtopics={() => dispatch(loadMoreFlashcardSubtopics(topic.id))}
                     onStart={onStartCustomSession}
                     isStarting={isStartingSession}
                     initialSelectedSubtopicId={deepLinkSubtopicId}

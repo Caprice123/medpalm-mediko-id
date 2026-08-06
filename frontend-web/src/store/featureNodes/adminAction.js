@@ -2,7 +2,7 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
-const { setNodes, setNodeRecords, setLoading } = actions
+const { setNodes, appendNodes, setPagination, setNodeRecords, setLoading } = actions
 
 // Returns filtered nodes without touching Redux state — for pickers and dropdowns
 export const fetchFilteredNodes = (params = {}) => async () => {
@@ -34,6 +34,36 @@ export const fetchFeatureNodes = () => async (dispatch, getState) => {
   } finally {
     dispatch(setLoading({ isFetchingNodes: false }))
   }
+}
+
+// Paginated variant of fetchFeatureNodes (limit=50, "Muat Lebih Banyak") — used by the
+// Materi admin topic/subtopic tables. The plain fetchFeatureNodes above stays unbounded
+// since many other admin pages rely on it returning the complete list for pickers/dropdowns.
+export const fetchFeatureNodesPaginated = ({ append = false } = {}) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading({ isFetchingNodes: true }))
+    const { filter, pagination } = getState().featureNodes
+    const queryParams = { page: pagination.page, perPage: pagination.perPage }
+    if (filter.search) queryParams.search = filter.search
+    if (filter.nodeType) queryParams.nodeType = filter.nodeType
+    if (filter.visibility) queryParams.visibility = filter.visibility
+    if (filter.classification) queryParams.classification = filter.classification
+    if (filter.layer) queryParams.layer = filter.layer
+    if (filter.parentId) queryParams.parentId = filter.parentId
+    if (filter.sortBy) queryParams.sortBy = filter.sortBy
+    const response = await getWithToken(Endpoints.admin.featureNodes, queryParams)
+    dispatch(append ? appendNodes(response.data.data || []) : setNodes(response.data.data || []))
+    if (response.data.pagination) dispatch(setPagination(response.data.pagination))
+  } finally {
+    dispatch(setLoading({ isFetchingNodes: false }))
+  }
+}
+
+export const loadMoreFeatureNodes = () => (dispatch, getState) => {
+  const { pagination } = getState().featureNodes
+  if (pagination.isLastPage) return
+  dispatch(setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchFeatureNodesPaginated({ append: true }))
 }
 
 export const fetchFeatureNodesWithStats = () => async (dispatch, getState) => {

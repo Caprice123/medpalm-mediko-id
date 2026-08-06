@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleFavorite } from '@store/favorites/userAction'
 import { SectionBlock, EmptyHint, FavoriteBtn } from '../../NotesSidebar.styles'
@@ -21,6 +22,19 @@ function TreeNode({
   const nodeData = nodeNotes[node.id]
   const notes = nodeData?.notes || []
   const canLoadMoreChildren = isOpen && childrenLoaded && childrenPagination[node.id]?.isLastPage === false && !isNodeLoading
+
+  const loadMoreRef = useRef(null)
+  useEffect(() => {
+    if (!canLoadMoreChildren) return
+    const el = loadMoreRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onLoadMoreChildren(node.id) },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [canLoadMoreChildren, node.id, onLoadMoreChildren])
 
   const hasNote = isLeaf && nodeData?.isLoaded && notes.length > 0
   const isKnownEmpty = isLeaf && nodeData?.isLoaded && notes.length === 0
@@ -76,8 +90,8 @@ function TreeNode({
             />
           ))}
           {canLoadMoreChildren && (
-            <LoadingRow $depth={depth + 1} $clickable onClick={() => onLoadMoreChildren(node.id)}>
-              Muat subtopik lainnya
+            <LoadingRow ref={loadMoreRef} $depth={depth + 1}>
+              Memuat subtopik lainnya...
             </LoadingRow>
           )}
         </>

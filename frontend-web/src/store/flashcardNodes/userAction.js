@@ -2,33 +2,75 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
-const { setTopics, setSubtopics, setSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
+const { setTopics, setSubtopics, setSubtopicsForTopic, appendSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
 
+const PROGRESS_PAGE_LIMIT = 50
+
+// Fetches only the first page — the dropdown that displays these loads more itself on scroll.
 export const fetchFlashcardSubtopicsRaw = (topicId) => async (dispatch, getState) => {
   const cached = getState().flashcardNodes.subtopicsByTopic[topicId]
-  if (cached) return cached
+  if (cached) return cached.items
 
-  const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`)
-  const subtopics = res.data.data || []
-  dispatch(setSubtopicsForTopic({ topicId, subtopics }))
+  const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`, { limit: PROGRESS_PAGE_LIMIT })
+  const subtopics = res.data.data?.subtopics || []
+  const nextCursor = res.data.data?.nextCursor ?? null
+  dispatch(setSubtopicsForTopic({ topicId, subtopics, nextCursor }))
   return subtopics
+}
+
+export const loadMoreFlashcardSubtopics = (topicId) => async (dispatch, getState) => {
+  const entry = getState().flashcardNodes.subtopicsByTopic[topicId]
+  if (!entry?.nextCursor) return
+
+  const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`, {
+    limit: PROGRESS_PAGE_LIMIT,
+    cursor: entry.nextCursor,
+  })
+  const subtopics = res.data.data?.subtopics || []
+  const nextCursor = res.data.data?.nextCursor ?? null
+  dispatch(appendSubtopicsForTopic({ topicId, subtopics, nextCursor }))
+}
+
+// The backend stays cursor-paginated (bounded per-request), but the topic list needs the
+// complete set — so page through it here rather than removing pagination server-side.
+async function fetchAllFlashcardTopics() {
+  const topics = []
+  let cursor = null
+  for (;;) {
+    const res = await getWithToken(Endpoints.api.flashcardNodes + '/topics', { limit: PROGRESS_PAGE_LIMIT, ...(cursor ? { cursor } : {}) })
+    topics.push(...(res.data.data?.topics || []))
+    cursor = res.data.data?.nextCursor ?? null
+    if (!cursor) break
+  }
+  return topics.sort((a, b) => a.name.localeCompare(b.name, 'id'))
 }
 
 export const fetchFlashcardTopics = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingTopics: true }))
-    const res = await getWithToken(Endpoints.api.flashcardNodes + '/topics')
-    dispatch(setTopics(res.data.data || []))
+    const topics = await fetchAllFlashcardTopics()
+    dispatch(setTopics(topics))
   } finally {
     dispatch(setLoading({ isFetchingTopics: false }))
   }
 }
 
+// Legacy v2 (non-v2-1) SubtopicList page renders the full set at once — page through here.
 export const fetchFlashcardSubtopics = (topicId) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingSubtopics: true }))
-    const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`)
-    dispatch(setSubtopics(res.data.data || []))
+    const subtopics = []
+    let cursor = null
+    for (;;) {
+      const res = await getWithToken(`${Endpoints.api.flashcardNodes}/topics/${topicId}/subtopics`, {
+        limit: PROGRESS_PAGE_LIMIT,
+        ...(cursor ? { cursor } : {}),
+      })
+      subtopics.push(...(res.data.data?.subtopics || []))
+      cursor = res.data.data?.nextCursor ?? null
+      if (!cursor) break
+    }
+    dispatch(setSubtopics(subtopics))
   } finally {
     dispatch(setLoading({ isFetchingSubtopics: false }))
   }
@@ -68,8 +110,18 @@ export const fetchFlashcardDueToday = () => async (dispatch) => {
 
 // fire-and-return — for the performance chart's topic drill-down, no Redux state
 export const fetchFlashcardProgressSubtopics = (topicId) => async () => {
-  const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics/${topicId}/subtopics`)
-  return res.data.data || []
+  const subtopics = []
+  let cursor = null
+  for (;;) {
+    const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics/${topicId}/subtopics`, {
+      limit: PROGRESS_PAGE_LIMIT,
+      ...(cursor ? { cursor } : {}),
+    })
+    subtopics.push(...(res.data.data?.subtopics || []))
+    cursor = res.data.data?.nextCursor ?? null
+    if (!cursor) break
+  }
+  return subtopics.sort((a, b) => a.nodeName.localeCompare(b.nodeName, 'id'))
 }
 
 // The backend stays cursor-paginated (bounded per-request), but the chart needs the
@@ -78,7 +130,7 @@ async function fetchAllFlashcardProgressTopics() {
   const topics = []
   let cursor = null
   for (;;) {
-    const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics`, cursor ? { cursor } : {})
+    const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics`, { limit: PROGRESS_PAGE_LIMIT, ...(cursor ? { cursor } : {}) })
     topics.push(...(res.data.data?.topics || []))
     cursor = res.data.data?.nextCursor ?? null
     if (!cursor) break

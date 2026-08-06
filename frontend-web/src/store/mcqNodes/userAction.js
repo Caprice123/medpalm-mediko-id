@@ -14,9 +14,36 @@ export const fetchMcqTopics = () => async (dispatch) => {
   }
 }
 
+const SUBTOPIC_PAGE_LIMIT = 50
+
+// Fetches only the first page — the dropdown that displays these loads more itself on scroll.
 export const fetchMcqSubtopicsRaw = (topicId) => async () => {
-  const res = await getWithToken(`${Endpoints.api.mcqNodes}/topics/${topicId}/subtopics`)
-  return res.data.data || []
+  const res = await getWithToken(`${Endpoints.api.mcqNodes}/topics/${topicId}/subtopics`, { limit: SUBTOPIC_PAGE_LIMIT })
+  return { items: res.data.data?.subtopics || [], nextCursor: res.data.data?.nextCursor ?? null }
+}
+
+export const loadMoreMcqSubtopicsRaw = (topicId, cursor) => async () => {
+  const res = await getWithToken(`${Endpoints.api.mcqNodes}/topics/${topicId}/subtopics`, { limit: SUBTOPIC_PAGE_LIMIT, cursor })
+  return { items: res.data.data?.subtopics || [], nextCursor: res.data.data?.nextCursor ?? null }
+}
+
+// The performance chart's drill-down needs the complete set to plot every subtopic, sorted
+// by the user's avgScore (unlike the name-sorted picker dropdown above) — page through here
+// rather than exposing partial data to the chart.
+export const fetchAllMcqSubtopicsRaw = (topicId) => async () => {
+  const items = []
+  let cursor = null
+  for (;;) {
+    const res = await getWithToken(`${Endpoints.api.mcqNodes}/topics/${topicId}/subtopics`, {
+      limit: SUBTOPIC_PAGE_LIMIT,
+      sortBy: 'avgScore',
+      ...(cursor ? { cursor } : {}),
+    })
+    items.push(...(res.data.data?.subtopics || []))
+    cursor = res.data.data?.nextCursor ?? null
+    if (!cursor) break
+  }
+  return { items, nextCursor: null }
 }
 
 export const startMcqNodeSession = (nodeId, count) => async (dispatch) => {

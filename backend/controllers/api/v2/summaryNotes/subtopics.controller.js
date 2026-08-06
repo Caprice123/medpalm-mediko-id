@@ -3,8 +3,9 @@ import { GetSummaryNoteSubtopicsService } from '#services/summaryNotes/v2/getSum
 class SubtopicsController {
   async getSubtopics(req, res) {
     const { topicId } = req.params
-    const subtopics = await GetSummaryNoteSubtopicsService.call({ topicId })
-    return res.json({ data: subtopics })
+    const { page, perPage } = req.query
+    const data = await GetSummaryNoteSubtopicsService.call({ topicId, page, perPage })
+    return res.json({ data })
   }
 }
 

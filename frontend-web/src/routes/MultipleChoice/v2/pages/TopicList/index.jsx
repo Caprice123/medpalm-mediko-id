@@ -15,7 +15,7 @@ export default function BankSoalPage() {
     openId, subtopicsCache, loadingIds,
     customOpen, setCustomOpen,
     handleCloseSession,
-    toggle, handleStart, loadSubtopics,
+    toggle, handleStart, loadSubtopics, loadMoreSubtopics,
     deepLinkSubtopicId,
   } = useTopicList()
 
@@ -44,6 +44,7 @@ export default function BankSoalPage() {
         loadingIds={loadingIds}
         subtopicsCache={subtopicsCache}
         toggle={toggle}
+        onLoadMoreSubtopics={loadMoreSubtopics}
         onStart={handleStart}
         isStarting={loading.isStartingSession}
         deepLinkSubtopicId={deepLinkSubtopicId}

@@ -4,17 +4,30 @@ import { getWithToken } from '@utils/requestUtils'
 
 const { setUserTopics, setTopic, setSubtopics, setAtlasGroups, setLoading } = actions
 
+const LIST_PAGE_LIMIT = 50
+
+// The backend stays paginated (bounded per-request), but these lists need the complete
+// set — so page through here rather than truncating at a single page.
+async function fetchAllFeatureNodes(params) {
+  const nodes = []
+  let page = 1
+  for (;;) {
+    const res = await getWithToken(Endpoints.api.featureNodes, { ...params, page, perPage: LIST_PAGE_LIMIT })
+    nodes.push(...(res.data.data || []))
+    if (res.data.pagination?.isLastPage ?? true) break
+    page += 1
+  }
+  return nodes
+}
+
 export const fetchUserTopics = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingUserTopics: true }))
-    const [primaryRes, specialRes] = await Promise.all([
-      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok', perPage: 100 }),
-      getWithToken(Endpoints.api.featureNodes, { visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem', perPage: 100 }),
+    const [primary, special] = await Promise.all([
+      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok' }),
+      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem' }),
     ])
-    dispatch(setUserTopics({
-      primary: primaryRes.data.data || [],
-      special: specialRes.data.data || [],
-    }))
+    dispatch(setUserTopics({ primary, special }))
   } finally {
     dispatch(setLoading({ isFetchingUserTopics: false }))
   }
@@ -23,8 +36,7 @@ export const fetchUserTopics = () => async (dispatch) => {
 export const fetchUserSubtopics = (parentSlug) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingSubtopics: true }))
-    const res = await getWithToken(Endpoints.api.featureNodes, { parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true, perPage: 100 })
-    const subtopics = res.data.data || []
+    const subtopics = await fetchAllFeatureNodes({ parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true })
     dispatch(setSubtopics(subtopics))
     return subtopics
   } finally {

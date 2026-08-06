@@ -18,8 +18,8 @@ async function buildHasVideoSet(nodeIds) {
 
 class FeatureNodesController {
   async index(req, res) {
-    const { search, nodeType, parentId, layer, visibility, classification, sortBy } = req.query
-    const nodes = await GetFeatureNodesService.call({
+    const { search, nodeType, parentId, layer, visibility, classification, sortBy, page, perPage } = req.query
+    const { nodes, pagination } = await GetFeatureNodesService.call({
       search,
       nodeType,
       parentId: parentId === 'null' ? null : parentId,
@@ -27,8 +27,13 @@ class FeatureNodesController {
       visibility,
       classification,
       sortBy,
+      page,
+      perPage,
     })
-    return res.status(200).json({ data: FeatureNodesSerializer.serializeList(nodes) })
+    return res.status(200).json({
+      data: FeatureNodesSerializer.serializeList(nodes),
+      ...(pagination ? { pagination } : {}),
+    })
   }
 
   async show(req, res) {

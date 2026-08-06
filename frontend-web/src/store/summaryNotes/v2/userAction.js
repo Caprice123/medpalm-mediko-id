@@ -4,20 +4,32 @@ import { getWithToken } from '@utils/requestUtils'
 import { fetchNodeStats } from '@store/featureNodes'
 
 const NOTES_PER_PAGE = 20
+const LIST_PAGE_LIMIT = 50
+
+// The backend stays paginated (bounded per-request), but the sidebar's topic list needs
+// the complete set — so page through here rather than truncating at a single page.
+async function fetchAllSummaryNoteTopics(classification) {
+  const topics = []
+  let page = 1
+  for (;;) {
+    const res = await getWithToken(Endpoints.api.summaryNotesV2Topics, { classification, page, perPage: LIST_PAGE_LIMIT })
+    topics.push(...(res.data.data?.topics || []))
+    if (res.data.data?.pagination?.isLastPage ?? true) break
+    page += 1
+  }
+  return topics
+}
 
 // Root-level topics, split by classification, into state.userTopics.
 // Only returns topics whose subtopics actually have a summary note (backend-filtered).
 export const fetchSummaryNoteTopics = () => async (dispatch) => {
   try {
     dispatch(actions.setLoading({ isFetchingUserTopics: true }))
-    const [primaryRes, specialRes] = await Promise.all([
-      getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'sistem_blok' }),
-      getWithToken(Endpoints.api.summaryNotesV2Topics, { classification: 'ilmu_lintas_sistem' }),
+    const [primary, special] = await Promise.all([
+      fetchAllSummaryNoteTopics('sistem_blok'),
+      fetchAllSummaryNoteTopics('ilmu_lintas_sistem'),
     ])
-    const userTopics = {
-      primary: primaryRes.data.data || [],
-      special: specialRes.data.data || [],
-    }
+    const userTopics = { primary, special }
     dispatch(actions.setUserTopics(userTopics))
     return userTopics
   } finally {
@@ -27,11 +39,11 @@ export const fetchSummaryNoteTopics = () => async (dispatch) => {
 
 // Returns { data, pagination } — for lazy tree loading of a topic's subtopics.
 // Only returns subtopics that actually have a summary note (backend-filtered).
-export const fetchLazyUserNodes = (parentId) => async () => {
-  const res = await getWithToken(Endpoints.api.summaryNotesV2Subtopics(parentId))
+export const fetchLazyUserNodes = (parentId, page = 1) => async () => {
+  const res = await getWithToken(Endpoints.api.summaryNotesV2Subtopics(parentId), { page, perPage: LIST_PAGE_LIMIT })
   return {
-    data: res.data.data || [],
-    pagination: { page: 1, isLastPage: true },
+    data: res.data.data?.subtopics || [],
+    pagination: res.data.data?.pagination || { page: 1, isLastPage: true },
   }
 }
 

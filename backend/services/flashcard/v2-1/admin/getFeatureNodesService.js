@@ -2,7 +2,9 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 export class GetFeatureNodesService extends BaseService {
-  static async call({ search, nodeType, parentId, layer, visibility, classification, sortBy } = {}) {
+  // page/perPage are opt-in — omitting both preserves the old unbounded-fetch behavior for
+  // the many existing callers (dropdowns/pickers) that expect the complete list back.
+  static async call({ search, nodeType, parentId, layer, visibility, classification, sortBy, page, perPage } = {}) {
     const where = {}
 
     if (nodeType) where.node_type = nodeType
@@ -21,6 +23,10 @@ export class GetFeatureNodesService extends BaseService {
       ]
     }
 
+    const paginate = page !== undefined || perPage !== undefined
+    const currentPage = Math.max(1, parseInt(page) || 1)
+    const currentPerPage = Math.min(100, Math.max(1, parseInt(perPage) || 50))
+
     const nodes = await prisma.feature_nodes.findMany({
       where,
       include: {
@@ -29,8 +35,15 @@ export class GetFeatureNodesService extends BaseService {
       orderBy: sortBy === 'order'
         ? [{ order: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }]
         : { name: 'asc' },
+      ...(paginate ? { skip: (currentPage - 1) * currentPerPage, take: currentPerPage + 1 } : {}),
     })
 
-    return nodes
+    if (!paginate) return { nodes, pagination: null }
+
+    const isLastPage = nodes.length <= currentPerPage
+    return {
+      nodes: nodes.slice(0, currentPerPage),
+      pagination: { page: currentPage, perPage: currentPerPage, isLastPage },
+    }
   }
 }

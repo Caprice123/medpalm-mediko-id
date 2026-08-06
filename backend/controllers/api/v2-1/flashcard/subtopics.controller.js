@@ -3,13 +3,18 @@ import { GetFlashcardSubtopicsService } from '#services/flashcard/v2-1/getFlashc
 class SubtopicsController {
   async index(req, res) {
     const { topicId } = req.params
-    const subtopics = await GetFlashcardSubtopicsService.call({ topicId })
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : null
+    const limit  = req.query.limit  ? parseInt(req.query.limit)  : 50
+    const { subtopics, nextCursor } = await GetFlashcardSubtopicsService.call({ topicId, cursor, limit })
     return res.status(200).json({
-      data: subtopics.map(s => ({
-        id: s.id,
-        name: s.name,
-        cardCount: s.cardCount,
-      })),
+      data: {
+        subtopics: subtopics.map(s => ({
+          id: s.id,
+          name: s.name,
+          cardCount: s.cardCount,
+        })),
+        nextCursor,
+      },
     })
   }
 }

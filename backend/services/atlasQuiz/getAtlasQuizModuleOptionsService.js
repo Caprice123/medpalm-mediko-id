@@ -3,11 +3,15 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 
 export class GetAtlasQuizModuleOptionsService extends BaseService {
-  static async call({ slug }) {
+  static async call({ slug, page = 1, perPage = 50 }) {
     const topic = await prisma.feature_nodes.findUnique({ where: { slug } })
     if (!topic) throw new ValidationError('Topik tidak ditemukan')
 
-    const modules = await prisma.feature_nodes.findMany({
+    const currentPage = Math.max(1, parseInt(page) || 1)
+    const currentPerPage = Math.min(50, Math.max(1, parseInt(perPage) || 50))
+    const skip = (currentPage - 1) * currentPerPage
+
+    const rows = await prisma.feature_nodes.findMany({
       where: {
         parent_id: topic.id,
         layer: 2,
@@ -16,8 +20,13 @@ export class GetAtlasQuizModuleOptionsService extends BaseService {
       },
       orderBy: { name: 'asc' },
       select: { id: true, name: true },
+      skip,
+      take: currentPerPage + 1,
     })
 
-    return modules.map(m => ({ id: m.id, name: m.name }))
+    const isLastPage = rows.length <= currentPerPage
+    const modules = rows.slice(0, currentPerPage).map(m => ({ id: m.id, name: m.name }))
+
+    return { modules, pagination: { page: currentPage, perPage: currentPerPage, isLastPage } }
   }
 }

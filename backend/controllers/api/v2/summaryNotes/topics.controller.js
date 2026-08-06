@@ -2,9 +2,9 @@ import { GetSummaryNoteTopicsService } from '#services/summaryNotes/v2/getSummar
 
 class TopicsController {
   async getTopics(req, res) {
-    const { classification } = req.query
-    const topics = await GetSummaryNoteTopicsService.call({ classification })
-    return res.json({ data: topics })
+    const { classification, page, perPage } = req.query
+    const data = await GetSummaryNoteTopicsService.call({ classification, page, perPage })
+    return res.json({ data })
   }
 }
 

@@ -19,7 +19,7 @@ class ProgressController {
   async getProgressTopics(req, res) {
     const userId = req.user.id
     const cursor = req.query.cursor ? parseInt(req.query.cursor) : null
-    const limit  = req.query.limit  ? parseInt(req.query.limit)  : 20
+    const limit  = req.query.limit  ? parseInt(req.query.limit)  : 50
     const data = await GetFlashcardProgressTopicsService.call({ userId, cursor, limit })
     return res.status(200).json({ data })
   }
@@ -27,7 +27,9 @@ class ProgressController {
   async getProgressSubtopics(req, res) {
     const userId = req.user.id
     const topicId = parseInt(req.params.topicId)
-    const data = await GetFlashcardProgressSubtopicsService.call({ userId, topicId })
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : null
+    const limit  = req.query.limit  ? parseInt(req.query.limit)  : 50
+    const data = await GetFlashcardProgressSubtopicsService.call({ userId, topicId, cursor, limit })
     return res.status(200).json({ data })
   }
 }

@@ -58,7 +58,7 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
   }
 
   const selectedTopic = selectedTopicId ? attempted.find(t => t.id === selectedTopicId) : null
-  const subtopics = selectedTopicId ? (subtopicsCache[selectedTopicId] || []) : []
+  const subtopics = selectedTopicId ? (subtopicsCache[selectedTopicId]?.items || []) : []
   const subtopicsWithScore = subtopics.filter(s => s.avgScore != null)
 
   const displayData = selectedTopicId

@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const DEFAULT_LIMIT = 20
+const DEFAULT_LIMIT = 50
 
 export class GetFlashcardProgressTopicsService extends BaseService {
   static async call({ userId, cursor = null, limit = DEFAULT_LIMIT }) {

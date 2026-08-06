@@ -11,7 +11,7 @@ import {
 
 export default function TopicListSection({
   openId, loadingIds, subtopicsCache, toggle,
-  onStart, isStarting, deepLinkSubtopicId,
+  onLoadMoreSubtopics, onStart, isStarting, deepLinkSubtopicId,
 }) {
   const { topics, filteredTopics, isLoading, searchQuery, setSearchQuery } = useTopicListSection()
 
@@ -50,7 +50,9 @@ export default function TopicListSection({
           {filteredTopics.map((topic, i) => {
             const isOpen = openId === topic.id
             const isLoadingSubtopic = loadingIds.has(topic.id)
-            const subtopics = subtopicsCache[topic.id] || []
+            const subtopicsEntry = subtopicsCache[topic.id]
+            const subtopics = subtopicsEntry?.items || []
+            const hasMoreSubtopics = !!subtopicsEntry?.nextCursor
             return (
               <TopikRowWrap id={`topic-row-${topic.id}`} key={topic.id} $delay={`${Math.min(i * 0.05, 0.4)}s`}>
                 <TopikRowHeader $open={isOpen} onClick={() => toggle(topic.id)}>
@@ -73,6 +75,8 @@ export default function TopicListSection({
                     topic={topic}
                     subtopics={subtopics}
                     isLoadingSubtopics={isLoadingSubtopic}
+                    hasMoreSubtopics={hasMoreSubtopics}
+                    onLoadMoreSubtopics={() => onLoadMoreSubtopics(topic.id)}
                     onStart={onStart}
                     isStarting={isStarting}
                     initialSelectedSubtopicId={deepLinkSubtopicId}

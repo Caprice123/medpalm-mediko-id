@@ -2,16 +2,33 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken } from '@utils/requestUtils'
 
-const { setPrimaryTopics, setSpecialTopics, setSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
+const { setPrimaryTopics, setSpecialTopics, setSubtopicsForTopic, appendSubtopicsForTopic, setSessionCards, setDueToday, setProgress, setLoading } = actions
 
+const SUBMODULE_PAGE_LIMIT = 50
+
+// Fetches only the first page — the dropdown that displays these loads more itself on scroll.
 export const fetchDiagnosticSubmodulesRaw = (moduleId) => async (dispatch, getState) => {
   const cached = getState().diagnosticNodes.subtopicsByTopic[moduleId]
-  if (cached) return cached
+  if (cached) return cached.items
 
-  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/modules/${moduleId}/submodules`)
-  const subtopics = res.data.data || []
-  dispatch(setSubtopicsForTopic({ topicId: moduleId, subtopics }))
+  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/modules/${moduleId}/submodules`, { limit: SUBMODULE_PAGE_LIMIT })
+  const subtopics = res.data.data?.submodules || []
+  const nextCursor = res.data.data?.nextCursor ?? null
+  dispatch(setSubtopicsForTopic({ topicId: moduleId, subtopics, nextCursor }))
   return subtopics
+}
+
+export const loadMoreDiagnosticSubmodules = (moduleId) => async (dispatch, getState) => {
+  const entry = getState().diagnosticNodes.subtopicsByTopic[moduleId]
+  if (!entry?.nextCursor) return
+
+  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/modules/${moduleId}/submodules`, {
+    limit: SUBMODULE_PAGE_LIMIT,
+    cursor: entry.nextCursor,
+  })
+  const subtopics = res.data.data?.submodules || []
+  const nextCursor = res.data.data?.nextCursor ?? null
+  dispatch(appendSubtopicsForTopic({ topicId: moduleId, subtopics, nextCursor }))
 }
 
 export const fetchDiagnosticCategories = () => async (dispatch) => {

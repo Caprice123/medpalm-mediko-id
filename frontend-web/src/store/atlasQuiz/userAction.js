@@ -17,7 +17,7 @@ const {
 export const fetchSistemBlokTopics = (page = 1) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isFetchingSistemBlok', value: true }))
-    const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'sistem_blok', page })
+    const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'sistem_blok', page, perPage: 50 })
     dispatch(appendSistemBlokTopics(response.data))
   } finally {
     dispatch(setLoading({ key: 'isFetchingSistemBlok', value: false }))
@@ -27,7 +27,7 @@ export const fetchSistemBlokTopics = (page = 1) => async (dispatch) => {
 export const fetchIlmuLintasSistemTopics = (page = 1) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isFetchingIlmuLintasSistem', value: true }))
-    const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'ilmu_lintas_sistem', page })
+    const response = await getWithToken(Endpoints.api.atlasQuizTopics, { classification: 'ilmu_lintas_sistem', page, perPage: 50 })
     dispatch(appendIlmuLintasSistemTopics(response.data))
   } finally {
     dispatch(setLoading({ key: 'isFetchingIlmuLintasSistem', value: false }))
@@ -113,16 +113,25 @@ export const fetchAnatomyQuizAdjacent = (sourceUniqueId) => async (dispatch) => 
 }
 
 
+// The dropdown filter needs the complete set of modules — page through here rather than
+// truncating the filter options.
 export const fetchAtlasQuizModuleOptions = (slug) => async (dispatch) => {
-  const response = await getWithToken(Endpoints.api.atlasQuizTopicModuleOptions(slug))
-  dispatch(setModuleOptions(response.data.data))
+  const modules = []
+  let page = 1
+  for (;;) {
+    const response = await getWithToken(Endpoints.api.atlasQuizTopicModuleOptions(slug), { page, perPage: 50 })
+    modules.push(...(response.data.data?.modules || []))
+    if (response.data.data?.pagination?.isLastPage ?? true) break
+    page += 1
+  }
+  dispatch(setModuleOptions(modules))
 }
 
 export const fetchAtlasQuizModules = (slug) => async (dispatch, getState) => {
   try {
     dispatch(setLoading({ key: 'isFetchingModules', value: true }))
     const { modulesFilter } = getState().atlasQuiz
-    const params = { page: modulesFilter.page }
+    const params = { page: modulesFilter.page, perPage: 50 }
     if (modulesFilter.module) params.module = modulesFilter.module
     const response = await getWithToken(Endpoints.api.atlasQuizTopicAtlasModels(slug), params)
     const isAppend = modulesFilter.page > 1
@@ -148,7 +157,7 @@ export const fetchAtlasQuizAnatomyQuizzes = (slug) => async (dispatch, getState)
   try {
     dispatch(setLoading({ key: 'isFetchingAnatomyQuizzes', value: true }))
     const { quizzesFilter } = getState().atlasQuiz
-    const params = { page: quizzesFilter.page }
+    const params = { page: quizzesFilter.page, perPage: 50 }
     if (quizzesFilter.module) params.module = quizzesFilter.module
     const response = await getWithToken(Endpoints.api.atlasQuizTopicAnatomyQuizzes(slug), params)
     const isAppend = quizzesFilter.page > 1

@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
-import { fetchMcqTopics, fetchMcqSubtopicsRaw, startMcqCustomSession, actions } from '@store/mcqNodes'
+import {
+  fetchMcqTopics, fetchMcqSubtopicsRaw, loadMoreMcqSubtopicsRaw, fetchAllMcqSubtopicsRaw,
+  startMcqCustomSession, actions,
+} from '@store/mcqNodes'
 import { fetchUserNodeByName } from '@store/featureNodes'
 
 export function useTopicList() {
@@ -53,10 +56,21 @@ export function useTopicList() {
     }
   }, [dispatch, subtopicsCache])
 
+  // Used by the performance chart drill-down — needs the complete set, not just page 1.
   const loadSubtopics = useCallback(async (topicId) => {
-    const data = await dispatch(fetchMcqSubtopicsRaw(topicId))
+    const data = await dispatch(fetchAllMcqSubtopicsRaw(topicId))
     setSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
   }, [dispatch])
+
+  const loadMoreSubtopics = useCallback(async (topicId) => {
+    const entry = subtopicsCache[topicId]
+    if (!entry?.nextCursor) return
+    const data = await dispatch(loadMoreMcqSubtopicsRaw(topicId, entry.nextCursor))
+    setSubtopicsCache(prev => ({
+      ...prev,
+      [topicId]: { items: [...(prev[topicId]?.items || []), ...data.items], nextCursor: data.nextCursor },
+    }))
+  }, [dispatch, subtopicsCache])
 
   const handleStart = (nodeIds, count) => {
     dispatch(startMcqCustomSession(nodeIds, count))
@@ -72,6 +86,7 @@ export function useTopicList() {
     toggle,
     handleStart,
     loadSubtopics,
+    loadMoreSubtopics,
     deepLinkSubtopicId: resolvedDeepLinkSubtopicId,
   }
 }

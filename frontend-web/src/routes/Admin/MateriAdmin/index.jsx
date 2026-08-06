@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchFeatureNodes, fetchFeatureNodeDetail, deleteFeatureNode, actions } from '@store/featureNodes'
+import { fetchFeatureNodesPaginated, loadMoreFeatureNodes, fetchFeatureNodeDetail, deleteFeatureNode, actions } from '@store/featureNodes'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import TextInput from '@components/common/TextInput'
@@ -22,7 +22,7 @@ const CLASSIFICATION_COLORS = {
 
 function MateriAdmin() {
   const dispatch = useDispatch()
-  const { nodes, loading } = useSelector(s => s.featureNodes)
+  const { nodes, pagination, loading } = useSelector(s => s.featureNodes)
   const [modal, setModal] = useState({ type: null, topic: null })
   const [selectedTopic, setSelectedTopic] = useState(null)
   const [search, setSearch] = useState('')
@@ -33,8 +33,11 @@ function MateriAdmin() {
     dispatch(actions.updateFilter({ key: 'visibility', value: 'general' }))
     dispatch(actions.updateFilter({ key: 'parentId', value: '' }))
     dispatch(actions.updateFilter({ key: 'search', value: search.trim() }))
-    dispatch(fetchFeatureNodes())
+    dispatch(actions.setPagination({ page: 1 }))
+    dispatch(fetchFeatureNodesPaginated())
   }
+
+  const handleLoadMore = () => dispatch(loadMoreFeatureNodes())
 
   useEffect(() => {
     load()
@@ -119,6 +122,14 @@ function MateriAdmin() {
         loading={loading.isFetchingNodes}
         emptyText="Belum ada topik."
       />
+
+      {!pagination.isLastPage && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+          <Button variant="secondary" onClick={handleLoadMore} disabled={loading.isFetchingNodes}>
+            {loading.isFetchingNodes ? 'Memuat...' : 'Muat Lebih Banyak'}
+          </Button>
+        </div>
+      )}
 
       {(modal.type === 'create' || modal.type === 'edit') && (
         <TopicFormModal

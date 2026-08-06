@@ -10,11 +10,28 @@ import {
 
 const PRESETS = [5, 10, 15, 20]
 
-function SubtopicDropdown({ options, selected, onChange, isLoading }) {
+const SCROLL_LOAD_MORE_RATIO = 0.8
+
+function SubtopicDropdown({ options, selected, onChange, isLoading, hasMore, onLoadMore }) {
   const [open, setOpen] = useState(false)
   const [panelStyle, setPanelStyle] = useState({})
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const triggerRef = useRef(null)
   const panelRef = useRef(null)
+
+  const handleListScroll = async (e) => {
+    if (!hasMore || isLoadingMore) return
+    const { scrollTop, scrollHeight, clientHeight } = e.target
+    if (scrollHeight <= clientHeight) return
+    const scrolledRatio = (scrollTop + clientHeight) / scrollHeight
+    if (scrolledRatio < SCROLL_LOAD_MORE_RATIO) return
+    setIsLoadingMore(true)
+    try {
+      await onLoadMore?.()
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
 
   useEffect(() => {
     const handler = (e) => {
@@ -61,7 +78,7 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
           </DropdownAction>
         </DropdownActions>
       </DropdownHeader>
-      <DropdownList>
+      <DropdownList onScroll={handleListScroll}>
         {options.map(opt => {
           const checked = selected.includes(opt.value)
           return (
@@ -72,6 +89,7 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
             </DropdownItem>
           )
         })}
+        {isLoadingMore && <DropdownItem style={{ cursor: 'default' }}><ItemName>Memuat lebih banyak...</ItemName></DropdownItem>}
       </DropdownList>
     </DropdownPanel>
   )
@@ -87,7 +105,10 @@ function SubtopicDropdown({ options, selected, onChange, isLoading }) {
   )
 }
 
-export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics, onStart, isStarting, initialSelectedSubtopicId }) {
+export default function QuickStartInline({
+  topic, subtopics, isLoadingSubtopics, hasMoreSubtopics, onLoadMoreSubtopics,
+  onStart, isStarting, initialSelectedSubtopicId,
+}) {
   const [selected, setSelected] = useState(initialSelectedSubtopicId ? [initialSelectedSubtopicId] : [])
   const [preset, setPreset] = useState(5)
   const [isCustom, setIsCustom] = useState(false)
@@ -115,6 +136,8 @@ export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics,
             selected={selected}
             onChange={setSelected}
             isLoading={isLoadingSubtopics}
+            hasMore={hasMoreSubtopics}
+            onLoadMore={onLoadMoreSubtopics}
           />
         </Col>
 

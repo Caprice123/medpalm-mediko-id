@@ -18,7 +18,7 @@ export function useCustomSession(onClose) {
     setLoadingTopics(new Set(loadingRef.current))
     try {
       const data = await dispatch(fetchMcqSubtopicsRaw(topicId))
-      subtopicsMapRef.current[topicId] = data
+      subtopicsMapRef.current[topicId] = data.items
       setSubtopicsMap({ ...subtopicsMapRef.current })
     } finally {
       loadingRef.current.delete(topicId)

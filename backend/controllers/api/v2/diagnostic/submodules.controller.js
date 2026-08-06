@@ -3,7 +3,9 @@ import { GetDiagnosticSubmodulesService } from '#services/diagnostic/v2/getDiagn
 class SubmodulesController {
   async index(req, res) {
     const { moduleId } = req.params
-    const data = await GetDiagnosticSubmodulesService.call({ moduleId })
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : null
+    const limit  = req.query.limit  ? parseInt(req.query.limit)  : 50
+    const data = await GetDiagnosticSubmodulesService.call({ moduleId, cursor, limit })
     res.json({ success: true, data })
   }
 }
