@@ -27,6 +27,7 @@ router.post('/node-due-session',                 asyncHandler(sessionController.
 router.get('/due-today',                         asyncHandler(progressController.getDueToday.bind(progressController)))
 router.get('/progress/summary',                  asyncHandler(progressController.getProgressSummary.bind(progressController)))
 router.get('/progress/topics',                   asyncHandler(progressController.getProgressTopics.bind(progressController)))
+router.get('/progress/topics/:topicId/subtopics', asyncHandler(progressController.getProgressSubtopics.bind(progressController)))
 
 // Rate
 router.post('/rate',                             asyncHandler(rateController.create.bind(rateController)))

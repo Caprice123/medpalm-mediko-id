@@ -36,15 +36,16 @@ export class RateDiagnosticQuestionService extends BaseService {
       },
     })
 
-    // Find the topic node (layer 1) via subtopic (layer 2) via feature_node_records
+    // Find the module node (layer 1) via submodule (layer 2) via feature_node_records
     const fnRecord = await prisma.feature_node_records.findFirst({
       where: { record_type: RECORD_TYPE, record_id: recordId },
       select: { node_id: true },
     })
-    const subtopic = fnRecord?.node_id
-      ? await prisma.feature_nodes.findUnique({ where: { id: fnRecord.node_id }, select: { parent_id: true } })
+    const submoduleNodeId = fnRecord?.node_id ?? null
+    const submodule = submoduleNodeId
+      ? await prisma.feature_nodes.findUnique({ where: { id: submoduleNodeId }, select: { parent_id: true } })
       : null
-    const topicNodeId = subtopic?.parent_id
+    const topicNodeId = submodule?.parent_id
 
     const oldRating = existing?.last_rating
 
@@ -58,12 +59,12 @@ export class RateDiagnosticQuestionService extends BaseService {
       return
     }
 
-    const nodeProgressOp = prisma.user_node_progress.upsert({
+    const buildNodeProgressUpsert = (nodeId) => prisma.user_node_progress.upsert({
       where: {
-        user_id_node_id_feature_type: { user_id: userId, node_id: topicNodeId, feature_type: RECORD_TYPE },
+        user_id_node_id_feature_type: { user_id: userId, node_id: nodeId, feature_type: RECORD_TYPE },
       },
       create: {
-        user_id: userId, node_id: topicNodeId, feature_type: RECORD_TYPE,
+        user_id: userId, node_id: nodeId, feature_type: RECORD_TYPE,
         again_count: rating === 'again' ? 1 : 0,
         hard_count:  rating === 'hard'  ? 1 : 0,
         good_count:  rating === 'good'  ? 1 : 0,
@@ -75,6 +76,9 @@ export class RateDiagnosticQuestionService extends BaseService {
         updated_at: new Date(),
       },
     })
+
+    const nodeProgressOp = buildNodeProgressUpsert(topicNodeId)
+    const submoduleProgressOp = submoduleNodeId ? buildNodeProgressUpsert(submoduleNodeId) : null
 
     const featureStatsOps = [
       prisma.user_feature_statistics.upsert({
@@ -94,6 +98,12 @@ export class RateDiagnosticQuestionService extends BaseService {
       ] : []),
     ]
 
-    await prisma.$transaction([reviewStateOp, nodeProgressOp, ...featureStatsOps, learnedItemOp])
+    await prisma.$transaction([
+      reviewStateOp,
+      nodeProgressOp,
+      ...(submoduleProgressOp ? [submoduleProgressOp] : []),
+      ...featureStatsOps,
+      learnedItemOp,
+    ])
   }
 }

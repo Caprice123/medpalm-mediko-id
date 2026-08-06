@@ -66,15 +66,34 @@ export const fetchFlashcardDueToday = () => async (dispatch) => {
   }
 }
 
+// fire-and-return — for the performance chart's topic drill-down, no Redux state
+export const fetchFlashcardProgressSubtopics = (topicId) => async () => {
+  const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics/${topicId}/subtopics`)
+  return res.data.data || []
+}
+
+// The backend stays cursor-paginated (bounded per-request), but the chart needs the
+// complete list — so page through it here rather than removing pagination server-side.
+async function fetchAllFlashcardProgressTopics() {
+  const topics = []
+  let cursor = null
+  for (;;) {
+    const res = await getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics`, cursor ? { cursor } : {})
+    topics.push(...(res.data.data?.topics || []))
+    cursor = res.data.data?.nextCursor ?? null
+    if (!cursor) break
+  }
+  return topics
+}
+
 export const fetchFlashcardProgress = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingProgress: true }))
-    const [summaryRes, topicsRes] = await Promise.all([
+    const [summaryRes, topics] = await Promise.all([
       getWithToken(`${Endpoints.api.flashcardNodes}/progress/summary`),
-      getWithToken(`${Endpoints.api.flashcardNodes}/progress/topics`),
+      fetchAllFlashcardProgressTopics(),
     ])
     const totalCounts = summaryRes.data.data || { again: 0, hard: 0, good: 0, easy: 0 }
-    const topics = topicsRes.data.data?.topics || []
     const totalCards = topics.reduce((sum, t) => sum + (t.totalCards ?? 0), 0)
     dispatch(setProgress({ totalCards, totalCounts, topics }))
   } finally {

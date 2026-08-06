@@ -19,7 +19,6 @@ export const Header = styled.div`
 `
 
 export const HeaderContent = styled.div`
-  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -162,7 +161,6 @@ export const ChatArea = styled.div`
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
-  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
 

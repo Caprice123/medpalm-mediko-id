@@ -1,7 +1,11 @@
 import styled from 'styled-components'
 
 export const PageContainer = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const LoadingWrap = styled.div`

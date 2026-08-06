@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  max-width: 800px;
   margin: 0 auto;
 `
 

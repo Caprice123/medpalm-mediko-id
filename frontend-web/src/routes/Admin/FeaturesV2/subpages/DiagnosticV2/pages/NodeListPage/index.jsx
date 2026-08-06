@@ -5,15 +5,20 @@ import Breadcrumb from '@components/common/Breadcrumb'
 import NodeFormModal from '../../components/NodeFormModal'
 import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
 import DiagnosticSettingsModal from '@routes/Admin/Features/subpages/DiagnosticQuiz/components/DiagnosticSettingsModal'
+import ClassificationBadge from '@components/common/ClassificationBadge'
 import { useNodeListPage } from './hooks/useNodeListPage'
 import {
   Container, Header, HeaderLeft, Title, PageTitle,
-  ActionGroup, ClassificationBadge, SearchRow,
+  ActionGroup, SearchRow,
 } from '../../DiagnosticV2.styles'
 import { TabRow, TabButton } from './NodeListPage.styles'
 
 const LAYER_LABELS = { 1: 'Modul', 2: 'Sub-modul' }
 const CLASSIFICATION_LABELS = { primary: 'Utama', special: 'Khusus' }
+const CLASSIFICATION_COLORS = {
+  primary: { bg: '#dbeafe', color: '#1d4ed8' },
+  special: { bg: '#fef3c7', color: '#b45309' },
+}
 
 export default function NodeListPage({
   path, currentLayer, parentNode,
@@ -39,9 +44,9 @@ export default function NodeListPage({
     ...(currentLayer === 1 ? [{
       header: 'Klasifikasi',
       width: '130px',
-      render: (n) => n.classification
-        ? <ClassificationBadge $type={n.classification}>{CLASSIFICATION_LABELS[n.classification] ?? n.classification}</ClassificationBadge>
-        : <span style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>—</span>,
+      render: (n) => (
+        <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} colorMap={CLASSIFICATION_COLORS} variant="square" />
+      ),
     }] : []),
     {
       header: 'Aksi',

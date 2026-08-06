@@ -95,10 +95,14 @@ export const SpecialStar = styled.span`
 `
 
 export const PageWrapper = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
   background: #f0fdfa;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const StickyHeader = styled.div`

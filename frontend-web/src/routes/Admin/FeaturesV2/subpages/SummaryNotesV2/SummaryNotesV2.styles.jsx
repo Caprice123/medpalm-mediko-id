@@ -32,16 +32,6 @@ export const FilterRow = styled.div`
   align-items: flex-end;
 `
 
-export const ClassificationBadge = styled.span`
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 99px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: #d1fae5;
-  color: #065f46;
-  letter-spacing: 0.02em;
-`
 
 /* ── Shared breadcrumb + page title ── */
 

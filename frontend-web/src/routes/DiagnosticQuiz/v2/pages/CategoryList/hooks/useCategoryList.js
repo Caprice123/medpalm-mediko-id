@@ -5,6 +5,7 @@ import {
   fetchDiagnosticSubmodulesRaw,
   fetchDiagnosticDueToday,
   fetchDiagnosticProgress,
+  fetchDiagnosticProgressSubmodules,
   startDiagnosticDueSession,
   actions,
 } from '@store/diagnosticNodes'
@@ -18,6 +19,7 @@ export function useCategoryList() {
   const [openTopicId, setOpenTopicId] = useState(null)
   const [loadingTopicId, setLoadingTopicId] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
+  const [progressSubmodulesCache, setProgressSubmodulesCache] = useState({})
 
   useEffect(() => {
     dispatch(fetchDiagnosticCategories())
@@ -45,6 +47,11 @@ export function useCategoryList() {
     }
   }, [dispatch, subtopicsByTopic])
 
+  const loadProgressSubmodules = useCallback(async (moduleId) => {
+    const data = await dispatch(fetchDiagnosticProgressSubmodules(moduleId))
+    setProgressSubmodulesCache(prev => ({ ...prev, [moduleId]: data }))
+  }, [dispatch])
+
   return {
     openTopicId,
     loadingTopicId,
@@ -53,5 +60,7 @@ export function useCategoryList() {
     handleStartAllDue,
     handleCloseSession,
     toggle,
+    progressSubmodulesCache,
+    loadProgressSubmodules,
   }
 }

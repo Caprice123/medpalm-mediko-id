@@ -1,13 +1,18 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem;
   background: #f9fafb;
+
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const ProgressBar = styled.div`

@@ -8,8 +8,7 @@ export const Container = styled.div`
 export const Content = styled.div`
     display: flex;
     margin: 0 auto;
-    max-width: 1200px;
-    height: 100vh;
+    height: calc(100vh - 44px);
     background: #f0fdfa;
     overflow: hidden;
 
@@ -423,7 +422,6 @@ export const GuideText = styled.p`
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 1200px;
   height: 100%;
   flex: 1;
   overflow: hidden;

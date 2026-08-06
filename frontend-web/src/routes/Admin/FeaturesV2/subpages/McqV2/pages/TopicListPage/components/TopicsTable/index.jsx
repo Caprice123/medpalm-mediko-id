@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
-import { ClassificationBadge, RowActions } from './TopicsTable.styles'
+import ClassificationBadge from '@components/common/ClassificationBadge'
+import { RowActions } from './TopicsTable.styles'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -20,9 +21,7 @@ export default function TopicsTable({ onSelectNode, onEditNode, onDeleteNode }) 
     {
       header: 'Klasifikasi',
       width: '180px',
-      render: (n) => n.classification
-        ? <ClassificationBadge>{CLASSIFICATION_LABELS[n.classification] ?? n.classification}</ClassificationBadge>
-        : <span style={{ color: '#d1d5db' }}>—</span>,
+      render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} />,
     },
     {
       header: 'Aksi',

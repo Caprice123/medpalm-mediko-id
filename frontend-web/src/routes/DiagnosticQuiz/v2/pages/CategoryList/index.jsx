@@ -3,11 +3,12 @@ import { startDiagnosticCustomSession, startDiagnosticNodeDueSession } from '@st
 import QuizPlayer from './components/QuizPlayer'
 import CategoryListHeader from './components/CategoryListHeader'
 import DueTodayPanel from './components/DueTodayPanel'
-import ProgressPanel from './components/ProgressPanel'
+// import ProgressPanel from './components/ProgressPanel' — replaced by PerformanceCard below
+import PerformanceCard from './components/PerformanceCard'
 import TopicGroupSection from './components/TopicGroupSection'
 import CustomSessionPanel from './components/CustomSessionPanel'
 import { useCategoryList, DUE_SESSION_BATCH_SIZE } from './hooks/useCategoryList'
-import { Container, DashboardRow, EmptyWrap } from './CategoryList.styles'
+import { Container, EmptyWrap } from './CategoryList.styles'
 
 export default function CategoryListPage() {
   const dispatch = useDispatch()
@@ -18,6 +19,7 @@ export default function CategoryListPage() {
     customOpen, setCustomOpen,
     handleStartAllDue, handleCloseSession,
     toggle,
+    progressSubmodulesCache, loadProgressSubmodules,
   } = useCategoryList()
 
   const isLoading = loading.isFetchingCategories
@@ -30,15 +32,18 @@ export default function CategoryListPage() {
         onOpenCustomSession={() => setCustomOpen(true)}
       />
 
-      <DashboardRow>
-        <DueTodayPanel
-          onStartAll={handleStartAllDue}
-          onStartNode={(nodeId) => dispatch(startDiagnosticNodeDueSession(nodeId))}
-          isStarting={loading.isStartingSession}
-          batchSize={DUE_SESSION_BATCH_SIZE}
-        />
-        <ProgressPanel />
-      </DashboardRow>
+      <DueTodayPanel
+        onStartAll={handleStartAllDue}
+        onStartNode={(nodeId) => dispatch(startDiagnosticNodeDueSession(nodeId))}
+        isStarting={loading.isStartingSession}
+        batchSize={DUE_SESSION_BATCH_SIZE}
+      />
+
+      {/* <ProgressPanel /> — replaced by PerformanceCard below */}
+      <PerformanceCard
+        submodulesCache={progressSubmodulesCache}
+        onRequestSubmodules={loadProgressSubmodules}
+      />
 
       <TopicGroupSection
         title="Modul Primer"

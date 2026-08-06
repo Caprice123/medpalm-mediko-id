@@ -7,11 +7,17 @@ import TextInput from '@components/common/TextInput'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import SubtopicFormModal from '../SubtopicFormModal'
 import SubtopicAtlasModelModal from '../SubtopicAtlasModelModal'
-import { Header, HeaderLeft, Title, SearchRow, ClassificationBadge, IconPreview } from '../../MateriAdmin.styles'
+import ClassificationBadge from '@components/common/ClassificationBadge'
+import { Header, HeaderLeft, Title, SearchRow, IconPreview } from '../../MateriAdmin.styles'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
   ilmu_lintas_sistem: 'Ilmu Lintas Sistem',
+}
+
+const CLASSIFICATION_COLORS = {
+  sistem_blok: { bg: '#d1fae5', color: '#065f46' },
+  ilmu_lintas_sistem: { bg: '#ede9fe', color: '#5b21b6' },
 }
 
 function SubtopicListPage({ topic, onBack }) {
@@ -75,11 +81,7 @@ function SubtopicListPage({ topic, onBack }) {
           <Button variant="secondary" onClick={onBack}>← Topik</Button>
           {topic.icon && <IconPreview>{topic.icon}</IconPreview>}
           <Title>{topic.name}</Title>
-          {topic.classification && (
-            <ClassificationBadge $type={topic.classification}>
-              {CLASSIFICATION_LABELS[topic.classification] ?? topic.classification}
-            </ClassificationBadge>
-          )}
+          <ClassificationBadge value={topic.classification} labels={CLASSIFICATION_LABELS} colorMap={CLASSIFICATION_COLORS} />
         </HeaderLeft>
         <Button variant="primary" onClick={() => setModal({ type: 'create', subtopic: null })}>
           + Sub-topik

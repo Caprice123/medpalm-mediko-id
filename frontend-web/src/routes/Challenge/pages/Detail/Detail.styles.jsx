@@ -11,12 +11,15 @@ const dotPulse = keyframes`
 `
 
 export const PageWrapper = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
   background: #f0fdfa;
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const Container = styled.div`
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
 

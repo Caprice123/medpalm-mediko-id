@@ -7,7 +7,11 @@ const fadeSlideUp = keyframes`
 
 export const Container = styled.div`
   padding: 2rem;
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const DashboardRow = styled.div`
@@ -21,7 +25,7 @@ export const DashboardRow = styled.div`
   }
 `
 
-// Shared by DueTodayPanel and ProgressPanel
+// Used by DueTodayPanel (ProgressPanel, which also used this, is currently commented out)
 export const PanelCard = styled.div`
   background: #fff;
   border-radius: 18px;
@@ -31,6 +35,7 @@ export const PanelCard = styled.div`
   gap: 0.875rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   animation: ${fadeSlideUp} 0.4s ease both;
+  margin-bottom: 1.75rem;
 `
 
 export const PanelHeader = styled.div`

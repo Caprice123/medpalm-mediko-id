@@ -2,8 +2,9 @@ import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import NodeFormModal from '../../components/NodeFormModal'
 import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
+import ClassificationBadge from '@components/common/ClassificationBadge'
 import { useNodeListPage } from './hooks/useNodeListPage'
-import { ActionGroup, ClassificationBadge } from '../../AnatomyAtlasV2.styles'
+import { ActionGroup } from '../../AnatomyAtlasV2.styles'
 import { TabRow, TabButton } from './NodeListPage.styles'
 
 const LAYER_LABELS = { 1: 'Topik', 2: 'Modul' }
@@ -34,9 +35,7 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
     {
       header: 'Klasifikasi',
       width: '160px',
-      render: (n) => n.classification
-        ? <ClassificationBadge>{CLASSIFICATION_LABELS[n.classification] ?? n.classification}</ClassificationBadge>
-        : <span style={{ color: '#d1d5db' }}>—</span>,
+      render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} />,
     },
     {
       header: 'Atlas 3D',

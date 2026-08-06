@@ -7,11 +7,17 @@ import TextInput from '@components/common/TextInput'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import TopicFormModal from './components/TopicFormModal'
 import SubtopicListPage from './components/SubtopicListPage'
-import { Container, Header, HeaderLeft, Title, SearchRow, ClassificationBadge, IconPreview } from './MateriAdmin.styles'
+import ClassificationBadge from '@components/common/ClassificationBadge'
+import { Container, Header, HeaderLeft, Title, SearchRow, IconPreview } from './MateriAdmin.styles'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
   ilmu_lintas_sistem: 'Ilmu Lintas Sistem',
+}
+
+const CLASSIFICATION_COLORS = {
+  sistem_blok: { bg: '#d1fae5', color: '#065f46' },
+  ilmu_lintas_sistem: { bg: '#ede9fe', color: '#5b21b6' },
 }
 
 function MateriAdmin() {
@@ -69,11 +75,9 @@ function MateriAdmin() {
     },
     {
       header: 'Klasifikasi',
-      render: (topic) => topic.classification ? (
-        <ClassificationBadge $type={topic.classification}>
-          {CLASSIFICATION_LABELS[topic.classification] ?? topic.classification}
-        </ClassificationBadge>
-      ) : <span style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>—</span>,
+      render: (topic) => (
+        <ClassificationBadge value={topic.classification} labels={CLASSIFICATION_LABELS} colorMap={CLASSIFICATION_COLORS} />
+      ),
     },
     {
       header: 'Aksi',

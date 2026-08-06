@@ -9,8 +9,9 @@ import NodeFormModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/compone
 import SummaryNotesSettingsModal from '@routes/Admin/Features/subpages/SummaryNotes/components/SummaryNotesSettingsModal'
 import NodeSummaryPage from './components/NodeSummaryPage'
 import UnlinkedNotesPage from './components/UnlinkedNotesPage'
+import ClassificationBadge from '@components/common/ClassificationBadge'
 import { useSummaryNotesAdmin } from './hooks/useSummaryNotesAdmin'
-import { Container, Header, HeaderLeft, Title, FilterRow, ClassificationBadge } from './SummaryNotesV2.styles'
+import { Container, Header, HeaderLeft, Title, FilterRow } from './SummaryNotesV2.styles'
 
 const CLASSIFICATION_OPTIONS = [
   { value: '', label: 'Semua Klasifikasi' },
@@ -43,9 +44,7 @@ function SummaryNotesV2({ onBack }) {
     {
       header: 'Klasifikasi',
       width: '180px',
-      render: (n) => n.classification
-        ? <ClassificationBadge>{CLASSIFICATION_LABELS[n.classification] ?? n.classification}</ClassificationBadge>
-        : <span style={{ color: '#d1d5db' }}>—</span>,
+      render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} bg="#d1fae5" color="#065f46" />,
     },
     {
       header: 'Aksi',

@@ -1,12 +1,16 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f0fdfa;
   padding: 1.5rem;
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const Card = styled.div`

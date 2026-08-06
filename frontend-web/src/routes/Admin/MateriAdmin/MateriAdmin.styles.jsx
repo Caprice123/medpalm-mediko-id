@@ -33,17 +33,6 @@ export const SearchRow = styled.div`
   }
 `
 
-export const ClassificationBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  padding: 0.1875rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 999px;
-  background: ${({ $type }) => $type === 'sistem_blok' ? '#d1fae5' : '#ede9fe'};
-  color: ${({ $type }) => $type === 'sistem_blok' ? '#065f46' : '#5b21b6'};
-`
-
 export const IconPreview = styled.span`
   font-size: 1.375rem;
 `

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { PanelCard, EmptyText } from '../../TopicList.styles'
+import { PanelCard } from '../../TopicList.styles'
 import {
   HeaderRow, CountBlock, CountNumber, CountLabel, SubtitleText,
   DueList, DueItem, ItemNumber, ItemContent, ItemTitle, ItemSub,
@@ -41,6 +41,8 @@ export default function DueTodayPanel({ onStartAll, onStartNode, isStarting, bat
   if (loading.isFetchingDueToday) return <DueTodaySkeleton />
 
   const subtopics = dueToday?.subtopics ?? []
+  if (subtopics.length === 0) return null
+
   const startCount = Math.min(dueToday?.total ?? 0, batchSize)
   const totalPages = Math.ceil(subtopics.length / PAGE_SIZE)
   const pageItems = subtopics.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
@@ -56,42 +58,34 @@ export default function DueTodayPanel({ onStartAll, onStartNode, isStarting, bat
             <CountLabel>kartu</CountLabel>
           </CountBlock>
         )}
-        {subtopics.length > 0 && (
-          <StartAllBtn onClick={onStartAll} disabled={isStarting}>
-            {isStarting ? 'Memulai...' : `Mulai ${startCount} Kartu`}
-          </StartAllBtn>
-        )}
+        <StartAllBtn onClick={onStartAll} disabled={isStarting}>
+          {isStarting ? 'Memulai...' : `Mulai ${startCount} Kartu`}
+        </StartAllBtn>
       </HeaderRow>
 
-      {subtopics.length > 0 ? (
-        <>
-          <SubtitleText>
-            Kartu dikelompokkan per sub-topik. Selesaikan satu sub-topik sebelum lanjut — tanpa diacak.
-          </SubtitleText>
-          <DueList>
-            {pageItems.map((s, i) => (
-              <DueItem key={s.nodeId} $delay={`${i * 0.07}s`} onClick={() => !isStarting && onStartNode(s.nodeId)}>
-                <ItemNumber>{pageOffset + i + 1}</ItemNumber>
-                <ItemContent>
-                  <ItemTitle>{s.nodeName}</ItemTitle>
-                  <ItemSub>{s.topicName}</ItemSub>
-                </ItemContent>
-                <ItemRight>
-                  <ItemCount>{s.dueCount}</ItemCount>
-                </ItemRight>
-              </DueItem>
-            ))}
-          </DueList>
-          {totalPages > 1 && (
-            <PaginationRow>
-              <PaginationBtn onClick={() => setPage(p => p - 1)} disabled={page === 0}>‹ Prev</PaginationBtn>
-              <PaginationInfo>{page + 1} / {totalPages}</PaginationInfo>
-              <PaginationBtn onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1}>Next ›</PaginationBtn>
-            </PaginationRow>
-          )}
-        </>
-      ) : (
-        <EmptyText>Tidak ada kartu yang perlu diulang hari ini.</EmptyText>
+      <SubtitleText>
+        Kartu dikelompokkan per sub-topik. Selesaikan satu sub-topik sebelum lanjut — tanpa diacak.
+      </SubtitleText>
+      <DueList>
+        {pageItems.map((s, i) => (
+          <DueItem key={s.nodeId} $delay={`${i * 0.07}s`} onClick={() => !isStarting && onStartNode(s.nodeId)}>
+            <ItemNumber>{pageOffset + i + 1}</ItemNumber>
+            <ItemContent>
+              <ItemTitle>{s.nodeName}</ItemTitle>
+              <ItemSub>{s.topicName}</ItemSub>
+            </ItemContent>
+            <ItemRight>
+              <ItemCount>{s.dueCount}</ItemCount>
+            </ItemRight>
+          </DueItem>
+        ))}
+      </DueList>
+      {totalPages > 1 && (
+        <PaginationRow>
+          <PaginationBtn onClick={() => setPage(p => p - 1)} disabled={page === 0}>‹ Prev</PaginationBtn>
+          <PaginationInfo>{page + 1} / {totalPages}</PaginationInfo>
+          <PaginationBtn onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1}>Next ›</PaginationBtn>
+        </PaginationRow>
       )}
     </PanelCard>
   )

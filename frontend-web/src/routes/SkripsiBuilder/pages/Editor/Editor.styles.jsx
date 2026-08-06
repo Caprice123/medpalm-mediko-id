@@ -49,15 +49,14 @@ export const Wrapper = styled.div`
 `
 
 export const Container = styled.div`
-  height: 100vh;
-  max-height: 100vh;
-  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: calc(100vh - 44px);
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
+    min-height: 100vh;
     max-width: 100%;
     height: initial;
     max-height: initial;

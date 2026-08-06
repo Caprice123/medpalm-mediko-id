@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
   background: #f0fdfa;
   padding: 3rem 1.5rem;
   position: relative;
@@ -19,10 +19,13 @@ export const Container = styled.div`
       radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
+
+   @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const Content = styled.div`
-  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 1;

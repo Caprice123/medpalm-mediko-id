@@ -5,10 +5,11 @@ import AnkiPlayer from './components/AnkiPlayer'
 import { useTopicList, DUE_SESSION_BATCH_SIZE } from './hooks/useTopicList'
 import TopicListHeader from './components/TopicListHeader'
 import DueTodayPanel from './components/DueTodayPanel'
-import ProgressPanel from './components/ProgressPanel'
+// import ProgressPanel from './components/ProgressPanel' — replaced by PerformanceCard below
+import PerformanceCard from './components/PerformanceCard'
 import TopicsSection from './components/TopicsSection'
 import CustomSessionPanel from './components/CustomSessionPanel'
-import { Container, DashboardRow } from './TopicList.styles'
+import { Container } from './TopicList.styles'
 
 export default function TopicListPage() {
   const dispatch = useDispatch()
@@ -20,6 +21,7 @@ export default function TopicListPage() {
     handleStartAllDue, handleCloseSession,
     toggle,
     deepLinkSubtopicId,
+    progressSubtopicsCache, loadProgressSubtopics,
   } = useTopicList()
 
   // scroll the deep-linked, now-expanded topic into view
@@ -37,15 +39,18 @@ export default function TopicListPage() {
         onOpenCustomSession={() => setCustomOpen(true)}
       />
 
-      <DashboardRow>
-        <DueTodayPanel
-          onStartAll={handleStartAllDue}
-          onStartNode={(nodeId) => dispatch(startFlashcardNodeDueSession(nodeId))}
-          isStarting={loading.isStartingSession}
-          batchSize={DUE_SESSION_BATCH_SIZE}
-        />
-        <ProgressPanel />
-      </DashboardRow>
+      <DueTodayPanel
+        onStartAll={handleStartAllDue}
+        onStartNode={(nodeId) => dispatch(startFlashcardNodeDueSession(nodeId))}
+        isStarting={loading.isStartingSession}
+        batchSize={DUE_SESSION_BATCH_SIZE}
+      />
+
+      {/* <ProgressPanel /> — replaced by PerformanceCard below */}
+      <PerformanceCard
+        subtopicsCache={progressSubtopicsCache}
+        onRequestSubtopics={loadProgressSubtopics}
+      />
 
       <TopicsSection
         openTopicId={openTopicId}

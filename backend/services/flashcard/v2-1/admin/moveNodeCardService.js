@@ -48,9 +48,51 @@ export class MoveNodeCardService extends BaseService {
       }
       await bumpNodeStat(tx, parseInt(targetNodeId), RECORD_TYPE, 1)
 
+      // 3. Move subtopic-level user_node_progress rating counts (always — a card can
+      // move between subtopics within the same topic without the topic changing)
+      if (sourceNodeId) {
+        await tx.$executeRaw`
+          UPDATE user_node_progress unp
+          SET
+            again_count = unp.again_count - CASE WHEN urs.last_rating = 'again' THEN 1 ELSE 0 END,
+            hard_count  = unp.hard_count  - CASE WHEN urs.last_rating = 'hard'  THEN 1 ELSE 0 END,
+            good_count  = unp.good_count  - CASE WHEN urs.last_rating = 'good'  THEN 1 ELSE 0 END,
+            easy_count  = unp.easy_count  - CASE WHEN urs.last_rating = 'easy'  THEN 1 ELSE 0 END,
+            updated_at  = NOW()
+          FROM user_review_states urs
+          WHERE urs.record_id   = ${parseInt(cardId)}
+            AND urs.record_type = ${RECORD_TYPE}
+            AND unp.user_id     = urs.user_id
+            AND unp.node_id     = ${sourceNodeId}
+            AND unp.feature_type = ${RECORD_TYPE}
+        `
+      }
+
+      await tx.$executeRaw`
+        INSERT INTO user_node_progress (user_id, node_id, feature_type, again_count, hard_count, good_count, easy_count, updated_at)
+        SELECT
+          urs.user_id,
+          ${parseInt(targetNodeId)},
+          ${RECORD_TYPE},
+          CASE WHEN urs.last_rating = 'again' THEN 1 ELSE 0 END,
+          CASE WHEN urs.last_rating = 'hard'  THEN 1 ELSE 0 END,
+          CASE WHEN urs.last_rating = 'good'  THEN 1 ELSE 0 END,
+          CASE WHEN urs.last_rating = 'easy'  THEN 1 ELSE 0 END,
+          NOW()
+        FROM user_review_states urs
+        WHERE urs.record_id   = ${parseInt(cardId)}
+          AND urs.record_type = ${RECORD_TYPE}
+        ON CONFLICT (user_id, node_id, feature_type) DO UPDATE SET
+          again_count  = user_node_progress.again_count + EXCLUDED.again_count,
+          hard_count   = user_node_progress.hard_count  + EXCLUDED.hard_count,
+          good_count   = user_node_progress.good_count  + EXCLUDED.good_count,
+          easy_count   = user_node_progress.easy_count  + EXCLUDED.easy_count,
+          updated_at   = NOW()
+      `
+
       if (!topicChanged) return
 
-      // 3. Update node_statistics topic counts
+      // 4. Update node_statistics topic counts
       if (sourceTopicId) {
         await bumpNodeStat(tx, sourceTopicId, RECORD_TYPE, -1)
       }

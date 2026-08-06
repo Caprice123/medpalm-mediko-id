@@ -1,20 +1,20 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  min-height: 100vh;
   background: #f0fdfa;
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: calc(100vh - 44px);
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
+      min-height: 100vh;
     padding: 1.5rem 1rem;
   }
 `
 
 export const ContentWrapper = styled.div`
-  max-width: 1200px;
   width: 100%;
   display: flex;
   flex-direction: column;

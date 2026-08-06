@@ -7,7 +7,6 @@ export const Container = styled.div`
 
 export const PageContainer = styled.div`
   padding: 2rem;
-  max-width: 1400px;
   margin: 0 auto;
 
   @media (max-width: 768px) {

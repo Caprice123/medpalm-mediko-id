@@ -5,6 +5,7 @@ const fadeSlideUp = keyframes`
   to   { opacity: 1; transform: translateY(0); }
 `
 
+// Used by DueTodayPanel (ProgressPanel, which also used this, is currently commented out)
 export const PanelCard = styled.div`
   background: #fff;
   border-radius: 18px;
@@ -14,6 +15,7 @@ export const PanelCard = styled.div`
   gap: 0.875rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   animation: ${fadeSlideUp} 0.4s ease both;
+  margin-bottom: 1.75rem;
 `
 
 export const PanelHeader = styled.div`

@@ -14,7 +14,6 @@ export const Container = styled.div`
 `
 
 export const TopicSelectionContainer = styled.div`
-  max-width: 1280px;
   width: 100%;
   display: flex;
   flex-direction: column;

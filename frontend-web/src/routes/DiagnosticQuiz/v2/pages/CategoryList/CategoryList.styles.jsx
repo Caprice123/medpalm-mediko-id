@@ -2,7 +2,11 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   padding: 2rem;
-  min-height: 100vh;
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const EmptyWrap = styled.div`
@@ -12,15 +16,4 @@ export const EmptyWrap = styled.div`
   background: #fff;
   border-radius: 16px;
   border: 1.5px dashed #e5e7eb;
-`
-
-export const DashboardRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 `

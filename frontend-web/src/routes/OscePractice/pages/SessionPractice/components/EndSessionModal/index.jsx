@@ -77,6 +77,7 @@ function EndSessionModal({
       size="medium"
       closeOnOverlayClick={!isProcessing}
       showCloseButton={!isProcessing}
+      onClose={onClose}
     >
       <ModalContent>
         {showConfirmation && (

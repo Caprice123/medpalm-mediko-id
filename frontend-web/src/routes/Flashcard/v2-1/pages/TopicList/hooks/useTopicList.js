@@ -6,6 +6,7 @@ import {
   fetchFlashcardSubtopicsRaw,
   fetchFlashcardDueToday,
   fetchFlashcardProgress,
+  fetchFlashcardProgressSubtopics,
   startFlashcardDueSession,
   actions,
 } from '@store/flashcardNodes'
@@ -24,6 +25,7 @@ export function useTopicList() {
   const [openTopicId, setOpenTopicId] = useState(null)
   const [loadingTopicId, setLoadingTopicId] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
+  const [progressSubtopicsCache, setProgressSubtopicsCache] = useState({})
 
   useEffect(() => {
     dispatch(fetchFlashcardTopics())
@@ -65,6 +67,11 @@ export function useTopicList() {
     }
   }, [dispatch, subtopicsByTopic])
 
+  const loadProgressSubtopics = useCallback(async (topicId) => {
+    const data = await dispatch(fetchFlashcardProgressSubtopics(topicId))
+    setProgressSubtopicsCache(prev => ({ ...prev, [topicId]: data }))
+  }, [dispatch])
+
   return {
     openTopicId,
     loadingTopicId,
@@ -74,5 +81,7 @@ export function useTopicList() {
     handleCloseSession,
     toggle,
     deepLinkSubtopicId: resolvedDeepLinkSubtopicId,
+    progressSubtopicsCache,
+    loadProgressSubtopics,
   }
 }

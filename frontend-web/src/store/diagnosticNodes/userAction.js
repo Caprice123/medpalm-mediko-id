@@ -82,15 +82,34 @@ export const fetchDiagnosticDueToday = () => async (dispatch) => {
   }
 }
 
+// fire-and-return — for the performance chart's module drill-down, no Redux state
+export const fetchDiagnosticProgressSubmodules = (moduleId) => async () => {
+  const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/progress/modules/${moduleId}/submodules`)
+  return res.data.data || []
+}
+
+// The backend stays cursor-paginated (bounded per-request), but the chart needs the
+// complete list — so page through it here rather than removing pagination server-side.
+async function fetchAllDiagnosticProgressModules() {
+  const modules = []
+  let cursor = null
+  for (;;) {
+    const res = await getWithToken(`${Endpoints.api.diagnosticNodes}/progress/modules`, cursor ? { cursor } : {})
+    modules.push(...(res.data.data?.modules || []))
+    cursor = res.data.data?.nextCursor ?? null
+    if (!cursor) break
+  }
+  return modules
+}
+
 export const fetchDiagnosticProgress = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingProgress: true }))
-    const [summaryRes, modulesRes] = await Promise.all([
+    const [summaryRes, modules] = await Promise.all([
       getWithToken(`${Endpoints.api.diagnosticNodes}/progress/summary`),
-      getWithToken(`${Endpoints.api.diagnosticNodes}/progress/modules`),
+      fetchAllDiagnosticProgressModules(),
     ])
     const totalCounts = summaryRes.data.data || { again: 0, hard: 0, good: 0, easy: 0 }
-    const modules = modulesRes.data.data?.modules || []
     const totalQuestions = modules.reduce((sum, t) => sum + (t.totalQuestions ?? 0), 0)
     // Note: Redux state field stays `topics` here — ProgressPanel/useCategoryList (out of this
     // rename's scope) still read `progress.topics`. Only the API-call construction was renamed.

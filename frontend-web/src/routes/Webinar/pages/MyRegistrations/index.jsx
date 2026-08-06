@@ -11,7 +11,6 @@ import { WebinarRoute } from '../../routes'
 import styled from 'styled-components'
 
 const Container = styled.div`
-  max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 `

@@ -61,14 +61,3 @@ export const LayerBadge = styled.span`
   color: #6d28d9;
 `
 
-export const ClassificationBadge = styled.span`
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: ${({ $type }) => $type === 'special' ? '#fef3c7' : '#dbeafe'};
-  color: ${({ $type }) => $type === 'special' ? '#b45309' : '#1d4ed8'};
-`

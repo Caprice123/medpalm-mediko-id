@@ -1,17 +1,20 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  height: 100vh;
+  height: calc(100vh - 44px);
   background: #f0fdfa;
   display: flex;
   justify-content: center;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: 100vh;
+  }
 `
 
 export const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
-  max-width: 1280px;
   height: 100%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 `

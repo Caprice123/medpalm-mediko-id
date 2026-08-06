@@ -1,6 +1,7 @@
 import { GetFlashcardDueTodayService } from '#services/flashcard/v2-1/getFlashcardDueTodayService'
 import { GetFlashcardProgressSummaryService } from '#services/flashcard/v2-1/getFlashcardProgressSummaryService'
 import { GetFlashcardProgressTopicsService } from '#services/flashcard/v2-1/getFlashcardProgressTopicsService'
+import { GetFlashcardProgressSubtopicsService } from '#services/flashcard/v2-1/getFlashcardProgressSubtopicsService'
 
 class ProgressController {
   async getDueToday(req, res) {
@@ -20,6 +21,13 @@ class ProgressController {
     const cursor = req.query.cursor ? parseInt(req.query.cursor) : null
     const limit  = req.query.limit  ? parseInt(req.query.limit)  : 20
     const data = await GetFlashcardProgressTopicsService.call({ userId, cursor, limit })
+    return res.status(200).json({ data })
+  }
+
+  async getProgressSubtopics(req, res) {
+    const userId = req.user.id
+    const topicId = parseInt(req.params.topicId)
+    const data = await GetFlashcardProgressSubtopicsService.call({ userId, topicId })
     return res.status(200).json({ data })
   }
 }

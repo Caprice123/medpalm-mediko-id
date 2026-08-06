@@ -7,8 +7,12 @@ export const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem 1.5rem;
-  min-height: 100vh;
   background: #f0fdfa;
+  min-height: calc(100vh - 44px);
+
+  @media (max-width: 768px) {
+    min-height: 100vh;
+  }
 `
 
 export const BackBtn = styled.button`

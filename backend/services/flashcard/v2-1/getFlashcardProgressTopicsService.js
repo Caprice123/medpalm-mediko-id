@@ -10,6 +10,13 @@ export class GetFlashcardProgressTopicsService extends BaseService {
         user_id: userId,
         feature_type: 'flashcard_card',
         ...(cursor ? { id: { gt: cursor } } : {}),
+        // Match the same criteria as the browsable topic list (GetFlashcardTopicsService) —
+        // a progress row can outlive its topic being unpublished, retyped, or emptied out.
+        feature_nodes: {
+          visibility: 'general',
+          node_type: 'topic',
+          node_statistics: { some: { record_type: 'flashcard_card', total_count: { gt: 0 } } },
+        },
       },
       orderBy: { id: 'asc' },
       take: limit + 1,

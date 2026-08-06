@@ -34,6 +34,22 @@ export class DeleteNodeDiagnosticQuestionService extends BaseService {
           create: { node_id: subtopicNodeId, record_type: RECORD_TYPE, total_count: 0 },
           update: { total_count: { decrement: 1 } },
         })
+
+        await tx.$executeRaw`
+          UPDATE user_node_progress unp
+          SET
+            again_count = GREATEST(0, unp.again_count - CASE WHEN urs.last_rating = 'again' THEN 1 ELSE 0 END),
+            hard_count  = GREATEST(0, unp.hard_count  - CASE WHEN urs.last_rating = 'hard'  THEN 1 ELSE 0 END),
+            good_count  = GREATEST(0, unp.good_count  - CASE WHEN urs.last_rating = 'good'  THEN 1 ELSE 0 END),
+            easy_count  = GREATEST(0, unp.easy_count  - CASE WHEN urs.last_rating = 'easy'  THEN 1 ELSE 0 END),
+            updated_at  = NOW()
+          FROM user_review_states urs
+          WHERE urs.record_id    = ${parseInt(questionId)}
+            AND urs.record_type  = ${RECORD_TYPE}
+            AND unp.user_id      = urs.user_id
+            AND unp.node_id      = ${subtopicNodeId}
+            AND unp.feature_type = ${RECORD_TYPE}
+        `
       }
 
       if (topicId) {
