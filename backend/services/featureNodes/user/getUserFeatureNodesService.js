@@ -37,7 +37,7 @@ function buildNodeFilter({ nodeType, visibility, classification, layer, hasConte
 }
 
 export class GetUserFeatureNodesService extends BaseService {
-  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page = 1, perPage = 30 } = {}) {
+  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page = 1, perPage = 30, username = null } = {}) {
     const currentPage = Math.max(1, parseInt(page) || 1)
     const currentPerPage = Math.min(100, Math.max(1, parseInt(perPage) || 30))
     const skip = (currentPage - 1) * currentPerPage
@@ -69,7 +69,7 @@ export class GetUserFeatureNodesService extends BaseService {
     return {
       data,
       pagination: { page: currentPage, perPage: currentPerPage, isLastPage },
-      videoEmbedUrlMap: await this.buildVideoEmbedUrlMap(data),
+      videoEmbedUrlMap: await this.buildVideoEmbedUrlMap(data, username),
       adjacentMap: (includeAdjacent === true || includeAdjacent === 'true')
         ? await this.buildAdjacentMap(data, { nodeType, visibility, classification, layer, hasContent })
         : {},
@@ -105,7 +105,7 @@ export class GetUserFeatureNodesService extends BaseService {
   }
 
   // Bulk-fetch video attachments for all nodes in one query
-  static async buildVideoEmbedUrlMap(nodes) {
+  static async buildVideoEmbedUrlMap(nodes, username = null) {
     const nodeIds = nodes.map(n => n.id)
     if (!nodeIds.length) return {}
 
@@ -118,7 +118,7 @@ export class GetUserFeatureNodesService extends BaseService {
     await Promise.all(videoAttachments.map(async (att) => {
       if (!att.blob) return
       if (att.blob.provider === 'bunny_stream') {
-        videoEmbedUrlMap[att.record_id] = bunnyStreamService.embedUrl(att.blob.key, { autoplay: process.env.NODE_ENV === 'production' })
+        videoEmbedUrlMap[att.record_id] = bunnyStreamService.embedUrl(att.blob.key, { autoplay: process.env.NODE_ENV === 'production', context: username })
       } else {
         videoEmbedUrlMap[att.record_id] = await IDriveService.getSignedUrl(att.blob.key, 7 * 24 * 60 * 60)
       }

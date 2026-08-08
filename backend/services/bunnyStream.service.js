@@ -1,17 +1,24 @@
 import fs from 'fs'
 
 const API_BASE = 'https://video.bunnycdn.com'
+const MAX_CONTEXT_LENGTH = 25 // watermark strip is too short to render a long username
 
 class BunnyStreamService {
   get apiKey() { return process.env.BUNNY_STREAM_API_KEY }
   get libraryId() { return process.env.BUNNY_STREAM_LIBRARY_ID }
   get embedDomain() { return process.env.BUNNY_STREAM_EMBED_DOMAIN }
 
-  embedUrl(videoId, { autoplay = false } = {}) {
+  embedUrl(videoId, { autoplay = false, context = null } = {}) {
     const base = this.embedDomain
       ? `https://${this.embedDomain}/${videoId}`
       : `https://iframe.mediadelivery.net/embed/${this.libraryId}/${videoId}`
-    return autoplay ? `${base}?autoplay` : base
+    const params = []
+    if (autoplay) params.push('autoplay')
+    if (context) {
+      const truncated = context.length > MAX_CONTEXT_LENGTH ? `${context.slice(0, MAX_CONTEXT_LENGTH - 1)}…` : context
+      params.push(`context=${encodeURIComponent(truncated)}`)
+    }
+    return params.length ? `${base}?${params.join('&')}` : base
   }
 
   async uploadVideo(filePath, originalName) {
