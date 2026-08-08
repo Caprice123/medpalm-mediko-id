@@ -18,6 +18,7 @@ class NodesController {
       includeAdjacent,
       page,
       perPage,
+      username: req.user?.name ?? null,
     })
 
     res.json({
