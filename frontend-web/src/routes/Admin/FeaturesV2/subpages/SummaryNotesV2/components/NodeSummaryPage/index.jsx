@@ -31,7 +31,6 @@ export default function NodeSummaryPage({ parentNode, onBack }) {
     },
     {
       header: 'Aksi',
-      width: '280px',
       align: 'right',
       render: (n) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>

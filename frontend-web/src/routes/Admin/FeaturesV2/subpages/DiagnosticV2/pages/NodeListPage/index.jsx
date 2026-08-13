@@ -1,6 +1,7 @@
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import TextInput from '@components/common/TextInput'
+import Dropdown from '@components/common/Dropdown'
 import Breadcrumb from '@components/common/Breadcrumb'
 import NodeFormModal from '../../components/NodeFormModal'
 import SwapNodeOrderModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/SwapNodeOrderModal'
@@ -19,6 +20,11 @@ const CLASSIFICATION_COLORS = {
   primary: { bg: '#dbeafe', color: '#1d4ed8' },
   special: { bg: '#fef3c7', color: '#b45309' },
 }
+const CLASSIFICATION_OPTIONS = [
+  { value: '', label: 'Semua Module' },
+  { value: 'primary', label: 'Utama' },
+  { value: 'special', label: 'Khusus' },
+]
 
 export default function NodeListPage({
   path, currentLayer, parentNode,
@@ -27,6 +33,7 @@ export default function NodeListPage({
   const {
     nodes, isLoading,
     search, setSearch, handleSearch,
+    classification, handleClassificationChange,
     settingsOpen, setSettingsOpen,
     nodeModal, setNodeModal,
     tab, handleTabChange,
@@ -42,15 +49,13 @@ export default function NodeListPage({
       render: (n) => <span style={{ fontWeight: 600, color: '#111827' }}>{n.name}</span>,
     },
     ...(currentLayer === 1 ? [{
-      header: 'Klasifikasi',
-      width: '130px',
+      header: 'Module',
       render: (n) => (
         <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} colorMap={CLASSIFICATION_COLORS} variant="square" />
       ),
     }] : []),
     {
       header: 'Aksi',
-      width: currentLayer === 2 ? '300px' : '220px',
       align: 'right',
       render: (n) => (
         <ActionGroup>
@@ -114,7 +119,16 @@ export default function NodeListPage({
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSearch()}
+          style={{ flex: 1 }}
         />
+        {currentLayer === 1 && (
+          <Dropdown
+            options={CLASSIFICATION_OPTIONS}
+            value={CLASSIFICATION_OPTIONS.find(o => o.value === classification) ?? CLASSIFICATION_OPTIONS[0]}
+            onChange={handleClassificationChange}
+            placeholder="Module..."
+          />
+        )}
         <Button variant="secondary" onClick={handleSearch}>Cari</Button>
       </SearchRow>
 

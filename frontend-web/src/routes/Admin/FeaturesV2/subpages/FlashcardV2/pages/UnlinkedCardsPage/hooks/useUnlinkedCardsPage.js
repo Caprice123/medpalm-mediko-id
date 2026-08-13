@@ -9,6 +9,7 @@ export function useUnlinkedCardsPage() {
 
   const [editModal, setEditModal] = useState({ open: false, card: null })
   const [assignModal, setAssignModal] = useState({ open: false, card: null })
+  const [previewModal, setPreviewModal] = useState({ open: false, card: null })
   const [search, setSearch] = useState('')
 
   const reload = () => {
@@ -40,6 +41,7 @@ export function useUnlinkedCardsPage() {
   return {
     editModal, setEditModal,
     assignModal, setAssignModal,
+    previewModal, setPreviewModal,
     search, setSearch,
     handleSearch, handleLoadMore, handleDelete,
     handleEditSuccess, handleAssignSuccess,

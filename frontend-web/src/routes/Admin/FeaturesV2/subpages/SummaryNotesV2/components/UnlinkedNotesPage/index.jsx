@@ -79,17 +79,15 @@ export default function UnlinkedNotesPage({ onBack }) {
     },
     {
       header: 'Status',
-      width: '110px',
       render: (note) => <NoteStatusBadge $status={note.status}>{note.status}</NoteStatusBadge>,
     },
     {
       header: 'Versi',
-      width: '70px',
       render: (note) => `v${note.version ?? 1}`,
     },
     {
       header: 'Aksi',
-      width: '200px',
+      align: 'right',
       render: (note) => (
         <NoteActions>
           <Button size="small" variant="secondary" onClick={() => setAssignNote(note)}>Pindah</Button>

@@ -5,7 +5,7 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import FileUpload from '@components/common/FileUpload'
 import Dropdown from '@components/common/Dropdown'
-import ClozeCard from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/ClozeCard'
+import CardPreviewModal from '../CardPreviewModal'
 import ClozeEditor from './components/ClozeEditor'
 import OcclusionEditor from './components/OcclusionEditor'
 import { useCardFormModal } from './hooks/useCardFormModal'
@@ -159,9 +159,10 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
       </div>
 
       {previewOpen && (
-        <Modal isOpen title="📖 Preview Flashcard" size="medium" onClose={() => setPreviewOpen(false)}>
-          <ClozeCard text={form.front} answers={form.clozeAnswers} />
-        </Modal>
+        <CardPreviewModal
+          card={{ type: form.type, front: form.front, back: form.back, clozeAnswers: form.clozeAnswers, occlusionRegions: form.occlusionRegions, imageUrl: form.imagePreviewUrl }}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
     </Modal>
   )

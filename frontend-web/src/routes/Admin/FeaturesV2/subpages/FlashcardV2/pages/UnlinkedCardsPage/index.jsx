@@ -3,6 +3,7 @@ import Button from '@components/common/Button'
 import Table from '@components/common/Table'
 import TextInput from '@components/common/TextInput'
 import CardFormModal from '../../components/CardFormModal'
+import CardPreviewModal from '../../components/CardPreviewModal'
 import MoveCardModal from '../../components/MoveCardModal'
 import { updateUnlinkedCard, assignCardToNode } from '@store/unlinkedCards'
 import { useUnlinkedCardsPage } from './hooks/useUnlinkedCardsPage'
@@ -17,6 +18,7 @@ export default function UnlinkedCardsPage({ onBack }) {
   const {
     editModal, setEditModal,
     assignModal, setAssignModal,
+    previewModal, setPreviewModal,
     search, setSearch,
     handleSearch, handleLoadMore, handleDelete,
     handleEditSuccess, handleAssignSuccess,
@@ -37,15 +39,14 @@ export default function UnlinkedCardsPage({ onBack }) {
     { header: 'Back', render: (c) => c.back },
     {
       header: 'Versi',
-      width: '70px',
       render: (c) => `v${c.version ?? 1}`,
     },
     {
       header: 'Aksi',
-      width: '220px',
       align: 'right',
       render: (c) => (
         <ActionGroup>
+          <Button size="small" variant="secondary" onClick={() => setPreviewModal({ open: true, card: c })}>Preview</Button>
           <Button size="small" variant="secondary" onClick={() => setAssignModal({ open: true, card: c })}>Pindah</Button>
           <Button size="small" onClick={() => setEditModal({ open: true, card: c })}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleDelete(c)}>Hapus</Button>
@@ -102,6 +103,13 @@ export default function UnlinkedCardsPage({ onBack }) {
           onSuccess={handleEditSuccess}
           onSave={(payload, onSuccess) => dispatch(updateUnlinkedCard(editModal.card.id, payload, onSuccess))}
           isSavingOverride={loading.isUpdatingCard}
+        />
+      )}
+
+      {previewModal.open && (
+        <CardPreviewModal
+          card={previewModal.card}
+          onClose={() => setPreviewModal({ open: false, card: null })}
         />
       )}
 

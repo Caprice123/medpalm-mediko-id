@@ -37,15 +37,13 @@ export const PageTitle = styled.h3`
 export const SearchRow = styled.div`
   display: flex;
   gap: 0.75rem;
-
-  > *:first-child {
-    flex: 1;
-  }
+  align-items: flex-end;
 `
 
 export const ActionGroup = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.375rem;
 `
 

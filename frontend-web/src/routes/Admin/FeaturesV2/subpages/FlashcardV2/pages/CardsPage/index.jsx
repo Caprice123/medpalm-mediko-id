@@ -4,6 +4,7 @@ import Table from '@components/common/Table'
 import Modal from '@components/common/Modal'
 import Breadcrumb from '@components/common/Breadcrumb'
 import CardFormModal from '../../components/CardFormModal'
+import CardPreviewModal from '../../components/CardPreviewModal'
 import MoveCardModal from '../../components/MoveCardModal'
 import { downloadCardsTemplate } from '@store/nodeCards/adminAction'
 import { useCardsPage } from './hooks/useCardsPage'
@@ -17,6 +18,7 @@ export default function CardsPage({ node, parentNode, onBack }) {
   const {
     modal, setModal,
     moveModal, setMoveModal,
+    previewModal, setPreviewModal,
     importRef, importResult, setImportResult,
     handleDelete, handleLoadMore, handleCardSuccess, handleMoveSuccess, handleImportFile,
   } = useCardsPage(node)
@@ -34,10 +36,10 @@ export default function CardsPage({ node, parentNode, onBack }) {
     { header: 'Back', render: (c) => (c.type === 'basic' ? c.back : '—') },
     {
       header: 'Aksi',
-      width: '200px',
       align: 'right',
       render: (c) => (
         <ActionGroup>
+          <Button size="small" variant="secondary" onClick={() => setPreviewModal({ open: true, card: c })}>Preview</Button>
           <Button size="small" variant="secondary" onClick={() => setMoveModal({ open: true, card: c })}>Pindah</Button>
           <Button size="small" onClick={() => setModal({ open: true, card: c })}>Edit</Button>
           <Button size="small" variant="danger" onClick={() => handleDelete(c)}>Hapus</Button>
@@ -102,6 +104,13 @@ export default function CardsPage({ node, parentNode, onBack }) {
           card={modal.card}
           onClose={() => setModal({ open: false, card: null })}
           onSuccess={handleCardSuccess}
+        />
+      )}
+
+      {previewModal.open && (
+        <CardPreviewModal
+          card={previewModal.card}
+          onClose={() => setPreviewModal({ open: false, card: null })}
         />
       )}
 

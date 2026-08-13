@@ -7,6 +7,7 @@ export function useNodeListPage(currentLayer, parentNode) {
   const { nodes, loading } = useSelector(s => s.featureNodes)
 
   const [search, setSearch] = useState('')
+  const [classification, setClassification] = useState('')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [nodeModal, setNodeModal] = useState({ open: false, node: null })
   const [tab, setTab] = useState('ordered')
@@ -18,12 +19,14 @@ export function useNodeListPage(currentLayer, parentNode) {
     dispatch(updateFilter({ key: 'parentId', value: parentNode?.id ? String(parentNode.id) : '' }))
     dispatch(updateFilter({ key: 'visibility', value: 'diagnostic' }))
     dispatch(updateFilter({ key: 'search', value: '' }))
+    dispatch(updateFilter({ key: 'classification', value: '' }))
     dispatch(updateFilter({ key: 'sortBy', value: currentLayer === 2 && tab === 'ordered' ? 'order' : '' }))
     dispatch(fetchFeatureNodes())
   }
 
   useEffect(() => {
     setSearch('')
+    setClassification('')
     loadNodes()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLayer, parentNode?.id, tab])
@@ -32,6 +35,13 @@ export function useNodeListPage(currentLayer, parentNode) {
 
   const handleSearch = () => {
     dispatch(updateFilter({ key: 'search', value: search.trim() }))
+    dispatch(fetchFeatureNodes())
+  }
+
+  const handleClassificationChange = (opt) => {
+    const value = opt?.value ?? ''
+    setClassification(value)
+    dispatch(updateFilter({ key: 'classification', value }))
     dispatch(fetchFeatureNodes())
   }
 
@@ -50,6 +60,7 @@ export function useNodeListPage(currentLayer, parentNode) {
   return {
     nodes, isLoading: loading.isFetchingNodes,
     search, setSearch, handleSearch,
+    classification, handleClassificationChange,
     settingsOpen, setSettingsOpen,
     nodeModal, setNodeModal,
     tab, handleTabChange,

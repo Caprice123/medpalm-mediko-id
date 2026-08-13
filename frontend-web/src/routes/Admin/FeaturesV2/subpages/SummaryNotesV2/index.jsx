@@ -43,12 +43,10 @@ function SummaryNotesV2({ onBack }) {
     },
     {
       header: 'Klasifikasi',
-      width: '180px',
-      render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} bg="#d1fae5" color="#065f46" />,
+      render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} />,
     },
     {
       header: 'Aksi',
-      width: '200px',
       align: 'right',
       render: (n) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>

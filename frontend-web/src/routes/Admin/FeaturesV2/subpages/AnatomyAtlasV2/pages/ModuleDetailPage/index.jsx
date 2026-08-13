@@ -38,9 +38,9 @@ export default function ModuleDetailPage({ module }) {
   const atlasColumns = [
     { header: 'Judul', render: n => <span style={{ fontWeight: 600, color: '#111827' }}>{n.title}</span> },
     { header: 'Deskripsi', render: n => <Description>{n.description || '—'}</Description> },
-    { header: 'Versi', width: '70px', render: n => `v${n.version ?? 1}` },
+    { header: 'Versi', render: n => `v${n.version ?? 1}` },
     {
-      header: 'Aksi', width: '320px', align: 'right',
+      header: 'Aksi', align: 'right',
       render: n => (
         <ActionGroup>
           <Button size="small" variant="secondary" onClick={() => setAtlasOrderModal({ open: true, item: n })}>Tukar Posisi</Button>
@@ -56,9 +56,9 @@ export default function ModuleDetailPage({ module }) {
   const quizColumns = [
     { header: 'Judul', render: n => <span style={{ fontWeight: 600, color: '#111827' }}>{n.title}</span> },
     { header: 'Deskripsi', render: n => <Description>{n.description || '—'}</Description> },
-    { header: 'Versi', width: '70px', render: n => `v${n.version ?? 1}` },
+    { header: 'Versi', render: n => `v${n.version ?? 1}` },
     {
-      header: 'Aksi', width: '320px', align: 'right',
+      header: 'Aksi', align: 'right',
       render: n => (
         <ActionGroup>
           <Button size="small" variant="secondary" onClick={() => setQuizOrderModal({ open: true, item: n })}>Tukar Posisi</Button>

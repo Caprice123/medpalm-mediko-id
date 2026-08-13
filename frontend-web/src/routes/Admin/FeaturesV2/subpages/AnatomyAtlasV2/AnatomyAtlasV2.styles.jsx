@@ -34,4 +34,11 @@ export const ActionGroup = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: flex-end;
+`
+
+export const SearchRow = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
 `

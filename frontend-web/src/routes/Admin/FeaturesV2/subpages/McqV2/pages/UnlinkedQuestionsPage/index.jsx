@@ -36,7 +36,6 @@ export default function UnlinkedQuestionsPage({ onBack }) {
     },
     {
       header: 'Jawaban Benar',
-      width: '160px',
       render: (q) => (
         <span style={{ fontWeight: 600, color: '#059669' }}>
           {OPTION_LABELS[q.correctIndex] != null ? `${OPTION_LABELS[q.correctIndex]}: ${q.options?.[q.correctIndex] ?? ''}` : '—'}
@@ -45,12 +44,10 @@ export default function UnlinkedQuestionsPage({ onBack }) {
     },
     {
       header: 'Versi',
-      width: '70px',
       render: (q) => `v${q.version ?? 1}`,
     },
     {
       header: 'Aksi',
-      width: '220px',
       align: 'right',
       render: (q) => (
         <ActionGroup>

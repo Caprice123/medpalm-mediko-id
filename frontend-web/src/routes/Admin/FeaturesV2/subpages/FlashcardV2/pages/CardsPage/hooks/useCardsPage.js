@@ -10,6 +10,7 @@ export function useCardsPage(node) {
 
   const [modal, setModal] = useState({ open: false, card: null })
   const [moveModal, setMoveModal] = useState({ open: false, card: null })
+  const [previewModal, setPreviewModal] = useState({ open: false, card: null })
   const importRef = useRef(null)
   const [importResult, setImportResult] = useState(null)
 
@@ -50,6 +51,7 @@ export function useCardsPage(node) {
   return {
     modal, setModal,
     moveModal, setMoveModal,
+    previewModal, setPreviewModal,
     importRef, importResult, setImportResult,
     handleDelete, handleLoadMore, handleCardSuccess, handleMoveSuccess, handleImportFile,
   }

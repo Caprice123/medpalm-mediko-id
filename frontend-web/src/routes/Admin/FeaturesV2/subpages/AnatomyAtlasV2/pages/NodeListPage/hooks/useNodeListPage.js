@@ -10,6 +10,8 @@ export function useNodeListPage(currentLayer, parentNode) {
 
   const [tab, setTab] = useState('ordered')
   const [orderModal, setOrderModal] = useState({ open: false, node: null })
+  const [search, setSearch] = useState('')
+  const [classification, setClassification] = useState('')
 
   const loadNodes = () => {
     dispatch(updateFilter({ key: 'layer', value: String(currentLayer) }))
@@ -17,15 +19,31 @@ export function useNodeListPage(currentLayer, parentNode) {
     dispatch(updateFilter({ key: 'visibility', value: VISIBILITY }))
     dispatch(updateFilter({ key: 'nodeType', value: currentLayer === 2 ? 'module' : 'topic' }))
     dispatch(updateFilter({ key: 'sortBy', value: currentLayer === 2 && tab === 'ordered' ? 'order' : '' }))
+    dispatch(updateFilter({ key: 'search', value: '' }))
+    dispatch(updateFilter({ key: 'classification', value: '' }))
     dispatch(fetchFeatureNodesWithStats())
   }
 
   useEffect(() => {
+    setSearch('')
+    setClassification('')
     loadNodes()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLayer, parentNode?.id, tab])
 
   const handleTabChange = (value) => setTab(value)
+
+  const handleSearch = () => {
+    dispatch(updateFilter({ key: 'search', value: search.trim() }))
+    dispatch(fetchFeatureNodesWithStats())
+  }
+
+  const handleClassificationChange = (opt) => {
+    const value = opt?.value ?? ''
+    setClassification(value)
+    dispatch(updateFilter({ key: 'classification', value }))
+    dispatch(fetchFeatureNodesWithStats())
+  }
 
   const handleDelete = (node) => {
     if (!window.confirm(`Hapus "${node.name}"? Semua data di dalamnya akan ikut terhapus.`)) return
@@ -37,6 +55,8 @@ export function useNodeListPage(currentLayer, parentNode) {
   return {
     nodes, isLoading: loading.isFetchingNodes,
     tab, handleTabChange,
+    search, setSearch, handleSearch,
+    classification, handleClassificationChange,
     orderModal, setOrderModal,
     handleDelete, handleOrderChanged, reload: loadNodes,
   }

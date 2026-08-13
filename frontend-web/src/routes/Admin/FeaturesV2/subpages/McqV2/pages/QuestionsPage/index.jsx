@@ -30,7 +30,6 @@ export default function QuestionsPage({ node, parentNode, onBack }) {
     },
     {
       header: 'Jawaban Benar',
-      width: '160px',
       render: (q) => (
         <CorrectAnswer>
           {OPTION_LABELS[q.correctIndex] != null ? `${OPTION_LABELS[q.correctIndex]}: ${q.options?.[q.correctIndex] ?? ''}` : '—'}
@@ -39,7 +38,6 @@ export default function QuestionsPage({ node, parentNode, onBack }) {
     },
     {
       header: 'Aksi',
-      width: '200px',
       align: 'right',
       render: (q) => (
         <ActionGroup>

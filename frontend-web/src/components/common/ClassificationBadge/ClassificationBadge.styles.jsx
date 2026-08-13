@@ -8,8 +8,8 @@ export const PillBadge = styled.span`
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
-  background: ${p => p.$bg || '#ede9fe'};
-  color: ${p => p.$color || '#6d28d9'};
+  background: ${p => p.$bg || '#d1fae5'};
+  color: ${p => p.$color || '#065f46'};
 `
 
 export const SquareBadge = styled.span`

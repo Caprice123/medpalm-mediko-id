@@ -20,12 +20,10 @@ export default function TopicsTable({ onSelectNode, onEditNode, onDeleteNode }) 
     },
     {
       header: 'Klasifikasi',
-      width: '180px',
       render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} />,
     },
     {
       header: 'Aksi',
-      width: '200px',
       align: 'right',
       render: (n) => (
         <RowActions>

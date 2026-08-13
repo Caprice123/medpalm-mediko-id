@@ -32,12 +32,10 @@ export default function UnlinkedAtlasPage({ onBack }) {
     },
     {
       header: 'Versi',
-      width: '70px',
       render: (m) => `v${m.version ?? 1}`,
     },
     {
       header: 'Aksi',
-      width: '220px',
       align: 'right',
       render: (m) => (
         <ActionGroup>

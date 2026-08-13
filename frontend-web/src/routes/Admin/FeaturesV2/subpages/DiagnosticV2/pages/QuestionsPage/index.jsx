@@ -35,12 +35,10 @@ export default function QuestionsPage({ path, parentNode, onBack, onNavigateRoot
     },
     {
       header: 'Jawaban',
-      width: '160px',
       render: (q) => <span style={{ color: '#16a34a', fontWeight: 600 }}>{q.answer}</span>,
     },
     {
       header: 'Aksi',
-      width: '220px',
       align: 'right',
       render: (q) => (
         <ActionGroup>
