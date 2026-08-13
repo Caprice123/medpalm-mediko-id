@@ -48,89 +48,38 @@ export const RegionOverlay = styled.div`
     `}
 `
 
-export const AnswerInput = styled.input`
-  position: absolute;
-  box-sizing: border-box;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  border-bottom: 2px dashed #9ca3af;
-  border-radius: 6px 6px 0 0;
-  background: #f3f4f6;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: normal;
-  font-family: inherit;
-  color: #111827;
-  text-align: center;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-
-  &:focus {
-    outline: none;
-    background: #f0f9ff;
-    border-bottom: 2px solid #6BB9E8;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 0.9375rem;
-  }
-`
-
 export const AnswerLabel = styled.div`
   position: absolute;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 700;
   line-height: 1.3;
-  background: white;
-  border: 1.5px solid ${p => (p.$correct ? '#22c55e' : '#ef4444')};
-  padding: 0.75rem 0;
+  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  color: #fff;
+  padding: 0.375rem 0.75rem;
   border-radius: 8px;
   text-align: center;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   pointer-events: none;
   z-index: 2;
-`
-
-export const CorrectAnswer = styled.span`
-  font-size: 1.125rem;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  padding: 0 0.5rem;
-  color: ${p => (p.$correct ? '#15803d' : '#b91c1c')};
 
   @media (max-width: 768px) {
     font-size: 0.9375rem;
   }
 `
 
-export const Divider = styled.span`
+export const RevealButton = styled.button`
   width: 100%;
-  height: 0;
-  border-top: 1.5px dashed rgba(0, 0, 0, 0.25);
-`
-
-export const UserAnswerText = styled.span`
-  font-size: 1.125rem;
+  padding: 0.75rem 1.5rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9375rem;
   font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  padding: 0 0.5rem;
-  color: #374151;
-  text-decoration: ${p => (p.$correct ? 'none' : 'line-through')};
+  cursor: pointer;
+  transition: opacity 0.15s;
 
-  @media (max-width: 768px) {
-    font-size: 0.9375rem;
-  }
-`
-
-export const Hint = styled.div`
-  text-align: center;
-  font-size: 0.8125rem;
-  color: #9ca3af;
+  &:hover { opacity: 0.9; }
 `

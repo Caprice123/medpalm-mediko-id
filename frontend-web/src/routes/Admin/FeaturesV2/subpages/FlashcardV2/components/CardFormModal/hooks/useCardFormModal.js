@@ -9,6 +9,7 @@ export function useCardFormModal({ nodeId, card, onSuccess, onSave, isSavingOver
   const { loading } = useSelector(state => state.nodeCards)
 
   const isEdit = !!card
+  const [previewOpen, setPreviewOpen] = useState(false)
   const [form, setForm] = useState({
     type: 'basic',
     front: '',
@@ -116,6 +117,7 @@ export function useCardFormModal({ nodeId, card, onSuccess, onSave, isSavingOver
 
   return {
     isEdit,
+    previewOpen, setPreviewOpen,
     form, set,
     setClozeAnswer, setOcclusionRegions,
     addReference, setReference, removeReference,

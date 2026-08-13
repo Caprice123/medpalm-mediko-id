@@ -5,9 +5,11 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import FileUpload from '@components/common/FileUpload'
 import Dropdown from '@components/common/Dropdown'
+import ClozeCard from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/ClozeCard'
 import ClozeEditor from './components/ClozeEditor'
 import OcclusionEditor from './components/OcclusionEditor'
 import { useCardFormModal } from './hooks/useCardFormModal'
+import { referencedClozeNumbers } from '../../utils/clozeTokens'
 
 const TYPE_OPTIONS = [
   { value: 'basic', label: 'Basic (Tanya-Jawab)' },
@@ -19,12 +21,15 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
   const isUploading = useSelector(state => state.common.loading?.isUploading)
   const {
     isEdit,
+    previewOpen, setPreviewOpen,
     form, set,
     setClozeAnswer, setOcclusionRegions,
     addReference, setReference, removeReference,
     handleImageUpload, handleRemoveImage, handleSubmit,
     isSaving,
   } = useCardFormModal({ nodeId, card, onSuccess, onSave, isSavingOverride })
+
+  const canPreviewCloze = form.type === 'cloze' && referencedClozeNumbers(form.front).length > 0
 
   const imageUpload = (
     <div>
@@ -128,6 +133,13 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
               answers={form.clozeAnswers}
               onAnswerChange={setClozeAnswer}
             />
+            <Button
+              variant="secondary"
+              disabled={!canPreviewCloze}
+              onClick={() => setPreviewOpen(true)}
+            >
+              📖 Preview Flashcard
+            </Button>
             {imageUpload}
           </>
         )}
@@ -145,6 +157,12 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
 
         {referencesEditor}
       </div>
+
+      {previewOpen && (
+        <Modal isOpen title="📖 Preview Flashcard" size="medium" onClose={() => setPreviewOpen(false)}>
+          <ClozeCard text={form.front} answers={form.clozeAnswers} />
+        </Modal>
+      )}
     </Modal>
   )
 }
