@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
 import { submitDiagnosticRating } from '@store/diagnosticNodes/userAction'
+import CardExtrasPanel from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/CardExtrasPanel'
 import {
   PlayerScreen, PlayerHeader, HeaderBar, BackBtn, HeaderTitle, HeaderCounter,
   ProgressBar, ProgressFill,
@@ -11,7 +12,7 @@ import {
   ImageBlock, QuestionImage, ImageCaption,
   VignetteText, QuestionText,
   ChoiceList, ChoiceBtn, ChoiceLabel,
-  AnswerReveal, ExplanationBox, ShowAnswerBtn,
+  AnswerReveal, ShowAnswerBtn,
   RatingFooter, RatingBtn,
 } from './QuizPlayer.styles'
 
@@ -44,6 +45,11 @@ export default function QuizPlayer({ cards, onBack }) {
   const retryCount = card ? (retryCounts[card.id] || 0) : 0
   const choices = card?.choices || []
   const isTextAnswer = !choices.length || card?.answerType === 'text'
+
+  const contentRef = useRef(null)
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0 })
+  }, [card?.id])
 
   const handleSelectChoice = useCallback((choice) => {
     if (revealed) return
@@ -107,7 +113,7 @@ export default function QuizPlayer({ cards, onBack }) {
           </ProgressBar>
         </PlayerHeader>
 
-        <ContentArea $hasFooter={revealed}>
+        <ContentArea ref={contentRef} $hasFooter={revealed}>
           {(topicName || subtopicName || card.isNew) && (
             <BreadcrumbRow>
               {topicName && <BreadcrumbChip>{topicName}</BreadcrumbChip>}
@@ -156,10 +162,14 @@ export default function QuizPlayer({ cards, onBack }) {
             <AnswerReveal>Jawaban: {card.answer}</AnswerReveal>
           )}
 
-          {revealed && card.explanation && (
-            <ExplanationBox>
-              <strong>Penjelasan:</strong> {card.explanation}
-            </ExplanationBox>
+          {revealed && (
+            <CardExtrasPanel
+              key={card.id}
+              explanationShort={card.explanationShort}
+              explanationLong={card.explanationLong}
+              references={card.references}
+              linkedSummaryNotes={card.linkedSummaryNotes}
+            />
           )}
 
           {!revealed && isTextAnswer && (

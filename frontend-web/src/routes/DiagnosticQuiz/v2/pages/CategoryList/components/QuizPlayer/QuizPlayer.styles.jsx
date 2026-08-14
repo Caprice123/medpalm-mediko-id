@@ -254,18 +254,6 @@ export const AnswerReveal = styled.div`
   font-weight: 600;
 `
 
-export const ExplanationBox = styled.div`
-  padding: 0.875rem 1rem;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  color: #92400e;
-  line-height: 1.6;
-
-  strong { font-weight: 700; }
-`
-
 export const ShowAnswerBtn = styled.button`
   width: 100%;
   padding: 0.875rem;

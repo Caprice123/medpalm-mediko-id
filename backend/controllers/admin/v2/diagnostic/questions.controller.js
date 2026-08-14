@@ -1,4 +1,5 @@
 import { GetNodeDiagnosticQuestionsService } from '#services/diagnostic/v2/admin/getNodeDiagnosticQuestionsService'
+import { GetNodeDiagnosticQuestionDetailService } from '#services/diagnostic/v2/admin/getNodeDiagnosticQuestionDetailService'
 import { AddNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/addNodeDiagnosticQuestionService'
 import { UpdateNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/updateNodeDiagnosticQuestionService'
 import { DeleteNodeDiagnosticQuestionService } from '#services/diagnostic/v2/admin/deleteNodeDiagnosticQuestionService'
@@ -11,20 +12,26 @@ class QuestionsController {
     res.json({ success: true, ...result })
   }
 
+  async show(req, res) {
+    const { questionId } = req.params
+    const question = await GetNodeDiagnosticQuestionDetailService.call({ questionId })
+    res.json({ success: true, data: question })
+  }
+
   async create(req, res) {
     const { nodeId } = req.params
-    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation } = req.body
+    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references } = req.body
     const newQ = await AddNodeDiagnosticQuestionService.call({
-      nodeId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation,
+      nodeId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references,
     })
     res.status(201).json({ success: true, data: newQ })
   }
 
   async update(req, res) {
     const { questionId } = req.params
-    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation } = req.body
+    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references } = req.body
     const updated = await UpdateNodeDiagnosticQuestionService.call({
-      questionId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation,
+      questionId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references,
     })
     res.json({ success: true, data: updated })
   }

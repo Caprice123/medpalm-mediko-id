@@ -20,7 +20,17 @@ export class NodeQuestionsSerializer {
     }
   }
 
+  // Lightweight shape for the question list table — only what the columns actually render.
+  static serializeListItem(question) {
+    return {
+      id: question.id,
+      question: question.question,
+      options: question.options,
+      correctIndex: question.correct_answer,
+    }
+  }
+
   static serializeList(questions) {
-    return questions.map(this.serialize.bind(this))
+    return questions.map(this.serializeListItem.bind(this))
   }
 }

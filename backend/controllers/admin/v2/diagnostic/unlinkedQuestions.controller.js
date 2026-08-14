@@ -14,9 +14,9 @@ class UnlinkedQuestionsController {
 
   async updateUnlinked(req, res) {
     const { questionId } = req.params
-    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation } = req.body
+    const { question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references } = req.body
     const updated = await UpdateNodeDiagnosticQuestionService.call({
-      questionId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanation,
+      questionId, question, vignette, imageBlobId, imageCaption, answer, answerType, choices, explanationShort, explanationLong, references,
     })
     res.json({ success: true, data: DiagnosticQuestionsSerializer.serialize(updated) })
   }

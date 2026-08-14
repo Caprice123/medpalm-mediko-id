@@ -20,6 +20,7 @@ router.get('/questions/template', importController.downloadTemplate.bind(importC
 router.get('/:nodeId/questions', asyncHandler(questionsController.index.bind(questionsController)))
 router.post('/:nodeId/questions', asyncHandler(questionsController.create.bind(questionsController)))
 router.post('/:nodeId/questions/import', uploadExcel, asyncHandler(importController.create.bind(importController)))
+router.get('/:nodeId/questions/:questionId', asyncHandler(questionsController.show.bind(questionsController)))
 router.put('/:nodeId/questions/:questionId', asyncHandler(questionsController.update.bind(questionsController)))
 router.delete('/:nodeId/questions/:questionId', asyncHandler(questionsController.destroy.bind(questionsController)))
 

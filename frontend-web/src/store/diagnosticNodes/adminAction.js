@@ -25,6 +25,13 @@ export const loadMoreDiagnosticAdminQuestions = (nodeId, search = '') => (dispat
   dispatch(fetchDiagnosticAdminQuestions(nodeId, { search, append: true }))
 }
 
+// Full question detail (image, explanations, references, linked notes) — fire-and-return,
+// no Redux state. Used by QuestionFormModal, which only gets the list row otherwise.
+export const fetchDiagnosticQuestionDetail = (nodeId, questionId) => async () => {
+  const res = await getWithToken(`${BASE}/${nodeId}/questions/${questionId}`)
+  return res.data.data
+}
+
 export const addDiagnosticQuestion = (nodeId, payload, onSuccess) => async (dispatch) => {
   try {
     dispatch(questionActions.setLoading({ isAddingQuestion: true }))
@@ -65,6 +72,28 @@ export const importDiagnosticQuestions = (nodeId, file, onSuccess) => async (dis
   } finally {
     dispatch(questionActions.setLoading({ isImportingQuestions: false }))
   }
+}
+
+// diagnostic_question → summary_note content_relations — fire-and-return, no Redux state
+export const fetchDiagnosticQuestionSummaryNoteRelations = (questionId) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'diagnostic_question', sourceId: questionId, targetType: 'summary_note',
+  })
+  return res.data.data || []
+}
+
+export const addDiagnosticQuestionSummaryNoteRelation = (questionId, noteId, label) => async () => {
+  await postWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'diagnostic_question', sourceId: questionId, targetType: 'summary_note', targetId: noteId, label,
+  })
+}
+
+export const updateDiagnosticQuestionSummaryNoteRelationLabel = (relationId, label) => async () => {
+  await putWithToken(`${Endpoints.admin.contentRelations}/${relationId}`, { label })
+}
+
+export const removeDiagnosticQuestionSummaryNoteRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelations}/${relationId}`)
 }
 
 export const downloadDiagnosticTemplate = () => async () => {

@@ -1100,6 +1100,9 @@ model diagnostic_questions {
   answer_type   String   @default("text") // 'text' or 'multiple_choice'
   choices       Json?
   explanation   String?
+  explanation_short String?
+  explanation_long  String?
+  references    Json?
   order         Int      @default(0)
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now())

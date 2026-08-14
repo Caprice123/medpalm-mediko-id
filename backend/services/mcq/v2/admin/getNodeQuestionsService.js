@@ -20,8 +20,12 @@ export class GetNodeQuestionsService extends BaseService {
     if (pageRecords.length === 0) return { questions: [], pagination }
 
     const questionIds = pageRecords.map(r => r.record_id)
+    // List view is lightweight — only what the table renders (question text, correct answer
+    // label). Full detail (image, explanations, references, linked notes) is fetched
+    // separately via GetNodeQuestionDetailService when a single question is opened.
     const rawQuestions = await prisma.mcq_questions.findMany({
       where: { id: { in: questionIds } },
+      select: { id: true, question: true, options: true, correct_answer: true },
     })
 
     const qMap = new Map(rawQuestions.map(q => [q.id, q]))

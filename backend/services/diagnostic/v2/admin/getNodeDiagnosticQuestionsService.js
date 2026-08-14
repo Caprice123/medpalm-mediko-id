@@ -23,7 +23,13 @@ export class GetNodeDiagnosticQuestionsService extends BaseService {
       ]
     }
 
-    const rawQuestions = await prisma.diagnostic_questions.findMany({ where })
+    // List view is lightweight — only what the table renders (question text, vignette
+    // snippet, answer). Full detail (image, explanations, references, linked notes) is
+    // fetched separately via GetNodeDiagnosticQuestionDetailService when a question is opened.
+    const rawQuestions = await prisma.diagnostic_questions.findMany({
+      where,
+      select: { id: true, question: true, vignette: true, answer: true },
+    })
     const qMap = new Map(rawQuestions.map(q => [q.id, q]))
     const orderedQuestions = questionIds.map(id => qMap.get(id)).filter(Boolean)
 

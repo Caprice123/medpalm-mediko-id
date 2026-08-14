@@ -9,7 +9,9 @@ export class DiagnosticQuestionsSerializer {
       answer: question.answer,
       answerType: question.answer_type,
       choices: question.choices,
-      explanation: question.explanation ?? null,
+      explanationShort: question.explanation_short ?? '',
+      explanationLong: question.explanation_long ?? '',
+      references: question.references ?? [],
       imageCaption: question.image_caption ?? null,
       imageUrl: question.imageUrl ?? null,
       imageBlobId: question.imageBlobId ?? null,
@@ -18,7 +20,17 @@ export class DiagnosticQuestionsSerializer {
     }
   }
 
+  // Lightweight shape for the question list table — only what the columns actually render.
+  static serializeListItem(question) {
+    return {
+      id: question.id,
+      question: question.question,
+      vignette: question.vignette ?? null,
+      answer: question.answer,
+    }
+  }
+
   static serializeList(questions) {
-    return questions.map(this.serialize.bind(this))
+    return questions.map(this.serializeListItem.bind(this))
   }
 }

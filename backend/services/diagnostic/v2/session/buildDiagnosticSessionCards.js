@@ -34,6 +34,25 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
   let idx = 0
   selected.forEach(id => { if (qBlobKeyMap.has(id)) urlMap.set(id, presignedUrls[idx++]) })
 
+  const noteRelations = await prisma.content_relations.findMany({
+    where: { source_type: 'diagnostic_question', source_id: { in: selected }, target_type: 'summary_note' },
+  })
+  const noteIds = [...new Set(noteRelations.map(r => r.target_id))]
+  const notes = noteIds.length > 0
+    ? await prisma.summary_notes.findMany({
+        where: { id: { in: noteIds }, status: 'published', is_deleted: false },
+        select: { id: true, unique_id: true, title: true },
+      })
+    : []
+  const noteMap = new Map(notes.map(n => [n.id, n]))
+  const notesByQuestion = new Map()
+  noteRelations.forEach(r => {
+    const note = noteMap.get(r.target_id)
+    if (!note) return
+    if (!notesByQuestion.has(r.source_id)) notesByQuestion.set(r.source_id, [])
+    notesByQuestion.get(r.source_id).push({ uniqueId: note.unique_id, title: r.label || note.title })
+  })
+
   return selected.map(id => {
     const q = qMap.get(id)
     if (!q) return null
@@ -57,7 +76,10 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
       vignette: q.vignette,
       imageUrl: urlMap.get(id) || null,
       imageCaption: q.image_caption,
-      explanation: q.explanation ?? null,
+      explanationShort: q.explanation_short ?? '',
+      explanationLong: q.explanation_long ?? '',
+      references: q.references ?? [],
+      linkedSummaryNotes: notesByQuestion.get(q.id) || [],
       answerType: q.answer_type,
       choices: q.choices,
       answer: q.answer,

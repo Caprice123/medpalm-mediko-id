@@ -11,8 +11,10 @@ export class GetUnlinkedDiagnosticQuestionsService extends BaseService {
       ? Prisma.sql`AND (dq.question ILIKE ${`%${search.trim()}%`} OR dq.vignette ILIKE ${`%${search.trim()}%`})`
       : Prisma.empty
 
+    // List view is lightweight — only what the table renders (question text, vignette
+    // snippet, answer). Full detail is fetched separately when a question is opened for edit.
     const rawQuestions = await prisma.$queryRaw`
-      SELECT dq.id, dq.quiz_id, dq.question, dq.vignette, dq.answer, dq.answer_type, dq.choices, dq.explanation, dq.image_caption, dq.order, dq.created_at, dq.updated_at
+      SELECT dq.id, dq.question, dq.vignette, dq.answer
       FROM diagnostic_questions dq
       LEFT JOIN feature_node_records fnr
         ON fnr.record_type = 'diagnostic_question' AND fnr.record_id = dq.id

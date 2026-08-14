@@ -6,7 +6,7 @@ import attachmentService from '#services/attachment/attachmentService'
 const RECORD_TYPE = 'diagnostic_question'
 
 export class AddNodeDiagnosticQuestionService extends BaseService {
-  static async call({ nodeId, question, vignette, imageBlobId, imageCaption, answer, answerType = 'multiple_choice', choices, explanation }) {
+  static async call({ nodeId, question, vignette, imageBlobId, imageCaption, answer, answerType = 'multiple_choice', choices, explanationShort, explanationLong, references }) {
     if (!question?.trim()) throw new ValidationError('Pertanyaan wajib diisi')
     if (!answer?.trim()) throw new ValidationError('Jawaban wajib diisi')
     if (answerType === 'multiple_choice' && (!choices || !Array.isArray(choices) || choices.length < 2)) {
@@ -21,7 +21,9 @@ export class AddNodeDiagnosticQuestionService extends BaseService {
         question: question.trim(),
         vignette: vignette?.trim() || null,
         image_caption: imageCaption?.trim() || null,
-        explanation: explanation?.trim() || null,
+        explanation_short: explanationShort?.trim() || null,
+        explanation_long: explanationLong?.trim() || null,
+        references: Array.isArray(references) ? references : [],
         answer: answer.trim(),
         answer_type: answerType,
         choices: answerType === 'multiple_choice' ? choices : null,
@@ -48,6 +50,7 @@ export class AddNodeDiagnosticQuestionService extends BaseService {
       update: { total_count: { increment: 1 } },
     })
 
-    return newQuestion
+    const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, newQuestion.id, 'image')
+    return { ...newQuestion, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

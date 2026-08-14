@@ -2,7 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const VALID_TYPES = ['flashcard_deck', 'flashcard_card', 'mcq_topic', 'mcq_question', 'summary_note', 'atlas_model', 'anatomy_quiz', 'feature_node']
+const VALID_TYPES = ['flashcard_deck', 'flashcard_card', 'mcq_topic', 'mcq_question', 'diagnostic_question', 'summary_note', 'atlas_model', 'anatomy_quiz', 'feature_node']
 
 export class CreateContentRelationService extends BaseService {
   static async call({ sourceType, sourceId, targetType, targetId, relationType = '', label = null }) {
