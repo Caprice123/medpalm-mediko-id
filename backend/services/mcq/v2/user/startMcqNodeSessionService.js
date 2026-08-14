@@ -81,6 +81,25 @@ export async function buildQuestionsResponse(selectedIds, questionToNodeMap, use
   let idx = 0
   ordered.forEach(q => { if (qBlobKeyMap.has(q.id)) urlMap.set(q.id, urls[idx++]) })
 
+  const noteRelations = await prisma.content_relations.findMany({
+    where: { source_type: 'mcq_question', source_id: { in: selectedIds }, target_type: 'summary_note' },
+  })
+  const noteIds = [...new Set(noteRelations.map(r => r.target_id))]
+  const notes = noteIds.length > 0
+    ? await prisma.summary_notes.findMany({
+        where: { id: { in: noteIds }, status: 'published', is_deleted: false },
+        select: { id: true, unique_id: true, title: true },
+      })
+    : []
+  const noteMap = new Map(notes.map(n => [n.id, n]))
+  const notesByQuestion = new Map()
+  noteRelations.forEach(r => {
+    const note = noteMap.get(r.target_id)
+    if (!note) return
+    if (!notesByQuestion.has(r.source_id)) notesByQuestion.set(r.source_id, [])
+    notesByQuestion.get(r.source_id).push({ uniqueId: note.unique_id, title: r.label || note.title })
+  })
+
   return ordered.map(q => {
     const nodeId = questionToNodeMap.get(q.id) ?? null
     const node = nodeId ? nodeMap.get(nodeId) : null
@@ -91,8 +110,10 @@ export async function buildQuestionsResponse(selectedIds, questionToNodeMap, use
       question: q.question,
       options: q.options,
       correctIndex: q.correct_answer,
-      explanation: q.explanation ?? null,
+      explanationShort: q.explanation_short ?? '',
+      explanationLong: q.explanation_long ?? '',
       references: q.references ?? [],
+      linkedSummaryNotes: notesByQuestion.get(q.id) || [],
       imageUrl: urlMap.get(q.id) || null,
       subtopic: node ? node.name : null,
       topic: parent ? parent.name : null,

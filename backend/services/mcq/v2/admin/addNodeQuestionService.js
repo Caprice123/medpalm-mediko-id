@@ -4,7 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 
 export class AddNodeQuestionService extends BaseService {
-  static async call({ nodeId, question, options, correctIndex, explanation, references, blobId }) {
+  static async call({ nodeId, question, options, correctIndex, explanationShort, explanationLong, references, blobId }) {
     if (!question?.trim()) throw new ValidationError('Teks pertanyaan wajib diisi')
     if (!Array.isArray(options) || options.length < 2) throw new ValidationError('Minimal 2 pilihan jawaban')
     if (options.some(o => !o?.trim())) throw new ValidationError('Semua pilihan jawaban wajib diisi')
@@ -18,7 +18,8 @@ export class AddNodeQuestionService extends BaseService {
         question: question.trim(),
         options,
         correct_answer: parseInt(correctIndex) ?? 0,
-        explanation: explanation?.trim() || null,
+        explanation_short: explanationShort?.trim() || null,
+        explanation_long: explanationLong?.trim() || null,
         references: Array.isArray(references) ? references : [],
         version: 2,
       },
@@ -38,6 +39,7 @@ export class AddNodeQuestionService extends BaseService {
       update: { total_count: { increment: 1 } },
     })
 
-    return created
+    const attachment = await attachmentService.getAttachmentWithUrl('mcq_question', created.id, 'image')
+    return { ...created, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

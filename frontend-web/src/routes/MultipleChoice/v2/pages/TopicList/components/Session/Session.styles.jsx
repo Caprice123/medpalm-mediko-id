@@ -15,14 +15,39 @@ export const Wrapper = styled.div`
 export const SessionContainer = styled.div`
   width: 100%;
   max-width: 720px;
+  max-height: min(90vh, 800px);
   background: white;
   border-radius: 20px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.18);
-  padding: 2rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`
+
+export const HeaderSection = styled.div`
+  flex-shrink: 0;
+  padding: 1.75rem 2.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  border-bottom: 1px solid #f1f5f9;
+`
+
+export const BodySection = styled.div`
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem 2.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+`
+
+export const FooterSection = styled.div`
+  flex-shrink: 0;
+  padding: 1.25rem 2.25rem 1.75rem;
+  border-top: 1px solid #f1f5f9;
 `
 
 export const SessionHeader = styled.div`
@@ -61,13 +86,6 @@ export const StatsRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
-
-export const QuestionCounter = styled.div`
-  font-size: 0.8125rem;
-  color: #6b7280;
-
-  b { color: #111827; }
 `
 
 export const AnsweredCount = styled.div`
@@ -210,47 +228,6 @@ export const OptionText = styled.span`
   font-size: 0.9375rem;
   color: #374151;
   line-height: 1.5;
-`
-
-export const ExplanationBox = styled.div`
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
-  border-radius: 10px;
-  padding: 0.875rem 1rem;
-  font-size: 0.875rem;
-  color: #92400e;
-  line-height: 1.6;
-`
-
-export const ReferencesBox = styled.div`
-  background: #f0f9ff;
-  border: 1.5px solid #bae6fd;
-  border-radius: 10px;
-  padding: 0.875rem 1rem;
-`
-
-export const ReferencesLabel = styled.div`
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #0369a1;
-  margin-bottom: 0.375rem;
-`
-
-export const ReferencesList = styled.ol`
-  margin: 0;
-  padding-left: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.8125rem;
-  color: #374151;
-`
-
-export const ReferenceLink = styled.a`
-  color: #0369a1;
-  text-decoration: underline;
 `
 
 export const ActionRow = styled.div`

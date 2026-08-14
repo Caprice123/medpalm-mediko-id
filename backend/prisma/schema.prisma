@@ -1395,6 +1395,8 @@ model mcq_questions {
   options        Json // Array of option strings
   correct_answer Int // Index of correct option (0-based)
   explanation    String?
+  explanation_short String?
+  explanation_long  String?
   references     Json?
   order          Int      @default(0)
   version        Int      @default(1)

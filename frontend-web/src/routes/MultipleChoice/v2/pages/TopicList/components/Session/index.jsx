@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { submitMcqSession, submitMcqAnswer } from '@store/mcqNodes'
+import CardExtrasPanel from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/CardExtrasPanel'
 import {
-  Wrapper, SessionContainer, SessionHeader, SessionTitle, CloseBtn,
-  StatsRow, QuestionCounter, AnsweredCount,
+  Wrapper, SessionContainer, HeaderSection, BodySection, FooterSection,
+  SessionHeader, SessionTitle, CloseBtn,
+  StatsRow, AnsweredCount,
   ProgressBar, ProgressFill,
   QuestionCard, QuestionMeta, NodePath, NewBadge, QuestionImage, QuestionText,
   OptionsList, OptionButton, OptionLabel, OptionText,
-  ExplanationBox, ReferencesBox, ReferencesLabel, ReferencesList, ReferenceLink, ActionRow, NextButton,
+  ActionRow, NextButton,
   ResultCard, ResultScore, ResultLabel, ResultStats,
   ResultStat, ResultStatNum, ResultStatLabel,
   ResultActions, SecondaryButton,
@@ -28,6 +30,11 @@ export default function McqSession({ onClose }) {
   const isAnswered = selectedOption !== null
   const isLast = currentIndex === sessionQuestions.length - 1
   const pct = Math.round(((currentIndex + (isAnswered ? 1 : 0)) / sessionQuestions.length) * 100)
+
+  const bodyRef = useRef(null)
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: 0 })
+  }, [question?.id])
 
   const handleSelect = (optIdx) => {
     if (isAnswered) return
@@ -77,35 +84,40 @@ export default function McqSession({ onClose }) {
     return (
       <Wrapper>
         <SessionContainer>
-          <SessionHeader>
-            <SessionTitle>Hasil Sesi</SessionTitle>
-          </SessionHeader>
-          <ResultCard>
-            <ResultScore>{pctScore}%</ResultScore>
-            <ResultLabel>Skor Sesi</ResultLabel>
-            <ResultStats>
-              <ResultStat>
-                <ResultStatNum>{totalCorrect}</ResultStatNum>
-                <ResultStatLabel>Benar</ResultStatLabel>
-              </ResultStat>
-              <ResultStat>
-                <ResultStatNum>{totalAnswered - totalCorrect}</ResultStatNum>
-                <ResultStatLabel>Salah</ResultStatLabel>
-              </ResultStat>
-              <ResultStat>
-                <ResultStatNum>{totalAnswered}</ResultStatNum>
-                <ResultStatLabel>Total</ResultStatLabel>
-              </ResultStat>
-            </ResultStats>
-            <ResultActions>
-              <SecondaryButton onClick={() => onClose(true)} disabled={loading.isSubmittingSession}>
-                Kembali
-              </SecondaryButton>
-              <NextButton onClick={handleFinish} disabled={loading.isSubmittingSession}>
-                {loading.isSubmittingSession ? 'Menyimpan...' : 'Simpan & Selesai'}
-              </NextButton>
-            </ResultActions>
-          </ResultCard>
+          <HeaderSection>
+            <SessionHeader>
+              <SessionTitle>Hasil Sesi</SessionTitle>
+            </SessionHeader>
+          </HeaderSection>
+
+          <BodySection>
+            <ResultCard>
+              <ResultScore>{pctScore}%</ResultScore>
+              <ResultLabel>Skor Sesi</ResultLabel>
+              <ResultStats>
+                <ResultStat>
+                  <ResultStatNum>{totalCorrect}</ResultStatNum>
+                  <ResultStatLabel>Benar</ResultStatLabel>
+                </ResultStat>
+                <ResultStat>
+                  <ResultStatNum>{totalAnswered - totalCorrect}</ResultStatNum>
+                  <ResultStatLabel>Salah</ResultStatLabel>
+                </ResultStat>
+                <ResultStat>
+                  <ResultStatNum>{totalAnswered}</ResultStatNum>
+                  <ResultStatLabel>Total</ResultStatLabel>
+                </ResultStat>
+              </ResultStats>
+              <ResultActions>
+                <SecondaryButton onClick={() => onClose(true)} disabled={loading.isSubmittingSession}>
+                  Kembali
+                </SecondaryButton>
+                <NextButton onClick={handleFinish} disabled={loading.isSubmittingSession}>
+                  {loading.isSubmittingSession ? 'Menyimpan...' : 'Simpan & Selesai'}
+                </NextButton>
+              </ResultActions>
+            </ResultCard>
+          </BodySection>
         </SessionContainer>
       </Wrapper>
     )
@@ -114,82 +126,82 @@ export default function McqSession({ onClose }) {
   return (
     <Wrapper>
       <SessionContainer>
-        <SessionHeader>
-          <SessionTitle>Sesi Soal</SessionTitle>
-          <CloseBtn onClick={() => onClose(false)} title="Keluar">✕</CloseBtn>
-        </SessionHeader>
+        <HeaderSection>
+          <SessionHeader>
+            <SessionTitle>Soal {currentIndex + 1} dari {sessionQuestions.length}</SessionTitle>
+            <CloseBtn onClick={() => onClose(false)} title="Keluar">✕</CloseBtn>
+          </SessionHeader>
 
-        <StatsRow>
-          <QuestionCounter>Soal <b>{currentIndex + 1}</b> dari {sessionQuestions.length}</QuestionCounter>
-          <AnsweredCount>{answers.length} dijawab sesi ini</AnsweredCount>
-        </StatsRow>
-
-        <ProgressBar>
-          <ProgressFill $pct={pct} />
-        </ProgressBar>
-
-        <QuestionCard>
-          {(question.topic || question.subtopic || question.isNew) && (
-            <QuestionMeta>
+          {(question.topic || question.subtopic) && (
+            <StatsRow>
               <NodePath>
                 {question.topic}
                 {question.topic && question.subtopic && ' › '}
                 {question.subtopic}
               </NodePath>
-              {question.isNew && <NewBadge>Baru</NewBadge>}
-            </QuestionMeta>
+              <AnsweredCount>{answers.length} dijawab sesi ini</AnsweredCount>
+            </StatsRow>
           )}
-          {question.imageUrl && <QuestionImage src={question.imageUrl} alt="" />}
-          <QuestionText>{question.question}</QuestionText>
-          <OptionsList>
-            {question.options.map((opt, i) => (
-              <OptionButton
-                key={i}
-                $answered={isAnswered}
-                $selected={isAnswered && selectedOption === i}
-                $correct={isAnswered && i === question.correctIndex}
-                onClick={() => handleSelect(i)}
-              >
-                <OptionLabel
+
+          <ProgressBar>
+            <ProgressFill $pct={pct} />
+          </ProgressBar>
+        </HeaderSection>
+
+        <BodySection ref={bodyRef}>
+          <QuestionCard>
+            {question.isNew && (
+              <QuestionMeta>
+                <NewBadge>Baru</NewBadge>
+              </QuestionMeta>
+            )}
+            {question.imageUrl && <QuestionImage src={question.imageUrl} alt="" />}
+            <QuestionText>{question.question}</QuestionText>
+            <OptionsList>
+              {question.options.map((opt, i) => (
+                <OptionButton
+                  key={i}
                   $answered={isAnswered}
                   $selected={isAnswered && selectedOption === i}
                   $correct={isAnswered && i === question.correctIndex}
+                  onClick={() => handleSelect(i)}
                 >
-                  {LABELS[i]}
-                </OptionLabel>
-                <OptionText>{opt}</OptionText>
-              </OptionButton>
-            ))}
-          </OptionsList>
+                  <OptionLabel
+                    $answered={isAnswered}
+                    $selected={isAnswered && selectedOption === i}
+                    $correct={isAnswered && i === question.correctIndex}
+                  >
+                    {LABELS[i]}
+                  </OptionLabel>
+                  <OptionText>{opt}</OptionText>
+                </OptionButton>
+              ))}
+            </OptionsList>
+          </QuestionCard>
 
-          {isAnswered && question.explanation && (
-            <ExplanationBox>
-              <strong>Penjelasan:</strong> {question.explanation}
-            </ExplanationBox>
+          {isAnswered && (
+            <CardExtrasPanel
+              key={question.id}
+              explanationShort={question.explanationShort}
+              explanationLong={question.explanationLong}
+              references={question.references}
+              linkedSummaryNotes={question.linkedSummaryNotes}
+            />
           )}
 
-          {isAnswered && question.references?.length > 0 && (
-            <ReferencesBox>
-              <ReferencesLabel>Referensi</ReferencesLabel>
-              <ReferencesList>
-                {question.references.map((ref, i) => (
-                  <li key={i}>
-                    {ref.url
-                      ? <ReferenceLink href={ref.url} target="_blank" rel="noopener noreferrer">{ref.label || ref.url}</ReferenceLink>
-                      : <span>{ref.label}</span>}
-                  </li>
-                ))}
-              </ReferencesList>
-            </ReferencesBox>
+          {isAnswered && !isLast && (
+            <ActionRow>
+              <NextButton onClick={handleNext}>Lanjut →</NextButton>
+            </ActionRow>
           )}
-        </QuestionCard>
+        </BodySection>
 
-        {isAnswered && (
-          <ActionRow>
-            <NextButton onClick={handleNext}>
-              {isLast ? 'Lihat Hasil →' : 'Lanjut →'}
-            </NextButton>
-          </ActionRow>
+        {isAnswered && isLast && (
+          <FooterSection>
+            <ActionRow>
+              <NextButton onClick={handleNext}>Lihat Hasil →</NextButton>
+            </ActionRow>
+          </FooterSection>
         )}
       </SessionContainer>
     </Wrapper>

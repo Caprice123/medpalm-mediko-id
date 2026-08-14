@@ -43,6 +43,7 @@ router.get('/questions/template', nodeQuestionsController.downloadTemplate.bind(
 router.get('/:nodeId/questions', asyncHandler(nodeQuestionsController.getNodeQuestions.bind(nodeQuestionsController)))
 router.post('/:nodeId/questions', asyncHandler(nodeQuestionsController.addNodeQuestion.bind(nodeQuestionsController)))
 router.post('/:nodeId/questions/import', uploadExcel, asyncHandler(nodeQuestionsController.importQuestions.bind(nodeQuestionsController)))
+router.get('/:nodeId/questions/:questionId', asyncHandler(nodeQuestionsController.getNodeQuestionDetail.bind(nodeQuestionsController)))
 router.put('/:nodeId/questions/:questionId', asyncHandler(nodeQuestionsController.updateNodeQuestion.bind(nodeQuestionsController)))
 router.delete('/:nodeId/questions/:questionId', asyncHandler(nodeQuestionsController.deleteNodeQuestion.bind(nodeQuestionsController)))
 router.put('/:nodeId/questions/:questionId/move', asyncHandler(nodeQuestionsController.moveNodeQuestion.bind(nodeQuestionsController)))

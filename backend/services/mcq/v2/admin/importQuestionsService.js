@@ -21,7 +21,7 @@ export class ImportQuestionsService extends BaseService {
       const optC = String(row['Opsi C'] || '').trim()
       const optD = String(row['Opsi D'] || '').trim()
       const correctLetter = String(row['Jawaban Benar'] || '').trim().toUpperCase()
-      const explanation = String(row['Penjelasan'] || '').trim() || null
+      const explanationShort = String(row['Penjelasan'] || '').trim() || null
 
       const references = []
       for (let n = 1; n <= 3; n++) {
@@ -42,7 +42,7 @@ export class ImportQuestionsService extends BaseService {
 
       try {
         const q = await prisma.mcq_questions.create({
-          data: { question, options, correct_answer: correctIndex, explanation, references, version: nodeId ? 2 : 1 },
+          data: { question, options, correct_answer: correctIndex, explanation_short: explanationShort, references, version: nodeId ? 2 : 1 },
         })
 
         if (nodeId) {

@@ -1,39 +1,51 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addNodeQuestion, updateNodeQuestion } from '@store/nodeQuestions'
+import { addNodeQuestion, updateNodeQuestion, fetchNodeQuestionDetail } from '@store/nodeQuestions'
 import { upload } from '@store/common/action'
+
+const emptyForm = () => ({
+  question: '',
+  options: ['', '', '', ''],
+  correctIndex: 0,
+  explanationShort: '',
+  explanationLong: '',
+  blobId: null,
+  imagePreviewUrl: null,
+  imageFilename: null,
+  references: [],
+})
 
 export function useQuestionFormModal({ nodeId, question, onSuccess, onSave, isSavingOverride }) {
   const dispatch = useDispatch()
   const { loading } = useSelector(state => state.nodeQuestions)
 
   const isEdit = !!question
-  const [form, setForm] = useState({
-    question: '',
-    options: ['', '', '', ''],
-    correctIndex: 0,
-    explanation: '',
-    blobId: null,
-    imagePreviewUrl: null,
-    imageFilename: null,
-    references: [],
-  })
+  const [isLoadingDetail, setIsLoadingDetail] = useState(isEdit)
+  const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
 
+  // The list only gives us the summary row — fetch full detail (image, explanations,
+  // references, linked notes) before letting the admin edit.
   useEffect(() => {
-    if (isEdit) {
+    if (!isEdit) return
+    let cancelled = false
+    setIsLoadingDetail(true)
+    dispatch(fetchNodeQuestionDetail(nodeId, question.id)).then((detail) => {
+      if (cancelled) return
       setForm({
-        question: question.question ?? '',
-        options: question.options?.length >= 2 ? question.options : ['', '', '', ''],
-        correctIndex: question.correctIndex ?? 0,
-        explanation: question.explanation ?? '',
-        blobId: question.imageBlobId ?? null,
-        imagePreviewUrl: question.imageUrl ?? null,
+        question: detail.question ?? '',
+        options: detail.options?.length >= 2 ? detail.options : ['', '', '', ''],
+        correctIndex: detail.correctIndex ?? 0,
+        explanationShort: detail.explanationShort || '',
+        explanationLong: detail.explanationLong || '',
+        blobId: detail.imageBlobId ?? null,
+        imagePreviewUrl: detail.imageUrl ?? null,
         imageFilename: null,
-        references: Array.isArray(question.references) ? question.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
+        references: Array.isArray(detail.references) ? detail.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
       })
-    }
-  }, [isEdit, question])
+    }).finally(() => { if (!cancelled) setIsLoadingDetail(false) })
+    return () => { cancelled = true }
+  }, [isEdit, question?.id])
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
 
@@ -89,7 +101,8 @@ export function useQuestionFormModal({ nodeId, question, onSuccess, onSave, isSa
       question: form.question,
       options: form.options,
       correctIndex: form.correctIndex,
-      explanation: form.explanation,
+      explanationShort: form.explanationShort.trim(),
+      explanationLong: form.explanationLong.trim(),
       blobId: form.blobId,
       references: form.references
         .filter(r => r.label.trim() || r.url.trim())
@@ -108,6 +121,7 @@ export function useQuestionFormModal({ nodeId, question, onSuccess, onSave, isSa
 
   return {
     isEdit,
+    isLoadingDetail,
     form, errors, set,
     addReference, setReference, removeReference,
     setOption, handleAddOption, handleRemoveOption,

@@ -26,6 +26,13 @@ export const loadMoreNodeQuestions = (nodeId) => (dispatch, getState) => {
   dispatch(fetchNodeQuestions(nodeId, { append: true }))
 }
 
+// Full question detail (image, explanations, references, linked notes) — fire-and-return,
+// no Redux state. Used by QuestionFormModal, which only gets the list row otherwise.
+export const fetchNodeQuestionDetail = (nodeId, questionId) => async () => {
+  const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/questions/${questionId}`)
+  return res.data.data
+}
+
 export const addNodeQuestion = (nodeId, payload, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ isAddingQuestion: true }))
@@ -76,6 +83,28 @@ export const importNodeQuestions = (nodeId, file, onSuccess) => async (dispatch)
   } finally {
     dispatch(setLoading({ isImportingQuestions: false }))
   }
+}
+
+// mcq_question → summary_note content_relations — fire-and-return, no Redux state
+export const fetchQuestionSummaryNoteRelations = (questionId) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'mcq_question', sourceId: questionId, targetType: 'summary_note',
+  })
+  return res.data.data || []
+}
+
+export const addQuestionSummaryNoteRelation = (questionId, noteId, label) => async () => {
+  await postWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'mcq_question', sourceId: questionId, targetType: 'summary_note', targetId: noteId, label,
+  })
+}
+
+export const updateQuestionSummaryNoteRelationLabel = (relationId, label) => async () => {
+  await putWithToken(`${Endpoints.admin.contentRelations}/${relationId}`, { label })
+}
+
+export const removeQuestionSummaryNoteRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelations}/${relationId}`)
 }
 
 export const downloadQuestionsTemplate = () => async () => {

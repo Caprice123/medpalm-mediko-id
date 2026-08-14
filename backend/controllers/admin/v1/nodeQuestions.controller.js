@@ -1,5 +1,6 @@
 import XLSX from 'xlsx'
 import { GetNodeQuestionsService } from '#services/mcq/v2/admin/getNodeQuestionsService'
+import { GetNodeQuestionDetailService } from '#services/mcq/v2/admin/getNodeQuestionDetailService'
 import { AddNodeQuestionService } from '#services/mcq/v2/admin/addNodeQuestionService'
 import { UpdateNodeQuestionService } from '#services/mcq/v2/admin/updateNodeQuestionService'
 import { DeleteNodeQuestionService } from '#services/mcq/v2/admin/deleteNodeQuestionService'
@@ -15,17 +16,23 @@ class NodeQuestionsController {
     return res.status(200).json({ data: NodeQuestionsSerializer.serializeList(questions), pagination })
   }
 
+  async getNodeQuestionDetail(req, res) {
+    const { questionId } = req.params
+    const question = await GetNodeQuestionDetailService.call({ questionId })
+    return res.status(200).json({ data: NodeQuestionsSerializer.serialize(question) })
+  }
+
   async addNodeQuestion(req, res) {
     const { nodeId } = req.params
-    const { question, options, correctIndex, explanation, references, blobId } = req.body
-    const created = await AddNodeQuestionService.call({ nodeId, question, options, correctIndex, explanation, references, blobId })
+    const { question, options, correctIndex, explanationShort, explanationLong, references, blobId } = req.body
+    const created = await AddNodeQuestionService.call({ nodeId, question, options, correctIndex, explanationShort, explanationLong, references, blobId })
     return res.status(201).json({ data: NodeQuestionsSerializer.serialize(created) })
   }
 
   async updateNodeQuestion(req, res) {
     const { questionId } = req.params
-    const { question, options, correctIndex, explanation, references, blobId } = req.body
-    const updated = await UpdateNodeQuestionService.call({ questionId, question, options, correctIndex, explanation, references, blobId })
+    const { question, options, correctIndex, explanationShort, explanationLong, references, blobId } = req.body
+    const updated = await UpdateNodeQuestionService.call({ questionId, question, options, correctIndex, explanationShort, explanationLong, references, blobId })
     return res.status(200).json({ data: NodeQuestionsSerializer.serialize(updated) })
   }
 
