@@ -10,6 +10,12 @@ const {
   setPagination,
 } = actions
 
+// Notes attached to a specific feature_node — fire-and-return, no Redux state (used by pickers)
+export const fetchSummaryNotesByNode = (nodeId) => async () => {
+  const res = await getWithToken(Endpoints.admin.summaryNotes, { nodeId, page: 1, perPage: 5 })
+  return res.data.data || []
+}
+
 // ============= Admin Endpoints =============
 
 /**

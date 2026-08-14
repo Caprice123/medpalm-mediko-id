@@ -12,6 +12,7 @@ router.use(requireTabPermission('featuresV2'))
 
 router.get('/', asyncHandler(contentRelationController.index.bind(contentRelationController)))
 router.post('/', asyncHandler(contentRelationController.create.bind(contentRelationController)))
+router.put('/:id', asyncHandler(contentRelationController.update.bind(contentRelationController)))
 router.delete('/:id', asyncHandler(contentRelationController.destroy.bind(contentRelationController)))
 
 export default router

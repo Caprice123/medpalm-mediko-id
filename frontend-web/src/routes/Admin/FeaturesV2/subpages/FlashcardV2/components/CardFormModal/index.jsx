@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
@@ -5,10 +6,13 @@ import Textarea from '@components/common/Textarea'
 import TextInput from '@components/common/TextInput'
 import FileUpload from '@components/common/FileUpload'
 import Dropdown from '@components/common/Dropdown'
+import Loading from '@components/common/Loading'
 import CardPreviewModal from '../CardPreviewModal'
 import ClozeEditor from './components/ClozeEditor'
 import OcclusionEditor from './components/OcclusionEditor'
+import SummaryNoteTreePicker from './components/SummaryNoteTreePicker'
 import { useCardFormModal } from './hooks/useCardFormModal'
+import { useCardSummaryNoteLinks } from './hooks/useCardSummaryNoteLinks'
 import { referencedClozeNumbers } from '../../utils/clozeTokens'
 
 const TYPE_OPTIONS = [
@@ -21,6 +25,7 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
   const isUploading = useSelector(state => state.common.loading?.isUploading)
   const {
     isEdit,
+    isLoadingDetail,
     previewOpen, setPreviewOpen,
     form, set,
     setClozeAnswer, setOcclusionRegions,
@@ -28,6 +33,22 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
     handleImageUpload, handleRemoveImage, handleSubmit,
     isSaving,
   } = useCardFormModal({ nodeId, card, onSuccess, onSave, isSavingOverride })
+
+  const {
+    relations: linkedNotes,
+    addNote,
+    updateLabel,
+    removeNote,
+    isSyncing: isSyncingNotes,
+  } = useCardSummaryNoteLinks(card?.id)
+
+  const [notePickerOpen, setNotePickerOpen] = useState(false)
+  const [labelDrafts, setLabelDrafts] = useState({})
+
+  const commitLabel = (relation, value) => {
+    setLabelDrafts(d => { const next = { ...d }; delete next[relation.id]; return next })
+    if (value !== (relation.label || '')) updateLabel(relation.id, value)
+  }
 
   const canPreviewCloze = form.type === 'cloze' && referencedClozeNumbers(form.front).length > 0
 
@@ -50,6 +71,56 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
           : null
         }
       />
+    </div>
+  )
+
+  const explanationEditor = (
+    <>
+      <div>
+        <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.375rem' }}>
+          Penjelasan Singkat (opsional)
+        </label>
+        <Textarea
+          value={form.explanationShort}
+          onChange={e => set('explanationShort', e.target.value)}
+          placeholder="Ringkasan singkat yang tampil langsung setelah jawaban dibuka"
+          rows={2}
+        />
+      </div>
+      <div>
+        <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.375rem' }}>
+          Penjelasan Panjang (opsional)
+        </label>
+        <Textarea
+          value={form.explanationLong}
+          onChange={e => set('explanationLong', e.target.value)}
+          placeholder="Penjelasan detail, ditampilkan saat pengguna klik 'Lihat Penjelasan Panjang'"
+          rows={4}
+        />
+      </div>
+    </>
+  )
+
+  const moduleLinksEditor = isEdit && (
+    <div>
+      <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.375rem' }}>
+        Modul Terkait (opsional)
+      </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {linkedNotes.map(relation => (
+          <div key={relation.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <TextInput
+              value={labelDrafts[relation.id] ?? relation.label ?? ''}
+              onChange={e => setLabelDrafts(d => ({ ...d, [relation.id]: e.target.value }))}
+              onBlur={e => commitLabel(relation, e.target.value.trim())}
+              placeholder="Label (mis. Modul Terkait)"
+            />
+            <TextInput value={relation.targetTitle || ''} disabled />
+            <Button variant="danger" onClick={() => removeNote(relation.id)} disabled={isSyncingNotes}>Hapus</Button>
+          </div>
+        ))}
+        <Button onClick={() => setNotePickerOpen(true)} disabled={isSyncingNotes}>+ Tambah Modul Terkait</Button>
+      </div>
     </div>
   )
 
@@ -80,12 +151,15 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>Batal</Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={isSaving || isUploading}>
+          <Button variant="primary" onClick={handleSubmit} disabled={isLoadingDetail || isSaving || isUploading}>
             {isSaving ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </>
       }
     >
+      {isLoadingDetail ? (
+        <Loading />
+      ) : (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <Dropdown
           label="Tipe Kartu"
@@ -155,13 +229,30 @@ function CardFormModal({ nodeId, card, onClose, onSuccess, onSave, isSavingOverr
           </>
         )}
 
+        {explanationEditor}
+        {moduleLinksEditor}
         {referencesEditor}
       </div>
+      )}
 
       {previewOpen && (
         <CardPreviewModal
-          card={{ type: form.type, front: form.front, back: form.back, clozeAnswers: form.clozeAnswers, occlusionRegions: form.occlusionRegions, imageUrl: form.imagePreviewUrl }}
+          card={{
+            type: form.type, front: form.front, back: form.back, clozeAnswers: form.clozeAnswers, occlusionRegions: form.occlusionRegions, imageUrl: form.imagePreviewUrl,
+            explanationShort: form.explanationShort, explanationLong: form.explanationLong, references: form.references,
+            linkedSummaryNotes: linkedNotes.map(r => ({ uniqueId: r.targetUniqueId, title: r.label || r.targetTitle })),
+          }}
           onClose={() => setPreviewOpen(false)}
+        />
+      )}
+
+      {notePickerOpen && (
+        <SummaryNoteTreePicker
+          onSelect={async (option) => {
+            await addNote(option)
+            setNotePickerOpen(false)
+          }}
+          onClose={() => setNotePickerOpen(false)}
         />
       )}
     </Modal>

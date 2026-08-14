@@ -6,7 +6,7 @@ import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 import { validateCardTypeFields } from '#utils/flashcardCardTypeValidator'
 
 export class AddNodeCardService extends BaseService {
-  static async call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions }) {
+  static async call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong }) {
     const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
@@ -20,6 +20,8 @@ export class AddNodeCardService extends BaseService {
         back: fields.back,
         cloze_answers: fields.clozeAnswers,
         occlusion_regions: fields.occlusionRegions,
+        explanation_short: explanationShort?.trim() || null,
+        explanation_long: explanationLong?.trim() || null,
         references: Array.isArray(references) ? references : [],
         version: 2,
       },
@@ -38,6 +40,7 @@ export class AddNodeCardService extends BaseService {
       await bumpNodeStat(prisma, node.parent_id, 'flashcard_card', 1)
     }
 
-    return card
+    const attachment = await attachmentService.getAttachmentWithUrl('flashcard_card', card.id, 'image')
+    return { ...card, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

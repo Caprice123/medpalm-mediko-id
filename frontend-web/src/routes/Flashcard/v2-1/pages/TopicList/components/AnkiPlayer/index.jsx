@@ -1,14 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
-import { submitFlashcardRating } from '@store/flashcardNodes/userAction'
-import ClozeCard from './components/ClozeCard'
-import OcclusionCard from './components/OcclusionCard'
+import { useRef, useEffect } from 'react'
+import CardBody from './components/CardBody'
+import { useAnkiPlayer } from './hooks/useAnkiPlayer'
 import {
-  Wrapper, DeckContainer, DeckHeader, DeckTitle, BackBtn,
-  StatsRow, CardCounter, ReviewedCount,
+  Wrapper, DeckContainer, HeaderSection, BodySection, FooterSection,
+  DeckHeader, DeckTitle, BackBtn,
+  StatsRow, TopicPath,
   ProgressBar, ProgressFill,
-  FlipArea, FlipCard, CardFront, CardBack, CardLabel, CardText, CardImage, FlipHint,
-  NewBadge, CardNodePath, CardReferences, CardReferencesLabel, CardReferencesList, CardReferenceLink, CardReferenceText,
   ActionRow, RatingBtn,
 } from './AnkiPlayer.styles'
 
@@ -22,136 +19,66 @@ const RATINGS = [
 const MAX_LAGI = 2
 
 export default function AnkiPlayer({ deck, onBack }) {
-  const dispatch = useDispatch()
-  const cards = deck.cards || []
+  const {
+    queue, card, index, progress, retryCount,
+    revealed, handleReveal,
+    handleRate,
+  } = useAnkiPlayer({ deck, onBack })
 
-  const [queue, setQueue] = useState(() => [...cards])
-  const [retryCounts, setRetryCounts] = useState({})
-  const [index, setIndex] = useState(0)
-  const [revealed, setRevealed] = useState(false)
-  const [ratings, setRatings] = useState([])
+  const hasTopicPath = !!(card.topic || card.subtopic)
 
-  const card = queue[index]
-  const progress = (index / queue.length) * 100
-  const retryCount = card ? (retryCounts[card.id] || 0) : 0
-
-  const handleReveal = useCallback(() => {
-    if (!revealed) setRevealed(true)
-  }, [revealed])
-
+  const bodyRef = useRef(null)
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.code === 'Space' && card?.type !== 'cloze' && card?.type !== 'occlusion') {
-        e.preventDefault(); handleReveal()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [handleReveal, card])
-
-  const handleRate = (ratingKey) => {
-    dispatch(submitFlashcardRating(card.id, ratingKey))
-
-    let newQueue = queue
-    if (ratingKey === 'again' && retryCount < MAX_LAGI) {
-      newQueue = [...queue, card]
-      setQueue(newQueue)
-      setRetryCounts(prev => ({ ...prev, [card.id]: retryCount + 1 }))
-    }
-
-    setRatings(prev => [...prev, { cardId: card.id, rating: ratingKey }])
-
-    const nextIndex = index + 1
-    if (nextIndex >= newQueue.length) {
-      onBack()
-    } else {
-      setIndex(nextIndex)
-      setRevealed(false)
-    }
-  }
+    bodyRef.current?.scrollTo({ top: 0 })
+  }, [card?.id])
 
   return (
     <Wrapper>
       <DeckContainer>
-        <DeckHeader>
-          <DeckTitle>{deck.title}</DeckTitle>
-          <BackBtn onClick={onBack} title="Tutup">✕</BackBtn>
-        </DeckHeader>
+        <HeaderSection>
+          <DeckHeader>
+            <DeckTitle>Kartu {index + 1} dari {queue.length}</DeckTitle>
+            <BackBtn onClick={onBack} title="Tutup">✕</BackBtn>
+          </DeckHeader>
 
-        <StatsRow>
-          <CardCounter>Kartu <b>{index + 1}</b> dari {queue.length}</CardCounter>
-          <ReviewedCount>{ratings.length} dikerjakan sesi ini</ReviewedCount>
-        </StatsRow>
+          {hasTopicPath && (
+            <StatsRow>
+              <TopicPath>
+                {card.topic?.name}{card.topic && card.subtopic && ' › '}{card.subtopic?.name}
+              </TopicPath>
+            </StatsRow>
+          )}
 
-        <ProgressBar>
-          <ProgressFill $progress={progress} />
-        </ProgressBar>
+          <ProgressBar>
+            <ProgressFill $progress={progress} />
+          </ProgressBar>
+        </HeaderSection>
 
-        {card.type === 'cloze' && (
-          <ClozeCard key={card.id} text={card.front} answers={card.clozeAnswers} onFullyRevealed={handleReveal} />
-        )}
-
-        {card.type === 'occlusion' && (
-          <OcclusionCard key={card.id} imageUrl={card.imageUrl} regions={card.occlusionRegions} onFullyRevealed={handleReveal} />
-        )}
-
-        {(!card.type || card.type === 'basic') && (
-          <FlipArea $clickable={!revealed} onClick={!revealed ? handleReveal : undefined}>
-            <FlipCard $flipped={revealed}>
-              <CardFront>
-                {card.isNew && <NewBadge>Baru</NewBadge>}
-                {(card.topic || card.subtopic) && (
-                  <CardNodePath>
-                    {card.topic?.name}{card.topic && card.subtopic && ' › '}{card.subtopic?.name}
-                  </CardNodePath>
-                )}
-                <CardLabel>Pertanyaan</CardLabel>
-                <CardText>{card.front}</CardText>
-                {card.imageUrl && <CardImage src={card.imageUrl} alt="" />}
-                <FlipHint>Klik kartu atau tekan spasi untuk flip</FlipHint>
-              </CardFront>
-              <CardBack>
-                <CardLabel>Jawaban</CardLabel>
-                <CardText>{card.back}</CardText>
-              </CardBack>
-            </FlipCard>
-          </FlipArea>
-        )}
-
-        {revealed && card.references?.length > 0 && (
-          <CardReferences>
-            <CardReferencesLabel>Referensi</CardReferencesLabel>
-            <CardReferencesList>
-              {card.references.map((ref, i) => (
-                <li key={i}>
-                  {ref.url
-                    ? <CardReferenceLink href={ref.url} target="_blank" rel="noopener noreferrer">{ref.label || ref.url}</CardReferenceLink>
-                    : <CardReferenceText>{ref.label}</CardReferenceText>}
-                </li>
-              ))}
-            </CardReferencesList>
-          </CardReferences>
-        )}
+        <BodySection ref={bodyRef}>
+          <CardBody card={card} revealed={revealed} onReveal={handleReveal} />
+        </BodySection>
 
         {revealed && (
-          <ActionRow>
-            {RATINGS.map(r => (
-              <RatingBtn
-                key={r.key}
-                $color={r.color}
-                onClick={() => handleRate(r.key)}
-                disabled={r.key === 'again' && retryCount >= MAX_LAGI}
-                title={r.key === 'again' && retryCount >= MAX_LAGI ? 'Batas ulang tercapai' : undefined}
-              >
-                {r.label}
-                {r.key === 'again' && retryCount > 0 && retryCount < MAX_LAGI && (
-                  <span style={{ fontSize: '0.625rem', display: 'block', opacity: 0.7 }}>
-                    {MAX_LAGI - retryCount}x lagi
-                  </span>
-                )}
-              </RatingBtn>
-            ))}
-          </ActionRow>
+          <FooterSection>
+            <ActionRow>
+              {RATINGS.map(r => (
+                <RatingBtn
+                  key={r.key}
+                  $color={r.color}
+                  onClick={() => handleRate(r.key)}
+                  disabled={r.key === 'again' && retryCount >= MAX_LAGI}
+                  title={r.key === 'again' && retryCount >= MAX_LAGI ? 'Batas ulang tercapai' : undefined}
+                >
+                  {r.label}
+                  {r.key === 'again' && retryCount > 0 && retryCount < MAX_LAGI && (
+                    <span style={{ fontSize: '0.625rem', display: 'block', opacity: 0.7 }}>
+                      {MAX_LAGI - retryCount}x lagi
+                    </span>
+                  )}
+                </RatingBtn>
+              ))}
+            </ActionRow>
+          </FooterSection>
         )}
       </DeckContainer>
     </Wrapper>

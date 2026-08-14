@@ -61,6 +61,7 @@ async function resolveTargetDetails(relations) {
       targetUniqueId: item?.unique_id || null,
       targetTitle: item?.title || null,
       relationType: rel.relation_type ?? '',
+      label: rel.label ?? '',
     }
   })
 }

@@ -109,7 +109,8 @@ export default function CardsPage({ node, parentNode, onBack }) {
 
       {previewModal.open && (
         <CardPreviewModal
-          card={previewModal.card}
+          cardId={previewModal.card.id}
+          nodeId={node.id}
           onClose={() => setPreviewModal({ open: false, card: null })}
         />
       )}

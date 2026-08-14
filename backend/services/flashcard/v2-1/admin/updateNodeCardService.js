@@ -5,7 +5,7 @@ import attachmentService from '#services/attachment/attachmentService'
 import { validateCardTypeFields } from '#utils/flashcardCardTypeValidator'
 
 export class UpdateNodeCardService extends BaseService {
-  static async call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions }) {
+  static async call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong }) {
     const card = await prisma.flashcard_cards.findUnique({ where: { id: parseInt(cardId) } })
     if (!card) throw new ValidationError('Kartu tidak ditemukan')
 
@@ -32,16 +32,30 @@ export class UpdateNodeCardService extends BaseService {
     }
 
     if (references !== undefined) data.references = Array.isArray(references) ? references : []
+    if (explanationShort !== undefined) data.explanation_short = explanationShort?.trim() || null
+    if (explanationLong !== undefined) data.explanation_long = explanationLong?.trim() || null
 
     const updated = await prisma.flashcard_cards.update({ where: { id: parseInt(cardId) }, data })
 
     if (blobId !== undefined) {
-      await attachmentService.detachAll({ recordType: 'flashcard_card', recordId: updated.id })
-      if (blobId) {
-        await attachmentService.attach({ blobId, recordType: 'flashcard_card', recordId: updated.id, name: 'image' })
+      const existingAttachment = await prisma.attachments.findFirst({
+        where: { record_type: 'flashcard_card', record_id: updated.id, name: 'image' },
+      })
+      const currentBlobId = existingAttachment?.blob_id ?? null
+      const newBlobId = blobId ? parseInt(blobId) : null
+
+      // Only touch the attachment when the blob actually changed — detachAll deletes the
+      // underlying blob/file, so re-running it with the same blobId every save would delete
+      // and then recreate an attachment pointing at a blob that no longer exists.
+      if (newBlobId !== currentBlobId) {
+        await attachmentService.detachAll({ recordType: 'flashcard_card', recordId: updated.id })
+        if (newBlobId) {
+          await attachmentService.attach({ blobId: newBlobId, recordType: 'flashcard_card', recordId: updated.id, name: 'image' })
+        }
       }
     }
 
-    return updated
+    const attachment = await attachmentService.getAttachmentWithUrl('flashcard_card', updated.id, 'image')
+    return { ...updated, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

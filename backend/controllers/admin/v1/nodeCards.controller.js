@@ -1,5 +1,6 @@
 import XLSX from 'xlsx'
 import { GetNodeCardsService } from '#services/flashcard/v2-1/admin/getNodeCardsService'
+import { GetNodeCardDetailService } from '#services/flashcard/v2-1/admin/getNodeCardDetailService'
 import { AddNodeCardService } from '#services/flashcard/v2-1/admin/addNodeCardService'
 import { UpdateNodeCardService } from '#services/flashcard/v2-1/admin/updateNodeCardService'
 import { DeleteNodeCardService } from '#services/flashcard/v2-1/admin/deleteNodeCardService'
@@ -15,17 +16,23 @@ class NodeCardsController {
     return res.status(200).json({ data: NodeCardsSerializer.serializeList(cards), pagination })
   }
 
+  async getNodeCardDetail(req, res) {
+    const { cardId } = req.params
+    const card = await GetNodeCardDetailService.call({ cardId })
+    return res.status(200).json({ data: NodeCardsSerializer.serialize(card) })
+  }
+
   async addNodeCard(req, res) {
     const { nodeId } = req.params
-    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions } = req.body
-    const card = await AddNodeCardService.call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions })
+    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong } = req.body
+    const card = await AddNodeCardService.call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong })
     return res.status(201).json({ data: NodeCardsSerializer.serialize(card) })
   }
 
   async updateNodeCard(req, res) {
     const { cardId } = req.params
-    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions } = req.body
-    const card = await UpdateNodeCardService.call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions })
+    const { type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong } = req.body
+    const card = await UpdateNodeCardService.call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong })
     return res.status(200).json({ data: NodeCardsSerializer.serialize(card) })
   }
 

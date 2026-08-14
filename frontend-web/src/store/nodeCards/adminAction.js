@@ -26,6 +26,14 @@ export const loadMoreNodeCards = (nodeId) => (dispatch, getState) => {
   dispatch(fetchNodeCards(nodeId, { append: true }))
 }
 
+// Full card detail (image, explanations, references, cloze/occlusion data) — fire-and-return,
+// no Redux state. Used by CardFormModal/CardPreviewModal, which only get the lightweight list
+// row (id/type/front/back) from the table.
+export const fetchNodeCardDetail = (nodeId, cardId) => async () => {
+  const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/cards/${cardId}`)
+  return res.data.data
+}
+
 export const addNodeCard = (nodeId, payload, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ isAddingCard: true }))
@@ -76,6 +84,28 @@ export const importNodeCards = (nodeId, file, onSuccess) => async (dispatch) => 
   } finally {
     dispatch(setLoading({ isImportingCards: false }))
   }
+}
+
+// flashcard_card → summary_note content_relations — fire-and-return, no Redux state
+export const fetchCardSummaryNoteRelations = (cardId) => async () => {
+  const res = await getWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'flashcard_card', sourceId: cardId, targetType: 'summary_note',
+  })
+  return res.data.data || []
+}
+
+export const addCardSummaryNoteRelation = (cardId, noteId, label) => async () => {
+  await postWithToken(Endpoints.admin.contentRelations, {
+    sourceType: 'flashcard_card', sourceId: cardId, targetType: 'summary_note', targetId: noteId, label,
+  })
+}
+
+export const updateCardSummaryNoteRelationLabel = (relationId, label) => async () => {
+  await putWithToken(`${Endpoints.admin.contentRelations}/${relationId}`, { label })
+}
+
+export const removeCardSummaryNoteRelation = (relationId) => async () => {
+  await deleteWithToken(`${Endpoints.admin.contentRelations}/${relationId}`)
 }
 
 export const downloadCardsTemplate = () => async () => {

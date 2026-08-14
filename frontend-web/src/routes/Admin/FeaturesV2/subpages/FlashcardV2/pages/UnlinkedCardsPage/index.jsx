@@ -108,7 +108,7 @@ export default function UnlinkedCardsPage({ onBack }) {
 
       {previewModal.open && (
         <CardPreviewModal
-          card={previewModal.card}
+          cardId={previewModal.card.id}
           onClose={() => setPreviewModal({ open: false, card: null })}
         />
       )}

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 export const Wrapper = styled.div`
   width: 100%;
   min-height: 320px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -12,6 +13,7 @@ export const Wrapper = styled.div`
 export const ImageBox = styled.div`
   position: relative;
   width: 100%;
+  flex-shrink: 0;
   border-radius: 8px;
   overflow: hidden;
   line-height: 0;

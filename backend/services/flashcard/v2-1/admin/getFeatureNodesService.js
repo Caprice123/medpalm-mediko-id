@@ -4,7 +4,7 @@ import { BaseService } from '#services/baseService'
 export class GetFeatureNodesService extends BaseService {
   // page/perPage are opt-in — omitting both preserves the old unbounded-fetch behavior for
   // the many existing callers (dropdowns/pickers) that expect the complete list back.
-  static async call({ search, nodeType, parentId, layer, visibility, classification, sortBy, page, perPage } = {}) {
+  static async call({ search, nodeType, parentId, layer, visibility, classification, sortBy, page, perPage, hasRecordType } = {}) {
     const where = {}
 
     if (nodeType) where.node_type = nodeType
@@ -21,6 +21,16 @@ export class GetFeatureNodesService extends BaseService {
         { name: { contains: search, mode: 'insensitive' } },
         { slug: { contains: search, mode: 'insensitive' } },
       ]
+    }
+
+    // Only nodes that have at least one feature_node_records row of this record_type (e.g. 'summary_note')
+    if (hasRecordType) {
+      const recordNodeIds = await prisma.feature_node_records.findMany({
+        where: { record_type: hasRecordType },
+        select: { node_id: true },
+        distinct: ['node_id'],
+      })
+      where.id = { in: recordNodeIds.map(r => r.node_id) }
     }
 
     const paginate = page !== undefined || perPage !== undefined

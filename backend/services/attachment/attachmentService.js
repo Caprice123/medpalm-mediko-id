@@ -113,7 +113,8 @@ class AttachmentService {
       })
     );
 
-    return attachmentsWithBlobs;
+    // Drop orphaned attachments whose blob row no longer exists (e.g. deleted blob)
+    return attachmentsWithBlobs.filter((attachment) => attachment.blob !== null);
   }
 
   /**

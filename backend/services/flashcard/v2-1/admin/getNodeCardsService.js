@@ -20,7 +20,13 @@ export class GetNodeCardsService extends BaseService {
     if (pageRecords.length === 0) return { cards: [], pagination }
 
     const cardIds = pageRecords.map(r => r.record_id)
-    const rawCards = await prisma.flashcard_cards.findMany({ where: { id: { in: cardIds } } })
+    // List view is lightweight — only what the table renders (type badge, front/back preview,
+    // occlusion region count). Full detail (image, explanations, references, cloze answers)
+    // is fetched separately via GetNodeCardDetailService when a single card is opened.
+    const rawCards = await prisma.flashcard_cards.findMany({
+      where: { id: { in: cardIds } },
+      select: { id: true, type: true, front: true, back: true, occlusion_regions: true },
+    })
     const cardMap = new Map(rawCards.map(c => [c.id, c]))
     const cards = pageRecords.map(r => cardMap.get(r.record_id)).filter(Boolean)
 

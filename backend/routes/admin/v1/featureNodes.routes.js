@@ -33,6 +33,7 @@ router.get('/cards/template', nodeCardsController.downloadTemplate.bind(nodeCard
 router.get('/:nodeId/cards', asyncHandler(nodeCardsController.getNodeCards.bind(nodeCardsController)))
 router.post('/:nodeId/cards', asyncHandler(nodeCardsController.addNodeCard.bind(nodeCardsController)))
 router.post('/:nodeId/cards/import', uploadExcel, asyncHandler(nodeCardsController.importCards.bind(nodeCardsController)))
+router.get('/:nodeId/cards/:cardId', asyncHandler(nodeCardsController.getNodeCardDetail.bind(nodeCardsController)))
 router.put('/:nodeId/cards/:cardId', asyncHandler(nodeCardsController.updateNodeCard.bind(nodeCardsController)))
 router.delete('/:nodeId/cards/:cardId', asyncHandler(nodeCardsController.deleteNodeCard.bind(nodeCardsController)))
 router.put('/:nodeId/cards/:cardId/move', asyncHandler(nodeCardsController.moveNodeCard.bind(nodeCardsController)))

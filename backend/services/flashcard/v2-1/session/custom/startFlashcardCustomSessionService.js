@@ -78,6 +78,25 @@ export class StartFlashcardCustomSessionService extends BaseService {
     let idx = 0
     orderedCards.forEach(card => { if (cardBlobKeyMap.has(card.id)) urlMap.set(card.id, presignedUrls[idx++]) })
 
+    const noteRelations = await prisma.content_relations.findMany({
+      where: { source_type: 'flashcard_card', source_id: { in: selected }, target_type: 'summary_note' },
+    })
+    const noteIds = [...new Set(noteRelations.map(r => r.target_id))]
+    const notes = noteIds.length > 0
+      ? await prisma.summary_notes.findMany({
+          where: { id: { in: noteIds }, status: 'published', is_deleted: false },
+          select: { id: true, unique_id: true, title: true },
+        })
+      : []
+    const noteMap = new Map(notes.map(n => [n.id, n]))
+    const notesByCard = new Map()
+    noteRelations.forEach(r => {
+      const note = noteMap.get(r.target_id)
+      if (!note) return
+      if (!notesByCard.has(r.source_id)) notesByCard.set(r.source_id, [])
+      notesByCard.get(r.source_id).push({ uniqueId: note.unique_id, title: r.label || note.title })
+    })
+
     return orderedCards.map(card => {
       const nId = cardToNodeMap.get(card.id)
       const node = nId ? nodeMap.get(nId) : null
@@ -88,7 +107,10 @@ export class StartFlashcardCustomSessionService extends BaseService {
         type: card.type ?? 'basic',
         clozeAnswers: card.cloze_answers ?? [],
         occlusionRegions: card.occlusion_regions ?? [],
+        explanationShort: card.explanation_short ?? '',
+        explanationLong: card.explanation_long ?? '',
         references: card.references ?? [],
+        linkedSummaryNotes: notesByCard.get(card.id) || [],
         imageUrl: urlMap.get(card.id) || null,
         isNew: newIdSet.has(card.id),
         subtopic: node ? { id: node.id, name: node.name } : null,

@@ -1,15 +1,19 @@
 import Modal from '@components/common/Modal'
-import ClozeCard from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/ClozeCard'
-import OcclusionCard from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/OcclusionCard'
-import BasicPreview from './components/BasicPreview'
+import Loading from '@components/common/Loading'
+import CardBody from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/CardBody'
+import { useCardPreviewModal } from './hooks/useCardPreviewModal'
 
-export default function CardPreviewModal({ card, onClose }) {
+export default function CardPreviewModal({ card, cardId, nodeId, onClose }) {
+  const { resolvedCard, isLoading, revealed, handleReveal } = useCardPreviewModal({ card, cardId, nodeId })
+
   return (
     <Modal isOpen title="📖 Preview Flashcard" size="medium" onClose={onClose}>
-      {card.type === 'cloze' && <ClozeCard text={card.front} answers={card.clozeAnswers} />}
-      {card.type === 'occlusion' && <OcclusionCard imageUrl={card.imageUrl} regions={card.occlusionRegions} />}
-      {(!card.type || card.type === 'basic') && (
-        <BasicPreview front={card.front} back={card.back} imageUrl={card.imageUrl} />
+      {isLoading || !resolvedCard ? (
+        <Loading />
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <CardBody card={resolvedCard} revealed={revealed} onReveal={handleReveal} />
+        </div>
       )}
     </Modal>
   )

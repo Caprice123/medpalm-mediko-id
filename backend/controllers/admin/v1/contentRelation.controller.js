@@ -1,5 +1,6 @@
 import { ListContentRelationsService } from '#services/contentRelation/listContentRelationsService'
 import { CreateContentRelationService } from '#services/contentRelation/createContentRelationService'
+import { UpdateContentRelationService } from '#services/contentRelation/updateContentRelationService'
 import { DeleteContentRelationService } from '#services/contentRelation/deleteContentRelationService'
 
 class ContentRelationController {
@@ -10,9 +11,16 @@ class ContentRelationController {
   }
 
   async create(req, res) {
-    const { sourceType, sourceId, targetType, targetId } = req.body
-    const relation = await CreateContentRelationService.call({ sourceType, sourceId, targetType, targetId })
+    const { sourceType, sourceId, targetType, targetId, relationType, label } = req.body
+    const relation = await CreateContentRelationService.call({ sourceType, sourceId, targetType, targetId, relationType, label })
     res.status(201).json({ data: relation })
+  }
+
+  async update(req, res) {
+    const { id } = req.params
+    const { label } = req.body
+    const relation = await UpdateContentRelationService.call({ id, label })
+    res.status(200).json({ data: relation })
   }
 
   async destroy(req, res) {

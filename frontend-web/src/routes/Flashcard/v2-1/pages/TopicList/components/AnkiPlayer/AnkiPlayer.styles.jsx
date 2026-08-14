@@ -15,15 +15,39 @@ export const Wrapper = styled.div`
 export const DeckContainer = styled.div`
   width: 100%;
   max-width: 720px;
+  max-height: min(90vh, 800px);
   background: white;
   border-radius: 20px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.18);
-  padding: 2rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`
+
+export const HeaderSection = styled.div`
+  flex-shrink: 0;
+  padding: 1.75rem 2.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  border-bottom: 1px solid #f1f5f9;
+`
+
+export const BodySection = styled.div`
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem 2.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  overflow: hidden;
+`
+
+export const FooterSection = styled.div`
+  flex-shrink: 0;
+  padding: 1.25rem 2.25rem 1.75rem;
+  border-top: 1px solid #f1f5f9;
 `
 
 export const DeckHeader = styled.div`
@@ -64,16 +88,14 @@ export const StatsRow = styled.div`
   justify-content: space-between;
 `
 
-export const CardCounter = styled.div`
+export const TopicPath = styled.div`
   font-size: 0.8125rem;
+  font-weight: 600;
   color: #6b7280;
-
-  b { color: #111827; }
-`
-
-export const ReviewedCount = styled.div`
-  font-size: 0.8125rem;
-  color: #9ca3af;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const ProgressBar = styled.div`
@@ -90,181 +112,6 @@ export const ProgressFill = styled.div`
   background: linear-gradient(90deg, #6BB9E8, #8DC63F);
   border-radius: 99px;
   transition: width 0.3s ease;
-`
-
-export const FlipArea = styled.div`
-  width: 100%;
-  height: 320px;
-  perspective: 1200px;
-  cursor: ${p => p.$clickable ? 'pointer' : 'default'};
-`
-
-export const FlipCard = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: ${p => p.$flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
-`
-
-const CardFaceBase = styled.div`
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: 12px;
-  border: 2px dashed #d1d5db;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.75rem;
-  text-align: center;
-  overflow: hidden;
-  transition: border-color 0.15s;
-`
-
-export const CardFront = styled(CardFaceBase)`
-  background: white;
-
-  ${FlipArea}:hover & {
-    border-color: #6BB9E8;
-  }
-`
-
-export const CardBack = styled(CardFaceBase)`
-  background: #f0f9ff;
-  transform: rotateY(180deg);
-  border-color: #bae6fd;
-`
-
-export const CardLabel = styled.div`
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #6BB9E8;
-  margin-bottom: 0.625rem;
-`
-
-export const CardText = styled.p`
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.5;
-  margin: 0;
-  white-space: pre-wrap;
-`
-
-export const CardImage = styled.img`
-  display: block;
-  max-width: 300px;
-  height: 160px;
-  object-fit: contain;
-  border-radius: 6px;
-  margin-top: 0.75rem;
-  background: #f3f4f6;
-  flex-shrink: 0;
-`
-
-export const CardReferences = styled.div`
-  background: #f0f9ff;
-  border: 1.5px solid #bae6fd;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-`
-
-export const CardReferencesLabel = styled.div`
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #0369a1;
-  margin-bottom: 0.375rem;
-`
-
-export const CardReferencesList = styled.ol`
-  margin: 0;
-  padding-left: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`
-
-export const CardReferenceLink = styled.a`
-  font-size: 0.8125rem;
-  color: #0369a1;
-  text-decoration: underline;
-  word-break: break-word;
-`
-
-export const CardReferenceText = styled.span`
-  font-size: 0.8125rem;
-  color: #374151;
-  word-break: break-word;
-`
-
-export const CardNodePath = styled.div`
-  position: absolute;
-  top: 0.875rem;
-  left: 0.875rem;
-  right: 3rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #6b7280;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-export const NewBadge = styled.div`
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: #dcfce7;
-  color: #16a34a;
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.2rem 0.5rem;
-  border-radius: 99px;
-  border: 1px solid #86efac;
-  pointer-events: none;
-`
-
-export const FlipHint = styled.div`
-  position: absolute;
-  bottom: 0.875rem;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6BB9E8;
-  letter-spacing: 0.01em;
-`
-
-export const ShowAnswerBtn = styled.button`
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: opacity 0.15s;
-  box-shadow: 0 4px 12px rgba(107, 185, 232, 0.35);
-
-  &:hover { opacity: 0.9; }
 `
 
 export const ActionRow = styled.div`

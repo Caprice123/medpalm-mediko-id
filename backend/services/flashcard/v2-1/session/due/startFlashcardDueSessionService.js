@@ -50,15 +50,57 @@ export class StartFlashcardDueSessionService extends BaseService {
     let idx = 0
     cards.forEach(card => { if (cardBlobKeyMap.has(card.id)) urlMap.set(card.id, presignedUrls[idx++]) })
 
-    return cards.map(card => ({
-      id: card.id,
-      front: card.front,
-      back: card.back,
-      type: card.type ?? 'basic',
-      clozeAnswers: card.cloze_answers ?? [],
-      occlusionRegions: card.occlusion_regions ?? [],
-      references: card.references ?? [],
-      imageUrl: urlMap.get(card.id) || null,
-    }))
+    const noteRelations = await prisma.content_relations.findMany({
+      where: { source_type: 'flashcard_card', source_id: { in: selectedIds }, target_type: 'summary_note' },
+    })
+    const noteIds = [...new Set(noteRelations.map(r => r.target_id))]
+    const notes = noteIds.length > 0
+      ? await prisma.summary_notes.findMany({
+          where: { id: { in: noteIds }, status: 'published', is_deleted: false },
+          select: { id: true, unique_id: true, title: true },
+        })
+      : []
+    const noteMap = new Map(notes.map(n => [n.id, n]))
+    const notesByCard = new Map()
+    noteRelations.forEach(r => {
+      const note = noteMap.get(r.target_id)
+      if (!note) return
+      if (!notesByCard.has(r.source_id)) notesByCard.set(r.source_id, [])
+      notesByCard.get(r.source_id).push({ uniqueId: note.unique_id, title: r.label || note.title })
+    })
+
+    const cardNodeLinks = await prisma.feature_node_records.findMany({
+      where: { record_type: 'flashcard_card', record_id: { in: selectedIds } },
+      select: { record_id: true, node_id: true },
+    })
+    const nodeIds = [...new Set(cardNodeLinks.map(l => l.node_id))]
+    const nodes = nodeIds.length > 0
+      ? await prisma.feature_nodes.findMany({
+          where: { id: { in: nodeIds } },
+          select: { id: true, name: true, parent: { select: { id: true, name: true } } },
+        })
+      : []
+    const nodeMap = new Map(nodes.map(n => [n.id, n]))
+    const cardToNodeMap = new Map(cardNodeLinks.map(l => [l.record_id, l.node_id]))
+
+    return cards.map(card => {
+      const nId = cardToNodeMap.get(card.id)
+      const node = nId ? nodeMap.get(nId) : null
+      return {
+        id: card.id,
+        front: card.front,
+        back: card.back,
+        type: card.type ?? 'basic',
+        clozeAnswers: card.cloze_answers ?? [],
+        occlusionRegions: card.occlusion_regions ?? [],
+        explanationShort: card.explanation_short ?? '',
+        explanationLong: card.explanation_long ?? '',
+        references: card.references ?? [],
+        linkedSummaryNotes: notesByCard.get(card.id) || [],
+        imageUrl: urlMap.get(card.id) || null,
+        subtopic: node ? { id: node.id, name: node.name } : null,
+        topic: node?.parent ? { id: node.parent.id, name: node.parent.name } : null,
+      }
+    })
   }
 }

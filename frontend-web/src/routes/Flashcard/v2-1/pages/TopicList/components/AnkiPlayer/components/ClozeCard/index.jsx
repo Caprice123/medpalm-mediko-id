@@ -7,7 +7,7 @@ export default function ClozeCard({ text, answers, onFullyRevealed }) {
   const { parts, revealed, userAnswers, setUserAnswer, reveal } = useClozeCard({ text, onFullyRevealed })
 
   return (
-    <Wrapper>
+    <Wrapper $revealed={revealed}>
       <TextBlockContainer>
         <TextBlock>
           {parts.map((part, i) => {

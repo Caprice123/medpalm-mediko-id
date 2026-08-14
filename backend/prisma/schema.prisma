@@ -273,6 +273,8 @@ model flashcard_cards {
   type              String         @default("basic")
   cloze_answers     Json?
   occlusion_regions Json?
+  explanation_short String?
+  explanation_long  String?
   created_at        DateTime       @default(now())
   updated_at        DateTime       @default(now())
 
@@ -593,6 +595,7 @@ model content_relations {
   target_type   String
   target_id     Int
   relation_type String   @default("")
+  label         String?
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now())
 
