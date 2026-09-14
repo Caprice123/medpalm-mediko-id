@@ -1,150 +1,139 @@
-import { useState, useEffect } from 'react'
 import { Parallax } from 'react-scroll-parallax'
-import Button from '@components/common/Button'
-import { LinkButton } from '../Home.styles'
 import {
   HeroSection as StyledHeroSection,
   HeroContent,
   HeroText,
   Badge,
+  BadgeIcon,
   HeroTitle,
+  HeroTitleHighlight,
   HeroSubtitle,
   HeroButtons,
+  HeroCtaPrimary,
+  HeroCtaSecondary,
+  HeroStats,
+  HeroStatItem,
+  HeroStatValue,
+  HeroStatLabel,
   HeroVisual,
-  HeroBrowserMockup,
-  HeroBrowserBar,
-  HeroBrowserDots,
-  HeroBrowserDot,
-  HeroBrowserUrl,
-  HeroBrowserContent,
-  HeroFeatureSlide,
-  HeroSlideIcon,
-  HeroSlideLabel,
-  HeroSlideTitle,
-  HeroSlideDesc,
-  HeroSlideIndicators,
-  HeroSlideIndicator,
+  LeaderboardCard,
+  LeaderboardHeader,
+  LeaderboardTitle,
+  WeeklyBadge,
+  LeaderboardCrown,
+  LeaderboardList,
+  LeaderboardRow,
+  RowAvatar,
+  RowInfo,
+  RowName,
+  RowMeta,
+  RowScore,
+  StreakBadge,
+  StreakIcon,
+  StreakValue,
+  StreakLabel,
 } from '../Home.styles'
 
-const DEFAULT_SLIDES = [
-  {
-    icon: '📝',
-    label: 'Bank Soal',
-    title: '40.000+ Soal MCQ',
-    desc: 'Latihan UKMPPD & ujian blok dengan pembahasan lengkap dari dokter.',
-  },
-  {
-    icon: '🩻',
-    label: 'Anatomi 3D',
-    title: 'Model Anatomi Interaktif',
-    desc: 'Eksplorasi struktur tubuh manusia secara visual dan detail.',
-  },
-  {
-    icon: '🩺',
-    label: 'AI OSCE',
-    title: 'Simulasi OSCE berbasis AI',
-    desc: 'Latihan skenario klinis dengan pasien virtual yang responsif.',
-  },
-  {
-    icon: '🎴',
-    label: 'Flashcards',
-    title: '45.000+ Flashcards',
-    desc: 'Hafal materi kedokteran lebih cepat dengan metode spaced repetition.',
-  },
-  {
-    icon: '💬',
-    label: 'AI Assistant',
-    title: 'Chat Assistant AI',
-    desc: 'Dijawab langsung dengan referensi textbook & jurnal ilmiah.',
-  },
+const DEFAULT_BADGE = 'Platform Medis Berbasis AI'
+const DEFAULT_SUBTITLE = '1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Kedokteran, simulasi OSCE dengan pasien virtual, 25.000+ quiz & flashcard, dan 400+ artikel kedokteran — semua dalam satu platform.'
+
+const HERO_STATS = [
+  { value: '1.895+', label: 'Model Anatomi 3D' },
+  { value: '25.000+', label: 'Quiz & Flashcard' },
+  { value: '400+', label: 'Artikel Kedokteran' },
 ]
 
-const DEFAULT_BADGE = '✨ Platform Medis Berbasis AI'
-const DEFAULT_TITLE = 'Better Learning.\nBetter Doctors.\nBetter Lives.'
-const DEFAULT_SUBTITLE = '1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Mahasiswa Kedokteran, Simulasi AI OSCE dengan Pasien Virtual, 25.000+ Kuis & Flashcards, 255+ Kuis Interpretasi Klinis, dan 400+ Artikel Kedokteran'
+const LEADERBOARD_ROWS = [
+  { name: 'Dinda', meta: 'Semester 4', score: '2.569 QP', color: '#FCD9B8' },
+  { name: 'Kamu', meta: 'Semester 4', score: '1.980 QP', color: '#8DC63F', highlight: true },
+]
 
-const SLIDE_DURATION = 3500
-
-export default function HeroSection({ scrollToSection, badge, title, subtitle, slides }) {
-  const [current, setCurrent] = useState(0)
-
-  const activeSlides = slides || DEFAULT_SLIDES
+export default function HeroSection({ scrollToSection, badge, title, subtitle }) {
   const activeBadge = badge || DEFAULT_BADGE
   const activeSubtitle = subtitle || DEFAULT_SUBTITLE
-
-  // Render title: split by newline for <br /> tags
-  const titleLines = (title || DEFAULT_TITLE).split('\n')
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrent(c => (c + 1) % activeSlides.length)
-    }, SLIDE_DURATION)
-    return () => clearTimeout(timer)
-  }, [current, activeSlides.length])
+  const customTitleLines = title ? title.split('\n') : null
 
   return (
     <StyledHeroSection>
       <Parallax speed={-5}>
         <HeroContent>
           <HeroText>
-            <Badge data-aos="fade-up">{activeBadge}</Badge>
+            <Badge data-aos="fade-up">
+              <BadgeIcon>🩺</BadgeIcon>
+              {activeBadge}
+            </Badge>
+
             <HeroTitle data-aos="fade-up" data-aos-delay="100">
-              {titleLines.map((line, i) => (
-                <span key={i}>
-                  {line}
-                  {i < titleLines.length - 1 && <br />}
-                </span>
-              ))}
+              {customTitleLines ? (
+                customTitleLines.map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < customTitleLines.length - 1 && <br />}
+                  </span>
+                ))
+              ) : (
+                <>
+                  Belajar makin{' '}
+                  <HeroTitleHighlight $color="green">seru</HeroTitleHighlight>,
+                  jadi dokter makin{' '}
+                  <HeroTitleHighlight $color="blue">jago</HeroTitleHighlight>.
+                </>
+              )}
             </HeroTitle>
+
             <HeroSubtitle data-aos="fade-up" data-aos-delay="200">
               {activeSubtitle}
             </HeroSubtitle>
+
             <HeroButtons data-aos="fade-up" data-aos-delay="300">
-              <LinkButton to="/sign-in" variant="primary" size="large">
-                Mulai Sekarang
-              </LinkButton>
-              <Button
-                variant="outline"
-                size="large"
-                onClick={() => scrollToSection('features')}
-              >
-                Lihat Fitur
-              </Button>
+              <HeroCtaPrimary to="/sign-in">
+                Mulai Sekarang 🚀
+              </HeroCtaPrimary>
+              <HeroCtaSecondary onClick={() => scrollToSection('how-it-works')}>
+                Lihat Demo
+              </HeroCtaSecondary>
             </HeroButtons>
+
+            <HeroStats data-aos="fade-up" data-aos-delay="400">
+              {HERO_STATS.map((stat, i) => (
+                <HeroStatItem key={i}>
+                  <HeroStatValue>{stat.value}</HeroStatValue>
+                  <HeroStatLabel>{stat.label}</HeroStatLabel>
+                </HeroStatItem>
+              ))}
+            </HeroStats>
           </HeroText>
 
           <HeroVisual data-aos="fade-left" data-aos-delay="200">
-            <HeroBrowserMockup>
-              <HeroBrowserBar>
-                <HeroBrowserDots>
-                  <HeroBrowserDot $color="#ff5f57" />
-                  <HeroBrowserDot $color="#febc2e" />
-                  <HeroBrowserDot $color="#28c840" />
-                </HeroBrowserDots>
-                <HeroBrowserUrl>medpal.id</HeroBrowserUrl>
-              </HeroBrowserBar>
+            <LeaderboardCard>
+              <StreakBadge>
+                <StreakIcon>🔥</StreakIcon>
+                <div>
+                  <StreakValue>12 hari</StreakValue>
+                  <StreakLabel>Streak belajar</StreakLabel>
+                </div>
+              </StreakBadge>
 
-              <HeroBrowserContent>
-                {activeSlides.map((slide, i) => (
-                  <HeroFeatureSlide key={i} $active={i === current}>
-                    <HeroSlideIcon>{slide.icon}</HeroSlideIcon>
-                    <HeroSlideLabel>{slide.label}</HeroSlideLabel>
-                    <HeroSlideTitle>{slide.title}</HeroSlideTitle>
-                    <HeroSlideDesc>{slide.desc}</HeroSlideDesc>
-                  </HeroFeatureSlide>
-                ))}
-              </HeroBrowserContent>
+              <LeaderboardHeader>
+                <LeaderboardTitle>Papan Peringkat</LeaderboardTitle>
+                <WeeklyBadge>Mingguan</WeeklyBadge>
+              </LeaderboardHeader>
 
-              <HeroSlideIndicators>
-                {activeSlides.map((_, i) => (
-                  <HeroSlideIndicator
-                    key={i}
-                    $active={i === current}
-                    onClick={() => setCurrent(i)}
-                  />
+              <LeaderboardCrown>🏆</LeaderboardCrown>
+
+              <LeaderboardList>
+                {LEADERBOARD_ROWS.map((row, i) => (
+                  <LeaderboardRow key={i} $highlight={row.highlight}>
+                    <RowAvatar $color={row.color} />
+                    <RowInfo>
+                      <RowName>{row.name}</RowName>
+                      <RowMeta>{row.meta}</RowMeta>
+                    </RowInfo>
+                    <RowScore>{row.score}</RowScore>
+                  </LeaderboardRow>
                 ))}
-              </HeroSlideIndicators>
-            </HeroBrowserMockup>
+              </LeaderboardList>
+            </LeaderboardCard>
           </HeroVisual>
         </HeroContent>
       </Parallax>

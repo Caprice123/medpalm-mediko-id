@@ -1,59 +1,90 @@
+import { useState } from 'react'
 import { Parallax } from 'react-scroll-parallax'
 import {
   HowItWorksSection as StyledHowItWorksSection,
   SectionContent,
-  SectionHeader,
-  SectionBadge,
-  SectionTitle,
-  SectionSubtitle,
+  DemoPanel,
+  DemoPanelBlob,
+  DemoPanelGrid,
+  DemoBadge,
+  DemoTitle,
+  DemoSubtitle,
+  DemoSteps,
+  DemoStep,
+  DemoStepNumber,
+  DemoStepText,
+  DemoVideoWrap,
+  DemoPlayButton,
 } from '../Home.styles'
 
+const STEPS = [
+  'Pilih topik atau sistem tubuh yang mau dipelajari',
+  'Jelajahi model 3D & kerjakan quiz interaktif',
+  'Uji pemahaman lewat simulasi OSCE pasien virtual',
+]
+
+function extractVideoId(url) {
+  if (!url) return null
+  const match = url.match(
+    /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  )
+  return match ? match[1] : null
+}
+
 export default function HowItWorksSection({ youtubeUrl }) {
+  const [playing, setPlaying] = useState(false)
+  const videoId = extractVideoId(youtubeUrl)
+
   return (
     <Parallax speed={2}>
       <StyledHowItWorksSection id="how-it-works">
         <SectionContent>
-          <SectionHeader data-aos="fade-up">
-            <SectionBadge>🎬 Lihat Demo</SectionBadge>
-            <SectionTitle>Cara Kerja MedPal</SectionTitle>
-            <SectionSubtitle>
-              Tonton video demo untuk melihat bagaimana MedPal dapat membantu pembelajaran Anda
-            </SectionSubtitle>
-          </SectionHeader>
+          <DemoPanel data-aos="zoom-in">
+            <DemoPanelBlob />
+            <DemoPanelGrid>
+              <div>
+                <DemoBadge>Cara Kerja</DemoBadge>
+                <DemoTitle>Belajar kedokteran, dibuat semudah main game</DemoTitle>
+                <DemoSubtitle>
+                  Tonton demo singkat dan lihat bagaimana MedPal menemanimu dari materi sampai simulasi pasien.
+                </DemoSubtitle>
 
-          <Parallax speed={-1}>
-            <div
-              data-aos="zoom-in"
-              data-aos-delay="200"
-              style={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '800px',
-                margin: '0 auto',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 50px rgba(107, 185, 232, 0.2)'
-              }}
-            >
-              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-                <iframe
-                  src={youtubeUrl || 'https://www.youtube.com/embed/YOUR_VIDEO_ID'}
-                  title="MedPal Demo"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '16px'
-                  }}
-                />
+                <DemoSteps>
+                  {STEPS.map((step, i) => (
+                    <DemoStep key={i}>
+                      <DemoStepNumber>{i + 1}</DemoStepNumber>
+                      <DemoStepText>{step}</DemoStepText>
+                    </DemoStep>
+                  ))}
+                </DemoSteps>
               </div>
-            </div>
-          </Parallax>
+
+              <DemoVideoWrap onClick={() => videoId && setPlaying(true)}>
+                {playing && videoId ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                    title="MedPal Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <>
+                    {videoId && (
+                      <img
+                        src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                        alt="MedPal Demo"
+                      />
+                    )}
+                    <DemoPlayButton>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </DemoPlayButton>
+                  </>
+                )}
+              </DemoVideoWrap>
+            </DemoPanelGrid>
+          </DemoPanel>
         </SectionContent>
       </StyledHowItWorksSection>
     </Parallax>

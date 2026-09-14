@@ -1,4 +1,3 @@
-import { LinkButton } from '../Home.styles'
 import Button from '@components/common/Button'
 import {
   Navbar as StyledNavbar,
@@ -7,6 +6,9 @@ import {
   LogoIcon,
   NavLinks,
   NavLink,
+  NavCtaGroup,
+  NavCtaSecondary,
+  NavCtaPrimary,
   MobileMenu,
   MobileNavLink,
 } from '../Home.styles'
@@ -28,10 +30,11 @@ export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSecti
             <NavLink onClick={() => scrollToSection('pricing')}>Harga</NavLink>
             <NavLink onClick={() => scrollToSection('how-it-works')}>Demo</NavLink>
             <NavLink onClick={() => scrollToSection('faq')}>FAQ</NavLink>
-            <LinkButton to="/sign-in" variant="primary" className="nav-cta">
-              Masuk
-            </LinkButton>
           </NavLinks>
+          <NavCtaGroup>
+            <NavCtaSecondary to="/sign-in">Masuk</NavCtaSecondary>
+            <NavCtaPrimary to="/sign-in">Mulai Gratis</NavCtaPrimary>
+          </NavCtaGroup>
           <Button
             onClick={toggleMobileMenu}
             variant="secondary"
@@ -62,6 +65,15 @@ export default function Navbar({ mobileMenuOpen, toggleMobileMenu, scrollToSecti
           fullWidth
           onClick={() => navigate('/sign-in')}
           style={{ marginTop: '2rem' }}
+        >
+          Mulai Gratis
+        </Button>
+        <Button
+          variant="outline"
+          size="large"
+          fullWidth
+          onClick={() => navigate('/sign-in')}
+          style={{ marginTop: '0.75rem' }}
         >
           Masuk
         </Button>

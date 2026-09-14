@@ -23,7 +23,6 @@ const HOME_CONSTANT_KEYS = [
   'home_hero_badge',
   'home_hero_title',
   'home_hero_subtitle',
-  'home_hero_slides',
   'home_how_it_works_youtube_url',
   'home_faq_items',
   'home_social_items',
@@ -85,7 +84,6 @@ function Home() {
           badge={constants.home_hero_badge}
           title={constants.home_hero_title}
           subtitle={constants.home_hero_subtitle}
-          slides={parseJson(constants.home_hero_slides)}
         />
 
         <FeaturesSection />
