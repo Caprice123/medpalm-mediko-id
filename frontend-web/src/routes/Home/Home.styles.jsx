@@ -6,6 +6,9 @@ export const GlobalStyles = createGlobalStyle`
   html, body {
     overflow-x: hidden;
   }
+  body, button, input, textarea, select {
+    font-family: 'Baloo 2', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
   .mobile-menu-btn {
     @media (max-width: 768px) {
       display: block !important;
@@ -61,6 +64,66 @@ export const LogoIcon = styled.div`
   font-size: 2rem;
   display: flex;
   align-items: center;
+`;
+
+export const NavCtaGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const NavCtaSecondary = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: ${colors.primary.dark};
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 4px 0 #e5e7eb;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: ${colors.primary.main};
+    background: rgba(107, 185, 232, 0.06);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #e5e7eb;
+  }
+`;
+
+export const NavCtaPrimary = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: white;
+  background: linear-gradient(180deg, ${colors.secondary.light} 0%, ${colors.secondary.main} 100%);
+  box-shadow: 0 5px 0 ${colors.secondary.dark};
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+
+  &:hover {
+    transform: translateY(2px);
+    box-shadow: 0 3px 0 ${colors.secondary.dark};
+  }
+
+  &:active {
+    transform: translateY(5px);
+    box-shadow: 0 0 0 ${colors.secondary.dark};
+  }
 `;
 
 export const NavLinks = styled.div`
@@ -254,16 +317,16 @@ export const Badge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(107, 185, 232, 0.1);
-  padding: 0.5rem 1.25rem;
+  background: #ffffff;
+  padding: 0.5rem 1.25rem 0.5rem 0.625rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(107, 185, 232, 0.25);
+  border: 1px solid #eef2f6;
   animation: slideInDown 0.6s ease-out;
   color: ${colors.primary.dark};
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.15);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 
   @keyframes slideInDown {
     from {
@@ -277,15 +340,25 @@ export const Badge = styled.div`
   }
 `;
 
+export const BadgeIcon = styled.span`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+  background: linear-gradient(135deg, ${colors.gradient.light1} 0%, ${colors.gradient.light2} 100%);
+  flex-shrink: 0;
+`;
+
 export const HeroTitle = styled.h1`
-  font-size: 2.5rem;
+  font-size: 3rem;
+  line-height: 1.15;
   font-weight: 800;
   margin-bottom: 1.5rem;
   animation: slideInLeft 0.8s ease-out 0.2s both;
-  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: ${colors.text.primary};
   position: relative;
   z-index: 1;
 
@@ -307,6 +380,17 @@ export const HeroTitle = styled.h1`
   @media (max-width: 480px) {
     font-size: 2rem;
   }
+`;
+
+export const HeroTitleGradientText = styled.span`
+  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+export const HeroTitleHighlight = styled.span`
+  color: ${props => props.$color === 'green' ? colors.secondary.dark : colors.primary.dark};
 `;
 
 export const HeroSubtitle = styled.p`
@@ -345,6 +429,100 @@ export const HeroButtons = styled.div`
   }
 `;
 
+export const HeroStats = styled.div`
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  animation: slideInLeft 0.8s ease-out 0.7s both;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 968px) {
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+`;
+
+export const HeroStatItem = styled.div``;
+
+export const HeroStatValue = styled.div`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: ${colors.primary.dark};
+  line-height: 1.2;
+`;
+
+export const HeroStatLabel = styled.div`
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+`;
+
+// Hero CTA buttons — solid green primary + neutral outline secondary
+export const HeroCtaPrimary = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  min-height: 44px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  text-align: center;
+  color: white;
+  background: linear-gradient(180deg, ${colors.secondary.light} 0%, ${colors.secondary.main} 100%);
+  box-shadow: 0 7px 0 ${colors.secondary.dark};
+  transition: all 0.15s ease;
+
+  &:hover {
+    transform: translateY(2px);
+    box-shadow: 0 5px 0 ${colors.secondary.dark};
+  }
+
+  &:active {
+    transform: translateY(7px);
+    box-shadow: 0 0 0 ${colors.secondary.dark};
+  }
+`;
+
+export const HeroCtaSecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  min-height: 44px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  background: white;
+  color: ${colors.text.primary};
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 7px 0 #e5e7eb;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: ${colors.primary.main};
+    color: ${colors.primary.dark};
+    transform: translateY(2px);
+    box-shadow: 0 5px 0 #e5e7eb;
+  }
+
+  &:active {
+    transform: translateY(7px);
+    box-shadow: 0 0 0 #e5e7eb;
+  }
+`;
+
 export const HeroVisual = styled.div`
   position: relative;
   z-index: 1;
@@ -352,6 +530,153 @@ export const HeroVisual = styled.div`
   @media (max-width: 968px) {
     display: none;
   }
+`;
+
+// Hero leaderboard visual
+export const LeaderboardCard = styled.div`
+  position: relative;
+  background: white;
+  border-radius: 28px;
+  border: 2px solid ${colors.primary.main};
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(15, 23, 42, 0.05);
+  padding: 1.75rem;
+  max-width: 380px;
+  margin: 0 auto;
+  animation: floatCard 4s ease-in-out infinite;
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+`;
+
+export const LeaderboardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+`;
+
+export const LeaderboardTitle = styled.div`
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: ${colors.text.primary};
+`;
+
+export const WeeklyBadge = styled.span`
+  background: #fef3c7;
+  color: #d97706;
+  padding: 0.3125rem 0.875rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+`;
+
+export const LeaderboardCrown = styled.div`
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, ${colors.secondary.light} 0%, ${colors.secondary.dark} 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 8px 20px rgba(141, 198, 63, 0.4);
+`;
+
+export const LeaderboardList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+`;
+
+export const LeaderboardRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 14px;
+  background: ${props => props.$highlight ? 'rgba(107, 185, 232, 0.08)' : 'transparent'};
+  border: 1.5px solid ${props => props.$highlight ? 'rgba(74, 158, 212, 0.3)' : 'transparent'};
+`;
+
+export const RowAvatar = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: ${props => props.$color || colors.gradient.light1};
+`;
+
+export const RowInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+export const RowName = styled.div`
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: ${colors.text.primary};
+`;
+
+export const RowMeta = styled.div`
+  font-size: 0.8125rem;
+  color: #9ca3af;
+`;
+
+export const RowScore = styled.div`
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: ${colors.secondary.dark};
+  white-space: nowrap;
+`;
+
+export const StreakBadge = styled.div`
+  position: absolute;
+  top: -2.5rem;
+  right: -2.25rem;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: floatBadge 3.5s ease-in-out infinite;
+
+  @media (max-width: 1100px) {
+    right: 0.5rem;
+  }
+
+  @keyframes floatBadge {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+`;
+
+export const StreakIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff1e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+`;
+
+export const StreakValue = styled.div`
+  font-weight: 800;
+  font-size: 1.0625rem;
+  color: ${colors.text.primary};
+  line-height: 1.2;
+`;
+
+export const StreakLabel = styled.div`
+  font-size: 0.75rem;
+  color: #9ca3af;
 `;
 
 // Hero Browser Mockup
@@ -574,20 +899,20 @@ export const SectionBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(107, 185, 232, 0.1);
-  color: ${colors.primary.dark};
+  background: ${colors.success.lighter};
+  color: ${colors.secondary.dark};
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 1rem;
-  border: 1px solid rgba(107, 185, 232, 0.25);
+  border: 1px solid rgba(141, 198, 63, 0.25);
 `;
 
 export const SectionTitle = styled.h2`
   font-size: 2.75rem;
   font-weight: 800;
-  color: ${colors.primary.dark};
+  color: ${colors.text.primary};
   margin-bottom: 1rem;
 
   @media (max-width: 768px) {
@@ -604,38 +929,62 @@ export const SectionSubtitle = styled.p`
 
 export const FeaturesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
   will-change: transform;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
+  }
+`;
+
+export const FeatureCard = styled.div`
+  background: white;
+  border: 1.5px solid #eef1f5;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 6px 0 #eef1f5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+
+  &:hover {
+    border-color: ${colors.primary.main};
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #dbe9f5;
+  }
+
+  &:active {
+    border-color: ${colors.primary.main};
+    transform: translateY(6px);
+    box-shadow: 0 0 0 #dbe9f5;
   }
 `;
 
 export const FeatureIcon = styled.div`
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, rgba(107, 185, 232, 0.15) 0%, rgba(141, 198, 63, 0.15) 100%);
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  background: ${props => props.$bg || 'rgba(107, 185, 232, 0.15)'};
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
   transition: all 0.3s ease;
 `;
 
 export const FeatureTitle = styled.h3`
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  color: ${colors.primary.dark};
-  margin-bottom: 0.75rem;
+  color: ${colors.text.primary};
+  margin-bottom: 0.5rem;
 `;
 
 export const FeatureDescription = styled.p`
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: #6b7280;
   line-height: 1.6;
 `;
@@ -998,13 +1347,13 @@ export const FAQList = styled.div`
 
 export const FAQItem = styled.div`
   background: white;
-  border: 1.5px solid ${props => props.$open ? colors.primary.main : '#e5e7eb'};
-  border-radius: 14px;
+  border: 1.5px solid ${props => props.$open ? colors.primary.main : '#eef1f5'};
+  border-radius: 20px;
   overflow: hidden;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: ${props => props.$open
-    ? '0 4px 20px rgba(107, 185, 232, 0.12)'
-    : '0 1px 3px rgba(0,0,0,0.04)'};
+    ? `0 4px 0 ${colors.primary.light}`
+    : '0 4px 0 #eef1f5'};
 `;
 
 export const FAQQuestion = styled.button`
@@ -1019,8 +1368,8 @@ export const FAQQuestion = styled.button`
   cursor: pointer;
   text-align: left;
   font-size: 1rem;
-  font-weight: 600;
-  color: ${colors.primary.dark};
+  font-weight: 700;
+  color: ${colors.text.primary};
   transition: color 0.2s ease;
 
   &:hover {
@@ -1035,16 +1384,20 @@ export const FAQQuestion = styled.button`
 
 export const FAQIcon = styled.span`
   flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.$open ? colors.primary.main : '#9ca3af'};
-  transition: color 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: ${props => props.$open ? 'rotate(180deg)' : 'rotate(0deg)'};
+  background: ${props => props.$open ? colors.primary.main : 'rgba(107, 185, 232, 0.12)'};
+  color: ${props => props.$open ? 'white' : colors.primary.dark};
+  transition: background 0.25s ease, color 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: ${props => props.$open ? 'rotate(45deg)' : 'rotate(0deg)'};
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     display: block;
   }
 `;
@@ -1075,6 +1428,165 @@ export const HowItWorksSection = styled.section`
 
   @media (max-width: 768px) {
     padding: 4rem 1.5rem;
+  }
+`;
+
+// Demo / Cara Kerja panel
+export const DemoPanel = styled.div`
+  position: relative;
+  background: linear-gradient(135deg, #1B5E7A 0%, #12876F 100%);
+  border-radius: 32px;
+  padding: 3.5rem;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 60, 80, 0.25);
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+    border-radius: 24px;
+  }
+`;
+
+export const DemoPanelBlob = styled.div`
+  position: absolute;
+  bottom: -80px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+`;
+
+export const DemoPanelGrid = styled.div`
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+`;
+
+export const DemoBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4375rem 1rem;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+`;
+
+export const DemoTitle = styled.h2`
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+`;
+
+export const DemoSubtitle = styled.p`
+  font-size: 1.0625rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 420px;
+`;
+
+export const DemoSteps = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+`;
+
+export const DemoStep = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+`;
+
+export const DemoStepNumber = styled.div`
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: ${colors.warning.main};
+  color: white;
+  font-weight: 800;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DemoStepText = styled.div`
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding-top: 0.25rem;
+`;
+
+export const DemoVideoWrap = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(135deg, ${colors.secondary.light} 0%, ${colors.primary.main} 100%);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+`;
+
+export const DemoPlayButton = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
+    color: ${colors.primary.dark};
+    margin-left: 3px;
   }
 `;
 
@@ -1229,28 +1741,55 @@ export const CTASection = styled.section`
   }
 `;
 
+export const CTAPanel = styled.div`
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #12876F 0%, #1B5E7A 100%);
+  border-radius: 32px;
+  padding: 4rem 3rem;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 60, 80, 0.25);
+
+  @media (max-width: 768px) {
+    padding: 2.75rem 1.75rem;
+    border-radius: 24px;
+  }
+`;
+
+export const CTAPanelBlob = styled.div`
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+`;
+
 export const CTAContent = styled.div`
-  max-width: 800px;
+  max-width: 640px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
 `;
 
 export const CTATitle = styled.h2`
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  color: ${colors.primary.dark};
-  margin-bottom: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
 
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
 `;
 
 export const CTASubtitle = styled.p`
-  font-size: 1.25rem;
-  color: #6b7280;
-  margin-bottom: 2.5rem;
+  font-size: 1.0625rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2rem;
   line-height: 1.6;
 `;
 
@@ -1342,71 +1881,61 @@ export const ConnectSection = styled.section`
 export const ConnectGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  max-width: 960px;
+  gap: 1rem;
+  max-width: 620px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    max-width: 400px;
+    max-width: 320px;
   }
 `;
 
 export const ConnectCard = styled.a`
   background: white;
-  border-radius: 20px;
-  padding: 2.25rem 1.75rem;
+  border-radius: 18px;
+  padding: 1.5rem 1.25rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  border: 1.5px solid #e5e7eb;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1.5px solid #eef1f5;
+  box-shadow: 0 5px 0 #eef1f5;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   position: relative;
 
   &:hover {
-    transform: translateY(-8px);
-    box-shadow:
-      0 20px 48px rgba(107, 185, 232, 0.22),
-      0 4px 12px rgba(107, 185, 232, 0.12);
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #dbe9f5;
     border-color: ${colors.primary.main};
   }
 `;
 
 export const ConnectCardIcon = styled.div`
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: ${props => props.$bg || 'rgba(107, 185, 232, 0.15)'};
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.25rem;
-  box-shadow: 0 8px 24px rgba(107, 185, 232, 0.35);
-
-  svg {
-    width: 36px;
-    height: 36px;
-    color: white;
-    display: block;
-  }
+  margin-bottom: 0.875rem;
+  font-size: 1.375rem;
 `;
 
 export const ConnectCardPlatform = styled.div`
   font-size: 1.125rem;
   font-weight: 700;
-  color: ${colors.primary.main};
+  color: ${colors.text.primary};
   margin-bottom: 0.25rem;
 `;
 
 export const ConnectCardHandle = styled.div`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
+  color: #6b7280;
 `;
 
 export const ConnectCardDesc = styled.div`
@@ -1419,13 +1948,20 @@ export const ConnectCardBtn = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  background: linear-gradient(180deg, ${colors.secondary.light} 0%, ${colors.secondary.main} 100%);
   color: white;
   padding: 0.5rem 1.375rem;
   border-radius: 50px;
   font-size: 0.875rem;
-  font-weight: 600;
-  box-shadow: 0 4px 14px rgba(107, 185, 232, 0.35);
+  font-weight: 700;
+  box-shadow: 0 3px 0 ${colors.secondary.dark};
+`;
+
+export const ConnectCopyright = styled.div`
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  color: #9ca3af;
 `;
 
 export const FooterBottom = styled.div`
@@ -1546,9 +2082,36 @@ export const PricingSection = styled.section`
 export const PricingFilterContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.625rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+`;
+
+export const PricingTab = styled.button`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.375rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  ${props => props.$active ? `
+    background: ${colors.text.primary};
+    color: white;
+    border: 1.5px solid ${colors.text.primary};
+  ` : `
+    background: white;
+    color: ${colors.text.primary};
+    border: 1.5px solid #e5e7eb;
+
+    &:hover {
+      border-color: ${colors.primary.main};
+      color: ${colors.primary.dark};
+    }
+  `}
 `;
 
 export const PricingGrid = styled.div`
@@ -1568,36 +2131,35 @@ export const PricingGrid = styled.div`
 
 export const PricingCard = styled.div`
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  border: 2px solid ${props => props.$isPopular ? colors.primary.main : '#e5e7eb'};
+  border: 2px solid ${props => props.$isPopular ? colors.secondary.main : '#e5e7eb'};
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  box-shadow: ${props => props.$isPopular ? '0 10px 40px rgba(107, 185, 232, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: ${props => props.$isPopular ? `0 6px 0 ${colors.secondary.light}` : '0 6px 0 #eef1f5'};
   width: 100%;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(107, 185, 232, 0.25);
-    border-color: ${colors.primary.main};
+    transform: translateY(2px);
+    box-shadow: ${props => props.$isPopular ? `0 4px 0 ${colors.secondary.light}` : '0 4px 0 #eef1f5'};
   }
 `;
 
 export const PopularBadge = styled.div`
   position: absolute;
-  top: -12px;
+  top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, ${colors.gradient.start} 0%, ${colors.gradient.end} 100%);
+  background: ${colors.warning.main};
   color: white;
-  padding: 0.375rem 1rem;
+  padding: 0.375rem 1.125rem;
   border-radius: 50px;
   font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
 `;
 
 export const PricingName = styled.h3`

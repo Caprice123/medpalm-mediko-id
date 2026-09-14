@@ -7,16 +7,16 @@ export async function seedGlobalConstants() {
     // Hero — Text (used on Home page and Login page)
     {
       key: 'home_hero_badge',
-      value: '✨ Platform Medis Berbasis AI',
+      value: 'Platform Medis Berbasis AI',
     },
     {
       key: 'home_hero_title',
-      value: 'Better Learning.\nBetter Doctors.\nBetter Lives.',
+      value: '',
     },
     {
       key: 'home_hero_subtitle',
       value:
-        '18.000+ flashcards, 20.000+ soal UKMPPD, simulasi OSCE AI, dan medical calculator — semua dalam satu platform.',
+        '1.895+ Model Anatomi 3D Interaktif, AI Chat Khusus Kedokteran, simulasi OSCE dengan pasien virtual, 25.000+ quiz & flashcard, dan 400+ artikel kedokteran — semua dalam satu platform.',
     },
 
     // Hero — Feature Slides (used on Home page and as Login feature cards)
