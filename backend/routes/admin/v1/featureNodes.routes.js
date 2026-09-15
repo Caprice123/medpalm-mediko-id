@@ -14,8 +14,6 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('nodeStructure'))
-router.use(requireFeaturePermission('featureNodes'))
 
 // Nodes CRUD
 router.get('/', asyncHandler(featureNodesController.index.bind(featureNodesController)))
