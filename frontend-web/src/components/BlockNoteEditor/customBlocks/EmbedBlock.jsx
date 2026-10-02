@@ -231,7 +231,7 @@ export const createEmbedBlock = createReactBlockSpec(
                 src={url}
                 height={localHeight}
                 allowFullScreen
-                loading="lazy"
+                loading="eager"
                 title="Embedded content"
               />
               {/* Edit button */}
