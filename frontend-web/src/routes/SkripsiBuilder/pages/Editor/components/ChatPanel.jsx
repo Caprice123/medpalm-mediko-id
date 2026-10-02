@@ -8,7 +8,7 @@ import { FaPaperPlane, FaStop } from 'react-icons/fa'
 import { ChatbotLoadingIndicator, ChatbotMessagesSkeleton } from '@components/common/SkeletonCard'
 import CustomMarkdownRenderer from '@components/common/CustomMarkdownRenderer/CustomMarkdownRenderer'
 import ModeSelector from './ModeSelector'
-import ResearchSettingsModal from './ResearchSettingsModal'
+import ResearchJournalSearchModal from './ResearchJournalSearchModal'
 import {
   ChatPanel as StyledChatPanel,
   ChatHeader,
@@ -336,7 +336,7 @@ const ChatPanel = memo(({ currentTab, style }) => {
             onResearchSettings={currentMode === 'research' ? () => setShowResearchSettings(true) : undefined}
           />
           {currentSet && (
-            <ResearchSettingsModal
+            <ResearchJournalSearchModal
               isOpen={showResearchSettings}
               onClose={() => setShowResearchSettings(false)}
               setUniqueId={currentSet.uniqueId}

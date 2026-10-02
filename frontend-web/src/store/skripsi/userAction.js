@@ -18,6 +18,15 @@ export const fetchSkripsiJournals = ({ page = 1, perPage = 20, search = '' } = {
   return response.data.data // { journals, pagination }
 }
 
+// Live listing/search against OpenAlex itself (not the admin-curated list) —
+// used by the journal picker so users select a real, resolvable journal.
+// An empty query browses top journals; a non-empty one narrows by name.
+export const searchSkripsiJournals = ({ query = '', page = 1, perPage = 10 } = {}) => async () => {
+  const route = Endpoints.api.skripsiJournals + '/search'
+  const response = await getWithToken(route, { q: query.trim(), page, perPage })
+  return response.data
+}
+
 export const fetchSkripsiDomains = ({ page = 1, perPage = 12, search = '' } = {}) => async () => {
   const params = new URLSearchParams({ page, perPage, ...(search ? { search } : {}) })
   const route = Endpoints.api.skripsi + `/domains?${params}`

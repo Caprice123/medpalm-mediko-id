@@ -22,6 +22,9 @@ router.get('/domains', asyncHandler(SkripsiSetsController.getDomains))
 // Journal list (paginated, active only — for tutor users in research settings modal)
 router.get('/journals', asyncHandler(SkripsiSetsController.getJournals.bind(SkripsiSetsController)))
 
+// Live journal listing/search against OpenAlex directly
+router.get('/journals/search', asyncHandler(SkripsiSetsController.searchJournals.bind(SkripsiSetsController)))
+
 router.get('/sets', asyncHandler(SkripsiSetsController.getSets))
 router.post('/sets', asyncHandler(SkripsiSetsController.createSet))
 router.post('/export-word', asyncHandler(SkripsiSetsController.exportToWord))

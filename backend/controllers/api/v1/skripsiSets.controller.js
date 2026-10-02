@@ -8,6 +8,7 @@ import { GetSetResearchSettingsService } from '#services/skripsi/getSetResearchS
 import { UpdateSetResearchSettingsService } from '#services/skripsi/updateSetResearchSettingsService'
 import { GetSkripsiDomainsService } from '#services/skripsi/getSkripsiDomainsService'
 import { GetSkripsiJournalsService } from '#services/skripsi/user/getSkripsiJournalsService'
+import { SearchSkripsiJournalsService } from '#services/skripsi/user/searchSkripsiJournalsService'
 import { SkripsiSetListSerializer } from '#serializers/api/v1/skripsiSetListSerializer'
 import { SkripsiSetSerializer } from '#serializers/api/v1/skripsiSetSerializer'
 import { convertHtmlToDocxWithImages } from './htmlToDocx.controller.js'
@@ -130,6 +131,17 @@ class SkripsiSetsController {
       search
     })
     return res.status(200).json({ data: result })
+  }
+
+  // Live journal listing/search against OpenAlex directly (not the admin-curated list)
+  async searchJournals(req, res) {
+    const { q = '', page = 1, perPage = 10 } = req.query
+    const result = await SearchSkripsiJournalsService.call({
+      query: q,
+      page: parseInt(page),
+      perPage: parseInt(perPage)
+    })
+    return res.status(200).json({ data: result.data, pagination: result.pagination })
   }
 
   // Get research domain settings for a set
