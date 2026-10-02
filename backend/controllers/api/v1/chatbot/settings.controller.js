@@ -3,6 +3,7 @@ import { GetUserChatbotSettingsService } from '#services/chatbot/user/getUserCha
 import { UpdateUserChatbotSettingsService } from '#services/chatbot/user/updateUserChatbotSettingsService'
 import { GetChatbotDomainsService } from '#services/chatbot/user/getChatbotDomainsService'
 import { GetChatbotJournalsService } from '#services/chatbot/user/getChatbotJournalsService'
+import { SearchChatbotJournalsService } from '#services/chatbot/user/searchChatbotJournalsService'
 
 class ChatbotSettingsController {
   async getSettings(req, res) {
@@ -49,6 +50,16 @@ class ChatbotSettingsController {
       search
     })
     return res.status(200).json({ data: result })
+  }
+
+  async searchJournals(req, res) {
+    const { q = '', page = 1, perPage = 10 } = req.query
+    const result = await SearchChatbotJournalsService.call({
+      query: q,
+      page: parseInt(page),
+      perPage: parseInt(perPage)
+    })
+    return res.status(200).json({ data: result.data, pagination: result.pagination })
   }
 }
 

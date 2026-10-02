@@ -61,6 +61,15 @@ export const fetchChatbotJournals = ({ page = 1, perPage = 20, search = '' } = {
   return response.data.data
 }
 
+// Live listing/search against OpenAlex itself (not the admin-curated list) —
+// used by the journal picker so users select a real, resolvable journal.
+// An empty query browses top journals; a non-empty one narrows by name.
+export const searchChatbotJournals = ({ query = '', page = 1, perPage = 10 } = {}) => async () => {
+  const route = Endpoints.api.chatbot + '/journals/search'
+  const response = await getWithToken(route, { q: query.trim(), page, perPage })
+  return response.data
+}
+
 export const updateUserChatbotSettings = (settings) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isUpdatingSettings', value: true }))

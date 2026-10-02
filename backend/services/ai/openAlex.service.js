@@ -15,66 +15,181 @@
 
 const BASE_URL = 'https://api.openalex.org'
 
-// Module-level cache: journal display name → OpenAlex source ID (e.g. "The Lancet" → "S137773608")
+// Module-level cache: journal display name → resolved candidate (or null)
 const sourceIdCache = new Map()
+
+// Only these OpenAlex source types are actual peer-reviewed venues whose
+// works a "trusted journal" filter should match. Other types (ebook
+// platform, repository, book series, etc.) usually mean the admin typed a
+// publisher name (e.g. "MDPI") rather than a specific journal title — using
+// them as a filter guarantees near-zero matching works.
+const FILTERABLE_SOURCE_TYPES = ['journal', 'conference']
 
 export class OpenAlexService {
   /**
-   * Resolve journal display names to OpenAlex source IDs via Sources API.
+   * Resolve one journal display name to its best-matching OpenAlex source.
+   * Fetches a few top candidates (not just the single top hit) and picks the
+   * highest-works_count one among actual journal/conference venues, ignoring
+   * non-filterable types like ebook platforms or repositories. Returns null
+   * if nothing filterable matches — callers should treat that as "no filter
+   * for this name" rather than forcing a filter that would zero out results.
    * Results are cached in-process to avoid repeat lookups.
+   *
+   * @param {string} name - e.g. "The Lancet"
+   * @returns {Promise<{id: string, displayName: string, type: string, worksCount: number} | null>}
+   */
+  static async resolveSourceCandidate(name) {
+    const key = (name || '').toLowerCase().trim()
+    if (!key) return null
+
+    if (sourceIdCache.has(key)) return sourceIdCache.get(key)
+
+    try {
+      const params = new URLSearchParams({
+        filter: `display_name.search:${name.trim()}`,
+        'per-page': '5',
+        select: 'id,display_name,type,works_count'
+      })
+      if (process.env.OPENALEX_API_KEY) params.set('api_key', process.env.OPENALEX_API_KEY)
+      else if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL)
+
+      const res = await fetch(`${BASE_URL}/sources?${params}`)
+      if (!res.ok) {
+        console.warn(`[OpenAlex] Sources lookup failed for "${name}": ${res.status}`)
+        sourceIdCache.set(key, null)
+        return null
+      }
+      const data = await res.json()
+      const results = data.results || []
+
+      const best = results
+        .filter(r => FILTERABLE_SOURCE_TYPES.includes(r.type))
+        .sort((a, b) => (b.works_count || 0) - (a.works_count || 0))[0]
+
+      if (!best) {
+        const topMatch = results[0]
+        console.warn(
+          `[OpenAlex] No journal/conference source found for "${name}"` +
+          (topMatch ? ` — closest match was "${topMatch.display_name}" (type: ${topMatch.type}), rejected` : ' — no matches at all')
+        )
+        sourceIdCache.set(key, null)
+        return null
+      }
+
+      // Extract short ID: "https://openalex.org/S137773608" → "S137773608"
+      const shortId = best.id.replace('https://openalex.org/', '')
+      const resolved = { id: shortId, displayName: best.display_name, type: best.type, worksCount: best.works_count || 0 }
+      sourceIdCache.set(key, resolved)
+      console.log(`[OpenAlex] Resolved "${name}" → ${shortId} (${best.display_name}, ${best.type}, ${best.works_count} works)`)
+      return resolved
+    } catch (err) {
+      console.warn(`[OpenAlex] Error resolving source for "${name}":`, err.message)
+      sourceIdCache.set(key, null)
+      return null
+    }
+  }
+
+  /**
+   * Resolve journal display names to OpenAlex source IDs via Sources API.
+   * Names that don't resolve to a filterable journal/conference source are
+   * silently dropped (not an error) — see resolveSourceCandidate.
    *
    * @param {string[]} journalNames - e.g. ["The Lancet", "Blood"]
    * @returns {Promise<string[]>} OpenAlex source IDs like ["S137773608", "S2764455111"]
    */
   static async resolveSourceIds(journalNames) {
     if (!journalNames || journalNames.length === 0) return []
+    const candidates = await Promise.all(journalNames.map(name => this.resolveSourceCandidate(name)))
+    return candidates.filter(Boolean).map(c => c.id)
+  }
 
-    const ids = []
+  /**
+   * Admin-facing preview of how a journal name will resolve, so entries like
+   * "MDPI" (a publisher, not a journal) are caught when the admin adds them
+   * rather than silently returning zero results for a user later.
+   *
+   * @param {string} name
+   * @returns {Promise<{resolved: boolean, matchedName?: string, sourceType?: string, worksCount?: number, warning: string | null}>}
+   */
+  static async previewJournalResolution(name) {
+    const candidate = await this.resolveSourceCandidate(name)
 
-    for (const name of journalNames) {
-      const key = name.toLowerCase().trim()
-      if (!key) continue
-
-      if (sourceIdCache.has(key)) {
-        const cached = sourceIdCache.get(key)
-        if (cached) ids.push(cached)
-        continue
-      }
-
-      try {
-        const params = new URLSearchParams({
-          filter: `display_name.search:${name.trim()}`,
-          'per-page': '1',
-          select: 'id,display_name'
-        })
-        if (process.env.OPENALEX_API_KEY) params.set('api_key', process.env.OPENALEX_API_KEY)
-        else if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL)
-
-        const res = await fetch(`${BASE_URL}/sources?${params}`)
-        if (!res.ok) {
-          console.warn(`[OpenAlex] Sources lookup failed for "${name}": ${res.status}`)
-          sourceIdCache.set(key, null)
-          continue
-        }
-        const data = await res.json()
-        const source = data.results?.[0]
-        if (source?.id) {
-          // Extract short ID: "https://openalex.org/S137773608" → "S137773608"
-          const shortId = source.id.replace('https://openalex.org/', '')
-          sourceIdCache.set(key, shortId)
-          ids.push(shortId)
-          console.log(`[OpenAlex] Resolved "${name}" → ${shortId} (${source.display_name})`)
-        } else {
-          console.warn(`[OpenAlex] No source found for journal: "${name}"`)
-          sourceIdCache.set(key, null)
-        }
-      } catch (err) {
-        console.warn(`[OpenAlex] Error resolving source ID for "${name}":`, err.message)
-        sourceIdCache.set(key, null)
+    if (!candidate) {
+      return {
+        resolved: false,
+        warning: `Nama "${name}" tidak cocok dengan jurnal/konferensi apa pun di OpenAlex. Ini mungkin nama penerbit (misalnya "MDPI" atau "Elsevier") bukan judul jurnal spesifik — filter ini tidak akan diterapkan saat pencarian, jadi tidak akan mempersempit hasil.`
       }
     }
 
-    return ids
+    return {
+      resolved: true,
+      matchedName: candidate.displayName,
+      sourceType: candidate.type,
+      worksCount: candidate.worksCount,
+      warning: candidate.worksCount === 0
+        ? `Cocok dengan "${candidate.displayName}" tetapi jurnal ini belum memiliki artikel yang terindeks di OpenAlex.`
+        : null
+    }
+  }
+
+  /**
+   * Browsable, paginated journal/conference listing — used by the journal
+   * picker so users select a real, resolvable OpenAlex venue directly
+   * (instead of typing a free-text name that may not resolve to anything
+   * filterable — see resolveSourceCandidate). With no query, lists the most
+   * prolific journals/conferences (sorted by works_count) so there's
+   * something to browse immediately; with a query, narrows to matching
+   * names (OpenAlex's own relevance ranking). Both the type restriction and
+   * the name search are applied server-side in the same OpenAlex call, so
+   * OpenAlex's native page/per-page pagination lines up correctly — no
+   * client-side re-pagination needed.
+   *
+   * @param {Object} options
+   * @param {string} options.query - optional; blank browses top journals
+   * @param {number} options.page
+   * @param {number} options.perPage
+   * @returns {Promise<{data: Array<{id, name, type, worksCount, publisher}>, pagination: {page, perPage, isLastPage}}>}
+   */
+  static async listJournals({ query = '', page = 1, perPage = 10 } = {}) {
+    const trimmed = (query || '').trim()
+    const filters = [`type:${FILTERABLE_SOURCE_TYPES.join('|')}`]
+    if (trimmed) filters.push(`display_name.search:${trimmed}`)
+
+    try {
+      const params = new URLSearchParams({
+        filter: filters.join(','),
+        page: String(page),
+        'per-page': String(perPage + 1), // take perPage+1 to derive isLastPage
+        select: 'id,display_name,type,works_count,host_organization_name'
+      })
+      if (!trimmed) params.set('sort', 'display_name') // no query → browse alphabetically
+      if (process.env.OPENALEX_API_KEY) params.set('api_key', process.env.OPENALEX_API_KEY)
+      else if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL)
+
+      const res = await fetch(`${BASE_URL}/sources?${params}`)
+      if (!res.ok) {
+        console.warn(`[OpenAlex] Journal listing failed for "${trimmed}": ${res.status}`)
+        return { data: [], pagination: { page, perPage, isLastPage: true } }
+      }
+
+      const data = await res.json()
+      const results = data.results || []
+      const isLastPage = results.length <= perPage
+
+      return {
+        data: results.slice(0, perPage).map(r => ({
+          id: r.id.replace('https://openalex.org/', ''),
+          name: r.display_name,
+          type: r.type,
+          worksCount: r.works_count || 0,
+          publisher: r.host_organization_name || null
+        })),
+        pagination: { page, perPage, isLastPage }
+      }
+    } catch (err) {
+      console.warn(`[OpenAlex] Error listing journals for "${trimmed}":`, err.message)
+      return { data: [], pagination: { page, perPage, isLastPage: true } }
+    }
   }
 
   /**

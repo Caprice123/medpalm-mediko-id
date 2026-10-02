@@ -1,6 +1,6 @@
 import { useSelector, shallowEqual } from 'react-redux'
 import { useState, memo, useMemo } from 'react'
-import ChatbotUserSettingsModal from '../ChatbotUserSettingsModal'
+import ChatbotJournalSearchModal from '../ChatbotJournalSearchModal'
 import {
   Container,
   ModeButton,
@@ -179,7 +179,7 @@ function ModeSelector({ currentMode, onModeChange }) {
           </InfoModalContent>
         </InfoModal>
       )}
-      <ChatbotUserSettingsModal
+      <ChatbotJournalSearchModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
       />

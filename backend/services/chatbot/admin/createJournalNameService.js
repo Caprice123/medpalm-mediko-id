@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { OpenAlexService } from '#services/ai/openAlex.service'
 
 export class CreateJournalNameService extends BaseService {
   static async call({ name }) {
@@ -8,6 +9,9 @@ export class CreateJournalNameService extends BaseService {
     const normalized = name.trim()
     const existing = await prisma.chatbot_journal_names.findUnique({ where: { name: normalized } })
     if (existing) throw new ValidationError('Journal name already exists')
-    return prisma.chatbot_journal_names.create({ data: { name: normalized } })
+    const created = await prisma.chatbot_journal_names.create({ data: { name: normalized } })
+
+    const resolution = await OpenAlexService.previewJournalResolution(normalized).catch(() => null)
+    return { ...created, resolution }
   }
 }

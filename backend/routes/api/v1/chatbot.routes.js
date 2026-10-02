@@ -23,6 +23,7 @@ router.get('/settings', asyncHandler(SettingsController.getSettings))
 router.put('/settings', asyncHandler(SettingsController.updateSettings))
 router.get('/domains', asyncHandler(SettingsController.getDomains))
 router.get('/journals', asyncHandler(SettingsController.getJournals.bind(SettingsController)))
+router.get('/journals/search', asyncHandler(SettingsController.searchJournals.bind(SettingsController)))
 
 // Conversation management
 router.get('/conversations', asyncHandler(ConversationController.index))

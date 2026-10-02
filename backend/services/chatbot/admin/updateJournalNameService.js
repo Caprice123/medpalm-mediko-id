@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { OpenAlexService } from '#services/ai/openAlex.service'
 
 export class UpdateJournalNameService extends BaseService {
   static async call({ id, name, is_active }) {
@@ -12,6 +13,11 @@ export class UpdateJournalNameService extends BaseService {
       data.name = name.trim()
     }
     if (is_active !== undefined) data.is_active = is_active
-    return prisma.chatbot_journal_names.update({ where: { id: parseInt(id) }, data })
+    const updated = await prisma.chatbot_journal_names.update({ where: { id: parseInt(id) }, data })
+
+    const resolution = name !== undefined
+      ? await OpenAlexService.previewJournalResolution(data.name).catch(() => null)
+      : null
+    return { ...updated, resolution }
   }
 }

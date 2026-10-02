@@ -4,8 +4,6 @@ export const Container = styled.div`
   background: white;
   border-top: 1px solid #e5e7eb;
   padding: 1rem 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
 
   @media (max-width: 768px) {
