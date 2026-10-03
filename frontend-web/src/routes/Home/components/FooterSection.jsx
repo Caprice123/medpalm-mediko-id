@@ -1,4 +1,5 @@
 import { Parallax } from 'react-scroll-parallax'
+import { FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import {
   ConnectSection,
   SectionContent,
@@ -40,8 +41,8 @@ const ICON_COLORS = {
 }
 
 const ICONS = {
-  instagram: '📷',
-  whatsapp: '💬',
+  instagram: <FaInstagram color="#e1306c" />,
+  whatsapp: <FaWhatsapp color="#25d366" />,
   youtube: '▶️',
   tiktok: '🎵',
   facebook: '👍',
