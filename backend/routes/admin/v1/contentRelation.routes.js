@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.use(authenticateToken)
 router.use(requireAdmin)
-router.use(requireTabPermission('featuresV2'))
+router.use(requireTabPermission('features'))
 
 router.get('/', asyncHandler(contentRelationController.index.bind(contentRelationController)))
 router.post('/', asyncHandler(contentRelationController.create.bind(contentRelationController)))
