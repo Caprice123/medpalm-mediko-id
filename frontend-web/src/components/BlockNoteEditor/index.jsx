@@ -64,6 +64,11 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
 
   const previousContentRef = useRef(null)
   const isInternalUpdateRef = useRef(false) // Track if update is from user typing
+  const onChangeRef = useRef(onChange)
+
+  useEffect(() => {
+    onChangeRef.current = onChange
+  })
 
   // Handle crop click for existing images
   const handleCropClick = async (imageBlock) => {
@@ -161,9 +166,6 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
       // Replace all blocks at once with new content (only for external updates like AI generation)
       if (currentBlocks.length > 0) {
         editor.replaceBlocks(currentBlocks, initialContent)
-      } else {
-        // If no blocks exist, insert the new ones
-        editor.insertBlocks(initialContent)
       }
 
       previousContentRef.current = newContentStr
@@ -184,20 +186,19 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
     return () => document.removeEventListener('mousedown', handleMouseDown, true)
   }, [])
 
-  // Listen to editor changes and call onChange
+  // Listen to editor changes and call onChange.
+  // Subscribes once per editor: callers pass an inline arrow, so depending on
+  // `onChange` would re-subscribe every render and stack up handlers.
   useEffect(() => {
-    if (!editor || !onChange) return
+    if (!editor) return
 
-    const handleUpdate = () => {
+    return editor.onChange(() => {
       // Mark this as an internal update (from user typing)
       isInternalUpdateRef.current = true
 
-      const blocks = editor.document
-      onChange(blocks)
-    }
-
-    editor.onChange(handleUpdate)
-  }, [editor, onChange])
+      onChangeRef.current?.(editor.document)
+    })
+  }, [editor])
 
   if (!editor) {
     return <div style={{ padding: '1rem', color: '#9ca3af' }}>Loading editor...</div>

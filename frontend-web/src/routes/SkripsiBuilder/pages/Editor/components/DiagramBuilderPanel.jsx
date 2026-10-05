@@ -8,6 +8,7 @@ import '@excalidraw/excalidraw/index.css';
 import Dropdown from '@components/common/Dropdown';
 import Textarea from '@components/common/Textarea';
 import { parseMermaidToExcalidraw } from "@excalidraw/mermaid-to-excalidraw";
+import { sanitizeMermaid } from '../utils/sanitizeMermaid';
 import {
   DiagramBuilderContainer,
   SubTabsNav,
@@ -122,9 +123,16 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
 
         // Wait for Excalidraw API to be ready, then load the diagram
         setTimeout(async () => {
-          if (excalidrawAPI) {
-            console.log(result)
-            const { elements, _files } = await parseMermaidToExcalidraw(result);
+          if (!excalidrawAPI) return;
+
+          // This runs after the enclosing try/catch has returned, so it needs its own
+          // handling - otherwise a Mermaid parse error surfaces as an unhandled rejection
+          // and the user is left staring at an empty preview.
+          try {
+            // Render the backend's output as-is; only if Mermaid rejects it do we retry
+            // with quoted labels, so sanitising can never alter a diagram that parsed.
+            const { elements, _files } = await parseMermaidToExcalidraw(result)
+              .catch(() => parseMermaidToExcalidraw(sanitizeMermaid(result)));
             // currently the elements returned from the parser are in a "skeleton" format
             // which we need to convert to fully qualified excalidraw elements first
             const excalidrawElements = convertToExcalidrawElements(elements);
@@ -161,6 +169,9 @@ const DiagramBuilderPanel = ({ currentTab, style }) => {
             if (savedDiagram && savedDiagram.diagramId) {
               setCurrentDiagramId(savedDiagram.diagramId);
             }
+          } catch (error) {
+            console.error('Failed to render diagram:', error);
+            dispatch(commonActions.setError('Gagal menampilkan diagram. Silakan coba lagi.'))
           }
         }, 100); // Small delay to ensure preview tab is mounted
       }
