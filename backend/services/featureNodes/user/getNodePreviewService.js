@@ -26,7 +26,7 @@ export class GetNodePreviewService extends BaseService {
 
     if (type === 'mcq_question') {
       const rows = await prisma.mcq_questions.findMany({
-        where: { id: { in: ids } },
+        where: { id: { in: ids }, is_deleted: false },
         select: { id: true, question: true, options: true, correct_answer: true, explanation: true },
         orderBy: { order: 'asc' },
       })

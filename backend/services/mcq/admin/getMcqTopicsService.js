@@ -41,7 +41,7 @@ export class GetMcqTopicsService extends BaseService {
       take: perPage + 1,
       orderBy: { id: 'desc' },
       include: {
-        mcq_questions: { select: { id: true } },
+        mcq_questions: { where: { is_deleted: false }, select: { id: true } },
         mcq_topic_tags: {
           include: {
             tags: { include: { tag_group: true } }

@@ -1,7 +1,6 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import attachmentService from '#services/attachment/attachmentService'
 
 export class DeleteNodeQuestionService extends BaseService {
   static async call({ nodeId, questionId }) {
@@ -10,14 +9,20 @@ export class DeleteNodeQuestionService extends BaseService {
     })
     if (!record) throw new ValidationError('Pertanyaan tidak ditemukan di node ini')
 
-    await prisma.feature_node_records.delete({ where: { id: record.id } })
+    // Soft delete: past answers and progress still reference the question,
+    // so the row and its attachment are kept
+    await prisma.$transaction(async (tx) => {
+      await tx.feature_node_records.delete({ where: { id: record.id } })
 
-    await attachmentService.detachAll({ recordType: 'mcq_question', recordId: parseInt(questionId) })
-    await prisma.mcq_questions.delete({ where: { id: parseInt(questionId) } })
+      await tx.mcq_questions.update({
+        where: { id: parseInt(questionId) },
+        data: { is_deleted: true, deleted_at: new Date() },
+      })
 
-    await prisma.node_statistics.updateMany({
-      where: { node_id: parseInt(nodeId), record_type: 'mcq_question' },
-      data: { total_count: { decrement: 1 } },
+      await tx.node_statistics.updateMany({
+        where: { node_id: parseInt(nodeId), record_type: 'mcq_question', total_count: { gt: 0 } },
+        data: { total_count: { decrement: 1 } },
+      })
     })
   }
 }

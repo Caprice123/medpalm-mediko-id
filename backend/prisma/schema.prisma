@@ -1403,6 +1403,8 @@ model mcq_questions {
   references     Json?
   order          Int      @default(0)
   version        Int      @default(1)
+  is_deleted     Boolean  @default(false)
+  deleted_at     DateTime?
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
 
@@ -1412,6 +1414,7 @@ model mcq_questions {
 
   @@index([topic_id])
   @@index([order])
+  @@index([is_deleted])
 }
 
 model mcq_topic_tags {

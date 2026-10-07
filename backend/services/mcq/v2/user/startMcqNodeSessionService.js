@@ -24,7 +24,7 @@ export class StartMcqNodeSessionService extends BaseService {
 }
 
 export async function buildQuestionsResponse(selectedIds, questionToNodeMap, userId) {
-  const questions = await prisma.mcq_questions.findMany({ where: { id: { in: selectedIds } } })
+  const questions = await prisma.mcq_questions.findMany({ where: { id: { in: selectedIds }, is_deleted: false } })
   const qMap = new Map(questions.map(q => [q.id, q]))
   const ordered = selectedIds.map(id => qMap.get(id)).filter(Boolean)
 

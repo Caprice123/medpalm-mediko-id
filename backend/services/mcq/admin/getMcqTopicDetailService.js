@@ -9,6 +9,7 @@ export class GetMcqTopicDetailService extends BaseService {
       where: { unique_id: id },
       include: {
         mcq_questions: {
+          where: { is_deleted: false },
           orderBy: { order: 'asc' }
         },
         mcq_topic_tags: {

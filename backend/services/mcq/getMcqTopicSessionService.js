@@ -17,6 +17,7 @@ export class GetMcqTopicSessionService extends BaseService {
       },
       include: {
         mcq_questions: {
+          where: { is_deleted: false },
           orderBy: { order: 'asc' }
         }
       }

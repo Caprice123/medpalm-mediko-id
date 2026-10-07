@@ -5,7 +5,7 @@ import { ValidationError } from '#errors/validationError'
 export class AssignQuestionToNodeService extends BaseService {
   static async call({ questionId, nodeId }) {
     const question = await prisma.mcq_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
     if (!node) throw new ValidationError('Sub-topik tidak ditemukan')
