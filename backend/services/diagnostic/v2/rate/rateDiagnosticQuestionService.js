@@ -10,6 +10,11 @@ export class RateDiagnosticQuestionService extends BaseService {
   static async call({ userId, recordId, rating }) {
     if (!VALID_RATINGS.includes(rating)) throw new ValidationError('Rating tidak valid')
 
+    // A question deleted mid-session already had its rating removed from progress;
+    // rating it now would desync review state from those counts
+    const question = await prisma.diagnostic_questions.findUnique({ where: { id: recordId }, select: { is_deleted: true } })
+    if (!question || question.is_deleted) return
+
     const existing = await prisma.user_review_states.findUnique({
       where: {
         user_id_record_type_record_id: { user_id: userId, record_type: RECORD_TYPE, record_id: recordId },

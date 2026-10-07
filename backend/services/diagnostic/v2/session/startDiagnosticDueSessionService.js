@@ -21,7 +21,7 @@ export class StartDiagnosticDueSessionService extends BaseService {
     // from their node — filter those out before sampling so `count` is
     // honored against the same pool GetDiagnosticDueTodayService reports.
     const [existingQuestions, linkedRecords] = await Promise.all([
-      prisma.diagnostic_questions.findMany({ where: { id: { in: dueIds } }, select: { id: true } }),
+      prisma.diagnostic_questions.findMany({ where: { id: { in: dueIds }, is_deleted: false }, select: { id: true } }),
       prisma.feature_node_records.findMany({ where: { record_type: RECORD_TYPE, record_id: { in: dueIds } }, select: { record_id: true } }),
     ])
     const linkedIds = new Set(linkedRecords.map(r => r.record_id))

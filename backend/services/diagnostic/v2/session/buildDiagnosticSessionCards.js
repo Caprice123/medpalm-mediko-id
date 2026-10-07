@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import idriveService from '#services/idrive.service'
 
 export async function buildDiagnosticSessionCards({ selected, newIdSet, node, nodeMap }) {
-  const questions = await prisma.diagnostic_questions.findMany({ where: { id: { in: selected } } })
+  const questions = await prisma.diagnostic_questions.findMany({ where: { id: { in: selected }, is_deleted: false } })
   const qMap = new Map(questions.map(q => [q.id, q]))
 
   const attachments = await prisma.attachments.findMany({

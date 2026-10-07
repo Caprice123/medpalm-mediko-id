@@ -15,7 +15,7 @@ export class GetNodeDiagnosticQuestionsService extends BaseService {
       return { questions: [], pagination: { page: parseInt(page), perPage: parseInt(perPage), isLastPage: true } }
     }
 
-    const where = { id: { in: questionIds } }
+    const where = { id: { in: questionIds }, is_deleted: false }
     if (search) {
       where.OR = [
         { question: { contains: search, mode: 'insensitive' } },

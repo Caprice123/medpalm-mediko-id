@@ -14,7 +14,7 @@ export class UpdateNodeDiagnosticQuestionService extends BaseService {
     }
 
     const existing = await prisma.diagnostic_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!existing) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!existing || existing.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const updated = await prisma.diagnostic_questions.update({
       where: { id: parseInt(questionId) },

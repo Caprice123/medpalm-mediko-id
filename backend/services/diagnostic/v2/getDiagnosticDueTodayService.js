@@ -22,6 +22,7 @@ export class GetDiagnosticDueTodayService extends BaseService {
       WHERE urs.user_id     = ${userId}
         AND urs.record_type = ${RECORD_TYPE}
         AND urs.due_date   <= ${now}
+        AND dq.is_deleted   = false
       GROUP BY fn.id, fn.name, parent.id, parent.name
     `
 

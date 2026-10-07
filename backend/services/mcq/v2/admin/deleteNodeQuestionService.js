@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 export class DeleteNodeQuestionService extends BaseService {
   static async call({ nodeId, questionId }) {
@@ -19,10 +20,7 @@ export class DeleteNodeQuestionService extends BaseService {
         data: { is_deleted: true, deleted_at: new Date() },
       })
 
-      await tx.node_statistics.updateMany({
-        where: { node_id: parseInt(nodeId), record_type: 'mcq_question', total_count: { gt: 0 } },
-        data: { total_count: { decrement: 1 } },
-      })
+      await bumpNodeStat(tx, parseInt(nodeId), 'mcq_question', -1)
     })
   }
 }

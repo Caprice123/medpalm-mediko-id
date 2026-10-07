@@ -19,6 +19,7 @@ export class GetUnlinkedDiagnosticQuestionsService extends BaseService {
       LEFT JOIN feature_node_records fnr
         ON fnr.record_type = 'diagnostic_question' AND fnr.record_id = dq.id
       WHERE fnr.id IS NULL
+        AND dq.is_deleted = false
         ${searchFilter}
       ORDER BY dq.id DESC
       LIMIT ${take} OFFSET ${skip}
