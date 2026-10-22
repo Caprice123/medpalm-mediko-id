@@ -14,6 +14,7 @@ export class GetDiagnosticQuizDetailService extends BaseService {
         where: { unique_id: quizId },
         include: {
           diagnostic_questions: {
+            where: { is_deleted: false },
             orderBy: { order: 'asc' }
           },
           diagnostic_quiz_tags: {

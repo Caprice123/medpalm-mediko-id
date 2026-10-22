@@ -10,7 +10,7 @@ export class UpdateNodeQuestionService extends BaseService {
     if (options.some(o => !o?.trim())) throw new ValidationError('Semua pilihan jawaban wajib diisi')
 
     const existing = await prisma.mcq_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!existing) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!existing || existing.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const updated = await prisma.mcq_questions.update({
       where: { id: parseInt(questionId) },

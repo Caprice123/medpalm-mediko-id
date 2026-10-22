@@ -58,7 +58,7 @@ export class SubmitDiagnosticAnswersService extends BaseService {
         include: {
           diagnostic_quiz: {
             include: {
-              diagnostic_questions: true
+              diagnostic_questions: { where: { is_deleted: false } }
             }
           }
         }

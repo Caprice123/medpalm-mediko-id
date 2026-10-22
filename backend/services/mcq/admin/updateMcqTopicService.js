@@ -108,24 +108,11 @@ export class UpdateMcqTopicService extends BaseService {
           data: { question_count: questions.length, updated_at: new Date() }
         })
 
-        // Get existing questions to delete their attachments
-        const existingQuestions = await tx.mcq_questions.findMany({
-          where: { topic_id: existingTopic.id }
-        })
-
-        // Delete attachments for existing questions
-        if (existingQuestions.length > 0) {
-          await tx.attachments.deleteMany({
-            where: {
-              record_type: 'mcq_question',
-              record_id: { in: existingQuestions.map(q => q.id) }
-            }
-          })
-        }
-
-        // Delete existing questions
-        await tx.mcq_questions.deleteMany({
-          where: { topic_id: existingTopic.id }
+        // Soft-delete existing questions; past answers and progress still reference them,
+        // so rows and their attachments are kept
+        await tx.mcq_questions.updateMany({
+          where: { topic_id: existingTopic.id, is_deleted: false },
+          data: { is_deleted: true, deleted_at: new Date() }
         })
 
         // Create new questions
@@ -178,6 +165,7 @@ export class UpdateMcqTopicService extends BaseService {
         where: { unique_id: id },
         include: {
           mcq_questions: {
+            where: { is_deleted: false },
             orderBy: { order: 'asc' }
           },
           mcq_topic_tags: {

@@ -11,7 +11,7 @@ export class CheckMcqAnswersService extends BaseService {
         status: 'published'
       },
       include: {
-        mcq_questions: true
+        mcq_questions: { where: { is_deleted: false } }
       }
     })
 

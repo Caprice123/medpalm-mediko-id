@@ -1,14 +1,14 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
-import attachmentService from '#services/attachment/attachmentService'
+import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 
 const RECORD_TYPE = 'diagnostic_question'
 
 export class DeleteNodeDiagnosticQuestionService extends BaseService {
   static async call({ questionId }) {
     const question = await prisma.diagnostic_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const fnRecord = await prisma.feature_node_records.findFirst({
       where: { record_type: RECORD_TYPE, record_id: parseInt(questionId) },
@@ -19,21 +19,20 @@ export class DeleteNodeDiagnosticQuestionService extends BaseService {
       ? (await prisma.feature_nodes.findUnique({ where: { id: subtopicNodeId }, select: { parent_id: true } }))?.parent_id ?? null
       : null
 
-    await attachmentService.detachAll({ recordType: RECORD_TYPE, recordId: parseInt(questionId) })
-
+    // Soft delete: the row, its attachment and users' review states are kept so past
+    // answers stay valid; rating counts are still removed from node progress below
     await prisma.$transaction(async (tx) => {
-      await tx.diagnostic_questions.delete({ where: { id: parseInt(questionId) } })
+      await tx.diagnostic_questions.update({
+        where: { id: parseInt(questionId) },
+        data: { is_deleted: true, deleted_at: new Date() },
+      })
 
       if (fnRecord) {
         await tx.feature_node_records.delete({ where: { id: fnRecord.id } })
       }
 
       if (subtopicNodeId) {
-        await tx.node_statistics.upsert({
-          where: { node_id_record_type: { node_id: subtopicNodeId, record_type: RECORD_TYPE } },
-          create: { node_id: subtopicNodeId, record_type: RECORD_TYPE, total_count: 0 },
-          update: { total_count: { decrement: 1 } },
-        })
+        await bumpNodeStat(tx, subtopicNodeId, RECORD_TYPE, -1)
 
         await tx.$executeRaw`
           UPDATE user_node_progress unp

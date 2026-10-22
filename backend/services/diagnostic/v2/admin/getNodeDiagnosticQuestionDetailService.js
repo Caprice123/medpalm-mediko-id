@@ -8,7 +8,7 @@ const RECORD_TYPE = 'diagnostic_question'
 export class GetNodeDiagnosticQuestionDetailService extends BaseService {
   static async call({ questionId }) {
     const question = await prisma.diagnostic_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, question.id, 'image')
 

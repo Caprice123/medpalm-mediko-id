@@ -24,12 +24,12 @@ export class GetNodeQuestionsService extends BaseService {
     // label). Full detail (image, explanations, references, linked notes) is fetched
     // separately via GetNodeQuestionDetailService when a single question is opened.
     const rawQuestions = await prisma.mcq_questions.findMany({
-      where: { id: { in: questionIds } },
+      where: { id: { in: questionIds }, is_deleted: false },
       select: { id: true, question: true, options: true, correct_answer: true },
     })
 
     const qMap = new Map(rawQuestions.map(q => [q.id, q]))
-    const questions = pageRecords.map(r => ({ ...qMap.get(r.record_id), nodeId: r.node_id })).filter(Boolean)
+    const questions = pageRecords.filter(r => qMap.has(r.record_id)).map(r => ({ ...qMap.get(r.record_id), nodeId: r.node_id }))
 
     return { questions, pagination }
   }

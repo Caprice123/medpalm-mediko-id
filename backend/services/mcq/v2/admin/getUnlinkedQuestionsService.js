@@ -18,6 +18,7 @@ export class GetUnlinkedQuestionsService extends BaseService {
         ON fnr.record_type = 'mcq_question' AND fnr.record_id = mq.id
       WHERE fnr.id IS NULL
         AND mq.version = 1
+        AND mq.is_deleted = false
         ${searchFilter}
       ORDER BY mq.id DESC
       LIMIT ${take} OFFSET ${skip}

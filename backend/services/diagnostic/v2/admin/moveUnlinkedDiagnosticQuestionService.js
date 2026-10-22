@@ -7,7 +7,7 @@ const RECORD_TYPE = 'diagnostic_question'
 export class MoveUnlinkedDiagnosticQuestionService extends BaseService {
   static async call({ questionId, nodeId }) {
     const question = await prisma.diagnostic_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const existing = await prisma.feature_node_records.findFirst({
       where: { record_type: RECORD_TYPE, record_id: parseInt(questionId) },

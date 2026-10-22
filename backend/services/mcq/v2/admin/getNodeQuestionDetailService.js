@@ -6,7 +6,7 @@ import attachmentService from '#services/attachment/attachmentService'
 export class GetNodeQuestionDetailService extends BaseService {
   static async call({ questionId }) {
     const question = await prisma.mcq_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const attachment = await attachmentService.getAttachmentWithUrl('mcq_question', question.id, 'image')
 

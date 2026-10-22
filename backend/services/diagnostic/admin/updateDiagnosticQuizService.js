@@ -29,9 +29,10 @@ export class UpdateDiagnosticQuizService extends BaseService {
 
     // Update quiz with questions and tags in a transaction
     const updatedQuiz = await prisma.$transaction(async tx => {
-      // Delete existing questions and tags
-      await tx.diagnostic_questions.deleteMany({
-        where: { quiz_id: existingQuiz.id }
+      // Soft-delete existing questions (past answers still reference them) and drop tags
+      await tx.diagnostic_questions.updateMany({
+        where: { quiz_id: existingQuiz.id, is_deleted: false },
+        data: { is_deleted: true, deleted_at: new Date() }
       })
 
       await tx.diagnostic_quiz_tags.deleteMany({
@@ -66,6 +67,7 @@ export class UpdateDiagnosticQuizService extends BaseService {
         },
         include: {
           diagnostic_questions: {
+            where: { is_deleted: false },
             orderBy: { order: 'asc' }
           },
           diagnostic_quiz_tags: {

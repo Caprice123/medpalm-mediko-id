@@ -7,7 +7,7 @@ const RECORD_TYPE = 'diagnostic_question'
 export class MoveLinkedDiagnosticQuestionService extends BaseService {
   static async call({ questionId, nodeId }) {
     const question = await prisma.diagnostic_questions.findUnique({ where: { id: parseInt(questionId) } })
-    if (!question) throw new ValidationError('Pertanyaan tidak ditemukan')
+    if (!question || question.is_deleted) throw new ValidationError('Pertanyaan tidak ditemukan')
 
     const targetNode = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
     if (!targetNode) throw new ValidationError('Sub-topik tidak ditemukan')

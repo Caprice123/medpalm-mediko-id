@@ -69,6 +69,7 @@ export class GetMcqTopicsService extends BaseService {
       orderBy: { id: 'desc' },
       include: {
         mcq_questions: {
+          where: { is_deleted: false },
           select: {
             id: true
           }
