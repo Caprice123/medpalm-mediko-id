@@ -31,6 +31,7 @@ export const EmailJobTypes = {
   WEBINAR_APPROVAL: 'webinar-approval',
   WEBINAR_REJECTION: 'webinar-rejection',
   CHALLENGE_ANSWER_KEY: 'challenge-answer-key',
+  TEST: 'test-email',
 }
 
 export async function queueWebinarApprovalEmail({ to, userName, webinarTitle, joinLinks, startAt }) {
@@ -60,5 +61,21 @@ export async function queueChallengeAnswerKeyEmail({ sessionId }) {
     { jobId: `challenge-answer-key-${sessionId}-${Date.now()}` }
   )
   console.log(`📤 Queued challenge answer key email for session ${sessionId} (Job ID: ${job.id})`)
+  return job
+}
+
+/**
+ * Queue a no-op diagnostic email. Used to verify end to end that the email
+ * worker is running and that the configured provider can actually deliver:
+ * the job carries all its data inline, so it touches no other table and
+ * cannot fail for reasons unrelated to the queue or the mail provider.
+ */
+export async function queueTestEmail({ to, requestedBy }) {
+  const job = await emailQueue.add(
+    EmailJobTypes.TEST,
+    { to, requestedBy, queuedAt: new Date().toISOString() },
+    { jobId: `test-email-${Date.now()}`, attempts: 1 }
+  )
+  console.log(`📤 Queued test email to ${to} (Job ID: ${job.id})`)
   return job
 }

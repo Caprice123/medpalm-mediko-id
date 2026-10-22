@@ -25,6 +25,7 @@ import adminExerciseRoutes from '#routes/admin/v1/exercise.routes';
 import adminFlashcardRoutes from '#routes/admin/v1/flashcard.routes';
 import adminSummaryNoteRoutes from '#routes/admin/v1/summaryNote.routes';
 import adminConstantRoutes from '#routes/admin/v1/constant.routes';
+import adminEmailTestRoutes from '#routes/admin/v1/emailTest.routes';
 import calculatorRoutes from '#routes/api/v1/calculator.routes';
 import diagnosticRoutes from '#routes/api/v1/diagnostic.routes'
 import anatomyRoutes from '#routes/api/v1/anatomy.routes'
@@ -249,6 +250,7 @@ app.use('/admin/v1/banners', adminBannerRoutes);
 app.use('/admin/v1/challenges', adminChallengeRoutes);
 app.use('/admin/v1/feature-nodes', adminFeatureNodesRoutes);
 app.use('/admin/v1/content-relations', adminContentRelationRoutes);
+app.use('/admin/v1/email-test', adminEmailTestRoutes);
 app.use('/admin/v2/flashcard/decks', adminV2FlashcardRoutes);
 app.use('/admin/v2/flashcard/cards', adminV2FlashcardCardsRoutes);
 app.use('/admin/v2/summary-notes', adminV2SummaryNotesRoutes);

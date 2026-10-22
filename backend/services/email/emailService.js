@@ -29,6 +29,26 @@ async function loadProvider() {
 const providerPromise = loadProvider()
 
 class EmailService {
+  /**
+   * Diagnostic email with no template file and no database lookup, so a
+   * failure here points at the queue, the worker or the mail provider and
+   * nothing else.
+   */
+  async sendTestEmail({ to, requestedBy, queuedAt }) {
+    const html = [
+      '<h2>Test email MedPal</h2>',
+      '<p>Kalau email ini sampai, worker email dan provider pengiriman berjalan normal.</p>',
+      '<ul>',
+      `<li>Dikirim ke: ${to}</li>`,
+      `<li>Diminta oleh: ${requestedBy || '-'}</li>`,
+      `<li>Masuk antrian: ${queuedAt || '-'}</li>`,
+      `<li>Diproses: ${new Date().toISOString()}</li>`,
+      '</ul>',
+    ].join('')
+
+    const provider = await providerPromise
+    await provider.sendMail({ to, subject: 'Test Email MedPal', html })
+  }
   async sendWebinarApproval({ to, userName, webinarTitle, joinLinks, startAt }) {
     const formattedDate = new Date(startAt).toLocaleString('id-ID', {
       weekday: 'long',

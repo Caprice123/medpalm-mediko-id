@@ -98,6 +98,10 @@ async function processEmailJob(job) {
       break
     }
 
+    case EmailJobTypes.TEST:
+      await emailService.sendTestEmail(data)
+      break
+
     default:
       throw new Error(`Unknown email job type: ${name}`)
   }
