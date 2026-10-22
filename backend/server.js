@@ -5,6 +5,8 @@ import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHand
 import prisma from '#prisma/client';
 import { startCronJobs } from '#jobs/cron';
 import { errorHandler } from '#middleware/errorHandler.middleware';
+import { rejectCompressedRequestBody } from '#middleware/contentEncoding.middleware';
+import { assertPatchedNodeVersion } from '#utils/nodeVersionGuard';
 import { setupBullBoard } from '#config/bullBoard';
 import authRoutes from '#routes/api/v1/auth.routes';
 import creditPlanRoutes from '#routes/api/v1/creditPlan.routes';
@@ -118,8 +120,12 @@ app.use(cors({
     ],
     exposedHeaders: ['X-Remaining-Quota'], // Expose custom header to frontend
 }));
-app.use(express.json({ limit: '100mb' })); // Increase limit for large file uploads
-app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// Refuse compressed request bodies before body-parser can inflate them.
+// Protects the inbound surface of CVE-2026-111497 (Brotli OOB write / RCE).
+app.use(rejectCompressedRequestBody);
+// inflate: false is the same guarantee enforced inside body-parser itself.
+app.use(express.json({ limit: '100mb', inflate: false })); // Increase limit for large file uploads
+app.use(express.urlencoded({ extended: true, limit: '100mb', inflate: false }));
 
 app.use(injectRemainingQuota);
 
@@ -266,8 +272,11 @@ app.use(sentryErrorHandler());
 // Custom error handling middleware (must be last)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
+
+  // Verify the runtime carries the 2026-10-21 Node.js security fixes
+  await assertPatchedNodeVersion();
 
   // Start cron jobs
   startCronJobs();

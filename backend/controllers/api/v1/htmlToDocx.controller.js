@@ -1,5 +1,5 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, ImageRun, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from 'docx';
-import axios from 'axios';
+import { untrustedHttp } from '#utils/untrustedHttp';
 import jsdom from 'jsdom';
 import prisma from '#prisma/client';
 import idriveService from '#services/idrive.service';
@@ -383,7 +383,8 @@ async function convertImagesToBase64InHtml(htmlContent) {
   let updatedHtml = htmlContent;
   for (const urlObj of imageUrls) {
     try {
-      const response = await axios.get(urlObj.decoded, {
+      // URL comes straight out of user-submitted HTML -> untrustedHttp
+      const response = await untrustedHttp.get(urlObj.decoded, {
         responseType: 'arraybuffer',
         timeout: 15000,
       });
@@ -444,7 +445,7 @@ async function fetchImageWithType(src) {
     const presignedUrl = await idriveService.getSignedUrl(blob.key, 3600);
 
     // Fetch image from iDrive
-    const response = await axios.get(presignedUrl, {
+    const response = await untrustedHttp.get(presignedUrl, {
       responseType: 'arraybuffer',
       timeout: 30000, // 30 seconds for large images
     });
@@ -453,7 +454,8 @@ async function fetchImageWithType(src) {
     buffer = Buffer.from(response.data);
   } else {
     // External URL
-    const response = await axios.get(src, {
+    // Arbitrary user-supplied URL -> untrustedHttp
+    const response = await untrustedHttp.get(src, {
       responseType: 'arraybuffer',
       timeout: 15000,
     });

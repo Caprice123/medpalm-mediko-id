@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import { assertPatchedNodeVersion } from '#utils/nodeVersionGuard'
 import { createSummaryNotesWorker, shutdownWorker as shutdownSummaryNotesWorker } from '#jobs/workers/summaryNotesWorker'
 import { createEmailWorker, shutdownWorker as shutdownEmailWorker } from '#jobs/workers/emailWorker'
 import { createChallengeWorker, shutdownWorker as shutdownChallengeWorker } from '#jobs/workers/challengeWorker'
@@ -18,6 +19,9 @@ import { createChallengeWorker, shutdownWorker as shutdownChallengeWorker } from
  */
 
 dotenv.config()
+
+// Verify the runtime carries the 2026-10-21 Node.js security fixes
+await assertPatchedNodeVersion()
 
 // Get queue name from command-line argument
 const queueName = process.argv[2] || 'summaryNotes'

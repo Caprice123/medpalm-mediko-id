@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { untrustedHttp } from '#utils/untrustedHttp';
 
 /**
  * Converts an image URL to base64 data URI
@@ -8,7 +8,8 @@ import axios from 'axios';
 export async function imageUrlToBase64(imageUrl) {
   try {
     console.log('Fetching image from URL:', imageUrl);
-    const response = await axios.get(imageUrl, {
+    // Caller-supplied URL (extracted from user HTML) -> untrustedHttp
+    const response = await untrustedHttp.get(imageUrl, {
       responseType: 'arraybuffer',
       timeout: 10000, // 10 second timeout
     });
