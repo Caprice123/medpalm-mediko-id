@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 const RECORD_TYPE = 'diagnostic_question'
 
@@ -51,6 +52,8 @@ export class AddNodeDiagnosticQuestionService extends BaseService {
     })
 
     const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, newQuestion.id, 'image')
+    await incrementContentStat(CONTENT_STAT_KEYS.diagnosticQuestion)
+
     return { ...newQuestion, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

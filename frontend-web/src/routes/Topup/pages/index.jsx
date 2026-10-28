@@ -10,7 +10,7 @@ import 'aos/dist/aos.css'
 import {
   PricingGrid,
   PricingFilterContainer,
-} from '@routes/Home/Home.styles'
+} from '@components/common/PricingPlanCard.styles'
 import {
   getStatusLabel,
   getTypeLabel,

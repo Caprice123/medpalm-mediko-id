@@ -8,7 +8,7 @@ import {
   PricingPrice,
   PricingDescription,
   DiscountBadge,
-} from '@routes/Home/Home.styles'
+} from './PricingPlanCard.styles'
 
 function PricingPlanCard({ plan, index, renderButton }) {
   return (

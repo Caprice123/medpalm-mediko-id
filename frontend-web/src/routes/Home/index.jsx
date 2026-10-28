@@ -1,12 +1,20 @@
-import { ParallaxProvider } from 'react-scroll-parallax'
+// Grid primitives only — NOT the full Bootstrap stylesheet. Vite injects any
+// imported CSS globally, and Bootstrap's reset/typography would restyle the
+// admin panel and every other page. bootstrap-grid ships just the container,
+// row, column and breakpoint rules, which nothing else in the app uses.
+import 'bootstrap/dist/css/bootstrap-grid.min.css'
+
 import { GlobalStyles, LandingContainer } from './Home.styles'
 import { useHome } from './hooks/useHome'
 
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
-import FeaturesSection from './components/FeaturesSection'
-import HowItWorksSection from './components/HowItWorksSection'
+import WhyMedPalSection from './components/WhyMedPalSection'
+import FeatureDetailSection from './components/FeatureDetailSection'
 import PricingSection from './components/PricingSection'
+import EventSection from './components/EventSection'
+import ChallengeSection from './components/ChallengeSection'
+import TestimonialSection from './components/TestimonialSection'
 import FAQSection from './components/FAQSection'
 import CTASection from './components/CTASection'
 import FooterSection from './components/FooterSection'
@@ -14,32 +22,39 @@ import FooterSection from './components/FooterSection'
 function Home() {
   const {
     scrollToSection,
-    heroBadge,
     heroTitle,
     heroSubtitle,
-    howItWorksYoutubeUrl,
+    navItems,
     faqItems,
+    eventItems,
+    challengeItems,
+    testimonialItems,
     socialItems,
   } = useHome()
 
   return (
-    <ParallaxProvider>
+    <>
       <GlobalStyles />
       <LandingContainer>
-        <Navbar scrollToSection={scrollToSection} />
+        <Navbar scrollToSection={scrollToSection} navItems={navItems} />
 
         <HeroSection
-          scrollToSection={scrollToSection}
-          badge={heroBadge}
           title={heroTitle}
           subtitle={heroSubtitle}
+          scrollToSection={scrollToSection}
         />
 
-        <FeaturesSection />
+        <WhyMedPalSection />
 
-        <HowItWorksSection youtubeUrl={howItWorksYoutubeUrl} />
+        <FeatureDetailSection />
 
         <PricingSection />
+
+        <EventSection eventItems={eventItems} />
+
+        <ChallengeSection challengeItems={challengeItems} />
+
+        <TestimonialSection testimonialItems={testimonialItems} />
 
         <FAQSection faqItems={faqItems} />
 
@@ -47,7 +62,7 @@ function Home() {
 
         <FooterSection socialItems={socialItems} />
       </LandingContainer>
-    </ParallaxProvider>
+    </>
   )
 }
 

@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 const RECORD_TYPE = 'diagnostic_question'
 
@@ -22,6 +23,8 @@ export class DeleteNodeDiagnosticQuestionService extends BaseService {
     // Soft delete: the row, its attachment and users' review states are kept so past
     // answers stay valid; rating counts are still removed from node progress below
     await prisma.$transaction(async (tx) => {
+      await bumpContentStat(tx, CONTENT_STAT_KEYS.diagnosticQuestion, -1)
+
       await tx.diagnostic_questions.update({
         where: { id: parseInt(questionId) },
         data: { is_deleted: true, deleted_at: new Date() },

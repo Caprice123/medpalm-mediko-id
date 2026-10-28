@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import embeddingService from '#services/embedding/embeddingService'
 import { decrementNodeStat } from '#utils/nodeStatisticsHelper'
+import { decrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class DeleteSummaryNoteV2Service extends BaseService {
   static async call({ id }) {
@@ -19,6 +20,12 @@ export class DeleteSummaryNoteV2Service extends BaseService {
       where: { id: existing.id },
       data: { is_deleted: true, deleted_at: new Date() },
     })
+
+    // Soft delete removes it from the landing-page count, but only if it was
+    // published and not already deleted.
+    if (existing.status === 'published' && !existing.deleted_at) {
+      await decrementContentStat(CONTENT_STAT_KEYS.summaryNote)
+    }
 
     if (record) {
       await prisma.feature_node_records.delete({ where: { id: record.id } })

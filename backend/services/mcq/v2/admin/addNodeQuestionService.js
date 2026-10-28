@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class AddNodeQuestionService extends BaseService {
   static async call({ nodeId, question, options, correctIndex, explanationShort, explanationLong, references, blobId }) {
@@ -32,6 +33,8 @@ export class AddNodeQuestionService extends BaseService {
     await prisma.feature_node_records.create({
       data: { node_id: parseInt(nodeId), record_type: 'mcq_question', record_id: created.id },
     })
+
+    await incrementContentStat(CONTENT_STAT_KEYS.mcqQuestion)
 
     await prisma.node_statistics.upsert({
       where: { node_id_record_type: { node_id: parseInt(nodeId), record_type: 'mcq_question' } },

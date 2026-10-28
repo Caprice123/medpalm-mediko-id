@@ -3,6 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
 import attachmentService from '#services/attachment/attachmentService'
 import idriveService from '#services/idrive.service'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateExerciseTopicService extends BaseService {
     static async call(topicId, { title, description, contentType, content, status, tags, questions, blobId }) {
@@ -192,6 +193,15 @@ export class UpdateExerciseTopicService extends BaseService {
                 const questionCount = await tx.exercise_questions.count({
                     where: { topic_id: topic.id }
                 })
+
+                // This path creates, updates and deletes selectively, so the
+                // net change is taken from the recount above rather than
+                // tracked per operation.
+                await bumpContentStat(
+                    tx,
+                    CONTENT_STAT_KEYS.exerciseQuestion,
+                    questionCount - existingQuestions.length
+                )
 
                 await tx.exercise_topics.update({
                     where: { unique_id: topicId },

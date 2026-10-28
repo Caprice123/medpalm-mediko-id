@@ -1,80 +1,164 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
+import { colors, fonts, gradients, media } from '../../theme'
 
-export const CTAWrapper = styled.section`
-  padding: 2.5rem 0 6rem;
+export const SectionWrapper = styled.section`
+  background: ${colors.pageBackground};
+  padding-block: 31px;
+`
 
-  @media (max-width: 768px) {
-    padding: 2rem 0 4rem;
-  }
-`;
-
-export const CTAPanel = styled.div`
+export const Banner = styled.div`
   position: relative;
-  background: linear-gradient(120deg, #12876F 0%, #1B5E7A 100%);
-  border-radius: 34px;
-  padding: 4.375rem 3.75rem;
-  color: #fff;
-  display: grid;
-  grid-template-columns: 1fr 325px;
+  overflow: hidden;
+  border-radius: 32px;
+  background: ${gradients.ctaBanner};
+  min-height: 274px;
+  display: flex;
   align-items: center;
-  gap: 1.875rem;
-  overflow: visible;
-  box-shadow: 0 40px 70px -40px rgba(23, 100, 110, 0.7);
+  justify-content: center;
 
-  @media (max-width: 960px) {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding: 3.5rem 1.75rem 0;
+  ${media.mobile} {
+    border-radius: 24px;
   }
+`
 
-  @media (max-width: 768px) {
-    border-radius: 26px;
-  }
-`;
-
-export const CTABlob = styled.div`
+export const Decoration = styled.div`
   position: absolute;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  left: -60px;
-  top: -60px;
+  inset: 0;
   pointer-events: none;
-`;
+  user-select: none;
+  overflow: hidden;
+`
 
-export const CTAContent = styled.div`
-  position: relative;
-`;
+// Both doodle plates are crops of a single exported image, offset inside their
+// own clipping frame the way the design slices them.
+const DoodleFrame = styled.div`
+  position: absolute;
+  top: 0;
+  height: 100%;
+  overflow: hidden;
+`
 
-export const CTATitle = styled.h2`
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin: 0 0 1rem;
-`;
+export const DoodleLeftFrame = styled(DoodleFrame)`
+  left: 0;
+  width: 425px;
+`
 
-export const CTASubtitle = styled.p`
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.0625rem;
-  margin: 0 0 1.875rem;
-  max-width: 520px;
+export const DoodleLeftImage = styled.img`
+  position: absolute;
+  top: -29.93%;
+  left: -5.41%;
+  width: 308.71%;
+  height: 159.61%;
+  max-width: none;
+`
 
-  @media (max-width: 960px) {
-    margin-left: auto;
-    margin-right: auto;
-  }
-`;
+export const DoodleRightFrame = styled(DoodleFrame)`
+  right: 0;
+  width: 309px;
+`
 
-export const CTAMascot = styled.img`
-  width: 350px;
-  margin: -150px 0 -88px;
+export const DoodleRightImage = styled.img`
+  position: absolute;
+  top: -41.97%;
+  left: -325.24%;
+  width: 425.24%;
+  height: 159.85%;
+  max-width: none;
+`
+
+export const FrameLeft = styled.img`
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 614.8px;
+  height: 274px;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+  object-fit: cover;
+`
+
+export const FrameRight = styled.img`
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  width: 232px;
+  height: 282px;
+  transform: translateY(-50%) rotate(180deg);
+`
+
+export const BannerMascot = styled.img`
+  position: absolute;
+  left: 11px;
+  top: 31px;
+  width: 316px;
+  height: 316px;
+  object-fit: contain;
   pointer-events: none;
   user-select: none;
 
-  @media (max-width: 960px) {
-    width: 250px;
-    margin: 10px auto -38px;
+  ${media.tablet} {
+    display: none;
   }
-`;
+`
+
+export const BannerContent = styled.div`
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 30px 24px 34px;
+  max-width: 520px;
+`
+
+export const Eyebrow = styled.p`
+  font-family: ${fonts.body};
+  font-weight: 700;
+  font-size: 13.63px;
+  line-height: 1.7;
+  letter-spacing: 1.91px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0;
+`
+
+export const Heading = styled.h2`
+  font-family: ${fonts.heading};
+  font-weight: 800;
+  font-size: 39.46px;
+  line-height: 1.18;
+  letter-spacing: -0.39px;
+  color: #fff;
+  margin: 14px 0 0;
+
+  ${media.mobile} {
+    font-size: 30px;
+  }
+`
+
+export const Description = styled.p`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.43;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 16px 0 0;
+`
+
+export const BannerButton = styled.button`
+  font-family: ${fonts.body};
+  font-weight: 600;
+  font-size: 15px;
+  color: #25749e;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 30px;
+  height: 48px;
+  padding: 0 30px;
+  margin-top: 22px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.45);
+  }
+`

@@ -27,6 +27,7 @@ const CONSTANT_KEYS = [
   'home_hero_slides',
   'home_how_it_works_youtube_url',
   'home_faq_items',
+  'home_testimonial_items',
   'home_social_items',
   'login_signin_title',
   'login_signin_subtitle',
@@ -44,6 +45,7 @@ const SOCIAL_TYPE_OPTIONS = [
 
 const DEFAULT_HERO_SLIDE = { icon: '', label: '', title: '', desc: '' }
 const DEFAULT_FAQ = { question: '', answer: '' }
+const DEFAULT_TESTIMONIAL = { quote: '', name: '', detail: '' }
 const DEFAULT_SOCIAL = { platform: '', type: 'instagram', handle: '', desc: '', url: '', btnLabel: '' }
 
 function parseJson(value, fallback) {
@@ -70,6 +72,7 @@ export default function GlobalSettings() {
   })
   const [heroSlides, setHeroSlides] = useState([{ ...DEFAULT_HERO_SLIDE }])
   const [faqItems, setFaqItems] = useState([{ ...DEFAULT_FAQ }])
+  const [testimonialItems, setTestimonialItems] = useState([{ ...DEFAULT_TESTIMONIAL }])
   const [socialItems, setSocialItems] = useState([{ ...DEFAULT_SOCIAL }])
 
   useEffect(() => {
@@ -81,10 +84,11 @@ export default function GlobalSettings() {
     try {
       dispatch(constantActions.updateFilter({ key: 'keys', value: CONSTANT_KEYS }))
       const constants = await dispatch(fetchConstants())
-      const { home_hero_slides, home_faq_items, home_social_items, ...rest } = constants || {}
+      const { home_hero_slides, home_faq_items, home_testimonial_items, home_social_items, ...rest } = constants || {}
       setSettings(prev => ({ ...prev, ...rest }))
       setHeroSlides(parseJson(home_hero_slides, [{ ...DEFAULT_HERO_SLIDE }]))
       setFaqItems(parseJson(home_faq_items, [{ ...DEFAULT_FAQ }]))
+      setTestimonialItems(parseJson(home_testimonial_items, [{ ...DEFAULT_TESTIMONIAL }]))
       setSocialItems(parseJson(home_social_items, [{ ...DEFAULT_SOCIAL }]))
     } catch (err) {
       console.error('Failed to load global settings:', err)
@@ -116,6 +120,7 @@ export default function GlobalSettings() {
         ...settings,
         home_hero_slides: JSON.stringify(heroSlides),
         home_faq_items: JSON.stringify(faqItems),
+        home_testimonial_items: JSON.stringify(testimonialItems),
         home_social_items: JSON.stringify(socialItems),
       }
       await dispatch(updateConstants(payload, () => {}))
@@ -322,6 +327,59 @@ export default function GlobalSettings() {
 
         <AddButton onClick={() => addItem(setFaqItems, DEFAULT_FAQ)} disabled={loading}>
           + Tambah Pertanyaan
+        </AddButton>
+      </SectionCard>
+
+      {/* Testimoni — ditampilkan di landing page */}
+      <SectionCard>
+        <SectionTitle>Testimoni</SectionTitle>
+
+        {testimonialItems.map((item, index) => (
+          <ItemCard key={index}>
+            <ItemHeader>
+              <ItemNumber>Testimoni {index + 1}</ItemNumber>
+              {testimonialItems.length > 1 && (
+                <RemoveButton onClick={() => removeItem(setTestimonialItems, index)}>Hapus</RemoveButton>
+              )}
+            </ItemHeader>
+
+            <FormGroup>
+              <Textarea
+                label="Isi Testimoni"
+                placeholder="MedPal membantu saya memahami anatomi jauh lebih cepat..."
+                value={item.quote}
+                onChange={(e) => handleItemChange(setTestimonialItems, index, 'quote', e.target.value)}
+                disabled={loading}
+                rows={3}
+              />
+            </FormGroup>
+
+            <FormRow>
+              <FormGroup>
+                <TextInput
+                  label="Nama Pengguna"
+                  placeholder="Andi Pratama"
+                  value={item.name}
+                  onChange={(e) => handleItemChange(setTestimonialItems, index, 'name', e.target.value)}
+                  disabled={loading}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <TextInput
+                  label="Keterangan"
+                  placeholder="Pendidikan Dokter · Universitas Indonesia"
+                  value={item.detail}
+                  onChange={(e) => handleItemChange(setTestimonialItems, index, 'detail', e.target.value)}
+                  disabled={loading}
+                />
+              </FormGroup>
+            </FormRow>
+          </ItemCard>
+        ))}
+
+        <AddButton onClick={() => addItem(setTestimonialItems, DEFAULT_TESTIMONIAL)} disabled={loading}>
+          + Tambah Testimoni
         </AddButton>
       </SectionCard>
 

@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateMcqTopicService extends BaseService {
   static async call({
@@ -110,10 +111,17 @@ export class UpdateMcqTopicService extends BaseService {
 
         // Soft-delete existing questions; past answers and progress still reference them,
         // so rows and their attachments are kept
-        await tx.mcq_questions.updateMany({
+        const removed = await tx.mcq_questions.updateMany({
           where: { topic_id: existingTopic.id, is_deleted: false },
           data: { is_deleted: true, deleted_at: new Date() }
         })
+
+        // The old set goes, a new one arrives — only the difference matters.
+        await bumpContentStat(
+          tx,
+          CONTENT_STAT_KEYS.mcqQuestion,
+          questions.length - removed.count
+        )
 
         // Create new questions
         const createdQuestions = []

@@ -19,6 +19,7 @@ import diagnostic from "./diagnostic";
 import anatomy from "./anatomy";
 import mcq from "./mcq";
 import constant from "./constant";
+import home from "./home";
 import chatbot from "./chatbot/reducer";
 import skripsi from "./skripsi/reducer";
 import oscePractice from "./oscePractice";
@@ -49,6 +50,7 @@ export const rootReducer = combineReducers({
     auth,
     calculator,
     constant,
+    home,
     common,
     credit,
     exercise,

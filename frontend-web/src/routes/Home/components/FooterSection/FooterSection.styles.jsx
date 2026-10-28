@@ -1,72 +1,106 @@
-import styled from 'styled-components';
-import { colors } from '@config/colors';
+import styled from 'styled-components'
+import { colors, fonts, media } from '../../theme'
 
-export const SocialWrapper = styled.section`
-  padding: 5rem 0 4rem;
-`;
+export const FooterWrapper = styled.footer`
+  background: ${colors.surface};
+  border-top: 1px solid ${colors.border};
+  padding-block: 44px 28px;
+`
 
-export const SocialMascot = styled.img`
-  display: block;
-  width: 213px;
-  margin: 0 auto 1rem;
-`;
+export const FooterGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 40px;
+  align-items: start;
+
+  ${media.tablet} {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+`
+
+export const Brand = styled.div`
+  font-family: ${fonts.display};
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+  line-height: 1;
+
+  span:first-child {
+    color: ${colors.brandBlueLight};
+  }
+
+  span:last-child {
+    color: ${colors.brandGreen};
+  }
+`
+
+export const Tagline = styled.p`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: ${colors.bodyText};
+  margin: 12px 0 0;
+  max-width: 380px;
+`
 
 export const SocialGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 300px));
-  justify-content: center;
-  gap: 1.375rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    max-width: 320px;
-    margin: 0 auto;
-  }
-`;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+`
 
 export const SocialCard = styled.a`
-  background: #fff;
-  border: 1.5px solid #eef1f5;
-  border-radius: 20px;
-  box-shadow: 0 5px 0 #eef1f5;
-  padding: 1.75rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid ${colors.border};
+  border-radius: 14px;
+  background: ${colors.surface};
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.18s ease, transform 0.18s ease;
 
   &:hover {
-    transform: translateY(2px);
-    box-shadow: 0 4px 0 #dbe9f5;
-    border-color: ${colors.primary.main};
+    border-color: ${colors.brandBlueLight};
+    transform: translateY(-1px);
   }
-`;
+`
 
-export const SocialIcon = styled.div`
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  font-size: 1.5rem;
-  margin: 0 auto 0.875rem;
-  background: ${props => props.$bg || 'rgba(107, 185, 232, 0.15)'};
-`;
+export const SocialIcon = styled.span`
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+  background: ${(props) => props.$background || colors.chipBackground};
+`
 
-export const SocialPlatform = styled.h3`
-  font-size: 1.1875rem;
-  margin: 0 0 0.25rem;
-  color: ${colors.text.primary};
-`;
+export const SocialPlatform = styled.div`
+  font-family: ${fonts.body};
+  font-weight: 700;
+  font-size: 14.5px;
+  color: ${colors.headingDark};
+`
 
-export const SocialHandle = styled.p`
-  color: #6b7280;
-  font-weight: 500;
-  margin: 0;
-`;
+export const SocialHandle = styled.div`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 13px;
+  color: ${colors.metaText};
+`
 
 export const Copyright = styled.div`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 13.5px;
+  color: ${colors.metaText};
+  border-top: 1px solid ${colors.border};
+  margin-top: 36px;
+  padding-top: 20px;
   text-align: center;
-  margin-top: 2.5rem;
-  font-size: 0.875rem;
-  color: #8a94a6;
-`;
+`

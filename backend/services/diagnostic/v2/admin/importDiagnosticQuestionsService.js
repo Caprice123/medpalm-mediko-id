@@ -1,6 +1,7 @@
 import XLSX from 'xlsx'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 const RECORD_TYPE = 'diagnostic_question'
 
@@ -53,6 +54,11 @@ export class ImportDiagnosticQuestionsService extends BaseService {
         create: { node_id: parseInt(nodeId), record_type: RECORD_TYPE, total_count: results.imported },
         update: { total_count: { increment: results.imported } },
       })
+    }
+
+    // One bump for the whole batch rather than per row.
+    if (results.imported > 0) {
+      await incrementContentStat(CONTENT_STAT_KEYS.diagnosticQuestion, results.imported)
     }
 
     return results

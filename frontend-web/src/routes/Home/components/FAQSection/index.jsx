@@ -1,92 +1,100 @@
-import { SectionContent, SectionHeader, SectionBadge, SectionTitle, SectionSubtitle } from '@routes/Home/Home.styles'
-import { mascots } from '@routes/Home/utils/mascots'
+import faqMascot from '@/assets/landing/faq-capybara-thinking.png'
+import toggleHorizontal from '@/assets/landing/faq-toggle-horizontal.svg'
+import toggleVertical from '@/assets/landing/faq-toggle-vertical.svg'
+import { ContentWidth } from '../../Home.styles'
 import { useFaqAccordion } from './hooks/useFaqAccordion'
 import {
-  FAQWrapper,
-  FAQLayout,
-  FAQSide,
-  SideBubble,
-  SideMascot,
-  FAQList,
-  FAQItem,
-  FAQQuestion,
-  FAQIcon,
-  FAQAnswer,
-  FAQAnswerInner,
+  SectionWrapper,
+  Layout,
+  Badge,
+  Heading,
+  Description,
+  ContactLink,
+  AccordionList,
+  AccordionItem,
+  AccordionTrigger,
+  ToggleChip,
+  ToggleBar,
+  ToggleBarVertical,
+  AccordionAnswer,
+  Mascot,
 } from './FAQSection.styles'
 
-const FAQS = [
+// The questions Figma shows. Answers are not in the design, so these are the
+// defaults an admin can replace through the `home_faq_items` constant.
+const DEFAULT_FAQS = [
   {
-    question: 'Apa itu kredit dan bagaimana cara menggunakannya?',
+    question: 'Apa saja yang bisa dipelajari di MedPal?',
     answer:
-      'Kredit adalah biaya untuk setiap penggunaan fitur yang berhubungan dengan AI, setiap paket langganan kami berikan credits, namun jika untuk pengguna yang menggunakan AI secara intensif dapat melakukan top up. Biaya credits untuk AI research sekitar 0,1 dan untuk OSCE AI sekitar 5 credits.',
+      'Materi kedokteran yang tersusun per sistem dan blok, atlas anatomi 3D interaktif, quiz, flashcard, serta berbagai fitur pendukung belajar lainnya.',
   },
   {
-    question: 'Apakah ada masa percobaan gratis?',
+    question: 'Apakah MedPal bisa digunakan lewat smartphone?',
     answer:
-      'Ada, namun biasanya dalam bentuk event khusus dengan waktu terbatas, users bisa mendapatkan free credits untuk AI ataupun free trial untuk mengakses fitur premium tertentu.',
+      'Bisa. MedPal dapat diakses lewat browser di ponsel, tablet, maupun komputer tanpa perlu instalasi tambahan.',
   },
   {
-    question: 'Bisakah saya mengakses MedPal dari smartphone?',
+    question: 'Apakah progres belajar tersimpan?',
     answer:
-      'Ya bisa, anda bisa mengaksesnya lewat website, namun untuk versi Play Store ataupun App Store akan tersedia sekitar Agustus 2026.',
+      'Ya. Progres belajar, riwayat quiz, dan status flashcard tersimpan otomatis di akunmu dan bisa dilanjutkan kapan saja.',
   },
   {
-    question: 'Bagaimana cara membeli kredit?',
+    question: 'Bagaimana cara memilih paket MedPal?',
     answer:
-      'Bisa dilakukan dengan mengklik "top up" di pojok sebelah kanan dashboard pengguna.',
+      'Pilih paket sesuai kebutuhan belajarmu. Kamu bisa mulai dari paket gratis, lalu meningkatkan kapan pun dibutuhkan.',
   },
   {
-    question: 'Apakah bahan belajar terus diperbarui?',
+    question: 'Apakah materi MedPal terus diperbarui?',
     answer:
-      'Benar, akan terus kami perbarui sesuai dengan kurikulum pendidikan kedokteran Indonesia.',
+      'Materi dan soal diperbarui secara berkala oleh tim kurikulum MedPal agar tetap relevan dengan kebutuhan perkuliahan.',
   },
 ]
 
-export default function FAQSection({ faqItems }) {
-  const items = faqItems || FAQS
+function FAQSection({ faqItems }) {
   const { isOpen, toggle } = useFaqAccordion()
+  const items = faqItems || DEFAULT_FAQS
 
   return (
-    <FAQWrapper id="faq">
-      <SectionContent>
-        <SectionHeader data-aos="fade-up">
-          <SectionBadge>FAQ</SectionBadge>
-          <SectionTitle>Pertanyaan yang Sering Diajukan</SectionTitle>
-          <SectionSubtitle>Temukan jawaban atas pertanyaan umum seputar MedPal</SectionSubtitle>
-        </SectionHeader>
+    <SectionWrapper id="faq">
+      <Mascot src={faqMascot} alt="" aria-hidden="true" />
 
-        <FAQLayout>
-          <FAQSide data-aos="fade-right">
-            <SideBubble>Masih bingung?<br />Cek di sini dulu!</SideBubble>
-            <SideMascot src={mascots.thinkingChin} alt="Maskot kapibara MedPal sedang berpikir" />
-          </FAQSide>
+      <ContentWidth>
+        <Layout>
+          <div>
+            <Badge>FAQ</Badge>
+            <Heading>
+              Pertanyaan yang
+              <br />
+              sering muncul.
+            </Heading>
+            <Description>
+              Masih ada yang ingin ditanyakan? Temukan jawaban singkat tentang
+              penggunaan MedPal di sini.
+            </Description>
+            <ContactLink href="mailto:medpal.id@gmail.com">Hubungi MedPal →</ContactLink>
+          </div>
 
-          <FAQList>
-            {items.map((faq, index) => {
-              const open = isOpen(index)
-              return (
-                <div key={faq.question} data-aos="fade-up" data-aos-delay={index * 50}>
-                  <FAQItem $open={open}>
-                    <FAQQuestion onClick={() => toggle(index)} aria-expanded={open}>
-                      {faq.question}
-                      <FAQIcon $open={open}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      </FAQIcon>
-                    </FAQQuestion>
-                    <FAQAnswer $open={open}>
-                      <FAQAnswerInner>{faq.answer}</FAQAnswerInner>
-                    </FAQAnswer>
-                  </FAQItem>
-                </div>
-              )
-            })}
-          </FAQList>
-        </FAQLayout>
-      </SectionContent>
-    </FAQWrapper>
+          <AccordionList>
+            {items.map((item, index) => (
+              <AccordionItem key={item.question}>
+                <AccordionTrigger
+                  onClick={() => toggle(index)}
+                  aria-expanded={isOpen(index)}
+                >
+                  {item.question}
+                  <ToggleChip aria-hidden="true">
+                    <ToggleBar src={toggleHorizontal} alt="" />
+                    <ToggleBarVertical src={toggleVertical} alt="" $open={isOpen(index)} />
+                  </ToggleChip>
+                </AccordionTrigger>
+                {isOpen(index) && <AccordionAnswer>{item.answer}</AccordionAnswer>}
+              </AccordionItem>
+            ))}
+          </AccordionList>
+        </Layout>
+      </ContentWidth>
+    </SectionWrapper>
   )
 }
+
+export default FAQSection

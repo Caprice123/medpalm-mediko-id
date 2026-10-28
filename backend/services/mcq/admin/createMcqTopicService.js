@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class CreateMcqTopicService extends BaseService {
   static async call({
@@ -51,6 +52,8 @@ export class CreateMcqTopicService extends BaseService {
           blobId: blobId
         })
       }
+
+      await bumpContentStat(tx, CONTENT_STAT_KEYS.mcqQuestion, questions.length)
 
       // Create questions
       const createdQuestions = []

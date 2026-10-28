@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
+import { bumpContentStat, flashcardStatKey } from '#utils/contentStatsHelper'
 
 const RECORD_TYPE = 'flashcard_card'
 
@@ -24,6 +25,7 @@ export class DeleteNodeCardService extends BaseService {
 
     await prisma.$transaction(async (tx) => {
       await tx.flashcard_cards.delete({ where: { id: parseInt(cardId) } })
+      await bumpContentStat(tx, flashcardStatKey(card.type), -1)
 
       if (fnRecord) {
         await tx.feature_node_records.delete({ where: { id: fnRecord.id } })

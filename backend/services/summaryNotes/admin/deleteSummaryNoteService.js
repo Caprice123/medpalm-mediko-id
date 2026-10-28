@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import embeddingService from '#services/embedding/embeddingService'
+import { decrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class DeleteSummaryNoteService extends BaseService {
   static async call({ id }) {
@@ -25,6 +26,12 @@ export class DeleteSummaryNoteService extends BaseService {
         deleted_at: new Date()
       }
     })
+
+    // Soft delete removes it from the landing-page count, but only if it was
+    // published and not already deleted.
+    if (existing.status === 'published' && !existing.deleted_at) {
+      await decrementContentStat(CONTENT_STAT_KEYS.summaryNote)
+    }
 
     // Delete embedding from ChromaDB if it was published
     if (existing.status === 'published') {

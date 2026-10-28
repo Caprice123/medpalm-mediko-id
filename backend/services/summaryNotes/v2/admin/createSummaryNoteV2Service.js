@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote } from '#jobs/queues/summaryNotesQueue'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class CreateSummaryNoteV2Service extends BaseService {
   static async call({ title, description, content, markdownContent, blobId, status, tagIds, createdBy, nodeId }) {
@@ -70,6 +71,11 @@ export class CreateSummaryNoteV2Service extends BaseService {
 
       return tx.summary_notes.findUnique({ where: { id: summaryNote.id } })
     }, { timeout: 30_000 })
+
+    // Only published notes are counted on the landing page.
+    if (result.status === 'published') {
+      await incrementContentStat(CONTENT_STAT_KEYS.summaryNote)
+    }
 
     if (result.status === 'published') {
       try {

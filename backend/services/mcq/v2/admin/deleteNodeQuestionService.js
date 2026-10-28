@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class DeleteNodeQuestionService extends BaseService {
   static async call({ nodeId, questionId }) {
@@ -21,6 +22,7 @@ export class DeleteNodeQuestionService extends BaseService {
       })
 
       await bumpNodeStat(tx, parseInt(nodeId), 'mcq_question', -1)
+      await bumpContentStat(tx, CONTENT_STAT_KEYS.mcqQuestion, -1)
     })
   }
 }

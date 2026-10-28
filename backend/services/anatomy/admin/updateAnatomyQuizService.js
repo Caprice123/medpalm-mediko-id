@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateAnatomyQuizService extends BaseService {
   static async call({ quizId, title, description, blobId, embedUrl, questionCount, mediaType, tags, questions, status }) {
@@ -13,7 +14,17 @@ export class UpdateAnatomyQuizService extends BaseService {
     const hasTags = tags !== undefined && tags !== null
 
     const updatedQuiz = await prisma.$transaction(async tx => {
-      await tx.anatomy_questions.deleteMany({ where: { quiz_id: existingQuiz.id } })
+      const removedQuestions = await tx.anatomy_questions.deleteMany({
+        where: { quiz_id: existingQuiz.id },
+      })
+
+      // The quiz update below recreates the whole set, so only the net change
+      // reaches the landing-page counter.
+      await bumpContentStat(
+        tx,
+        CONTENT_STAT_KEYS.anatomyQuestion,
+        questions.length - removedQuestions.count
+      )
 
       if (hasTags) {
         await tx.anatomy_quiz_tags.deleteMany({ where: { quiz_id: existingQuiz.id } })

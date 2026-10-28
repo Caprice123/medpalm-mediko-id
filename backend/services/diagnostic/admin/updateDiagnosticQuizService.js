@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateDiagnosticQuizService extends BaseService {
   static async call({
@@ -30,10 +31,17 @@ export class UpdateDiagnosticQuizService extends BaseService {
     // Update quiz with questions and tags in a transaction
     const updatedQuiz = await prisma.$transaction(async tx => {
       // Soft-delete existing questions (past answers still reference them) and drop tags
-      await tx.diagnostic_questions.updateMany({
+      const removed = await tx.diagnostic_questions.updateMany({
         where: { quiz_id: existingQuiz.id, is_deleted: false },
         data: { is_deleted: true, deleted_at: new Date() }
       })
+
+      // The old set goes, a new one arrives — only the difference matters.
+      await bumpContentStat(
+        tx,
+        CONTENT_STAT_KEYS.diagnosticQuestion,
+        questions.length - removed.count
+      )
 
       await tx.diagnostic_quiz_tags.deleteMany({
         where: { quiz_id: existingQuiz.id }

@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { bumpContentStat, publishedDelta, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateAtlasModelService extends BaseService {
   static async call({ modelId, title, description, embedUrl, status, editorContent }) {
@@ -10,7 +11,7 @@ export class UpdateAtlasModelService extends BaseService {
     if (!existingModel) throw new ValidationError('Atlas model tidak ditemukan')
 
     const updatedModel = await prisma.$transaction(async tx => {
-      return tx.atlas_models.update({
+      const model = await tx.atlas_models.update({
         where: { unique_id: modelId },
         data: {
           title,
@@ -21,6 +22,17 @@ export class UpdateAtlasModelService extends BaseService {
           updated_at: new Date(),
         },
       })
+
+      // Publishing or unpublishing moves the landing-page counter even though
+      // no row was added or removed. Bumped inside the transaction so a
+      // rollback takes the counter with it.
+      await bumpContentStat(
+        tx,
+        CONTENT_STAT_KEYS.atlasModel,
+        publishedDelta(existingModel, model)
+      )
+
+      return model
     })
 
     return updatedModel

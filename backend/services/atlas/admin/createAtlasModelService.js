@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class CreateAtlasModelService extends BaseService {
   static async call({
@@ -38,6 +39,11 @@ export class CreateAtlasModelService extends BaseService {
         }
       }
     })
+
+    // Only published models are counted — a draft adds nothing until it ships.
+    if (model.status === 'published') {
+      await incrementContentStat(CONTENT_STAT_KEYS.atlasModel)
+    }
 
     return model
   }

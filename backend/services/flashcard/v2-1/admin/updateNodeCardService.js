@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 import { validateCardTypeFields } from '#utils/flashcardCardTypeValidator'
+import { bumpContentStat, flashcardStatKey } from '#utils/contentStatsHelper'
 
 export class UpdateNodeCardService extends BaseService {
   static async call({ cardId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong }) {
@@ -36,6 +37,12 @@ export class UpdateNodeCardService extends BaseService {
     if (explanationLong !== undefined) data.explanation_long = explanationLong?.trim() || null
 
     const updated = await prisma.flashcard_cards.update({ where: { id: parseInt(cardId) }, data })
+
+    // Changing a card's type moves it from one counter to the other.
+    if (updated.type !== card.type) {
+      await bumpContentStat(prisma, flashcardStatKey(card.type), -1)
+      await bumpContentStat(prisma, flashcardStatKey(updated.type), 1)
+    }
 
     if (blobId !== undefined) {
       const existingAttachment = await prisma.attachments.findFirst({

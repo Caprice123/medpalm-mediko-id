@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { bumpContentStat, flashcardStatKey } from '#utils/contentStatsHelper'
 
 export class UpdateFlashcardDeckV2Service extends BaseService {
   static async call(uniqueId, { title, description, status, cards }) {
@@ -31,7 +32,22 @@ export class UpdateFlashcardDeckV2Service extends BaseService {
           })
         }
 
+        // Cards are hard-deleted here, so count the outgoing set by type before
+        // removing it. Deck cards are always basic, but group anyway so a future
+        // typed deck card cannot silently skew the counters.
+        const outgoing = await tx.flashcard_cards.groupBy({
+          by: ['type'],
+          where: { deck_id: deck.id },
+          _count: { _all: true },
+        })
+        for (const group of outgoing) {
+          await bumpContentStat(tx, flashcardStatKey(group.type), -group._count._all)
+        }
+
         await tx.flashcard_cards.deleteMany({ where: { deck_id: deck.id } })
+        // The replacement set is created as basic cards.
+        await bumpContentStat(tx, flashcardStatKey('basic'), cards.length)
+
 
         const createdCards = []
         for (let i = 0; i < cards.length; i++) {

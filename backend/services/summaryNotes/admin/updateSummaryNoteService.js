@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote, queueDeleteSummaryNoteEmbedding } from '#jobs/queues/summaryNotesQueue'
+import { bumpContentStat, publishedDelta, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateSummaryNoteService extends BaseService {
   static async call({ id, title, description, content, markdownContent, blobId, status, isActive, tagIds, flashcardDeckIds, mcqTopicIds }) {
@@ -46,6 +47,16 @@ export class UpdateSummaryNoteService extends BaseService {
         where: { unique_id: id },
         data: updateData
       })
+
+      // Publishing or unpublishing moves the landing-page count even though no
+      // row is added or removed. Inside the transaction so a rollback undoes it.
+      if (!existing.deleted_at && status !== undefined) {
+        await bumpContentStat(
+          tx,
+          CONTENT_STAT_KEYS.summaryNote,
+          publishedDelta(existing, { status, deleted_at: existing.deleted_at })
+        )
+      }
 
       // Update tag associations if provided
       if (tagIds !== undefined) {

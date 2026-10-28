@@ -1,157 +1,164 @@
-import styled from 'styled-components';
-import { colors } from '@config/colors';
+import styled from 'styled-components'
+import { colors, fonts, media } from '../../theme'
 
-export const FAQWrapper = styled.section`
-  padding: 6rem 0;
+export const SectionWrapper = styled.section`
+  position: relative;
+  background: ${colors.surface};
+  padding-block: 56px 64px;
+  overflow: hidden;
+`
 
-  @media (max-width: 768px) {
-    padding: 4rem 0;
-  }
-`;
-
-export const FAQLayout = styled.div`
+export const Layout = styled.div`
+  position: relative;
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 2.5rem;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 60px;
   align-items: start;
-  max-width: 1000px;
-  margin: 0 auto;
+  /* Clears the mascot Figma parks against the left edge. */
+  padding-left: 200px;
 
-  @media (max-width: 900px) {
+  ${media.desktop} {
+    padding-left: 0;
+    gap: 36px;
+  }
+
+  ${media.tablet} {
     grid-template-columns: 1fr;
   }
-`;
+`
 
-export const FAQSide = styled.div`
-  position: sticky;
-  top: 110px;
-  text-align: center;
+export const Badge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: ${colors.brandBlueLight};
+  color: #fff;
+  font-family: ${fonts.body};
+  font-weight: 700;
+  font-size: 12.1px;
+  letter-spacing: 0.19px;
+`
 
-  @media (max-width: 900px) {
-    position: static;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    text-align: left;
+export const Heading = styled.h2`
+  font-family: ${fonts.heading};
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.52px;
+  color: ${colors.headingDark};
+  margin: 20px 0 0;
+
+  ${media.mobile} {
+    font-size: 30px;
   }
-`;
+`
 
-export const SideBubble = styled.div`
-  position: relative;
+export const Description = styled.p`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 17.4px;
+  line-height: 1.65;
+  color: ${colors.bodyText};
+  margin: 18px 0 0;
+`
+
+export const ContactLink = styled.a`
   display: inline-block;
-  background: #fff;
-  border: 2px solid ${colors.text.primary};
-  border-radius: 18px;
-  padding: 0.625rem 0.875rem;
+  font-family: ${fonts.body};
   font-weight: 600;
-  font-size: 0.875rem;
-  line-height: 1.35;
-  box-shadow: 4px 4px 0 ${colors.text.primary};
-  margin-bottom: 1.125rem;
+  font-size: 15px;
+  line-height: 1.65;
+  color: ${colors.brandBlueLight};
+  text-decoration: none;
+  margin-top: 16px;
 
-  @media (max-width: 900px) {
-    margin-bottom: 0;
+  &:hover {
+    text-decoration: underline;
   }
+`
 
-  &::after {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    background: #fff;
-    border: 2px solid ${colors.text.primary};
-    border-top: 0;
-    border-left: 0;
-    transform: rotate(45deg);
-    bottom: -9px;
-    left: 50%;
-    margin-left: -7px;
+export const AccordionList = styled.div`
+  border-top: 1px solid ${colors.border};
+`
 
-    @media (max-width: 900px) {
-      display: none;
-    }
-  }
-`;
+export const AccordionItem = styled.div`
+  border-bottom: 1px solid ${colors.border};
+`
 
-export const SideMascot = styled.img`
-  width: 275px;
-  margin: 0 auto;
-  animation: faqFloat 5s ease-in-out infinite;
-
-  @media (max-width: 900px) {
-    width: 138px;
-    margin: 0;
-  }
-
-  @keyframes faqFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`;
-
-export const FAQList = styled.div`
-  display: grid;
-  gap: 0.875rem;
-`;
-
-export const FAQItem = styled.div`
-  background: #fff;
-  border: 1.5px solid ${props => props.$open ? colors.primary.main : '#eef1f5'};
-  border-radius: 20px;
-  overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: ${props => props.$open ? `0 4px 0 ${colors.primary.light}` : '0 4px 0 #eef1f5'};
-`;
-
-export const FAQQuestion = styled.button`
+export const AccordionTrigger = styled.button`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
+  gap: 24px;
+  min-height: 77px;
+  padding: 18px 15px 18px 0;
   background: none;
   border: none;
   cursor: pointer;
   text-align: left;
-  font-size: 1rem;
+
+  font-family: ${fonts.body};
   font-weight: 700;
-  color: ${colors.text.primary};
-  transition: color 0.2s ease;
+  font-size: 17px;
+  line-height: 1.5;
+  color: ${colors.headingDark};
+`
 
-  &:hover { color: ${colors.primary.main}; }
-`;
-
-export const FAQIcon = styled.span`
+export const ToggleChip = styled.span`
+  position: relative;
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => props.$open ? colors.primary.main : 'rgba(107, 185, 232, 0.12)'};
-  color: ${props => props.$open ? '#fff' : colors.primary.dark};
-  transition: background 0.25s ease, color 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: ${props => props.$open ? 'rotate(45deg)' : 'rotate(0deg)'};
+  border-radius: 14px;
+  background: ${colors.chipBackground};
+`
 
-  svg { width: 14px; height: 14px; display: block; }
-`;
+export const ToggleBar = styled.img`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+`
 
-export const FAQAnswer = styled.div`
-  max-height: ${props => props.$open ? '400px' : '0'};
-  overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-`;
+// The vertical stroke is removed when the row opens, turning the "+" into "−".
+export const ToggleBarVertical = styled.img`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  opacity: ${(props) => (props.$open ? 0 : 1)};
+  transition: opacity 0.18s ease;
+`
 
-export const FAQAnswerInner = styled.div`
-  padding: 0 1.5rem 1.25rem;
-  font-size: 0.9375rem;
-  color: #4b5565;
-  line-height: 1.75;
-`;
+export const AccordionAnswer = styled.div`
+  font-family: ${fonts.body};
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: ${colors.bodyText};
+  padding: 0 60px 22px 0;
+`
+
+// Anchored to the section so it hangs 27px off the left edge of the frame, as
+// in Figma — inside the content column it would crash into the heading.
+export const Mascot = styled.img`
+  position: absolute;
+  left: -27px;
+  top: -10px;
+  width: 404px;
+  height: 404px;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+
+  ${media.desktop} {
+    display: none;
+  }
+`

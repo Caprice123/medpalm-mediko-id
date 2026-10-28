@@ -1,8 +1,9 @@
-import { SectionContent, SectionHeader, SectionBadge, SectionTitle, SectionSubtitle } from '@routes/Home/Home.styles'
-import { mascots } from '@routes/Home/utils/mascots'
+import { ContentWidth } from '../../Home.styles'
 import {
-  SocialWrapper,
-  SocialMascot,
+  FooterWrapper,
+  FooterGrid,
+  Brand,
+  Tagline,
   SocialGrid,
   SocialCard,
   SocialIcon,
@@ -11,63 +12,80 @@ import {
   Copyright,
 } from './FooterSection.styles'
 
-const DEFAULT_SOCIAL_CARDS = [
-  { platform: 'Instagram', handle: '@medpal.id', url: 'https://instagram.com/medpal.id', type: 'instagram' },
-  { platform: 'WhatsApp', handle: '+6285746469645', url: 'https://wa.me/6285746469645', type: 'whatsapp' },
+// Keyed by the `type` field of each `home_social_items` entry, matching the
+// options the admin Global Settings page offers.
+const ICON_STYLES = {
+  instagram: { background: '#fde7f0', icon: '📷' },
+  whatsapp: { background: '#e3f6e7', icon: '💬' },
+  youtube: { background: '#fde8e8', icon: '▶️' },
+  tiktok: { background: '#eceef2', icon: '🎵' },
+  facebook: { background: '#e6effd', icon: '👥' },
+  twitter: { background: '#e8f4fd', icon: '🐦' },
+  linkedin: { background: '#e4eefb', icon: '💼' },
+}
+
+const DEFAULT_SOCIAL_ITEMS = [
+  {
+    platform: 'Instagram',
+    type: 'instagram',
+    handle: '@medpal.id',
+    url: 'https://instagram.com/medpal.id',
+  },
+  {
+    platform: 'WhatsApp',
+    type: 'whatsapp',
+    handle: 'Hubungi kami',
+    url: 'https://wa.me/',
+  },
 ]
 
-const ICON_STYLES = {
-  instagram: { bg: '#fde6ec', icon: '📷' },
-  whatsapp: { bg: '#e4f6de', icon: '💬' },
-  youtube: { bg: '#fde2e2', icon: '▶️' },
-  tiktok: { bg: '#e4e7fb', icon: '🎵' },
-  facebook: { bg: '#dceefb', icon: '👍' },
-  twitter: { bg: '#dceefb', icon: '🐦' },
-  linkedin: { bg: '#dceefb', icon: '💼' },
-}
-
-export default function FooterSection({ socialItems }) {
-  const cards = socialItems || DEFAULT_SOCIAL_CARDS
+function FooterSection({ socialItems }) {
+  const items = socialItems || DEFAULT_SOCIAL_ITEMS
 
   return (
-    <SocialWrapper id="contact">
-      <SectionContent>
-        <SocialMascot
-          data-aos="fade-up"
-          src={mascots.waving}
-          alt="Maskot kapibara MedPal melambaikan tangan"
-        />
+    <FooterWrapper id="contact">
+      <ContentWidth>
+        <FooterGrid>
+          <div>
+            <Brand>
+              <span>Med</span>
+              <span>Pal</span>
+            </Brand>
+            <Tagline>
+              Platform belajar kedokteran untuk mahasiswa Indonesia — materi, anatomi 3D,
+              quiz, dan flashcard dalam satu tempat.
+            </Tagline>
+          </div>
 
-        <SectionHeader data-aos="fade-up">
-          <SectionBadge>Sosial Media</SectionBadge>
-          <SectionTitle>Tetap Terhubung dengan Kami</SectionTitle>
-          <SectionSubtitle>Ikuti perkembangan terbaru dan dapatkan tips medis eksklusif</SectionSubtitle>
-        </SectionHeader>
-
-        <SocialGrid>
-          {cards.map((card, i) => {
-            const style = ICON_STYLES[card.type] || ICON_STYLES.instagram
-            return (
-              <SocialCard
-                key={card.platform + i}
-                href={card.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
-              >
-                <SocialIcon $bg={style.bg}>{style.icon}</SocialIcon>
-                <SocialPlatform>{card.platform}</SocialPlatform>
-                <SocialHandle>{card.handle}</SocialHandle>
-              </SocialCard>
-            )
-          })}
-        </SocialGrid>
+          <SocialGrid>
+            {items.map((item) => {
+              const style = ICON_STYLES[item.type] || ICON_STYLES.instagram
+              return (
+                <SocialCard
+                  key={item.platform}
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <SocialIcon $background={style.background} aria-hidden="true">
+                    {style.icon}
+                  </SocialIcon>
+                  <div>
+                    <SocialPlatform>{item.platform}</SocialPlatform>
+                    <SocialHandle>{item.desc || item.handle}</SocialHandle>
+                  </div>
+                </SocialCard>
+              )
+            })}
+          </SocialGrid>
+        </FooterGrid>
 
         <Copyright>
-          © {new Date().getFullYear()} MedPal Indonesia. Belajar lebih ceria, jadi dokter lebih siap.
+          © {new Date().getFullYear()} MedPal.id — Seluruh hak cipta dilindungi.
         </Copyright>
-      </SectionContent>
-    </SocialWrapper>
+      </ContentWidth>
+    </FooterWrapper>
   )
 }
+
+export default FooterSection

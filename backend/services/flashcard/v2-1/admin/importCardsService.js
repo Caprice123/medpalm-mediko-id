@@ -2,6 +2,7 @@ import XLSX from 'xlsx'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
+import { incrementContentStat, flashcardStatKey } from '#utils/contentStatsHelper'
 
 export class ImportCardsService extends BaseService {
   static async call({ nodeId, buffer }) {
@@ -51,6 +52,11 @@ export class ImportCardsService extends BaseService {
       if (node?.parent_id) {
         await bumpNodeStat(prisma, node.parent_id, 'flashcard_card', results.imported)
       }
+    }
+
+    // The importer creates basic cards only.
+    if (results.imported > 0) {
+      await incrementContentStat(flashcardStatKey('basic'), results.imported)
     }
 
     return results

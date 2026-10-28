@@ -4,6 +4,7 @@ import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 import { bumpNodeStat } from '#utils/nodeStatisticsHelper'
 import { validateCardTypeFields } from '#utils/flashcardCardTypeValidator'
+import { bumpContentStat, flashcardStatKey } from '#utils/contentStatsHelper'
 
 export class AddNodeCardService extends BaseService {
   static async call({ nodeId, type, front, back, blobId, references, clozeAnswers, occlusionRegions, explanationShort, explanationLong }) {
@@ -41,6 +42,9 @@ export class AddNodeCardService extends BaseService {
     }
 
     const attachment = await attachmentService.getAttachmentWithUrl('flashcard_card', card.id, 'image')
+    // Only basic and cloze are shown on the landing page; occlusion maps to null.
+    await bumpContentStat(prisma, flashcardStatKey(card.type), 1)
+
     return { ...card, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
   }
 }

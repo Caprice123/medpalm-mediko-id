@@ -1,6 +1,7 @@
 import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from "#services/baseService"
+import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class UpdateExerciseQuestionsService extends BaseService {
     static async call(topicId, questions) {
@@ -18,9 +19,16 @@ export class UpdateExerciseQuestionsService extends BaseService {
         // Delete existing questions and create new ones in a transaction
         const updatedTopic = await prisma.$transaction(async (tx) => {
             // Delete existing questions
-            await tx.exercise_questions.deleteMany({
+            const removed = await tx.exercise_questions.deleteMany({
                 where: { topic_id: parseInt(topicId) }
             })
+
+            // The old set goes, a new one arrives — only the difference matters.
+            await bumpContentStat(
+                tx,
+                CONTENT_STAT_KEYS.exerciseQuestion,
+                questions.length - removed.count
+            )
 
             // Create new questions
             await tx.exercise_questions.createMany({

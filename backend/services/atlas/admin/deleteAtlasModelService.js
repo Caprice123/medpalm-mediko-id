@@ -3,6 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { decrementNodeStat } from '#utils/nodeStatisticsHelper'
 import { closeOrderGap } from '#utils/nodeRecordOrderHelper'
+import { decrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class DeleteAtlasModelService extends BaseService {
   static async call(modelId) {
@@ -24,6 +25,12 @@ export class DeleteAtlasModelService extends BaseService {
       where: { id: model.id },
       data: { is_deleted: true, deleted_at: new Date() },
     })
+
+    // A soft delete removes it from the landing-page count, but only if it was
+    // being counted in the first place.
+    if (model.status === 'published' && !model.deleted_at) {
+      await decrementContentStat(CONTENT_STAT_KEYS.atlasModel)
+    }
 
     if (record) {
       await prisma.feature_node_records.delete({ where: { id: record.id } })

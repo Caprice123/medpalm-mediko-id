@@ -1,18 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthRoute } from '@routes/Auth/routes'
 
-export function useNavbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+export function useNavbar({ scrollToSection }) {
+  const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  // The menu covers the viewport, so the page behind it must not scroll.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    if (!isMenuOpen) return undefined
+
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [isMenuOpen])
+
+  // Leaving it open while the layout switches back to the desktop row would
+  // trap the scroll lock with no visible way to close it.
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 993px)')
+    const close = (event) => {
+      if (event.matches) setIsMenuOpen(false)
+    }
+    query.addEventListener('change', close)
+    return () => query.removeEventListener('change', close)
   }, [])
 
-  const toggleMobileMenu = () => setMobileMenuOpen(prev => !prev)
-  const closeMobileMenu = () => setMobileMenuOpen(false)
+  const goToSignIn = () => {
+    setIsMenuOpen(false)
+    navigate(AuthRoute.signInRoute)
+  }
 
-  return { mobileMenuOpen, toggleMobileMenu, closeMobileMenu, scrolled }
+  const handleNavClick = (target) => {
+    setIsMenuOpen(false)
+    scrollToSection(target)
+  }
+
+  const toggleMenu = () => setIsMenuOpen((open) => !open)
+
+  return { isMenuOpen, toggleMenu, handleNavClick, goToSignIn }
 }

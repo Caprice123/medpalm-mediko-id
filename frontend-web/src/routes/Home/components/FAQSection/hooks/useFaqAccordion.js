@@ -1,18 +1,10 @@
 import { useState } from 'react'
 
 export function useFaqAccordion() {
-  const [openSet, setOpenSet] = useState(new Set())
+  const [openIndex, setOpenIndex] = useState(null)
 
-  const toggle = (index) => {
-    setOpenSet(prev => {
-      const next = new Set(prev)
-      if (next.has(index)) next.delete(index)
-      else next.add(index)
-      return next
-    })
-  }
-
-  const isOpen = (index) => openSet.has(index)
+  const isOpen = (index) => openIndex === index
+  const toggle = (index) => setOpenIndex((current) => (current === index ? null : index))
 
   return { isOpen, toggle }
 }

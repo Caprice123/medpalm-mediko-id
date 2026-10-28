@@ -1,3 +1,5 @@
+// Accepts any of the shapes the admin panel stores — youtu.be short links,
+// watch?v=, /embed/, /shorts/ and /live/ — and returns the 11-character id.
 export function extractYoutubeId(url) {
   if (!url) return null
   const match = url.match(

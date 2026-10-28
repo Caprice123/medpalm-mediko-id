@@ -2,6 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote } from '#jobs/queues/summaryNotesQueue'
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 
 export class CreateSummaryNoteService extends BaseService {
   static async call({ title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds, createdBy }) {
@@ -119,6 +120,11 @@ export class CreateSummaryNoteService extends BaseService {
     }, {
         timeout: 30000 // 20 seconds
     })
+
+    // Only published notes are counted on the landing page.
+    if (result.status === 'published') {
+      await incrementContentStat(CONTENT_STAT_KEYS.summaryNote)
+    }
 
     // Queue embedding job if status is 'published'
     if (result.status === 'published') {
