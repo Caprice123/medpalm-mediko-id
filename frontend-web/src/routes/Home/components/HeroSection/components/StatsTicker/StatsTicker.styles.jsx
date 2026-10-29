@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components'
-import { colors, fonts } from '../../../../theme'
+import { colors, fonts, layout } from '../../../../theme'
 
 // The track holds TRACK_COPIES identical copies and shifts by exactly one of
 // them, so the end state is visually identical to the start.
@@ -15,7 +15,8 @@ const scroll = keyframes`
 
 export const TickerBar = styled.div`
   background: ${colors.tickerBackground};
-  height: 89px;
+  /* The hero subtracts this from the viewport so the two fill one screen. */
+  height: ${layout.tickerHeight};
   display: flex;
   align-items: center;
   overflow: hidden;

@@ -26,16 +26,18 @@ import {
   CardLink,
   CardLinkArrow,
 } from './EventSection.styles'
+import { useHomeEvents } from './hooks/useHomeEvents'
 
-// The public events API sits behind authentication, so the landing page reads
-// this list from the `home_event_items` constant instead.
+// Real events, read live from the event listing — the ones this section
+// advertises are the same ones /events shows, so there is nothing for an admin
+// to retype in Pengaturan Global.
 //
 // There is deliberately no placeholder fallback: Figma's "Nama Event" cards are
 // a design mockup, and shipping them would show visitors fake events with a
-// button that leads nowhere. An empty list renders an honest empty state.
-function EventSection({ eventItems }) {
-  const items = eventItems
-  const hasEvents = Array.isArray(items) && items.length > 0
+// button that leads nowhere. No open events renders an honest empty state.
+function EventSection() {
+  const { items, isLoaded } = useHomeEvents()
+  const hasEvents = items.length > 0
 
   return (
     <SectionWrapper>
@@ -46,12 +48,12 @@ function EventSection({ eventItems }) {
           <HeaderBlock>
             <GradientHeading>Free Event</GradientHeading>
             <Description>
-              Sesi rutin bersama pemateri MedPal untuk membahas topik yang sedang banyak
-              ditanyakan.
+              Periode mencoba fitur MedPal tanpa biaya. Daftar selama pendaftarannya
+              masih dibuka.
             </Description>
           </HeaderBlock>
 
-          <ViewAllLink href="/webinar">
+          <ViewAllLink href="/events">
             Lihat semua event
             <ViewAllIcon src={arrowCircle} alt="" />
           </ViewAllLink>
@@ -63,7 +65,7 @@ function EventSection({ eventItems }) {
           {hasEvents ? (
             <Row className="g-4">
               {items.map((item, index) => (
-                <Col key={`${item.title}-${index}`} xs={12} md={6} xl={4}>
+                <Col key={item.code} xs={12} md={6} xl={4}>
                   <EventCard data-aos="fade-up" data-aos-delay={index * 80}>
                     <BadgeRow>
                       <FreeBadge>{item.status}</FreeBadge>
@@ -74,7 +76,7 @@ function EventSection({ eventItems }) {
                     <CardTitle>{item.title}</CardTitle>
                     <CardDescription>{item.description}</CardDescription>
 
-                    <CardLink href={item.url || '/webinar'}>
+                    <CardLink href="/events">
                       Lihat Event
                       <CardLinkArrow src={arrowRight} alt="" />
                     </CardLink>
@@ -83,12 +85,12 @@ function EventSection({ eventItems }) {
               ))}
             </Row>
           ) : (
-            <LandingEmptyState
+            isLoaded && <LandingEmptyState
               icon="🗓️"
-              title="Belum ada event terjadwal"
-              description="Sesi berikutnya sedang disiapkan tim MedPal. Cek halaman event untuk rekaman sesi sebelumnya."
+              title="Belum ada event yang dibuka"
+              description="Periode berikutnya sedang disiapkan tim MedPal. Cek halaman event untuk yang sudah lewat."
               actionLabel="Lihat semua event"
-              onAction={() => { window.location.href = '/webinar' }}
+              onAction={() => { window.location.href = '/events' }}
             />
           )}
         </CardsArea>

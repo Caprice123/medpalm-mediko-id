@@ -87,3 +87,23 @@ export const AddButton = styled.button`
     color: #6BB9E8;
   }
 `
+
+// Shared by FeatureSection, EventSection, ChallengeSection and LoginSection,
+// which each need a line explaining where their values actually show up.
+export const SectionHint = styled.p`
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #6b7280;
+  margin: -0.25rem 0 1rem;
+`
+
+export const NoAccessMessage = styled.p`
+  color: #6b7280;
+  padding: 1rem;
+`
+
+// Used by FeatureSection to mark a feature whose tab is switched off.
+export const ItemNote = styled.span`
+  font-size: 0.75rem;
+  color: #9ca3af;
+`

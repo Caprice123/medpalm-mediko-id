@@ -17,40 +17,22 @@ import {
   EllipseLarge,
   DecorMascot,
 } from './WhyMedPalSection.styles'
+import { useWhyMedPal } from './hooks/useWhyMedPal'
 
-// Figma repeats one placeholder card four times. Shipping four identical cards
-// would read as a bug, so these are the four real selling points; the layout,
-// spacing and colours still follow the design exactly.
-const CARDS = [
-  {
-    title: 'Materi yang Terarah',
-    description: 'Materi tersusun sistematis sesuai kurikulum',
-  },
-  {
-    title: 'Anatomi 3D Interaktif',
-    description: 'Pelajari struktur tubuh dari berbagai sudut',
-  },
-  {
-    title: 'Latihan Terukur',
-    description: 'Quiz dan flashcard dengan pembahasan lengkap',
-  },
-  {
-    title: 'Progres Terpantau',
-    description: 'Lacak perkembangan belajarmu setiap hari',
-  },
-]
-
+// The copy is editable under Pengaturan Global; the layout, spacing and colours
+// still follow the design exactly, and the 01/02/… markers are always derived
+// from position so a reordered or shortened list cannot skip a number.
 function WhyMedPalSection() {
+  const { heading, subtitle, cards } = useWhyMedPal()
+
   return (
     <SectionWrapper id="features">
       <ContentWidth>
-        <SectionHeading>Kenapa MedPal.id?</SectionHeading>
-        <Subheading>
-          Satu platform untuk mendukung perjalanan belajarmu di kedokteran.
-        </Subheading>
+        <SectionHeading>{heading}</SectionHeading>
+        <Subheading>{subtitle}</Subheading>
 
         <CardRow>
-          {CARDS.map((card, index) => (
+          {cards.map((card, index) => (
             <FeatureCard key={card.title} data-aos="fade-up" data-aos-delay={index * 80}>
               <CardNumber>{String(index + 1).padStart(2, '0')}</CardNumber>
               <CardTitle>{card.title}</CardTitle>

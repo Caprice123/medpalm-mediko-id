@@ -1,13 +1,15 @@
 import express from 'express'
 import challengeController from '#controllers/api/v1/challenge.controller'
-import { authenticateToken } from '#middleware/auth.middleware'
+import { authenticateToken, optionalAuthenticate } from '#middleware/auth.middleware'
 import { asyncHandler } from '#utils/asyncHandler'
 
 const router = express.Router()
 
+// Public, for the same reason as the webinar listing — see that route file.
+router.get('/', optionalAuthenticate, asyncHandler(challengeController.index.bind(challengeController)))
+
 router.use(authenticateToken)
 
-router.get('/', asyncHandler(challengeController.index.bind(challengeController)))
 router.get('/my-badges', asyncHandler(challengeController.myBadges.bind(challengeController)))
 router.get('/:uniqueId', asyncHandler(challengeController.show.bind(challengeController)))
 router.get('/:uniqueId/badges', asyncHandler(challengeController.badges.bind(challengeController)))

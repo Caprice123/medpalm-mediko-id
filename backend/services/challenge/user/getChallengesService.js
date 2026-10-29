@@ -1,5 +1,9 @@
 import prisma from '#prisma/client'
 
+// How far ahead the landing page is willing to advertise a challenge that has
+// not started yet.
+const UPCOMING_WINDOW_DAYS = 7
+
 export class GetUserChallengesService {
   static async call({ userId, page = 1, perPage = 20, search, tab = 'ongoing', universityId, semesterId }) {
     const p = parseInt(page)
@@ -15,6 +19,19 @@ export class GetUserChallengesService {
     } else if (tab === 'upcoming') {
       where.status = 'active'
       where.start_at = { gt: now }
+    } else if (tab === 'ongoing_or_upcoming') {
+      // Running now, or starting within the next week. What the landing page
+      // asks for: a challenge a month out is not news it needs to carry.
+      //
+      // Written as one AND array rather than as sibling `where` keys because
+      // both halves have to tolerate a null date — no end date means it never
+      // closes, no start date means it has already started.
+      const horizon = new Date(now.getTime() + UPCOMING_WINDOW_DAYS * 24 * 60 * 60 * 1000)
+      where.status = 'active'
+      where.AND = [
+        { OR: [{ end_at: null }, { end_at: { gte: now } }] },
+        { OR: [{ start_at: null }, { start_at: { lte: horizon } }] },
+      ]
     } else if (tab === 'past') {
       where.AND = [
         { status: 'completed' },
@@ -43,10 +60,17 @@ export class GetUserChallengesService {
     const isLastPage = data.length <= pp
     const sliced = data.slice(0, pp)
 
-    const sessions = await prisma.challenge_sessions.findMany({
-      where: { challenge_id: { in: sliced.map(c => c.id) }, user_id: userId },
-      select: { challenge_id: true, status: true, score: true, correct_count: true },
-    })
+    // No user means an anonymous caller — the landing page reads this listing
+    // without a login. The query is skipped rather than filtered: `user_id` is
+    // a non-nullable column, so Prisma rejects a null filter outright, and
+    // leaving it undefined would drop the condition and match every user's
+    // sessions. Same guard the event and webinar listings already use.
+    const sessions = userId
+      ? await prisma.challenge_sessions.findMany({
+          where: { challenge_id: { in: sliced.map(c => c.id) }, user_id: userId },
+          select: { challenge_id: true, status: true, score: true, correct_count: true },
+        })
+      : []
 
     const sessionMap = Object.fromEntries(sessions.map(s => [s.challenge_id, s]))
 

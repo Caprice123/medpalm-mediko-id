@@ -48,8 +48,7 @@ function FooterSection({ socialItems }) {
         <FooterGrid>
           <div>
             <Brand>
-              <span>Med</span>
-              <span>Pal</span>
+              <img src="/icon.png" alt="MedPal" />
             </Brand>
             <Tagline>
               Platform belajar kedokteran untuk mahasiswa Indonesia — materi, anatomi 3D,

@@ -12,7 +12,13 @@ import { UserChallengeSerializer } from '#serializers/api/v1/challengeSerializer
 class ChallengeController {
   async index(req, res) {
     const { page, perPage, search, tab, universityId, semesterId } = req.query
-    const result = await GetUserChallengesService.call({ userId: req.user.id, page, perPage, search, tab, universityId, semesterId })
+    // Readable without a login (the public landing page), so there may be no
+    // user. Normalised to null so the service can tell "anonymous" apart from a
+    // real id and skip its per-user session lookup entirely — `user_id` is a
+    // non-nullable column, so it can be neither null-filtered nor left
+    // undefined (undefined drops the condition and matches everyone).
+    const userId = req.user?.id ?? null
+    const result = await GetUserChallengesService.call({ userId, page, perPage, search, tab, universityId, semesterId })
     return res.status(200).json({
       data: UserChallengeSerializer.serializeList(result.data),
       pagination: result.pagination,

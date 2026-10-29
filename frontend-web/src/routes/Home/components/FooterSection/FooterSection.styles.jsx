@@ -19,19 +19,12 @@ export const FooterGrid = styled.div`
   }
 `
 
+// Same lockup as the header, a little smaller — see Navbar.styles.
 export const Brand = styled.div`
-  font-family: ${fonts.display};
-  font-weight: 600;
-  font-size: 32px;
-  letter-spacing: -0.5px;
-  line-height: 1;
-
-  span:first-child {
-    color: ${colors.brandBlueLight};
-  }
-
-  span:last-child {
-    color: ${colors.brandGreen};
+  img {
+    height: 36px;
+    width: auto;
+    display: block;
   }
 `
 

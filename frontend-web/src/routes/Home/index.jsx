@@ -24,10 +24,7 @@ function Home() {
     scrollToSection,
     heroTitle,
     heroSubtitle,
-    navItems,
     faqItems,
-    eventItems,
-    challengeItems,
     testimonialItems,
     socialItems,
   } = useHome()
@@ -36,7 +33,7 @@ function Home() {
     <>
       <GlobalStyles />
       <LandingContainer>
-        <Navbar scrollToSection={scrollToSection} navItems={navItems} />
+        <Navbar scrollToSection={scrollToSection} />
 
         <HeroSection
           title={heroTitle}
@@ -50,9 +47,9 @@ function Home() {
 
         <PricingSection />
 
-        <EventSection eventItems={eventItems} />
+        <EventSection />
 
-        <ChallengeSection challengeItems={challengeItems} />
+        <ChallengeSection />
 
         <TestimonialSection testimonialItems={testimonialItems} />
 

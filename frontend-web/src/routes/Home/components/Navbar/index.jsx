@@ -16,30 +16,28 @@ import {
   MobileTrial,
 } from './Navbar.styles'
 
-// Matches the links drawn in the Figma header; an admin can override the list
-// through the `home_nav_items` constant.
-const DEFAULT_NAV_ITEMS = [
+// Matches the links drawn in the Figma header. Not configurable: every target
+// has to be the id of a section that actually exists on this page, so an
+// editable list buys nothing and can only produce links that scroll nowhere.
+const NAV_ITEMS = [
   { label: 'Tentang', target: 'about' },
   { label: 'Fitur', target: 'features' },
   { label: 'Produk', target: 'pricing' },
   { label: 'FAQ', target: 'faq' },
 ]
 
-function Navbar({ scrollToSection, navItems }) {
+function Navbar({ scrollToSection }) {
   const { isMenuOpen, toggleMenu, handleNavClick, goToSignIn } = useNavbar({ scrollToSection })
-  const items = navItems || DEFAULT_NAV_ITEMS
-
   return (
     <HeaderBar>
       <ContentWidth>
         <HeaderInner>
-          <Brand href="/" aria-label="MedPal">
-            <span>Med</span>
-            <span>Pal</span>
+          <Brand href="/">
+            <img src="/icon.png" alt="MedPal" />
           </Brand>
 
           <NavLinks>
-            {items.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <NavLink key={item.target} onClick={() => handleNavClick(item.target)}>
                 {item.label}
               </NavLink>
@@ -74,7 +72,7 @@ function Navbar({ scrollToSection, navItems }) {
       </ContentWidth>
 
       <MobileMenu $open={isMenuOpen}>
-        {items.map((item) => (
+        {NAV_ITEMS.map((item) => (
           <NavLink key={item.target} onClick={() => handleNavClick(item.target)}>
             {item.label}
           </NavLink>

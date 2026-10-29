@@ -40,6 +40,7 @@
     "db:seed:exercise": "node prisma/seeds/exerciseConstants.seed.js",
     "db:seed:flashcard": "node prisma/seeds/flashcardConstants.seed.js",
     "db:seed:home": "node prisma/seeds/homeConstants.seed.js",
+    "db:seed:home-landing": "node prisma/seeds/homeLandingConstants.seed.js",
     "db:seed:flashcard-nodes": "node prisma/seeds/flashcardNodes.seed.js",
     "db:seed:mcq-from-flashcards": "node prisma/seeds/mcqFromFlashcards.seed.js",
     "chromadb:start": "python -m chromadb.cli.cli run --path ./data/chromadb --port 8000",

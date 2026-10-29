@@ -5,18 +5,39 @@ import { media } from '../../../../theme'
 // the 1440x774 hero frame running x 620..1440, y 120..680. Keeping the children
 // positioned as percentages of that box preserves the overlap between the
 // mascot and the two floating UI cards at every width.
+/* The art is the tallest thing in the hero, so it is what has to give when the
+   window is short enough that the hero and the ticker cannot both fit.
+
+   Capping its height directly would not work: with an explicit width AND a
+   capped height, `aspect-ratio` is overruled and the box simply squashes,
+   distorting every percentage-positioned child inside it. Capping the WIDTH
+   against the height still available keeps the ratio exact, so the art scales
+   down whole.
+
+   The 400px is everything the first screen spends outside this box:
+     75  header
+   + 89  ticker
+   + 40  HeroGrid top padding
+   + 69  TrustCardSlot padding (32 + 37)
+   + 127 the trust card itself
+   and 1.4643 is 820/560, turning that leftover height into a width. */
+const HEIGHT_CAPPED_WIDTH = 'calc((100vh - 400px) * 1.4643)'
+
 export const ArtBox = styled.div`
   position: relative;
-  width: 100%;
   aspect-ratio: 820 / 560;
+  width: min(100%, ${HEIGHT_CAPPED_WIDTH});
 
   /* In Figma the art runs past the 1260px content column into the right
      gutter. HeroWrapper clips the overflow at the viewport edge. */
   @media (min-width: 1200px) {
-    width: calc(100% + 90px);
+    width: min(calc(100% + 90px), ${HEIGHT_CAPPED_WIDTH});
   }
 
   ${media.tablet} {
+    /* The hero is no longer height-constrained here, so the art goes back to
+       being sized purely by its column. */
+    width: 100%;
     max-width: 560px;
     margin: 0 auto;
   }

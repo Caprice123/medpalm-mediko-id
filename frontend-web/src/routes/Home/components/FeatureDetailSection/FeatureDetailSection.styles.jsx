@@ -82,13 +82,22 @@ export const TabRow = styled.div`
 
 export const Tab = styled.button`
   min-width: 157px;
-  height: 45px;
-  padding: 0 18px;
+  /* The labels are feature names straight from the admin panel, so they run as
+     long as "Flashcard Belajar Interaktif". A fixed 45px height clipped those
+     once they wrapped inside a narrow pill; min-height keeps Figma's 45px for
+     every single-line label and lets the rest grow instead. */
+  min-height: 45px;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   border-radius: 30px;
   cursor: pointer;
   font-family: ${fonts.body};
   font-weight: 600;
   font-size: 14.5px;
+  line-height: 1.25;
   transition: filter 0.18s ease, border-color 0.18s ease;
 
   ${(props) =>

@@ -1,10 +1,35 @@
 import styled from 'styled-components'
-import { colors, media } from '../../theme'
+import { ContentWidth } from '../../Home.styles'
+import { colors, layout, media } from '../../theme'
 
 export const HeroWrapper = styled.section`
   position: relative;
   background: ${colors.pageBackground};
   overflow: hidden;
+
+  /* The hero and the ticker together fill the first screen, the way Figma
+     draws them: on its 774px-tall frame the header covers 0..75, the hero
+     plate runs to 685 and the ticker closes the frame at 774.
+     min-height rather than height, so a window too short for even the
+     compressed hero scrolls instead of clipping it. */
+  min-height: calc(100vh - ${layout.headerHeight} - ${layout.tickerHeight});
+  display: flex;
+  flex-direction: column;
+
+  /* ContentWidth is the hero's only in-flow child — the background plates are
+     absolutely positioned — so it has to pass the height down for HeroGrid to
+     take up the slack. */
+  ${ContentWidth} {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ${media.tablet} {
+    /* Stacked, the hero is taller than a phone screen on its own. Forcing it
+       into one would squash the art and the copy to nothing. */
+    min-height: 0;
+  }
 `
 
 // The two pastel leaf plates Figma puts behind the hero. They are decoration
@@ -46,8 +71,13 @@ export const HeroGrid = styled.div`
   grid-template-columns: 507px minmax(0, 1fr);
   align-items: center;
   gap: 24px;
-  padding-block: 48px 0;
-  min-height: 520px;
+  padding-block: 40px 0;
+
+  /* Takes whatever the trust card leaves. The art inside caps itself against
+     the same budget, so on a short window the whole hero scales down together
+     instead of pushing the ticker off the screen. */
+  flex: 1;
+  min-height: 0;
 
   ${media.desktop} {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -55,18 +85,23 @@ export const HeroGrid = styled.div`
 
   ${media.tablet} {
     grid-template-columns: 1fr;
-    min-height: 0;
     padding-block: 36px 0;
+    flex: none;
   }
 `
 
-// Lifts the trust card over the boundary between the hero and the ticker,
-// the way the design overlaps them.
+// The trust card sits inside the hero, not across its boundary: Figma puts the
+// card at y 521..648 and ends the hero plate at 685, so 37px of hero background
+// runs underneath it before the ticker starts. The ticker then butts straight
+// against that edge with no margin of its own.
+//
+// This used to have no bottom padding at all, which left the card touching the
+// ticker.
 export const TrustCardSlot = styled.div`
   position: relative;
-  padding-block: 32px 0;
+  padding-block: 32px 37px;
 
   ${media.tablet} {
-    padding-block: 28px 0;
+    padding-block: 28px 28px;
   }
 `

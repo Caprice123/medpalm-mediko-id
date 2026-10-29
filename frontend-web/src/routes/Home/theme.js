@@ -98,6 +98,13 @@ export const layout = {
   // (1260 + 48) — otherwise every section would sit 24px inside the design.
   maxWidth: '1308px',
   gutter: '90px',
+
+  // The sticky header and the hero's stats ticker. Both are fixed-height, and
+  // the hero sizes itself against the pair so that together they fill exactly
+  // one screen — so the numbers live here rather than inside one component's
+  // own stylesheet, where the hero could not see them.
+  headerHeight: '75px',
+  tickerHeight: '89px',
 }
 
 export const media = {

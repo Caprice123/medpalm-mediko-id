@@ -38,6 +38,36 @@ export const authenticate = async (req, res, next) => {
 };
 
 /**
+ * Optional authentication middleware
+ *
+ * For endpoints that are readable without a login but return more when the
+ * caller is signed in — the public landing page lists upcoming webinars and
+ * challenges anonymously, while a signed-in visitor hitting the same route
+ * still gets their own registration and session state.
+ *
+ * A missing header is simply anonymous. A present-but-invalid token is also
+ * treated as anonymous rather than a 401, so an expired session degrades to
+ * the public view instead of breaking the page.
+ */
+export const optionalAuthenticate = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+
+  try {
+    const { user, session } = await authService.verifyToken(authHeader.replace('Bearer ', ''));
+    req.user = user;
+    req.session = session;
+  } catch {
+    // Deliberately ignored — continue as an anonymous caller.
+  }
+
+  return next();
+};
+
+/**
  * Role-based authorization middleware
  * @param {Array<String>} roles - Allowed roles
  */

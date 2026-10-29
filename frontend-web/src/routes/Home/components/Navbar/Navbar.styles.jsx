@@ -1,10 +1,10 @@
 import styled from 'styled-components'
-import { colors, fonts, gradients, media } from '../../theme'
+import { colors, fonts, gradients, layout, media } from '../../theme'
 
-// Figma's header is 75px tall. Kept as a constant because three rules depend on
-// it staying in step: the bar, the row that centres its contents, and the
-// mobile menu that drops below it.
-const HEADER_HEIGHT = '75px'
+// Three rules here depend on the header height staying in step — the bar, the
+// row that centres its contents, and the mobile menu that drops below it — and
+// so does the hero, which subtracts it from the viewport. Hence theme.layout.
+const HEADER_HEIGHT = layout.headerHeight
 
 export const HeaderBar = styled.header`
   position: sticky;
@@ -28,25 +28,25 @@ export const HeaderInner = styled.div`
   gap: 16px;
 `
 
+// The product's own lockup, the same /icon.png the signed-in app uses, rather
+// than a two-span wordmark that only approximated it. Height-driven: the file
+// is a wide horizontal lockup, so the width follows from it.
 export const Brand = styled.a`
-  font-family: ${fonts.display};
-  font-weight: 600;
-  font-size: 36px;
-  letter-spacing: -0.58px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
   text-decoration: none;
   flex-shrink: 0;
 
-  span:first-child {
-    color: ${colors.brandBlueLight};
-  }
-
-  span:last-child {
-    color: ${colors.brandGreen};
+  img {
+    height: 40px;
+    width: auto;
+    display: block;
   }
 
   ${media.mobile} {
-    font-size: 28px;
+    img {
+      height: 32px;
+    }
   }
 `
 

@@ -1,6 +1,10 @@
 import prisma from '#prisma/client'
 import attachmentService from '#services/attachment/attachmentService'
 
+// How far ahead the landing page is willing to advertise an event whose
+// registration has not opened yet.
+const UPCOMING_WINDOW_DAYS = 7
+
 export class GetEventsService {
   static async call({ page = 1, perPage = 20, search, registrationStatus, userId }) {
     const pageNum = parseInt(page)
@@ -22,6 +26,20 @@ export class GetEventsService {
       where.registration_end_at = { gte: now }
     } else if (registrationStatus === 'closed') {
       where.registration_end_at = { lt: now }
+    } else if (registrationStatus === 'open_or_upcoming') {
+      // Registration has not closed yet AND opens within the next week —
+      // everything a visitor can either sign up for now or very soon. The
+      // landing page asks for this; an event two months out is not news it
+      // needs to carry.
+      //
+      // Both columns are nullable here, so each condition has to let a null
+      // through: no deadline means registration never closes, and no opening
+      // date means it is already open.
+      const horizon = new Date(now.getTime() + UPCOMING_WINDOW_DAYS * 24 * 60 * 60 * 1000)
+      where.AND = [
+        { OR: [{ registration_end_at: null }, { registration_end_at: { gte: now } }] },
+        { OR: [{ registration_start_at: null }, { registration_start_at: { lte: horizon } }] },
+      ]
     }
 
     const events = await prisma.events.findMany({
