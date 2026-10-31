@@ -6,7 +6,7 @@ export class CreateCreditPlanService extends BaseService {
     static async call(req) {
         const { name, description, credits, price, isActive, isPopular, discount, order } = req.body
 
-        this.validate({ name, credits, price })
+        this.validate({ name, credits, price, discount })
 
         const plan = await prisma.credit_plans.create({
             data: {
@@ -23,7 +23,7 @@ export class CreateCreditPlanService extends BaseService {
         return plan
     }
 
-    static validate({ name, credits, price }) {
+    static validate({ name, credits, price, discount }) {
         if (!name || !credits || !price) {
             throw new ValidationError('Name, credits, and price are required')
         }
