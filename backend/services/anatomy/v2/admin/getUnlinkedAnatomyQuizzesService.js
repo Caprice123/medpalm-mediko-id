@@ -1,6 +1,5 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
-import attachmentService from '#services/attachment/attachmentService'
 
 export class GetUnlinkedAnatomyQuizzesService extends BaseService {
   static async call({ page = 1, perPage = 20, search = '' }) {
@@ -37,13 +36,8 @@ export class GetUnlinkedAnatomyQuizzesService extends BaseService {
     const isLastPage = quizzes.length <= perPage
     const paginatedQuizzes = quizzes.slice(0, perPage)
 
-    const attachmentMap = await attachmentService.getBulkAttachmentsWithUrls(
-      paginatedQuizzes.map(quiz => ({ recordType: 'anatomy_quiz', recordId: quiz.id, name: 'image' }))
-    )
-
     return {
       data: paginatedQuizzes,
-      attachmentMap,
       pagination: { page, perPage, isLastPage },
     }
   }

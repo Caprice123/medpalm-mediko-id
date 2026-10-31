@@ -9,7 +9,7 @@ class UnlinkedQuizzesController {
     const { page = 1, perPage = 20, search = '' } = req.query
     const result = await GetUnlinkedAnatomyQuizzesService.call({ page, perPage, search })
     return res.status(200).json({
-      data: AnatomyQuizListSerializer.serialize(result.data, result.attachmentMap),
+      data: AnatomyQuizListSerializer.serialize(result.data),
       pagination: result.pagination,
     })
   }
@@ -26,7 +26,7 @@ class UnlinkedQuizzesController {
       tags,
       status,
     })
-    const [serialized] = AnatomyQuizListSerializer.serialize([quiz], new Map())
+    const [serialized] = AnatomyQuizListSerializer.serialize([quiz])
     return res.status(200).json({ data: serialized })
   }
 

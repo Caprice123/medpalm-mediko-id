@@ -12,7 +12,7 @@ class NodeAnatomyController {
     const { page, perPage } = req.query
     const result = await GetNodeAnatomyQuizzesService.call({ nodeId, page, perPage })
     return res.status(200).json({
-      data: AnatomyQuizListSerializer.serialize(result.data, result.attachmentMap),
+      data: AnatomyQuizListSerializer.serialize(result.data),
       pagination: result.pagination,
     })
   }

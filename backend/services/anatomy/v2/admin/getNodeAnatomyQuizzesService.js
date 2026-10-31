@@ -1,6 +1,5 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
-import attachmentService from '#services/attachment/attachmentService'
 
 export class GetNodeAnatomyQuizzesService extends BaseService {
   static async call({ nodeId, page = 1, perPage = 20 }) {
@@ -20,7 +19,7 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
     const quizIds = pageRecords.map(r => r.record_id)
 
     if (!quizIds.length) {
-      return { data: [], attachmentMap: new Map(), pagination: { page, perPage, isLastPage: true } }
+      return { data: [], pagination: { page, perPage, isLastPage: true } }
     }
 
     // No includes: the V2 list serializer reads only columns off the quiz row, and
@@ -35,13 +34,8 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
     const quizzesById = new Map(quizzes.map(q => [q.id, q]))
     const orderedQuizzes = quizIds.map(id => quizzesById.get(id)).filter(Boolean)
 
-    const attachmentMap = await attachmentService.getBulkAttachmentsWithUrls(
-      orderedQuizzes.map(quiz => ({ recordType: 'anatomy_quiz', recordId: quiz.id, name: 'image' }))
-    )
-
     return {
       data: orderedQuizzes,
-      attachmentMap,
       pagination: { page, perPage, isLastPage },
     }
   }
