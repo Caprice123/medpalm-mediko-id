@@ -25,10 +25,10 @@ const snap = new midtransClient.Snap({
  */
 export const createSnapToken = async ({ orderId, amount, customerDetails, itemDetails }) => {
   try {
+    // customerDetails is left out on purpose — it carries the buyer's email and name.
     console.log('Creating Midtrans Snap token with params:', {
       orderId,
       amount,
-      customerDetails,
       itemDetails
     })
 
@@ -50,10 +50,9 @@ export const createSnapToken = async ({ orderId, amount, customerDetails, itemDe
 
     const transaction = await snap.createTransaction(parameter)
 
-    console.log('Midtrans Snap token created:', {
-      token: transaction.token,
-      redirect_url: transaction.redirect_url
-    })
+    // Neither the token nor the redirect URL is logged: the token authorises the payment
+    // session, and the redirect URL embeds it.
+    console.log('Midtrans Snap token created for order:', orderId)
 
     return {
       token: transaction.token,

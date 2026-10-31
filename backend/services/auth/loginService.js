@@ -142,7 +142,6 @@ class AuthService {
     } catch (error) {
       throw new AuthorizationError('Invalid or expired token');
     }
-    console.log(decoded)
 
     // Check if session exists and is active
     const session = await prisma.user_sessions.findUnique({

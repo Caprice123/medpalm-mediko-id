@@ -19,8 +19,6 @@ export const authenticate = async (req, res, next) => {
     const token = authHeader.replace('Bearer ', '');
 
     // Verify token and get user
-    console.log(authHeader)
-    console.log(token)
     const { user, session } = await authService.verifyToken(token);
 
     // Attach user and session to request

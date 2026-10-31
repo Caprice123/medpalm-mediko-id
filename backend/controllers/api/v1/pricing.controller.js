@@ -192,7 +192,8 @@ class PricingController {
           ]
         })
 
-        console.log('Midtrans Snap token created:', snapResult)
+        // snapResult holds the Snap token and the redirect URL that embeds it.
+        console.log('Midtrans Snap token created for order:', orderId)
 
         // Store order ID in payment_reference
         await prisma.user_purchases.update({
