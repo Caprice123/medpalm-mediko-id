@@ -2,6 +2,25 @@ import prisma from '#prisma/client'
 
 const RECORD_TYPES = ['flashcard_card', 'summary_note', 'mcq_question', '3d_atlas', 'anatomy_quiz']
 
+// Pass record types as arguments to backfill only those, e.g.
+//   node prisma/seeds/backfillNodeStatistics.js 3d_atlas anatomy_quiz
+// With no arguments every type above is backfilled.
+function selectedRecordTypes() {
+  const args = process.argv.slice(2)
+  if (args.length === 0) return RECORD_TYPES
+
+  const unknown = args.filter(a => !RECORD_TYPES.includes(a))
+  if (unknown.length > 0) {
+    // Exit rather than skip: a typo would otherwise look like a successful run
+    // that silently backfilled nothing.
+    console.error(`Unknown record type(s): ${unknown.join(', ')}`)
+    console.error(`Known types: ${RECORD_TYPES.join(', ')}`)
+    process.exit(1)
+  }
+
+  return RECORD_TYPES.filter(t => args.includes(t))
+}
+
 // Record types whose node_statistics rows only ever mirror feature_node_records on that
 // same node, so a row with no matching records can safely be reset to 0. `flashcard_card`
 // is deliberately absent: its layer-1 rows are parent rollups written by
@@ -10,9 +29,10 @@ const RECORD_TYPES = ['flashcard_card', 'summary_note', 'mcq_question', '3d_atla
 const RECONCILABLE_RECORD_TYPES = ['3d_atlas', 'anatomy_quiz']
 
 async function backfill() {
-  console.log('Backfilling node_statistics...')
+  const recordTypes = selectedRecordTypes()
+  console.log(`Backfilling node_statistics for: ${recordTypes.join(', ')}`)
 
-  for (const recordType of RECORD_TYPES) {
+  for (const recordType of recordTypes) {
     const records = await prisma.feature_node_records.groupBy({
       by: ['node_id'],
       where: { record_type: recordType },

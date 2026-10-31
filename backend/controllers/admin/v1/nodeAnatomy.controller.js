@@ -2,7 +2,9 @@ import { GetNodeAnatomyQuizzesService } from '#services/anatomy/v2/admin/getNode
 import { UnlinkNodeAnatomyQuizService } from '#services/anatomy/v2/admin/unlinkNodeAnatomyQuizService'
 import { MoveNodeAnatomyQuizService } from '#services/anatomy/v2/admin/moveNodeAnatomyQuizService'
 import { SwapNodeAnatomyQuizOrderService } from '#services/anatomy/v2/admin/swapNodeAnatomyQuizOrderService'
-import { AnatomyQuizListSerializer } from '#serializers/admin/v1/anatomyQuizListSerializer'
+// v2 serializer — see the note in nodeAtlas.controller.js. Carries `version` and
+// `embedUrl`, which the V2 module detail page reads and the v1 serializer omits.
+import { AnatomyQuizListSerializer } from '#serializers/admin/v2/anatomyQuizListSerializer'
 
 class NodeAnatomyController {
   async index(req, res) {

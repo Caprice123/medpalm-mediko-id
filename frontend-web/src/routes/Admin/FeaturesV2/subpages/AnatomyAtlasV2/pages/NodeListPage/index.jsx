@@ -45,16 +45,21 @@ export default function NodeListPage({ currentLayer, parentNode, onNavigateInto,
       header: 'Klasifikasi',
       render: (n) => <ClassificationBadge value={n.classification} labels={CLASSIFICATION_LABELS} />,
     }] : []),
-    {
-      header: 'Atlas 3D',
-      align: 'center',
-      render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.atlasCount ?? 0}</span>,
-    },
-    {
-      header: 'Quiz',
-      align: 'center',
-      render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.quizCount ?? 0}</span>,
-    },
+    // Layer 2 only: content links to module nodes, so these counts come from the
+    // module's own node_statistics rows. A topic holds none of its own and would
+    // read 0 for every row.
+    ...(currentLayer === 2 ? [
+      {
+        header: 'Atlas 3D',
+        align: 'center',
+        render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.atlasCount ?? 0}</span>,
+      },
+      {
+        header: 'Quiz',
+        align: 'center',
+        render: (n) => <span style={{ color: '#374151', fontWeight: 500 }}>{n.quizCount ?? 0}</span>,
+      },
+    ] : []),
     {
       header: 'Aksi',
       align: 'right',

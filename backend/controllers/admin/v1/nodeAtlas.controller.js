@@ -2,7 +2,11 @@ import { GetNodeAtlasModelsService } from '#services/atlas/v2/admin/getNodeAtlas
 import { UnlinkNodeAtlasModelService } from '#services/atlas/v2/admin/unlinkNodeAtlasModelService'
 import { MoveNodeAtlasModelService } from '#services/atlas/v2/admin/moveNodeAtlasModelService'
 import { SwapNodeAtlasModelOrderService } from '#services/atlas/v2/admin/swapNodeAtlasModelOrderService'
-import { AtlasModelListSerializer } from '#serializers/admin/v1/atlasModelListSerializer'
+// v2 serializer: this list feeds the V2 module detail page, which needs `version` and
+// `editorContent`. The v1 serializer emits neither — its tag fields are what the v1
+// admin panel needs and this page never reads. Serving v1 here left the edit modal
+// initialising editorContent to null, so saving a title change wiped the stored content.
+import { AtlasModelListSerializer } from '#serializers/admin/v2/atlasModelListSerializer'
 
 class NodeAtlasController {
   async index(req, res) {
