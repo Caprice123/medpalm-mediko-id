@@ -1,8 +1,12 @@
 import styled from 'styled-components'
 import { colors, fonts, media } from '../../theme'
 
+// z-index rather than plain `position: relative`: it opens a stacking context
+// so Decoration can sit at a negative layer — behind the cards and the heading,
+// but still in front of this section's own white background.
 export const SectionWrapper = styled.section`
   position: relative;
+  z-index: 0;
   background: ${colors.surface};
   padding-block: 44px 56px;
   overflow: hidden;
@@ -64,14 +68,16 @@ export const CardNumber = styled.div`
   flex-shrink: 0;
 `
 
+// Figma centres the title over a left-aligned description, which only holds
+// together while every title fits on one line. The real titles don't, so the
+// card ended up with a centred two-line heading sitting above left-aligned body
+// copy and a left-aligned number. Everything shares one edge instead.
 export const CardTitle = styled.h3`
   font-family: ${fonts.body};
   font-weight: 600;
   font-size: 20.48px;
-  line-height: 1.65;
+  line-height: 1.35;
   color: #000;
-  /* Figma centres the title while the description below stays left-aligned. */
-  text-align: center;
   margin: 14px 0 0;
 `
 
@@ -87,6 +93,7 @@ export const CardDescription = styled.p`
 // Decorative blob cluster + mascot anchored to the right edge of the section.
 export const Decoration = styled.div`
   position: absolute;
+  z-index: -1;
   right: 0;
   top: -18px;
   width: 420px;

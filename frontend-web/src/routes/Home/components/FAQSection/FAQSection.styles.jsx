@@ -8,17 +8,19 @@ export const SectionWrapper = styled.section`
   overflow: hidden;
 `
 
+// The mascot is a real column rather than an absolutely positioned overlay with
+// a padding-left reserved for it. That padding was a fixed 200px while the
+// gutter it had to clear grows with the window, so between 1200px and ~1600px
+// the mascot ran straight over the heading.
 export const Layout = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
-  gap: 60px;
+  grid-template-columns: minmax(0, 250px) minmax(0, 400px) minmax(0, 1fr);
+  column-gap: 48px;
   align-items: start;
-  /* Clears the mascot Figma parks against the left edge. */
-  padding-left: 200px;
 
   ${media.desktop} {
-    padding-left: 0;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
     gap: 36px;
   }
 
@@ -146,14 +148,12 @@ export const AccordionAnswer = styled.div`
   padding: 0 60px 22px 0;
 `
 
-// Anchored to the section so it hangs 27px off the left edge of the frame, as
-// in Figma — inside the content column it would crash into the heading.
+// Sized by its own grid column, so the copy next to it can never be overlapped
+// no matter how wide the window's gutters get.
 export const Mascot = styled.img`
-  position: absolute;
-  left: -27px;
-  top: -10px;
-  width: 404px;
-  height: 404px;
+  width: 100%;
+  height: auto;
+  align-self: center;
   object-fit: contain;
   pointer-events: none;
   user-select: none;

@@ -41,7 +41,7 @@ const DEFAULT_FAQS = [
   {
     question: 'Bagaimana cara memilih paket MedPal?',
     answer:
-      'Pilih paket sesuai kebutuhan belajarmu. Kamu bisa mulai dari paket gratis, lalu meningkatkan kapan pun dibutuhkan.',
+      'Pilih paket sesuai kebutuhan belajarmu. Setiap paket berisi sejumlah kredit dengan masa aktif tertentu, dan kamu bisa menambah atau mengganti paket kapan pun dibutuhkan.',
   },
   {
     question: 'Apakah materi MedPal terus diperbarui?',
@@ -56,10 +56,10 @@ function FAQSection({ faqItems }) {
 
   return (
     <SectionWrapper id="faq">
-      <Mascot src={faqMascot} alt="" aria-hidden="true" />
-
       <ContentWidth>
         <Layout>
+          <Mascot src={faqMascot} alt="" aria-hidden="true" />
+
           <div>
             <Badge>FAQ</Badge>
             <Heading>

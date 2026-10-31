@@ -9,8 +9,12 @@ const fadeUp = keyframes`
   to   { opacity: 1; transform: none; }
 `
 
+// z-index rather than plain `position: relative`: it opens a stacking context
+// so FrameLeft and Decoration can sit at a negative layer — behind the copy,
+// but still in front of this section's own background.
 export const SectionWrapper = styled.section`
   position: relative;
+  z-index: 0;
   background: ${colors.eventBackground};
   padding-block: 44px 56px;
   overflow: hidden;
@@ -18,6 +22,7 @@ export const SectionWrapper = styled.section`
 
 export const FrameLeft = styled.img`
   position: absolute;
+  z-index: -1;
   left: 0;
   top: 0;
   width: 287px;
@@ -236,6 +241,7 @@ export const PointIcon = styled.img`
 
 export const Decoration = styled.div`
   position: absolute;
+  z-index: -1;
   right: 0;
   bottom: 0;
   width: 360px;

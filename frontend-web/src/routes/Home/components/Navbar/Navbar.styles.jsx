@@ -126,7 +126,7 @@ export const SignInLink = styled.button`
   }
 `
 
-export const TrialButton = styled.button`
+export const StartButton = styled.button`
   font-family: ${fonts.body};
   font-weight: 600;
   font-size: 14px;
@@ -195,7 +195,7 @@ export const MobileMenu = styled.div`
   }
 `
 
-// The sign-in and trial actions live inside the overlay on small screens, so
+// The sign-in and start actions live inside the overlay on small screens, so
 // the bar itself stays down to just the wordmark and the toggle.
 export const MobileActions = styled.div`
   display: flex;
@@ -218,7 +218,7 @@ export const MobileSignIn = styled.button`
   cursor: pointer;
 `
 
-export const MobileTrial = styled.button`
+export const MobileStartButton = styled.button`
   width: 100%;
   height: 48px;
   border-radius: 12px;

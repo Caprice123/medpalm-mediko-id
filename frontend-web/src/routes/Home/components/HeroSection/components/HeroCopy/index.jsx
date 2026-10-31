@@ -36,7 +36,7 @@ function HeroCopy({ title, subtitle, scrollToSection }) {
 
       <CtaRow>
         <PrimaryCta onClick={() => navigate(AuthRoute.signInRoute)}>
-          Coba Gratis Sekarang
+          Mulai Sekarang
         </PrimaryCta>
         <SecondaryCta onClick={() => scrollToSection('features')}>
           Lihat Fitur

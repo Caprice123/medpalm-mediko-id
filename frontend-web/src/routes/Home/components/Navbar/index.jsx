@@ -8,12 +8,12 @@ import {
   NavLink,
   HeaderActions,
   SignInLink,
-  TrialButton,
+  StartButton,
   MenuToggle,
   MobileMenu,
   MobileActions,
   MobileSignIn,
-  MobileTrial,
+  MobileStartButton,
 } from './Navbar.styles'
 
 // Matches the links drawn in the Figma header. Not configurable: every target
@@ -46,7 +46,7 @@ function Navbar({ scrollToSection }) {
 
           <HeaderActions>
             <SignInLink onClick={goToSignIn}>Masuk</SignInLink>
-            <TrialButton onClick={goToSignIn}>Coba Gratis</TrialButton>
+            <StartButton onClick={goToSignIn}>Mulai Sekarang</StartButton>
             <MenuToggle
               onClick={toggleMenu}
               aria-label={isMenuOpen ? 'Tutup menu' : 'Buka menu'}
@@ -80,7 +80,7 @@ function Navbar({ scrollToSection }) {
 
         <MobileActions>
           <MobileSignIn onClick={goToSignIn}>Masuk</MobileSignIn>
-          <MobileTrial onClick={goToSignIn}>Coba Gratis</MobileTrial>
+          <MobileStartButton onClick={goToSignIn}>Mulai Sekarang</MobileStartButton>
         </MobileActions>
       </MobileMenu>
     </HeaderBar>

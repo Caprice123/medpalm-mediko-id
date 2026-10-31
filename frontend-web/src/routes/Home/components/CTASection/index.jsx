@@ -55,7 +55,7 @@ function CTASection() {
               serta berbagai fitur pendukung dalam satu platform.
             </Description>
             <BannerButton onClick={() => navigate(AuthRoute.signInRoute)}>
-              Coba Gratis Sekarang →
+              Mulai Sekarang →
             </BannerButton>
           </BannerContent>
         </Banner>

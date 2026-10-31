@@ -9,6 +9,13 @@ export const TrustGrid = styled.div`
   padding: 23px 15px;
   box-shadow: 0 18px 40px -28px rgba(14, 42, 56, 0.35);
 
+  /* The card is the largest fixed band the hero spends outside the art, so on
+     a short window it gives up what it can without the figures losing their
+     weight. See heroChrome in the theme for the running total. */
+  ${media.shortViewport} {
+    padding: 14px 15px;
+  }
+
   ${media.mobile} {
     grid-template-columns: 1fr;
     padding: 8px 16px;
@@ -30,6 +37,12 @@ export const TrustItem = styled.div`
     width: 1px;
     height: 71px;
     background: ${colors.divider};
+  }
+
+  ${media.shortViewport} {
+    & + &::before {
+      height: 56px;
+    }
   }
 
   ${media.mobile} {
@@ -54,6 +67,10 @@ export const TrustValue = styled.div`
   letter-spacing: -1.4px;
   color: ${colors.headingDarker};
 
+  ${media.shortViewport} {
+    font-size: 32px;
+  }
+
   ${media.tablet} {
     font-size: 32px;
   }
@@ -66,4 +83,8 @@ export const TrustLabel = styled.div`
   line-height: 1.25;
   color: ${colors.textSecondary};
   margin-top: 6px;
+
+  ${media.shortViewport} {
+    margin-top: 4px;
+  }
 `
