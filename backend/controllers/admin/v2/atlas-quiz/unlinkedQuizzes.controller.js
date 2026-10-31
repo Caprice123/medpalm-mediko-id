@@ -16,15 +16,16 @@ class UnlinkedQuizzesController {
 
   async updateUnlinked(req, res) {
     const { uniqueId } = req.params
-    const { title, description, embedUrl, questionCount, tags, status } = req.body
+    const { title, description, embedUrl, questionCount, status, difficulty, estimatedMinutes } = req.body
     const quiz = await UpdateAnatomyQuizV2Service.call({
       quizId: uniqueId,
       title,
       description,
       embedUrl: embedUrl || null,
       questionCount: questionCount !== undefined ? parseInt(questionCount) : undefined,
-      tags,
       status,
+      difficulty,
+      estimatedMinutes,
     })
     const [serialized] = AnatomyQuizListSerializer.serialize([quiz])
     return res.status(200).json({ data: serialized })

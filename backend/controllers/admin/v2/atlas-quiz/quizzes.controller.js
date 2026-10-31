@@ -30,7 +30,7 @@ class QuizzesController {
 
   async update(req, res) {
     const { uniqueId } = req.params
-    const { title, description, embedUrl, questionCount, tags, status } = req.body
+    const { title, description, embedUrl, questionCount, status, difficulty, estimatedMinutes } = req.body
 
     const updatedQuiz = await UpdateAnatomyQuizV2Service.call({
       quizId: uniqueId,
@@ -38,8 +38,9 @@ class QuizzesController {
       description,
       embedUrl: embedUrl || null,
       questionCount: questionCount !== undefined ? parseInt(questionCount) : undefined,
-      tags,
       status,
+      difficulty,
+      estimatedMinutes,
     })
 
     return res.status(200).json({ data: AnatomyQuizSerializer.serialize(updatedQuiz) })

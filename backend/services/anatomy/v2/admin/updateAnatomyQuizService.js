@@ -10,27 +10,22 @@ export class UpdateAnatomyQuizV2Service extends BaseService {
     const existingQuiz = await prisma.anatomy_quizzes.findUnique({ where: { unique_id: quizId } })
     if (!existingQuiz) throw new ValidationError('Quiz tidak ditemukan')
 
-    const updatedQuiz = await prisma.$transaction(async tx => {
-      if (hasTags) {
-        await tx.anatomy_quiz_tags.deleteMany({ where: { quiz_id: existingQuiz.id } })
-      }
-
-      return tx.anatomy_quizzes.update({
-        where: { unique_id: quizId },
-        data: {
-          title,
-          description: description || '',
-          ...(status && { status }),
-          embed_url: embedUrl || null,
-          media_type: '3d',
-          question_count: questionCount || 0,
-          ...(difficulty && { difficulty }),
-          ...(estimatedMinutes !== undefined && { estimated_minutes: estimatedMinutes ? parseInt(estimatedMinutes) : null }),
-          updated_at: new Date(),
-        },
-      })
+    // No tag handling and no transaction: V2 quizzes are organised by the feature_nodes
+    // tree, never by tag. The tag-clearing branch this used to open referenced an
+    // undeclared `hasTags`, which threw a ReferenceError on every save.
+    return prisma.anatomy_quizzes.update({
+      where: { unique_id: quizId },
+      data: {
+        title,
+        description: description || '',
+        ...(status && { status }),
+        embed_url: embedUrl || null,
+        media_type: '3d',
+        question_count: questionCount || 0,
+        ...(difficulty && { difficulty }),
+        ...(estimatedMinutes !== undefined && { estimated_minutes: estimatedMinutes ? parseInt(estimatedMinutes) : null }),
+        updated_at: new Date(),
+      },
     })
-
-    return updatedQuiz
   }
 }
