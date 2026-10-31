@@ -2,7 +2,7 @@ import { CreateAtlasModelV2Service } from '#services/atlas/v2/admin/createAtlasM
 import { GetAtlasModelDetailService } from '#services/atlas/admin/getAtlasModelDetailService'
 import { UpdateAtlasModelService } from '#services/atlas/admin/updateAtlasModelService'
 import { DeleteAtlasModelService } from '#services/atlas/admin/deleteAtlasModelService'
-import { AtlasModelSerializer } from '#serializers/admin/v1/atlasModelSerializer'
+import { AtlasModelSerializer } from '#serializers/admin/v2/atlasModelSerializer'
 
 class ModelsController {
   async create(req, res) {

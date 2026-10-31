@@ -1,6 +1,5 @@
 import { actions } from '@store/anatomy/reducer'
 import Endpoints from '@config/endpoint'
-import { handleApiError } from '@utils/errorUtils'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '@utils/requestUtils'
 
 const {
@@ -96,6 +95,22 @@ export const deleteAnatomyQuiz = (quizId) => async (dispatch) => {
     dispatch(setLoading({ key: 'isDeleteAnatomyQuizLoading', value: false }))
   }
 }
+
+// V2 detail fetch — the list rows carry no difficulty/estimatedMinutes, so the edit form
+// reads the quiz from here instead of from the row it was opened on.
+export const fetchAnatomyQuizV2 = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isGetDetailAnatomyQuizLoading', value: true }))
+    const response = await getWithToken(`${Endpoints.admin.anatomyV2}/${uniqueId}`)
+    const quiz = response.data.data
+    dispatch(setDetail(quiz))
+    return quiz
+  } finally {
+    dispatch(setLoading({ key: 'isGetDetailAnatomyQuizLoading', value: false }))
+  }
+}
+
+export const clearAnatomyQuizDetail = () => (dispatch) => dispatch(setDetail(undefined))
 
 export const createAnatomyQuizV2 = (quizData, onSuccess) => async (dispatch) => {
   try {

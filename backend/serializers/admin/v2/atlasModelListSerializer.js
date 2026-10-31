@@ -1,5 +1,9 @@
 import moment from 'moment-timezone'
 
+// Row shape for atlas model lists. Deliberately omits `editorContent`: it is a whole
+// BlockNote document per row, and no list renders it. The edit form fetches it from the
+// show endpoint instead.
+
 export class AtlasModelListSerializer {
   static serialize(models) {
     return models.map(model => ({
@@ -8,7 +12,6 @@ export class AtlasModelListSerializer {
       title: model.title,
       description: model.description,
       embedUrl: model.embed_url,
-      editorContent: model.editor_content ? JSON.parse(model.editor_content) : null,
       status: model.status,
       version: model.version ?? 1,
       createdAt: model.created_at

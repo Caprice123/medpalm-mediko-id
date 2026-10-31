@@ -2,7 +2,7 @@ import { CreateAnatomyQuizV2Service } from '#services/anatomy/v2/admin/createAna
 import { GetAnatomyQuizDetailService } from '#services/anatomy/admin/getAnatomyQuizDetailService'
 import { UpdateAnatomyQuizV2Service } from '#services/anatomy/v2/admin/updateAnatomyQuizService'
 import { DeleteAnatomyQuizV2Service } from '#services/anatomy/v2/admin/deleteAnatomyQuizService'
-import { AnatomyQuizSerializer } from '#serializers/admin/v1/anatomyQuizSerializer'
+import { AnatomyQuizSerializer } from '#serializers/admin/v2/anatomyQuizSerializer'
 
 class QuizzesController {
   async create(req, res) {

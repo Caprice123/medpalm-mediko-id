@@ -91,6 +91,22 @@ export const deleteAtlasModel = (modelId, onSuccess) => async (dispatch) => {
   }
 }
 
+// V2 detail fetch — the list rows carry no editorContent, so the edit form reads the
+// model from here instead of from the row it was opened on.
+export const fetchAtlasModelV2 = (uniqueId) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isGetDetailAtlasLoading', value: true }))
+    const response = await getWithToken(`${Endpoints.admin.atlasV2}/${uniqueId}`)
+    const model = response.data.data
+    dispatch(setDetail(model))
+    return model
+  } finally {
+    dispatch(setLoading({ key: 'isGetDetailAtlasLoading', value: false }))
+  }
+}
+
+export const clearAtlasModelDetail = () => (dispatch) => dispatch(setDetail(undefined))
+
 export const createAtlasModelV2 = (modelData, onSuccess) => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isCreateAtlasLoading', value: true }))

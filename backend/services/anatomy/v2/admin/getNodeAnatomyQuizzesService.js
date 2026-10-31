@@ -23,12 +23,11 @@ export class GetNodeAnatomyQuizzesService extends BaseService {
       return { data: [], attachmentMap: new Map(), pagination: { page, perPage, isLastPage: true } }
     }
 
+    // No includes: the V2 list serializer reads only columns off the quiz row, and
+    // questionCount comes from the `question_count` column rather than counting the
+    // relation. Tags and questions belong to the detail endpoint.
     const quizzes = await prisma.anatomy_quizzes.findMany({
       where: { id: { in: quizIds } },
-      include: {
-        anatomy_quiz_tags: { include: { tags: { include: { tag_group: true } } } },
-        anatomy_questions: { orderBy: { order: 'asc' } },
-      },
     })
 
     // findMany({ id: { in } }) does not preserve input order — resort to match
