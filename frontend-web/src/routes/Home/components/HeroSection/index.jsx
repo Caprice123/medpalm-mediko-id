@@ -1,17 +1,14 @@
 import bgLeavesRight from '@/assets/landing/hero-bg-leaves-right.png'
-import bgLeavesLeft from '@/assets/landing/hero-bg-leaves-left.png'
 import { ContentWidth } from '../../Home.styles'
 import HeroCopy from './components/HeroCopy'
 import HeroArt from './components/HeroArt'
-import TrustCard from './components/TrustCard'
 import StatsTicker from './components/StatsTicker'
 import {
   HeroWrapper,
   BackgroundLayer,
   BackgroundRight,
-  BackgroundLeft,
   HeroGrid,
-  TrustCardSlot,
+  HeroFloor,
 } from './HeroSection.styles'
 
 function HeroSection({ title, subtitle, scrollToSection }) {
@@ -20,7 +17,6 @@ function HeroSection({ title, subtitle, scrollToSection }) {
       <HeroWrapper id="about">
         <BackgroundLayer aria-hidden="true">
           <BackgroundRight src={bgLeavesRight} alt="" />
-          <BackgroundLeft src={bgLeavesLeft} alt="" />
         </BackgroundLayer>
 
         <ContentWidth>
@@ -29,9 +25,7 @@ function HeroSection({ title, subtitle, scrollToSection }) {
             <HeroArt />
           </HeroGrid>
 
-          <TrustCardSlot>
-            <TrustCard />
-          </TrustCardSlot>
+          <HeroFloor />
         </ContentWidth>
       </HeroWrapper>
 

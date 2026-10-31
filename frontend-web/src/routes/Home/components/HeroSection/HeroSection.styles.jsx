@@ -42,24 +42,24 @@ export const BackgroundLayer = styled.div`
   overflow: hidden;
 `
 
+// This plate is the whole backdrop, not just a right-hand panel: the blob and
+// the leaves live on its right, but its left half carries the soft waves that
+// are supposed to run underneath the headline. Squeezing it into the 84.5% the
+// Figma frame measures pushed those waves off the copy and left a seam where
+// the left plate ended, so it spans the hero instead.
+//
+// It is also the ONLY plate. A second image used to be layered over the first
+// 27.7%, and because both were `cover`-scaled to a hero whose height changes,
+// the two never agreed on scale — they met in a visible vertical seam. This
+// one already carries the left-hand waves, so the overlap bought nothing.
 export const BackgroundRight = styled.img`
   position: absolute;
   top: 0;
   right: 0;
-  width: 84.5%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: right top;
-`
-
-export const BackgroundLeft = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 27.7%;
-  height: 100%;
-  object-fit: cover;
-  object-position: left top;
 `
 
 export const HeroGrid = styled.div`
@@ -73,11 +73,17 @@ export const HeroGrid = styled.div`
   gap: 24px;
   padding-block: 40px 0;
 
-  /* Takes whatever the trust card leaves. The art inside caps itself against
-     the same budget, so on a short window the whole hero scales down together
-     instead of pushing the ticker off the screen. */
+  /* Takes the whole hero plate now that the trust card no longer sits under
+     it. The art inside caps itself against the same budget, so on a short
+     window the hero scales down instead of pushing the ticker off screen. */
   flex: 1;
   min-height: 0;
+
+  /* Half the top padding, handed to the art. See heroChrome in the theme —
+     this is one of the terms its compact total counts. */
+  ${media.shortViewport} {
+    padding-block: 20px 0;
+  }
 
   ${media.desktop} {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -90,18 +96,14 @@ export const HeroGrid = styled.div`
   }
 `
 
-// The trust card sits inside the hero, not across its boundary: Figma puts the
-// card at y 521..648 and ends the hero plate at 685, so 37px of hero background
-// runs underneath it before the ticker starts. The ticker then butts straight
-// against that edge with no margin of its own.
-//
-// This used to have no bottom padding at all, which left the card touching the
-// ticker.
-export const TrustCardSlot = styled.div`
-  position: relative;
-  padding-block: 32px 37px;
+// The hero plate needs a band of its own background between the art and the
+// ticker — Figma ends the plate 37px below the card that used to sit here.
+// With the figures moved onto the art, that band is all this is.
+export const HeroFloor = styled.div`
+  height: 37px;
+  flex: none;
 
-  ${media.tablet} {
-    padding-block: 28px 28px;
+  ${media.shortViewport} {
+    height: 22px;
   }
 `

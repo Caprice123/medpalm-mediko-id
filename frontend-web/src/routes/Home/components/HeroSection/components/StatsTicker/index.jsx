@@ -15,7 +15,7 @@ const TRACK_COPIES = 4
 const formatCount = (value) => `${value.toLocaleString('id-ID')}+`
 
 function StatsTicker() {
-  // Display-only data — read straight from the store, as with TrustCard. The
+  // Display-only data — read straight from the store, as in HeroArt. The
   // backend already drops features with no content, so whatever arrives here
   // is worth showing.
   const ticker = useSelector((state) => state.home.stats.ticker)

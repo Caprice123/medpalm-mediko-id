@@ -6,7 +6,8 @@ import { useAppDispatch } from '@store/store'
 import { fetchFeatures } from '@store/feature/userAction'
 import { fetchPricingPlans } from '@store/pricing/action'
 import { fetchPublicConstants } from '@store/constant/userAction'
-import { fetchHomeStats, fetchHomeEvents, fetchHomeChallenges } from '@store/home/userAction'
+import { fetchHomeEvents, fetchHomeChallenges } from '@store/home/userAction'
+import { useLiveHomeStats } from '@hooks/useLiveHomeStats'
 
 // Two deliberate omissions. `home_hero_badge` is the login page's tagline and
 // the rebuilt landing page renders it nowhere. Events and challenges used to be
@@ -62,10 +63,13 @@ export function useHome() {
     dispatch(fetchFeatures())
     dispatch(fetchPricingPlans())
     dispatch(fetchPublicConstants(HOME_CONSTANT_KEYS))
-    dispatch(fetchHomeStats())
     dispatch(fetchHomeEvents())
     dispatch(fetchHomeChallenges())
   }, [dispatch])
+
+  // The hero's stat cards count up to these, and keep counting as the figures
+  // move — so they are polled rather than fetched once alongside the rest.
+  useLiveHomeStats()
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
