@@ -14,6 +14,10 @@ export class GetUnlinkedAtlasModelsService extends BaseService {
     })
     const linkedIds = linkedRecords.map(r => r.record_id)
 
+    // Scoped to version 1 on purpose: this list is the v1 → v2 migration inbox, showing
+    // legacy models that were never attached to the node tree so an admin can assign
+    // them to a module. Version-2 models are born attached and are managed from their
+    // module's detail page, so they don't belong in this list.
     const where = { version: 1, is_deleted: false }
     if (linkedIds.length > 0) where.id = { notIn: linkedIds }
 

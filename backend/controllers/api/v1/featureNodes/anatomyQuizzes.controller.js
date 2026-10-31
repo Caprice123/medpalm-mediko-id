@@ -1,4 +1,4 @@
-import { GetNodeAnatomyQuizzesService } from '#services/featureNodes/user/getNodeAnatomyQuizzesService'
+import { GetNodeAnatomyQuizzesService } from '#services/anatomy/v2/user/getNodeAnatomyQuizzesService'
 
 class AnatomyQuizzesController {
   async nodeAnatomyQuizzes(req, res) {

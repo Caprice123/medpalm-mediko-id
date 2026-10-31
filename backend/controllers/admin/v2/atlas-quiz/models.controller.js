@@ -1,48 +1,22 @@
-import prisma from '#prisma/client'
-import { ValidationError } from '#errors/validationError'
-import { CreateAtlasModelService } from '#services/atlas/admin/createAtlasModelService'
-import { GetAtlasModelsService } from '#services/atlas/admin/getAtlasModelsService'
+import { CreateAtlasModelV2Service } from '#services/atlas/v2/admin/createAtlasModelService'
 import { GetAtlasModelDetailService } from '#services/atlas/admin/getAtlasModelDetailService'
 import { UpdateAtlasModelService } from '#services/atlas/admin/updateAtlasModelService'
 import { DeleteAtlasModelService } from '#services/atlas/admin/deleteAtlasModelService'
 import { AtlasModelSerializer } from '#serializers/admin/v1/atlasModelSerializer'
-import { AtlasModelListSerializer } from '#serializers/admin/v1/atlasModelListSerializer'
-
-const RECORD_TYPE = '3d_atlas'
 
 class ModelsController {
-  async index(req, res) {
-    const { topic, subtopic, status, page, perPage, search } = req.query
-
-    const result = await GetAtlasModelsService.call({ topic, subtopic, status, page, perPage, search })
-
-    return res.status(200).json({
-      data: AtlasModelListSerializer.serialize(result.data),
-      pagination: result.pagination,
-    })
-  }
-
   async create(req, res) {
     const { title, description, embedUrl, tags, status, editorContent, nodeId } = req.body
 
-    if (!nodeId) throw new ValidationError('Node ID wajib diisi')
-
-    const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
-    if (!node) throw new ValidationError('Node tidak ditemukan')
-
-    const model = await CreateAtlasModelService.call({
+    const model = await CreateAtlasModelV2Service.call({
+      nodeId,
       title,
       description,
       embedUrl,
       tags,
-      status: status || 'published',
-      version: 2,
-      createdBy: req.user.id,
+      status,
       editorContent,
-    })
-
-    await prisma.feature_node_records.create({
-      data: { node_id: parseInt(nodeId), record_type: RECORD_TYPE, record_id: model.id },
+      createdBy: req.user.id,
     })
 
     return res.status(201).json({ data: AtlasModelSerializer.serialize(model) })

@@ -11,7 +11,6 @@ router.use(requireAdmin)
 router.use(requireTabPermission('features'))
 router.use(requireFeaturePermission('anatomy'))
 
-router.get('/', asyncHandler(anatomyV2Controller.index.bind(anatomyV2Controller)))
 router.post('/', asyncHandler(anatomyV2Controller.create.bind(anatomyV2Controller)))
 router.get('/:uniqueId', asyncHandler(anatomyV2Controller.show.bind(anatomyV2Controller)))
 router.put('/:uniqueId', asyncHandler(anatomyV2Controller.update.bind(anatomyV2Controller)))

@@ -11,7 +11,11 @@ export class GetAtlasModelsService extends BaseService {
     const skip = (page - 1) * perPage
     const take = perPage + 1
 
-    const where = { is_deleted: false }
+    // Version 1 only — this list backs the v1 admin panel, whose editor assumes tags and
+    // the flat (tag-based) model. v2 models live in the feature_nodes tree and are
+    // managed from their module's detail page; without this filter they leaked in here,
+    // matching the user-facing v1 list which has always filtered version 1.
+    const where = { is_deleted: false, version: 1 }
     const tagFilters = []
 
     if (filters.topic) {

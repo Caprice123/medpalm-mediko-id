@@ -15,6 +15,8 @@ export class GetUnlinkedAnatomyQuizzesService extends BaseService {
     })
     const linkedIds = linkedRecords.map(r => r.record_id)
 
+    // Scoped to version 1 on purpose — the v1 → v2 migration inbox. See the note in
+    // atlas/v2/admin/getUnlinkedAtlasModelsService.js.
     const where = { version: 1, is_deleted: false }
     if (linkedIds.length > 0) where.id = { notIn: linkedIds }
 

@@ -11,7 +11,6 @@ router.use(requireAdmin)
 router.use(requireTabPermission('features'))
 router.use(requireFeaturePermission('atlas'))
 
-router.get('/', asyncHandler(atlasV2Controller.index.bind(atlasV2Controller)))
 router.post('/', asyncHandler(atlasV2Controller.create.bind(atlasV2Controller)))
 router.get('/:uniqueId', asyncHandler(atlasV2Controller.show.bind(atlasV2Controller)))
 router.put('/:uniqueId', asyncHandler(atlasV2Controller.update.bind(atlasV2Controller)))

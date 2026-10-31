@@ -1,7 +1,7 @@
-import { GetNodeAnatomyQuizzesService } from '#services/featureNodes/admin/getNodeAnatomyQuizzesService'
-import { UnlinkNodeAnatomyQuizService } from '#services/featureNodes/admin/unlinkNodeAnatomyQuizService'
-import { MoveNodeAnatomyQuizService } from '#services/featureNodes/admin/moveNodeAnatomyQuizService'
-import { SwapNodeAnatomyQuizOrderService } from '#services/featureNodes/admin/swapNodeAnatomyQuizOrderService'
+import { GetNodeAnatomyQuizzesService } from '#services/anatomy/v2/admin/getNodeAnatomyQuizzesService'
+import { UnlinkNodeAnatomyQuizService } from '#services/anatomy/v2/admin/unlinkNodeAnatomyQuizService'
+import { MoveNodeAnatomyQuizService } from '#services/anatomy/v2/admin/moveNodeAnatomyQuizService'
+import { SwapNodeAnatomyQuizOrderService } from '#services/anatomy/v2/admin/swapNodeAnatomyQuizOrderService'
 import { AnatomyQuizListSerializer } from '#serializers/admin/v1/anatomyQuizListSerializer'
 
 class NodeAnatomyController {

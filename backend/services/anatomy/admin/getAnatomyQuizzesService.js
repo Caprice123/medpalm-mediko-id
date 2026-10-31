@@ -16,7 +16,9 @@ export class GetAnatomyQuizzesService extends BaseService {
     // Fetch perPage + 1 to determine if there's a next page
     const take = perPage + 1
 
-    const where = { is_deleted: false }
+    // Version 1 only — see the note in atlas/admin/getAtlasModelsService.js. Mirrors the
+    // user-facing v1 list, which has always filtered version 1.
+    const where = { is_deleted: false, version: 1 }
 
     // Build filter conditions for tags
     const tagFilters = []

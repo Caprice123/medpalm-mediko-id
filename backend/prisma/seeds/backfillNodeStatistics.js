@@ -1,6 +1,13 @@
 import prisma from '#prisma/client'
 
-const RECORD_TYPES = ['flashcard_card', 'summary_note', 'mcq_question']
+const RECORD_TYPES = ['flashcard_card', 'summary_note', 'mcq_question', '3d_atlas', 'anatomy_quiz']
+
+// Record types whose node_statistics rows only ever mirror feature_node_records on that
+// same node, so a row with no matching records can safely be reset to 0. `flashcard_card`
+// is deliberately absent: its layer-1 rows are parent rollups written by
+// backfillFlashcardTopicNodeStatistics.js, not a count of records on the topic node, so
+// zeroing orphans would wipe them.
+const RECONCILABLE_RECORD_TYPES = ['3d_atlas', 'anatomy_quiz']
 
 async function backfill() {
   console.log('Backfilling node_statistics...')
@@ -21,6 +28,22 @@ async function backfill() {
         update: { total_count: row._count.id },
       })
     }
+
+    if (!RECONCILABLE_RECORD_TYPES.includes(recordType)) continue
+
+    // Rows left behind by nodes that no longer hold any record of this type — including
+    // counts that drifted negative while the V2 create path incremented nothing but the
+    // delete path still decremented.
+    const countedNodeIds = records.map(r => r.node_id)
+    const { count } = await prisma.node_statistics.updateMany({
+      where: {
+        record_type: recordType,
+        total_count: { not: 0 },
+        ...(countedNodeIds.length > 0 && { node_id: { notIn: countedNodeIds } }),
+      },
+      data: { total_count: 0 },
+    })
+    console.log(`  ${recordType}: ${count} stale rows reset to 0`)
   }
 
   console.log('Done.')

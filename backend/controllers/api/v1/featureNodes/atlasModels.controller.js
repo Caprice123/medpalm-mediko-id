@@ -1,5 +1,5 @@
-import { GetNodeAtlasModelsService } from '#services/featureNodes/user/getNodeAtlasModelsService'
-import { GetTopicAtlasModelsService } from '#services/featureNodes/user/getTopicAtlasModelsService'
+import { GetNodeAtlasModelsService } from '#services/atlas/v2/user/getNodeAtlasModelsService'
+import { GetTopicAtlasModelsService } from '#services/atlas/v2/user/getTopicAtlasModelsService'
 
 class AtlasModelsController {
   async nodeAtlasModels(req, res) {

@@ -1,7 +1,7 @@
-import { GetNodeAtlasModelsService } from '#services/featureNodes/admin/getNodeAtlasModelsService'
-import { UnlinkNodeAtlasModelService } from '#services/featureNodes/admin/unlinkNodeAtlasModelService'
-import { MoveNodeAtlasModelService } from '#services/featureNodes/admin/moveNodeAtlasModelService'
-import { SwapNodeAtlasModelOrderService } from '#services/featureNodes/admin/swapNodeAtlasModelOrderService'
+import { GetNodeAtlasModelsService } from '#services/atlas/v2/admin/getNodeAtlasModelsService'
+import { UnlinkNodeAtlasModelService } from '#services/atlas/v2/admin/unlinkNodeAtlasModelService'
+import { MoveNodeAtlasModelService } from '#services/atlas/v2/admin/moveNodeAtlasModelService'
+import { SwapNodeAtlasModelOrderService } from '#services/atlas/v2/admin/swapNodeAtlasModelOrderService'
 import { AtlasModelListSerializer } from '#serializers/admin/v1/atlasModelListSerializer'
 
 class NodeAtlasController {
