@@ -3,8 +3,7 @@ import { actions as commonActions } from '@store/common/reducer'
 import { actions as pricingActions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, patchWithToken } from '../../utils/requestUtils'
-import { getToken } from '@utils/authToken'
-import { refreshAccessToken } from '../../config/api'
+import { ensureValidToken } from '../../config/api'
 import { checkMimeTypeSupport } from '@utils/testDeepgramConnection'
 import { setTimeout } from 'worker-timers'
 import { captureException } from '@config/sentry'
@@ -313,29 +312,6 @@ let activePhysicalExamAbortController = null
 // Track if user stopped the stream
 let userStoppedStreamFlag = false
 let physicalExamUserStoppedStreamFlag = false
-
-// Helper function to ensure token is valid and refreshed if needed
-const ensureValidToken = async () => {
-  const token = getToken()
-
-  if (!token) {
-    throw new Error('No authentication token found')
-  }
-
-  // Check if access token is expired
-  const isTokenExpired = (isoString) => {
-    const now = new Date()
-    const targetDate = new Date(isoString)
-    return targetDate < now
-  }
-
-  // If access token is expired, refresh it using axios
-  if (isTokenExpired(token.accessTokenExpiresAt)) {
-    return await refreshAccessToken()
-  }
-
-  return token.accessToken
-}
 
 // Send message with streaming
 export const sendMessage = (sessionId, message) => async (dispatch) => {

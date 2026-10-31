@@ -3,8 +3,7 @@ import { actions as commonActions } from '@store/common/reducer'
 import { actions as pricingActions } from '@store/pricing/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken } from '../../utils/requestUtils'
-import { getToken } from '@utils/authToken'
-import { refreshAccessToken } from '../../config/api'
+import { ensureValidToken } from '../../config/api'
 import { setTimeout } from 'worker-timers'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
@@ -410,27 +409,6 @@ export const stopStreaming = (tabId) => async (dispatch, getState) => {
     dispatch(setTabLoading({ tabId, key: 'isSendingMessage', value: false }))
     return null
   }
-}
-
-// Helper function to ensure token is valid and refreshed if needed
-const ensureValidToken = async () => {
-  const token = getToken()
-
-  if (!token) {
-    throw new Error('No authentication token found')
-  }
-
-  const isTokenExpired = (isoString) => {
-    const now = new Date()
-    const targetDate = new Date(isoString)
-    return targetDate < now
-  }
-
-  if (isTokenExpired(token.accessTokenExpiresAt)) {
-    return await refreshAccessToken()
-  }
-
-  return token.accessToken
 }
 
 // Streaming message handler - typing animation with backend pacing

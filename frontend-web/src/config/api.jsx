@@ -19,8 +19,7 @@ const isTokenExpired = (isoString) => {
     return targetDate < now; // Check if the target date is before now
 };
 
-let isRefreshing = false; // Tracks if a refresh request is ongoing
-let refreshPromise = null; // Holds the promise of the ongoing refresh
+let refreshPromise = null; // The single in-flight refresh, shared by both interceptors
 
 export const refreshAccessToken = async () => {
     const token = getToken();
@@ -30,6 +29,35 @@ export const refreshAccessToken = async () => {
     const newToken = refreshResponse.data.data;
     setToken(newToken);
     return newToken.accessToken;
+};
+
+// Never let two refreshes run at once. The backend rotates the refresh token on every
+// call, so a second concurrent refresh would present an already-rotated token, fail, and
+// take an otherwise healthy session down with it. Callers report their own errors; this
+// only deduplicates.
+const refreshOnce = () => {
+    if (!refreshPromise) {
+        refreshPromise = refreshAccessToken().finally(() => { refreshPromise = null; });
+    }
+    return refreshPromise;
+};
+
+// Resolve a bearer token for the fetch-based streaming paths. They bypass the axios
+// interceptors entirely, so they have to do this themselves — but going through
+// refreshOnce means a stream that starts while a refresh is already in flight joins that
+// one instead of firing a second, which the backend's refresh-token rotation would reject.
+export const ensureValidToken = async () => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error('No authentication token found');
+    }
+
+    if (isTokenExpired(token.accessTokenExpiresAt)) {
+        return refreshOnce();
+    }
+
+    return token.accessToken;
 };
 
 const trimSpaces = (data) => {
@@ -75,25 +103,13 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
 
             // If the access token is expired, refresh it
             if (isTokenExpired(token.accessTokenExpiresAt)) {
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    refreshPromise = refreshAccessToken()
-                        .then((newAccessToken) => {
-                            isRefreshing = false;
-                            refreshPromise = null;
-                            return newAccessToken;
-                        })
-                        .catch((error) => {
-                            isRefreshing = false;
-                            refreshPromise = null;
-                            handleApiError(error, dispatch)
-                            throw error;
-                        });
+                try {
+                    const newAccessToken = await refreshOnce();
+                    config.headers.Authorization = `Bearer ${newAccessToken}`;
+                } catch (error) {
+                    handleApiError(error, dispatch)
+                    throw error;
                 }
-
-                // Wait for the ongoing refresh token request
-                const newAccessToken = await refreshPromise;
-                config.headers.Authorization = `Bearer ${newAccessToken}`;
             } else {
                 // Use the current access token if not expired
                 config.headers.Authorization = `Bearer ${token.accessToken}`;
@@ -120,7 +136,7 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
 
             return response;
         },
-        (error) => {
+        async (error) => {
             console.error('API Error Interceptor triggered:', error);
             console.error('Error response:', error.response);
             console.error('Error status:', error.response?.status);
@@ -136,6 +152,27 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 }
                 dispatch(creditActions.setBalance(balance));
                 dispatch(pricingActions.updateCreditBalance(update));
+            }
+
+            // A 401 the request interceptor's clock check did not see coming — a device
+            // clock that runs behind, or a token the server rejected for a reason the
+            // client cannot observe. Refresh once and replay before giving up on the
+            // session. `_retried` bounds this: a 401 on the replay falls straight through
+            // to the logout below instead of looping.
+            if (
+                error.response?.status === 401
+                && error.config
+                && !error.config._retried
+                && error.config.url !== endpoints.Login
+            ) {
+                error.config._retried = true;
+                try {
+                    const newAccessToken = await refreshOnce();
+                    error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+                    return api(error.config);
+                } catch {
+                    // Refresh failed too — the session really is gone. Fall through.
+                }
             }
 
             // If we get a 401 error, the token is invalid or expired
