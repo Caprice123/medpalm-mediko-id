@@ -68,9 +68,15 @@ export const SocialIcon = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
   flex-shrink: 0;
   background: ${(props) => props.$background || colors.chipBackground};
+  color: ${(props) => props.$color || colors.headingDark};
+
+  svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
 `
 
 export const SocialPlatform = styled.div`
