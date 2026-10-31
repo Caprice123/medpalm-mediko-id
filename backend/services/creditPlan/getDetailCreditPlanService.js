@@ -8,7 +8,7 @@ export class GetDetailCreditPlanService extends BaseService {
             where: { id: Number(id) }
         })
         if (!plan) {
-            throw new ValidationError('Credit plan not found')
+            throw new ValidationError('Paket kredit tidak ditemukan')
         }
         return plan
     }

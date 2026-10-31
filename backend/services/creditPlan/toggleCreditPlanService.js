@@ -28,7 +28,7 @@ export class ToggleCreditPlanService extends BaseService {
         })
 
         if (!existingPlan) {
-            throw new ValidationError("Credit plan not found")
+            throw new ValidationError('Paket kredit tidak ditemukan')
         }
     }
 }

@@ -35,20 +35,20 @@ export class updateCreditPlanService extends BaseService {
         })
 
         if (!existingPlan) {
-            throw new ValidationError("Credit plan not found")
+            throw new ValidationError('Paket kredit tidak ditemukan')
         }
 
         // Validation
         if (credits !== undefined && credits <= 0) {
-            throw new ValidationError('Credits must be greater than 0')
+            throw new ValidationError('Jumlah kredit harus lebih dari 0')
         }
 
         if (price !== undefined && price <= 0) {
-            throw new ValidationError('Price must be greater than 0')
+            throw new ValidationError('Harga harus lebih dari 0')
         }
 
         if (discount !== undefined && (discount < 0 || discount > 100)) {
-            throw new ValidationError('Discount must be between 0 and 100')
+            throw new ValidationError('Diskon harus antara 0 dan 100')
         }
     }
 }

@@ -25,19 +25,19 @@ export class CreateCreditPlanService extends BaseService {
 
     static validate({ name, credits, price, discount }) {
         if (!name || !credits || !price) {
-            throw new ValidationError('Name, credits, and price are required')
+            throw new ValidationError('Nama, jumlah kredit, dan harga wajib diisi')
         }
 
         if (credits <= 0) {
-            throw new ValidationError('Credits must be greater than 0')
+            throw new ValidationError('Jumlah kredit harus lebih dari 0')
         }
 
         if (price <= 0) {
-            throw new ValidationError('Price must be greater than 0')
+            throw new ValidationError('Harga harus lebih dari 0')
         }
 
         if (discount && (discount < 0 || discount > 100)) {
-            throw new ValidationError('Discount must be between 0 and 100')
+            throw new ValidationError('Diskon harus antara 0 dan 100')
         }
     }
 }
