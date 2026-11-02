@@ -13,6 +13,7 @@ import { GetPhysicalExamMessagesService } from '#services/osce/user/getPhysicalE
 import { SendPhysicalExamMessageService } from '#services/osce/user/sendPhysicalExamMessageService'
 import { captureException } from '#config/sentry'
 import { ValidationError } from '#errors/validationError'
+import { shouldCalculateOscePerformanceStats } from '#utils/oscePerformanceStats'
 
 class SessionsController {
   // GET /api/v1/osce/sessions - Get user's session history
@@ -199,7 +200,7 @@ class SessionsController {
         diagnoses,
         therapies,
         observations,
-      })
+      }, shouldCalculateOscePerformanceStats(req))
 
       return res.status(200).json({
         data: {

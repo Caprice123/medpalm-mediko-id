@@ -13,6 +13,7 @@ const initialState = {
   // User-facing state
   userTopics: [], // Available topics for user to select
   userSessions: [], // User's session history
+  performanceTopics: [], // Per-topic average score across the user's completed sessions
   streamingMessage: null,
 
   // Session result details
@@ -37,6 +38,7 @@ const initialState = {
     isFetchingAllRubrics: false,
     isLoadingUserTopics: false,
     isLoadingUserSessions: false,
+    isLoadingPerformance: false,
     isLoadingSessionDetail: false,
     isLoadingSessionMessages: false,
     isLoadingMoreMessages: false,
@@ -136,6 +138,9 @@ const { reducer, actions } = createSlice({
     },
     setUserTopics: (state, { payload }) => {
       state.userTopics = payload
+    },
+    setPerformanceTopics: (state, { payload }) => {
+      state.performanceTopics = payload
     },
     setUserSessions: (state, { payload }) => {
       state.userSessions = payload

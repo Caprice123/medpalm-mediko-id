@@ -1,11 +1,16 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { AdjustOsceTagStatisticsService } from '#services/osce/v2/adjustOsceTagStatisticsService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { DateTime } from 'luxon'
 import { ValidationError } from '#errors/validationError'
 
 export class EndOsceSessionService extends BaseService {
-  static async call(userId, sessionId, sessionData) {
+  // calculateStatistics decides whether this finalize folds its score into
+  // user_osce_topic_statistics. The caller passes it because the rollout is per frontend, not
+  // per deploy — see shouldCalculateOscePerformanceStats in #utils/oscePerformanceStats. It
+  // defaults to false so any caller that has not been updated leaves the counters alone.
+  static async call(userId, sessionId, sessionData, calculateStatistics = false) {
     if (!userId) {
       throw new ValidationError('User ID is required')
     }
@@ -212,6 +217,25 @@ export class EndOsceSessionService extends BaseService {
           status: "completed",
         },
       })
+
+      // After the session row is written, never before: the counters are derived from it, and
+      // the backfill script rebuilds them from the same rows. Failure is swallowed on purpose —
+      // a counter that did not move must not cost the user the result they just earned, and the
+      // backfill script can repair the row later.
+      if (calculateStatistics) {
+        try {
+          await AdjustOsceTagStatisticsService.call({
+            userId,
+            // The snapshots are already loaded with their tag group above; the service picks
+            // the 'topic' group out of them.
+            tagSnapshots: session.osce_session_tag_snapshots,
+            totalScore: evaluation.totalScore,
+            maxScore: evaluation.maxScore,
+          })
+        } catch (statsError) {
+          console.error('[EndOsceSessionService] Failed to adjust OSCE tag statistics:', statsError)
+        }
+      }
 
       return {
         totalScore: evaluation.totalScore,

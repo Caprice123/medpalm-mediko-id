@@ -14,6 +14,7 @@ const {
   setLoading,
   setUserTopics,
   setUserSessions,
+  setPerformanceTopics,
   setSessionDetail,
   setSessionMessages,
   setPhysicalExamMessages,
@@ -84,6 +85,25 @@ export const fetchUserOsceSessions = () => async (dispatch, getState) => {
     return { sessions, pagination }
   } finally {
     dispatch(setLoading({ key: 'isLoadingUserSessions', value: false }))
+  }
+}
+
+// Fetch the user's per-topic average score. Served by v2 because the v1 session routes stay
+// untouched; the numbers are aggregated by the backend, never derived from the paginated
+// session list, which only ever holds one page.
+export const fetchOscePerformance = () => async (dispatch) => {
+  try {
+    dispatch(setLoading({ key: 'isLoadingPerformance', value: true }))
+
+    const route = Endpoints.api.oscePracticeV2 + "/performance"
+    const response = await getWithToken(route)
+
+    const topics = response.data.data?.topics || []
+    dispatch(setPerformanceTopics(topics))
+
+    return topics
+  } finally {
+    dispatch(setLoading({ key: 'isLoadingPerformance', value: false }))
   }
 }
 

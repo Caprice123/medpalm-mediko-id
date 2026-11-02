@@ -2008,6 +2008,30 @@ model osce_session_therapies {
   @@index([osce_session_id])
 }
 
+// Per-topic running totals for one user's OSCE practice, maintained incrementally when a
+// session is finalized (see AdjustOsceTagStatisticsService).
+//
+// Keyed by tag, not by osce_topic: a row in osce_topics is one case/scenario, while the clinical
+// topic a student thinks in (Psikiatri, Kardiologi) is a tag in the 'topic' tag group, attached
+// to the case and snapshotted onto the session. One finalized session therefore feeds one row
+// per topic tag it carried.
+//
+// Sums are stored rather than the average: the percentage is total_score / max_score, so
+// folding in one more session is two increments and no read-modify-write of a derived column.
+model user_osce_tag_statistics {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  tag_id        Int
+  session_count Int      @default(0)
+  total_score   Int      @default(0) // Sum of rubric points earned
+  max_score     Int      @default(0) // Sum of rubric points available
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  @@unique([user_id, tag_id])
+  @@index([user_id])
+}
+
 // ============= Webinar Feature =============
 
 model webinar_events {

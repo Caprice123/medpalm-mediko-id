@@ -1,4 +1,5 @@
 import SessionCard from './components/SessionCard'
+import PerformanceCard from './components/PerformanceCard'
 import Button from '@components/common/Button'
 import Pagination from '@components/Pagination'
 import { OsceSessionSkeletonGrid } from '@components/common/SkeletonCard'
@@ -19,6 +20,7 @@ function SessionHistory() {
     return (
       <Container>
         <PageContainer>
+          <PerformanceCard />
           <Section>
             <SectionHeader>
               <SectionTitle>Riwayat Latihan</SectionTitle>
@@ -33,6 +35,7 @@ function SessionHistory() {
   return (
     <Container>
       <PageContainer>
+        <PerformanceCard />
         <Section>
           <SectionHeader>
             <SectionTitle>Riwayat Latihan</SectionTitle>
