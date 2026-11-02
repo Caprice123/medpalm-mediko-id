@@ -1,29 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { fetchNodePreview } from '@store/featureNodes'
 import { fetchSummaryNoteDetailV2 } from '@store/summaryNotes/v2/userAction'
 
 export function useSummaryNotesTab(subtopic) {
   const dispatch = useDispatch()
-  const [notes, setNotes] = useState([])
+  const { isFetchingPreview } = useSelector(s => s.featureNodes.loading)
+  const { isNoteDetailLoading } = useSelector(s => s.summaryNotesV2.loading)
+
+  // null means "belum dimuat" — only an actual empty array is an empty state,
+  // so the panel never flashes "tidak ada catatan" while the fetch is in flight
+  const [notes, setNotes] = useState(null)
   const [selectedNote, setSelectedNote] = useState(null)
   const [noteDetail, setNoteDetail] = useState(null)
-  const [noteDetailLoading, setNoteDetailLoading] = useState(false)
 
   const openNote = (note) => {
     setSelectedNote(note)
     setNoteDetail(null)
-    setNoteDetailLoading(true)
-    dispatch(fetchSummaryNoteDetailV2(note.uniqueId)).then(detail => {
-      setNoteDetail(detail)
-      setNoteDetailLoading(false)
-    })
+    dispatch(fetchSummaryNoteDetailV2(note.uniqueId)).then(setNoteDetail)
   }
 
   // a subtopic has at most one summary note, so when there's exactly one,
   // open it directly instead of showing a list to click.
   useEffect(() => {
     if (!subtopic?.id) return
+    setNotes(null)
     dispatch(fetchNodePreview(subtopic.id, 'summary_note')).then(data => {
       const list = data || []
       setNotes(list)
@@ -39,10 +40,11 @@ export function useSummaryNotesTab(subtopic) {
   }, [noteDetail?.content])
 
   return {
-    notes,
+    notes: notes ?? [],
+    isLoadingNotes: notes === null || isFetchingPreview,
     selectedNote,
     noteDetail,
-    noteDetailLoading,
+    noteDetailLoading: isNoteDetailLoading,
     parsedContent,
     handleNoteClick: openNote,
   }

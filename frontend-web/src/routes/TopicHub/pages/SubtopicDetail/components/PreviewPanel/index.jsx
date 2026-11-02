@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
 import {
-  Backdrop, Drawer, DrawerHeader, DrawerTitle, CloseBtn,
+  Backdrop, Drawer, ResizeHandle, DrawerHeader, DrawerTitle, CloseBtn,
   TabBar, TabBtn, PanelContent,
 } from './PreviewPanel.styles'
+import usePreviewPanel from './hooks/usePreviewPanel'
 import SummaryNotesTab from './components/SummaryNotesTab'
 import FlashcardTab from './components/FlashcardTab'
 import McqTab from './components/McqTab'
@@ -14,18 +14,7 @@ const TABS = [
 ]
 
 export default function PreviewPanel({ open, onClose, activeTab, onTabChange, subtopic, stats }) {
-  // lock the body while the drawer is open so the page underneath can't scroll
-  useEffect(() => {
-    if (!open) return
-    const prevHeight = document.body.style.height
-    const prevOverflow = document.body.style.overflow
-    document.body.style.height = '100vh'
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.height = prevHeight
-      document.body.style.overflow = prevOverflow
-    }
-  }, [open])
+  const { width, isResizing, startResize, resetWidth } = usePreviewPanel({ open })
 
   if (!open) return null
 
@@ -34,7 +23,15 @@ export default function PreviewPanel({ open, onClose, activeTab, onTabChange, su
   return (
     <>
       <Backdrop onClick={onClose} />
-      <Drawer>
+      <Drawer $width={width}>
+        {/* drag the left edge to resize; double-click snaps back to the default width */}
+        <ResizeHandle
+          $active={isResizing}
+          onPointerDown={startResize}
+          onDoubleClick={resetWidth}
+          title="Geser untuk mengubah lebar panel"
+        />
+
         <DrawerHeader>
           <DrawerTitle>{subtopic?.name} · Sumber Belajar</DrawerTitle>
           <CloseBtn onClick={onClose}>✕</CloseBtn>

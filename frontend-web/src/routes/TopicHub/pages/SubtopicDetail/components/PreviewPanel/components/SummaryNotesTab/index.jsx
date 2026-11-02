@@ -1,4 +1,5 @@
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import Loading from '@components/common/Loading'
 import { CountLabel } from '../../PreviewPanel.styles'
 import {
   NoteItem, NoteIcon, NoteInfo, NoteTitle, NoteReadTime, NoteExtLink,
@@ -7,7 +8,16 @@ import {
 import { useSummaryNotesTab } from './hooks/useSummaryNotesTab'
 
 export default function SummaryNotesTab({ subtopic }) {
-  const { notes, selectedNote, noteDetail, noteDetailLoading, parsedContent, handleNoteClick } = useSummaryNotesTab(subtopic)
+  const {
+    notes, isLoadingNotes, selectedNote, noteDetail, noteDetailLoading,
+    parsedContent, handleNoteClick,
+  } = useSummaryNotesTab(subtopic)
+
+  // the list fetch decides whether a note opens straight away, so stay on the
+  // spinner until it resolves rather than showing the empty state first
+  if (isLoadingNotes) {
+    return <Loading size="small" text="Memuat catatan..." padding="2rem 0" />
+  }
 
   if (!selectedNote) {
     return notes.length === 0
@@ -32,7 +42,7 @@ export default function SummaryNotesTab({ subtopic }) {
         </OpenFullBtn>
       </NoteDetailHeader>
       {noteDetailLoading ? (
-        <CountLabel style={{ marginTop: '1rem' }}>Memuat...</CountLabel>
+        <Loading size="small" text="Memuat catatan..." padding="2rem 0" />
       ) : noteDetail ? (
         <>
           <NoteDetailTitle>{noteDetail.title}</NoteDetailTitle>

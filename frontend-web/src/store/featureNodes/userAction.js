@@ -76,9 +76,14 @@ export const fetchNodeStats = (nodeId) => async () => {
   return res.data.data
 }
 
-export const fetchNodePreview = (nodeId, type) => async () => {
-  const res = await getWithToken(Endpoints.api.featureNodePreview(nodeId), { type })
-  return res.data.data
+export const fetchNodePreview = (nodeId, type) => async (dispatch) => {
+  try {
+    dispatch(setLoading({ isFetchingPreview: true }))
+    const res = await getWithToken(Endpoints.api.featureNodePreview(nodeId), { type })
+    return res.data.data
+  } finally {
+    dispatch(setLoading({ isFetchingPreview: false }))
+  }
 }
 
 export const fetchTopicAtlasModels = (topicId) => async (dispatch) => {

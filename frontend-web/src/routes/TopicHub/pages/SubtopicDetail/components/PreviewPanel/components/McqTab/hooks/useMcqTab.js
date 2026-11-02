@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { startMcqNodeSession, submitMcqAnswer, submitMcqSession } from '@store/mcqNodes'
 
@@ -21,6 +21,13 @@ export function useMcqTab(subtopic, mcqMax) {
     setIndex(0); setSelected(null); setAnswers([]); setFinished(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing])
+
+  // the drawer body keeps its scroll position between questions, so pull the
+  // player header back into view whenever a new question comes up
+  const topRef = useRef(null)
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ block: 'start' })
+  }, [index])
 
   const handleStart = () => {
     const n = Math.min(Math.max(1, count), mcqMax)
@@ -67,7 +74,7 @@ export function useMcqTab(subtopic, mcqMax) {
     playing, questions, index, selected, answers, finished,
     question, isAnswered, isLast, totalCorrect,
     isStarting: loading.isStartingSession,
-    isSubmitting: loading.isSubmittingSession,
+    isSubmitting: loading.isSubmittingSession, topRef,
     handleStart, handleSelect, handleNext, handleSubmit, handleExit,
   }
 }

@@ -34,6 +34,7 @@ const initialState = {
     isUploadingVideo: false,
     isFetchingDetail: false,
     isFetchingSubtopics: false,
+    isFetchingPreview: false,
     isSwappingOrder: false,
   },
 }

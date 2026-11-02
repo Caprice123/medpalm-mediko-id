@@ -2,9 +2,11 @@ import {
   CountLabel, SessionRow, CountInput, StartButton,
   PlayerHeader, PlayerStats, PlayerCounter, PlayerBackBtn, PlayerProgress, PlayerFill,
 } from '../../PreviewPanel.styles'
+import Loading from '@components/common/Loading'
+import CardExtrasPanel from '@routes/Flashcard/v2-1/pages/TopicList/components/AnkiPlayer/components/CardExtrasPanel'
 import {
   McqQuestion, McqText, McqOptions, McqOption, McqOptionLabel, McqOptionText,
-  McqExplanation, McqActionRow, McqNextBtn,
+  McqImage, McqNewBadge, McqActionRow, McqNextBtn,
   McqResult, McqScore, McqScoreLabel, McqResultStats, McqResultStat,
   McqResultNum, McqResultLabel, McqResultActions, McqSecondaryBtn,
 } from './McqTab.styles'
@@ -17,7 +19,7 @@ export default function McqTab({ subtopic, mcqMax }) {
     count, setCount,
     playing, questions, index, selected, answers, finished,
     question, isAnswered, isLast, totalCorrect,
-    isStarting, isSubmitting,
+    isStarting, isSubmitting, topRef,
     handleStart, handleSelect, handleNext, handleSubmit, handleExit,
   } = useMcqTab(subtopic, mcqMax)
 
@@ -58,11 +60,13 @@ export default function McqTab({ subtopic, mcqMax }) {
     )
   }
 
-  if (!question) return null
+  // questions are seeded from Redux one render after the session starts, so show
+  // the spinner instead of a blank panel while they land
+  if (!question) return <Loading size="small" text="Menyiapkan soal..." padding="2rem 0" />
 
   return (
     <>
-      <PlayerHeader>
+      <PlayerHeader ref={topRef}>
         <PlayerStats><PlayerCounter>Soal <b>{index + 1}</b> dari {questions.length}</PlayerCounter></PlayerStats>
         <PlayerBackBtn onClick={handleExit}>✕</PlayerBackBtn>
       </PlayerHeader>
@@ -70,6 +74,8 @@ export default function McqTab({ subtopic, mcqMax }) {
         <PlayerFill $progress={((index + (isAnswered ? 1 : 0)) / questions.length) * 100} />
       </PlayerProgress>
       <McqQuestion>
+        {question.isNew && <McqNewBadge>Baru</McqNewBadge>}
+        {question.imageUrl && <McqImage src={question.imageUrl} alt="" />}
         <McqText>{question.question}</McqText>
         <McqOptions>
           {question.options.map((opt, i) => (
@@ -91,10 +97,19 @@ export default function McqTab({ subtopic, mcqMax }) {
             </McqOption>
           ))}
         </McqOptions>
-        {isAnswered && question.explanation && (
-          <McqExplanation><strong>Penjelasan:</strong> {question.explanation}</McqExplanation>
-        )}
       </McqQuestion>
+
+      {/* same extras panel as the full-page MCQ session: short/long explanation,
+          references and linked summary notes */}
+      {isAnswered && (
+        <CardExtrasPanel
+          key={question.id}
+          explanationShort={question.explanationShort}
+          explanationLong={question.explanationLong}
+          references={question.references}
+          linkedSummaryNotes={question.linkedSummaryNotes}
+        />
+      )}
       {isAnswered && (
         <McqActionRow>
           <McqNextBtn onClick={handleNext}>{isLast ? 'Lihat Hasil →' : 'Lanjut →'}</McqNextBtn>

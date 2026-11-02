@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { startFlashcardNodeSession, submitFlashcardRating } from '@store/flashcardNodes/userAction'
 
@@ -23,6 +23,13 @@ export function useFlashcardTab(subtopic, flashcardMax) {
     setCardIndex(0); setRevealed(false); setRetryCounts({}); setDone(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing])
+
+  // the drawer body keeps its scroll position between cards, so pull the player
+  // header back into view whenever a new card comes up
+  const topRef = useRef(null)
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ block: 'start' })
+  }, [cardIndex])
 
   const handleReveal = useCallback(() => setRevealed(true), [])
 
@@ -54,7 +61,7 @@ export function useFlashcardTab(subtopic, flashcardMax) {
   return {
     count, setCount,
     playing, queue, cardIndex, revealed, done, card, retryCount,
-    isStarting: loading.isStartingSession,
+    isStarting: loading.isStartingSession, topRef,
     handleStart, handleRate, handleReveal, handleExit,
   }
 }

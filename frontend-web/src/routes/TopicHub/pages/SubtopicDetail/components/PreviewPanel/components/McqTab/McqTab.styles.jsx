@@ -79,14 +79,26 @@ export const McqOptionText = styled.span`
   line-height: 1.5;
 `
 
-export const McqExplanation = styled.div`
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
+export const McqImage = styled.img`
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
   border-radius: 8px;
-  padding: 0.75rem;
-  font-size: 0.8125rem;
-  color: #92400e;
-  line-height: 1.6;
+  background: #f3f4f6;
+`
+
+export const McqNewBadge = styled.span`
+  align-self: flex-start;
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #86efac;
+  border-radius: 99px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 `
 
 export const McqActionRow = styled.div`

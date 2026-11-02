@@ -17,7 +17,7 @@ export const Drawer = styled.aside`
   top: 0;
   right: 0;
   bottom: 0;
-  width: 380px;
+  width: ${({ $width }) => $width}px;
   max-width: 100vw;
   background: #fff;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
@@ -29,6 +29,37 @@ export const Drawer = styled.aside`
 
   @media (max-width: 768px) {
     width: 100vw;
+  }
+`
+
+export const ResizeHandle = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* the visible grip line, centred inside the wider hit area */
+  &::after {
+    content: '';
+    width: 2px;
+    height: 100%;
+    background: ${({ $active }) => $active ? '#10b981' : 'transparent'};
+    transition: background 0.15s;
+  }
+
+  &:hover::after {
+    background: #10b981;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `
 
