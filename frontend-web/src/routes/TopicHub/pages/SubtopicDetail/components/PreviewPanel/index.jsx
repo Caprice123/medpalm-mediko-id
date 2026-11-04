@@ -1,5 +1,6 @@
+import { PiDotsSixVertical } from 'react-icons/pi'
 import {
-  Backdrop, Drawer, ResizeHandle, DrawerHeader, DrawerTitle, CloseBtn,
+  Backdrop, Drawer, ResizeHandle, ResizeGrip, DrawerHeader, DrawerTitle, CloseBtn,
   TabBar, TabBtn, PanelContent,
 } from './PreviewPanel.styles'
 import usePreviewPanel from './hooks/usePreviewPanel'
@@ -30,7 +31,9 @@ export default function PreviewPanel({ open, onClose, activeTab, onTabChange, su
           onPointerDown={startResize}
           onDoubleClick={resetWidth}
           title="Geser untuk mengubah lebar panel"
-        />
+        >
+          <ResizeGrip $active={isResizing} aria-hidden="true"><PiDotsSixVertical /></ResizeGrip>
+        </ResizeHandle>
 
         <DrawerHeader>
           <DrawerTitle>{subtopic?.name} · Sumber Belajar</DrawerTitle>

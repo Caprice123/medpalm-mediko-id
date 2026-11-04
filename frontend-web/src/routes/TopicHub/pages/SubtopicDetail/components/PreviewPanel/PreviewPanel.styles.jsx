@@ -37,20 +37,23 @@ export const ResizeHandle = styled.div`
   top: 0;
   left: 0;
   bottom: 0;
-  width: 8px;
+  width: 16px;
   cursor: col-resize;
   touch-action: none;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* the visible grip line, centred inside the wider hit area */
+  /* the edge line, centred inside the wider hit area. It stays visible at rest
+     so the drawer reads as having a grabbable edge rather than a hard border */
   &::after {
     content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
     width: 2px;
-    height: 100%;
-    background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'transparent'};
+    background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
     transition: background 0.15s;
   }
 
@@ -60,6 +63,31 @@ export const ResizeHandle = styled.div`
 
   @media (max-width: 768px) {
     display: none;
+  }
+`
+
+// The grip itself — a dotted pill sitting on the edge line, so the handle is
+// discoverable without a hover. Hover tints it, dragging fills it.
+export const ResizeGrip = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-300)'};
+  background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-surface)'};
+  color: ${({ $active }) => $active ? 'var(--color-surface)' : 'var(--color-gray-400)'};
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  ${ResizeHandle}:hover & {
+    border-color: var(--color-brand-blue);
+    background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-brand-blue-tint)'};
+    color: ${({ $active }) => $active ? 'var(--color-surface)' : 'var(--color-brand-blue)'};
   }
 `
 
