@@ -61,27 +61,37 @@ export const TopicCard = styled.button`
   border: 1px solid var(--color-border-strong);
   border-radius: 12px;
   cursor: pointer;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--color-gray-700);
   text-align: left;
   transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 
+  /* Hover darkens the edge. It used to lighten it to the blue tint, which made
+     the card's boundary weaker on the one card the pointer was on. */
   &:hover {
-    border-color: var(--color-brand-blue-tint-strong);
+    border-color: var(--color-brand-blue);
     background: var(--color-brand-blue-tint);
-    color: var(--color-brand-blue-deep);
     box-shadow: 0 2px 10px rgba(30, 115, 170, 0.08);
   }
 `
 
+export const TopicCardName = styled.span`
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+  transition: color 0.15s;
+
+  ${TopicCard}:hover & {
+    color: var(--color-brand-blue-deep);
+  }
+`
+
 export const TopicCardArrow = styled.span`
-  /* The card's only affordance marker, so it has to be legible as text:
-     gray-400 was 2.92:1 against white, under the 4.5:1 a glyph this size
-     needs. gray-500 measures 5.51:1. */
+  /* A drawn icon rather than the "→" character it used to be: a text glyph
+     renders at the mercy of the font and is announced as "right arrow" by a
+     screen reader. gray-500 measures 5.51:1 against the card. */
+  display: flex;
+  align-items: center;
   color: var(--color-gray-500);
-  font-size: 0.875rem;
   flex-shrink: 0;
   transition: color 0.15s;
 

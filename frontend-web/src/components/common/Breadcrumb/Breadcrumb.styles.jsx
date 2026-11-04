@@ -10,7 +10,9 @@ export const Nav = styled.nav`
 `
 
 export const Sep = styled.span`
-  color: var(--color-gray-300);
+  /* gray-300 is 1.26:1 against the page — the separator was effectively
+     invisible, so the trail read as two unrelated words. */
+  color: var(--color-gray-400);
 `
 
 export const Crumb = styled.button`
@@ -18,7 +20,9 @@ export const Crumb = styled.button`
   border: none;
   padding: 0;
   font: inherit;
-  color: var(--color-brand-green);
+  /* The last green left in the app: it survived the re-theme because it was
+     already a token rather than a hex, so the sweep never saw it. */
+  color: var(--color-brand-blue);
   cursor: pointer;
   font-weight: 500;
 

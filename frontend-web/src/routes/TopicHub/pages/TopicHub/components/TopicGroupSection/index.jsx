@@ -1,11 +1,12 @@
 import { useSelector } from 'react-redux'
+import { PiArrowRight } from 'react-icons/pi'
 import {
   TopicSection, TopicSectionTag, TopicSectionDesc,
-  TopicGrid, TopicCard, TopicCardArrow, SkeletonCard,
+  TopicGrid, TopicCard, TopicCardName, TopicCardArrow, SkeletonCard,
 } from './TopicGroupSection.styles'
 
-// Matches the larger real group, so the grid does not visibly reflow when 8
-// placeholders resolve to 11 topics — a shift that landed after the page's
+// Matches the larger real group, so the grid does not visibly reflow when
+// placeholders resolve to topics — a shift that used to land after the page's
 // own entrance animation had finished.
 const SKELETON_COUNT = 11
 
@@ -25,8 +26,8 @@ export default function TopicGroupSection({ classification, tag, description, on
           ? Array.from({ length: SKELETON_COUNT }, (_, i) => <SkeletonCard key={i} />)
           : topics.map((topic) => (
             <TopicCard key={topic.id} onClick={() => onTopicClick(topic)}>
-              {topic.name}
-              <TopicCardArrow>→</TopicCardArrow>
+              <TopicCardName>{topic.name}</TopicCardName>
+              <TopicCardArrow><PiArrowRight size={16} /></TopicCardArrow>
             </TopicCard>
           ))
         }
