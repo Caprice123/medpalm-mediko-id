@@ -14,7 +14,7 @@ export function useStoredOpen(key) {
   const toggle = useCallback(() => {
     setOpen(prev => {
       const next = !prev
-      try { localStorage.setItem(key, String(next)) } catch {}
+      try { localStorage.setItem(key, String(next)) } catch { /* section state is session-only */ }
       return next
     })
   }, [key])

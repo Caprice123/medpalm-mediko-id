@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchSummaryNoteDetailV2, fetchNoteAnatomyQuizRelations, fetchNoteNodeStats,
 } from '@store/summaryNotes/v2/userAction'
+import { extractOutline, estimateReadingMinutes } from '../../../utils/noteOutline'
 
 export function useNotePanel(noteId) {
   const dispatch = useDispatch()
-  const { detail } = useSelector(s => s.summaryNotesV2)
+  const detail = useSelector(s => s.summaryNotesV2.detail)
 
   useEffect(() => {
     if (noteId) {
@@ -16,11 +17,7 @@ export function useNotePanel(noteId) {
 
   const nodeInfo = detail?.nodes?.[0] ?? null
   const nodeId = nodeInfo?.nodeId ?? null
-  const topicSlug = nodeInfo?.path?.[0]?.slug ?? null
-  const topicName = nodeInfo?.path?.[0]?.name ?? null
-  const subtopicSlug = nodeInfo?.nodeSlug ?? null
-  const subtopicName = nodeInfo?.nodeName ?? null
-  const breadcrumbPath = nodeInfo?.path || []
+  const topicNode = nodeInfo?.path?.[0] ?? null
 
   useEffect(() => {
     dispatch(fetchNoteNodeStats(nodeId))
@@ -41,10 +38,22 @@ export function useNotePanel(noteId) {
     }
   }, [detail?.content])
 
+  const outline = useMemo(() => extractOutline(parsedContent), [parsedContent])
+  const readingMinutes = useMemo(() => estimateReadingMinutes(parsedContent), [parsedContent])
+
   return {
     detail,
     parsedContent,
-    breadcrumbPath,
-    topicSlug, topicName, subtopicSlug, subtopicName,
+    outline,
+    readingMinutes,
+    // The breadcrumb stops at the subtopic: the note's own title is the <h1> directly
+    // below it, and repeating it as the last crumb said the same thing twice.
+    breadcrumbPath: nodeInfo?.path || [],
+    topicSlug: topicNode?.slug ?? null,
+    topicName: topicNode?.name ?? null,
+    topicNodeId: topicNode?.id ?? null,
+    subtopicSlug: nodeInfo?.nodeSlug ?? null,
+    subtopicName: nodeInfo?.nodeName ?? null,
+    subtopicNodeId: nodeId,
   }
 }

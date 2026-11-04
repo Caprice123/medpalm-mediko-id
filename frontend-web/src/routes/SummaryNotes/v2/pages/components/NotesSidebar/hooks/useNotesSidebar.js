@@ -1,96 +1,79 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSummaryNotesByNode, fetchLazyUserNodes, fetchSummaryNoteTopics, searchSummaryNotesV2 } from '@store/summaryNotes/v2/userAction'
+import {
+  fetchSummaryNotesByNode, fetchUserNodeChildren, loadMoreUserNodeChildren,
+  fetchSummaryNoteTopics,
+} from '@store/summaryNotes/v2/userAction'
 import { fetchFavorites } from '@store/favorites/userAction'
 
-export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode) {
+export function useNotesSidebar({ onSelectNote, onSelectEmptyNode }) {
   const dispatch = useDispatch()
-  const { nodeNotes, detail } = useSelector(s => s.summaryNotesV2)
+  const { nodeNotes, nodeChildren, detail } = useSelector(s => s.summaryNotesV2)
 
-  const [childrenMap, setChildrenMap] = useState({})
-  const [childrenPagination, setChildrenPagination] = useState({})
+  // Which disclosures the reader has opened — pure presentation, and deliberately
+  // not persisted: a reader returning to the page wants to see the note they were
+  // reading revealed, not whatever twelve topics they once expanded.
   const [expandedNodes, setExpandedNodes] = useState(new Set())
-  const [loadingNodeIds, setLoadingNodeIds] = useState(new Set())
-
-  const [search, setSearch] = useState('')
-  const debounceRef = useRef(null)
-
-  // Seeded with whatever note the sidebar mounts already selected (e.g. a direct
-  // /summary-notes/:id URL) so that note's first detail load also triggers reveal,
-  // not just ones selected via search/favorites/recently-viewed clicks.
-  const pendingRevealIdRef = useRef(selectedNoteId || null)
 
   useEffect(() => {
     dispatch(fetchSummaryNoteTopics())
     dispatch(fetchFavorites('summary_note'))
   }, [dispatch])
 
-  const fetchChildren = useCallback(async (nodeId, page = 1) => {
-    if (page === 1 && nodeId in childrenMap) {
-      return { data: childrenMap[nodeId], isLastPage: childrenPagination[nodeId]?.isLastPage ?? true }
-    }
-    setLoadingNodeIds(prev => new Set([...prev, nodeId]))
-    try {
-      const { data: children, pagination } = await dispatch(fetchLazyUserNodes(nodeId, page))
-      setChildrenMap(prev => ({
-        ...prev,
-        [nodeId]: page === 1 ? children : [...(prev[nodeId] || []), ...children],
-      }))
-      setChildrenPagination(prev => ({ ...prev, [nodeId]: pagination }))
-      return { data: children, isLastPage: pagination.isLastPage }
-    } finally {
-      setLoadingNodeIds(prev => { const s = new Set(prev); s.delete(nodeId); return s })
-    }
-  }, [childrenMap, childrenPagination, dispatch])
+  const fetchChildren = useCallback(async (nodeId) => {
+    if (nodeId in nodeChildren) return nodeChildren[nodeId]
+    return dispatch(fetchUserNodeChildren(nodeId))
+  }, [nodeChildren, dispatch])
 
   const fetchNotesUntilFound = useCallback(async (nodeId, noteId) => {
     const existing = nodeNotes[nodeId]
-    if (existing?.notes?.find(n => n.id === noteId)) return
+    if (existing?.notes?.find(note => note.id === noteId)) return
     let page = existing?.isLoaded ? existing.page + 1 : 1
-    while (true) {
+    for (;;) {
       const result = await dispatch(fetchSummaryNotesByNode(nodeId, page))
-      if (!result || result.notes.find(n => n.id === noteId) || result.isLastPage) break
+      if (!result || result.notes.find(note => note.id === noteId) || result.isLastPage) break
       page++
     }
   }, [nodeNotes, dispatch])
 
-  const revealNote = useCallback(async (noteDetail) => {
-    if (!noteDetail?.nodes?.length) return
-    const { path } = noteDetail.nodes[0]
-    if (!path?.length) return
-    for (const ancestor of path.slice(0, -1)) {
-      if (!(ancestor.id in childrenMap)) await fetchChildren(ancestor.id)
-      setExpandedNodes(prev => new Set([...prev, ancestor.id]))
-    }
-    const leaf = path[path.length - 1]
-    await fetchNotesUntilFound(leaf.id, noteDetail.id)
-  }, [childrenMap, fetchChildren, fetchNotesUntilFound])
-
+  // Expand the ancestors of whichever note is now open so the tree always shows
+  // where the reader is. Driven off `detail` rather than off click handlers, so it
+  // also fires for a note reached by a direct /summary-notes/:id URL or by the
+  // browser's back button — neither of which goes through a click. Idempotent:
+  // ancestors already loaded are not refetched.
   useEffect(() => {
-    if (detail && detail.uniqueId === pendingRevealIdRef.current) {
-      pendingRevealIdRef.current = null
-      revealNote(detail)
+    const path = detail?.nodes?.[0]?.path
+    if (!path?.length) return
+
+    let cancelled = false
+    const reveal = async () => {
+      for (const ancestor of path.slice(0, -1)) {
+        if (cancelled) return
+        await fetchChildren(ancestor.id)
+        setExpandedNodes(prev => new Set([...prev, ancestor.id]))
+      }
+      if (cancelled) return
+      const leaf = path[path.length - 1]
+      await fetchNotesUntilFound(leaf.id, detail.id)
     }
-  }, [detail, revealNote])
+    reveal()
+    return () => { cancelled = true }
+    // Keyed on the note itself: re-running on every nodeChildren change would loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detail?.id])
 
-  const handleSelectAndReveal = useCallback((uniqueId) => {
-    pendingRevealIdRef.current = uniqueId
-    onSelectNote(uniqueId)
-  }, [onSelectNote])
-
-  // Subtopic (layer 2) click — always a leaf. Opens its bound note directly,
-  // or the "no note yet" empty state in the panel if it has none.
+  // A subtopic (layer 2) is always a leaf bound to at most one note — a convention
+  // used app-wide — so clicking one opens its note directly rather than expanding.
   const openLeafNode = useCallback(async (node) => {
-    const nodeId = node.id
-    let nodeData = nodeNotes[nodeId]
+    let nodeData = nodeNotes[node.id]
     if (!nodeData?.isLoaded) {
-      const result = await dispatch(fetchSummaryNotesByNode(nodeId))
+      const result = await dispatch(fetchSummaryNotesByNode(node.id))
       nodeData = { notes: result?.notes || [] }
     }
     if (nodeData.notes?.length > 0) {
       onSelectNote(nodeData.notes[0].uniqueId)
     } else {
-      onSelectEmptyNode(nodeId)
+      onSelectEmptyNode(node.id)
     }
   }, [nodeNotes, dispatch, onSelectNote, onSelectEmptyNode])
 
@@ -99,38 +82,21 @@ export function useNotesSidebar(selectedNoteId, onSelectNote, onSelectEmptyNode)
       await openLeafNode(node)
       return
     }
-
-    const nodeId = node.id
-    const isExpanding = !expandedNodes.has(nodeId)
-    if (!isExpanding) {
-      setExpandedNodes(prev => { const next = new Set(prev); next.delete(nodeId); return next })
+    if (expandedNodes.has(node.id)) {
+      setExpandedNodes(prev => {
+        const next = new Set(prev)
+        next.delete(node.id)
+        return next
+      })
       return
     }
-    setExpandedNodes(prev => new Set([...prev, nodeId]))
-    await fetchChildren(nodeId)
+    setExpandedNodes(prev => new Set([...prev, node.id]))
+    await fetchChildren(node.id)
   }, [expandedNodes, fetchChildren, openLeafNode])
 
-  const handleLoadMoreChildren = useCallback(async (nodeId) => {
-    const page = childrenPagination[nodeId]?.page ?? 1
-    await fetchChildren(nodeId, page + 1)
-  }, [childrenPagination, fetchChildren])
-
-  const handleSearchChange = useCallback((value) => {
-    setSearch(value)
-    clearTimeout(debounceRef.current)
-    if (value.trim()) {
-      debounceRef.current = setTimeout(() => {
-        dispatch(searchSummaryNotesV2(value.trim()))
-      }, 350)
-    }
+  const handleLoadMoreChildren = useCallback((nodeId) => {
+    dispatch(loadMoreUserNodeChildren(nodeId))
   }, [dispatch])
 
-  const isSearching = search.trim().length > 0
-
-  return {
-    nodeNotes, childrenMap, childrenPagination, expandedNodes, loadingNodeIds,
-    handleToggleNode, handleLoadMoreChildren,
-    search, isSearching, handleSearchChange,
-    handleSelectAndReveal,
-  }
+  return { expandedNodes, handleToggleNode, handleLoadMoreChildren }
 }

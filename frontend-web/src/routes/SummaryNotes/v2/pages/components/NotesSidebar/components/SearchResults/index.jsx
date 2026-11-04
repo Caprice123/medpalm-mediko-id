@@ -1,54 +1,68 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { PiFolder, PiStar, PiStarFill } from 'react-icons/pi'
 import { toggleFavorite } from '@store/favorites/userAction'
-import { SectionBlock, EmptyHint, FavoriteBtn } from '../../NotesSidebar.styles'
-import { SearchNoteRow, SearchNoteInfo, SearchNoteTitle, SearchNotePath } from './SearchResults.styles'
+import { splitMatches } from '../../../../utils/textMatching'
+import { EmptyHint, FavoriteButton } from '../../NotesSidebar.styles'
+import { ResultsHeader, ResultRow, ResultInfo, ResultTitle, ResultPath } from './SearchResults.styles'
 
-export default function SearchResults({ selectedNoteId, onSelectNote }) {
+export default function SearchResults({ query, selectedNoteId, onSelectNote }) {
   const dispatch = useDispatch()
   const searchResults = useSelector(s => s.summaryNotesV2.searchResults)
   const isSearchLoading = useSelector(s => s.summaryNotesV2.loading.isSearchLoading)
-  const { favoritedIds } = useSelector(s => s.favorites)
-  const favLoading = useSelector(s => s.favorites.loading)
-  const favoritedSummaryNoteIds = favoritedIds['summary_note'] || []
+  const isToggling = useSelector(s => s.favorites.loading.isToggling)
+  const favoritedNoteIds = useSelector(s => s.favorites.favoritedIds['summary_note'])
 
-  const handleToggleFavorite = (e, noteId, metadata = null) => {
-    e.stopPropagation()
-    dispatch(toggleFavorite('summary_note', noteId, metadata))
+  if (isSearchLoading) return <EmptyHint>Mencari...</EmptyHint>
+  if (searchResults.length === 0) return <EmptyHint>Tidak ada ringkasan yang cocok</EmptyHint>
+
+  const handleToggleFavorite = (event, note) => {
+    event.stopPropagation()
+    dispatch(toggleFavorite('summary_note', note.id, {
+      uniqueId: note.uniqueId,
+      title: note.title,
+    }))
   }
 
   return (
-    <SectionBlock>
-      {isSearchLoading ? (
-        <EmptyHint>Mencari...</EmptyHint>
-      ) : searchResults.length === 0 ? (
-        <EmptyHint>Tidak ada hasil</EmptyHint>
-      ) : searchResults.map(note => {
-        const isFav = favoritedSummaryNoteIds.includes(note.id)
+    <>
+      <ResultsHeader>{searchResults.length} hasil</ResultsHeader>
+      {searchResults.map(note => {
+        const isSelected = note.uniqueId === selectedNoteId
+        const isFavorited = (favoritedNoteIds || []).includes(note.id)
+
         return (
-          <SearchNoteRow
+          <ResultRow
             key={note.id}
-            $selected={note.uniqueId === selectedNoteId}
+            $selected={isSelected}
             onClick={() => onSelectNote(note.uniqueId)}
           >
-            <SearchNoteInfo>
-              <SearchNoteTitle $selected={note.uniqueId === selectedNoteId}>
-                {note.title}
-              </SearchNoteTitle>
+            <ResultInfo>
+              <ResultTitle $selected={isSelected}>
+                {splitMatches(note.title, query).map((segment, index) => (
+                  segment.isMatch
+                    ? <mark key={index}>{segment.text}</mark>
+                    : <span key={index}>{segment.text}</span>
+                ))}
+              </ResultTitle>
               {note.nodePath?.length > 0 && (
-                <SearchNotePath>📁 {note.nodePath.join(' › ')}</SearchNotePath>
+                <ResultPath title={note.nodePath.join(' › ')}>
+                  <PiFolder />{note.nodePath.join(' › ')}
+                </ResultPath>
               )}
-            </SearchNoteInfo>
-            <FavoriteBtn
-              $active={isFav}
-              disabled={favLoading.isToggling}
-              onClick={e => handleToggleFavorite(e, note.id, { uniqueId: note.uniqueId, title: note.title })}
-              title={isFav ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+            </ResultInfo>
+            <FavoriteButton
+              $active={isFavorited}
+              $alwaysVisible={isFavorited}
+              disabled={isToggling}
+              onClick={event => handleToggleFavorite(event, note)}
+              title={isFavorited ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+              aria-label={isFavorited ? 'Hapus dari favorit' : 'Tambah ke favorit'}
             >
-              ★
-            </FavoriteBtn>
-          </SearchNoteRow>
+              {isFavorited ? <PiStarFill /> : <PiStar />}
+            </FavoriteButton>
+          </ResultRow>
         )
       })}
-    </SectionBlock>
+    </>
   )
 }

@@ -37,6 +37,13 @@ export const palette = {
   // read against all day.
   surfaceApp: '#f6fafb',
 
+  // The summary-note reader deliberately sits on a warm paper tone instead of the
+  // cool near-white used by the rest of the app: long-form reading is easier on a
+  // slightly yellow ground, and it marks the reader as its own surface, distinct
+  // from the app chrome around it. Only the reader uses these two.
+  surfaceReader: '#fdfcf8',        // the reading canvas itself
+  surfaceReaderShell: '#f5f3ee',   // the shell/gutter the canvas floats on
+
   // ------------------------------------------------------- neutral ramp
   // A single cool grey ramp. The app previously mixed Tailwind's `gray` and
   // `slate` ramps; both now resolve here so greys stay consistent.

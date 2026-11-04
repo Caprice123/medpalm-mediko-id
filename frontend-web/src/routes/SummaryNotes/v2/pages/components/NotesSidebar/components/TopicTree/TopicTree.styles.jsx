@@ -1,62 +1,51 @@
 import styled from 'styled-components'
 
-export const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem 0.5rem;
+export const SectionBlock = styled.div`
+  padding: 0.625rem 0 0.25rem;
 `
 
-export const SectionLabel = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-gray-700);
-`
-
-export const NodeRow = styled.div`
+export const SectionHeader = styled.button`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
-  cursor: ${p => p.$clickable ? 'pointer' : 'default'};
-  border-radius: 0;
-  user-select: none;
-  background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : 'transparent'};
-  &:hover { background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : (p.$clickable ? 'var(--color-gray-100)' : 'transparent')}; }
+  width: 100%;
+  padding: 0.25rem 0.875rem 0.375rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover > span { color: var(--color-gray-700); }
 `
 
-export const ChevronIcon = styled.span`
-  font-size: 0.75rem;
-  color: var(--color-gray-400);
-  width: 0.75rem;
+export const SectionChevron = styled.span`
+  display: flex;
   flex-shrink: 0;
+  font-size: 0.625rem;
+  color: var(--color-gray-400);
   transform: ${p => p.$open ? 'rotate(90deg)' : 'none'};
   transition: transform 0.15s;
-  display: inline-block;
 `
 
-export const NodeIcon = styled.span`
-  font-size: 0.875rem;
-  flex-shrink: 0;
-`
-
-export const NodeLabel = styled.span`
-  font-size: 0.9375rem;
-  color: ${p => p.$selected ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
-  font-weight: ${p => p.$selected ? '600' : '400'};
+export const SectionLabel = styled.span`
   flex: 1;
+  min-width: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gray-500);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `
 
-export const LoadingRow = styled.div`
-  padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
-  font-size: 0.75rem;
-  color: ${p => p.$clickable ? 'var(--color-brand-blue)' : 'var(--color-gray-400)'};
-  cursor: ${p => p.$clickable ? 'pointer' : 'default'};
-  &:hover { ${p => p.$clickable && 'text-decoration: underline;'} }
+export const SectionCount = styled.span`
+  flex-shrink: 0;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 99px;
+  background: var(--color-gray-100);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
 `

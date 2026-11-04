@@ -1,105 +1,103 @@
 import styled from 'styled-components'
 
-export const LinkedGroup = styled.div`
-  margin-bottom: 1rem;
-
-  &:last-child { margin-bottom: 0; }
-`
-
-const TYPE_COLORS = {
+// Per-feature categorical accents: these exist to tell content types apart at a
+// glance, which is exactly the case the palette rule leaves local to a feature.
+// Blue and deep blue come from the brand ramp; purple and orange have no palette
+// equivalent because nothing else in the product needs them.
+const TYPE_ACCENT = {
+  topic: 'var(--color-brand-blue-deep)',
   flashcard: 'var(--color-brand-blue)',
   mcq: '#7c3aed',
   anatomy: '#ea580c',
-  topic: 'var(--color-brand-blue-deep)',
 }
 
-const TYPE_HOVER_BG = {
-  flashcard: 'var(--color-brand-blue-tint)',
-  mcq: '#faf5ff',
-  anatomy: '#fff7ed',
+const TYPE_WASH = {
   topic: 'var(--color-brand-blue-tint)',
+  flashcard: 'var(--color-brand-blue-tint)',
+  mcq: '#f5f0ff',
+  anatomy: '#fff4ea',
 }
 
-export const LinkedGroupLabel = styled.div`
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
-`
-
-export const LinkedGroupHint = styled.p`
-  font-size: 0.8125rem;
-  color: var(--color-gray-500);
-  margin: 0 0 0.75rem 0;
-`
-
-export const RelatedList = styled.div`
-  display: flex;
-  flex-direction: column;
+export const ResourceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: 0.625rem;
 `
 
-export const RelatedRow = styled.button`
+export const ResourceCard = styled.button`
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
   width: 100%;
-  padding: 0.875rem 1rem;
-  background: var(--color-surface-page);
+  padding: 0.75rem 0.875rem;
+  background: var(--color-surface);
   border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
 
   &:hover {
-    background: ${p => TYPE_HOVER_BG[p.$type] || 'var(--color-brand-blue-tint)'};
-    border-color: ${p => TYPE_COLORS[p.$type] || 'var(--color-brand-blue)'};
+    background: ${p => TYPE_WASH[p.$type]};
+    border-color: ${p => TYPE_ACCENT[p.$type]};
+    transform: translateY(-1px);
   }
 `
 
-export const RelatedIcon = styled.span`
-  font-size: 1.25rem;
+export const ResourceIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 8px;
+  background: ${p => TYPE_WASH[p.$type]};
+  color: ${p => TYPE_ACCENT[p.$type]};
+  font-size: 1.125rem;
 `
 
-export const RelatedInfo = styled.span`
+export const ResourceInfo = styled.span`
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.0625rem;
   flex: 1;
   min-width: 0;
 `
 
-export const RelatedTitle = styled.span`
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-  line-height: 1.4;
+export const ResourceKind = styled.span`
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: ${p => TYPE_ACCENT[p.$type]};
 `
 
-export const RelatedSubtitle = styled.span`
-  font-size: 0.8125rem;
+export const ResourceTitle = styled.span`
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const ResourceMeta = styled.span`
+  font-size: 0.75rem;
   color: var(--color-gray-500);
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
 `
 
-export const RelatedBadge = styled.span`
-  flex-shrink: 0;
-  padding: 0.25rem 0.625rem;
-  border-radius: 99px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: ${p => TYPE_COLORS[p.$type] || 'var(--color-brand-blue)'}22;
-  color: ${p => TYPE_COLORS[p.$type] || 'var(--color-brand-blue)'};
-`
-
-export const RelatedArrow = styled.span`
+export const ResourceArrow = styled.span`
+  display: flex;
   flex-shrink: 0;
   color: var(--color-gray-400);
   font-size: 1rem;
+
+  ${ResourceCard}:hover & {
+    color: ${p => TYPE_ACCENT[p.$type]};
+  }
 `

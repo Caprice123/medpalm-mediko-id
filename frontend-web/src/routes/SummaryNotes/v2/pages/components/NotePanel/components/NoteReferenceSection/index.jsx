@@ -1,3 +1,4 @@
+import { PiPaperclip } from 'react-icons/pi'
 import FileUpload from '@components/common/FileUpload'
 import Button from '@components/common/Button'
 import { SectionRow, SectionLabel, SectionLine } from '../../NotePanel.styles'
@@ -8,7 +9,7 @@ export default function NoteReferenceSection({ sourceDocument }) {
   return (
     <>
       <SectionRow>
-        <SectionLabel>📚 Referensi</SectionLabel>
+        <SectionLabel><PiPaperclip />Referensi</SectionLabel>
         <SectionLine />
       </SectionRow>
       <FileUpload

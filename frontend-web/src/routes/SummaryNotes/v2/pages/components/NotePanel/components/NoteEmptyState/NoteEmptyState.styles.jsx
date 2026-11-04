@@ -2,27 +2,22 @@ import styled from 'styled-components'
 
 export const EmptyPanel = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 1rem;
-  color: var(--color-gray-400);
-  padding: 3rem;
-  text-align: center;
-  position: relative;
-
-  @media (max-width: 768px) {
-    min-height: 100vh;
-  }
+  padding: 2rem 1.5rem;
+  background: var(--color-surface-reader);
 `
 
-export const EmptyIcon = styled.div`
-  font-size: 3rem;
-  opacity: 0.5;
+export const EmptyGlyph = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue);
+  font-size: 1.75rem;
 `
 
-export const EmptyText = styled.p`
-  font-size: 1rem;
-  margin: 0;
-`

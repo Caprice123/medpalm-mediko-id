@@ -3,6 +3,12 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   nodes: [],          // flat list of feature_nodes (from /api/v1/feature-nodes)
   nodeNotes: {},      // { [nodeId]: { notes: [], isLoaded: false, isLoading: false } }
+  // Lazy-loaded subtopic children of a topic node. Kept in the store rather than in
+  // the sidebar's own state because the reader needs them too, to work out the
+  // previous/next note within the same topic.
+  nodeChildren: {},           // { [parentId]: [node, …] }
+  nodeChildrenPagination: {}, // { [parentId]: { page, isLastPage } }
+  loadingNodeIds: [],         // parent ids whose children are being fetched
   detail: null,       // currently viewed note detail (shared admin + user)
   searchResults: [],
   userTopics: { primary: [], special: [] },
@@ -31,6 +37,20 @@ const summaryNotesV2Slice = createSlice({
   reducers: {
     setNodes(state, { payload }) {
       state.nodes = payload
+    },
+    setNodeChildren(state, { payload: { nodeId, children } }) {
+      state.nodeChildren[nodeId] = children
+    },
+    appendNodeChildren(state, { payload: { nodeId, children } }) {
+      state.nodeChildren[nodeId] = [...(state.nodeChildren[nodeId] || []), ...children]
+    },
+    setNodeChildrenPagination(state, { payload: { nodeId, pagination } }) {
+      state.nodeChildrenPagination[nodeId] = pagination
+    },
+    setNodeChildrenLoading(state, { payload: { nodeId, value } }) {
+      state.loadingNodeIds = value
+        ? [...new Set([...state.loadingNodeIds, nodeId])]
+        : state.loadingNodeIds.filter(id => id !== nodeId)
     },
     setNodeNotes(state, { payload: { nodeId, notes, page = 1, isLastPage = true } }) {
       state.nodeNotes[nodeId] = { notes, isLoaded: true, isLoading: false, isLoadingMore: false, page, isLastPage }

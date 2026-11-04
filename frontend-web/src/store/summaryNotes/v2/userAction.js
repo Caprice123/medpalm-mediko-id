@@ -37,14 +37,35 @@ export const fetchSummaryNoteTopics = () => async (dispatch) => {
   }
 }
 
-// Returns { data, pagination } — for lazy tree loading of a topic's subtopics.
-// Only returns subtopics that actually have a summary note (backend-filtered).
-export const fetchLazyUserNodes = (parentId, page = 1) => async () => {
-  const res = await getWithToken(Endpoints.api.summaryNotesV2Subtopics(parentId), { page, perPage: LIST_PAGE_LIMIT })
-  return {
-    data: res.data.data?.subtopics || [],
-    pagination: res.data.data?.pagination || { page: 1, isLastPage: true },
+// Lazy tree loading of a topic's subtopics, into state.nodeChildren. Only returns
+// subtopics that actually have a summary note (backend-filtered), so every child
+// here is guaranteed openable — which is what lets the reader's previous/next
+// navigation step through them without checking each one first.
+export const fetchUserNodeChildren = (parentId, { append = false } = {}) => async (dispatch, getState) => {
+  const page = getState().summaryNotesV2.nodeChildrenPagination[parentId]?.page ?? 1
+  try {
+    dispatch(actions.setNodeChildrenLoading({ nodeId: parentId, value: true }))
+    const res = await getWithToken(Endpoints.api.summaryNotesV2Subtopics(parentId), { page, perPage: LIST_PAGE_LIMIT })
+    const children = res.data.data?.subtopics || []
+    const pagination = res.data.data?.pagination || { page, isLastPage: true }
+    dispatch(append
+      ? actions.appendNodeChildren({ nodeId: parentId, children })
+      : actions.setNodeChildren({ nodeId: parentId, children }))
+    dispatch(actions.setNodeChildrenPagination({ nodeId: parentId, pagination }))
+    return children
+  } finally {
+    dispatch(actions.setNodeChildrenLoading({ nodeId: parentId, value: false }))
   }
+}
+
+export const loadMoreUserNodeChildren = (parentId) => (dispatch, getState) => {
+  const pagination = getState().summaryNotesV2.nodeChildrenPagination[parentId]
+  if (!pagination || pagination.isLastPage) return
+  dispatch(actions.setNodeChildrenPagination({
+    nodeId: parentId,
+    pagination: { ...pagination, page: pagination.page + 1 },
+  }))
+  return dispatch(fetchUserNodeChildren(parentId, { append: true }))
 }
 
 export const fetchSummaryNotesByNode = (nodeId, page = 1) => async (dispatch) => {
@@ -121,5 +142,5 @@ export const fetchRecentlyViewed = () => async (dispatch) => {
       limit: 5
     })
     dispatch(actions.setRecentlyViewed(response.data.data || []))
-  } catch {}
+  } catch { /* the sidebar's recently-viewed shortcut is optional; a failure here must not break the page */ }
 }
