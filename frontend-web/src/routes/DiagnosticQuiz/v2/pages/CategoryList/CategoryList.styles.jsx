@@ -9,12 +9,3 @@ export const Container = styled.div`
     min-height: 100vh;
   }
 `
-
-export const EmptyWrap = styled.div`
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #9ca3af;
-  background: #fff;
-  border-radius: 16px;
-  border: 1.5px dashed #e5e7eb;
-`
