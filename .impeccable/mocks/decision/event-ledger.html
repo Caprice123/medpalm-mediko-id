@@ -1,0 +1,160 @@
+<meta charset="utf-8">
+<title>Ledger Klaim</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Fredoka:wght@600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1e73aa;--blue-light:#2e8fc2;--blue-deep:#044a77;--blue-tint:#eaf8ff;--blue-tint-strong:#c5ebff;
+    --green:#7cb342;--green-dark:#699a3d;--green-darker:#3f6b1f;--green-tint:#e7f5e2;--green-tint-strong:#cfe6bf;
+    --g50:#f6fafb;--g100:#eff3f5;--g200:#e7ecef;--g500:#5c6b74;--g700:#2c3b45;--g800:#15242e;--g900:#0b1419;
+    --surface:#fff;--page:#f6fafb;--border-strong:#828e96;
+    --danger-dark:#dc2626;--danger-tint:#fee2e2;
+    --warning:#f59e0b;--warning-light:#fbbf24;--warning-text:#7d5a1f;--warning-tint:#fef3c7;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{width:1440px;height:900px;overflow:hidden}
+  body{display:flex;background:var(--page);font-family:'Plus Jakarta Sans',sans-serif;color:var(--g900)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif;line-height:1.2}
+  .rail{width:240px;flex:0 0 240px;background:var(--surface);border-right:1px solid var(--g200);padding:20px 14px;display:flex;flex-direction:column;gap:10px}
+  .mark{font-family:'Fredoka',sans-serif;font-size:20px;color:var(--blue);margin-bottom:12px}
+  .nav{height:12px;border-radius:6px;background:var(--g100)}
+  .nav.on{background:var(--blue-deep)}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 28px;gap:14px}
+  .tb{height:11px;width:96px;border-radius:6px;background:var(--g100)}
+  .content{padding:26px 32px;display:flex;flex-direction:column;gap:18px}
+  h1{font-size:30px;font-weight:700;color:var(--blue-deep)}
+  .sub{font-size:15px;color:var(--g500);margin-top:3px}
+
+  /* summary strip — my claims, always on the page */
+  .summary{background:var(--surface);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(11,20,25,.06)}
+  .summary > b{font-size:15px;font-weight:700;color:var(--g700);margin-right:4px}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600}
+  .chip b{font-family:'Baloo 2',sans-serif;font-size:17px;line-height:1;font-variant-numeric:tabular-nums}
+  .chip.ok{background:var(--green-tint);color:var(--green-darker)}
+  .chip.wait{background:var(--warning-tint);color:var(--warning-text)}
+  .chip.no{background:var(--danger-tint);color:var(--danger-dark)}
+  .earned{margin-left:auto;font-size:13px;font-weight:700;color:var(--blue-deep);background:var(--blue-tint);border:1px solid var(--blue-tint-strong);padding:8px 13px;border-radius:10px}
+
+  .filters{display:flex;align-items:center;gap:8px}
+  .f{padding:7px 14px;border-radius:999px;border:1.5px solid var(--g200);background:var(--surface);color:var(--g500);font-size:13px;font-weight:600}
+  .f.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .search{margin-left:auto;width:230px;height:38px;border:1px solid var(--g200);border-radius:999px;background:var(--surface);display:flex;align-items:center;padding:0 15px;font-size:13px;color:var(--g500)}
+
+  /* the ledger */
+  .table{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(11,20,25,.06)}
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--g500);background:var(--g50);padding:11px 16px;border-bottom:1px solid var(--g200);
+  }
+  thead th:last-child{text-align:right}
+  tbody td{padding:14px 16px;border-bottom:1px solid var(--g100);vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--g50)}
+  .ev-name{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:3px}
+  .ev-code{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--g500);background:var(--g100);border-radius:5px;padding:2px 6px}
+  .reward{display:flex;flex-direction:column;gap:5px}
+  .r-line{display:flex;align-items:baseline;gap:6px;color:var(--blue-deep)}
+  .r-line .n{font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .r-line .u{font-size:14px;font-weight:700}
+  .r-line .q{font-size:12px;font-weight:600;color:var(--g500)}
+  .r-feat{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--blue-deep);background:var(--blue-tint);border:1px solid var(--blue-tint-strong);border-radius:7px;padding:3px 8px;align-self:flex-start}
+  .period{font-size:13px;color:var(--g700);font-weight:600}
+  .period small{display:block;font-size:11.5px;font-weight:500;color:var(--g500);margin-top:2px}
+  .bar{margin-top:6px;height:4px;width:110px;border-radius:2px;background:var(--g200);overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green) 0%,var(--green-dark) 100%)}
+  .bar i.urgent{background:linear-gradient(90deg,var(--warning-light) 0%,var(--warning) 100%)}
+  .evergreen{font-size:12px;font-weight:700;color:var(--green-darker);background:var(--green-tint);border-radius:6px;padding:3px 8px;display:inline-block}
+  td.act{text-align:right;white-space:nowrap}
+  .btn{height:36px;padding:0 16px;border:1.5px solid transparent;border-radius:9px;font:600 13px 'Plus Jakarta Sans';cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .btn.primary{background:linear-gradient(103deg,var(--blue) 0%,var(--blue-light) 100%);color:#fff}
+  .btn.secondary{background:var(--surface);color:var(--g800);border-color:var(--g200)}
+  .st{font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 11px;display:inline-block}
+  .st.wait{background:var(--warning-tint);color:var(--warning-text)}
+  .st.ok{background:var(--green-tint);color:var(--green-darker)}
+  .loadmore{display:flex;justify-content:center}
+</style>
+<div class="rail">
+  <div class="mark">MedPal.id</div>
+  <div class="nav"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div>
+  <div class="nav"></div><div class="nav"></div><div class="nav on"></div><div class="nav"></div><div class="nav"></div>
+</div>
+<div class="main">
+  <div class="topbar"><div class="tb"></div><div class="tb" style="width:64px"></div></div>
+  <div class="content">
+    <div>
+      <h1>Event</h1>
+      <p class="sub">6 event terdaftar · 3 bisa diklaim sekarang</p>
+    </div>
+
+    <div class="summary">
+      <b>Klaim Saya</b>
+      <span class="chip ok"><b>2</b> Disetujui</span>
+      <span class="chip wait"><b>1</b> Menunggu review</span>
+      <span class="chip no"><b>1</b> Ditolak</span>
+      <span class="earned">Sudah diterima: 150 kredit · 2 fitur aktif</span>
+    </div>
+
+    <div class="filters">
+      <span class="f on">Bisa diklaim</span>
+      <span class="f">Akan dibuka</span>
+      <span class="f">Sudah ditutup</span>
+      <span class="f">Semua</span>
+      <span class="search">Cari event…</span>
+    </div>
+
+    <div class="table">
+      <table>
+        <thead>
+          <tr><th>Event</th><th>Hadiah</th><th>Periode klaim</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="ev-name">Promo Awal Semester</div><span class="ev-code">PROMO-AWAL-SMT</span></td>
+            <td>
+              <div class="reward">
+                <div class="r-line"><span class="n">100</span><span class="u">kredit</span><span class="q">permanen</span></div>
+                <span class="r-feat">MCQ Premium · 30 hari</span>
+              </div>
+            </td>
+            <td><div class="period">Tutup 3 hari lagi<small>9 Nov 2026, 23.59 WIB</small><div class="bar"><i class="urgent" style="width:17%"></i></div></div></td>
+            <td class="act"><button class="btn secondary">Detail</button> <button class="btn primary">Klaim</button></td>
+          </tr>
+          <tr>
+            <td><div class="ev-name">Referral Teman Sekelas</div><span class="ev-code">REF-TEMAN</span></td>
+            <td>
+              <div class="reward">
+                <div class="r-line"><span class="n">50</span><span class="u">kredit</span><span class="q">berlaku 90 hari</span></div>
+              </div>
+            </td>
+            <td><div class="period">Sampai 30 Nov 2026<small>23.59 WIB</small><div class="bar"><i style="width:62%"></i></div></div></td>
+            <td class="act"><button class="btn secondary">Detail</button> <button class="btn primary">Klaim</button></td>
+          </tr>
+          <tr>
+            <td><div class="ev-name">Beta Tester Atlas 3D</div><span class="ev-code">BETA-ATLAS</span></td>
+            <td>
+              <div class="reward">
+                <span class="r-feat">Atlas 3D · 14 hari</span>
+              </div>
+            </td>
+            <td><span class="evergreen">Selalu terbuka</span></td>
+            <td class="act"><span class="st wait">Menunggu review</span></td>
+          </tr>
+          <tr>
+            <td><div class="ev-name">Beta Tester Flashcard SRS</div><span class="ev-code">BETA-FLASH</span></td>
+            <td>
+              <div class="reward">
+                <div class="r-line"><span class="n">25</span><span class="u">kredit</span><span class="q">berlaku 60 hari</span></div>
+                <span class="r-feat">Flashcard SRS · 30 hari</span>
+              </div>
+            </td>
+            <td><div class="period">Ditutup 3 Agu 2026<small>sudah berakhir</small></div></td>
+            <td class="act"><span class="st ok">Sudah diterima</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="loadmore"><button class="btn secondary">Muat lebih banyak</button></div>
+  </div>
+</div>

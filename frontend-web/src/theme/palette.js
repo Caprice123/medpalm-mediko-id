@@ -76,7 +76,11 @@ export const palette = {
   warning: '#f59e0b',
   warningLight: '#fbbf24',
   warningDark: '#d97706',
-  warningText: '#9d7438',
+  // Text on an amber ground. The previous value (#9d7438) failed WCAG AA for
+  // small text on every ground it is actually used on — 3.78:1 on warningTint,
+  // 3.19:1 on warningTintStrong, and 4.21:1 even on plain white. Measured, this
+  // value clears all three at 5.62:1, 4.75:1 and 6.26:1.
+  warningText: '#7d5a1f',
   warningTint: '#fef3c7',
   warningTintStrong: '#ffdba6',
 }

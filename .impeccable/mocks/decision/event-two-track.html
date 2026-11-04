@@ -1,0 +1,166 @@
+<meta charset="utf-8">
+<title>Dua Jalur</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Fredoka:wght@600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1e73aa;--blue-light:#2e8fc2;--blue-deep:#044a77;--blue-tint:#eaf8ff;--blue-tint-strong:#c5ebff;
+    --green:#7cb342;--green-dark:#699a3d;--green-darker:#3f6b1f;--green-tint:#e7f5e2;--green-tint-strong:#cfe6bf;
+    --g50:#f6fafb;--g100:#eff3f5;--g200:#e7ecef;--g500:#5c6b74;--g700:#2c3b45;--g800:#15242e;--g900:#0b1419;
+    --surface:#fff;--page:#f6fafb;--border-strong:#828e96;
+    --danger-dark:#dc2626;--danger-tint:#fee2e2;
+    --warning:#f59e0b;--warning-light:#fbbf24;--warning-text:#7d5a1f;--warning-tint:#fef3c7;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{width:1440px;height:900px;overflow:hidden}
+  body{display:flex;background:var(--page);font-family:'Plus Jakarta Sans',sans-serif;color:var(--g900)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif;line-height:1.2}
+  .rail{width:240px;flex:0 0 240px;background:var(--surface);border-right:1px solid var(--g200);padding:20px 14px;display:flex;flex-direction:column;gap:10px}
+  .mark{font-family:'Fredoka',sans-serif;font-size:20px;color:var(--blue);margin-bottom:12px}
+  .nav{height:12px;border-radius:6px;background:var(--g100)}
+  .nav.on{background:var(--blue-deep)}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 28px;gap:14px}
+  .tb{height:11px;width:96px;border-radius:6px;background:var(--g100)}
+  .content{padding:26px 32px;display:flex;flex-direction:column;gap:22px}
+  .head{display:flex;align-items:flex-end;justify-content:space-between}
+  h1{font-size:30px;font-weight:700;color:var(--blue-deep)}
+  .sub{font-size:15px;color:var(--g500);margin-top:3px}
+  .search{width:240px;height:40px;border:1px solid var(--g200);border-radius:999px;background:var(--surface);display:flex;align-items:center;padding:0 16px;font-size:13px;color:var(--g500)}
+
+  .track-head{display:flex;align-items:center;gap:13px;margin-bottom:13px}
+  .track-head h2{font-size:19px;font-weight:700;color:var(--g800)}
+  .track-head .n{font-family:'Baloo 2',sans-serif;font-size:14px;font-weight:700;background:var(--blue-tint);color:var(--blue-deep);padding:2px 10px;border-radius:999px}
+  .track-head .rule{flex:1;height:1px;background:var(--g200)}
+
+  /* track 1 — offers led by the reward */
+  .offers{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+  .offer{background:var(--surface);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(11,20,25,.07)}
+  .wtrack{height:5px;background:var(--g100)}
+  .wfill{height:100%;background:linear-gradient(90deg,var(--green) 0%,var(--green-dark) 100%)}
+  .wfill.urgent{background:linear-gradient(90deg,var(--warning-light) 0%,var(--warning) 100%)}
+  .goods{background:var(--blue-tint);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-height:84px}
+  .good{display:flex;align-items:baseline;gap:8px;color:var(--blue-deep)}
+  .good .n{font-family:'Baloo 2',sans-serif;font-size:25px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .good .u{font-size:15px;font-weight:700}
+  .good .q{font-size:12.5px;font-weight:600;color:var(--blue-deep)}
+  .feat{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--blue-deep);background:var(--surface);border:1px solid var(--blue-tint-strong);border-radius:8px;padding:4px 9px;align-self:flex-start}
+  .ob{padding:13px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .code{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--g500);background:var(--g100);border-radius:5px;padding:2px 6px;align-self:flex-start}
+  .ob h3{font-size:17px;font-weight:700}
+  .desc{font-size:13.5px;line-height:1.5;color:var(--g500);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .when{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:9px;background:var(--g100);color:var(--g700)}
+  .when.urgent{background:var(--warning-tint);color:var(--warning-text)}
+  .when.ever{background:var(--green-tint);color:var(--green-darker)}
+  .foot{margin-top:auto;padding-top:13px;display:flex;gap:9px}
+  .foot > *{flex:1}
+  .btn{height:39px;border:1.5px solid transparent;border-radius:10px;font:600 13.5px 'Plus Jakarta Sans';cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+  .btn.primary{background:linear-gradient(103deg,var(--blue) 0%,var(--blue-light) 100%);color:#fff}
+  .btn.secondary{background:var(--surface);color:var(--g800);border-color:var(--g200)}
+  .btn:disabled{opacity:.6}
+
+  /* track 2 — what actually happened to my claims */
+  .claims{display:flex;flex-direction:column;gap:10px}
+  .claim{background:var(--surface);border-radius:13px;padding:14px 17px;display:flex;align-items:flex-start;gap:14px;box-shadow:0 1px 3px rgba(11,20,25,.06)}
+  .ci{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:700;flex-shrink:0}
+  .ci.ok{background:var(--green-tint);color:var(--green-darker)}
+  .ci.wait{background:var(--warning-tint);color:var(--warning-text)}
+  .ci.no{background:var(--danger-tint);color:var(--danger-dark)}
+  .cbody{flex:1;min-width:0}
+  .cbody h3{font-size:16px;font-weight:700;margin-bottom:2px}
+  .cmeta{font-size:12.5px;color:var(--g500)}
+  .got{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;font-weight:700;background:var(--green-tint);color:var(--green-darker);border:1px solid var(--green-tint-strong);border-radius:8px;padding:5px 10px}
+  .got .n{font-family:'Baloo 2',sans-serif;font-size:15px;line-height:1}
+  .note{margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--g700);background:var(--g50);border-radius:9px;padding:8px 11px}
+  .badge{font-size:12px;font-weight:700;border-radius:999px;padding:5px 11px;white-space:nowrap}
+  .badge.ok{background:var(--green-tint);color:var(--green-darker)}
+  .badge.wait{background:var(--warning-tint);color:var(--warning-text)}
+  .badge.no{background:var(--danger-tint);color:var(--danger-dark)}
+</style>
+<div class="rail">
+  <div class="mark">MedPal.id</div>
+  <div class="nav"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div>
+  <div class="nav"></div><div class="nav"></div><div class="nav on"></div><div class="nav"></div><div class="nav"></div>
+</div>
+<div class="main">
+  <div class="topbar"><div class="tb"></div><div class="tb" style="width:64px"></div></div>
+  <div class="content">
+    <div class="head">
+      <div>
+        <h1>Event</h1>
+        <p class="sub">3 event bisa diklaim sekarang · 4 klaim kamu tercatat</p>
+      </div>
+      <span class="search">Cari event…</span>
+    </div>
+
+    <div>
+      <div class="track-head"><h2>Bisa diklaim sekarang</h2><span class="n">3</span><span class="rule"></span></div>
+      <div class="offers">
+        <div class="offer">
+          <div class="wtrack"><div class="wfill urgent" style="width:17%"></div></div>
+          <div class="goods">
+            <div class="good"><span class="n">100</span><span class="u">kredit</span><span class="q">permanen</span></div>
+            <span class="feat">MCQ Premium · 30 hari</span>
+          </div>
+          <div class="ob">
+            <span class="code">PROMO-AWAL-SMT</span>
+            <h3>Promo Awal Semester</h3>
+            <p class="desc">Unggah bukti pembayaran UKT semester ini untuk klaim kredit dan akses bank soal premium.</p>
+            <p class="when urgent">Tutup 3 hari lagi — 9 Nov, 23.59 WIB</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn primary">Klaim</button></div>
+          </div>
+        </div>
+
+        <div class="offer">
+          <div class="wtrack"><div class="wfill" style="width:62%"></div></div>
+          <div class="goods">
+            <div class="good"><span class="n">50</span><span class="u">kredit</span><span class="q">berlaku 90 hari</span></div>
+          </div>
+          <div class="ob">
+            <span class="code">REF-TEMAN</span>
+            <h3>Referral Teman Sekelas</h3>
+            <p class="desc">Ajak satu teman mendaftar, unggah tangkapan layar konfirmasinya, dan kredit masuk setelah diverifikasi.</p>
+            <p class="when">Dibuka sampai 30 Nov 2026</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn primary">Klaim</button></div>
+          </div>
+        </div>
+
+        <div class="offer">
+          <div class="goods">
+            <span class="feat">Atlas 3D · 14 hari</span>
+          </div>
+          <div class="ob">
+            <span class="code">BETA-ATLAS</span>
+            <h3>Beta Tester Atlas 3D</h3>
+            <p class="desc">Bantu uji model anatomi baru. Unggah bukti kamu mahasiswa aktif, lalu kirim satu catatan hasil uji.</p>
+            <p class="when ever">Selalu terbuka — tanpa batas waktu</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn secondary" disabled>Menunggu review</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="track-head"><h2>Riwayat klaim</h2><span class="n">4</span><span class="rule"></span></div>
+      <div class="claims">
+        <div class="claim">
+          <div class="ci ok">&#10003;</div>
+          <div class="cbody">
+            <h3>Promo Juli</h3>
+            <p class="cmeta">Diajukan 12 Juli 2026 · ditinjau 14 Juli 2026</p>
+            <span class="got"><span class="n">100</span> kredit diterima · permanen</span>
+          </div>
+          <span class="badge ok">Disetujui</span>
+        </div>
+        <div class="claim">
+          <div class="ci no">&#10005;</div>
+          <div class="cbody">
+            <h3>Promo September</h3>
+            <p class="cmeta">Diajukan 4 Sep 2026 · ditinjau 5 Sep 2026</p>
+            <p class="note"><b>Catatan admin:</b> Bukti transfer tidak terbaca — nominal tertutup pantulan cahaya. Mohon unggah ulang.</p>
+          </div>
+          <span class="badge no">Ditolak</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

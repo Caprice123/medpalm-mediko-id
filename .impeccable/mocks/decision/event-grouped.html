@@ -1,0 +1,145 @@
+<meta charset="utf-8">
+<title>Per Jenis Hadiah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Fredoka:wght@600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1e73aa;--blue-light:#2e8fc2;--blue-deep:#044a77;--blue-tint:#eaf8ff;--blue-tint-strong:#c5ebff;
+    --green:#7cb342;--green-dark:#699a3d;--green-darker:#3f6b1f;--green-tint:#e7f5e2;--green-tint-strong:#cfe6bf;
+    --g50:#f6fafb;--g100:#eff3f5;--g200:#e7ecef;--g500:#5c6b74;--g700:#2c3b45;--g800:#15242e;--g900:#0b1419;
+    --surface:#fff;--page:#f6fafb;
+    --danger-dark:#dc2626;--danger-tint:#fee2e2;
+    --warning:#f59e0b;--warning-light:#fbbf24;--warning-text:#7d5a1f;--warning-tint:#fef3c7;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{width:1440px;height:900px;overflow:hidden}
+  body{display:flex;background:var(--page);font-family:'Plus Jakarta Sans',sans-serif;color:var(--g900)}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif;line-height:1.2}
+  .rail{width:240px;flex:0 0 240px;background:var(--surface);border-right:1px solid var(--g200);padding:20px 14px;display:flex;flex-direction:column;gap:10px}
+  .mark{font-family:'Fredoka',sans-serif;font-size:20px;color:var(--blue);margin-bottom:12px}
+  .nav{height:12px;border-radius:6px;background:var(--g100)}
+  .nav.on{background:var(--blue-deep)}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 28px;gap:14px}
+  .tb{height:11px;width:96px;border-radius:6px;background:var(--g100)}
+  .content{padding:26px 32px;display:flex;flex-direction:column;gap:16px}
+  .head{display:flex;align-items:flex-end;justify-content:space-between}
+  h1{font-size:30px;font-weight:700;color:var(--blue-deep)}
+  .sub{font-size:15px;color:var(--g500);margin-top:3px}
+  .search{width:230px;height:38px;border:1px solid var(--g200);border-radius:999px;background:var(--surface);display:flex;align-items:center;padding:0 15px;font-size:13px;color:var(--g500)}
+
+  .summary{background:var(--surface);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(11,20,25,.06)}
+  .summary > b{font-size:15px;font-weight:700;color:var(--g700);margin-right:4px}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600}
+  .chip b{font-family:'Baloo 2',sans-serif;font-size:17px;line-height:1;font-variant-numeric:tabular-nums}
+  .chip.ok{background:var(--green-tint);color:var(--green-darker)}
+  .chip.wait{background:var(--warning-tint);color:var(--warning-text)}
+  .chip.no{background:var(--danger-tint);color:var(--danger-dark)}
+
+  .group{margin-top:4px}
+  .group-head{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .group-head h2{font-size:17px;font-weight:700;color:var(--g800)}
+  .group-head .n{font-family:'Baloo 2',sans-serif;font-size:13px;font-weight:700;background:var(--blue-tint);color:var(--blue-deep);padding:2px 9px;border-radius:999px}
+  .group-head .rule{flex:1;height:1px;background:var(--g200)}
+
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--surface);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(11,20,25,.07)}
+  .goods{background:var(--blue-tint);padding:12px 15px;display:flex;flex-direction:column;gap:7px}
+  .good{display:flex;align-items:baseline;gap:7px;color:var(--blue-deep)}
+  .good .n{font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .good .u{font-size:14px;font-weight:700}
+  .good .q{font-size:12px;font-weight:600;color:var(--blue-deep)}
+  .feat{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--blue-deep);background:var(--surface);border:1px solid var(--blue-tint-strong);border-radius:7px;padding:3px 8px;align-self:flex-start}
+  .cb{padding:12px 15px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .cb h3{font-size:16px;font-weight:700}
+  .code{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--g500);background:var(--g100);border-radius:5px;padding:2px 6px;align-self:flex-start}
+  .when{font-size:12.5px;font-weight:600;color:var(--g700);background:var(--g100);border-radius:8px;padding:6px 9px}
+  .when.urgent{background:var(--warning-tint);color:var(--warning-text)}
+  .when.ever{background:var(--green-tint);color:var(--green-darker)}
+  .foot{margin-top:auto;padding-top:11px;display:flex;gap:8px}
+  .foot > *{flex:1}
+  .btn{height:37px;border:1.5px solid transparent;border-radius:9px;font:600 13px 'Plus Jakarta Sans';cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+  .btn.primary{background:linear-gradient(103deg,var(--blue) 0%,var(--blue-light) 100%);color:#fff}
+  .btn.secondary{background:var(--surface);color:var(--g800);border-color:var(--g200)}
+  .btn:disabled{opacity:.6}
+</style>
+<div class="rail">
+  <div class="mark">MedPal.id</div>
+  <div class="nav"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div>
+  <div class="nav"></div><div class="nav"></div><div class="nav on"></div><div class="nav"></div><div class="nav"></div>
+</div>
+<div class="main">
+  <div class="topbar"><div class="tb"></div><div class="tb" style="width:64px"></div></div>
+  <div class="content">
+    <div class="head">
+      <div>
+        <h1>Event</h1>
+        <p class="sub">6 event terdaftar · dikelompokkan menurut jenis hadiahnya</p>
+      </div>
+      <span class="search">Cari event…</span>
+    </div>
+
+    <div class="summary">
+      <b>Klaim Saya</b>
+      <span class="chip ok"><b>2</b> Disetujui</span>
+      <span class="chip wait"><b>1</b> Menunggu review</span>
+      <span class="chip no"><b>1</b> Ditolak</span>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>Kredit</h2><span class="n">2</span><span class="rule"></span></div>
+      <div class="row">
+        <div class="card">
+          <div class="goods"><div class="good"><span class="n">100</span><span class="u">kredit</span><span class="q">permanen</span></div></div>
+          <div class="cb">
+            <span class="code">PROMO-AWAL-SMT</span>
+            <h3>Promo Awal Semester</h3>
+            <p class="when urgent">Tutup 3 hari lagi</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn primary">Klaim</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="goods"><div class="good"><span class="n">50</span><span class="u">kredit</span><span class="q">90 hari</span></div></div>
+          <div class="cb">
+            <span class="code">REF-TEMAN</span>
+            <h3>Referral Teman Sekelas</h3>
+            <p class="when">Sampai 30 Nov 2026</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn primary">Klaim</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>Akses fitur</h2><span class="n">1</span><span class="rule"></span></div>
+      <div class="row">
+        <div class="card">
+          <div class="goods"><span class="feat">Atlas 3D · 14 hari</span></div>
+          <div class="cb">
+            <span class="code">BETA-ATLAS</span>
+            <h3>Beta Tester Atlas 3D</h3>
+            <p class="when ever">Selalu terbuka</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn secondary" disabled>Menunggu</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>Kredit + akses fitur</h2><span class="n">1</span><span class="rule"></span></div>
+      <div class="row">
+        <div class="card">
+          <div class="goods">
+            <div class="good"><span class="n">25</span><span class="u">kredit</span><span class="q">60 hari</span></div>
+            <span class="feat">Flashcard SRS · 30 hari</span>
+          </div>
+          <div class="cb">
+            <span class="code">BETA-FLASH</span>
+            <h3>Beta Tester Flashcard SRS</h3>
+            <p class="when">Ditutup 3 Agu 2026</p>
+            <div class="foot"><button class="btn secondary">Detail</button><button class="btn secondary" disabled>Sudah diterima</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
