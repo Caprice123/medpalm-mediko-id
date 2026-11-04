@@ -1,6 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
+// Bootstrap's GRID-ONLY stylesheet (containers, rows, columns, responsive
+// utilities). Deliberately not the full bundle: Reboot and the component styles
+// would restyle every existing page. Layout primitives only, per CLAUDE.md.
+import 'bootstrap/dist/css/bootstrap-grid.min.css'
 import { initSentry, ErrorBoundary } from './config/sentry'
 
 // Initialize Sentry before rendering

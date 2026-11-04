@@ -107,6 +107,87 @@
         ],
         "createdAt": "2026-10-31T10:00:25.739Z",
         "reason": "Sanctioned: the repeating gradient is the hairline 72/80px grid layer of the researched multi-layer ground, radially masked to fade at the edges. Texture, not decorative striping."
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-04T14:40:01.513Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-04T14:40:02.606Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-04T14:40:03.737Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/agenda.html"
+        ],
+        "createdAt": "2026-11-04T14:40:04.718Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/agenda.html"
+        ],
+        "createdAt": "2026-11-04T14:40:05.663Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/agenda.html"
+        ],
+        "createdAt": "2026-11-04T14:40:06.716Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/billboard.html"
+        ],
+        "createdAt": "2026-11-04T14:40:07.785Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/billboard.html"
+        ],
+        "createdAt": "2026-11-04T14:40:09.232Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/billboard.html"
+        ],
+        "createdAt": "2026-11-04T14:40:10.509Z",
+        "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
       }
     ]
   }

@@ -91,6 +91,20 @@ export const formatJakartaDateLong = (isoString) => {
   return `${getPart(parts, 'day')} ${getPart(parts, 'month')} ${getPart(parts, 'year')}`
 }
 
+// "12 Nov" — for a compact date tab where the full string would not fit.
+export const formatJakartaDateShort = (isoString) => {
+  if (!isoString) return '-'
+  const parts = jakartaParts(isoString, { day: 'numeric', month: 'short' })
+  return `${getPart(parts, 'day')} ${getPart(parts, 'month')}`
+}
+
+// "19.00" — the Jakarta clock time on its own, for rows that already say the date.
+export const formatJakartaTimeShort = (isoString) => {
+  if (!isoString) return '-'
+  const parts = jakartaParts(isoString, { hour: '2-digit', minute: '2-digit', hour12: false })
+  return `${getPart(parts, 'hour')}.${getPart(parts, 'minute')}`
+}
+
 
 export const formatDate = (dateString) => {
     return formatLocalDate(dateString)

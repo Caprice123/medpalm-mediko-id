@@ -7,7 +7,7 @@ import EmptyState from '@components/common/EmptyState'
 import Pagination from '@components/Pagination'
 import { actions } from '@store/webinar/reducer'
 import { formatJakartaDateTimeFull, formatJakartaDateLong } from '@utils/dateUtils'
-import { WebinarRoute } from '../../routes'
+import { WebinarRoute } from '../../../routes'
 import styled from 'styled-components'
 
 const Container = styled.div`
