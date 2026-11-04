@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import colors from '@config/colors'
 
 export const PageContainer = styled.div`
-    background: #f0fdfa;
+    background: var(--color-brand-blue-tint);
 `
 
 export const Container = styled.div`
@@ -54,7 +54,7 @@ export const CreditBalanceCard = styled.div`
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 16px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.3);
 `
 
 export const BalanceGrid = styled.div`
@@ -132,27 +132,27 @@ export const StatusBadge = styled.span`
     switch (props.status) {
       case 'completed':
         return `
-          background: #ECFDF5;
-          color: #059669;
-          border: 1px solid #10b981;
+          background: var(--color-brand-green-tint);
+          color: var(--color-brand-green-dark);
+          border: 1px solid var(--color-brand-green);
         `
       case 'pending':
         return `
-          background: #FEF3C7;
+          background: var(--color-warning-tint);
           color: #92400E;
-          border: 1px solid #F59E0B;
+          border: 1px solid var(--color-warning);
         `
       case 'waiting_approval':
         return `
-          background: #EFF6FF;
-          color: #1E40AF;
-          border: 1px solid #3B82F6;
+          background: var(--color-brand-blue-tint);
+          color: var(--color-brand-blue-deep);
+          border: 1px solid var(--color-brand-blue);
         `
       case 'failed':
         return `
-          background: #FEF2F2;
-          color: #DC2626;
-          border: 1px solid #EF4444;
+          background: var(--color-danger-tint-soft);
+          color: var(--color-danger-dark);
+          border: 1px solid var(--color-danger);
         `
       default:
         return `
@@ -173,21 +173,21 @@ export const TypeBadge = styled.span`
     switch (props.type) {
       case 'credits':
         return `
-          background: #EFF6FF;
-          color: #1E40AF;
-          border: 1px solid #3B82F6;
+          background: var(--color-brand-blue-tint);
+          color: var(--color-brand-blue-deep);
+          border: 1px solid var(--color-brand-blue);
         `
       case 'subscription':
         return `
-          background: #F0F9FF;
+          background: var(--color-surface-page);
           color: #075985;
-          border: 1px solid #0EA5E9;
+          border: 1px solid var(--color-brand-blue-light);
         `
       case 'hybrid':
         return `
-          background: #FEF3C7;
+          background: var(--color-warning-tint);
           color: #92400E;
-          border: 1px solid #F59E0B;
+          border: 1px solid var(--color-warning);
         `
       default:
         return `
@@ -203,164 +203,107 @@ export const AmountText = styled.span`
   color: ${colors.text.primary};
 `
 
-export const TabsRow = styled.div`
+// TabsRow is a fit-to-content pill, so it needs a full-width row of its own to
+// be centred against — the pill cannot centre itself.
+export const TabsBar = styled.div`
   display: flex;
+  justify-content: center;
+`
+
+// Segmented control, not underlined tabs. There are only ever two views here
+// and they are a destination choice ("buy" vs "look at what I bought"), so a
+// pill switch that shows both options as equal, tappable targets reads better
+// than a tab rule — and it survives narrow screens, where it stacks the two
+// segments instead of letting them spill off the edge.
+export const TabsRow = styled.div`
+  display: inline-flex;
   gap: 0.25rem;
+  padding: 0.3125rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid ${colors.neutral.gray200};
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(17, 26, 43, 0.06);
+
+  @media (max-width: 640px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
 `
 
 export const Tab = styled.button`
-  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: 11px;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: ${props => props.$active ? colors.primary.main : colors.text.secondary};
-  background: none;
-  border: none;
-  border-bottom: 2px solid ${props => props.$active ? colors.primary.main : 'transparent'};
-  margin-bottom: -2px;
   cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  transition: background 0.18s ease, color 0.18s ease;
 
-  &:hover {
-    color: ${colors.primary.main};
+  svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
   }
-`
 
-export const PlansSection = styled.div`
-  background: ${colors.background.paper};
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-`
+  ${props => props.$active ? `
+    background: linear-gradient(103deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
+    color: var(--color-surface);
+  ` : `
+    background: transparent;
+    color: var(--color-gray-500);
 
-export const PlanFilterTabs = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-`
-
-export const PlanFilterTab = styled.button`
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid ${props => props.$active ? colors.primary.main : colors.neutral.gray300};
-  background: ${props => props.$active ? colors.primary.main : 'transparent'};
-  color: ${props => props.$active ? '#ffffff' : colors.text.secondary};
-  transition: all 0.15s;
-
-  &:hover {
-    border-color: ${colors.primary.main};
-    color: ${props => props.$active ? '#ffffff' : colors.primary.main};
-  }
-`
-
-export const PlansGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+    &:hover {
+      background: var(--color-brand-blue-tint);
+      color: var(--color-brand-blue);
+    }
+  `}
 
   @media (max-width: 640px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (max-width: 400px) {
-    grid-template-columns: 1fr;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
   }
 `
 
-export const PlanCard = styled.div`
-  border: 1px solid ${colors.neutral.gray200};
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-  transition: box-shadow 0.15s, border-color 0.15s;
+// Deliberately not a panel. The plan cards are white with their own border, so
+// a white card behind them flattens the whole block — they sit straight on the
+// page's blue wash instead, the way the landing page's pricing section stages
+// them.
+export const PlansSection = styled.div`
+  padding-block: 0.5rem 1rem;
+`
 
-  &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-color: ${colors.primary.light};
+export const PlansHeader = styled.div`
+  max-width: 820px;
+  margin-bottom: 2rem;
+`
+
+export const PlansHeading = styled.h2`
+  font-family: 'Baloo 2', system-ui, -apple-system, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-gray-800);
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
   }
 `
 
-export const PopularBadge = styled.span`
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: ${colors.primary.main};
-  color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 0.2rem 0.75rem;
-  border-radius: 9999px;
-  white-space: nowrap;
-`
+export const PlansDescription = styled.p`
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-gray-500);
+  margin: 0.5rem 0 0;
 
-export const PlanName = styled.div`
-  font-size: 1rem;
-  font-weight: 700;
-  color: ${colors.text.primary};
-  margin-top: 0.25rem;
-`
-
-export const PlanCredits = styled.div`
-  font-size: 1.375rem;
-  font-weight: 800;
-  color: ${colors.primary.main};
-  line-height: 1.3;
-`
-
-export const PlanPrice = styled.div`
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: ${colors.text.primary};
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-`
-
-export const DiscountBadge = styled.span`
-  font-size: 0.7rem;
-  font-weight: 700;
-  background: #ECFDF5;
-  color: #059669;
-  border: 1px solid #10b981;
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-`
-
-export const PlanDescription = styled.div`
-  font-size: 0.8125rem;
-  color: ${colors.text.secondary};
-  line-height: 1.4;
-  flex: 1;
-`
-
-export const PlansEmptyState = styled.div`
-  text-align: center;
-  padding: 3rem 1rem;
-  color: ${colors.text.secondary};
-`
-
-export const PlanDescriptionWrapper = styled.div`
-  font-size: 0.875rem;
-  color: #6b7280;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-
-  p { margin: 0; }
-  ul, ol { text-align: left; margin: 0.25rem 0; padding-left: 1.25rem; }
-  li { margin: 0.125rem 0; }
-  strong { font-weight: 600; color: #374151; }
+  @media (max-width: 768px) {
+    font-size: 0.9375rem;
+  }
 `

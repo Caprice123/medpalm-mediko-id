@@ -1,47 +1,25 @@
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
+import PricingPlanCard from '@components/common/PricingPlanCard'
+import { PricingGrid } from '@components/common/PricingPlanCard.styles'
 import pricingMascot from '@/assets/landing/pricing-capybara-idea.png'
-import checkIcon from '@/assets/landing/check-icon.svg'
+import { TopupRoute } from '@routes/Topup/routes'
 import { ContentWidth, SectionHeading } from '../../Home.styles'
 import {
   SectionWrapper,
   HeaderBlock,
   Description,
   Mascot,
-  PlanCard,
-  PopularBadge,
-  PlanLabel,
-  PlanCredits,
-  PriceRow,
-  PlanPrice,
-  DiscountBadge,
-  Divider,
-  FeatureList,
-  FeatureItem,
-  CheckIcon,
-  PlanButton,
 } from './PricingSection.styles'
 
-// Every plan in the design lists the same five inclusions — only the credits,
-// duration and price differ per card.
-const PLAN_FEATURES = [
-  'Materi kedokteran Semester 1–7',
-  'AI Chat berbasis referensi medis terkurasi',
-  'Anatomi 3D & simulasi AI OSCE',
-  '35.000 kuis, flashcard & latihan klinis',
-  '400 artikel ringkas dan high-yield',
-]
-
-// The pricing API returns `price` as a string (Prisma Decimal serialises that
-// way), so coerce before formatting rather than trusting the type.
-const formatPrice = (price) => {
-  const value = Number(price)
-  return Number.isFinite(value) ? `Rp ${value.toLocaleString('id-ID')}` : price
-}
-
+// The card itself is `@components/common/PricingPlanCard`, the same component
+// /topup renders. It used to be a second copy of the card living in this
+// folder, which also meant the inclusions under each plan were a hardcoded
+// list here while /topup showed the plan's own `description` — so the two
+// pages disagreed about what a plan included. Both now read the card, and the
+// inclusions, from the pricing API.
 function PricingSection() {
   const navigate = useNavigate()
   const plans = useSelector((state) => state.pricing.plans)
@@ -60,44 +38,24 @@ function PricingSection() {
         </HeaderBlock>
 
         {plans && plans.length > 0 ? (
-          <Row className="g-4 mt-1">
+          <PricingGrid>
             {plans.map((plan, index) => (
-              <Col key={plan.id} xs={12} sm={6} xl={3}>
-                <PlanCard
-                  $popular={plan.isPopular}
-                  data-aos="fade-up"
-                  data-aos-delay={index * 80}
-                >
-                  {plan.isPopular && <PopularBadge>PALING POPULER</PopularBadge>}
-
-                  <PlanLabel>{plan.name}</PlanLabel>
-                  <PlanCredits>
-                    {plan.creditsIncluded} Kredit {plan.durationDays} Hari
-                  </PlanCredits>
-
-                  <PriceRow>
-                    <PlanPrice>{formatPrice(plan.price)}</PlanPrice>
-                    {plan.discount ? <DiscountBadge>HEMAT {plan.discount}%</DiscountBadge> : null}
-                  </PriceRow>
-
-                  <Divider />
-
-                  <FeatureList>
-                    {PLAN_FEATURES.map((feature) => (
-                      <FeatureItem key={feature}>
-                        <CheckIcon src={checkIcon} alt="" />
-                        {feature}
-                      </FeatureItem>
-                    ))}
-                  </FeatureList>
-
-                  <PlanButton $popular={plan.isPopular} onClick={() => navigate('/topup')}>
+              <PricingPlanCard
+                key={plan.id}
+                plan={plan}
+                index={index}
+                renderButton={(p) => (
+                  <Button
+                    variant={p.isPopular ? 'primary' : 'secondary'}
+                    fullWidth
+                    onClick={() => navigate(TopupRoute.moduleRoute)}
+                  >
                     Pilih Paket
-                  </PlanButton>
-                </PlanCard>
-              </Col>
+                  </Button>
+                )}
+              />
             ))}
-          </Row>
+          </PricingGrid>
         ) : (
           <EmptyState
             title="Paket belum tersedia"

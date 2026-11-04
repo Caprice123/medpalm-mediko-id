@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { fetchPurchaseHistory, fetchUserStatus, fetchInitialTopupData, purchasePricingPlan } from '@store/pricing/userAction'
@@ -21,12 +21,7 @@ export const useTopup = () => {
   const [selectedPurchaseId, setSelectedPurchaseId] = useState(null)
   const initialTab = new URLSearchParams(location.search).get('tab') || 'plans'
   const [activeTab, setActiveTab] = useState(initialTab)
-  const [planFilter, setPlanFilter] = useState('all')
   const snapScriptLoaded = useRef(false)
-
-  const filteredPlans = useMemo(() => plans.filter(plan =>
-    planFilter === 'all' ? true : plan.bundleType === planFilter
-  ), [planFilter, plans])
 
   useEffect(() => {
     AOS.init({
@@ -124,9 +119,6 @@ export const useTopup = () => {
     loading,
     plans,
     plansLoading,
-    filteredPlans,
-    planFilter,
-    setPlanFilter,
     activeTab,
     setActiveTab,
     showDetailModal,

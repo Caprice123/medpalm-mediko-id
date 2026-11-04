@@ -7,10 +7,7 @@ import { TopupTableSkeleton, CreditPurchaseSkeleton } from '@components/common/S
 import EmptyState from '@components/common/EmptyState'
 import TransactionDetail from './components/TransactionDetail'
 import 'aos/dist/aos.css'
-import {
-  PricingGrid,
-  PricingFilterContainer,
-} from '@components/common/PricingPlanCard.styles'
+import { PricingGrid } from '@components/common/PricingPlanCard.styles'
 import {
   getStatusLabel,
   getTypeLabel,
@@ -32,12 +29,16 @@ import {
   StatusBadge,
   TypeBadge,
   AmountText,
+  TabsBar,
   TabsRow,
   Tab,
   PlansSection,
-  PlanFilterTab,
+  PlansHeader,
+  PlansHeading,
+  PlansDescription,
   PageContainer,
 } from './Topup.styles'
+import { PiCreditCard, PiClock } from 'react-icons/pi'
 import { Parallax, ParallaxProvider } from 'react-scroll-parallax'
 
 function Topup() {
@@ -46,10 +47,8 @@ function Topup() {
     pagination,
     userStatus,
     loading,
-    filteredPlans,
+    plans,
     plansLoading,
-    planFilter,
-    setPlanFilter,
     activeTab,
     setActiveTab,
     showDetailModal,
@@ -83,10 +82,10 @@ function Topup() {
         if (!purchaseDate) return '-'
         return (
           <div style={{ fontSize: '0.875rem' }}>
-            <div style={{ fontWeight: '500', color: '#111827' }}>
+            <div style={{ fontWeight: '500', color: 'var(--color-gray-900)' }}>
               {new Date(purchaseDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' })}
             </div>
-            <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+            <div style={{ color: 'var(--color-gray-500)', fontSize: '0.75rem' }}>
               {new Date(purchaseDate).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB
             </div>
           </div>
@@ -204,58 +203,66 @@ function Topup() {
                 </BalanceGrid>
             </CreditBalanceCard> */}
 
-            <TabsRow>
-                <Tab $active={activeTab === 'plans'} onClick={() => setActiveTab('plans')}>
-                💳 Pilih Paket
+            <TabsBar>
+            <TabsRow role="tablist">
+                <Tab
+                role="tab"
+                aria-selected={activeTab === 'plans'}
+                $active={activeTab === 'plans'}
+                onClick={() => setActiveTab('plans')}
+                >
+                <PiCreditCard />
+                Pilih Paket
                 </Tab>
-                <Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
-                📋 Riwayat Transaksi
+                <Tab
+                role="tab"
+                aria-selected={activeTab === 'history'}
+                $active={activeTab === 'history'}
+                onClick={() => setActiveTab('history')}
+                >
+                <PiClock />
+                Riwayat Transaksi
                 </Tab>
             </TabsRow>
+            </TabsBar>
 
             {activeTab === 'plans' && (
                 <PlansSection>
-                <PricingFilterContainer>
-                    {[
-                    { key: 'all', label: 'Semua Paket' },
-                    { key: 'credits', label: 'Kredit' },
-                    { key: 'subscription', label: 'Berlangganan' },
-                    { key: 'hybrid', label: 'Paket Hybrid' },
-                    ].map(({ key, label }) => (
-                    <PlanFilterTab key={key} $active={planFilter === key} onClick={() => setPlanFilter(key)}>
-                        {label}
-                    </PlanFilterTab>
-                    ))}
-                </PricingFilterContainer>
+                <PlansHeader>
+                    <PlansHeading>Pilih paket sesuai kebutuhan belajarmu.</PlansHeading>
+                    <PlansDescription>
+                    Akses fitur MedPal sesuai durasi dan kebutuhan belajarmu. Pilih paket yang
+                    paling sesuai untuk mendukung proses belajar sehari-hari.
+                    </PlansDescription>
+                </PlansHeader>
 
                 {plansLoading ? (
-                    <CreditPurchaseSkeleton planCount={6} />
-                ) : filteredPlans.length > 0 ? (
-                        <PricingGrid>
-                        {filteredPlans.map((plan, index) => (
-                            <PricingPlanCard
-                                key={planFilter + plan.id}
-                                plan={plan}
-                                index={index}
-                                renderButton={(p) => (
-                                    <Button
-                                        variant={p.isPopular ? 'primary' : 'outline'}
-                                        fullWidth
-                                        onClick={() => handlePlanSelect(p)}
-                                        disabled={isPurchaseLoading}
-                                    >
-                                        {isPurchaseLoading ? 'Memproses...' : 'Pilih Paket'}
-                                    </Button>
-                                )}
-                            />
-                        ))}
-
-                        </PricingGrid>
+                    <CreditPurchaseSkeleton planCount={4} />
+                ) : plans.length > 0 ? (
+                    <PricingGrid>
+                    {plans.map((plan, index) => (
+                        <PricingPlanCard
+                            key={plan.id}
+                            plan={plan}
+                            index={index}
+                            renderButton={(p) => (
+                                <Button
+                                    variant={p.isPopular ? 'primary' : 'secondary'}
+                                    fullWidth
+                                    onClick={() => handlePlanSelect(p)}
+                                    disabled={isPurchaseLoading}
+                                >
+                                    {isPurchaseLoading ? 'Memproses...' : 'Pilih Paket'}
+                                </Button>
+                            )}
+                        />
+                    ))}
+                    </PricingGrid>
                 ) : (
                     <EmptyState
                     icon="💳"
-                    title="Tidak ada paket tersedia"
-                    description="Pilih kategori lain atau coba lagi nanti"
+                    title="Paket belum tersedia"
+                    description="Paket berlangganan sedang disiapkan. Silakan cek kembali nanti."
                     />
                 )}
                 </PlansSection>
