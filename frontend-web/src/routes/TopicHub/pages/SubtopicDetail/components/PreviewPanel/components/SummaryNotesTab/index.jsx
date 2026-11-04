@@ -1,4 +1,5 @@
 import BlockNoteEditor from '@components/BlockNoteEditor'
+import { PiArrowUpRight } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
 import { CountLabel } from '../../PreviewPanel.styles'
 import {
@@ -29,7 +30,7 @@ export default function SummaryNotesTab({ subtopic }) {
             <NoteTitle>{note.title}</NoteTitle>
             <NoteReadTime>{note.readingMinutes} menit baca</NoteReadTime>
           </NoteInfo>
-          <NoteExtLink>↗</NoteExtLink>
+          <NoteExtLink><PiArrowUpRight size={14} /></NoteExtLink>
         </NoteItem>
       ))
   }
@@ -38,7 +39,7 @@ export default function SummaryNotesTab({ subtopic }) {
     <>
       <NoteDetailHeader>
         <OpenFullBtn href={`/summary-notes/${selectedNote.uniqueId}`} target="_blank" rel="noopener noreferrer">
-          Buka Penuh ↗
+          Buka Penuh <PiArrowUpRight size={14} />
         </OpenFullBtn>
       </NoteDetailHeader>
       {noteDetailLoading ? (

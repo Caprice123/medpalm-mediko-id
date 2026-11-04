@@ -36,11 +36,16 @@ export const NavButton = styled.button`
 `
 
 export const NavDirection = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--color-gray-400);
+  /* gray-400 is 2.92:1 — under the 4.5:1 that 12px text needs. */
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  justify-content: ${({ $align }) => $align === 'right' ? 'flex-end' : 'flex-start'};
 `
 
 export const NavTitle = styled.span`

@@ -107,6 +107,9 @@ export const McqActionRow = styled.div`
 `
 
 export const McqNextBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
   padding: 0.625rem 1.5rem;
   background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
@@ -134,9 +137,7 @@ export const McqResult = styled.div`
 export const McqScore = styled.div`
   font-size: 3.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-brand-blue);
   line-height: 1;
 `
 

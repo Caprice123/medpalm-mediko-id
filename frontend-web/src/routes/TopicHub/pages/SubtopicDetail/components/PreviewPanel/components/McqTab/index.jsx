@@ -1,3 +1,4 @@
+import { PiArrowRight } from 'react-icons/pi'
 import {
   CountLabel, SessionRow, CountInput, StartButton,
   PlayerHeader, PlayerStats, PlayerCounter, PlayerBackBtn, PlayerProgress, PlayerFill,
@@ -112,7 +113,9 @@ export default function McqTab({ subtopic, mcqMax }) {
       )}
       {isAnswered && (
         <McqActionRow>
-          <McqNextBtn onClick={handleNext}>{isLast ? 'Lihat Hasil →' : 'Lanjut →'}</McqNextBtn>
+          <McqNextBtn onClick={handleNext}>
+            {isLast ? 'Lihat Hasil' : 'Lanjut'} <PiArrowRight size={15} />
+          </McqNextBtn>
         </McqActionRow>
       )}
     </>

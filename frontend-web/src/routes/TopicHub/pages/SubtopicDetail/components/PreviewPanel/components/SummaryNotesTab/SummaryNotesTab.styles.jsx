@@ -55,6 +55,8 @@ export const NoteReadTime = styled.span`
 `
 
 export const NoteExtLink = styled.span`
+  display: flex;
+  align-items: center;
   font-size: 0.875rem;
   color: var(--color-gray-400);
   flex-shrink: 0;
@@ -70,6 +72,7 @@ export const NoteDetailHeader = styled.div`
 `
 
 export const OpenFullBtn = styled.a`
+  gap: 0.25rem;
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-brand-blue);

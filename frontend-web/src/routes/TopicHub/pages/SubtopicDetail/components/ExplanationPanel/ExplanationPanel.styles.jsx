@@ -5,18 +5,13 @@ const shimmer = keyframes`
   100% { background-position: 600px 0; }
 `
 
-export const ExplanationSection = styled.section`
-  background: var(--color-gray-50);
-  border: 1px solid var(--color-gray-200);
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 2rem;
-`
-
 export const ExplanationText = styled.p`
   font-size: 0.9375rem;
   line-height: 1.7;
   color: var(--color-gray-700);
+  /* Held to a readable measure; full-bleed prose on a wide screen loses the
+     line it is on. */
+  max-width: 68ch;
   margin: 0;
   white-space: pre-wrap;
 `
