@@ -102,15 +102,6 @@ export const StyledButton = styled.button`
     cursor: not-allowed;
   }
 
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px ${props =>
-      props.variant === 'danger' ? 'rgba(239, 68, 68, 0.2)' :
-      props.variant === 'success' ? 'rgba(124, 179, 66, 0.25)' :
-      'rgba(30, 115, 170, 0.2)'
-    };
-  }
-
   ${props => props.fullWidth && `
     width: 100%;
     justify-content: center;

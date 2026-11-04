@@ -58,7 +58,7 @@ export const TopicCard = styled.button`
   min-height: 3.5rem;
   padding: 0.875rem 1rem;
   background: var(--color-surface);
-  border: 1.5px solid var(--color-gray-200);
+  border: 1px solid var(--color-border-strong);
   border-radius: 12px;
   cursor: pointer;
   font-size: 0.9375rem;
@@ -77,7 +77,10 @@ export const TopicCard = styled.button`
 `
 
 export const TopicCardArrow = styled.span`
-  color: var(--color-gray-400);
+  /* The card's only affordance marker, so it has to be legible as text:
+     gray-400 was 2.92:1 against white, under the 4.5:1 a glyph this size
+     needs. gray-500 measures 5.51:1. */
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   flex-shrink: 0;
   transition: color 0.15s;

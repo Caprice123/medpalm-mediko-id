@@ -4,7 +4,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
   padding: 1.5rem;
   min-height: calc(100vh - 44px);
 

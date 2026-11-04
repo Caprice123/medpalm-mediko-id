@@ -4,7 +4,7 @@ export const Container = styled.div`
   display: flex;
   height: calc(100vh - 300px);
   overflow: hidden;
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
 
   @media (max-width: 768px) {
     flex-direction: column;

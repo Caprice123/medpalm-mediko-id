@@ -33,9 +33,6 @@ import {
   TabsRow,
   Tab,
   PlansSection,
-  PlansHeader,
-  PlansHeading,
-  PlansDescription,
   PageContainer,
 } from './Topup.styles'
 import { PiCreditCard, PiClock } from 'react-icons/pi'
@@ -228,14 +225,6 @@ function Topup() {
 
             {activeTab === 'plans' && (
                 <PlansSection>
-                <PlansHeader>
-                    <PlansHeading>Pilih paket sesuai kebutuhan belajarmu.</PlansHeading>
-                    <PlansDescription>
-                    Akses fitur MedPal sesuai durasi dan kebutuhan belajarmu. Pilih paket yang
-                    paling sesuai untuk mendukung proses belajar sehari-hari.
-                    </PlansDescription>
-                </PlansHeader>
-
                 {plansLoading ? (
                     <CreditPurchaseSkeleton planCount={4} />
                 ) : plans.length > 0 ? (

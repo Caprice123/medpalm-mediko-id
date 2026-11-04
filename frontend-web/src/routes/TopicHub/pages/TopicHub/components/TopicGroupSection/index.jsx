@@ -4,7 +4,10 @@ import {
   TopicGrid, TopicCard, TopicCardArrow, SkeletonCard,
 } from './TopicGroupSection.styles'
 
-const SKELETON_COUNT = 8
+// Matches the larger real group, so the grid does not visibly reflow when 8
+// placeholders resolve to 11 topics — a shift that landed after the page's
+// own entrance animation had finished.
+const SKELETON_COUNT = 11
 
 export default function TopicGroupSection({ classification, tag, description, onTopicClick }) {
   const { userTopics, loading } = useSelector(s => s.featureNodes)

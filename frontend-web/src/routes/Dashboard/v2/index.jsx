@@ -7,6 +7,7 @@ import 'swiper/css'
 import 'swiper/css/effect-fade'
 import 'swiper/css/pagination'
 import { getUserData } from '@utils/authToken'
+import { getGreeting, getFirstName } from '@utils/greeting'
 import { fetchActiveBanners } from '@store/banner/userAction'
 import { fetchWebinars } from '@store/webinar/userAction'
 import { fetchEvents } from '@store/event/userAction'
@@ -38,14 +39,6 @@ function trackFeatureVisit(entry) {
     const updated = [entry, ...saved.filter(f => f.sessionType !== entry.sessionType)].slice(0, 6)
     localStorage.setItem(QUICK_ACCESS_KEY, JSON.stringify(updated))
   } catch {}
-}
-
-function getGreeting() {
-  const h = new Date().getHours()
-  if (h >= 4 && h < 12) return 'Selamat pagi'
-  if (h >= 12 && h < 15) return 'Selamat siang'
-  if (h >= 15 && h < 18) return 'Selamat sore'
-  return 'Selamat malam'
 }
 
 function getDateLabel() {
@@ -102,7 +95,7 @@ function DashboardV2() {
         <HeroInner>
           <HeroLeft>
             <HeroDate>{getDateLabel()}</HeroDate>
-            <HeroGreeting>{getGreeting()}, {currentUser?.name?.split(' ')[0] ?? 'Sobat'} 👋</HeroGreeting>
+            <HeroGreeting>{getGreeting()}, {getFirstName(currentUser?.name)} 👋</HeroGreeting>
             <HeroSub>Semangat belajar hari ini!</HeroSub>
           </HeroLeft>
           <HeroRight>

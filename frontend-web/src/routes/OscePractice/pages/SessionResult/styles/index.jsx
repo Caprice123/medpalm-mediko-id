@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-background: var(--color-brand-blue-tint);
+background: var(--color-surface-app);
 `
 
 export const Wrapper = styled.div`

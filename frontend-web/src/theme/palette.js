@@ -51,6 +51,14 @@ export const palette = {
   gray800: '#15242e',
   gray900: '#0b1419',
 
+  // The boundary colour for interactive surfaces (cards, inputs, pickers).
+  // The ramp above cannot draw one: a card is #ffffff on a #f6fafb page, which
+  // is 1.05:1, and gray-200 as its border is 1.19:1 — WCAG 1.4.11 asks 3:1 for
+  // a boundary that identifies a component. Measured, this value is 3.36:1
+  // against the card and 3.19:1 against the page, so it clears on both sides;
+  // gray-400 (2.92:1) and gray-300 (1.26:1) clear on neither.
+  borderStrong: '#828e96',
+
   // --------------------------------------------------------------- status
   danger: '#ef4444',
   dangerDark: '#dc2626',

@@ -16,7 +16,11 @@ export const SectionLabel = styled.h2`
 `
 
 /* Held to a readable width. Full-bleed, the card stranded its arrow some
-   1,500px away from the topic name it belonged to. */
+   1,500px away from the topic name it belonged to.
+   Set apart from the 22 topic cards by the colour of its whole edge rather
+   than by a thick accent rail on one side: it reads as a different kind of
+   object either way, and brand blue at 5.14:1 draws a far better boundary
+   than the hairline it replaces. */
 export const LastSessionCard = styled.button`
   display: flex;
   align-items: center;
@@ -25,15 +29,14 @@ export const LastSessionCard = styled.button`
   max-width: 32rem;
   padding: 1rem 1.25rem;
   background: var(--color-surface);
-  border: 1.5px solid var(--color-brand-blue-tint);
-  border-left: 4px solid var(--color-brand-blue);
+  border: 1px solid var(--color-brand-blue);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
 
   &:hover {
-    border-color: var(--color-brand-blue-tint-strong);
+    background: var(--color-brand-blue-tint);
     box-shadow: 0 2px 14px rgba(30, 115, 170, 0.12);
     transform: translateY(-1px);
   }

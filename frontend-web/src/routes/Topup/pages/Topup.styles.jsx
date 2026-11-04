@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import colors from '@config/colors'
 
 export const PageContainer = styled.div`
-    background: var(--color-brand-blue-tint);
+    background: var(--color-surface-app);
 `
 
 export const Container = styled.div`
@@ -272,38 +272,8 @@ export const Tab = styled.button`
 
 // Deliberately not a panel. The plan cards are white with their own border, so
 // a white card behind them flattens the whole block — they sit straight on the
-// page's blue wash instead, the way the landing page's pricing section stages
+// page wash instead, the way the landing page's pricing section stages
 // them.
 export const PlansSection = styled.div`
   padding-block: 0.5rem 1rem;
-`
-
-export const PlansHeader = styled.div`
-  max-width: 820px;
-  margin-bottom: 2rem;
-`
-
-export const PlansHeading = styled.h2`
-  font-family: 'Baloo 2', system-ui, -apple-system, sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--color-gray-800);
-  margin: 0;
-
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
-  }
-`
-
-export const PlansDescription = styled.p`
-  font-size: 1.0625rem;
-  font-weight: 500;
-  line-height: 1.6;
-  color: var(--color-gray-500);
-  margin: 0.5rem 0 0;
-
-  @media (max-width: 768px) {
-    font-size: 0.9375rem;
-  }
 `

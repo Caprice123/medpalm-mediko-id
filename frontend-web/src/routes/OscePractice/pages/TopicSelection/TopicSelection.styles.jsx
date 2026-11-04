@@ -2,14 +2,13 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const PageContainer = styled.div`
-    background: var(--color-brand-blue-tint);
+    background: var(--color-surface-app);
 `
 
 export const Container = styled.div`
     margin: 0 auto;
     padding: 2rem;
     min-height: 100vh;
-    background: "red";
     
     @media (max-width: 768px) {
       padding: 1rem;

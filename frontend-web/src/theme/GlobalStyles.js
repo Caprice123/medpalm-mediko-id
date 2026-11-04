@@ -42,6 +42,16 @@ export const GlobalStyles = createGlobalStyle`
     font-family: inherit;
   }
 
+  /* One keyboard focus indicator for the whole product. Cards, links and
+     inputs previously fell back to the UA ring while Button drew its own
+     3px 20%-alpha halo, so the ring changed character as you tabbed across a
+     single page — and a 20% halo is a marginal indicator to begin with. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
   a {
     color: ${colors.primary.main};
     text-decoration: none;

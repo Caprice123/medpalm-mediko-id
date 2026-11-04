@@ -17,7 +17,7 @@ import MateriAdmin from './MateriAdmin'
 
 const AdminContainer = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-surface-app);
 `
 
 const MainContent = styled.main`

@@ -1,19 +1,19 @@
 import styled from 'styled-components'
 
 export const PageHeader = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 `
 
+/* Small on purpose. At 2.375rem this was the largest, highest-contrast thing
+   on the page and it told the student nothing they did not already know,
+   while the 22 topics they came to click sat at 0.9375rem. On a surface whose
+   job is "pick a topic", the greeting orients; the sections lead. */
 export const Greeting = styled.h1`
-  font-size: 2.375rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.3;
   color: var(--color-gray-900);
-  margin: 0 0 0.5rem;
-
-  @media (max-width: 768px) {
-    font-size: 1.875rem;
-  }
+  margin: 0 0 0.25rem;
 `
 
 /* The name in brand blue, the way the landing hero sets its second headline
@@ -24,13 +24,8 @@ export const GreetingName = styled.span`
 `
 
 export const GreetingSubtitle = styled.p`
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-gray-600);
-  max-width: 46rem;
   margin: 0;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-  }
 `

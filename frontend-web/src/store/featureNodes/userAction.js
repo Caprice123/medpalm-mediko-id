@@ -2,7 +2,7 @@ import { actions } from './reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken } from '@utils/requestUtils'
 
-const { setUserTopics, setTopic, setSubtopics, setAtlasGroups, setLoading } = actions
+const { setUserTopics, setTopic, setSubtopics, setAtlasGroups, setLoading, setError } = actions
 
 const LIST_PAGE_LIMIT = 50
 
@@ -23,11 +23,17 @@ async function fetchAllFeatureNodes(params) {
 export const fetchUserTopics = () => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingUserTopics: true }))
+    dispatch(setError({ userTopics: null }))
     const [primary, special] = await Promise.all([
       fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok' }),
       fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem' }),
     ])
     dispatch(setUserTopics({ primary, special }))
+  } catch (error) {
+    // Without this the request failed silently: the page rendered a greeting
+    // over blank space and the rejection surfaced only in the console, so a
+    // dropped connection was indistinguishable from "no content published".
+    dispatch(setError({ userTopics: error?.message || 'Gagal memuat topik' }))
   } finally {
     dispatch(setLoading({ isFetchingUserTopics: false }))
   }

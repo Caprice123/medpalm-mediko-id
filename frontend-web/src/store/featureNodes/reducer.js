@@ -21,6 +21,9 @@ const initialState = {
     perPage: 50,
     isLastPage: true,
   },
+  errors: {
+    userTopics: null,
+  },
   loading: {
     isFetchingNodes: false,
     isCreating: false,
@@ -54,6 +57,7 @@ const featureNodesSlice = createSlice({
     updateFilter(state, { payload: { key, value } }) { state.filter[key] = value },
     resetFilter(state) { state.filter = initialState.filter },
     setLoading(state, action) { state.loading = { ...state.loading, ...action.payload } },
+    setError(state, action) { state.errors = { ...state.errors, ...action.payload } },
     reset() { return initialState },
   },
 })

@@ -2,14 +2,14 @@ import styled, { keyframes, css } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
 `
 
 export const Content = styled.div`
     display: flex;
     margin: 0 auto;
     height: calc(100vh - 44px);
-    background: var(--color-brand-blue-tint);
+    background: var(--color-surface-app);
     overflow: hidden;
 
     @media (max-width: 768px) {

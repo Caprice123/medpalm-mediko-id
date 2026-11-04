@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 44px);
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
 
   @media (max-width: 768px) {
     min-height: 100vh;

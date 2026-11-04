@@ -7,7 +7,7 @@ const slideUp = keyframes`
 
 export const PageWrapper = styled.div`
   min-height: 100vh;
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
 `
 
 export const Container = styled.div`
