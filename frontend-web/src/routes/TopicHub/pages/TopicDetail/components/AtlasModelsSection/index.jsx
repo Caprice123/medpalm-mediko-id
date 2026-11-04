@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'
-import { PiCube } from 'react-icons/pi'
+import { PiArrowRight } from 'react-icons/pi'
 import {
-  AtlasSection, AtlasSectionHeader, AtlasSectionTitle, AtlasSectionIcon, AtlasSectionSubtitle,
-  AtlasModuleGroup, AtlasModuleHeader, AtlasModuleTitle,
-  AtlasGrid, AtlasCard, AtlasCardIcon, AtlasCardTitle, AtlasCardArrow,
-} from './AtlasModelsSection.styles'
+  Section, SectionHeading, SectionDescription,
+  ItemGrid, ItemCard, ItemCardName, ItemCardArrow,
+} from '../../TopicDetail.styles'
+import { ModuleGroup, ModuleTitle } from './AtlasModelsSection.styles'
 
 export default function AtlasModelsSection({ onSelectModel }) {
   const atlasGroups = useSelector(s => s.featureNodes.atlasGroups)
@@ -12,33 +12,25 @@ export default function AtlasModelsSection({ onSelectModel }) {
   if (atlasGroups.length === 0) return null
 
   return (
-    <AtlasSection>
-      <AtlasSectionHeader>
-        <AtlasSectionTitle>
-          <AtlasSectionIcon><PiCube size={20} /></AtlasSectionIcon>
-          Model 3D Anatomi
-        </AtlasSectionTitle>
-      </AtlasSectionHeader>
-      <AtlasSectionSubtitle>
-        Model 3D dibuka di halaman baru dengan navigasi kembali. Setiap model disertai kuis 3D terkait di bagian bawah.
-      </AtlasSectionSubtitle>
+    <Section>
+      <SectionHeading>Model 3D Anatomi</SectionHeading>
+      <SectionDescription>
+        Setiap model disertai kuis anatomi terkait.
+      </SectionDescription>
 
       {atlasGroups.map(group => (
-        <AtlasModuleGroup key={group.moduleId}>
-          <AtlasModuleHeader>
-            <AtlasModuleTitle>3D Model {group.moduleName}</AtlasModuleTitle>
-          </AtlasModuleHeader>
-          <AtlasGrid>
+        <ModuleGroup key={group.moduleId}>
+          <ModuleTitle>{group.moduleName}</ModuleTitle>
+          <ItemGrid>
             {group.models.map(model => (
-              <AtlasCard key={model.uniqueId} onClick={() => onSelectModel(model.uniqueId)}>
-                <AtlasCardIcon><PiCube size={16} /></AtlasCardIcon>
-                <AtlasCardTitle>{model.title}</AtlasCardTitle>
-                <AtlasCardArrow>→</AtlasCardArrow>
-              </AtlasCard>
+              <ItemCard key={model.uniqueId} onClick={() => onSelectModel(model.uniqueId)}>
+                <ItemCardName>{model.title}</ItemCardName>
+                <ItemCardArrow><PiArrowRight size={16} /></ItemCardArrow>
+              </ItemCard>
             ))}
-          </AtlasGrid>
-        </AtlasModuleGroup>
+          </ItemGrid>
+        </ModuleGroup>
       ))}
-    </AtlasSection>
+    </Section>
   )
 }

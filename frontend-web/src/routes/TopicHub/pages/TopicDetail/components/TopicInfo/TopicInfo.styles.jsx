@@ -1,75 +1,45 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
-export const TopicHeader = styled.div`
+const shimmer = keyframes`
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+`
+
+export const TopicHeader = styled.header`
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 2.5rem;
 `
 
-export const TopicHeaderLeft = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-`
-
-export const TopicIconBox = styled.div`
-  width: 4rem;
-  height: 4rem;
-  border-radius: 16px;
-  background: #ede9fe;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  flex-shrink: 0;
-`
-
-export const TopicMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-`
-
-export const ClassificationBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  padding: 0.1875rem 0.625rem;
-  background: var(--color-brand-blue-tint);
-  color: var(--color-brand-blue-deep);
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 999px;
-  width: fit-content;
-`
-
 export const TopicName = styled.h1`
-  font-size: 1.625rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--color-gray-900);
   margin: 0;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 1.625rem;
+  }
 `
 
 export const TopicDescription = styled.p`
-  font-size: 0.9375rem;
-  color: var(--color-gray-500);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-gray-600);
+  max-width: 64rem;
   margin: 0;
 `
 
-export const BackButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.9375rem;
-  color: var(--color-gray-700);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  white-space: nowrap;
-
-  &:hover { color: var(--color-gray-900); }
+/* The name used to fall back to the raw URL slug while the request was in
+   flight, so every visit flashed "sistem-kardiovaskular" as a heading — which
+   reads as a bug rather than as loading. */
+export const TitleSkeleton = styled.div`
+  width: min(24rem, 60%);
+  height: 2.25rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 800px 100%;
+  animation: ${shimmer} 1.4s infinite linear;
 `

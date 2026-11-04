@@ -42,9 +42,13 @@ export const fetchUserTopics = () => async (dispatch) => {
 export const fetchUserSubtopics = (parentSlug) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingSubtopics: true }))
+    dispatch(setError({ topicDetail: null }))
     const subtopics = await fetchAllFeatureNodes({ parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true })
     dispatch(setSubtopics(subtopics))
     return subtopics
+  } catch (error) {
+    dispatch(setError({ topicDetail: error?.message || 'Gagal memuat subtopik' }))
+    return []
   } finally {
     dispatch(setLoading({ isFetchingSubtopics: false }))
   }

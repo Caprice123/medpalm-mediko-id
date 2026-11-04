@@ -23,6 +23,7 @@ const initialState = {
   },
   errors: {
     userTopics: null,
+    topicDetail: null,
   },
   loading: {
     isFetchingNodes: false,
