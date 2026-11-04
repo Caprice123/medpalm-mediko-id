@@ -430,7 +430,7 @@ function UITest() {
             <ComponentDemo>
               <StateLabel>Code Example</StateLabel>
               <pre style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
@@ -469,7 +469,7 @@ function UITest() {
             <ComponentDemo>
               <StateLabel>Code Example</StateLabel>
               <pre style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
@@ -520,7 +520,7 @@ function UITest() {
             <ComponentDemo>
               <StateLabel>Code Example</StateLabel>
               <pre style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
@@ -592,7 +592,7 @@ function UITest() {
             <ComponentDemo>
               <StateLabel>Code Example</StateLabel>
               <pre style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
@@ -638,17 +638,17 @@ function UITest() {
             <ComponentLabel>Component Props Documentation</ComponentLabel>
             <ComponentDemo>
               <div style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1.5rem',
                 borderRadius: '8px',
                 fontSize: '0.875rem'
               }}>
-                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   FileUpload Component Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Required</th>
@@ -656,7 +656,7 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>file</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>
                         Object | null
@@ -666,43 +666,43 @@ function UITest() {
                         File object with name, type, size properties
                       </td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>onFileSelect</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Function</td>
                       <td style={{ padding: '0.5rem' }}>Yes</td>
                       <td style={{ padding: '0.5rem' }}>Callback when file is selected</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>onRemove</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Function</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
                       <td style={{ padding: '0.5rem' }}>Callback to remove file</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actions</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>ReactNode</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
                       <td style={{ padding: '0.5rem' }}>Custom action buttons (View, Generate, etc.)</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>acceptedTypes</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Array</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
                       <td style={{ padding: '0.5rem' }}>Array of accepted file types/extensions</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>acceptedTypesLabel</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
                       <td style={{ padding: '0.5rem' }}>Label for accepted types (e.g., "PDF, PPTX")</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>maxSizeMB</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Number</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
                       <td style={{ padding: '0.5rem' }}>Maximum file size in MB (default: 50)</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>isUploading</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>No</td>
@@ -716,9 +716,9 @@ function UITest() {
                     </tr>
                   </tbody>
                 </table>
-                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <strong style={{ color: '#1e40af' }}>💡 Usage Tips:</strong>
-                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: '#1e3a8a' }}>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--color-brand-blue-tint)', borderRadius: '6px', border: '1px solid var(--color-brand-blue-tint-strong)' }}>
+                  <strong style={{ color: 'var(--color-brand-blue-deep)' }}>💡 Usage Tips:</strong>
+                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: 'var(--color-brand-blue-deep)' }}>
                     <li>Pass action buttons as React components in the <code>actions</code> prop</li>
                     <li>Use PhotoProvider wrapper for image preview functionality</li>
                     <li>The component handles file size formatting and icons automatically</li>
@@ -762,8 +762,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -828,8 +828,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -894,8 +894,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -938,8 +938,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -957,18 +957,18 @@ function UITest() {
             <ComponentLabel>Component Props</ComponentLabel>
             <ComponentDemo>
               <div style={{
-                background: '#f9fafb',
-                border: '1px solid #e5e7eb',
+                background: 'var(--color-gray-50)',
+                border: '1px solid var(--color-gray-200)',
                 padding: '1.5rem',
                 borderRadius: '8px',
                 fontSize: '0.875rem'
               }}>
-                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   Card Component Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -976,31 +976,31 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>variant</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>default</td>
                       <td style={{ padding: '0.5rem' }}>primary | success | warning | danger | default</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>rounded</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>md</td>
                       <td style={{ padding: '0.5rem' }}>sm | md | lg - Border radius size</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>shadow</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>true</td>
                       <td style={{ padding: '0.5rem' }}>Show box shadow</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>hoverable</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>false</td>
                       <td style={{ padding: '0.5rem' }}>Enable hover effect</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>clickable</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>false</td>
@@ -1015,12 +1015,12 @@ function UITest() {
                   </tbody>
                 </table>
 
-                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   CardHeader Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -1028,31 +1028,31 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>title</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Header title text</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actions</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>ReactNode</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Action buttons or components</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>size</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>md</td>
                       <td style={{ padding: '0.5rem' }}>sm | md | lg - Title size</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>divider</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>true</td>
                       <td style={{ padding: '0.5rem' }}>Show bottom border</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>padding</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>1rem 1.5rem</td>
@@ -1067,12 +1067,12 @@ function UITest() {
                   </tbody>
                 </table>
 
-                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   CardBody Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -1089,12 +1089,12 @@ function UITest() {
                   </tbody>
                 </table>
 
-                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: '1.5rem', marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   CardFooter Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -1102,19 +1102,19 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>align</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>right</td>
                       <td style={{ padding: '0.5rem' }}>left | center | between | right</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>divider</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>true</td>
                       <td style={{ padding: '0.5rem' }}>Show top border</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>padding</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>1rem 1.5rem</td>
@@ -1129,9 +1129,9 @@ function UITest() {
                   </tbody>
                 </table>
 
-                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <strong style={{ color: '#1e40af' }}>💡 Usage Tips:</strong>
-                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: '#1e3a8a' }}>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--color-brand-blue-tint)', borderRadius: '6px', border: '1px solid var(--color-brand-blue-tint-strong)' }}>
+                  <strong style={{ color: 'var(--color-brand-blue-deep)' }}>💡 Usage Tips:</strong>
+                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: 'var(--color-brand-blue-deep)' }}>
                     <li>Use Header, Body, Footer structure like Bootstrap for consistency</li>
                     <li>Pass action buttons as React components in CardHeader actions prop</li>
                     <li>Control footer alignment with the align prop: left, center, between, right</li>
@@ -1275,7 +1275,7 @@ function UITest() {
             </ComponentDemo>
             <ComponentDemo>
               <StateLabel>Fetching data</StateLabel>
-              <Loading type="circles" size="medium" text="Fetching data..." textColor="#6BB9E8" textWeight="500" />
+              <Loading type="circles" size="medium" text="Fetching data..." textColor="var(--color-brand-blue)" textWeight="500" />
             </ComponentDemo>
           </ComponentCard>
 
@@ -1285,19 +1285,19 @@ function UITest() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
                 <div style={{ textAlign: 'center' }}>
                   <StateLabel>Primary Blue</StateLabel>
-                  <Loading type="oval" size="medium" color="#6BB9E8" text="Primary" />
+                  <Loading type="oval" size="medium" color="var(--color-brand-blue)" text="Primary" />
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <StateLabel>Success Green</StateLabel>
-                  <Loading type="oval" size="medium" color="#8DC63F" text="Success" />
+                  <Loading type="oval" size="medium" color="var(--color-brand-green)" text="Success" />
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <StateLabel>Danger Red</StateLabel>
-                  <Loading type="oval" size="medium" color="#ef4444" text="Error" />
+                  <Loading type="oval" size="medium" color="var(--color-danger)" text="Error" />
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <StateLabel>Warning Orange</StateLabel>
-                  <Loading type="oval" size="medium" color="#f59e0b" text="Warning" />
+                  <Loading type="oval" size="medium" color="var(--color-warning)" text="Warning" />
                 </div>
               </div>
             </ComponentDemo>
@@ -1307,15 +1307,15 @@ function UITest() {
             <ComponentLabel>Overlay Examples</ComponentLabel>
             <ComponentDemo>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid var(--color-gray-200)', borderRadius: '8px' }}>
                   <p style={{ padding: '1rem', margin: 0 }}>Content behind overlay</p>
                   <Loading overlay type="oval" size="small" text="Loading..." />
                 </div>
-                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid var(--color-gray-200)', borderRadius: '8px' }}>
                   <p style={{ padding: '1rem', margin: 0 }}>Content with blur</p>
                   <Loading overlay blur type="tailspin" size="small" text="Processing..." />
                 </div>
-                <div style={{ position: 'relative', height: '150px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                <div style={{ position: 'relative', height: '150px', border: '1px solid var(--color-gray-200)', borderRadius: '8px' }}>
                   <p style={{ padding: '1rem', margin: 0 }}>Dark overlay</p>
                   <Loading overlay overlayColor="rgba(0,0,0,0.5)" type="rotating" size="small" text="Please wait..." textColor="#fff" />
                 </div>
@@ -1347,17 +1347,17 @@ function UITest() {
             <ComponentLabel>Component Props Documentation</ComponentLabel>
             <ComponentDemo>
               <div style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1.5rem',
                 borderRadius: '8px',
                 fontSize: '0.875rem'
               }}>
-                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   Loading Component Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -1365,91 +1365,91 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>type</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>oval</td>
                       <td style={{ padding: '0.5rem' }}>Spinner type: oval, dots, circles, tailspin, puff, rings, hearts, grid, audio, triangle, bars, revolving, rotating, mutating, watch, color-ring, ball-triangle</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>size</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String | Number</td>
                       <td style={{ padding: '0.5rem' }}>medium</td>
                       <td style={{ padding: '0.5rem' }}>small (40), medium (60), large (80), or custom number</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>color</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
-                      <td style={{ padding: '0.5rem' }}>#6BB9E8</td>
+                      <td style={{ padding: '0.5rem' }}>var(--color-brand-blue)</td>
                       <td style={{ padding: '0.5rem' }}>Primary spinner color</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>secondaryColor</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
-                      <td style={{ padding: '0.5rem' }}>#8DC63F</td>
+                      <td style={{ padding: '0.5rem' }}>var(--color-brand-green)</td>
                       <td style={{ padding: '0.5rem' }}>Secondary color for some spinners</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>text</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Loading text to display below spinner</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textSize</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>medium</td>
                       <td style={{ padding: '0.5rem' }}>small, medium, large</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textColor</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
-                      <td style={{ padding: '0.5rem' }}>#6b7280</td>
+                      <td style={{ padding: '0.5rem' }}>var(--color-gray-500)</td>
                       <td style={{ padding: '0.5rem' }}>Text color</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>textWeight</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>400</td>
                       <td style={{ padding: '0.5rem' }}>Text font weight</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>overlay</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>false</td>
                       <td style={{ padding: '0.5rem' }}>Show as overlay with background</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>overlayColor</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>rgba(255,255,255,0.9)</td>
                       <td style={{ padding: '0.5rem' }}>Background color for overlay</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>blur</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Boolean</td>
                       <td style={{ padding: '0.5rem' }}>false</td>
                       <td style={{ padding: '0.5rem' }}>Apply backdrop blur effect when overlay is true</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>height</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>auto</td>
                       <td style={{ padding: '0.5rem' }}>Container height</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>minHeight</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>auto</td>
                       <td style={{ padding: '0.5rem' }}>Container minimum height</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>width</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>100%</td>
                       <td style={{ padding: '0.5rem' }}>Container width</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>padding</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>0</td>
@@ -1463,14 +1463,14 @@ function UITest() {
                     </tr>
                   </tbody>
                 </table>
-                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <strong style={{ color: '#1e40af' }}>💡 Usage Examples:</strong>
-                  <div style={{ marginTop: '0.75rem', background: '#1f2937', color: '#e5e7eb', padding: '1rem', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--color-brand-blue-tint)', borderRadius: '6px', border: '1px solid var(--color-brand-blue-tint-strong)' }}>
+                  <strong style={{ color: 'var(--color-brand-blue-deep)' }}>💡 Usage Examples:</strong>
+                  <div style={{ marginTop: '0.75rem', background: 'var(--color-gray-800)', color: 'var(--color-gray-200)', padding: '1rem', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
 {`// Simple loading
 <Loading type="oval" size="medium" text="Loading..." />
 
 // Custom colors
-<Loading type="tailspin" color="#8DC63F" text="Processing..." />
+<Loading type="tailspin" color="var(--color-brand-green)" text="Processing..." />
 
 // Overlay loading
 <div style={{ position: 'relative' }}>
@@ -1515,17 +1515,17 @@ function UITest() {
           <ComponentCard>
             <ComponentLabel>Primary Colors</ComponentLabel>
             <ColorPalette>
-              <ColorSwatch color="#6BB9E8">
+              <ColorSwatch color="var(--color-brand-blue)">
                 <div>Primary</div>
-                <div>#6BB9E8</div>
+                <div>var(--color-brand-blue)</div>
               </ColorSwatch>
-              <ColorSwatch color="#4A9ED4">
+              <ColorSwatch color="var(--color-brand-blue)">
                 <div>Primary Dark</div>
-                <div>#4A9ED4</div>
+                <div>var(--color-brand-blue)</div>
               </ColorSwatch>
-              <ColorSwatch color="#8ECDF0" light>
+              <ColorSwatch color="var(--color-brand-blue-light)" light>
                 <div>Primary Light</div>
-                <div>#8ECDF0</div>
+                <div>var(--color-brand-blue-light)</div>
               </ColorSwatch>
             </ColorPalette>
           </ComponentCard>
@@ -1533,13 +1533,13 @@ function UITest() {
           <ComponentCard>
             <ComponentLabel>Secondary & Accent</ComponentLabel>
             <ColorPalette>
-              <ColorSwatch color="#8DC63F">
+              <ColorSwatch color="var(--color-brand-green)">
                 <div>Success/Green</div>
-                <div>#8DC63F</div>
+                <div>var(--color-brand-green)</div>
               </ColorSwatch>
-              <ColorSwatch color="#6BA32E">
+              <ColorSwatch color="var(--color-brand-green-dark)">
                 <div>Green Dark</div>
-                <div>#6BA32E</div>
+                <div>var(--color-brand-green-dark)</div>
               </ColorSwatch>
               <ColorSwatch color="#A8D86A" light>
                 <div>Green Light</div>
@@ -1551,13 +1551,13 @@ function UITest() {
           <ComponentCard>
             <ComponentLabel>Status Colors</ComponentLabel>
             <ColorPalette>
-              <ColorSwatch color="#ef4444">
+              <ColorSwatch color="var(--color-danger)">
                 <div>Error</div>
-                <div>#ef4444</div>
+                <div>var(--color-danger)</div>
               </ColorSwatch>
-              <ColorSwatch color="#f59e0b">
+              <ColorSwatch color="var(--color-warning)">
                 <div>Warning</div>
-                <div>#f59e0b</div>
+                <div>var(--color-warning)</div>
               </ColorSwatch>
             </ColorPalette>
           </ComponentCard>
@@ -1565,33 +1565,33 @@ function UITest() {
           <ComponentCard>
             <ComponentLabel>Neutral Colors</ComponentLabel>
             <ColorPalette>
-              <ColorSwatch color="#111827">
+              <ColorSwatch color="var(--color-gray-900)">
                 <div>Gray 900</div>
-                <div>#111827</div>
+                <div>var(--color-gray-900)</div>
               </ColorSwatch>
-              <ColorSwatch color="#374151">
+              <ColorSwatch color="var(--color-gray-700)">
                 <div>Gray 700</div>
-                <div>#374151</div>
+                <div>var(--color-gray-700)</div>
               </ColorSwatch>
-              <ColorSwatch color="#6b7280">
+              <ColorSwatch color="var(--color-gray-500)">
                 <div>Gray 500</div>
-                <div>#6b7280</div>
+                <div>var(--color-gray-500)</div>
               </ColorSwatch>
-              <ColorSwatch color="#9ca3af">
+              <ColorSwatch color="var(--color-gray-400)">
                 <div>Gray 400</div>
-                <div>#9ca3af</div>
+                <div>var(--color-gray-400)</div>
               </ColorSwatch>
-              <ColorSwatch color="#d1d5db" light>
+              <ColorSwatch color="var(--color-gray-300)" light>
                 <div>Gray 300</div>
-                <div>#d1d5db</div>
+                <div>var(--color-gray-300)</div>
               </ColorSwatch>
-              <ColorSwatch color="#e5e7eb" light>
+              <ColorSwatch color="var(--color-gray-200)" light>
                 <div>Gray 200</div>
-                <div>#e5e7eb</div>
+                <div>var(--color-gray-200)</div>
               </ColorSwatch>
-              <ColorSwatch color="#f9fafb" light>
+              <ColorSwatch color="var(--color-gray-50)" light>
                 <div>Gray 50</div>
-                <div>#f9fafb</div>
+                <div>var(--color-gray-50)</div>
               </ColorSwatch>
             </ColorPalette>
           </ComponentCard>
@@ -1606,19 +1606,19 @@ function UITest() {
             <ComponentLabel>Basic Empty States</ComponentLabel>
             <ComponentDemo>
               <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="📝"
                     title="Tidak ada set skripsi ditemukan"
                   />
                 </div>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="🎴"
                     title="Tidak ada deck flashcard"
                   />
                 </div>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="💬"
                     title="Tidak ada percakapan"
@@ -1628,8 +1628,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -1646,7 +1646,7 @@ function UITest() {
           <ComponentCard style={{ gridColumn: '1 / -1' }}>
             <ComponentLabel>With Description</ComponentLabel>
             <ComponentDemo>
-              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                 <EmptyState
                   icon="📋"
                   title="Tidak ada data ditemukan"
@@ -1656,8 +1656,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -1675,7 +1675,7 @@ function UITest() {
           <ComponentCard style={{ gridColumn: '1 / -1' }}>
             <ComponentLabel>With Action Button</ComponentLabel>
             <ComponentDemo>
-              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                 <EmptyState
                   icon="📝"
                   title="Belum ada catatan"
@@ -1688,8 +1688,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -1710,7 +1710,7 @@ function UITest() {
           <ComponentCard style={{ gridColumn: '1 / -1' }}>
             <ComponentLabel>With Custom Actions</ComponentLabel>
             <ComponentDemo>
-              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                 <EmptyState
                   icon="🔍"
                   title="Tidak ada hasil pencarian"
@@ -1730,8 +1730,8 @@ function UITest() {
 
               <div style={{
                 marginTop: '1rem',
-                background: '#1f2937',
-                color: '#e5e7eb',
+                background: 'var(--color-gray-800)',
+                color: 'var(--color-gray-200)',
                 padding: '1rem',
                 borderRadius: '6px',
                 fontFamily: 'monospace',
@@ -1760,14 +1760,14 @@ function UITest() {
             <ComponentLabel>Different Contexts</ComponentLabel>
             <ComponentDemo>
               <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="📊"
                     title="Tidak ada data statistik"
                     description="Data statistik akan muncul setelah Anda memulai aktivitas."
                   />
                 </div>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="🎯"
                     title="Tidak ada latihan"
@@ -1776,7 +1776,7 @@ function UITest() {
                     onAction={() => alert('Select topic')}
                   />
                 </div>
-                <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ border: '1px solid var(--color-gray-200)', borderRadius: '8px', overflow: 'hidden' }}>
                   <EmptyState
                     icon="⚠️"
                     title="Koneksi terputus"
@@ -1794,17 +1794,17 @@ function UITest() {
             <ComponentLabel>Component Props Documentation</ComponentLabel>
             <ComponentDemo>
               <div style={{
-                background: '#f9fafb',
+                background: 'var(--color-gray-50)',
                 padding: '1.5rem',
                 borderRadius: '8px',
                 fontSize: '0.875rem'
               }}>
-                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: '#111827' }}>
+                <h4 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-gray-900)' }}>
                   EmptyState Component Props
                 </h4>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-200)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Prop</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Type</th>
                       <th style={{ padding: '0.5rem', fontWeight: 600 }}>Default</th>
@@ -1812,43 +1812,43 @@ function UITest() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>icon</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String | ReactNode</td>
                       <td style={{ padding: '0.5rem' }}>📭</td>
                       <td style={{ padding: '0.5rem' }}>Icon to display (emoji or React component)</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>title</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>Tidak ada data ditemukan</td>
                       <td style={{ padding: '0.5rem' }}>Main message to display</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>description</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Optional subtitle/description text</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actionLabel</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Label for action button</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>onAction</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>Function</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
                       <td style={{ padding: '0.5rem' }}>Click handler for action button</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>actionVariant</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>String</td>
                       <td style={{ padding: '0.5rem' }}>primary</td>
                       <td style={{ padding: '0.5rem' }}>Button variant (primary, secondary, danger, success, outline)</td>
                     </tr>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', color: '#6366f1' }}>customAction</td>
                       <td style={{ padding: '0.5rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>ReactNode</td>
                       <td style={{ padding: '0.5rem' }}>-</td>
@@ -1862,9 +1862,9 @@ function UITest() {
                     </tr>
                   </tbody>
                 </table>
-                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                  <strong style={{ color: '#1e40af' }}>💡 Usage Tips:</strong>
-                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: '#1e3a8a' }}>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--color-brand-blue-tint)', borderRadius: '6px', border: '1px solid var(--color-brand-blue-tint-strong)' }}>
+                  <strong style={{ color: 'var(--color-brand-blue-deep)' }}>💡 Usage Tips:</strong>
+                  <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem', color: 'var(--color-brand-blue-deep)' }}>
                     <li>Use contextual emojis that match the type of content (📝 for notes, 🎴 for flashcards, etc.)</li>
                     <li>Keep title messages concise and actionable</li>
                     <li>Add descriptions to guide users on what to do next</li>
@@ -1885,32 +1885,32 @@ function UITest() {
         <ComponentGrid>
           <ComponentCard>
             <ComponentLabel>Headings</ComponentLabel>
-            <div style={{ fontSize: '2rem', fontWeight: 600, color: '#111827', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--color-gray-900)', marginBottom: '0.5rem' }}>
               Heading 1
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-900)', marginBottom: '0.5rem' }}>
               Heading 2
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '0.5rem' }}>
               Heading 3
             </div>
-            <div style={{ fontSize: '1.125rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '0.5rem' }}>
               Heading 4
             </div>
           </ComponentCard>
 
           <ComponentCard>
             <ComponentLabel>Body Text</ComponentLabel>
-            <div style={{ fontSize: '1rem', color: '#374151', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1rem', color: 'var(--color-gray-700)', marginBottom: '0.5rem' }}>
               Body Large (1rem / 16px)
             </div>
-            <div style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-gray-700)', marginBottom: '0.5rem' }}>
               Body Normal (0.875rem / 14px)
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)', marginBottom: '0.5rem' }}>
               Body Small (0.75rem / 12px)
             </div>
-            <div style={{ fontSize: '0.625rem', color: '#6b7280' }}>
+            <div style={{ fontSize: '0.625rem', color: 'var(--color-gray-500)' }}>
               Caption (0.625rem / 10px)
             </div>
           </ComponentCard>

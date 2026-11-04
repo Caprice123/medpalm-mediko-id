@@ -22,15 +22,15 @@ export const UploadedItem = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   font-size: 0.8125rem;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const UploadError = styled.p`
-  color: #dc2626;
+  color: var(--color-danger-dark);
   font-size: 0.8125rem;
   margin: 0.5rem 0 0;
 `

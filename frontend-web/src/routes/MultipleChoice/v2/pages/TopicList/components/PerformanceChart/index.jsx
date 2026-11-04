@@ -7,11 +7,11 @@ const BAR_GAP = 24
 const Y_AXIS_OFFSET = 27
 
 function scoreColor(score) {
-  if (score == null) return '#e5e7eb'
-  if (score >= 75) return '#10b981'
-  if (score >= 60) return '#3b82f6'
-  if (score >= 45) return '#f59e0b'
-  return '#ef4444'
+  if (score == null) return 'var(--color-gray-200)'
+  if (score >= 75) return 'var(--color-brand-green)'
+  if (score >= 60) return 'var(--color-brand-blue)'
+  if (score >= 45) return 'var(--color-warning)'
+  return 'var(--color-danger)'
 }
 
 function CustomTooltip({ active, payload }) {
@@ -19,10 +19,10 @@ function CustomTooltip({ active, payload }) {
   const { name, avgScore } = payload[0].payload
   return (
     <div style={{
-      background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10,
+      background: '#fff', border: '1px solid var(--color-gray-200)', borderRadius: 10,
       padding: '0.6rem 0.875rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     }}>
-      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827', marginBottom: '0.2rem' }}>{name}</div>
+      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '0.2rem' }}>{name}</div>
       <div style={{ fontSize: '1rem', fontWeight: 800, color: scoreColor(avgScore) }}>{avgScore}%</div>
     </div>
   )
@@ -38,7 +38,7 @@ function CustomTick({ x, y, payload }) {
         style={{
           fontSize: 13,
           fontWeight: 500,
-          color: '#6b7280',
+          color: 'var(--color-gray-500)',
           textAlign: 'center',
           lineHeight: '15px',
           wordBreak: 'break-word',
@@ -99,7 +99,7 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
                 barCategoryGap={BAR_GAP}
                 margin={{ top: 16, right: 16, left: -24, bottom: 8 }}
               >
-                <CartesianGrid vertical={false} stroke="#f3f4f6" />
+                <CartesianGrid vertical={false} stroke="var(--color-gray-100)" />
                 <XAxis
                   dataKey="name"
                   tick={<CustomTick />}
@@ -113,9 +113,9 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
                   tickFormatter={v => `${v}%`}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 13, fill: '#9ca3af' }}
+                  tick={{ fontSize: 13, fill: 'var(--color-gray-400)' }}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb', radius: 6 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-gray-50)', radius: 6 }} />
                 <Bar dataKey="avgScore" radius={[6, 6, 0, 0]}>
                   {displayData.map((entry, i) => (
                     <Cell key={i} fill={scoreColor(entry.avgScore)} />
@@ -124,7 +124,7 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
                     dataKey="avgScore"
                     position="top"
                     formatter={v => `${v}%`}
-                    style={{ fontSize: 13, fontWeight: 700, fill: '#374151' }}
+                    style={{ fontSize: 13, fontWeight: 700, fill: 'var(--color-gray-700)' }}
                   />
                 </Bar>
               </BarChart>
@@ -134,10 +134,10 @@ function PerformanceChart({ topics, subtopicsCache = {}, onRequestSubtopics, sel
       )}
 
       <Legend>
-        <LegendItem><LegendDot $color="#10b981" />≥75%</LegendItem>
-        <LegendItem><LegendDot $color="#3b82f6" />60–74%</LegendItem>
-        <LegendItem><LegendDot $color="#f59e0b" />45–59%</LegendItem>
-        <LegendItem><LegendDot $color="#ef4444" />&lt;45%</LegendItem>
+        <LegendItem><LegendDot $color="var(--color-brand-green)" />≥75%</LegendItem>
+        <LegendItem><LegendDot $color="var(--color-brand-blue)" />60–74%</LegendItem>
+        <LegendItem><LegendDot $color="var(--color-warning)" />45–59%</LegendItem>
+        <LegendItem><LegendDot $color="var(--color-danger)" />&lt;45%</LegendItem>
       </Legend>
     </>
   )

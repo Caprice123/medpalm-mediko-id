@@ -4,13 +4,13 @@ const getStatusColors = (status) => {
   switch (status) {
     case 'published':
       return {
-        background: '#dcfce7',
-        color: '#16a34a'
+        background: 'var(--color-brand-green-tint)',
+        color: 'var(--color-brand-green-dark)'
       }
     case 'testing':
       return {
-        background: '#fef3c7',
-        color: '#d97706'
+        background: 'var(--color-warning-tint)',
+        color: 'var(--color-warning-dark)'
       }
     case 'draft':
     default:

@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -15,8 +15,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 
@@ -51,7 +51,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -69,7 +69,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 1.125rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   font-weight: 400;
   max-width: 600px;
@@ -107,7 +107,7 @@ export const CalculatorCard = styled.div`
   background: white;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.08);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
   cursor: pointer;
@@ -121,7 +121,7 @@ export const CalculatorCard = styled.div`
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #06b6d4, #0891b2);
+    background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-deep));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.4s ease;
@@ -129,8 +129,8 @@ export const CalculatorCard = styled.div`
 
   &:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.2);
-    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 20px 40px rgba(30, 115, 170, 0.2);
+    border-color: rgba(30, 115, 170, 0.2);
 
     &::before {
       transform: scaleX(1);
@@ -141,7 +141,7 @@ export const CalculatorCard = styled.div`
 export const CalculatorTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.75rem 0;
   display: flex;
   align-items: center;
@@ -153,7 +153,7 @@ export const CalculatorTitle = styled.h2`
 `
 
 export const CalculatorDescription = styled.p`
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.9375rem;
   margin: 0 0 1.5rem 0;
   line-height: 1.7;
@@ -164,13 +164,13 @@ export const FieldCount = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(8, 145, 178, 0.05));
-  color: #0891b2;
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.1), rgba(4, 74, 119, 0.05));
+  color: var(--color-brand-blue-deep);
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(30, 115, 170, 0.2);
 
   &::before {
     content: '📋';
@@ -182,8 +182,8 @@ export const CalculatorForm = styled.div`
   background: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.1);
+  box-shadow: 0 10px 40px rgba(30, 115, 170, 0.1);
+  border: 1px solid rgba(30, 115, 170, 0.1);
   animation: slideIn 0.5s ease;
 
   @keyframes slideIn {
@@ -224,8 +224,8 @@ export const HeaderTop = styled.div`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -237,8 +237,8 @@ export const BackButton = styled.button`
   gap: 0.5rem;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -248,7 +248,7 @@ export const TopicInfo = styled.div`
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-gray-900);
     margin: 0 0 0.5rem 0;
     display: flex;
     align-items: center;
@@ -261,7 +261,7 @@ export const TopicInfo = styled.div`
 
   p {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin: 0;
     line-height: 1.5;
   }
@@ -284,28 +284,28 @@ export const Tag = styled.span`
   font-weight: 600;
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
 
   ${props => props.kategori && `
-    background: #FEF3C7;
+    background: var(--color-warning-tint);
     color: #92400E;
-    border: 1px solid #F59E0B;
+    border: 1px solid var(--color-warning);
   `}
 `
 
 export const FormTitle = styled.h2`
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -320,7 +320,7 @@ export const FormTitle = styled.h2`
 
 export const FormDescription = styled.p`
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0.5rem 0 0 0;
   line-height: 1.6;
 `
@@ -332,7 +332,7 @@ export const InputsSection = styled.div`
 export const SectionTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin: 0 0 1rem 0;
 `
 
@@ -346,7 +346,7 @@ export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1.25rem;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 14px;
   margin: 8px 0;
   background: white;
@@ -354,14 +354,14 @@ export const FormGroup = styled.div`
   transition: border-color 0.2s;
 
   &:focus-within {
-    border-color: #06b6d4;
+    border-color: var(--color-brand-blue);
   }
 `
 
 export const FormLabel = styled.label`
   font-size: 16px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-800);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -376,42 +376,42 @@ export const LabelWithDescription = styled.div`
 
 export const FieldDescription = styled.p`
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   margin: 0;
   line-height: 1.4;
 `
 
 export const FormInput = styled.input`
   padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 0.9375rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
-  background: #f8fafc;
-  color: #1e293b;
+  background: var(--color-surface-page);
+  color: var(--color-gray-800);
   font-weight: 500;
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
+    border-color: var(--color-brand-blue);
     background: white;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 0 4px rgba(30, 115, 170, 0.1);
     transform: translateY(-1px);
   }
 
   &::placeholder {
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-weight: 400;
   }
 
   &:hover:not(:focus) {
-    border-color: #cbd5e1;
+    border-color: var(--color-gray-300);
   }
 `
 
 export const CalculateButton = styled.button`
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -426,7 +426,7 @@ export const CalculateButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.25);
   position: relative;
   overflow: hidden;
 
@@ -443,7 +443,7 @@ export const CalculateButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(6, 182, 212, 0.35);
+    box-shadow: 0 8px 30px rgba(30, 115, 170, 0.35);
 
     &::before {
       left: 100%;
@@ -455,7 +455,7 @@ export const CalculateButton = styled.button`
   }
 
   &:disabled {
-    background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+    background: linear-gradient(135deg, var(--color-gray-300), var(--color-gray-400));
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -477,13 +477,13 @@ export const ResultSection = styled.div`
 export const ResultHeader = styled.div`
   text-align: center;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   margin-bottom: 1.5rem;
 `
 
 export const ResultLabel = styled.p`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 0.75rem 0;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -508,7 +508,7 @@ export const ResultValue = styled.h2`
 
 export const ResultUnit = styled.span`
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-weight: 500;
 
   @media (max-width: 768px) {
@@ -519,7 +519,7 @@ export const ResultUnit = styled.span`
 export const ResultDetails = styled.div`
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 `
 
 export const ResultDetailItem = styled.div`
@@ -528,7 +528,7 @@ export const ResultDetailItem = styled.div`
   align-items: center;
   padding: 0.75rem 0;
   font-size: 0.875rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 
   &:last-child {
     border-bottom: none;
@@ -538,16 +538,16 @@ export const ResultDetailItem = styled.div`
 
 export const DetailLabel = styled.span`
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const DetailValue = styled.span`
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const ErrorMessage = styled.div`
-  color: #ef4444;
+  color: var(--color-danger);
   font-size: 0.75rem;
   margin-top: 0.25rem;
 `
@@ -556,8 +556,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(6, 182, 212, 0.2);
-  border-top: 3px solid #06b6d4;
+  border: 3px solid rgba(30, 115, 170, 0.2);
+  border-top: 3px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 
@@ -570,10 +570,10 @@ export const LoadingSpinner = styled.div`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 80px 20px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   background: white;
   border-radius: 20px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--color-gray-200);
 `
 
 export const EmptyIcon = styled.div`
@@ -584,7 +584,7 @@ export const EmptyIcon = styled.div`
 
 export const EmptyText = styled.p`
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   font-weight: 500;
 `
@@ -592,13 +592,13 @@ export const EmptyText = styled.p`
 export const ClassificationsSection = styled.div`
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 `
 
 export const ClassificationTitle = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -607,7 +607,7 @@ export const ClassificationTitle = styled.div`
 export const ClassificationItem = styled.div`
   margin-bottom: 0.75rem;
   padding: 1rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 8px;
   border-left: 3px solid ${colors.primary.main};
 
@@ -626,14 +626,14 @@ export const ClassificationName = styled.div`
 
 export const ClassificationValue = styled.div`
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--color-gray-900);
   font-weight: 500;
   line-height: 1.5;
 `
 
 export const ClassificationEmpty = styled.div`
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-style: italic;
 `
 
@@ -643,9 +643,9 @@ export const ClinicalReferencesSection = styled.div`
 
 export const ClinicalReferenceBox = styled.div`
   padding: 1rem 1.25rem;
-  background: #fef3c7;
+  background: var(--color-warning-tint);
   border-radius: 8px;
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid var(--color-warning);
 `
 
 export const ClinicalReferenceItem = styled.div`
@@ -666,7 +666,7 @@ export const OptionCard = styled.div`
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem;
-  border: 2px solid ${props => props.selected ? '#8b5cf6' : '#e5e7eb'};
+  border: 2px solid ${props => props.selected ? '#8b5cf6' : 'var(--color-gray-200)'};
   border-radius: 12px;
   background: ${props => props.selected ? '#f5f3ff' : 'white'};
   cursor: pointer;
@@ -695,7 +695,7 @@ export const OptionContent = styled.div`
 
 export const OptionTextContent = styled.div`
   font-size: 15px;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
   font-weight: 500;
 `
@@ -703,7 +703,7 @@ export const OptionTextContent = styled.div`
 export const OptionImageContainer = styled.div`
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   cursor: zoom-in;
   transition: all 0.2s;
   max-width: 300px;
@@ -729,7 +729,7 @@ export const ResultTabsWrapper = styled.div`
 export const ResultTabBar = styled.div`
   display: flex;
   gap: 0;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   overflow-x: auto;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
@@ -739,17 +739,17 @@ export const ResultTab = styled.button`
   padding: 0.75rem 1.25rem;
   background: none;
   border: none;
-  border-bottom: 3px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
+  border-bottom: 3px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
   margin-bottom: -2px;
   font-size: 0.875rem;
   font-weight: ${props => props.$active ? '700' : '500'};
-  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
 
   &:hover {
-    color: #06b6d4;
+    color: var(--color-brand-blue);
   }
 `
 
@@ -763,9 +763,9 @@ export const ResultTabContent = styled.div`
 export const ResultValueBox = styled.div`
   text-align: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(6,182,212,0.07), rgba(8,145,178,0.04));
+  background: linear-gradient(135deg, rgba(30, 115, 170,0.07), rgba(4, 74, 119,0.04));
   border-radius: 12px;
-  border: 1px solid rgba(6,182,212,0.15);
+  border: 1px solid rgba(30, 115, 170,0.15);
   margin-bottom: 1.75rem;
 `
 
@@ -776,7 +776,7 @@ export const ClassificationTable = styled.table`
 `
 
 export const ClassificationThead = styled.thead`
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 `
 
 export const ClassificationTh = styled.th`
@@ -784,29 +784,29 @@ export const ClassificationTh = styled.th`
   text-align: left;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0891b2;
+  color: var(--color-brand-blue-deep);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
 `
 
 export const ClassificationTr = styled.tr`
   &:not(:last-child) {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--color-gray-100);
   }
   &:hover {
-    background: #f9fafb;
+    background: var(--color-gray-50);
   }
 `
 
 export const ClassificationTd = styled.td`
   padding: 0.875rem 1rem;
-  color: #374151;
+  color: var(--color-gray-700);
   vertical-align: middle;
 
   &:first-child {
     font-weight: 600;
-    color: #111827;
+    color: var(--color-gray-900);
     width: 40%;
   }
 `
@@ -815,15 +815,15 @@ export const ClassificationBadge = styled.span`
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(8,145,178,0.08));
-  color: #0891b2;
+  background: linear-gradient(135deg, rgba(30, 115, 170,0.12), rgba(4, 74, 119,0.08));
+  color: var(--color-brand-blue-deep);
   font-weight: 600;
   font-size: 0.875rem;
-  border: 1px solid rgba(6,182,212,0.2);
+  border: 1px solid rgba(30, 115, 170,0.2);
 `
 
 export const ClassificationEmptyBadge = styled.span`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-style: italic;
   font-size: 0.8rem;
 `
@@ -831,7 +831,7 @@ export const ClassificationEmptyBadge = styled.span`
 export const FieldImageContainer = styled.div`
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   cursor: zoom-in;
   transition: all 0.2s;
   margin-bottom: 0.75rem;

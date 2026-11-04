@@ -24,7 +24,7 @@ export const ProgressBar = styled.div`
   position: relative;
   width: 100%;
   height: 32px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 1rem;
@@ -47,7 +47,7 @@ export const ProgressText = styled.div`
   transform: translate(-50%, -50%);
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   z-index: 1;
 `
 
@@ -55,8 +55,8 @@ export const TimerContainer = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${props => props.warning ? '#fee2e2' : '#ecfdf5'};
-  border: 2px solid ${props => props.warning ? '#ef4444' : '#10b981'};
+  background: ${props => props.warning ? 'var(--color-danger-tint)' : 'var(--color-brand-green-tint)'};
+  border: 2px solid ${props => props.warning ? 'var(--color-danger)' : 'var(--color-brand-green)'};
   padding: 0.5rem 1rem;
   border-radius: 8px;
 `
@@ -64,7 +64,7 @@ export const TimerContainer = styled.div`
 export const TimerText = styled.div`
   font-size: 1.125rem;
   font-weight: 700;
-  color: ${props => props.warning ? '#991b1b' : '#065f46'};
+  color: ${props => props.warning ? '#991b1b' : 'var(--color-brand-green-darker)'};
 `
 
 export const QuestionContainer = styled.div`
@@ -78,14 +78,14 @@ export const QuestionContainer = styled.div`
 export const QuestionNumber = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 1rem;
 `
 
 export const QuestionText = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
 `
@@ -95,7 +95,7 @@ export const QuestionImage = styled.img`
   max-width: 500px;
   border-radius: 8px;
   margin-bottom: 1.5rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
 `
 
 export const OptionsContainer = styled.div`
@@ -109,7 +109,7 @@ export const OptionCard = styled.div`
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem;
-  border: 2px solid ${props => props.selected ? '#ec4899' : '#e5e7eb'};
+  border: 2px solid ${props => props.selected ? '#ec4899' : 'var(--color-gray-200)'};
   border-radius: 8px;
   background: ${props => props.selected ? '#fdf2f8' : 'white'};
   cursor: pointer;
@@ -137,7 +137,7 @@ export const OptionLabel = styled.div`
 export const OptionText = styled.div`
   flex: 1;
   font-size: 1rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
   padding-top: 0.25rem;
 `
@@ -186,20 +186,20 @@ const Button = styled.button`
 `
 
 export const BackButton = styled(Button)`
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
 
   &:hover:not(:disabled) {
-    background: #e5e7eb;
+    background: var(--color-gray-200);
   }
 `
 
 export const PreviousButton = styled(Button)`
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
 
   &:hover:not(:disabled) {
-    background: #e5e7eb;
+    background: var(--color-gray-200);
   }
 `
 
@@ -213,17 +213,17 @@ export const NextButton = styled(Button)`
 `
 
 export const SubmitButton = styled(Button)`
-  background: #10b981;
+  background: var(--color-brand-green);
   color: white;
 
   &:hover:not(:disabled) {
-    background: #059669;
+    background: var(--color-brand-green-dark);
   }
 `
 
 export const WarningText = styled.div`
-  background: #fef3c7;
-  border: 2px solid #f59e0b;
+  background: var(--color-warning-tint);
+  border: 2px solid var(--color-warning);
   color: #92400e;
   padding: 1rem;
   border-radius: 8px;

@@ -17,17 +17,17 @@ export const MobileCloseButton = styled.button`
     right: 1rem;
     width: 36px;
     height: 36px;
-    background: #f3f4f6;
+    background: var(--color-gray-100);
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     z-index: 10;
 
     &:hover {
-      background: #fee2e2;
-      color: #dc2626;
+      background: var(--color-danger-tint);
+      color: var(--color-danger-dark);
     }
   }
 `
@@ -45,7 +45,7 @@ export const FloatingHamburger = styled.button`
     width: 44px;
     height: 44px;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-gray-200);
     border-radius: 10px;
     cursor: grab;
     padding: 10px;
@@ -58,13 +58,13 @@ export const FloatingHamburger = styled.button`
       display: block;
       width: 100%;
       height: 2px;
-      background: #374151;
+      background: var(--color-gray-700);
       border-radius: 2px;
       transition: all 0.25s ease;
     }
 
     &:hover span {
-      background: #06b6d4;
+      background: var(--color-brand-blue);
     }
   }
 `
@@ -78,7 +78,7 @@ export const Sidebar = styled.aside`
   width: ${props => props.$open ? '240px' : '0px'};
   min-width: ${props => props.$open ? '240px' : '0px'};
   background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--color-gray-200);
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -123,7 +123,7 @@ export const SidebarLogo = styled.button`
   border: none;
   background: none;
   cursor: pointer;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   flex-shrink: 0;
 
   img {
@@ -132,7 +132,7 @@ export const SidebarLogo = styled.button`
   }
 
   &:hover {
-    background: #f0fdfa;
+    background: var(--color-brand-blue-tint);
   }
 `
 
@@ -146,14 +146,14 @@ export const SidebarNav = styled.nav`
     width: 6px;
   }
   &::-webkit-scrollbar-track {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
   }
   &::-webkit-scrollbar-thumb {
-    background: #9ca3af;
+    background: var(--color-gray-400);
     border-radius: 3px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
+    background: var(--color-gray-500);
   }
 `
 
@@ -174,11 +174,11 @@ export const SidebarGroupHeader = styled.button`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   transition: color 0.15s;
 
   &:hover {
-    color: #6b7280;
+    color: var(--color-gray-500);
   }
 `
 
@@ -197,7 +197,7 @@ export const SidebarGroupItems = styled.div`
 export const SidebarTooltip = styled.span`
   position: fixed;
   transform: translateY(-50%);
-  background: #1f2937;
+  background: var(--color-gray-800);
   color: #ffffff;
   font-size: 0.72rem;
   line-height: 1.4;
@@ -214,7 +214,7 @@ export const SidebarTooltip = styled.span`
     top: 50%;
     transform: translateY(-50%);
     border: 5px solid transparent;
-    border-right-color: #1f2937;
+    border-right-color: var(--color-gray-800);
   }
 `
 
@@ -228,18 +228,18 @@ export const SidebarItem = styled.button`
   width: calc(100% - 0.5rem);
   border: none;
   border-radius: 8px;
-  background: ${props => props.$active ? '#0f766e' : 'none'};
+  background: ${props => props.$active ? 'var(--color-brand-blue-deep)' : 'none'};
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: ${props => props.$active ? '600' : '400'};
-  color: ${props => props.$active ? '#ffffff' : '#374151'};
+  color: ${props => props.$active ? '#ffffff' : 'var(--color-gray-700)'};
   text-align: left;
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 
   &:hover {
-    background: ${props => props.$active ? '#0f766e' : '#f1f5f9'};
-    color: ${props => props.$active ? '#ffffff' : '#0f766e'};
+    background: ${props => props.$active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-100)'};
+    color: ${props => props.$active ? '#ffffff' : 'var(--color-brand-blue-deep)'};
   }
 `
 
@@ -266,7 +266,7 @@ export const SidebarLockIcon = styled.span`
 `
 
 export const SidebarFooter = styled.div`
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   padding: 0.875rem 1.25rem;
   flex-shrink: 0;
 `
@@ -282,7 +282,7 @@ export const UserAvatar = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #06b6d4;
+  background: var(--color-brand-blue);
   color: white;
   font-size: 0.875rem;
   font-weight: 700;
@@ -302,7 +302,7 @@ export const UserAvatar = styled.div`
 export const UserName = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -329,14 +329,14 @@ export const StatHeaderLeft = styled.div`
   align-items: center;
   gap: 0.375rem;
   font-size: 0.75rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 600;
   font-size: 0.8125rem;
 `
 
 export const StatChevron = styled.span`
   font-size: 0.5rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   transition: transform 0.2s ease;
   transform: ${props => props.$open ? 'rotate(0deg)' : 'rotate(-90deg)'};
 `
@@ -353,7 +353,7 @@ export const StatDetailRow = styled.div`
   align-items: center;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: ${props => props.$warn ? '#dc2626' : '#6b7280'};
+  color: ${props => props.$warn ? 'var(--color-danger-dark)' : 'var(--color-gray-500)'};
   padding: 0.2rem 0;
 `
 
@@ -386,20 +386,20 @@ export const FooterActionButton = styled.button`
   gap: 0.375rem;
   padding: 0.4rem 0.5rem;
   border-radius: 7px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   background: none;
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  color: ${props => props.$danger ? '#dc2626' : '#374151'};
-  border-color: ${props => props.$danger ? '#fecaca' : '#e5e7eb'};
+  color: ${props => props.$danger ? 'var(--color-danger-dark)' : 'var(--color-gray-700)'};
+  border-color: ${props => props.$danger ? '#fecaca' : 'var(--color-gray-200)'};
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 
   &:hover {
-    background: ${props => props.$danger ? '#fee2e2' : '#f0fdfa'};
-    color: ${props => props.$danger ? '#dc2626' : '#06b6d4'};
-    border-color: ${props => props.$danger ? '#fca5a5' : '#06b6d4'};
+    background: ${props => props.$danger ? 'var(--color-danger-tint)' : 'var(--color-brand-blue-tint)'};
+    color: ${props => props.$danger ? 'var(--color-danger-dark)' : 'var(--color-brand-blue)'};
+    border-color: ${props => props.$danger ? 'var(--color-danger-border)' : 'var(--color-brand-blue)'};
   }
 `
 
@@ -457,13 +457,13 @@ export const SidebarToggleButton = styled.button`
   background: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1.1rem;
   transition: color 0.15s, background 0.15s;
 
   &:hover {
-    background: #f0fdfa;
-    color: #06b6d4;
+    background: var(--color-brand-blue-tint);
+    color: var(--color-brand-blue);
   }
 
   @media (max-width: 768px) {

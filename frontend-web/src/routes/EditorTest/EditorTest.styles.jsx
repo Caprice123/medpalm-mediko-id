@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--color-surface-page);
   padding: 2rem;
 `
 
@@ -14,7 +14,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-800);
   margin: 0;
 `
 
@@ -29,19 +29,19 @@ export const EditorWrapper = styled.div`
   h3 {
     margin-top: 0;
     margin-bottom: 0.5rem;
-    color: #334155;
+    color: var(--color-gray-700);
     font-size: 1.125rem;
   }
 
   /* BlockNote editor styling */
   .bn-container {
     min-height: 300px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--color-gray-200);
     border-radius: 8px;
     transition: border-color 0.2s;
 
     &:focus-within {
-      border-color: #6BB9E8;
+      border-color: var(--color-brand-blue);
     }
   }
 `
@@ -58,12 +58,12 @@ export const OutputSection = styled.div`
 export const OutputTitle = styled.h3`
   margin-top: 0;
   margin-bottom: 1rem;
-  color: #334155;
+  color: var(--color-gray-700);
   font-size: 1.125rem;
 `
 
 export const OutputContent = styled.div`
-  background: #1e293b;
+  background: var(--color-gray-800);
   border-radius: 8px;
   padding: 1.5rem;
   overflow-x: auto;
@@ -72,7 +72,7 @@ export const OutputContent = styled.div`
 
   pre {
     margin: 0;
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-family: 'Courier New', monospace;
     font-size: 0.875rem;
     line-height: 1.6;
@@ -87,17 +87,17 @@ export const OutputContent = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: var(--color-gray-900);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: var(--color-gray-700);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--color-gray-600);
   }
 `
 
@@ -108,7 +108,7 @@ export const ButtonGroup = styled.div`
 
 export const ExportButton = styled.button`
   padding: 0.625rem 1.25rem;
-  background: linear-gradient(90deg, #6BB9E8, #3b82f6);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue));
   color: white;
   border: none;
   border-radius: 8px;
@@ -116,11 +116,11 @@ export const ExportButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(107, 185, 232, 0.2);
+  box-shadow: 0 2px 4px rgba(30, 115, 170, 0.2);
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(107, 185, 232, 0.3);
+    box-shadow: 0 4px 8px rgba(30, 115, 170, 0.3);
   }
 
   &:active:not(:disabled) {

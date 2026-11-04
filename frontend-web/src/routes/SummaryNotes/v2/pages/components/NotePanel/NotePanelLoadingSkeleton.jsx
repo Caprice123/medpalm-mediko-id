@@ -8,8 +8,8 @@ const Wrapper = styled.div`
   min-height: 100%;
 
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
     line-height: 1;
   }
 `
@@ -19,7 +19,7 @@ const TopBarSkeleton = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 2rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-gray-100);
   background: white;
 `
 
@@ -30,7 +30,7 @@ const BreadcrumbRow = styled.div`
 `
 
 const Sep = styled.span`
-  color: #d1d5db;
+  color: var(--color-gray-300);
   font-size: 0.8125rem;
 `
 
@@ -42,7 +42,7 @@ const ContentArea = styled.div`
 
 const Divider = styled.hr`
   border: none;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-gray-100);
   margin: 2rem 0;
 `
 

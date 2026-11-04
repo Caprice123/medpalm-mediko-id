@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.header`
   background: white;
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.1);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.1);
   padding: 1.25rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -96,18 +96,18 @@ export const Avatar = styled.img`
 
 export const UserName = styled.span`
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const StatusSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  background: linear-gradient(135deg, rgba(107, 185, 232, 0.08) 0%, rgba(141, 198, 63, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.08) 0%, rgba(124, 179, 66, 0.08) 100%);
   border: 1.5px solid ${colors.neutral.gray200};
   border-radius: 8px;
   padding: 0.375rem 0.625rem;
-  box-shadow: 0 2px 4px rgba(107, 185, 232, 0.1);
+  box-shadow: 0 2px 4px rgba(30, 115, 170, 0.1);
 
   @media (max-width: 768px) {
     flex: 1;
@@ -209,13 +209,13 @@ export const TooltipLabel = styled.span`
 
 export const TooltipValue = styled.span`
   font-weight: 700;
-  color: ${props => props.$warn ? '#dc2626' : colors.text.primary};
+  color: ${props => props.$warn ? 'var(--color-danger-dark)' : colors.text.primary};
 `
 
 export const StatusDivider = styled.div`
   width: 1px;
   height: 20px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
   margin: 0 0.25rem;
 
   @media (max-width: 768px) {
@@ -225,7 +225,7 @@ export const StatusDivider = styled.div`
 
 export const ErrorMessage = styled.div`
   background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  color: var(--color-danger-dark);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -289,7 +289,7 @@ export const MobileMenuItem = styled.div`
   background: ${colors.neutral.gray50};
   border-radius: 12px;
   border: 1px solid ${colors.neutral.gray200};
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.08);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.08);
 
   &.status-wrapper {
     flex-direction: column;
@@ -318,7 +318,7 @@ export const MobileCreditBreakdown = styled.div`
   flex-direction: column;
   gap: 0.35rem;
   padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   width: 100%;
   max-width: 260px;
   align-self: center;
@@ -329,11 +329,11 @@ export const MobileCreditBreakdownRow = styled.div`
   justify-content: space-between;
   gap: 1.5rem;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   span:last-child {
     font-weight: 600;
-    color: ${props => props.$warn ? '#dc2626' : '#374151'};
+    color: ${props => props.$warn ? 'var(--color-danger-dark)' : 'var(--color-gray-700)'};
   }
 `
 
@@ -393,13 +393,13 @@ export const AvatarDropdownItem = styled.button`
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: ${props => props.$danger ? '#dc2626' : colors.text.primary};
+  color: ${props => props.$danger ? 'var(--color-danger-dark)' : colors.text.primary};
   cursor: pointer;
   text-align: left;
   transition: background 0.15s;
 
   &:hover {
-    background: ${props => props.$danger ? '#fef2f2' : colors.neutral.gray50};
+    background: ${props => props.$danger ? 'var(--color-danger-tint-soft)' : colors.neutral.gray50};
   }
 `
 

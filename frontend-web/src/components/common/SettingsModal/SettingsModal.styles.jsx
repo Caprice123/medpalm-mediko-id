@@ -40,7 +40,7 @@ export const Modal = styled.div`
 
 export const ModalHeader = styled.div`
   padding: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,7 +51,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h3`
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0;
 `
 
@@ -59,7 +59,7 @@ export const CloseButton = styled.button`
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -70,8 +70,8 @@ export const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    color: #374151;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
   }
 `
 
@@ -88,7 +88,7 @@ export const FormGroup = styled.div`
 export const Label = styled.label`
   display: block;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
 `
@@ -96,22 +96,22 @@ export const Label = styled.label`
 export const Input = styled.input`
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.15);
   }
 `
 
 export const Textarea = styled.textarea`
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   font-size: 0.875rem;
   font-family: inherit;
@@ -120,15 +120,15 @@ export const Textarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.15);
   }
 `
 
 export const Select = styled.select`
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   font-size: 0.875rem;
   background: white;
@@ -137,26 +137,26 @@ export const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.15);
   }
 `
 
 export const HintText = styled.div`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-top: 0.5rem;
   line-height: 1.4;
 `
 
 export const VariableBadge = styled.code`
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background: rgba(30, 115, 170, 0.1);
+  color: var(--color-brand-blue);
   padding: 0.125rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(30, 115, 170, 0.3);
 `
 
 export const ToggleSwitch = styled.label`
@@ -171,7 +171,7 @@ export const ToggleSwitch = styled.label`
     height: 0;
 
     &:checked + span {
-      background: #3b82f6;
+      background: var(--color-brand-blue);
     }
 
     &:checked + span:before {
@@ -187,7 +187,7 @@ export const ToggleSlider = styled.span`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cbd5e1;
+  background-color: var(--color-gray-300);
   transition: 0.2s;
   border-radius: 34px;
 
@@ -207,7 +207,7 @@ export const ToggleSlider = styled.span`
 
 export const ModalFooter = styled.div`
   padding: 1.5rem;
-  border-top: 2px solid #e5e7eb;
+  border-top: 2px solid var(--color-gray-200);
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;

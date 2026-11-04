@@ -30,7 +30,7 @@ export const ProgressBadge = styled.div`
   border-radius: 20px;
   font-weight: 700;
   font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.3);
 `
 
 export const TopicInfo = styled.div`
@@ -56,8 +56,8 @@ export const TopicInfo = styled.div`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -65,8 +65,8 @@ export const BackButton = styled.button`
   font-weight: 500;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -87,13 +87,13 @@ export const Tag = styled.span`
   font-weight: 600;
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
@@ -124,7 +124,7 @@ export const ProgressFill = styled.div`
   transition: width 0.4s ease;
   width: ${props => props.progress}%;
   border-radius: 6px;
-  box-shadow: 0 0 10px rgba(107, 185, 232, 0.4);
+  box-shadow: 0 0 10px rgba(30, 115, 170, 0.4);
 `
 
 export const ProgressPercentage = styled.div`
@@ -172,7 +172,7 @@ export const QuestionNumber = styled.div`
   border-radius: 20px;
   background: linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main});
   color: ${colors.text.inverse};
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.3);
 `
 
 export const CategoryBadge = styled.div`
@@ -217,7 +217,7 @@ export const InlineInput = styled.input`
     outline: none;
     border-bottom: 3px solid ${colors.primary.dark};
     background: ${colors.neutral.white};
-    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.2);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.2);
   }
 
   &::placeholder {
@@ -232,7 +232,7 @@ export const InlineInput = styled.input`
 `
 
 export const HintBox = styled.div`
-  background: #EFF6FF;
+  background: var(--color-brand-blue-tint);
   border-left: 4px solid ${colors.primary.main};
   padding: 1rem 1.25rem;
   border-radius: 8px;
@@ -277,11 +277,11 @@ export const NavButton = styled.button`
     background: linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main});
     color: ${colors.text.inverse};
     border: none;
-    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(107, 185, 232, 0.4);
+      box-shadow: 0 6px 16px rgba(30, 115, 170, 0.4);
     }
 
     &:active:not(:disabled) {
@@ -343,7 +343,7 @@ export const SubmitButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -351,7 +351,7 @@ export const SubmitButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(107, 185, 232, 0.5);
+    box-shadow: 0 6px 20px rgba(30, 115, 170, 0.5);
   }
 
   &:active:not(:disabled) {
@@ -417,9 +417,9 @@ export const StatsGrid = styled.div`
 
 export const StatCard = styled.div`
   background: ${props => {
-    if (props.type === 'correct') return '#ECFDF5'
-    if (props.type === 'wrong') return '#FEF2F2'
-    return '#EFF6FF'
+    if (props.type === 'correct') return 'var(--color-brand-green-tint)'
+    if (props.type === 'wrong') return 'var(--color-danger-tint-soft)'
+    return 'var(--color-brand-blue-tint)'
   }};
   border: 2px solid ${props => {
     if (props.type === 'correct') return colors.success.main
@@ -480,7 +480,7 @@ export const ReviewTitle = styled.h3`
 `
 
 export const ReviewItem = styled.div`
-  background: ${props => props.isCorrect ? '#ECFDF5' : '#FEF2F2'};
+  background: ${props => props.isCorrect ? 'var(--color-brand-green-tint)' : 'var(--color-danger-tint-soft)'};
   border-left: 4px solid ${props => props.isCorrect ? colors.success.main : colors.error.main};
   border-radius: 12px;
   padding: 1rem;
@@ -509,7 +509,7 @@ export const ReviewQuestion = styled.div`
   padding-right: 2rem;
 
   .blank {
-    background: #FEF3C7;
+    background: var(--color-warning-tint);
     color: ${colors.warning.dark};
     padding: 0.25rem 0.625rem;
     border-radius: 6px;
@@ -549,7 +549,7 @@ export const ReviewAnswer = styled.div`
 export const ExplanationBox = styled.div`
   margin-top: 0.75rem;
   padding: 1rem;
-  background: ${props => props.isCorrect ? '#D1FAE5' : '#FEF3C7'};
+  background: ${props => props.isCorrect ? 'var(--color-brand-green-tint)' : 'var(--color-warning-tint)'};
   border: 2px solid ${props => props.isCorrect ? colors.success.main : colors.warning.main};
   border-radius: 8px;
 `
@@ -582,7 +582,7 @@ export const ReturnButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.3);
   margin-top: 2rem;
   display: flex;
   align-items: center;
@@ -591,7 +591,7 @@ export const ReturnButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(107, 185, 232, 0.5);
+    box-shadow: 0 6px 20px rgba(30, 115, 170, 0.5);
   }
 
   &:active {

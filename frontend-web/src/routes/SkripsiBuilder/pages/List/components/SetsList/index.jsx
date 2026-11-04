@@ -104,7 +104,7 @@ function SetsList() {
           </>
         }
       >
-        <p style={{ margin: 0, color: '#6b7280' }}>
+        <p style={{ margin: 0, color: 'var(--color-gray-500)' }}>
           Apakah Anda yakin ingin menghapus set ini? Tindakan ini tidak dapat dibatalkan.
         </p>
       </Modal>

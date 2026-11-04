@@ -24,7 +24,7 @@ function EditorTest() {
 
       <EditorWrapper>
         <h3>Try it out:</h3>
-        <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1rem' }}>
+        <p style={{ color: 'var(--color-gray-500)', fontSize: '0.875rem', marginBottom: '1rem' }}>
           Type <strong>/</strong> for commands • Select text for formatting
         </p>
 

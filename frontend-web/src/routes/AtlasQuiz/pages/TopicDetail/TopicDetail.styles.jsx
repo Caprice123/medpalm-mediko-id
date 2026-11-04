@@ -30,11 +30,11 @@ export const ClassificationTag = styled.span`
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: ${({ $type }) => $type === 'patologi' ? '#fee2e2' : '#d1fae5'};
-  color: ${({ $type }) => $type === 'patologi' ? '#b91c1c' : '#047857'};
+  background: ${({ $type }) => $type === 'patologi' ? 'var(--color-danger-tint)' : 'var(--color-brand-green-tint)'};
+  color: ${({ $type }) => $type === 'patologi' ? '#b91c1c' : 'var(--color-brand-green-darker)'};
 `
 
 export const ArrowIcon = styled.span`
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-size: 1rem;
 `

@@ -229,9 +229,9 @@ function Example12() {
           <Col key={num} xs={12} sm={6} lg={4}>
             <div style={{
               padding: '1.5rem',
-              background: '#f9fafb',
+              background: 'var(--color-gray-50)',
               borderRadius: '8px',
-              border: '1px solid #e5e7eb'
+              border: '1px solid var(--color-gray-200)'
             }}>
               <h3>Card {num}</h3>
               <p>Card content goes here</p>

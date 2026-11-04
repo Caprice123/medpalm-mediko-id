@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Fredoka:wght@300..700&family=Plus+Jakarta+Sans:wght@200..800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{width:1440px;height:900px;overflow:hidden;position:relative;
+       font-family:"Plus Jakarta Sans",sans-serif;color:#15242e;background:#eef5f8}
+  .frame{position:absolute;inset:26px;border:1px solid #d5e3ea;border-radius:24px;background:#fff;
+         overflow:hidden;display:grid;grid-template-columns:118px 1fr}
+  .rail{border-right:1px solid #e7ecef;background:#f6fafb;display:flex;flex-direction:column;
+        align-items:center;justify-content:space-between;padding:30px 16px}
+  .vmark{font-family:Fredoka,sans-serif;font-weight:600;font-size:21px;color:#1e73aa;
+         writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.02em}
+  .rstats{display:flex;flex-direction:column;gap:26px;align-items:center}
+  .rs b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:18px;
+        color:#1e73aa;text-align:center}
+  .rs span{display:block;width:86px;font-size:11px;line-height:1.35;color:#5c6b74;text-align:center}
+  .rback{font-size:18px;color:#3d5a68}
+  .stage{position:relative;display:flex;flex-direction:column;align-items:center;
+         justify-content:center;padding:0 80px}
+  .leaf{position:absolute;right:0;bottom:0;width:380px;opacity:.38}
+  .inner{position:relative;width:100%;max-width:520px;text-align:center}
+  h1{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+     letter-spacing:-1px}
+  .sub{margin-top:18px;font-size:17px;line-height:1.65;color:#3d5a68;margin-inline:auto;max-width:430px}
+  .gbtn{margin-top:36px;width:100%;height:58px;border:1px solid #d9e2e7;border-radius:14px;
+        background:#fff;display:flex;align-items:center;justify-content:center;gap:14px;
+        font-size:16.5px;font-weight:600;color:#15242e;box-shadow:0 10px 26px rgba(21,36,46,.08)}
+  .g{width:22px;height:22px;border-radius:50%;
+     background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+  .note{margin-top:20px;font-size:13.5px;line-height:1.6;color:#5c6b74}
+  .hair{margin-top:34px;height:1px;background:#e7ecef}
+  .foot{margin-top:18px;font-size:13px;color:#5c6b74}
+</style></head><body>
+  <div class="frame">
+    <div class="rail">
+      <div class="vmark">MedPal.id</div>
+      <div class="rstats">
+        <div class="rs"><b>12.480+</b><span>Member tergabung</span></div>
+        <div class="rs"><b>38.260+</b><span>Soal &amp; flashcard</span></div>
+        <div class="rs"><b>1.940+</b><span>Materi &amp; 3D</span></div>
+      </div>
+      <div class="rback">&#8592;</div>
+    </div>
+    <div class="stage">
+      <img class="leaf" src="data:image/webp;base64,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" alt="">
+      <div class="inner">
+        <h1>Selamat Datang Kembali</h1>
+        <p class="sub">Masuk untuk mengakses materi, Atlas Anatomi 3D, kuis, dan kartu kilat.</p>
+        <div class="gbtn"><span class="g"></span> Lanjutkan dengan Google</div>
+        <p class="note">Tidak perlu daftar — akunmu dibuat otomatis saat pertama kali masuk.</p>
+        <div class="hair"></div>
+        <p class="foot">Butuh bantuan? Hubungi kami lewat halaman kontak.</p>
+      </div>
+    </div>
+  </div>
+</body></html>

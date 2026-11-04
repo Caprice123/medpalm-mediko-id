@@ -17,15 +17,15 @@ export const StyledCheckbox = styled.input`
   height: 18px;
   cursor: pointer;
   border-radius: 4px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: #6BB9E8;
+    border-color: var(--color-brand-blue);
   }
 
   &:checked {
-    accent-color: #6BB9E8;
+    accent-color: var(--color-brand-blue);
   }
 
   &:disabled {
@@ -35,11 +35,11 @@ export const StyledCheckbox = styled.input`
 `
 
 export const Label = styled.label`
-  color: #374151;
+  color: var(--color-gray-700);
   font-size: 0.875rem;
   cursor: pointer;
 
   &:hover {
-    color: #111827;
+    color: var(--color-gray-900);
   }
 `

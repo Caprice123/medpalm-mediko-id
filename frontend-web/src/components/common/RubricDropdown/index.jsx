@@ -25,9 +25,9 @@ function RubricDropdown({ value, onChange, error, required = false }) {
         fontSize: '0.875rem',
         fontWeight: '600',
         marginBottom: '0.5rem',
-        color: '#374151'
+        color: 'var(--color-gray-700)'
       }}>
-        Rubric {required && <span style={{ color: '#ef4444' }}>*</span>}
+        Rubric {required && <span style={{ color: 'var(--color-danger)' }}>*</span>}
       </label>
       <Select
         value={selectedOption}
@@ -39,9 +39,9 @@ function RubricDropdown({ value, onChange, error, required = false }) {
         styles={{
           control: (base, state) => ({
             ...base,
-            borderColor: error ? '#ef4444' : state.isFocused ? '#3b82f6' : '#d1d5db',
+            borderColor: error ? 'var(--color-danger)' : state.isFocused ? 'var(--color-brand-blue)' : 'var(--color-gray-300)',
             '&:hover': {
-              borderColor: error ? '#ef4444' : '#3b82f6',
+              borderColor: error ? 'var(--color-danger)' : 'var(--color-brand-blue)',
             },
           }),
         }}
@@ -50,7 +50,7 @@ function RubricDropdown({ value, onChange, error, required = false }) {
         <div style={{
           marginTop: '0.25rem',
           fontSize: '0.875rem',
-          color: '#ef4444'
+          color: 'var(--color-danger)'
         }}>
           {error}
         </div>
@@ -58,7 +58,7 @@ function RubricDropdown({ value, onChange, error, required = false }) {
       <div style={{
         marginTop: '0.25rem',
         fontSize: '0.75rem',
-        color: '#6b7280'
+        color: 'var(--color-gray-500)'
       }}>
         Pilih rubrik yang akan digunakan untuk mengevaluasi topik OSCE ini
       </div>

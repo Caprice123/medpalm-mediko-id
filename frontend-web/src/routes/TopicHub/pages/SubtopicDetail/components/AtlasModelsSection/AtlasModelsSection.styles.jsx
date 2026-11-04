@@ -6,7 +6,7 @@ export const AtlasSection = styled.section`
 
 export const AtlasSectionSubtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0.25rem 0 1rem;
 `
 
@@ -22,7 +22,7 @@ export const AtlasCard = styled.button`
   align-items: center;
   gap: 0.875rem;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 0.875rem 1rem;
   cursor: pointer;
@@ -31,8 +31,8 @@ export const AtlasCard = styled.button`
   opacity: ${({ $locked }) => $locked ? 0.6 : 1};
 
   &:hover {
-    border-color: ${({ $locked }) => $locked ? '#e5e7eb' : '#10b981'};
-    box-shadow: ${({ $locked }) => $locked ? 'none' : '0 0 0 3px rgba(16, 185, 129, 0.08)'};
+    border-color: ${({ $locked }) => $locked ? 'var(--color-gray-200)' : 'var(--color-brand-blue)'};
+    box-shadow: ${({ $locked }) => $locked ? 'none' : '0 0 0 3px rgba(30, 115, 170, 0.08)'};
   }
 `
 
@@ -43,8 +43,8 @@ export const AtlasCardIcon = styled.span`
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 8px;
-  background: #d1fae5;
-  color: #047857;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
   font-size: 1rem;
   flex-shrink: 0;
 `
@@ -52,7 +52,7 @@ export const AtlasCardIcon = styled.span`
 export const AtlasCardTitle = styled.span`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   flex: 1;
   min-width: 0;
   line-height: 1.4;
@@ -61,6 +61,6 @@ export const AtlasCardTitle = styled.span`
 
 export const AtlasCardArrow = styled.span`
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   flex-shrink: 0;
 `

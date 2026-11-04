@@ -95,7 +95,7 @@ const starterKit = StarterKit.configure({
   },
   horizontalRule: false,
   dropcursor: {
-    color: "#DBEAFE",
+    color: "var(--color-brand-blue-tint-strong)",
     width: 4,
   },
   gapcursor: false,

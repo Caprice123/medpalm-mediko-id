@@ -104,7 +104,7 @@ export const Navbar = () => {
                     </StatusItem>
                     {subs.length > 0 && (
                       <SubscriptionTooltip>
-                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-gray-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
                           Feature Access
                         </div>
                         {subs.map(({ feature, endDate }) => (

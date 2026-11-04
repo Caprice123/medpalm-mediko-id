@@ -5,7 +5,7 @@ export const Container = styled.div`
   display: flex;
   height: calc(100vh - 300px);
   overflow: hidden;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 
   @media (max-width: 768px) {
     flex-direction: column;

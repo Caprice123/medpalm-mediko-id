@@ -9,7 +9,7 @@ export const AdjacentNav = styled.div`
 
 export const AdjacentCard = styled.div`
   background: #fff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   cursor: pointer;
@@ -19,12 +19,12 @@ export const AdjacentCard = styled.div`
   transition: box-shadow 0.15s, border-color 0.15s;
   text-align: ${p => p.$right ? 'right' : 'left'};
   align-items: ${p => p.$right ? 'flex-end' : 'flex-start'};
-  &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #94a3b8; }
+  &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: var(--color-gray-400); }
 `
 
 export const AdjacentCardEmpty = styled.div`
-  background: #f8fafc;
-  border: 1.5px dashed #e2e8f0;
+  background: var(--color-surface-page);
+  border: 1.5px dashed var(--color-gray-200);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -38,12 +38,12 @@ export const AdjacentLabel = styled.div`
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--color-gray-400);
 `
 
 export const AdjacentTitle = styled.div`
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-gray-900);
   line-height: 1.4;
 `

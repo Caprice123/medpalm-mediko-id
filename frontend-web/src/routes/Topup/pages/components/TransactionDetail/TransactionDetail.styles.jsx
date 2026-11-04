@@ -125,27 +125,27 @@ export const StatusBadge = styled.span`
     switch (props.status) {
       case 'completed':
         return `
-          background: #ECFDF5;
-          color: #059669;
-          border: 1px solid #10b981;
+          background: var(--color-brand-green-tint);
+          color: var(--color-brand-green-dark);
+          border: 1px solid var(--color-brand-green);
         `
       case 'pending':
         return `
-          background: #FEF3C7;
+          background: var(--color-warning-tint);
           color: #92400E;
-          border: 1px solid #F59E0B;
+          border: 1px solid var(--color-warning);
         `
       case 'waiting_approval':
         return `
-          background: #EFF6FF;
-          color: #1E40AF;
-          border: 1px solid #3B82F6;
+          background: var(--color-brand-blue-tint);
+          color: var(--color-brand-blue-deep);
+          border: 1px solid var(--color-brand-blue);
         `
       case 'failed':
         return `
-          background: #FEF2F2;
-          color: #DC2626;
-          border: 1px solid #EF4444;
+          background: var(--color-danger-tint-soft);
+          color: var(--color-danger-dark);
+          border: 1px solid var(--color-danger);
         `
       default:
         return `
@@ -166,21 +166,21 @@ export const TypeBadge = styled.span`
     switch (props.type) {
       case 'credits':
         return `
-          background: #EFF6FF;
-          color: #1E40AF;
-          border: 1px solid #3B82F6;
+          background: var(--color-brand-blue-tint);
+          color: var(--color-brand-blue-deep);
+          border: 1px solid var(--color-brand-blue);
         `
       case 'subscription':
         return `
-          background: #F0F9FF;
+          background: var(--color-surface-page);
           color: #075985;
-          border: 1px solid #0EA5E9;
+          border: 1px solid var(--color-brand-blue-light);
         `
       case 'hybrid':
         return `
-          background: #FEF3C7;
+          background: var(--color-warning-tint);
           color: #92400E;
-          border: 1px solid #F59E0B;
+          border: 1px solid var(--color-warning);
         `
       default:
         return `
@@ -248,8 +248,8 @@ export const ErrorState = styled.div`
 `
 
 export const BankInfoCard = styled.div`
-  background: #EFF6FF;
-  border: 1.5px solid #BFDBFE;
+  background: var(--color-brand-blue-tint);
+  border: 1.5px solid var(--color-brand-blue-tint-strong);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -266,13 +266,13 @@ export const BankInfoRow = styled.div`
 
 export const BankInfoLabel = styled.div`
   font-size: 0.8125rem;
-  color: #1E40AF;
+  color: var(--color-brand-blue-deep);
   font-weight: 500;
 `
 
 export const BankInfoValue = styled.div`
   font-size: 0.9375rem;
-  color: #1e3a8a;
+  color: var(--color-brand-blue-deep);
   font-weight: 700;
   text-align: right;
   letter-spacing: ${props => props.$mono ? '0.05em' : 'inherit'};

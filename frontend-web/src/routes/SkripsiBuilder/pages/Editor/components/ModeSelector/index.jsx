@@ -63,7 +63,7 @@ function ModeSelector({ currentMode, onModeChange, onResearchSettings }) {
       <Container>
         <div style={{
           padding: isMobile ? '0.75rem' : '1rem',
-          color: '#6b7280',
+          color: 'var(--color-gray-500)',
           textAlign: 'center',
           fontSize: isMobile ? '0.875rem' : '1rem'
         }}>

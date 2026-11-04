@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
   display: flex;
@@ -17,8 +17,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 
@@ -62,7 +62,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -80,7 +80,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 1.125rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   font-weight: 400;
   max-width: 600px;
@@ -118,7 +118,7 @@ export const CalculatorCard = styled.div`
   background: white;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.08);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
   cursor: pointer;
@@ -132,7 +132,7 @@ export const CalculatorCard = styled.div`
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #06b6d4, #0891b2);
+    background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-deep));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.4s ease;
@@ -140,8 +140,8 @@ export const CalculatorCard = styled.div`
 
   &:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.2);
-    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 20px 40px rgba(30, 115, 170, 0.2);
+    border-color: rgba(30, 115, 170, 0.2);
 
     &::before {
       transform: scaleX(1);
@@ -152,7 +152,7 @@ export const CalculatorCard = styled.div`
 export const CalculatorTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.75rem 0;
   display: flex;
   align-items: center;
@@ -164,7 +164,7 @@ export const CalculatorTitle = styled.h2`
 `
 
 export const CalculatorDescription = styled.p`
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.9375rem;
   margin: 0 0 1.5rem 0;
   line-height: 1.7;
@@ -175,13 +175,13 @@ export const FieldCount = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(8, 145, 178, 0.05));
-  color: #0891b2;
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.1), rgba(4, 74, 119, 0.05));
+  color: var(--color-brand-blue-deep);
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(30, 115, 170, 0.2);
 
   &::before {
     content: '📋';
@@ -193,8 +193,8 @@ export const CalculatorForm = styled.div`
   background: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.1);
+  box-shadow: 0 10px 40px rgba(30, 115, 170, 0.1);
+  border: 1px solid rgba(30, 115, 170, 0.1);
   animation: slideIn 0.5s ease;
 
   @keyframes slideIn {
@@ -219,7 +219,7 @@ export const FormHeader = styled.div`
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 2px solid var(--color-gray-100);
   position: relative;
 
   &::after {
@@ -229,19 +229,19 @@ export const FormHeader = styled.div`
     left: 0;
     width: 60px;
     height: 2px;
-    background: linear-gradient(90deg, #06b6d4, #0891b2);
+    background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   }
 `
 
 export const BackButton = styled.button`
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  background: linear-gradient(135deg, var(--color-gray-100), var(--color-gray-200));
   border: none;
   width: 48px;
   height: 48px;
   border-radius: 12px;
   font-size: 20px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--color-gray-500);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -249,10 +249,10 @@ export const BackButton = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
     color: white;
     transform: translateX(-4px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   }
 
   &:active {
@@ -263,7 +263,7 @@ export const BackButton = styled.button`
 export const FormTitle = styled.h2`
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -278,7 +278,7 @@ export const FormTitle = styled.h2`
 
 export const FormDescription = styled.p`
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0.5rem 0 0 0;
   line-height: 1.6;
 `
@@ -290,7 +290,7 @@ export const InputsSection = styled.div`
 export const SectionTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin: 0 0 1rem 0;
 `
 
@@ -308,7 +308,7 @@ export const FormGroup = styled.div`
 export const FormLabel = styled.label`
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: var(--color-gray-700);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -324,42 +324,42 @@ export const LabelWithDescription = styled.div`
 
 export const FieldDescription = styled.p`
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   margin: 0;
   line-height: 1.4;
 `
 
 export const FormInput = styled.input`
   padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 0.9375rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
-  background: #f8fafc;
-  color: #1e293b;
+  background: var(--color-surface-page);
+  color: var(--color-gray-800);
   font-weight: 500;
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
+    border-color: var(--color-brand-blue);
     background: white;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 0 4px rgba(30, 115, 170, 0.1);
     transform: translateY(-1px);
   }
 
   &::placeholder {
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-weight: 400;
   }
 
   &:hover:not(:focus) {
-    border-color: #cbd5e1;
+    border-color: var(--color-gray-300);
   }
 `
 
 export const CalculateButton = styled.button`
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -374,7 +374,7 @@ export const CalculateButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.25);
   position: relative;
   overflow: hidden;
 
@@ -391,7 +391,7 @@ export const CalculateButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(6, 182, 212, 0.35);
+    box-shadow: 0 8px 30px rgba(30, 115, 170, 0.35);
 
     &::before {
       left: 100%;
@@ -403,7 +403,7 @@ export const CalculateButton = styled.button`
   }
 
   &:disabled {
-    background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+    background: linear-gradient(135deg, var(--color-gray-300), var(--color-gray-400));
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -411,13 +411,13 @@ export const CalculateButton = styled.button`
 `
 
 export const ResultSection = styled.div`
-  background: linear-gradient(135deg, #f0fdfa 0%, #cffafe 50%, #e0f2fe 100%);
-  border: 3px solid #06b6d4;
+  background: linear-gradient(135deg, var(--color-brand-blue-tint) 0%, var(--color-brand-blue-tint) 50%, var(--color-brand-blue-tint) 100%);
+  border: 3px solid var(--color-brand-blue);
   border-radius: 24px;
   padding: 3rem 2rem;
   text-align: center;
   margin-top: 2.5rem;
-  box-shadow: 0 20px 60px rgba(6, 182, 212, 0.15);
+  box-shadow: 0 20px 60px rgba(30, 115, 170, 0.15);
   position: relative;
   overflow: hidden;
   animation: resultPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -440,7 +440,7 @@ export const ResultSection = styled.div`
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(30, 115, 170, 0.1) 0%, transparent 70%);
     animation: rotate 20s linear infinite;
   }
 
@@ -456,7 +456,7 @@ export const ResultSection = styled.div`
 
 export const ResultLabel = styled.p`
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0 0 1rem 0;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -468,7 +468,7 @@ export const ResultLabel = styled.p`
 export const ResultValue = styled.h2`
   font-size: 4.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -476,7 +476,7 @@ export const ResultValue = styled.h2`
   line-height: 1;
   position: relative;
   z-index: 1;
-  text-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+  text-shadow: 0 4px 20px rgba(30, 115, 170, 0.2);
 
   @media (max-width: 768px) {
     font-size: 3rem;
@@ -485,7 +485,7 @@ export const ResultValue = styled.h2`
 
 export const ResultUnit = styled.span`
   font-size: 2rem;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -500,7 +500,7 @@ export const ResultUnit = styled.span`
 export const ResultDetails = styled.div`
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 2px solid rgba(6, 182, 212, 0.2);
+  border-top: 2px solid rgba(30, 115, 170, 0.2);
   text-align: left;
   position: relative;
   z-index: 1;
@@ -515,13 +515,13 @@ export const ResultDetailItem = styled.div`
   border-radius: 16px;
   margin-bottom: 0.75rem;
   font-size: 0.9375rem;
-  border: 2px solid rgba(6, 182, 212, 0.15);
+  border: 2px solid rgba(30, 115, 170, 0.15);
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: #06b6d4;
+    border-color: var(--color-brand-blue);
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.1);
   }
 
   &:last-child {
@@ -531,18 +531,18 @@ export const ResultDetailItem = styled.div`
 
 export const DetailLabel = styled.span`
   font-weight: 600;
-  color: #64748b;
+  color: var(--color-gray-500);
 `
 
 export const DetailValue = styled.span`
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   font-size: 1rem;
 `
 
 export const ErrorMessage = styled.div`
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
-  border: 2px solid #ef4444;
+  background: linear-gradient(135deg, var(--color-danger-tint), #fecaca);
+  border: 2px solid var(--color-danger);
   border-radius: 12px;
   padding: 16px 20px;
   color: #991b1b;
@@ -563,8 +563,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(6, 182, 212, 0.2);
-  border-top: 3px solid #06b6d4;
+  border: 3px solid rgba(30, 115, 170, 0.2);
+  border-top: 3px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 
@@ -577,10 +577,10 @@ export const LoadingSpinner = styled.div`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 80px 20px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   background: white;
   border-radius: 20px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--color-gray-200);
 `
 
 export const EmptyIcon = styled.div`
@@ -591,7 +591,7 @@ export const EmptyIcon = styled.div`
 
 export const EmptyText = styled.p`
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   font-weight: 500;
 `

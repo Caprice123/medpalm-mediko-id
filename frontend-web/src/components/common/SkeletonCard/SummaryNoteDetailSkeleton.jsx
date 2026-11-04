@@ -4,8 +4,8 @@ import styled from 'styled-components'
 
 const SkeletonWrapper = styled.div`
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
     line-height: 1;
   }
 
@@ -53,7 +53,7 @@ export function SummaryNoteDetailSkeleton() {
         <HeaderCard>
           <HeaderTop>
             {/* Back button */}
-            <Skeleton width={100} height={36} borderRadius={6} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton width={100} height={36} borderRadius={6} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </HeaderTop>
 
           {/* Title with icon */}
@@ -61,8 +61,8 @@ export function SummaryNoteDetailSkeleton() {
             height={28}
             width="60%"
             style={{ marginBottom: '0.5rem' }}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
 
           {/* Description */}
@@ -70,19 +70,19 @@ export function SummaryNoteDetailSkeleton() {
             count={2}
             height={14}
             style={{ marginBottom: '0.75rem' }}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
 
           {/* University Tags */}
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-            <Skeleton width={130} height={28} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-            <Skeleton width={110} height={28} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton width={130} height={28} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+            <Skeleton width={110} height={28} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
 
           {/* Semester Tags */}
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-            <Skeleton width={120} height={28} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton width={120} height={28} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
         </HeaderCard>
 
@@ -93,16 +93,16 @@ export function SummaryNoteDetailSkeleton() {
             height={24}
             width="40%"
             style={{ marginBottom: '1rem' }}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
           {/* Paragraph 1 */}
           <Skeleton
             count={3}
             height={16}
             style={{ marginBottom: '0.5rem' }}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
 
           {/* Heading 2 */}
@@ -111,16 +111,16 @@ export function SummaryNoteDetailSkeleton() {
               height={24}
               width="35%"
               style={{ marginBottom: '1rem' }}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
             {/* Paragraph 2 */}
             <Skeleton
               count={4}
               height={16}
               style={{ marginBottom: '0.5rem' }}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </div>
 
@@ -130,16 +130,16 @@ export function SummaryNoteDetailSkeleton() {
               height={24}
               width="45%"
               style={{ marginBottom: '1rem' }}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
             {/* Paragraph 3 */}
             <Skeleton
               count={3}
               height={16}
               style={{ marginBottom: '0.5rem' }}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </div>
 
@@ -149,8 +149,8 @@ export function SummaryNoteDetailSkeleton() {
               count={2}
               height={16}
               style={{ marginBottom: '0.5rem' }}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </div>
         </ContentCard>

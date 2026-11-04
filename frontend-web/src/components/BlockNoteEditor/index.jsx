@@ -201,7 +201,7 @@ function BlockNoteEditor({ initialContent, onChange, editable = true, placeholde
   }, [editor])
 
   if (!editor) {
-    return <div style={{ padding: '1rem', color: '#9ca3af' }}>Loading editor...</div>
+    return <div style={{ padding: '1rem', color: 'var(--color-gray-400)' }}>Loading editor...</div>
   }
 
   return (

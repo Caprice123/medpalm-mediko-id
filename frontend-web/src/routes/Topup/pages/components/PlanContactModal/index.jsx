@@ -13,8 +13,8 @@ import styled from 'styled-components'
 import colors from '@config/colors'
 
 const PlanInfo = styled.div`
-  background: ${colors.background.default || '#f9fafb'};
-  border: 1px solid ${colors.neutral?.gray200 || '#e5e7eb'};
+  background: ${colors.background.default || 'var(--color-gray-50)'};
+  border: 1px solid ${colors.neutral?.gray200 || 'var(--color-gray-200)'};
   border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -23,12 +23,12 @@ const PlanInfo = styled.div`
 const PlanName = styled.div`
   font-weight: 700;
   font-size: 1rem;
-  color: ${colors.text?.primary || '#111827'};
+  color: ${colors.text?.primary || 'var(--color-gray-900)'};
 `
 
 const PlanPrice = styled.div`
   font-size: 0.875rem;
-  color: ${colors.text?.secondary || '#6b7280'};
+  color: ${colors.text?.secondary || 'var(--color-gray-500)'};
   margin-top: 0.25rem;
 `
 

@@ -59,7 +59,7 @@ const DiagnosticQuizDetail = () => {
                 <Content>
                     <div style={{ textAlign: 'center', padding: '4rem 0' }}>
                         <LoadingSpinner />
-                        <p style={{ marginTop: '1rem', color: '#64748b' }}>Memuat quiz...</p>
+                        <p style={{ marginTop: '1rem', color: 'var(--color-gray-500)' }}>Memuat quiz...</p>
                     </div>
                 </Content>
             </Container>

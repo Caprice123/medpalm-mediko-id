@@ -42,12 +42,12 @@ export const SectionLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
 `
 
 export const SectionLine = styled.div`
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
 `

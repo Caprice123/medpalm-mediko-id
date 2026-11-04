@@ -13,14 +13,14 @@ export const DiagramBuilderContainer = styled.div`
     height: ${props => props.$activeSubTab === 'preview' ? '600px' : '100vh'};
     flex-shrink: 0;
     border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-gray-200);
   }
 `;
 
 export const SubTabsNav = styled.div`
   display: flex;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
 `;
 
 export const SubTab = styled.button`
@@ -28,16 +28,16 @@ export const SubTab = styled.button`
   padding: 12px 16px;
   background: ${props => props.$active ? 'white' : 'transparent'};
   border: none;
-  border-bottom: 2px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
-  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  border-bottom: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   font-size: 14px;
   font-weight: ${props => props.$active ? '600' : '500'};
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.$active ? 'white' : '#f3f4f6'};
-    color: ${props => props.$active ? '#06b6d4' : '#1f2937'};
+    background: ${props => props.$active ? 'white' : 'var(--color-gray-100)'};
+    color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-800)'};
   }
 
   @media (max-width: 768px) {
@@ -64,7 +64,7 @@ export const FormContent = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--color-gray-300);
     border-radius: 3px;
   }
 
@@ -83,7 +83,7 @@ export const ConfigHeader = styled.div`
   gap: 8px;
   padding: 12px 14px;
   background: #ecfeff;
-  border-bottom: 1px solid #06b6d4;
+  border-bottom: 1px solid var(--color-brand-blue);
 `;
 
 export const ConfigIcon = styled.span`
@@ -93,7 +93,7 @@ export const ConfigIcon = styled.span`
 export const ConfigTitle = styled.span`
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
 `;
 
 export const ConfigBody = styled.div`
@@ -124,24 +124,24 @@ export const FormLabel = styled.label`
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
 `;
 
 export const FormSelect = styled.select`
   width: 100%;
   padding: 8px 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 6px;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--color-gray-800);
   background: white;
   cursor: pointer;
   transition: all 0.2s;
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.1);
   }
 
   @media (max-width: 768px) {
@@ -153,10 +153,10 @@ export const FormSelect = styled.select`
 export const FormTextarea = styled.textarea`
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 6px;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--color-gray-800);
   resize: vertical;
   min-height: 120px;
   transition: all 0.2s;
@@ -164,12 +164,12 @@ export const FormTextarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.1);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
   }
 
   @media (max-width: 768px) {
@@ -183,8 +183,8 @@ export const TipsBox = styled.div`
   display: flex;
   gap: 10px;
   padding: 12px;
-  background: #fef3c7;
-  border: 1px solid #fbbf24;
+  background: var(--color-warning-tint);
+  border: 1px solid var(--color-warning-light);
   border-radius: 6px;
   margin-top: 12px;
 `;
@@ -215,7 +215,7 @@ export const TipsContent = styled.div`
 export const GenerateButton = styled.button`
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #60a5fa 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-light) 0%, var(--color-brand-blue) 100%);
   border: none;
   border-radius: 8px;
   color: white;
@@ -230,7 +230,7 @@ export const GenerateButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(30, 115, 170, 0.3);
   }
 
   &:disabled {
@@ -258,19 +258,19 @@ export const HistoryContainer = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #f9fafb;
+  background: var(--color-gray-50);
 `;
 
 export const HistoryHeader = styled.div`
   padding: 16px;
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 `;
 
 export const HistoryTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -283,7 +283,7 @@ export const HistoryTitle = styled.h3`
 
 export const HistorySubtitle = styled.p`
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 
   @media (max-width: 768px) {
@@ -305,7 +305,7 @@ export const HistoryList = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--color-gray-300);
     border-radius: 4px;
   }
 
@@ -321,15 +321,15 @@ export const HistoryCard = styled.div`
   gap: 12px;
   padding: 16px;
   background: white;
-  border: 2px solid ${props => props.$active ? '#06b6d4' : '#e5e7eb'};
+  border: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: ${props => props.$active ? '0 4px 6px rgba(6, 182, 212, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+  box-shadow: ${props => props.$active ? '0 4px 6px rgba(30, 115, 170, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
 
   &:hover {
-    border-color: #06b6d4;
-    box-shadow: 0 4px 6px rgba(6, 182, 212, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 4px 6px rgba(30, 115, 170, 0.1);
     transform: translateY(-2px);
   }
 
@@ -349,7 +349,7 @@ export const HistoryIcon = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #60a5fa 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-light) 0%, var(--color-brand-blue) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,7 +371,7 @@ export const HistoryCardInfo = styled.div`
 export const HistoryCardTitle = styled.h4`
   font-weight: 600;
   font-size: 15px;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 4px 0;
   text-transform: capitalize;
 
@@ -385,7 +385,7 @@ export const HistoryCardMeta = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   flex-wrap: wrap;
 `;
 
@@ -397,13 +397,13 @@ export const HistoryCardMetaItem = styled.span`
   &:not(:last-child)::after {
     content: '•';
     margin-left: 8px;
-    color: #d1d5db;
+    color: var(--color-gray-300);
   }
 `;
 
 export const HistoryCardDescription = styled.p`
   font-size: 13px;
-  color: #4b5563;
+  color: var(--color-gray-600);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -421,12 +421,12 @@ export const HistoryCardFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 `;
 
 export const HistoryCardDate = styled.span`
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -443,8 +443,8 @@ export const HistoryCardActions = styled.div`
 
 export const HistoryCardButton = styled.button`
   padding: 6px 10px;
-  background: ${props => props.$primary ? '#06b6d4' : '#f3f4f6'};
-  color: ${props => props.$primary ? 'white' : '#6b7280'};
+  background: ${props => props.$primary ? 'var(--color-brand-blue)' : 'var(--color-gray-100)'};
+  color: ${props => props.$primary ? 'white' : 'var(--color-gray-500)'};
   border: none;
   border-radius: 4px;
   font-size: 12px;
@@ -453,7 +453,7 @@ export const HistoryCardButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.$primary ? '#0891b2' : '#e5e7eb'};
+    background: ${props => props.$primary ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-200)'};
     transform: translateY(-1px);
   }
 `;
@@ -476,13 +476,13 @@ export const EmptyHistory = styled.div`
   h4 {
     font-size: 18px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--color-gray-800);
     margin: 0 0 8px 0;
   }
 
   p {
     font-size: 14px;
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin: 0;
     line-height: 1.5;
   }
@@ -521,8 +521,8 @@ export const PreviewToolbar = styled.div`
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
 
   @media (max-width: 768px) {
     padding: 0.625rem 0.75rem;
@@ -542,19 +542,19 @@ export const ToolbarBtn = styled.button`
   align-items: center;
   gap: 4px;
   background: ${props =>
-    props.$variant === 'save' ? '#06b6d4' :
-    props.$variant === 'export' ? '#10b981' :
+    props.$variant === 'save' ? 'var(--color-brand-blue)' :
+    props.$variant === 'export' ? 'var(--color-brand-green)' :
     props.$variant === 'zoom' ? '#8b5cf6' :
-    '#6b7280'
+    'var(--color-gray-500)'
   };
   color: white;
 
   &:hover {
     background: ${props =>
-      props.$variant === 'save' ? '#0891b2' :
-      props.$variant === 'export' ? '#059669' :
+      props.$variant === 'save' ? 'var(--color-brand-blue-deep)' :
+      props.$variant === 'export' ? 'var(--color-brand-green-dark)' :
       props.$variant === 'zoom' ? '#7c3aed' :
-      '#4b5563'
+      'var(--color-gray-600)'
     };
     transform: translateY(-1px);
   }

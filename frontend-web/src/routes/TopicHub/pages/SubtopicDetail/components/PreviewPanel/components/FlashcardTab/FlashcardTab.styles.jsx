@@ -32,7 +32,7 @@ export const PlayerDoneWrap = styled.div`
 
 export const PlayerDoneText = styled.p`
   font-size: 0.9375rem;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0;
   font-weight: 500;
 `

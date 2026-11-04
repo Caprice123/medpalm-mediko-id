@@ -94,7 +94,7 @@ function ObservationTab() {
                 />
                 <span>
                   {obs.name}
-                  {obs.isChecked && <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: '600' }}>✓</span>}
+                  {obs.isChecked && <span style={{ marginLeft: '0.5rem', color: 'var(--color-brand-green)', fontWeight: '600' }}>✓</span>}
                 </span>
               </ObservationCheckboxItem>
             ))}

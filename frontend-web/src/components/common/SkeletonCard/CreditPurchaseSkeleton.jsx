@@ -13,7 +13,7 @@ const FilterTabsContainer = styled.div`
   display: flex;
   gap: 0.75rem;
   padding: 0.5rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 8px;
   flex-wrap: wrap;
 `
@@ -27,7 +27,7 @@ const PlansGridContainer = styled.div`
 
 const PlanCardSkeleton = styled.div`
   padding: 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   background: white;
   display: flex;
@@ -46,8 +46,8 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
             width={100}
             height={36}
             borderRadius={8}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
         ))}
       </FilterTabsContainer>
@@ -62,8 +62,8 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
                 width={100}
                 height={20}
                 borderRadius={12}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
             )}
 
@@ -71,16 +71,16 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
             <Skeleton
               width="80%"
               height={24}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* Plan Credits */}
             <Skeleton
               width="60%"
               height={32}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* Plan Price */}
@@ -88,16 +88,16 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
               <Skeleton
                 width="70%"
                 height={28}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
               {index % 2 === 0 && (
                 <Skeleton
                   width={80}
                   height={20}
                   borderRadius={12}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               )}
             </div>
@@ -106,8 +106,8 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
             <Skeleton
               count={2}
               height={14}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* Spacer */}
@@ -117,8 +117,8 @@ function CreditPurchaseSkeleton({ planCount = 6 }) {
             <Skeleton
               height={40}
               borderRadius={8}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </PlanCardSkeleton>
         ))}

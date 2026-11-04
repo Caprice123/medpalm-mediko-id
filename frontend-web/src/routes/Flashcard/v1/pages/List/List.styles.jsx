@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
@@ -39,7 +39,7 @@ export const Title = styled.h1`
 `
 
 export const Subtitle = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1.05rem;
 `
 

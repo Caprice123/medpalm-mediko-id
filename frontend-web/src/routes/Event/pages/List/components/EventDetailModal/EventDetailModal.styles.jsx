@@ -14,7 +14,7 @@ export const DetailRow = styled.div`
   flex-direction: column;
   gap: 0.375rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 
   &:last-child { border-bottom: none; padding-bottom: 0; }
 `
@@ -24,12 +24,12 @@ export const DetailLabel = styled.span`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const DetailText = styled.p`
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -47,9 +47,9 @@ export const FeatureTag = styled.span`
   font-weight: 500;
   padding: 0.25rem 0.625rem;
   border-radius: 4px;
-  background: #eff6ff;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
+  border: 1px solid var(--color-brand-blue-tint-strong);
 `
 
 export const RewardBadge = styled.span`
@@ -60,8 +60,8 @@ export const RewardBadge = styled.span`
   font-weight: 600;
   padding: 0.25rem 0.625rem;
   border-radius: 4px;
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--color-brand-green-tint);
+  color: var(--color-brand-green-dark);
   margin-right: 0.375rem;
   margin-bottom: 0.375rem;
 `

@@ -25,9 +25,9 @@ const RatingChips = styled.div`
 const RatingChip = styled.button`
   padding: 0.375rem 0.875rem;
   border-radius: 99px;
-  border: 2px solid ${p => p.$active ? p.$color : '#e5e7eb'};
+  border: 2px solid ${p => p.$active ? p.$color : 'var(--color-gray-200)'};
   background: ${p => p.$active ? p.$color + '18' : 'white'};
-  color: ${p => p.$active ? p.$color : '#6b7280'};
+  color: ${p => p.$active ? p.$color : 'var(--color-gray-500)'};
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
@@ -53,10 +53,10 @@ const SliderInput = styled.input`
   border-radius: 2px;
   background: linear-gradient(
     to right,
-    #0d9488 0%,
-    #0d9488 ${p => (p.value - 1) / 99 * 100}%,
-    #e5e7eb ${p => (p.value - 1) / 99 * 100}%,
-    #e5e7eb 100%
+    var(--color-brand-blue) 0%,
+    var(--color-brand-blue) ${p => (p.value - 1) / 99 * 100}%,
+    var(--color-gray-200) ${p => (p.value - 1) / 99 * 100}%,
+    var(--color-gray-200) 100%
   );
   outline: none;
   cursor: pointer;
@@ -66,8 +66,8 @@ const SliderInput = styled.input`
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #0d9488;
-    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    background: var(--color-brand-blue);
+    box-shadow: 0 1px 4px rgba(30, 115, 170,0.4);
     cursor: pointer;
   }
 
@@ -76,8 +76,8 @@ const SliderInput = styled.input`
     height: 18px;
     border: none;
     border-radius: 50%;
-    background: #0d9488;
-    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    background: var(--color-brand-blue);
+    box-shadow: 0 1px 4px rgba(30, 115, 170,0.4);
     cursor: pointer;
   }
 `
@@ -87,14 +87,14 @@ const SliderValue = styled.span`
   text-align: right;
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #0d9488;
+  color: var(--color-brand-blue);
 `
 
 const RATING_OPTIONS = [
-  { key: 'again', label: 'Lagi',  color: '#ef4444' },
+  { key: 'again', label: 'Lagi',  color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit', color: '#f97316' },
-  { key: 'good',  label: 'Baik',  color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah', color: '#22c55e' },
+  { key: 'good',  label: 'Baik',  color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah', color: 'var(--color-brand-green)' },
 ]
 
 export default function ReviewModal({ isOpen, onClose, autoStart = false }) {
@@ -171,8 +171,8 @@ export default function ReviewModal({ isOpen, onClose, autoStart = false }) {
 
   if (playing) {
     if (loading.isFetchingSession) return createPortal(
-      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#f0fdfa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: '#0d9488', fontWeight: 600, fontSize: '1rem' }}>Memuat kartu...</span>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--color-brand-blue-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: 'var(--color-brand-blue)', fontWeight: 600, fontSize: '1rem' }}>Memuat kartu...</span>
       </div>,
       document.body
     )
@@ -183,8 +183,8 @@ export default function ReviewModal({ isOpen, onClose, autoStart = false }) {
     }
 
     if (sessionCards.length === 0) return createPortal(
-      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#f0fdfa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <span style={{ color: '#6b7280', fontSize: '0.9375rem' }}>Tidak ada kartu untuk sesi ini.</span>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--color-brand-blue-tint)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+        <span style={{ color: 'var(--color-gray-500)', fontSize: '0.9375rem' }}>Tidak ada kartu untuk sesi ini.</span>
         <Button variant="secondary" onClick={handleBack}>Kembali</Button>
       </div>,
       document.body

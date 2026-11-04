@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 
   @media (max-width: 768px) {
     min-height: 100vh;
@@ -20,7 +20,7 @@ export const Container = styled.div`
 export const BackBtn = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   cursor: pointer;
   padding: 0;
@@ -30,11 +30,11 @@ export const BackBtn = styled.button`
   gap: 0.25rem;
   transition: color 0.15s;
 
-  &:hover { color: #06b6d4; }
+  &:hover { color: var(--color-brand-blue); }
 `
 
 export const HeroCard = styled.div`
-  background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   border-radius: 20px;
   padding: 2.5rem 2rem;
   text-align: center;
@@ -126,7 +126,7 @@ export const BadgeName = styled.div`
 
 export const BadgeDesc = styled.div`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-top: 0.2rem;
 `
 
@@ -140,12 +140,12 @@ export const EmailNotice = styled.div`
   gap: 0.75rem;
   margin-bottom: 1.25rem;
   font-size: 0.875rem;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
 `
 
 export const Panel = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
@@ -158,7 +158,7 @@ export const PanelHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
   gap: 0.5rem;
   flex-wrap: wrap;
 `
@@ -166,13 +166,13 @@ export const PanelHeader = styled.div`
 export const PanelTitle = styled.div`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const RefreshCountdown = styled.span`
   font-size: 0.75rem;
-  color: #0e7490;
-  background: #cffafe;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.2rem 0.625rem;
   border-radius: 999px;
   font-weight: 600;
@@ -180,7 +180,7 @@ export const RefreshCountdown = styled.span`
 
 const MEDAL_BG = {
   1: { bg: '#fffbeb', border: '#fde68a' },
-  2: { bg: '#f8fafc', border: '#e2e8f0' },
+  2: { bg: 'var(--color-surface-page)', border: 'var(--color-gray-200)' },
   3: { bg: '#fff7ed', border: '#fed7aa' },
 }
 
@@ -199,7 +199,7 @@ export const LeaderRow = styled.div`
 export const RankNum = styled.span`
   font-size: 0.875rem;
   font-weight: 800;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   min-width: 2.25rem;
 `
 
@@ -216,7 +216,7 @@ export const LeaderNameCol = styled.div`
 
 export const LeaderName = styled.div`
   font-size: 0.875rem;
-  color: ${p => p.$isMe ? '#0e7490' : '#374151'};
+  color: ${p => p.$isMe ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   font-weight: ${p => p.$isMe ? 700 : 500};
   white-space: nowrap;
   overflow: hidden;
@@ -225,7 +225,7 @@ export const LeaderName = styled.div`
 
 export const LeaderUniversity = styled.div`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -234,12 +234,12 @@ export const LeaderUniversity = styled.div`
 export const LeaderScore = styled.span`
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const EmptyLeader = styled.div`
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   padding: 1.5rem 0;
 `
@@ -248,7 +248,7 @@ export const DetailBtn = styled.button`
   display: block;
   width: 100%;
   padding: 0.875rem;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: #fff;
   border: none;
   border-radius: 12px;

@@ -25,9 +25,9 @@ function formatTime(seconds) {
 }
 
 const PhaseBadge = styled.div`
-  background: ${props => props.$special ? '#fffbeb' : '#eff6ff'};
-  color: ${props => props.$special ? '#b45309' : '#1d4ed8'};
-  border: 1.5px solid ${props => props.$special ? '#fcd34d' : '#bfdbfe'};
+  background: ${props => props.$special ? '#fffbeb' : 'var(--color-brand-blue-tint)'};
+  color: ${props => props.$special ? '#b45309' : 'var(--color-brand-blue-deep)'};
+  border: 1.5px solid ${props => props.$special ? '#fcd34d' : 'var(--color-brand-blue-tint-strong)'};
   padding: 0.3rem 0.875rem;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -208,7 +208,7 @@ export default function BlitzSession({ session, uniqueId, endAt }) {
     return (
       <PageWrapper>
         <Main>
-          <div style={{ color: '#6b7280', fontSize: '1.125rem', textAlign: 'center' }}>
+          <div style={{ color: 'var(--color-gray-500)', fontSize: '1.125rem', textAlign: 'center' }}>
             Mengirim hasil...
           </div>
         </Main>
@@ -237,7 +237,7 @@ export default function BlitzSession({ session, uniqueId, endAt }) {
     return (
       <PageWrapper>
         <Main>
-          <div style={{ color: '#6b7280', fontSize: '1.125rem', textAlign: 'center' }}>
+          <div style={{ color: 'var(--color-gray-500)', fontSize: '1.125rem', textAlign: 'center' }}>
             Semua soal telah dijawab! Mengirim...
           </div>
         </Main>

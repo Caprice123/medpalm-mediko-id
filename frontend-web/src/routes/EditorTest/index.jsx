@@ -369,7 +369,7 @@ export default function EditorTest() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
             <h3 style={{ margin: 0, marginBottom: '0.25rem' }}>Try it out:</h3>
-            <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
+            <p style={{ color: 'var(--color-gray-500)', fontSize: '0.875rem', margin: 0 }}>
               Type <strong>/</strong> for commands (headings, lists, images, tables) • <strong>Tab</strong> to indent • <strong>Shift+Tab</strong> to unindent
             </p>
           </div>

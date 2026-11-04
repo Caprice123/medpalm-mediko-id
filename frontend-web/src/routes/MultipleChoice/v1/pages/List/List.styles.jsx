@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
   display: flex;
@@ -17,8 +17,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `

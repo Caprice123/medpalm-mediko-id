@@ -16,7 +16,7 @@ const fadeSlideIn = keyframes`
 `
 
 const skeletonBg = `
-  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 40%, #f3f4f6 80%);
+  background: linear-gradient(90deg, var(--color-gray-100) 0%, var(--color-gray-200) 40%, var(--color-gray-100) 80%);
   background-size: 600px 100%;
 `
 
@@ -25,7 +25,7 @@ export const StackedBar = styled.div`
   border-radius: 999px;
   overflow: hidden;
   display: flex;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   transform-origin: left center;
   animation: ${fillBar} 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 `
@@ -48,7 +48,7 @@ export const LegendItem = styled.div`
   gap: 0.45rem;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const LegendDot = styled.span`
@@ -62,7 +62,7 @@ export const LegendDot = styled.span`
 export const LegendCount = styled.span`
   font-size: 1rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-left: auto;
 `
 
@@ -70,7 +70,7 @@ export const PerTopicSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
   padding-top: 0.875rem;
 `
 
@@ -79,7 +79,7 @@ export const PerTopicLabel = styled.div`
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const PerTopicRow = styled.div`
@@ -94,7 +94,7 @@ export const PerTopicRow = styled.div`
 export const PerTopicName = styled.span`
   font-size: 0.9rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-gray-900);
   width: 140px;
   flex-shrink: 0;
   white-space: nowrap;
@@ -108,7 +108,7 @@ export const MiniBar = styled.div`
   border-radius: 999px;
   overflow: hidden;
   display: flex;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   transform-origin: left center;
   animation: ${fillBar} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation-delay: ${p => p.$delay || '0s'};
@@ -117,7 +117,7 @@ export const MiniBar = styled.div`
 export const TotalCount = styled.span`
   font-size: 0.9rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   flex-shrink: 0;
   min-width: 1.5rem;
   text-align: right;
@@ -134,21 +134,21 @@ export const PaginationRow = styled.div`
 export const PaginationBtn = styled.button`
   padding: 0.3rem 0.875rem;
   border-radius: 8px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   background: #fff;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   cursor: pointer;
   transition: border-color 0.15s;
 
-  &:hover:not(:disabled) { border-color: #0d9488; color: #0d9488; }
+  &:hover:not(:disabled) { border-color: var(--color-brand-blue); color: var(--color-brand-blue); }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 `
 
 export const PaginationInfo = styled.span`
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-weight: 500;
 `
 

@@ -8,7 +8,7 @@ export const EmptyStateContainer = styled.div`
   justify-content: center;
   text-align: center;
   padding: 3rem 1.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyStateIcon = styled.div`
@@ -27,13 +27,13 @@ export const EmptyStateIcon = styled.div`
 export const EmptyStateTitle = styled.p`
   font-size: 1rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0 0 0.5rem 0;
 `
 
 export const EmptyStateDescription = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 1.5rem 0;
   max-width: 400px;
   line-height: 1.5;

@@ -33,7 +33,7 @@ export const ModalContent = styled.div`
 
 export const ModalHeader = styled.div`
   padding: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,7 +47,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0891b2;
+  color: var(--color-brand-blue-deep);
   margin: 0;
 `
 
@@ -55,7 +55,7 @@ export const CloseButton = styled.button`
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -66,8 +66,8 @@ export const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    color: #374151;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
   }
 `
 
@@ -85,10 +85,10 @@ export const FilterTabs = styled.div`
 
 export const FilterTab = styled.button`
   background: ${props => props.$active
-    ? 'linear-gradient(135deg, #6BB9E8, #8DC63F)'
+    ? 'linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light))'
     : 'transparent'};
-  color: ${props => props.$active ? 'white' : '#6b7280'};
-  border: 2px solid ${props => props.$active ? 'transparent' : '#e5e7eb'};
+  color: ${props => props.$active ? 'white' : 'var(--color-gray-500)'};
+  border: 2px solid ${props => props.$active ? 'transparent' : 'var(--color-gray-200)'};
   padding: 0.5rem 1.25rem;
   border-radius: 8px;
   font-weight: 600;
@@ -98,9 +98,9 @@ export const FilterTab = styled.button`
 
   &:hover {
     ${props => !props.$active && `
-      border-color: #6BB9E8;
-      color: #6BB9E8;
-      background: rgba(107, 185, 232, 0.05);
+      border-color: var(--color-brand-blue);
+      color: var(--color-brand-blue);
+      background: rgba(30, 115, 170, 0.05);
     `}
   }
 `
@@ -120,7 +120,7 @@ export const PlanCard = styled.div`
   background: white;
   border-radius: 16px;
   padding: 2rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   position: relative;
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -130,8 +130,8 @@ export const PlanCard = styled.div`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(107, 185, 232, 0.25);
-    border-color: #6BB9E8;
+    box-shadow: 0 15px 40px rgba(30, 115, 170, 0.25);
+    border-color: var(--color-brand-blue);
   }
 `
 
@@ -140,7 +140,7 @@ export const PopularBadge = styled.div`
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: white;
   padding: 0.375rem 1rem;
   border-radius: 50px;
@@ -153,7 +153,7 @@ export const PopularBadge = styled.div`
 export const PlanName = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-800);
   margin-bottom: 0.5rem;
   text-align: center;
 `
@@ -163,7 +163,7 @@ export const PlanCredits = styled.div`
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -173,20 +173,20 @@ export const PlanCredits = styled.div`
 export const PlanPrice = styled.div`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   text-align: center;
   margin-bottom: 1rem;
 
   span {
     font-size: 0.875rem;
     font-weight: 400;
-    color: #6b7280;
+    color: var(--color-gray-500);
   }
 `
 
 export const DiscountBadge = styled.span`
-  background: #FEF3C7;
-  color: #D97706;
+  background: var(--color-warning-tint);
+  color: var(--color-warning-dark);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -196,7 +196,7 @@ export const DiscountBadge = styled.span`
 
 export const PlanDescription = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-align: center;
   margin-bottom: 1.5rem;
   line-height: 1.5;
@@ -206,12 +206,12 @@ export const PlanDescription = styled.p`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const ErrorMessage = styled.div`
   background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  color: var(--color-danger-dark);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;

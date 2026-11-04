@@ -16,6 +16,6 @@ export const SectionLabel = styled.h3`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #10b981;
+  color: var(--color-brand-blue);
   margin: 0 0 0.625rem;
 `

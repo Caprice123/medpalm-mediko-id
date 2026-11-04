@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
@@ -54,18 +54,18 @@ export const ModeButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#e5e7eb'};
-  background: ${props => props.active ? '#eff6ff' : 'white'};
+  border: 1px solid ${props => props.active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  background: ${props => props.active ? 'var(--color-brand-blue-tint)' : 'white'};
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.875rem;
   font-weight: 500;
-  color: ${props => props.active ? '#3b82f6' : '#374151'};
+  color: ${props => props.active ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'};
 
   &:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
 
   .cost {
@@ -77,7 +77,7 @@ export const ModeButton = styled.button`
     margin: 0;
     font-size: 0.8125rem;
     line-height: 1.5;
-    color: #6b7280;
+    color: var(--color-gray-500);
     text-align: left;
     font-weight: 400;
   }
@@ -114,21 +114,21 @@ export const InfoButton = styled.button`
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   background: white;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-gray-500);
   white-space: nowrap;
   flex-shrink: 0;
 
   &:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
-    background: #eff6ff;
+    border-color: var(--color-brand-blue);
+    color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
 
   &.desktop-only {
@@ -186,13 +186,13 @@ export const InfoModalHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 
   h3 {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-gray-900);
   }
 
   @media (max-width: 768px) {
@@ -208,7 +208,7 @@ export const CloseButton = styled.button`
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -220,8 +220,8 @@ export const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    color: #111827;
+    background: var(--color-gray-100);
+    color: var(--color-gray-900);
   }
 `
 
@@ -241,7 +241,7 @@ export const InfoModalBody = styled.div`
 export const ModeInfo = styled.div`
   padding: 0.75rem;
   border-radius: 8px;
-  background: #f9fafb;
+  background: var(--color-gray-50);
 
   .mode-header {
     display: flex;
@@ -256,7 +256,7 @@ export const ModeInfo = styled.div`
     .mode-label {
       font-size: 1rem;
       font-weight: 600;
-      color: #111827;
+      color: var(--color-gray-900);
     }
   }
 
@@ -264,7 +264,7 @@ export const ModeInfo = styled.div`
     margin: 0;
     font-size: 0.875rem;
     line-height: 1.6;
-    color: #6b7280;
+    color: var(--color-gray-500);
     padding-left: 2rem;
   }
 
@@ -275,7 +275,7 @@ export const ModeInfo = styled.div`
     .mode-description {
       padding-left: 0;
       font-size: 0.8125rem;
-      color: #6b7280;
+      color: var(--color-gray-500);
       margin-top: 0.25rem;
     }
   }

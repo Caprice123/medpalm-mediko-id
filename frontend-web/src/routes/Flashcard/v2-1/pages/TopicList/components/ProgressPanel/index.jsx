@@ -12,10 +12,10 @@ import {
 const PAGE_SIZE = 10
 
 const RATING_CONFIG = [
-  { key: 'again', label: 'Ulangi', color: '#ef4444' },
+  { key: 'again', label: 'Ulangi', color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit',  color: '#f97316' },
-  { key: 'good',  label: 'Baik',   color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah',  color: '#22c55e' },
+  { key: 'good',  label: 'Baik',   color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah',  color: 'var(--color-brand-green)' },
 ]
 
 function totalReviewed(counts) {
@@ -43,7 +43,7 @@ function ProgressSkeleton() {
       <SkeletonLegendGrid>
         {[1, 2, 3, 4].map(i => <SkeletonBlock key={i} $h="1rem" />)}
       </SkeletonLegendGrid>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', paddingTop: '0.875rem', borderTop: '1px solid #f3f4f6' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', paddingTop: '0.875rem', borderTop: '1px solid var(--color-gray-100)' }}>
         <SkeletonBlock $w="60px" $h="0.75rem" />
         {[80, 65, 90, 55].map((w, i) => (
           <SkeletonPerTopicRow key={i}>
@@ -71,7 +71,7 @@ export default function ProgressPanel() {
   return (
     <PanelCard>
       <PanelHeader>
-        <PanelTitle><FaChartBar style={{ color: '#0d9488', fontSize: '1rem', flexShrink: 0 }} /> Progress Kamu</PanelTitle>
+        <PanelTitle><FaChartBar style={{ color: 'var(--color-brand-blue)', fontSize: '1rem', flexShrink: 0 }} /> Progress Kamu</PanelTitle>
       </PanelHeader>
 
       <StackedBarDisplay counts={totalCounts} />

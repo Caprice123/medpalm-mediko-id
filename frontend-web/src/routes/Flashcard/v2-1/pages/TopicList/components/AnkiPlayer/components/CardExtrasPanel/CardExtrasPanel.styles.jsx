@@ -9,17 +9,17 @@ export const Wrapper = styled.div`
 export const ShortExplanationLabel = styled.div`
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.5rem;
 `
 
 export const ShortExplanationBox = styled.div`
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  background: var(--color-brand-green-tint);
+  border: 1px solid var(--color-brand-green-tint-strong);
   border-radius: 10px;
   padding: 0.875rem 1rem;
   font-size: 0.875rem;
-  color: #065f46;
+  color: var(--color-brand-green-darker);
   line-height: 1.5;
   white-space: pre-wrap;
 `
@@ -29,17 +29,17 @@ export const LongExplanationToggle = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover { background: #e5e7eb; }
+  &:hover { background: var(--color-gray-200); }
 `
 
 export const LongExplanationChevron = styled.svg`
@@ -48,7 +48,7 @@ export const LongExplanationChevron = styled.svg`
   flex-shrink: 0;
   transition: transform 0.2s ease;
   transform: rotate(${p => p.$open ? '180deg' : '0deg'});
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const LongExplanationCollapse = styled.div`
@@ -64,19 +64,19 @@ export const LongExplanationCollapseInner = styled.div`
 
 export const LongExplanationBox = styled.div`
   margin-top: 0.5rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 0.875rem 1rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
   white-space: pre-wrap;
 `
 
 export const Divider = styled.hr`
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   margin: 0;
 `
 
@@ -99,7 +99,7 @@ export const RelatedColumnLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.125rem;
 `
 
@@ -118,8 +118,8 @@ export const RelatedRow = styled.a`
   transition: opacity 0.15s;
 
   ${p => p.$variant === 'module'
-    ? `background: #ecfdf5; border-color: #a7f3d0; color: #047857;`
-    : `background: #f8fafc; border-color: #e2e8f0; color: #374151;`}
+    ? `background: var(--color-brand-green-tint); border-color: var(--color-brand-green-tint-strong); color: var(--color-brand-green-darker);`
+    : `background: var(--color-surface-page); border-color: var(--color-gray-200); color: var(--color-gray-700);`}
 
   &:hover { opacity: 0.85; }
 `

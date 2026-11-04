@@ -8,4 +8,8 @@ const fadeUp = keyframes`
 export const Container = styled.div`
   padding: 2.5rem 2.5rem 4rem;
   animation: ${fadeUp} 0.35s ease both;
+
+  @media (max-width: 768px) {
+    padding: 1.75rem 1.25rem 3rem;
+  }
 `

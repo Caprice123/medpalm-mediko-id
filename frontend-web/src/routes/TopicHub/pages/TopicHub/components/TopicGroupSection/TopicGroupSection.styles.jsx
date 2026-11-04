@@ -9,90 +9,91 @@ export const TopicSection = styled.section`
   margin-bottom: 2.75rem;
 `
 
-export const TopicSectionTag = styled.p`
-  font-size: 0.6875rem;
+/* The section is named once, by this heading. It used to be an eyebrow label
+   above a second, longer title ("Sistem Blok" / "Topik berbasis sistem organ")
+   — two lines saying the same thing, with the shorter and clearer of the two
+   set in the smaller type. The eyebrow won. */
+export const TopicSectionTag = styled.h2`
+  font-size: 1.625rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #10b981;
-  text-transform: uppercase;
-  margin: 0 0 0.25rem;
-`
-
-export const TopicSectionTitle = styled.h2`
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #111827;
+  color: var(--color-brand-blue);
   margin: 0 0 0.375rem;
-`
 
-export const TopicSectionDesc = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0 0 1.25rem;
-`
-
-export const TopicGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.625rem;
-`
-
-export const TopicPill = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4375rem 0.875rem 0.4375rem 0.4375rem;
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #374151;
-  font-weight: 500;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  white-space: nowrap;
-
-  &:hover {
-    border-color: #6ee7b7;
-    background: #ecfdf5;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-    color: #065f46;
+  @media (max-width: 768px) {
+    font-size: 1.375rem;
   }
 `
 
-export const TopicPillIcon = styled.span`
-  font-size: 1.125rem;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.875rem;
-  height: 1.875rem;
-  border-radius: 50%;
-  background: ${({ $bg }) => $bg || '#f3f4f6'};
-  flex-shrink: 0;
+export const TopicSectionDesc = styled.p`
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-gray-600);
+  /* Wide enough that each section's one-sentence description stays on a single
+     line on a desktop screen — at a 46rem measure it broke two words onto a
+     second line and read as though it had been cut off. */
+  max-width: 64rem;
+  margin: 0 0 1.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.9375rem;
+  }
 `
 
-export const TopicPillArrow = styled.span`
-  margin-left: 0.25rem;
-  color: #9ca3af;
+/* A uniform grid rather than wrapped pills. Topic names range from "Dasar
+   Kedokteran" to "Sistem Gastrointestinal, Hepatobilier, dan Pankreas", so
+   content-width pills produced ragged rows with nothing for the eye to follow.
+   Equal columns give the list a left edge to scan down. */
+export const TopicGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+  gap: 0.75rem;
+`
+
+export const TopicCard = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-gray-700);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--color-brand-blue-tint-strong);
+    background: var(--color-brand-blue-tint);
+    color: var(--color-brand-blue-deep);
+    box-shadow: 0 2px 10px rgba(30, 115, 170, 0.08);
+  }
+`
+
+export const TopicCardArrow = styled.span`
+  color: var(--color-gray-400);
   font-size: 0.875rem;
+  flex-shrink: 0;
   transition: color 0.15s;
 
-  ${TopicPill}:hover & {
-    color: #10b981;
+  ${TopicCard}:hover & {
+    color: var(--color-brand-blue);
   }
 `
 
 const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 800px 100%;
   animation: ${shimmer} 1.4s infinite linear;
 `
 
-export const SkeletonPill = styled(SkeletonBase)`
-  height: 2.375rem;
-  width: ${({ $w }) => $w || '7rem'};
-  border-radius: 999px;
-  display: inline-block;
+export const SkeletonCard = styled(SkeletonBase)`
+  height: 3.5rem;
+  border-radius: 12px;
 `

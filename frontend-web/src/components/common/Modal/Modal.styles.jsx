@@ -75,7 +75,7 @@ export const ModalContainer = styled.div`
 
 export const ModalHeader = styled.div`
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -88,7 +88,7 @@ export const ModalHeader = styled.div`
 export const ModalTitle = styled.h2`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 
   @media (max-width: 768px) {
@@ -99,7 +99,7 @@ export const ModalTitle = styled.h2`
 export const CloseButton = styled.button`
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.25rem;
@@ -113,8 +113,8 @@ export const CloseButton = styled.button`
   justify-content: center;
 
   &:hover {
-    background: rgba(107, 185, 232, 0.1);
-    color: #6BB9E8;
+    background: rgba(30, 115, 170, 0.1);
+    color: var(--color-brand-blue);
   }
 
   @media (max-width: 768px) {
@@ -142,12 +142,12 @@ export const ModalBody = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--color-gray-300);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-gray-400);
   }
 
   @media (max-width: 768px) {
@@ -157,7 +157,7 @@ export const ModalBody = styled.div`
 
 export const ModalFooter = styled.div`
   padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;

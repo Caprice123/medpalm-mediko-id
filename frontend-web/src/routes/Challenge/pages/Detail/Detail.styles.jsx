@@ -1,8 +1,8 @@
 import styled, { keyframes } from 'styled-components'
 
 const pulse = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.35); }
-  50% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(30, 115, 170, 0.35); }
+  50% { box-shadow: 0 0 0 10px rgba(30, 115, 170, 0); }
 `
 
 const dotPulse = keyframes`
@@ -12,7 +12,7 @@ const dotPulse = keyframes`
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 
   @media (max-width: 768px) {
     min-height: 100vh;
@@ -31,7 +31,7 @@ export const Container = styled.div`
 export const BackBtn = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   cursor: pointer;
   padding: 0;
@@ -41,12 +41,12 @@ export const BackBtn = styled.button`
   gap: 0.25rem;
   transition: color 0.15s;
 
-  &:hover { color: #06b6d4; }
+  &:hover { color: var(--color-brand-blue); }
 `
 
 /* ——— Hero Card ——— */
 export const HeroCard = styled.div`
-  background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   border-radius: 20px;
   padding: 2rem;
   margin-bottom: 1.25rem;
@@ -111,7 +111,7 @@ export const LiveBadge = styled.div`
 export const LiveDot = styled.span`
   width: 7px;
   height: 7px;
-  background: #ef4444;
+  background: var(--color-danger);
   border-radius: 50%;
   flex-shrink: 0;
   animation: ${dotPulse} 1.4s ease-in-out infinite;
@@ -189,7 +189,7 @@ export const DateCardsRow = styled.div`
 
 export const DateCard = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -201,7 +201,7 @@ export const DateCardIcon = styled.div`
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: ${props => props.$color || '#f0fdfa'};
+  background: ${props => props.$color || 'var(--color-brand-blue-tint)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +215,7 @@ export const DateCardLabel = styled.div`
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.07em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   margin-bottom: 0.25rem;
 `
@@ -223,13 +223,13 @@ export const DateCardLabel = styled.div`
 export const DateCardValue = styled.div`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 /* ——— Points Guide ——— */
 export const PointsGuideCard = styled.div`
   background: #fff;
-  border: 1px solid #cffafe;
+  border: 1px solid var(--color-brand-blue-tint);
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -243,7 +243,7 @@ export const PointsGuideCard = styled.div`
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(180deg, #06b6d4, #0891b2);
+    background: linear-gradient(180deg, var(--color-brand-blue), var(--color-brand-blue-deep));
     border-radius: 4px 0 0 4px;
   }
 `
@@ -254,14 +254,14 @@ export const PointsGuideHeader = styled.div`
   gap: 0.625rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e0f2fe;
+  border-bottom: 1px solid var(--color-brand-blue-tint);
 `
 
 export const PointsGuideTitleIcon = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -271,7 +271,7 @@ export const PointsGuideTitleIcon = styled.div`
 export const PointsGuideTitle = styled.div`
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
 `
 
 export const PointsItem = styled.div`
@@ -280,19 +280,19 @@ export const PointsItem = styled.div`
   gap: 0.75rem;
   padding: 0.625rem 0;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
 
-  & + & { border-top: 1px solid #f0fdfa; }
+  & + & { border-top: 1px solid var(--color-brand-blue-tint); }
 
-  strong { color: #0d9488; font-weight: 700; }
+  strong { color: var(--color-brand-blue); font-weight: 700; }
 `
 
 export const PointsItemIcon = styled.div`
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: ${props => props.$bg || '#cffafe'};
+  background: ${props => props.$bg || 'var(--color-brand-blue-tint)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -318,7 +318,7 @@ export const RewardCard = styled.div`
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(180deg, #f59e0b, #d97706);
+    background: linear-gradient(180deg, var(--color-warning), var(--color-warning-dark));
     border-radius: 4px 0 0 4px;
   }
 
@@ -345,7 +345,7 @@ export const RewardCardIcon = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, var(--color-warning-light), var(--color-warning));
   box-shadow: 0 4px 10px rgba(251, 191, 36, 0.4);
   display: flex;
   align-items: center;
@@ -364,7 +364,7 @@ export const RewardCardLabel = styled.div`
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #d97706;
+  color: var(--color-warning-dark);
   margin-bottom: 0.2rem;
 `
 
@@ -392,7 +392,7 @@ export const RewardTierGrid = styled.div`
 
 export const RewardTierCard = styled.div`
   background: ${p => p.$isMyReward ? '#fffbeb' : '#fff'};
-  border: 1.5px solid ${p => p.$isMyReward ? '#f59e0b' : '#fde68a'};
+  border: 1.5px solid ${p => p.$isMyReward ? 'var(--color-warning)' : '#fde68a'};
   border-radius: 12px;
   padding: 0.875rem 1rem;
   display: flex;
@@ -405,7 +405,7 @@ export const RewardTierRank = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, var(--color-warning-light), var(--color-warning));
   color: #fff;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -437,7 +437,7 @@ export const StartSection = styled.div`
 export const StartBtn = styled.button`
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: #fff;
   border: none;
   border-radius: 14px;
@@ -445,14 +445,14 @@ export const StartBtn = styled.button`
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.01em;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 15px rgba(30, 115, 170, 0.35);
   transition: transform 0.15s, box-shadow 0.15s;
   animation: ${pulse} 2.5s ease-in-out infinite;
   margin-bottom: 0.625rem;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+    box-shadow: 0 6px 20px rgba(30, 115, 170, 0.45);
   }
   &:disabled {
     background: #a5f3fc;
@@ -465,27 +465,27 @@ export const StartBtn = styled.button`
 export const ContinueBtn = styled.button`
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue-deep) 100%);
   color: #fff;
   border: none;
   border-radius: 14px;
   font-size: 1.0625rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.35);
+  box-shadow: 0 4px 15px rgba(4, 74, 119, 0.35);
   transition: transform 0.15s, box-shadow 0.15s;
   margin-bottom: 0.625rem;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.45);
+    box-shadow: 0 6px 20px rgba(4, 74, 119, 0.45);
   }
 `
 
 export const StartHint = styled.div`
   text-align: center;
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const CompletedNote = styled.div`
@@ -494,7 +494,7 @@ export const CompletedNote = styled.div`
   justify-content: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
   font-weight: 500;
   background: #ecfeff;
   border: 1px solid #a5f3fc;
@@ -521,7 +521,7 @@ export const CompletedTopRow = styled.div`
 /* ——— My Result ——— */
 export const MyResultBox = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -530,7 +530,7 @@ export const MyResultBox = styled.div`
 `
 
 export const MyResultHeader = styled.div`
-  background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
@@ -552,8 +552,8 @@ export const MyResultBadge = styled.div`
   gap: 0.375rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #0e7490;
-  background: #cffafe;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
 `
@@ -570,7 +570,7 @@ export const Stat = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 
   &:last-child { border-bottom: none; }
 `
@@ -578,7 +578,7 @@ export const Stat = styled.div`
 export const StatValue = styled.div`
   font-size: 1.625rem;
   font-weight: 800;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
   line-height: 1.1;
   letter-spacing: -0.02em;
 `
@@ -586,7 +586,7 @@ export const StatValue = styled.div`
 export const StatLabel = styled.div`
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-top: 0.3rem;
@@ -597,8 +597,8 @@ export const ShareBtn = styled.button`
   padding: 0.75rem;
   background: none;
   border: none;
-  border-top: 1px solid #f3f4f6;
-  color: #06b6d4;
+  border-top: 1px solid var(--color-gray-100);
+  color: var(--color-brand-blue);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -607,22 +607,22 @@ export const ShareBtn = styled.button`
   align-items: center;
   justify-content: center;
 
-  &:hover { background: #f0fdfa; }
+  &:hover { background: var(--color-brand-blue-tint); }
 `
 
 /* ——— Tabs ——— */
 export const TabsRow = styled.div`
   display: flex;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   margin-bottom: 1.5rem;
   gap: 0.25rem;
 `
 
 export const TabBtn = styled.button`
   background: transparent;
-  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   border: none;
-  border-bottom: 2px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
+  border-bottom: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
   padding: 0.625rem 1.25rem;
   font-size: 0.9375rem;
   font-weight: ${props => props.$active ? 700 : 500};
@@ -631,14 +631,14 @@ export const TabBtn = styled.button`
   bottom: -2px;
   transition: color 0.15s;
 
-  &:hover { color: ${props => props.$active ? '#06b6d4' : '#374151'}; }
+  &:hover { color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'}; }
 `
 
 export const TabPanel = styled.div``
 
 export const Panel = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -647,10 +647,10 @@ export const Panel = styled.div`
 export const PanelTitle = styled.h3`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 export const LeaderboardHeader = styled.div`
@@ -659,21 +659,21 @@ export const LeaderboardHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 export const RefreshCountdown = styled.span`
   font-size: 0.75rem;
-  color: #0e7490;
-  background: #cffafe;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.2rem 0.625rem;
   border-radius: 999px;
   font-weight: 600;
 `
 
 const MEDAL_BG = {
-  1: { bg: '#fffbeb', border: '#fde68a', rankColor: '#d97706' },
-  2: { bg: '#f8fafc', border: '#e2e8f0', rankColor: '#64748b' },
+  1: { bg: '#fffbeb', border: '#fde68a', rankColor: 'var(--color-warning-dark)' },
+  2: { bg: 'var(--color-surface-page)', border: 'var(--color-gray-200)', rankColor: 'var(--color-gray-500)' },
   3: { bg: '#fff7ed', border: '#fed7aa', rankColor: '#c2410c' },
 }
 
@@ -693,7 +693,7 @@ export const LeaderRow = styled.div`
 export const RankNum = styled.span`
   font-size: 0.875rem;
   font-weight: 800;
-  color: ${props => props.$rank <= 3 ? (MEDAL_BG[props.$rank]?.rankColor || '#374151') : '#9ca3af'};
+  color: ${props => props.$rank <= 3 ? (MEDAL_BG[props.$rank]?.rankColor || 'var(--color-gray-700)') : 'var(--color-gray-400)'};
   min-width: 2.25rem;
 `
 
@@ -711,7 +711,7 @@ export const LeaderNameCol = styled.div`
 
 export const LeaderName = styled.div`
   font-size: 0.875rem;
-  color: ${props => props.$isMe ? '#0e7490' : '#374151'};
+  color: ${props => props.$isMe ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   font-weight: ${props => props.$isMe ? 700 : 500};
   white-space: nowrap;
   overflow: hidden;
@@ -720,7 +720,7 @@ export const LeaderName = styled.div`
 
 export const LeaderUniversity = styled.div`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -729,12 +729,12 @@ export const LeaderUniversity = styled.div`
 export const LeaderScore = styled.span`
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const EmptyLeader = styled.div`
   text-align: center;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   padding: 1.5rem 0;
 `
@@ -748,7 +748,7 @@ export const BadgeCardGrid = styled.div`
 
 export const BadgeCard = styled.div`
   background: ${props => props.$earned ? '#ecfeff' : '#fafafa'};
-  border: 2px solid ${props => props.$earned ? '#06b6d4' : '#e5e7eb'};
+  border: 2px solid ${props => props.$earned ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
   border-radius: 14px;
   padding: 1.25rem 1rem;
   display: flex;
@@ -757,11 +757,11 @@ export const BadgeCard = styled.div`
   gap: 0.5rem;
   text-align: center;
   transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: ${props => props.$earned ? '0 0 0 3px rgba(6, 182, 212, 0.15)' : 'none'};
+  box-shadow: ${props => props.$earned ? '0 0 0 3px rgba(30, 115, 170, 0.15)' : 'none'};
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${props => props.$earned ? '0 4px 16px rgba(6, 182, 212, 0.25)' : '0 4px 12px rgba(0, 0, 0, 0.08)'};
+    box-shadow: ${props => props.$earned ? '0 4px 16px rgba(30, 115, 170, 0.25)' : '0 4px 12px rgba(0, 0, 0, 0.08)'};
   }
 `
 
@@ -770,15 +770,15 @@ export const BadgeCardImg = styled.img`
   height: 72px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid ${props => props.$earned ? '#06b6d4' : '#e5e7eb'};
-  box-shadow: ${props => props.$earned ? '0 0 0 4px rgba(6, 182, 212, 0.2)' : 'none'};
+  border: 3px solid ${props => props.$earned ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  box-shadow: ${props => props.$earned ? '0 0 0 4px rgba(30, 115, 170, 0.2)' : 'none'};
   margin-bottom: 0.25rem;
 `
 
 export const BadgeCardPlaceholder = styled.div`
   width: 72px;
   height: 72px;
-  background: linear-gradient(135deg, #cffafe, #e0f2fe);
+  background: linear-gradient(135deg, var(--color-brand-blue-tint), var(--color-brand-blue-tint));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -790,13 +790,13 @@ export const BadgeCardPlaceholder = styled.div`
 export const BadgeCardName = styled.div`
   font-size: 0.875rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const BadgeCardRankLabel = styled.div`
   font-size: 0.75rem;
-  color: #6b7280;
-  background: #f3f4f6;
+  color: var(--color-gray-500);
+  background: var(--color-gray-100);
   padding: 0.15rem 0.625rem;
   border-radius: 999px;
   font-weight: 500;
@@ -805,8 +805,8 @@ export const BadgeCardRankLabel = styled.div`
 export const BadgeEarnedTag = styled.div`
   font-size: 0.7rem;
   font-weight: 700;
-  color: #0e7490;
-  background: #cffafe;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.2rem 0.625rem;
   border-radius: 999px;
   display: flex;
@@ -829,7 +829,7 @@ export const RewardTabPanel = styled.div`
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 4px;
-    background: linear-gradient(180deg, #f59e0b, #d97706);
+    background: linear-gradient(180deg, var(--color-warning), var(--color-warning-dark));
     border-radius: 4px 0 0 4px;
   }
 `
@@ -853,7 +853,7 @@ export const RewardTabIcon = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, var(--color-warning-light), var(--color-warning));
   box-shadow: 0 3px 8px rgba(251, 191, 36, 0.35);
   display: flex;
   align-items: center;
@@ -873,9 +873,9 @@ export const RewardTabStatus = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: ${p => p.$ready ? '#d1fae5' : '#fef3c7'};
-  color: ${p => p.$ready ? '#065f46' : '#92400e'};
-  border: 1px solid ${p => p.$ready ? '#6ee7b7' : '#fcd34d'};
+  background: ${p => p.$ready ? 'var(--color-brand-green-tint)' : 'var(--color-warning-tint)'};
+  color: ${p => p.$ready ? 'var(--color-brand-green-darker)' : '#92400e'};
+  border: 1px solid ${p => p.$ready ? 'var(--color-brand-green-tint-strong)' : '#fcd34d'};
   border-radius: 999px;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
@@ -886,7 +886,7 @@ export const RewardTabStatus = styled.div`
 
 export const RewardTabDesc = styled.div`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.55;
   margin-bottom: 0.875rem;
   padding-left: calc(36px + 0.625rem);
@@ -898,7 +898,7 @@ export const RewardProofSection = styled.div`
   gap: 0.875rem;
   margin-top: 0.875rem;
   padding-top: 0.875rem;
-  border-top: 1px solid #fef3c7;
+  border-top: 1px solid var(--color-warning-tint);
 `
 
 export const RewardProofThumb = styled.img`
@@ -927,7 +927,7 @@ export const RewardProofLabel = styled.div`
 
 export const RewardProofLink = styled.a`
   font-size: 0.8125rem;
-  color: #d97706;
+  color: var(--color-warning-dark);
   font-weight: 600;
   text-decoration: none;
   display: inline-flex;
@@ -940,7 +940,7 @@ export const RewardProofLink = styled.a`
 export const RewardPendingNote = styled.div`
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #fef3c7;
+  border-top: 1px solid var(--color-warning-tint);
   font-size: 0.8125rem;
   color: #92400e;
   line-height: 1.55;

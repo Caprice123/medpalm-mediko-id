@@ -35,20 +35,20 @@ const Dropdown = memo(function Dropdown({
       ...provided,
       minHeight: '44px',
       borderColor: hasError
-        ? '#ef4444'
+        ? 'var(--color-danger)'
         : state.isFocused
-          ? '#6BB9E8'
-          : '#d1d5db',
+          ? 'var(--color-brand-blue)'
+          : 'var(--color-gray-300)',
       borderRadius: '6px',
       boxShadow: state.isFocused
         ? hasError
           ? '0 0 0 3px rgba(239, 68, 68, 0.1)'
-          : '0 0 0 3px rgba(107, 185, 232, 0.15)'
+          : '0 0 0 3px rgba(30, 115, 170, 0.15)'
         : 'none',
       '&:hover': {
-        borderColor: hasError ? '#ef4444' : '#9ca3af',
+        borderColor: hasError ? 'var(--color-danger)' : 'var(--color-gray-400)',
       },
-      backgroundColor: disabled ? '#f9fafb' : 'white',
+      backgroundColor: disabled ? 'var(--color-gray-50)' : 'white',
       cursor: disabled ? 'not-allowed' : 'pointer',
       fontSize: '0.875rem',
       fontFamily: 'inherit',
@@ -59,7 +59,7 @@ const Dropdown = memo(function Dropdown({
     }),
     placeholder: (provided) => ({
       ...provided,
-      color: '#9ca3af',
+      color: 'var(--color-gray-400)',
       fontSize: '0.875rem',
       overflow: 'hidden', // Ensure the text within the placeholder element is hidden if too long
       whiteSpace: 'nowrap', // Force the text to stay on a single line
@@ -67,7 +67,7 @@ const Dropdown = memo(function Dropdown({
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: '#111827',
+      color: 'var(--color-gray-900)',
       fontSize: '0.875rem',
     }),
     input: (provided) => ({
@@ -81,12 +81,12 @@ const Dropdown = memo(function Dropdown({
     }),
     dropdownIndicator: (provided, state) => ({
       ...provided,
-      color: disabled ? '#d1d5db' : '#6b7280',
+      color: disabled ? 'var(--color-gray-300)' : 'var(--color-gray-500)',
       padding: '8px',
       transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : null,
       transition: 'transform 0.2s ease',
       '&:hover': {
-        color: disabled ? '#d1d5db' : '#374151',
+        color: disabled ? 'var(--color-gray-300)' : 'var(--color-gray-700)',
       },
     }),
     menu: (provided) => ({
@@ -108,21 +108,21 @@ const Dropdown = memo(function Dropdown({
         borderRadius: '4px',
       },
       '::-webkit-scrollbar-thumb': {
-        background: '#cbd5e1',
+        background: 'var(--color-gray-300)',
         borderRadius: '4px',
       },
       '::-webkit-scrollbar-thumb:hover': {
-        background: '#94a3b8',
+        background: 'var(--color-gray-400)',
       },
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? 'rgba(107, 185, 232, 0.15)'
+        ? 'rgba(30, 115, 170, 0.15)'
         : state.isFocused
-          ? 'rgba(107, 185, 232, 0.08)'
+          ? 'rgba(30, 115, 170, 0.08)'
           : 'white',
-      color: state.isSelected ? '#4A9ED4' : '#374151',
+      color: state.isSelected ? 'var(--color-brand-blue)' : 'var(--color-gray-700)',
       fontWeight: state.isSelected ? '500' : '400',
       cursor: 'pointer',
       fontSize: '0.875rem',
@@ -131,35 +131,35 @@ const Dropdown = memo(function Dropdown({
       display: 'flex',
       alignItems: 'center',
       '&:active': {
-        backgroundColor: 'rgba(107, 185, 232, 0.15)',
+        backgroundColor: 'rgba(30, 115, 170, 0.15)',
       },
     }),
     groupHeading: (provided) => ({
       ...provided,
       fontSize: '0.75rem',
       fontWeight: '700',
-      color: '#6b7280',
+      color: 'var(--color-gray-500)',
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
       padding: '0.5rem 0.875rem',
       marginTop: '0.25rem',
       marginBottom: '0.25rem',
-      backgroundColor: '#f9fafb',
+      backgroundColor: 'var(--color-gray-50)',
     }),
     multiValue: (provided) => ({
       ...provided,
-      background: '#e0f2fe',
+      background: 'var(--color-brand-blue-tint)',
       borderRadius: '4px',
     }),
     multiValueLabel: (provided) => ({
       ...provided,
-      color: '#0369a1',
+      color: 'var(--color-brand-blue-deep)',
       fontSize: '0.8125rem',
       padding: '1px 4px',
     }),
     multiValueRemove: (provided) => ({
       ...provided,
-      color: '#0369a1',
+      color: 'var(--color-brand-blue-deep)',
       ':hover': { background: '#bae6fd', color: '#075985' },
     }),
   }

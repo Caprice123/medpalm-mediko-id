@@ -4,12 +4,12 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f9fafb;
+  background: var(--color-gray-50);
 `
 
 export const Header = styled.div`
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   padding: 1rem 1.5rem;
   flex-shrink: 0;
 
@@ -33,7 +33,7 @@ export const BackButton = styled.button`
   display: none;
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -41,8 +41,8 @@ export const BackButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    color: #374151;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
   }
 
   @media (max-width: 768px) {
@@ -53,7 +53,7 @@ export const BackButton = styled.button`
 export const TopicTitle = styled.h1`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   flex: 1;
   padding: 0.5rem 0;
@@ -74,16 +74,16 @@ export const EditButton = styled.button`
   width: 32px;
   height: 32px;
   background: none;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
-    color: #374151;
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-700);
   }
 `
 
@@ -100,30 +100,30 @@ export const TitleActionButton = styled.button`
   transition: all 0.2s;
 
   ${({ $variant }) => $variant === 'save' ? `
-    background: #10b981;
+    background: var(--color-brand-green);
     color: white;
-    &:hover { background: #059669; }
+    &:hover { background: var(--color-brand-green-dark); }
   ` : `
-    background: #f3f4f6;
-    color: #6b7280;
-    &:hover { background: #e5e7eb; color: #374151; }
+    background: var(--color-gray-100);
+    color: var(--color-gray-500);
+    &:hover { background: var(--color-gray-200); color: var(--color-gray-700); }
   `}
 `
 
 export const TopicInput = styled.input`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   flex: 1;
   padding: 0.5rem;
-  border: 2px solid #06b6d4;
+  border: 2px solid var(--color-brand-blue);
   border-radius: 6px;
   outline: none;
   background: white;
 
   &:focus {
-    border-color: #0891b2;
+    border-color: var(--color-brand-blue-deep);
   }
 
   @media (max-width: 768px) {
@@ -137,11 +137,11 @@ export const CreditBadge = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
 
   span:first-child {
     font-size: 1rem;
@@ -174,12 +174,12 @@ export const ChatArea = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--color-gray-300);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-gray-400);
   }
 
   @media (max-width: 768px) {
@@ -198,7 +198,7 @@ export const LoadingState = styled.div`
   justify-content: center;
   height: 100%;
   gap: 1rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   div:first-child {
     font-size: 3rem;
@@ -212,7 +212,7 @@ export const ErrorState = styled.div`
   justify-content: center;
   height: 100%;
   gap: 1rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   div:first-child {
     font-size: 3rem;
@@ -221,8 +221,8 @@ export const ErrorState = styled.div`
   button {
     padding: 0.5rem 1rem;
     background: white;
-    color: #3b82f6;
-    border: 1px solid #3b82f6;
+    color: var(--color-brand-blue);
+    border: 1px solid var(--color-brand-blue);
     border-radius: 6px;
     font-size: 0.875rem;
     font-weight: 500;
@@ -230,7 +230,7 @@ export const ErrorState = styled.div`
     transition: all 0.2s;
 
     &:hover {
-      background: #eff6ff;
+      background: var(--color-brand-blue-tint);
     }
   }
 `

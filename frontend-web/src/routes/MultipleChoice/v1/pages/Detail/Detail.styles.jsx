@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -15,8 +15,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -65,8 +65,8 @@ export const HeaderTop = styled.div`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -78,8 +78,8 @@ export const BackButton = styled.button`
   gap: 0.5rem;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -89,7 +89,7 @@ export const TopicInfo = styled.div`
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-gray-900);
     margin: 0 0 0.5rem 0;
     display: flex;
     align-items: center;
@@ -102,7 +102,7 @@ export const TopicInfo = styled.div`
 
   p {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin: 0;
     line-height: 1.5;
   }
@@ -127,7 +127,7 @@ export const Tag = styled.span`
   ${props => props.department && `
     background: #FFF7ED;
     color: #92400E;
-    border: 1px solid #F59E0B;
+    border: 1px solid var(--color-warning);
   `}
 
   ${props => props.topic && `
@@ -137,13 +137,13 @@ export const Tag = styled.span`
   `}
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
@@ -152,7 +152,7 @@ export const Tag = styled.span`
 export const Title = styled.h2`
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #6BB9E8, #3b82f6);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -167,7 +167,7 @@ export const Title = styled.h2`
 
 export const Description = styled.p`
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0.5rem 0 0 0;
   line-height: 1.6;
 `
@@ -180,9 +180,9 @@ export const QuizInfo = styled.div`
   flex-wrap: wrap;
   margin-bottom: 2rem;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #f0f9ff, #fff);
+  background: linear-gradient(135deg, var(--color-surface-page), #fff);
   border-radius: 12px;
-  border: 2px solid #bfdbfe;
+  border: 2px solid var(--color-brand-blue-tint-strong);
 
   @media (max-width: 640px) {
     flex-direction: column;
@@ -196,7 +196,7 @@ export const InfoItem = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 600;
 `
 
@@ -206,11 +206,11 @@ export const Timer = styled.div`
   gap: 0.5rem;
   font-size: 1.125rem;
   font-weight: 700;
-  color: ${props => props.warning ? '#dc2626' : '#1e40af'};
+  color: ${props => props.warning ? 'var(--color-danger-dark)' : 'var(--color-brand-blue-deep)'};
   padding: 0.5rem 1rem;
-  background: ${props => props.warning ? '#fee2e2' : '#dbeafe'};
+  background: ${props => props.warning ? 'var(--color-danger-tint)' : 'var(--color-brand-blue-tint-strong)'};
   border-radius: 8px;
-  border: 2px solid ${props => props.warning ? '#fca5a5' : '#93c5fd'};
+  border: 2px solid ${props => props.warning ? 'var(--color-danger-border)' : 'var(--color-brand-blue-tint-strong)'};
   animation: ${props => props.warning ? 'pulse 1s infinite' : 'none'};
 
   @keyframes pulse {
@@ -222,7 +222,7 @@ export const Timer = styled.div`
 export const ProgressBar = styled.div`
   width: 100%;
   height: 8px;
-  background: #f1f5f9;
+  background: var(--color-gray-100);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -230,7 +230,7 @@ export const ProgressBar = styled.div`
 
 export const ProgressFill = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #6BB9E8, #3b82f6);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue));
   width: ${props => props.progress}%;
   transition: width 0.3s ease;
 `
@@ -242,7 +242,7 @@ export const QuestionCard = styled.div`
 export const QuestionText = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 1.5rem 0;
   line-height: 1.5;
 `
@@ -257,19 +257,19 @@ export const OptionButton = styled.button`
   padding: 1rem 1.25rem;
   border: 2px solid ${props =>
     props.selected && props.showResult
-      ? props.isCorrect ? '#10b981' : '#ef4444'
+      ? props.isCorrect ? 'var(--color-brand-green)' : 'var(--color-danger)'
       : props.selected
-        ? '#3b82f6'
-        : '#e2e8f0'};
+        ? 'var(--color-brand-blue)'
+        : 'var(--color-gray-200)'};
   background: ${props =>
     props.selected && props.showResult
-      ? props.isCorrect ? '#ecfdf5' : '#fef2f2'
+      ? props.isCorrect ? 'var(--color-brand-green-tint)' : 'var(--color-danger-tint-soft)'
       : props.selected
-        ? '#dbeafe'
+        ? 'var(--color-brand-blue-tint-strong)'
         : 'white'};
   border-radius: 12px;
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--color-gray-900);
   font-weight: 500;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   text-align: left;
@@ -280,8 +280,8 @@ export const OptionButton = styled.button`
   gap: 0.75rem;
 
   &:hover:not(:disabled) {
-    border-color: #3b82f6;
-    background: #eff6ff;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
     transform: translateY(-2px);
   }
 
@@ -299,11 +299,11 @@ export const OptionLabel = styled.span`
   border-radius: 50%;
   background: ${props =>
     props.selected && props.showResult
-      ? props.isCorrect ? '#10b981' : '#ef4444'
+      ? props.isCorrect ? 'var(--color-brand-green)' : 'var(--color-danger)'
       : props.selected
-        ? '#3b82f6'
-        : '#e2e8f0'};
-  color: ${props => props.selected ? 'white' : '#64748b'};
+        ? 'var(--color-brand-blue)'
+        : 'var(--color-gray-200)'};
+  color: ${props => props.selected ? 'white' : 'var(--color-gray-500)'};
   font-weight: 700;
   font-size: 0.875rem;
   flex-shrink: 0;
@@ -321,8 +321,8 @@ export const OptionIcon = styled.span`
 export const ExplanationBox = styled.div`
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background: ${props => props.isCorrect ? '#ecfdf5' : '#fef3c7'};
-  border: 2px solid ${props => props.isCorrect ? '#10b981' : '#fbbf24'};
+  background: ${props => props.isCorrect ? 'var(--color-brand-green-tint)' : 'var(--color-warning-tint)'};
+  border: 2px solid ${props => props.isCorrect ? 'var(--color-brand-green)' : 'var(--color-warning-light)'};
   border-radius: 12px;
   animation: fadeIn 0.3s ease;
 
@@ -334,7 +334,7 @@ export const ExplanationBox = styled.div`
 
 export const ExplanationLabel = styled.div`
   font-weight: 700;
-  color: ${props => props.isCorrect ? '#059669' : '#92400e'};
+  color: ${props => props.isCorrect ? 'var(--color-brand-green-dark)' : '#92400e'};
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -342,7 +342,7 @@ export const ExplanationLabel = styled.div`
 `
 
 export const ExplanationText = styled.p`
-  color: #334155;
+  color: var(--color-gray-700);
   margin: 0;
   line-height: 1.6;
   font-size: 0.9375rem;
@@ -353,7 +353,7 @@ export const ActionButtons = styled.div`
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 2px solid #f1f5f9;
+  border-top: 2px solid var(--color-gray-100);
 
   @media (max-width: 640px) {
     flex-direction: column;
@@ -410,9 +410,9 @@ export const StatsGrid = styled.div`
 
 export const StatCard = styled.div`
   background: ${props => {
-    if (props.type === 'correct') return '#ECFDF5'
-    if (props.type === 'wrong') return '#FEF2F2'
-    return '#EFF6FF'
+    if (props.type === 'correct') return 'var(--color-brand-green-tint)'
+    if (props.type === 'wrong') return 'var(--color-danger-tint-soft)'
+    return 'var(--color-brand-blue-tint)'
   }};
   border: 2px solid ${props => {
     if (props.type === 'correct') return colors.success.main
@@ -473,7 +473,7 @@ export const ReviewTitle = styled.h3`
 `
 
 export const ReviewItem = styled.div`
-  background: ${props => props.isCorrect ? '#ECFDF5' : '#FEF2F2'};
+  background: ${props => props.isCorrect ? 'var(--color-brand-green-tint)' : 'var(--color-danger-tint-soft)'};
   border-left: 4px solid ${props => props.isCorrect ? colors.success.main : colors.error.main};
   border-radius: 12px;
   padding: 1rem;
@@ -536,7 +536,7 @@ export const ReturnButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.3);
   margin-top: 2rem;
   display: flex;
   align-items: center;
@@ -545,7 +545,7 @@ export const ReturnButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(107, 185, 232, 0.5);
+    box-shadow: 0 6px 20px rgba(30, 115, 170, 0.5);
   }
 
   &:active {
@@ -557,8 +557,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(107, 185, 232, 0.2);
-  border-top: 4px solid #6BB9E8;
+  border: 4px solid rgba(30, 115, 170, 0.2);
+  border-top: 4px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 

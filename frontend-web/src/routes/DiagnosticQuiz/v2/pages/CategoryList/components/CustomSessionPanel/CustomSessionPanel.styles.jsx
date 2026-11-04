@@ -14,7 +14,7 @@ export const Footer = styled.div`
 
 export const StartButton = styled.button`
   padding: 0.6rem 1.25rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -22,7 +22,7 @@ export const StartButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
-  box-shadow: 0 4px 14px rgba(107, 185, 232, 0.4);
+  box-shadow: 0 4px 14px rgba(30, 115, 170, 0.4);
   &:hover:not(:disabled) { opacity: 0.9; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `

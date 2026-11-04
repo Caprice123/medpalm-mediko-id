@@ -6,7 +6,7 @@ export const PlayerScreen = styled.div`
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -19,7 +19,7 @@ export const PlayerScreen = styled.div`
 
 export const PlayerHeader = styled.div`
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   flex-shrink: 0;
 `
 
@@ -34,7 +34,7 @@ export const BackBtn = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1.5rem;
   padding: 0.125rem 0.5rem;
   display: flex;
@@ -42,32 +42,32 @@ export const BackBtn = styled.button`
   border-radius: 6px;
   line-height: 1;
   transition: background 0.15s, color 0.15s;
-  &:hover { background: #f3f4f6; color: #111827; }
+  &:hover { background: var(--color-gray-100); color: var(--color-gray-900); }
 `
 
 export const HeaderTitle = styled.span`
   flex: 1;
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const HeaderCounter = styled.span`
   font-size: 0.875rem;
-  color: #9ca3af;
-  b { color: #111827; font-weight: 700; }
+  color: var(--color-gray-400);
+  b { color: var(--color-gray-900); font-weight: 700; }
 `
 
 export const ProgressBar = styled.div`
   width: 100%;
   height: 4px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
 `
 
 export const ProgressFill = styled.div`
   height: 100%;
   width: ${p => p.$progress}%;
-  background: linear-gradient(90deg, #0d9488, #059669);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   transition: width 0.3s ease;
 `
 
@@ -81,12 +81,12 @@ export const ContentArea = styled.div`
 
   &::-webkit-scrollbar { width: 6px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+  &::-webkit-scrollbar-thumb { background: var(--color-gray-300); border-radius: 99px; }
 `
 
 export const RatingFooter = styled.div`
   background: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   padding: 0.875rem 1rem;
   flex-shrink: 0;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
@@ -107,29 +107,29 @@ export const BreadcrumbChip = styled.span`
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #374151;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  color: var(--color-gray-700);
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   padding: 0.2rem 0.625rem;
 `
 
 export const BreadcrumbSep = styled.span`
   font-size: 0.75rem;
-  color: #d1d5db;
+  color: var(--color-gray-300);
 `
 
 export const NewBadge = styled.span`
   display: inline-block;
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--color-brand-green-tint);
+  color: var(--color-brand-green-dark);
   font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.2rem 0.5rem;
   border-radius: 99px;
-  border: 1px solid #86efac;
+  border: 1px solid var(--color-brand-green-tint-strong);
 `
 
 /* ── Image block ── */
@@ -154,7 +154,7 @@ export const QuestionImage = styled.img`
 
 export const ImageCaption = styled.p`
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: -0.25rem 0 0;
   font-style: italic;
   line-height: 1.5;
@@ -164,12 +164,12 @@ export const ImageCaption = styled.p`
 
 export const VignetteText = styled.p`
   font-size: 0.9375rem;
-  color: #1d4ed8;
+  color: var(--color-brand-blue-deep);
   line-height: 1.7;
   margin: 0;
   font-style: italic;
-  background: #eff6ff;
-  border-left: 3px solid #3b82f6;
+  background: var(--color-brand-blue-tint);
+  border-left: 3px solid var(--color-brand-blue);
   padding: 0.75rem 1rem;
   border-radius: 0 8px 8px 0;
 `
@@ -177,7 +177,7 @@ export const VignetteText = styled.p`
 export const QuestionText = styled.p`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0;
 `
@@ -198,19 +198,19 @@ export const ChoiceBtn = styled.button`
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 1.5px solid ${p => {
-    if (p.$state === 'correct') return '#22c55e'
-    if (p.$state === 'wrong') return '#ef4444'
-    if (p.$state === 'reveal') return '#e5e7eb'
-    if (p.$state === 'selected') return '#0d9488'
-    return '#e5e7eb'
+    if (p.$state === 'correct') return 'var(--color-brand-green)'
+    if (p.$state === 'wrong') return 'var(--color-danger)'
+    if (p.$state === 'reveal') return 'var(--color-gray-200)'
+    if (p.$state === 'selected') return 'var(--color-brand-blue)'
+    return 'var(--color-gray-200)'
   }};
   background: ${p => {
-    if (p.$state === 'correct') return '#f0fdf4'
-    if (p.$state === 'wrong') return '#fef2f2'
-    if (p.$state === 'selected') return '#f0fdfa'
+    if (p.$state === 'correct') return 'var(--color-brand-green-tint)'
+    if (p.$state === 'wrong') return 'var(--color-danger-tint-soft)'
+    if (p.$state === 'selected') return 'var(--color-brand-blue-tint)'
     return 'white'
   }};
-  color: #111827;
+  color: var(--color-gray-900);
   font-size: 0.9375rem;
   font-weight: 500;
   text-align: left;
@@ -218,8 +218,8 @@ export const ChoiceBtn = styled.button`
   transition: border-color 0.15s, background 0.15s;
 
   &:hover:not([disabled]) {
-    border-color: #0d9488;
-    background: #f0fdfa;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
 `
 
@@ -234,30 +234,30 @@ export const ChoiceLabel = styled.span`
   font-weight: 700;
   flex-shrink: 0;
   background: ${p => {
-    if (p.$state === 'correct') return '#22c55e'
-    if (p.$state === 'wrong') return '#ef4444'
-    if (p.$state === 'selected') return '#0d9488'
-    return '#f3f4f6'
+    if (p.$state === 'correct') return 'var(--color-brand-green)'
+    if (p.$state === 'wrong') return 'var(--color-danger)'
+    if (p.$state === 'selected') return 'var(--color-brand-blue)'
+    return 'var(--color-gray-100)'
   }};
-  color: ${p => ['correct', 'wrong', 'selected'].includes(p.$state) ? 'white' : '#6b7280'};
+  color: ${p => ['correct', 'wrong', 'selected'].includes(p.$state) ? 'white' : 'var(--color-gray-500)'};
 `
 
 /* ── Answer reveal + explanation ── */
 
 export const AnswerReveal = styled.div`
   padding: 0.875rem 1rem;
-  background: #f0fdf4;
-  border: 1.5px solid #86efac;
+  background: var(--color-brand-green-tint);
+  border: 1.5px solid var(--color-brand-green-tint-strong);
   border-radius: 10px;
   font-size: 0.875rem;
-  color: #166534;
+  color: var(--color-brand-green-darker);
   font-weight: 600;
 `
 
 export const ShowAnswerBtn = styled.button`
   width: 100%;
   padding: 0.875rem;
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -265,7 +265,7 @@ export const ShowAnswerBtn = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
-  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   &:hover { opacity: 0.9; }
 `
 

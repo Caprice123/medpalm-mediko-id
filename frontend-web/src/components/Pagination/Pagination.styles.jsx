@@ -18,12 +18,12 @@ export const PaginationButton = styled.button`
 
   /* Default variant (cyan background) */
   ${props => props.$variant !== 'admin' && `
-    background-color: ${props.disabled ? '#e5e7eb' : '#0891b2'};
-    color: ${props.disabled ? '#9ca3af' : 'white'};
+    background-color: ${props.disabled ? 'var(--color-gray-200)' : 'var(--color-brand-blue-deep)'};
+    color: ${props.disabled ? 'var(--color-gray-400)' : 'white'};
     border: none;
 
     &:hover:not(:disabled) {
-      background-color: #0e7490;
+      background-color: var(--color-brand-blue-deep);
     }
 
     &:active:not(:disabled) {
@@ -34,11 +34,11 @@ export const PaginationButton = styled.button`
   /* Admin variant (white background with cyan border) */
   ${props => props.$variant === 'admin' && `
     background: white;
-    color: #6BB9E8;
-    border: 1px solid #6BB9E8;
+    color: var(--color-brand-blue);
+    border: 1px solid var(--color-brand-blue);
 
     &:hover:not(:disabled) {
-      background: #6BB9E8;
+      background: var(--color-brand-blue);
       color: white;
     }
 
@@ -50,7 +50,7 @@ export const PaginationButton = styled.button`
 `
 
 export const PageInfo = styled.div`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-weight: 500;
   font-size: 0.875rem;
   min-width: 100px;

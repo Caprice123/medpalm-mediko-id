@@ -116,7 +116,7 @@ function TransactionDetail({ isOpen, onClose, purchaseId, onEvidenceUploaded }) 
                   </DetailItem>
                   <DetailItem>
                     <DetailLabel>Jumlah Dibayar</DetailLabel>
-                    <DetailValue style={{ fontSize: '1.125rem', color: '#059669' }}>
+                    <DetailValue style={{ fontSize: '1.125rem', color: 'var(--color-brand-green-dark)' }}>
                       {formatCurrency(transaction.amountPaid)}
                     </DetailValue>
                   </DetailItem>

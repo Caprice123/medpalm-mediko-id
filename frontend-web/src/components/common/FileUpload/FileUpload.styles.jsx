@@ -5,17 +5,17 @@ export const UploadSection = styled.div`
 `
 
 export const UploadArea = styled.div`
-  border: 2px dashed ${({ $isDragging }) => $isDragging ? '#3b82f6' : '#cbd5e1'};
+  border: 2px dashed ${({ $isDragging }) => $isDragging ? 'var(--color-brand-blue)' : 'var(--color-gray-300)'};
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  background: ${({ $isDragging }) => $isDragging ? '#eff6ff' : '#f8fafc'};
+  background: ${({ $isDragging }) => $isDragging ? 'var(--color-brand-blue-tint)' : 'var(--color-surface-page)'};
 
   &:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
 `
 
@@ -26,7 +26,7 @@ export const UploadIcon = styled.div`
 
 export const UploadText = styled.p`
   margin: 0.25rem 0;
-  color: #475569;
+  color: var(--color-gray-600);
   font-size: 0.95rem;
 `
 
@@ -35,8 +35,8 @@ export const ExistingFileInfo = styled.div`
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-page);
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
 `
 
@@ -46,7 +46,7 @@ export const FileIcon = styled.div`
 
 export const FileName = styled.div`
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   font-size: 0.95rem;
 `
 
@@ -57,7 +57,7 @@ export const ActionsContainer = styled.div`
 
 export const ActionButton = styled.button`
   padding: 0.5rem 1rem;
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 6px;
@@ -71,18 +71,18 @@ export const ActionButton = styled.button`
   gap: 0.25rem;
 
   &:hover {
-    background: #2563eb;
+    background: var(--color-brand-blue-deep);
   }
 
   &:disabled {
-    background: #94a3b8;
+    background: var(--color-gray-400);
     cursor: not-allowed;
   }
 `
 
 export const RemoveButton = styled.button`
   padding: 0.5rem 1rem;
-  background: #ef4444;
+  background: var(--color-danger);
   color: white;
   border: none;
   border-radius: 6px;
@@ -92,6 +92,6 @@ export const RemoveButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #dc2626;
+    background: var(--color-danger-dark);
   }
 `

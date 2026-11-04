@@ -6,7 +6,7 @@ export const PageWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 3rem 1rem;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 `
 
 export const Card = styled.div`
@@ -21,7 +21,7 @@ export const Card = styled.div`
 export const IconWrapper = styled.div`
   width: 64px;
   height: 64px;
-  background: #ccfbf1;
+  background: var(--color-brand-blue-tint-strong);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -33,14 +33,14 @@ export const IconWrapper = styled.div`
 export const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.5rem;
   text-align: center;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0 0 2rem;
   line-height: 1.6;
   text-align: center;
@@ -57,6 +57,6 @@ export const FieldLabel = styled.label`
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.4rem;
 `

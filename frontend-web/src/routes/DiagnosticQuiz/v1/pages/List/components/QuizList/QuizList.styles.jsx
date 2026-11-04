@@ -5,13 +5,13 @@ export const LoadingOverlay = styled.div`
   justify-content: center;
   align-items: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyStateIcon = styled.div`
@@ -26,9 +26,9 @@ export const EmptyStateText = styled.p`
 `
 
 export const ActionButton = styled.button`
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--color-brand-blue);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 500;
@@ -36,7 +36,7 @@ export const ActionButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: #2563eb;
+    background: var(--color-brand-blue-deep);
   }
 `
 
@@ -54,13 +54,13 @@ export const QuizCard = styled.div`
   display: flex;
   flex-direction: column;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 1.25rem;
   transition: all 0.2s;
 
   &:hover {
-    border-color: #d1d5db;
+    border-color: var(--color-gray-300);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 `
@@ -76,14 +76,14 @@ export const QuizCardHeader = styled.div`
 export const QuizCardTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   flex: 1;
 `
 
 export const StatusBadge = styled.span`
-  background: ${props => props.published ? '#dcfce7' : '#e0e7ff'};
-  color: ${props => props.published ? '#16a34a' : '#4f46e5'};
+  background: ${props => props.published ? 'var(--color-brand-green-tint)' : '#e0e7ff'};
+  color: ${props => props.published ? 'var(--color-brand-green-dark)' : '#4f46e5'};
   padding: 0.25rem 0.625rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -98,7 +98,7 @@ export const QuizImageContainer = styled.div`
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 0.75rem;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +111,7 @@ export const QuizImage = styled.img`
 `
 
 export const QuizDescription = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.75rem;
@@ -126,9 +126,9 @@ export const QuizStats = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.75rem;
 `
 
@@ -140,14 +140,14 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   font-weight: 600;
 `
 
 export const StatValue = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 700;
 `
 
@@ -169,8 +169,8 @@ export const ImageBadge = styled.span`
   align-items: center;
   gap: 0.3rem;
   padding: 0.2rem 0.625rem;
-  background: #e0f2fe;
-  color: #0369a1;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -185,16 +185,16 @@ export const CardActions = styled.div`
 export const CardActionButton = styled.button`
   flex: 1;
   padding: 0.5rem 1rem;
-  border: 1px solid ${props => props.danger ? '#ef4444' : '#3b82f6'};
+  border: 1px solid ${props => props.danger ? 'var(--color-danger)' : 'var(--color-brand-blue)'};
   background: white;
-  color: ${props => props.danger ? '#ef4444' : '#3b82f6'};
+  color: ${props => props.danger ? 'var(--color-danger)' : 'var(--color-brand-blue)'};
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
 
   &:hover {
-    background: ${props => props.danger ? '#fef2f2' : '#eff6ff'};
+    background: ${props => props.danger ? 'var(--color-danger-tint-soft)' : 'var(--color-brand-blue-tint)'};
   }
 
   &:disabled {
@@ -216,14 +216,14 @@ export const Tag = styled.span`
   gap: 0.25rem;
   padding: 0.25rem 0.625rem;
   background: ${props => {
-    if (props.university) return '#dbeafe'; // Blue for university
-    if (props.semester) return '#d1fae5'; // Green for semester
-    if (props.topic) return '#fef3c7'; // Amber for topic
+    if (props.university) return 'var(--color-brand-blue-tint-strong)'; // Blue for university
+    if (props.semester) return 'var(--color-brand-green-tint)'; // Green for semester
+    if (props.topic) return 'var(--color-warning-tint)'; // Amber for topic
     return '#ede9fe'; // Purple default
   }};
   color: ${props => {
-    if (props.university) return '#1e40af'; // Blue for university
-    if (props.semester) return '#065f46'; // Green for semester
+    if (props.university) return 'var(--color-brand-blue-deep)'; // Blue for university
+    if (props.semester) return 'var(--color-brand-green-darker)'; // Green for semester
     if (props.topic) return '#92400e'; // Amber for topic
     return '#5b21b6'; // Purple default
   }};

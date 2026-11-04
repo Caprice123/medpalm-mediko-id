@@ -18,7 +18,7 @@ export const SessionContainer = styled.div`
   max-height: min(90vh, 800px);
   background: white;
   border-radius: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@ export const HeaderSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 export const BodySection = styled.div`
@@ -47,7 +47,7 @@ export const BodySection = styled.div`
 export const FooterSection = styled.div`
   flex-shrink: 0;
   padding: 1.25rem 2.25rem 1.75rem;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-gray-100);
 `
 
 export const SessionHeader = styled.div`
@@ -60,7 +60,7 @@ export const SessionHeader = styled.div`
 export const SessionTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
@@ -70,16 +70,16 @@ export const CloseBtn = styled.button`
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border: none;
   border-radius: 50%;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1rem;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 
-  &:hover { background: #fee2e2; color: #ef4444; }
+  &:hover { background: var(--color-danger-tint); color: var(--color-danger); }
 `
 
 export const StatsRow = styled.div`
@@ -90,13 +90,13 @@ export const StatsRow = styled.div`
 
 export const AnsweredCount = styled.div`
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const ProgressBar = styled.div`
   width: 100%;
   height: 6px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 99px;
   overflow: hidden;
 `
@@ -104,13 +104,13 @@ export const ProgressBar = styled.div`
 export const ProgressFill = styled.div`
   height: 100%;
   width: ${p => p.$pct}%;
-  background: linear-gradient(90deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-light));
   border-radius: 99px;
   transition: width 0.3s ease;
 `
 
 export const QuestionCard = styled.div`
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1.75rem;
   display: flex;
@@ -123,7 +123,7 @@ export const QuestionCard = styled.div`
 export const NodePath = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -132,15 +132,15 @@ export const NodePath = styled.div`
 export const NewBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--color-brand-green-tint);
+  color: var(--color-brand-green-dark);
   font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.15rem 0.5rem;
   border-radius: 99px;
-  border: 1px solid #86efac;
+  border: 1px solid var(--color-brand-green-tint-strong);
   flex-shrink: 0;
 `
 
@@ -157,14 +157,14 @@ export const QuestionImage = styled.img`
   max-height: 200px;
   object-fit: contain;
   border-radius: 8px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   align-self: center;
 `
 
 export const QuestionText = styled.p`
   font-size: 1.0625rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0;
 `
@@ -182,15 +182,15 @@ export const OptionButton = styled.button`
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 2px solid ${p => {
-    if (!p.$answered) return '#e5e7eb'
-    if (p.$correct) return '#22c55e'
-    if (p.$selected) return '#ef4444'
-    return '#e5e7eb'
+    if (!p.$answered) return 'var(--color-gray-200)'
+    if (p.$correct) return 'var(--color-brand-green)'
+    if (p.$selected) return 'var(--color-danger)'
+    return 'var(--color-gray-200)'
   }};
   background: ${p => {
     if (!p.$answered) return '#fff'
-    if (p.$correct) return '#f0fdf4'
-    if (p.$selected) return '#fef2f2'
+    if (p.$correct) return 'var(--color-brand-green-tint)'
+    if (p.$selected) return 'var(--color-danger-tint-soft)'
     return '#fff'
   }};
   cursor: ${p => p.$answered ? 'default' : 'pointer'};
@@ -199,8 +199,8 @@ export const OptionButton = styled.button`
   transition: border-color 0.15s, background 0.15s;
 
   &:hover:not([disabled]) {
-    border-color: ${p => !p.$answered ? '#6BB9E8' : 'inherit'};
-    background: ${p => !p.$answered ? '#f0f9ff' : 'inherit'};
+    border-color: ${p => !p.$answered ? 'var(--color-brand-blue)' : 'inherit'};
+    background: ${p => !p.$answered ? 'var(--color-surface-page)' : 'inherit'};
   }
 `
 
@@ -215,18 +215,18 @@ export const OptionLabel = styled.span`
   font-size: 0.8125rem;
   font-weight: 700;
   background: ${p => {
-    if (!p.$answered) return '#f3f4f6'
-    if (p.$correct) return '#22c55e'
-    if (p.$selected) return '#ef4444'
-    return '#f3f4f6'
+    if (!p.$answered) return 'var(--color-gray-100)'
+    if (p.$correct) return 'var(--color-brand-green)'
+    if (p.$selected) return 'var(--color-danger)'
+    return 'var(--color-gray-100)'
   }};
-  color: ${p => (p.$answered && (p.$correct || p.$selected)) ? '#fff' : '#374151'};
+  color: ${p => (p.$answered && (p.$correct || p.$selected)) ? '#fff' : 'var(--color-gray-700)'};
   transition: all 0.15s;
 `
 
 export const OptionText = styled.span`
   font-size: 0.9375rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
 `
 
@@ -237,7 +237,7 @@ export const ActionRow = styled.div`
 
 export const NextButton = styled.button`
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -245,7 +245,7 @@ export const NextButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.15s;
-  box-shadow: 0 4px 12px rgba(107,185,232,0.35);
+  box-shadow: 0 4px 12px rgba(30, 115, 170,0.35);
 
   &:hover { opacity: 0.92; transform: translateY(-1px); }
   &:active { transform: translateY(0); }
@@ -264,7 +264,7 @@ export const ResultCard = styled.div`
 export const ResultScore = styled.div`
   font-size: 4rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
@@ -273,7 +273,7 @@ export const ResultScore = styled.div`
 export const ResultLabel = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 `
@@ -294,12 +294,12 @@ export const ResultStat = styled.div`
 export const ResultStatNum = styled.div`
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const ResultStatLabel = styled.div`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -313,15 +313,15 @@ export const ResultActions = styled.div`
 
 export const SecondaryButton = styled.button`
   padding: 0.75rem 1.5rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 10px;
   background: #fff;
-  color: #374151;
+  color: var(--color-gray-700);
   font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s;
 
-  &:hover { border-color: #6BB9E8; }
+  &:hover { border-color: var(--color-brand-blue); }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 `

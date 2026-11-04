@@ -3,14 +3,14 @@ import styled from 'styled-components'
 export const NoteTitle = styled.h1`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.5rem 0;
   line-height: 1.3;
 `
 
 export const NoteDescription = styled.p`
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 1rem 0;
   line-height: 1.6;
 `

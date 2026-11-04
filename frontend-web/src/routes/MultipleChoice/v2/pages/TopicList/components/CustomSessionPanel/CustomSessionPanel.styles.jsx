@@ -14,7 +14,7 @@ export const Footer = styled.div`
 
 export const StartButton = styled.button`
   padding: 0.6rem 2rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -24,7 +24,7 @@ export const StartButton = styled.button`
   white-space: nowrap;
   transition: opacity 0.15s, transform 0.15s;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(107,185,232,0.4);
+  box-shadow: 0 4px 14px rgba(30, 115, 170,0.4);
   letter-spacing: 0.01em;
 
   &:hover { opacity: 0.92; transform: translateY(-1px); }

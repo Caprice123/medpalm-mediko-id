@@ -28,12 +28,12 @@ const DialogTitle = styled.h3`
   margin: 0 0 12px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
 `
 
 const DialogMessage = styled.p`
   margin: 0 0 24px 0;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.5;
 `
 

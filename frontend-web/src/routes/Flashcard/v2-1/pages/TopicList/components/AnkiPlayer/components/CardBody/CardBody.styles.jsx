@@ -23,7 +23,7 @@ const CardFaceBase = styled.div`
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border-radius: 12px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-gray-300);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,12 +38,12 @@ export const CardFront = styled(CardFaceBase)`
   background: white;
 
   ${FlipArea}:hover & {
-    border-color: #6BB9E8;
+    border-color: var(--color-brand-blue);
   }
 `
 
 export const CardBack = styled(CardFaceBase)`
-  background: #f0f9ff;
+  background: var(--color-surface-page);
   transform: rotateY(180deg);
   border-color: #bae6fd;
 `
@@ -53,14 +53,14 @@ export const CardLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   margin-bottom: 0.625rem;
 `
 
 export const CardText = styled.p`
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.5;
   margin: 0;
   white-space: pre-wrap;
@@ -73,7 +73,7 @@ export const CardImage = styled.img`
   object-fit: contain;
   border-radius: 6px;
   margin-top: 0.75rem;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   flex-shrink: 0;
 `
 
@@ -81,15 +81,15 @@ export const NewBadge = styled.div`
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--color-brand-green-tint);
+  color: var(--color-brand-green-dark);
   font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.2rem 0.5rem;
   border-radius: 99px;
-  border: 1px solid #86efac;
+  border: 1px solid var(--color-brand-green-tint-strong);
   pointer-events: none;
 `
 
@@ -101,6 +101,6 @@ export const FlipHint = styled.div`
   text-align: center;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   letter-spacing: 0.01em;
 `

@@ -29,7 +29,7 @@ export const VideoFrame = styled.iframe`
 `
 
 export const SkeletonVideo = styled.div`
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 1200px 100%;
   animation: ${shimmer} 1.4s infinite linear;
   width: 100%;

@@ -31,14 +31,14 @@ function CalculatorField({ field, value, onChange, error }) {
                     {field.is_required && <span style={{ color: '#ff6b6b' }}> *</span>}
                 </FormLabel>
                 {field.description && (
-                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0', lineHeight: '1.4' }}>
+                    <p style={{ fontSize: '12px', color: 'var(--color-gray-400)', margin: '0', lineHeight: '1.4' }}>
                         {field.description}
                     </p>
                 )}
             </LabelWithDescription>
 
             {field.placeholder && (
-                <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '12px', color: 'var(--color-gray-400)', margin: '0', lineHeight: '1.5' }}>
                     {field.placeholder}
                 </p>
             )}

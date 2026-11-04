@@ -7,7 +7,7 @@ export const RegCard = styled.div`
   gap: 1rem;
   padding: 1rem 1.25rem;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   margin-bottom: 0.75rem;
 
@@ -21,13 +21,13 @@ export const RegInfo = styled.div`
 export const RegTitle = styled.h3`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.2rem;
 `
 
 export const RegMeta = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -38,11 +38,11 @@ export const StatusBadge = styled.span`
   font-size: 0.8125rem;
   font-weight: 600;
   background: ${({ $s }) =>
-    $s === 'approved' ? '#dcfce7' :
-    $s === 'rejected' ? '#fee2e2' : '#fef9c3'};
+    $s === 'approved' ? 'var(--color-brand-green-tint)' :
+    $s === 'rejected' ? 'var(--color-danger-tint)' : '#fef9c3'};
   color: ${({ $s }) =>
-    $s === 'approved' ? '#16a34a' :
-    $s === 'rejected' ? '#dc2626' : '#854d0e'};
+    $s === 'approved' ? 'var(--color-brand-green-dark)' :
+    $s === 'rejected' ? 'var(--color-danger-dark)' : '#854d0e'};
 `
 
 export const EvidenceLinks = styled.div`
@@ -54,14 +54,14 @@ export const EvidenceLinks = styled.div`
 
 export const EvidenceLink = styled.a`
   font-size: 0.75rem;
-  color: #2563eb;
+  color: var(--color-brand-blue-deep);
   text-decoration: none;
   padding: 0.2rem 0.5rem;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--color-brand-blue-tint);
+  border: 1px solid var(--color-brand-blue-tint-strong);
   border-radius: 4px;
 
-  &:hover { background: #dbeafe; }
+  &:hover { background: var(--color-brand-blue-tint-strong); }
 `
 
 export const JoinLinks = styled.div`
@@ -81,7 +81,7 @@ export const JoinLink = styled.a`
   text-decoration: none;
   padding: 0.375rem 0.875rem;
   border-radius: 6px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   transition: opacity 0.15s;
 
   &:hover { opacity: 0.88; }
@@ -89,7 +89,7 @@ export const JoinLink = styled.a`
 
 export const AdminNote = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0.375rem 0 0;
   font-style: italic;
 `

@@ -31,7 +31,7 @@ export const ProcessingIcon = styled.div`
 
 export const Message = styled.p`
   font-size: 1.125rem;
-  color: #1f2937;
+  color: var(--color-gray-800);
   text-align: center;
   line-height: 1.6;
   margin: 0;
@@ -41,14 +41,14 @@ export const BulletList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   padding: 1.5rem;
   border-radius: 8px;
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid var(--color-warning);
 `
 
 export const BulletItem = styled.div`
-  color: #4b5563;
+  color: var(--color-gray-600);
   font-size: 0.938rem;
   line-height: 1.5;
 `
@@ -57,7 +57,7 @@ export const ProcessingSteps = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   padding: 1.5rem;
   border-radius: 8px;
 `
@@ -78,14 +78,14 @@ export const StepIcon = styled.div`
 
 export const StepText = styled.div`
   font-size: 1rem;
-  color: ${props => props.completed ? '#10b981' : '#4b5563'};
+  color: ${props => props.completed ? 'var(--color-brand-green)' : 'var(--color-gray-600)'};
   font-weight: ${props => props.completed ? '600' : '400'};
   transition: all 0.3s ease;
 `
 
 export const SubMessage = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-align: center;
   font-style: italic;
   margin: 0;

@@ -18,7 +18,7 @@ export const DeckContainer = styled.div`
   max-height: min(90vh, 800px);
   background: white;
   border-radius: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@ export const HeaderSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 export const BodySection = styled.div`
@@ -47,7 +47,7 @@ export const BodySection = styled.div`
 export const FooterSection = styled.div`
   flex-shrink: 0;
   padding: 1.25rem 2.25rem 1.75rem;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-gray-100);
 `
 
 export const DeckHeader = styled.div`
@@ -60,7 +60,7 @@ export const DeckHeader = styled.div`
 export const DeckTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
@@ -70,16 +70,16 @@ export const BackBtn = styled.button`
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border: none;
   border-radius: 50%;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1rem;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 
-  &:hover { background: #fee2e2; color: #ef4444; }
+  &:hover { background: var(--color-danger-tint); color: var(--color-danger); }
 `
 
 export const StatsRow = styled.div`
@@ -91,7 +91,7 @@ export const StatsRow = styled.div`
 export const TopicPath = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -101,7 +101,7 @@ export const TopicPath = styled.div`
 export const ProgressBar = styled.div`
   width: 100%;
   height: 6px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 99px;
   overflow: hidden;
 `
@@ -109,7 +109,7 @@ export const ProgressBar = styled.div`
 export const ProgressFill = styled.div`
   height: 100%;
   width: ${p => p.$progress}%;
-  background: linear-gradient(90deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-light));
   border-radius: 99px;
   transition: width 0.3s ease;
 `

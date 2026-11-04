@@ -2,14 +2,14 @@ import styled, { keyframes, css } from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 `
 
 export const Content = styled.div`
     display: flex;
     margin: 0 auto;
     height: calc(100vh - 44px);
-    background: #f0fdfa;
+    background: var(--color-brand-blue-tint);
     overflow: hidden;
 
     @media (max-width: 768px) {
@@ -43,11 +43,11 @@ export const Sidebar = styled.div`
 // Timer animations
 const pulseGlow = keyframes`
   0%, 100% {
-    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 12px 30px rgba(124, 179, 66, 0.25);
   }
   50% {
-    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4),
-                0 0 20px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 12px 30px rgba(124, 179, 66, 0.4),
+                0 0 20px rgba(124, 179, 66, 0.3);
   }
 `
 
@@ -85,8 +85,8 @@ export const TimerCard = styled.div`
     switch ($state) {
       case 'critical':
         return css`
-          background: linear-gradient(135deg, #ef4444, #dc2626);
-          border-color: #dc2626;
+          background: linear-gradient(135deg, var(--color-danger), var(--color-danger-dark));
+          border-color: var(--color-danger-dark);
           box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
           animation: ${pulseCritical} 1s infinite ease-in-out;
 
@@ -97,8 +97,8 @@ export const TimerCard = styled.div`
         `
       case 'warning':
         return css`
-          background: linear-gradient(135deg, #f59e0b, #d97706);
-          border-color: #d97706;
+          background: linear-gradient(135deg, var(--color-warning), var(--color-warning-dark));
+          border-color: var(--color-warning-dark);
           box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
           animation: ${pulseWarning} 1.5s infinite ease-in-out;
 
@@ -110,14 +110,14 @@ export const TimerCard = styled.div`
       case 'normal':
       default:
         return css`
-          background: linear-gradient(135deg, #10b981, #059669);
-          border-color: #059669;
-          box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+          background: linear-gradient(135deg, var(--color-brand-green), var(--color-brand-green-dark));
+          border-color: var(--color-brand-green-dark);
+          box-shadow: 0 12px 30px rgba(124, 179, 66, 0.25);
           animation: ${pulseGlow} 2s infinite ease-in-out;
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 40px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 16px 40px rgba(124, 179, 66, 0.35);
           }
         `
     }
@@ -454,7 +454,7 @@ export const Message = styled.div`
 `
 
 export const UserMessage = styled.div`
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
@@ -475,7 +475,7 @@ export const UserMessage = styled.div`
 
 export const AIMessage = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
   border-bottom-left-radius: 4px;
@@ -533,7 +533,7 @@ export const InputArea = styled.div`
   border-radius: 0;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
   margin-top: 0;
-  border-top: 1px solid rgba(0, 124, 240, 0.1);
+  border-top: 1px solid rgba(30, 115, 170, 0.1);
 
   @media (max-width: 768px) {
     padding: 16px;
@@ -561,7 +561,7 @@ export const TextInput = styled.textarea`
   width: 100%;
   min-height: 80px;
   padding: 16px 20px;
-  border: 2px solid rgba(0, 124, 240, 0.15);
+  border: 2px solid rgba(30, 115, 170, 0.15);
   border-radius: 12px;
   resize: none;
   font-family: inherit;
@@ -574,7 +574,7 @@ export const TextInput = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${colors.primary.main};
-    box-shadow: 0 0 0 3px rgba(0, 124, 240, 0.1);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.1);
     background: #ffffff;
   }
 
@@ -625,12 +625,12 @@ export const RecordButton = styled.button`
   flex: 1;
   height: 56px;
   gap: 12px;
-  background: ${props => props.recording ? 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)' : colors.primary.main};
+  background: ${props => props.recording ? 'linear-gradient(135deg, var(--color-danger) 0%, #f87171 100%)' : colors.primary.main};
   color: white;
   font-size: 1rem;
   box-shadow: ${props => props.recording
     ? '0 4px 16px rgba(239, 68, 68, 0.3)'
-    : '0 4px 16px rgba(0, 124, 240, 0.25)'};
+    : '0 4px 16px rgba(30, 115, 170, 0.25)'};
   border: none;
   border-radius: 14px;
   font-weight: 600;
@@ -654,7 +654,7 @@ export const RecordButton = styled.button`
 
     &:hover {
       box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      background: linear-gradient(135deg, var(--color-danger-dark) 0%, var(--color-danger) 100%);
     }
   `}
 
@@ -662,7 +662,7 @@ export const RecordButton = styled.button`
     transform: translateY(-2px);
     box-shadow: ${props => props.recording
       ? '0 8px 24px rgba(239, 68, 68, 0.4)'
-      : '0 8px 24px rgba(0, 124, 240, 0.35)'};
+      : '0 8px 24px rgba(30, 115, 170, 0.35)'};
 
     svg {
       transform: scale(1.1);
@@ -673,7 +673,7 @@ export const RecordButton = styled.button`
     transform: translateY(0);
     box-shadow: ${props => props.recording
       ? '0 4px 12px rgba(239, 68, 68, 0.3)'
-      : '0 4px 12px rgba(0, 124, 240, 0.3)'};
+      : '0 4px 12px rgba(30, 115, 170, 0.3)'};
   }
 
   svg {
@@ -684,12 +684,12 @@ export const RecordButton = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
-    background: #94a3b8;
+    box-shadow: 0 2px 8px rgba(30, 115, 170, 0.1);
+    background: var(--color-gray-400);
 
     &:hover {
       transform: none;
-      box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+      box-shadow: 0 2px 8px rgba(30, 115, 170, 0.1);
     }
   }
 
@@ -713,7 +713,7 @@ export const SendButton = styled.button`
   width: 56px;
   background: linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.primary.hover} 100%);
   color: white;
-  box-shadow: 0 4px 16px rgba(0, 124, 240, 0.25);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.25);
   border: none;
   border-radius: 14px;
   font-weight: 600;
@@ -726,24 +726,24 @@ export const SendButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 124, 240, 0.35);
+    box-shadow: 0 8px 24px rgba(30, 115, 170, 0.35);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(0, 124, 240, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
-    background: #94a3b8;
+    box-shadow: 0 2px 8px rgba(30, 115, 170, 0.1);
+    background: var(--color-gray-400);
 
     &:hover {
       transform: none;
-      box-shadow: 0 2px 8px rgba(0, 124, 240, 0.1);
+      box-shadow: 0 2px 8px rgba(30, 115, 170, 0.1);
     }
   }
 
@@ -764,9 +764,9 @@ export const HelpText = styled.div`
   margin-top: 12px;
   text-align: center;
   padding: 12px 16px;
-  background: linear-gradient(135deg, rgba(0, 124, 240, 0.06) 0%, rgba(0, 223, 216, 0.06) 100%);
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.06) 0%, rgba(0, 223, 216, 0.06) 100%);
   border-radius: 10px;
-  border: 1px solid rgba(0, 124, 240, 0.15);
+  border: 1px solid rgba(30, 115, 170, 0.15);
   font-weight: 500;
   line-height: 1.4;
 `
@@ -809,7 +809,7 @@ export const TypingIndicator = styled.div`
 export const TypingDot = styled.div`
   width: 8px;
   height: 8px;
-  background: #9ca3af;
+  background: var(--color-gray-400);
   border-radius: 50%;
   animation: ${typingAnimation} 1.4s infinite;
   animation-delay: ${props => props.delay};
@@ -1042,7 +1042,7 @@ export const ObservationCheckbox = styled.label`
 
   &:hover:not([disabled]) {
     border-color: ${colors.primary.main};
-    box-shadow: 0 2px 4px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 2px 4px rgba(30, 115, 170, 0.1);
   }
 
   input[type="checkbox"] {
@@ -1075,7 +1075,7 @@ export const SaveObservationsButton = styled.button`
 
   &:hover:not(:disabled) {
     background: ${colors.primary.hover};
-    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   }
 
   &:disabled {

@@ -21,7 +21,7 @@ export const LoadingText = styled.p`
       default: return '0.875rem'
     }
   }};
-  color: ${({ color }) => color || '#6b7280'};
+  color: ${({ color }) => color || 'var(--color-gray-500)'};
   font-weight: ${({ weight }) => weight || '400'};
   text-align: center;
 `

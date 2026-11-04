@@ -5,8 +5,8 @@ import { Card, CardBody } from '@components/common/Card'
 
 const SkeletonWrapper = styled.div`
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
   }
 `
 

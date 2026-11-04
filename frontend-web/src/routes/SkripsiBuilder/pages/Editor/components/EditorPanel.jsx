@@ -32,7 +32,7 @@ const EditorPanel = memo(({
           </Button>
         </EditorActions>
         <StyledEditorContent>
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-gray-400)' }}>
             Memuat konten editor...
           </div>
         </StyledEditorContent>

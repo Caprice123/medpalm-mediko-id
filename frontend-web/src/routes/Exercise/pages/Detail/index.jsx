@@ -22,7 +22,7 @@ function ExerciseDetailPage() {
       <PageContainer>
         <LoadingContainer>
           <LoadingSpinner />
-          <div style={{ marginTop: '1rem', color: '#6b7280' }}>
+          <div style={{ marginTop: '1rem', color: 'var(--color-gray-500)' }}>
             Memulai latihan soal...
           </div>
         </LoadingContainer>
@@ -36,7 +36,7 @@ function ExerciseDetailPage() {
       <PageContainer>
         <LoadingContainer>
           <LoadingSpinner />
-          <div style={{ marginTop: '1rem', color: '#6b7280' }}>
+          <div style={{ marginTop: '1rem', color: 'var(--color-gray-500)' }}>
             Memuat soal latihan...
           </div>
         </LoadingContainer>

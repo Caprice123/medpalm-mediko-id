@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -15,8 +15,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -66,8 +66,8 @@ export const HeaderTop = styled.div`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -79,8 +79,8 @@ export const BackButton = styled.button`
   gap: 0.5rem;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -90,7 +90,7 @@ export const TopicInfo = styled.div`
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-gray-900);
     margin: 0 0 0.5rem 0;
     display: flex;
     align-items: center;
@@ -103,7 +103,7 @@ export const TopicInfo = styled.div`
 
   p {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin: 0;
     line-height: 1.5;
   }
@@ -128,13 +128,13 @@ export const Tag = styled.span`
   font-weight: 500;
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
@@ -143,7 +143,7 @@ export const Tag = styled.span`
 export const FormTitle = styled.h2`
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #6BB9E8, #3b82f6);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -158,7 +158,7 @@ export const FormTitle = styled.h2`
 
 export const FormDescription = styled.p`
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0.5rem 0 0 0;
   line-height: 1.6;
 `
@@ -182,15 +182,15 @@ export const QuizImageSection = styled.div`
   flex-direction: column;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(107, 185, 232, 0.12);
-  background: #f8fafc;
+  box-shadow: 0 8px 24px rgba(30, 115, 170, 0.12);
+  background: var(--color-surface-page);
   position: sticky;
   top: 0;
   transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: 0 12px 32px rgba(107, 185, 232, 0.18);
-    border-color: rgba(107, 185, 232, 0.2);
+    box-shadow: 0 12px 32px rgba(30, 115, 170, 0.18);
+    border-color: rgba(30, 115, 170, 0.2);
   }
 
 
@@ -206,7 +206,7 @@ export const QuizImage = styled.img`
   height: 100%;
   display: block;
   object-fit: contain;
-  background: #f8fafc;
+  background: var(--color-surface-page);
   cursor: pointer;
   transition: opacity 0.3s ease;
 
@@ -257,16 +257,16 @@ export const QuestionsSection = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: var(--color-gray-100);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--color-gray-300);
     border-radius: 4px;
 
     &:hover {
-      background: #94a3b8;
+      background: var(--color-gray-400);
     }
   }
 
@@ -279,17 +279,17 @@ export const QuestionsSection = styled.div`
 export const SubmitButtonContainer = styled.div`
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px solid #f1f5f9;
+  border-top: 2px solid var(--color-gray-100);
   flex-shrink: 0;
 `
 
 export const SectionTitle = styled.h3`
   font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 1.25rem 0;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 2px solid var(--color-gray-100);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -299,7 +299,7 @@ export const SectionTitle = styled.h3`
     content: '';
     width: 3px;
     height: 20px;
-    background: linear-gradient(180deg, #6BB9E8, #3b82f6);
+    background: linear-gradient(180deg, var(--color-brand-blue), var(--color-brand-blue));
     border-radius: 2px;
   }
 
@@ -310,16 +310,16 @@ export const SectionTitle = styled.h3`
 
 export const QuestionCard = styled.div`
   background: white;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.05);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.05);
   position: relative;
 
   &:hover {
-    box-shadow: 0 8px 20px rgba(107, 185, 232, 0.15);
+    box-shadow: 0 8px 20px rgba(30, 115, 170, 0.15);
     transform: translateX(4px);
 
     &::before {
@@ -336,7 +336,7 @@ export const QuestionLabel = styled.label`
   display: block;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--color-gray-700);
   margin-bottom: 0.75rem;
   line-height: 1.5;
 `
@@ -344,30 +344,30 @@ export const QuestionLabel = styled.label`
 export const QuestionInput = styled.input`
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 0.9375rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   background: white;
-  color: #1e293b;
+  color: var(--color-gray-800);
   font-weight: 500;
 
   &:focus {
     outline: none;
-    border-color: #6BB9E8;
+    border-color: var(--color-brand-blue);
     background: white;
-    box-shadow: 0 0 0 4px rgba(107, 185, 232, 0.1);
+    box-shadow: 0 0 0 4px rgba(30, 115, 170, 0.1);
     transform: translateY(-1px);
   }
 
   &::placeholder {
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-weight: 400;
   }
 
   &:hover:not(:focus) {
-    border-color: #cbd5e1;
+    border-color: var(--color-gray-300);
   }
 `
 
@@ -377,9 +377,9 @@ export const ResultHeader = styled.div`
   gap: 1.5rem;
   padding: 2.5rem;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, rgba(107, 185, 232, 0.08), rgba(59, 130, 246, 0.05));
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.08), rgba(30, 115, 170, 0.05));
   border-radius: 20px;
-  border: 2px solid rgba(107, 185, 232, 0.2);
+  border: 2px solid rgba(30, 115, 170, 0.2);
   position: relative;
   overflow: hidden;
   animation: resultPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -391,7 +391,7 @@ export const ResultHeader = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #6BB9E8, #3b82f6);
+    background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue));
   }
 
   &::after {
@@ -436,7 +436,7 @@ export const CelebrationHeader = styled.div`
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -445,7 +445,7 @@ export const CelebrationHeader = styled.div`
 export const ScoreDisplay = styled.div`
   font-size: 2.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -475,7 +475,7 @@ export const ScoreDisplay = styled.div`
 
 export const ScoreLabel = styled.p`
   font-size: 0.9375rem;
-  color: #475569;
+  color: var(--color-gray-600);
   margin: 0.5rem 0 1.25rem 0;
   font-weight: 600;
 `
@@ -493,14 +493,14 @@ export const StatsGrid = styled.div`
 
 export const StatCard = styled.div`
   background: ${props => {
-    if (props.type === 'correct') return '#ECFDF5';
-    if (props.type === 'wrong') return '#FEF2F2';
-    return '#EFF6FF';
+    if (props.type === 'correct') return 'var(--color-brand-green-tint)';
+    if (props.type === 'wrong') return 'var(--color-danger-tint-soft)';
+    return 'var(--color-brand-blue-tint)';
   }};
   border: 2px solid ${props => {
-    if (props.type === 'correct') return '#10b981';
-    if (props.type === 'wrong') return '#ef4444';
-    return '#6BB9E8';
+    if (props.type === 'correct') return 'var(--color-brand-green)';
+    if (props.type === 'wrong') return 'var(--color-danger)';
+    return 'var(--color-brand-blue)';
   }};
   padding: 1rem;
   border-radius: 12px;
@@ -521,9 +521,9 @@ export const StatValue = styled.div`
   font-size: 1.25rem;
   font-weight: 900;
   color: ${props => {
-    if (props.type === 'correct') return '#047857';
-    if (props.type === 'wrong') return '#dc2626';
-    return '#1e40af';
+    if (props.type === 'correct') return 'var(--color-brand-green-darker)';
+    if (props.type === 'wrong') return 'var(--color-danger-dark)';
+    return 'var(--color-brand-blue-deep)';
   }};
   margin-bottom: 0.25rem;
 `
@@ -531,7 +531,7 @@ export const StatValue = styled.div`
 export const StatLabel = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--color-gray-600);
 `
 
 export const AnswersReview = styled.div`
@@ -548,16 +548,16 @@ export const AnswersReview = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: var(--color-gray-100);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--color-gray-300);
     border-radius: 4px;
 
     &:hover {
-      background: #94a3b8;
+      background: var(--color-gray-400);
     }
   }
 
@@ -569,13 +569,13 @@ export const AnswersReview = styled.div`
 
 export const AnswerCard = styled.div`
   background: ${props => props.isCorrect
-    ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)'
-    : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)'};
+    ? 'linear-gradient(135deg, var(--color-brand-green-tint) 0%, var(--color-brand-green-tint) 100%)'
+    : 'linear-gradient(135deg, var(--color-danger-tint-soft) 0%, var(--color-danger-tint) 100%)'};
   border-radius: 16px;
   padding: 1.5rem;
-  border: 2px solid ${props => props.isCorrect ? '#10b981' : '#ef4444'};
+  border: 2px solid ${props => props.isCorrect ? 'var(--color-brand-green)' : 'var(--color-danger)'};
   box-shadow: 0 4px 12px ${props => props.isCorrect
-    ? 'rgba(16, 185, 129, 0.1)'
+    ? 'rgba(124, 179, 66, 0.1)'
     : 'rgba(239, 68, 68, 0.1)'};
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -588,7 +588,7 @@ export const AnswerCard = styled.div`
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: ${props => props.isCorrect ? '#10b981' : '#ef4444'};
+    background: ${props => props.isCorrect ? 'var(--color-brand-green)' : 'var(--color-danger)'};
     color: white;
     display: flex;
     align-items: center;
@@ -596,7 +596,7 @@ export const AnswerCard = styled.div`
     font-size: 1.25rem;
     font-weight: 700;
     box-shadow: 0 4px 12px ${props => props.isCorrect
-      ? 'rgba(16, 185, 129, 0.3)'
+      ? 'rgba(124, 179, 66, 0.3)'
       : 'rgba(239, 68, 68, 0.3)'};
     z-index: 10;
   }
@@ -604,7 +604,7 @@ export const AnswerCard = styled.div`
   &:hover {
     transform: translateX(4px);
     box-shadow: 0 8px 20px ${props => props.isCorrect
-      ? 'rgba(16, 185, 129, 0.2)'
+      ? 'rgba(124, 179, 66, 0.2)'
       : 'rgba(239, 68, 68, 0.2)'};
   }
 `
@@ -612,7 +612,7 @@ export const AnswerCard = styled.div`
 export const AnswerQuestion = styled.div`
   font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin-bottom: 1rem;
   padding-right: 3rem;
   line-height: 1.5;
@@ -643,7 +643,7 @@ export const AnswerItem = styled.div`
 
 export const AnswerItemLabel = styled.span`
   font-weight: 700;
-  color: #475569;
+  color: var(--color-gray-600);
   font-size: 0.875rem;
 
   @media (min-width: 640px) {
@@ -653,18 +653,18 @@ export const AnswerItemLabel = styled.span`
 
 export const AnswerItemValue = styled.span`
   color: ${props =>
-    props.type === 'correct' ? '#059669' :
-    props.type === 'wrong' ? '#dc2626' :
-    '#334155'};
+    props.type === 'correct' ? 'var(--color-brand-green-dark)' :
+    props.type === 'wrong' ? 'var(--color-danger-dark)' :
+    'var(--color-gray-700)'};
   font-weight: 600;
   flex: 1;
   padding: 0.625rem 0.875rem;
   background: white;
   border-radius: 8px;
   border: 2px solid ${props =>
-    props.type === 'correct' ? '#d1fae5' :
-    props.type === 'wrong' ? '#fee2e2' :
-    '#e2e8f0'};
+    props.type === 'correct' ? 'var(--color-brand-green-tint)' :
+    props.type === 'wrong' ? 'var(--color-danger-tint)' :
+    'var(--color-gray-200)'};
   word-break: break-word;
 `
 
@@ -677,11 +677,11 @@ export const OptionsContainer = styled.div`
 
 export const OptionButton = styled.button`
   padding: 0.875rem 1rem;
-  border: 2px solid ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
-  background: ${props => props.selected ? '#F0F9FF' : 'white'};
+  border: 2px solid ${props => props.selected ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  background: ${props => props.selected ? 'var(--color-surface-page)' : 'white'};
   border-radius: 12px;
   font-size: 0.9375rem;
-  color: #0f172a;
+  color: var(--color-gray-900);
   font-weight: 500;
   cursor: pointer;
   text-align: left;
@@ -692,8 +692,8 @@ export const OptionButton = styled.button`
   width: 100%;
 
   &:hover {
-    border-color: #6BB9E8;
-    background: #F0F9FF;
+    border-color: var(--color-brand-blue);
+    background: var(--color-surface-page);
     transform: translateY(-2px);
   }
 `
@@ -705,8 +705,8 @@ export const OptionLabel = styled.span`
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: ${props => props.selected ? '#6BB9E8' : '#e2e8f0'};
-  color: ${props => props.selected ? 'white' : '#64748b'};
+  background: ${props => props.selected ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  color: ${props => props.selected ? 'white' : 'var(--color-gray-500)'};
   font-weight: 700;
   font-size: 0.875rem;
   flex-shrink: 0;
@@ -717,7 +717,7 @@ export const OptionText = styled.span`
 `
 
 export const ErrorText = styled.p`
-  color: #ef4444;
+  color: var(--color-danger);
   font-size: 0.75rem;
   margin-top: 0.5rem;
   margin-bottom: 0;
@@ -728,8 +728,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(107, 185, 232, 0.2);
-  border-top: 3px solid #6BB9E8;
+  border: 3px solid rgba(30, 115, 170, 0.2);
+  border-top: 3px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 

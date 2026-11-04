@@ -14,7 +14,7 @@ export const AtlasSectionHeader = styled.div`
 export const AtlasSectionTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   display: flex;
   align-items: center;
@@ -22,14 +22,14 @@ export const AtlasSectionTitle = styled.h2`
 `
 
 export const AtlasSectionIcon = styled.span`
-  color: #10b981;
+  color: var(--color-brand-blue);
   display: flex;
   align-items: center;
 `
 
 export const AtlasSectionSubtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 1.25rem;
 `
 
@@ -53,14 +53,14 @@ export const AtlasModuleTag = styled.span`
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: ${({ $type }) => $type === 'patologi' ? '#fee2e2' : '#d1fae5'};
-  color: ${({ $type }) => $type === 'patologi' ? '#b91c1c' : '#047857'};
+  background: ${({ $type }) => $type === 'patologi' ? 'var(--color-danger-tint)' : 'var(--color-brand-green-tint)'};
+  color: ${({ $type }) => $type === 'patologi' ? '#b91c1c' : 'var(--color-brand-green-darker)'};
 `
 
 export const AtlasModuleTitle = styled.span`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const AtlasGrid = styled.div`
@@ -79,14 +79,14 @@ export const AtlasCard = styled.div`
   gap: 0.875rem;
   padding: 0.875rem 1rem;
   background: #fff;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 10px;
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: #a7f3d0;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+    border-color: var(--color-brand-blue-tint-strong);
+    box-shadow: 0 2px 8px rgba(30, 115, 170, 0.08);
   }
 `
 
@@ -97,8 +97,8 @@ export const AtlasCardIcon = styled.span`
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 8px;
-  background: #d1fae5;
-  color: #047857;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
   font-size: 1rem;
   flex-shrink: 0;
 `
@@ -107,12 +107,12 @@ export const AtlasCardTitle = styled.span`
   flex: 1;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.4;
 `
 
 export const AtlasCardArrow = styled.span`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 1.125rem;
   flex-shrink: 0;
   display: flex;

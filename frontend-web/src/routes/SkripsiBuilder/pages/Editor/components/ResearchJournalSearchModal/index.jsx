@@ -170,7 +170,7 @@ function ResearchJournalSearchModal({ isOpen, onClose, setUniqueId }) {
             <span>
               {myJournals.length === 0
                 ? 'Semua jurnal aktif (default)'
-                : <>{myJournals.length}<span style={{ color: atLimit ? '#ef4444' : '#9ca3af' }}>/{maxJournals}</span> jurnal dipilih</>}
+                : <>{myJournals.length}<span style={{ color: atLimit ? 'var(--color-danger)' : 'var(--color-gray-400)' }}>/{maxJournals}</span> jurnal dipilih</>}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {searchResults.length > 0 && (

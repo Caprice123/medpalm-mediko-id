@@ -25,7 +25,7 @@ export const TextBlock = styled.p`
   row-gap: 0.5rem;
   font-size: 1.3125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 2.4;
   margin: 0;
   text-align: center;
@@ -68,7 +68,7 @@ export const AnswerBox = styled.span`
   text-align: center;
   padding: 0.125rem 1rem;
   border-radius: 8px;
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: #fff;
 
   @media (max-width: 768px) {
@@ -82,24 +82,24 @@ export const BlankInput = styled.input`
   width: 7rem;
   padding: 0.3125rem 0.5rem;
   margin: 0 0.1875rem;
-  border: 1.5px solid #d1d5db;
+  border: 1.5px solid var(--color-gray-300);
   border-radius: 8px;
   background: #fff;
   font-size: 1.0625rem;
   font-weight: 600;
   font-family: inherit;
-  color: #111827;
+  color: var(--color-gray-900);
   text-align: center;
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
     font-weight: 400;
   }
 
   &:focus {
     outline: none;
-    border-color: #0d9488;
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.15);
   }
 
   @media (max-width: 768px) {
@@ -111,7 +111,7 @@ export const BlankInput = styled.input`
 export const RevealButton = styled.button`
   width: 100%;
   padding: 0.75rem 1.5rem;
-  background: #0d9488;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 10px;

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: linear-gradient(135deg, var(--color-surface-page) 0%, var(--color-brand-blue-tint) 100%);
   padding: 2rem;
 `
 
@@ -14,7 +14,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -22,7 +22,7 @@ export const Title = styled.h1`
 `
 
 export const Subtitle = styled.p`
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 1.1rem;
 `
 
@@ -56,7 +56,7 @@ export const QuizCard = styled.div`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(107, 185, 232, 0.2);
+    box-shadow: 0 8px 24px rgba(30, 115, 170, 0.2);
   }
 `
 
@@ -76,12 +76,12 @@ export const QuizCardBody = styled.div`
 export const QuizTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-gray-800);
   margin-bottom: 0.5rem;
 `
 
 export const QuizDescription = styled.p`
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   margin-bottom: 1rem;
   line-height: 1.5;
@@ -92,7 +92,7 @@ export const QuizMeta = styled.div`
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
 `
 
@@ -111,8 +111,8 @@ export const TagList = styled.div`
 
 export const Tag = styled.span`
   padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, rgba(107, 185, 232, 0.1), rgba(141, 198, 63, 0.1));
-  color: #6BB9E8;
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.1), rgba(124, 179, 66, 0.1));
+  color: var(--color-brand-blue);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -123,7 +123,7 @@ export const SubscriptionBadge = styled.div`
   top: 1rem;
   right: 1rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   color: white;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -149,7 +149,7 @@ export const EmptyStateIcon = styled.div`
 
 export const EmptyStateText = styled.p`
   font-size: 1.25rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin-bottom: 0.5rem;
 `
 
@@ -161,6 +161,6 @@ export const LoadingOverlay = styled.div`
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   font-size: 1.1rem;
 `

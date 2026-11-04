@@ -50,12 +50,12 @@ export const ResizeHandle = styled.div`
     content: '';
     width: 2px;
     height: 100%;
-    background: ${({ $active }) => $active ? '#10b981' : 'transparent'};
+    background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'transparent'};
     transition: background 0.15s;
   }
 
   &:hover::after {
-    background: #10b981;
+    background: var(--color-brand-blue);
   }
 
   @media (max-width: 768px) {
@@ -74,7 +74,7 @@ export const DrawerHeader = styled.div`
 export const DrawerTitle = styled.h2`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.4;
 `
@@ -84,30 +84,30 @@ export const CloseBtn = styled.button`
   border: none;
   cursor: pointer;
   font-size: 1rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   padding: 0.125rem;
   flex-shrink: 0;
   line-height: 1;
-  &:hover { color: #374151; }
+  &:hover { color: var(--color-gray-700); }
 `
 
 export const TabBar = styled.div`
   display: flex;
   gap: 0;
   padding: 1rem 1.25rem 0;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   margin-top: 0.75rem;
 `
 
 export const TabBtn = styled.button`
   background: none;
   border: none;
-  border-bottom: 2.5px solid ${({ $active }) => $active ? '#10b981' : 'transparent'};
+  border-bottom: 2.5px solid ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'transparent'};
   margin-bottom: -2px;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   font-weight: ${({ $active }) => $active ? '600' : '500'};
-  color: ${({ $active }) => $active ? '#10b981' : '#6b7280'};
+  color: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -116,7 +116,7 @@ export const TabBtn = styled.button`
   transition: color 0.15s, border-color 0.15s;
 
   &:hover {
-    color: ${({ $active }) => $active ? '#10b981' : '#374151'};
+    color: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'};
   }
 `
 
@@ -133,7 +133,7 @@ export const PanelContent = styled.div`
 export const CountLabel = styled.p`
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0 0 0.5rem;
 `
 
@@ -146,16 +146,16 @@ export const SessionRow = styled.div`
 export const CountInput = styled.input`
   width: 5rem;
   padding: 0.5rem 0.625rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 0.9375rem;
-  color: #111827;
+  color: var(--color-gray-900);
   text-align: center;
   outline: none;
 
   &:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.12);
   }
 
   &::-webkit-inner-spin-button,
@@ -167,7 +167,7 @@ export const CountInput = styled.input`
 export const StartButton = styled.button`
   flex: 1;
   padding: 0.5rem 1rem;
-  background: #10b981;
+  background: var(--color-brand-blue);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -176,8 +176,8 @@ export const StartButton = styled.button`
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: #059669; }
-  &:disabled { background: #d1d5db; cursor: not-allowed; }
+  &:hover:not(:disabled) { background: var(--color-brand-blue-deep); }
+  &:disabled { background: var(--color-gray-300); cursor: not-allowed; }
 `
 
 // Shared by FlashcardTab and McqTab players
@@ -195,12 +195,12 @@ export const PlayerStats = styled.div`
 
 export const PlayerCounter = styled.span`
   font-size: 0.8125rem;
-  color: #6b7280;
-  b { color: #111827; }
+  color: var(--color-gray-500);
+  b { color: var(--color-gray-900); }
 `
 
 export const PlayerBackBtn = styled.button`
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border: none;
   border-radius: 50%;
   width: 28px;
@@ -209,16 +209,16 @@ export const PlayerBackBtn = styled.button`
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   cursor: pointer;
   flex-shrink: 0;
-  &:hover { background: #fee2e2; color: #ef4444; }
+  &:hover { background: var(--color-danger-tint); color: var(--color-danger); }
 `
 
 export const PlayerProgress = styled.div`
   width: 100%;
   height: 5px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 99px;
   overflow: hidden;
 `
@@ -226,7 +226,7 @@ export const PlayerProgress = styled.div`
 export const PlayerFill = styled.div`
   height: 100%;
   width: ${p => p.$progress}%;
-  background: linear-gradient(90deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-light));
   border-radius: 99px;
   transition: width 0.3s ease;
 `

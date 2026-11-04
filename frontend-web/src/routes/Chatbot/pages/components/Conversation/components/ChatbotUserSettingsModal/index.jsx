@@ -274,7 +274,7 @@ function ChatbotUserSettingsModal({ isOpen, onClose }) {
             <span>
               {selectedJournals.length === 0 && customJournals.length === 0
                 ? 'Semua jurnal aktif (default)'
-                : <>{totalSelected}<span style={{ color: atLimit ? '#ef4444' : '#9ca3af' }}>/{MAX_JOURNALS}</span> jurnal dipilih</>}
+                : <>{totalSelected}<span style={{ color: atLimit ? 'var(--color-danger)' : 'var(--color-gray-400)' }}>/{MAX_JOURNALS}</span> jurnal dipilih</>}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <Button variant="secondary" size="small" onClick={selectAllJournals} type="button">

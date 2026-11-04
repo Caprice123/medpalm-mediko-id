@@ -21,7 +21,7 @@ const HeaderSection = styled.div`
 const TabBarSection = styled.div`
   display: flex;
   gap: 1rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   padding-bottom: 0.5rem;
 `
 
@@ -32,7 +32,7 @@ const ContentSection = styled.div`
   padding: 2rem;
   background: white;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 `
 
 const ScoreSection = styled.div`
@@ -44,9 +44,9 @@ const ScoreSection = styled.div`
 
 const ScoreCard = styled.div`
   padding: 1.5rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -69,8 +69,8 @@ const TableRow = styled.div`
   grid-template-columns: 2fr 1fr 1fr;
   gap: 1rem;
   padding: 1rem;
-  background: ${props => props.$header ? '#f9fafb' : 'white'};
-  border: 1px solid #e5e7eb;
+  background: ${props => props.$header ? 'var(--color-gray-50)' : 'white'};
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
 `
 
@@ -83,8 +83,8 @@ function SessionResultSkeleton() {
           width={100}
           height={40}
           borderRadius={8}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
       </HeaderSection>
 
@@ -96,8 +96,8 @@ function SessionResultSkeleton() {
             width={100}
             height={40}
             borderRadius={8}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
         ))}
       </TabBarSection>
@@ -111,14 +111,14 @@ function SessionResultSkeleton() {
               <Skeleton
                 width="60%"
                 height={16}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
               <Skeleton
                 width="80%"
                 height={32}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
             </ScoreCard>
           ))}
@@ -131,25 +131,25 @@ function SessionResultSkeleton() {
             <Skeleton
               width={200}
               height={24}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* Table */}
             <TableSkeleton>
               {/* Table Header */}
               <TableRow $header>
-                <Skeleton width="80%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-                <Skeleton width="60%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-                <Skeleton width="60%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+                <Skeleton width="80%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+                <Skeleton width="60%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+                <Skeleton width="60%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
               </TableRow>
 
               {/* Table Rows */}
               {Array.from({ length: 3 }).map((_, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  <Skeleton width="90%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-                  <Skeleton width="50%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-                  <Skeleton width="40%" height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+                  <Skeleton width="90%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+                  <Skeleton width="50%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+                  <Skeleton width="40%" height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
                 </TableRow>
               ))}
             </TableSkeleton>

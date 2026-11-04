@@ -12,7 +12,7 @@ export const Card = styled.div`
 
   &:hover {
     border-color: ${colors.osce.primary};
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.1);
     transform: translateY(-2px);
   }
 
@@ -150,7 +150,7 @@ export const TagList = styled.div`
 export const Tag = styled.span`
   display: inline-block;
   padding: 0.25rem 0.625rem;
-  background: ${props => props.university ? '#ede9fe' : '#fef3c7'};
+  background: ${props => props.university ? '#ede9fe' : 'var(--color-warning-tint)'};
   color: ${props => props.university ? '#5b21b6' : '#92400e'};
   border-radius: 4px;
   font-size: 0.75rem;
@@ -174,22 +174,22 @@ export const StatusBadge = styled.div`
     switch (props.status) {
       case 'created':
         return `
-          background: #dbeafe;
-          color: #1e40af;
+          background: var(--color-brand-blue-tint-strong);
+          color: var(--color-brand-blue-deep);
         `
       case 'started':
         return `
-          background: #fef3c7;
+          background: var(--color-warning-tint);
           color: #92400e;
         `
       case 'completed':
         return `
-          background: #d1fae5;
-          color: #065f46;
+          background: var(--color-brand-green-tint);
+          color: var(--color-brand-green-darker);
         `
       case 'expired':
         return `
-          background: #fee2e2;
+          background: var(--color-danger-tint);
           color: #991b1b;
         `
       default:

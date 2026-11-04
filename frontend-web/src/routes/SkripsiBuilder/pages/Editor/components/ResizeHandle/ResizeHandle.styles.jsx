@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Handle = styled.div`
   width: 4px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
   cursor: col-resize;
   position: relative;
   transition: background 0.2s;
@@ -10,11 +10,11 @@ export const Handle = styled.div`
   user-select: none;
 
   &:hover {
-    background: #06b6d4;
+    background: var(--color-brand-blue);
   }
 
   &:active {
-    background: #0891b2;
+    background: var(--color-brand-blue-deep);
   }
 
   /* Visual indicator on hover */
@@ -27,8 +27,8 @@ export const Handle = styled.div`
     width: 20px;
     height: 40px;
     background: transparent;
-    border-left: 2px dotted #9ca3af;
-    border-right: 2px dotted #9ca3af;
+    border-left: 2px dotted var(--color-gray-400);
+    border-right: 2px dotted var(--color-gray-400);
     opacity: 0;
     transition: opacity 0.2s;
     pointer-events: none;

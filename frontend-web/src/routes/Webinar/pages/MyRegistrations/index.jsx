@@ -25,13 +25,13 @@ const PageHeader = styled.div`
 const PageTitle = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
 const RegistrationCard = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1rem;
@@ -51,13 +51,13 @@ const WebinarInfo = styled.div`
 const WebinarTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.25rem;
 `
 
 const MetaText = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 0.25rem;
 `
 
@@ -69,16 +69,16 @@ const StatusBadge = styled.span`
   font-size: 0.8125rem;
   font-weight: 500;
   background: ${({ status }) =>
-    status === 'approved' ? '#dcfce7' :
-    status === 'rejected' ? '#fee2e2' : '#fef9c3'};
+    status === 'approved' ? 'var(--color-brand-green-tint)' :
+    status === 'rejected' ? 'var(--color-danger-tint)' : '#fef9c3'};
   color: ${({ status }) =>
-    status === 'approved' ? '#16a34a' :
-    status === 'rejected' ? '#dc2626' : '#854d0e'};
+    status === 'approved' ? 'var(--color-brand-green-dark)' :
+    status === 'rejected' ? 'var(--color-danger-dark)' : '#854d0e'};
 `
 
 const AdminNote = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0.5rem 0 0;
   font-style: italic;
 `
@@ -92,14 +92,14 @@ const EvidenceList = styled.div`
 
 const EvidenceLink = styled.a`
   font-size: 0.75rem;
-  color: #2563eb;
+  color: var(--color-brand-blue-deep);
   text-decoration: none;
   padding: 0.2rem 0.5rem;
-  background: #eff6ff;
+  background: var(--color-brand-blue-tint);
   border-radius: 4px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--color-brand-blue-tint-strong);
 
-  &:hover { background: #dbeafe; }
+  &:hover { background: var(--color-brand-blue-tint-strong); }
 `
 
 const STATUS_LABEL = { pending: 'Menunggu', approved: 'Disetujui', rejected: 'Ditolak' }
@@ -128,7 +128,7 @@ function MyRegistrationsPage() {
       </PageHeader>
 
       {loading.isGetMyRegistrationsLoading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-gray-500)' }}>
           Memuat data...
         </div>
       ) : myRegistrations.length === 0 ? (

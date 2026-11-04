@@ -25,7 +25,7 @@ export default function DeckCard({ deck }) {
       <CardBody padding="0 1.25rem 1.25rem 1.25rem">
         {deck.description && (
           <p style={{
-            color: '#6b7280', fontSize: '0.875rem', lineHeight: 1.5,
+            color: 'var(--color-gray-500)', fontSize: '0.875rem', lineHeight: 1.5,
             marginBottom: '0.75rem', display: '-webkit-box',
             WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
           }}>

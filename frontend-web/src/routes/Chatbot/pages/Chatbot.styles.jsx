@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -24,7 +24,7 @@ export const LeftPanel = styled.div`
   min-width: 320px;
   max-width: 450px;
   background: white;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -53,7 +53,7 @@ export const RightPanel = styled.div`
 
 export const Header = styled.div`
   padding: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -67,7 +67,7 @@ export const Header = styled.div`
 export const HeaderTitle = styled.h1`
   font-size: 24px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0;
 
   @media (max-width: 768px) {
@@ -77,8 +77,8 @@ export const HeaderTitle = styled.h1`
 
 export const NewChatButton = styled.button`
   background: white;
-  color: #06b6d4;
-  border: 1px solid #06b6d4;
+  color: var(--color-brand-blue);
+  border: 1px solid var(--color-brand-blue);
   border-radius: 6px;
   padding: 8px 16px;
   font-size: 14px;
@@ -102,7 +102,7 @@ export const NewChatButton = styled.button`
 
 export const SearchContainer = styled.div`
   padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   background: white;
 
   @media (max-width: 768px) {
@@ -113,19 +113,19 @@ export const SearchContainer = styled.div`
 export const SearchInput = styled.input`
   width: 100%;
   padding: 10px 16px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 14px;
   outline: none;
   transition: all 0.2s;
 
   &:focus {
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.1);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
   }
 
   @media (max-width: 768px) {
@@ -161,7 +161,7 @@ export const EmptyIcon = styled.div`
 export const EmptyTitle = styled.h2`
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 8px 0;
 
   @media (max-width: 768px) {
@@ -171,7 +171,7 @@ export const EmptyTitle = styled.h2`
 
 export const EmptyDescription = styled.p`
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
   max-width: 400px;
 

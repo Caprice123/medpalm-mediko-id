@@ -50,7 +50,7 @@ const QuizResults = ({ topic, answers, onRetry, onBack }) => {
             <StatusText passed={passed}>
               {passed ? '✅ Lulus!' : '❌ Belum Lulus'}
             </StatusText>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-gray-500)', marginTop: '0.5rem' }}>
               Passing Score: {topic.passing_score}%
             </div>
           </ResultStatus>
@@ -62,11 +62,11 @@ const QuizResults = ({ topic, answers, onRetry, onBack }) => {
             </SummaryItem>
             <SummaryItem>
               <SummaryLabel>Benar</SummaryLabel>
-              <SummaryValue style={{ color: '#10b981' }}>{correctAnswers}</SummaryValue>
+              <SummaryValue style={{ color: 'var(--color-brand-green)' }}>{correctAnswers}</SummaryValue>
             </SummaryItem>
             <SummaryItem>
               <SummaryLabel>Salah</SummaryLabel>
-              <SummaryValue style={{ color: '#ef4444' }}>{incorrectAnswers}</SummaryValue>
+              <SummaryValue style={{ color: 'var(--color-danger)' }}>{incorrectAnswers}</SummaryValue>
             </SummaryItem>
           </ResultSummary>
         </ResultCard>

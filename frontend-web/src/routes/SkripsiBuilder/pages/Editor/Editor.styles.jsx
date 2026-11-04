@@ -1,24 +1,24 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
-    background: #f0fdfa;
+    background: var(--color-brand-blue-tint);
 
     /* Resize handle styles */
     .resize-handle-skripsi {
       width: 4px;
-      background: #e5e7eb;
+      background: var(--color-gray-200);
       cursor: col-resize;
       position: relative;
       transition: background 0.2s;
       user-select: none;
 
       &:hover {
-        background: #06b6d4;
+        background: var(--color-brand-blue);
       }
 
       &[data-resize-handle-active="pointer"],
       &[data-resize-handle-active="keyboard"] {
-        background: #0891b2;
+        background: var(--color-brand-blue-deep);
       }
 
       /* Visual indicator */
@@ -31,8 +31,8 @@ export const Wrapper = styled.div`
         width: 20px;
         height: 40px;
         background: transparent;
-        border-left: 2px dotted #9ca3af;
-        border-right: 2px dotted #9ca3af;
+        border-left: 2px dotted var(--color-gray-400);
+        border-right: 2px dotted var(--color-gray-400);
         opacity: 0;
         transition: opacity 0.2s;
         pointer-events: none;
@@ -65,7 +65,7 @@ export const Container = styled.div`
 
 export const TopBar = styled.div`
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
@@ -79,7 +79,7 @@ export const TopBar = styled.div`
 export const BackButton = styled.button`
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 14px;
   cursor: pointer;
   display: flex;
@@ -90,8 +90,8 @@ export const BackButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
-    color: #1f2937;
+    background: var(--color-gray-100);
+    color: var(--color-gray-800);
   }
 
   @media (max-width: 768px) {
@@ -111,7 +111,7 @@ export const SetTitleWrapper = styled.div`
 export const SetTitle = styled.h2`
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0;
   text-align: center;
 
@@ -123,9 +123,9 @@ export const SetTitle = styled.h2`
 export const SetTitleInput = styled.input`
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   padding: 8px 12px;
-  border: 2px solid #06b6d4;
+  border: 2px solid var(--color-brand-blue);
   border-radius: 6px;
   outline: none;
   background: white;
@@ -133,11 +133,11 @@ export const SetTitleInput = styled.input`
   min-width: 300px;
 
   &:focus {
-    border-color: #0891b2;
+    border-color: var(--color-brand-blue-deep);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
     font-weight: 400;
   }
 
@@ -151,15 +151,15 @@ export const SetTitleInput = styled.input`
 
 export const EditButton = styled.button`
   background: ${props =>
-    props.$variant === 'success' ? '#10b981' :
-    props.$variant === 'danger' ? '#ef4444' :
+    props.$variant === 'success' ? 'var(--color-brand-green)' :
+    props.$variant === 'danger' ? 'var(--color-danger)' :
     'transparent'
   };
   color: ${props =>
-    props.$variant === 'success' || props.$variant === 'danger' ? 'white' : '#6b7280'
+    props.$variant === 'success' || props.$variant === 'danger' ? 'white' : 'var(--color-gray-500)'
   };
   border: ${props =>
-    props.$variant === 'success' || props.$variant === 'danger' ? 'none' : '1px solid #d1d5db'
+    props.$variant === 'success' || props.$variant === 'danger' ? 'none' : '1px solid var(--color-gray-300)'
   };
   border-radius: 6px;
   padding: 8px 10px;
@@ -172,12 +172,12 @@ export const EditButton = styled.button`
 
   &:hover {
     background: ${props =>
-      props.$variant === 'success' ? '#059669' :
-      props.$variant === 'danger' ? '#dc2626' :
-      '#f3f4f6'
+      props.$variant === 'success' ? 'var(--color-brand-green-dark)' :
+      props.$variant === 'danger' ? 'var(--color-danger-dark)' :
+      'var(--color-gray-100)'
     };
     color: ${props =>
-      props.$variant === 'success' || props.$variant === 'danger' ? 'white' : '#1f2937'
+      props.$variant === 'success' || props.$variant === 'danger' ? 'white' : 'var(--color-gray-800)'
     };
   }
 `
@@ -195,8 +195,8 @@ export const EditorActions = styled.div`
   display: none;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
 
   @media (max-width: 768px) {
     display: flex;
@@ -206,7 +206,7 @@ export const EditorActions = styled.div`
 `
 
 export const SaveButton = styled.button`
-  background: #06b6d4;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 6px;
@@ -220,11 +220,11 @@ export const SaveButton = styled.button`
   gap: 6px;
 
   &:hover {
-    background: #0891b2;
+    background: var(--color-brand-blue-deep);
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: var(--color-gray-400);
     cursor: not-allowed;
   }
 
@@ -237,7 +237,7 @@ export const SaveButton = styled.button`
 `
 
 export const ExportButton = styled.button`
-  background: #10b981;
+  background: var(--color-brand-green);
   color: white;
   border: none;
   border-radius: 6px;
@@ -251,11 +251,11 @@ export const ExportButton = styled.button`
   gap: 6px;
 
   &:hover {
-    background: #059669;
+    background: var(--color-brand-green-dark);
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: var(--color-gray-400);
     cursor: not-allowed;
   }
 
@@ -269,7 +269,7 @@ export const ExportButton = styled.button`
 
 export const TabBar = styled.div`
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   padding: 0 24px;
   display: flex;
   overflow-x: auto;
@@ -279,7 +279,7 @@ export const TabBar = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--color-gray-300);
     border-radius: 2px;
   }
 
@@ -290,10 +290,10 @@ export const TabBar = styled.div`
 `
 
 export const Tab = styled.button`
-  background: ${props => props.$active ? '#f0fdfa' : 'transparent'};
+  background: ${props => props.$active ? 'var(--color-brand-blue-tint)' : 'transparent'};
   border: none;
-  border-bottom: 2px solid ${props => props.$active ? '#06b6d4' : 'transparent'};
-  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  border-bottom: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   padding: 12px 20px;
   font-size: 14px;
   font-weight: ${props => props.$active ? '600' : '500'};
@@ -302,8 +302,8 @@ export const Tab = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f9fafb;
-    color: ${props => props.$active ? '#06b6d4' : '#1f2937'};
+    background: var(--color-gray-50);
+    color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-800)'};
   }
 
   @media (max-width: 768px) {
@@ -336,14 +336,14 @@ export const ChatPanel = styled.div`
     height: 100vh;
     flex-shrink: 0;
     border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-gray-200);
   }
 `
 
 export const ChatHeader = styled.div`
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
 
   @media (max-width: 768px) {
     padding: 0.75rem 1rem;
@@ -353,7 +353,7 @@ export const ChatHeader = styled.div`
 export const ChatTitle = styled.h3`
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0;
 
   @media (max-width: 768px) {
@@ -374,7 +374,7 @@ export const ChatMessages = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--color-gray-300);
     border-radius: 3px;
   }
 
@@ -391,7 +391,7 @@ export const Message = styled.div`
 `
 
 export const UserMessage = styled.div`
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
@@ -412,7 +412,7 @@ export const UserMessage = styled.div`
 
 export const AIMessage = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
   border-bottom-left-radius: 4px;
@@ -500,10 +500,10 @@ export const MessageContent = styled.div`
   }
 
   blockquote {
-    border-left: 3px solid #e5e7eb;
+    border-left: 3px solid var(--color-gray-200);
     padding-left: 1rem;
     margin: 0.75rem 0;
-    color: #6b7280;
+    color: var(--color-gray-500);
 
     @media (max-width: 768px) {
       padding-left: 0.75rem;
@@ -511,10 +511,10 @@ export const MessageContent = styled.div`
   }
 
   a {
-    color: #3b82f6;
+    color: var(--color-brand-blue);
     text-decoration: underline;
     &:hover {
-      color: #2563eb;
+      color: var(--color-brand-blue-deep);
     }
   }
 
@@ -539,7 +539,7 @@ export const MessageContent = styled.div`
   }
 
   th, td {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-gray-200);
     padding: 0.5rem;
     text-align: left;
 
@@ -549,7 +549,7 @@ export const MessageContent = styled.div`
   }
 
   th {
-    background: #f9fafb;
+    background: var(--color-gray-50);
     font-weight: 600;
   }
 `
@@ -579,13 +579,13 @@ export const ModeBadge = styled.div`
     switch (props.mode) {
       case 'normal':
         return `
-          background: #dbeafe;
-          color: #1e40af;
+          background: var(--color-brand-blue-tint-strong);
+          color: var(--color-brand-blue-deep);
         `
       case 'validated_search':
         return `
-          background: #dcfce7;
-          color: #166534;
+          background: var(--color-brand-green-tint);
+          color: var(--color-brand-green-darker);
         `
       case 'research':
         return `
@@ -594,8 +594,8 @@ export const ModeBadge = styled.div`
         `
       default:
         return `
-          background: #f3f4f6;
-          color: #374151;
+          background: var(--color-gray-100);
+          color: var(--color-gray-700);
         `
     }
   }}
@@ -604,29 +604,29 @@ export const ModeBadge = styled.div`
 export const SourcesSection = styled.div`
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 
   .sources-title {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--color-gray-700);
     margin-bottom: 0.5rem;
   }
 `
 
 export const SourceItem = styled.a`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.25rem;
 
   &:hover {
-    color: #3b82f6;
+    color: var(--color-brand-blue);
   }
 `
 
 export const ChatInputArea = styled.div`
   padding: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   background: white;
 
   @media (max-width: 768px) {
@@ -646,7 +646,7 @@ export const ChatInputWrapper = styled.div`
 export const ChatInput = styled.textarea`
   flex: 1;
   padding: 10px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 14px;
   outline: none;
@@ -657,15 +657,15 @@ export const ChatInput = styled.textarea`
   line-height: 1.5;
 
   &:focus {
-    border-color: #06b6d4;
+    border-color: var(--color-brand-blue);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
   }
 
   &:disabled {
-    background: #f9fafb;
+    background: var(--color-gray-50);
     cursor: not-allowed;
   }
 
@@ -678,7 +678,7 @@ export const ChatInput = styled.textarea`
 `
 
 export const SendButton = styled.button`
-  background: #06b6d4;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -692,11 +692,11 @@ export const SendButton = styled.button`
   gap: 6px;
 
   &:hover {
-    background: #0891b2;
+    background: var(--color-brand-blue-deep);
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: var(--color-gray-400);
     cursor: not-allowed;
   }
 
@@ -723,8 +723,8 @@ export const EditorPanel = styled.div`
 
 export const EditorToolbar = styled.div`
   padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
@@ -736,9 +736,9 @@ export const EditorToolbar = styled.div`
 `
 
 export const ToolbarButton = styled.button`
-  background: ${props => props.$active ? '#e0f2fe' : 'transparent'};
-  border: 1px solid ${props => props.$active ? '#06b6d4' : '#d1d5db'};
-  color: ${props => props.$active ? '#06b6d4' : '#6b7280'};
+  background: ${props => props.$active ? 'var(--color-brand-blue-tint)' : 'transparent'};
+  border: 1px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-300)'};
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
   padding: 6px 10px;
   border-radius: 4px;
   font-size: 13px;
@@ -749,8 +749,8 @@ export const ToolbarButton = styled.button`
   gap: 4px;
 
   &:hover {
-    background: #f3f4f6;
-    border-color: #06b6d4;
+    background: var(--color-gray-100);
+    border-color: var(--color-brand-blue);
   }
 
   &:disabled {
@@ -818,13 +818,13 @@ export const LoadingState = styled.div`
   align-items: center;
   padding: 60px;
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyMessages = styled.div`
   text-align: center;
   padding: 40px 20px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 14px;
 `
 
@@ -837,7 +837,7 @@ export const TypingIndicator = styled.div`
 export const TypingDot = styled.div`
   width: 8px;
   height: 8px;
-  background: #9ca3af;
+  background: var(--color-gray-400);
   border-radius: 50%;
   animation: typing 1.4s infinite;
   animation-delay: ${props => props.delay};

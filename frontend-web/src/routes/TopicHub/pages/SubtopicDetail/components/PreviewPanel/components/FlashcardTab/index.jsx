@@ -11,10 +11,10 @@ import {
 import { useFlashcardTab, MAX_LAGI } from './hooks/useFlashcardTab'
 
 const RATINGS = [
-  { key: 'again', label: 'Lagi',  color: '#ef4444' },
+  { key: 'again', label: 'Lagi',  color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit', color: '#f97316' },
-  { key: 'good',  label: 'Baik',  color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah', color: '#22c55e' },
+  { key: 'good',  label: 'Baik',  color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah', color: 'var(--color-brand-green)' },
 ]
 
 export default function FlashcardTab({ subtopic, flashcardMax }) {

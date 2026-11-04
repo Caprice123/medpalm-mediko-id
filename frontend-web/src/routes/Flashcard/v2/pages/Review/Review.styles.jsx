@@ -9,19 +9,19 @@ export const Container = styled.div`
 export const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.25rem;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.9375rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 1.5rem;
 `
 
 export const BuilderCard = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 1.5rem;
 `
@@ -31,7 +31,7 @@ export const SectionLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin-bottom: 0.625rem;
 `
 
@@ -57,7 +57,7 @@ export const ModeGrid = styled.div`
 export const ModeOption = styled.div`
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 2px solid ${p => p.$active ? '#7c3aed' : '#e5e7eb'};
+  border: 2px solid ${p => p.$active ? '#7c3aed' : 'var(--color-gray-200)'};
   background: ${p => p.$active ? '#f5f3ff' : 'white'};
   cursor: pointer;
   display: flex;
@@ -67,11 +67,11 @@ export const ModeOption = styled.div`
 
   strong {
     font-size: 0.875rem;
-    color: ${p => p.$active ? '#6d28d9' : '#111827'};
+    color: ${p => p.$active ? '#6d28d9' : 'var(--color-gray-900)'};
   }
   span {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     line-height: 1.4;
   }
 
@@ -90,7 +90,7 @@ export const SaveToggle = styled.button`
   height: 20px;
   border-radius: 99px;
   border: none;
-  background: ${p => p.$active ? '#7c3aed' : '#d1d5db'};
+  background: ${p => p.$active ? '#7c3aed' : 'var(--color-gray-300)'};
   cursor: pointer;
   position: relative;
   transition: background 0.2s;
@@ -111,7 +111,7 @@ export const SaveToggle = styled.button`
 
 export const SaveToggleLabel = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const SessionList = styled.div`
@@ -126,7 +126,7 @@ export const SessionCard = styled.div`
   align-items: center;
   justify-content: space-between;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 0.875rem 1rem;
   gap: 1rem;
@@ -135,12 +135,12 @@ export const SessionCard = styled.div`
 export const SessionName = styled.div`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const SessionMeta = styled.div`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-top: 0.2rem;
 `
 
@@ -153,7 +153,7 @@ export const SessionActions = styled.div`
 export const EmptyHint = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.9375rem;
 `
 
@@ -167,9 +167,9 @@ export const RatingChips = styled.div`
 export const RatingChip = styled.button`
   padding: 0.375rem 0.875rem;
   border-radius: 99px;
-  border: 2px solid ${p => p.$active ? p.$color : '#e5e7eb'};
+  border: 2px solid ${p => p.$active ? p.$color : 'var(--color-gray-200)'};
   background: ${p => p.$active ? p.$color + '18' : 'white'};
-  color: ${p => p.$active ? p.$color : '#6b7280'};
+  color: ${p => p.$active ? p.$color : 'var(--color-gray-500)'};
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
@@ -195,10 +195,10 @@ export const SliderInput = styled.input`
   border-radius: 2px;
   background: linear-gradient(
     to right,
-    #0d9488 0%,
-    #0d9488 ${p => (p.value - 1) / 99 * 100}%,
-    #e5e7eb ${p => (p.value - 1) / 99 * 100}%,
-    #e5e7eb 100%
+    var(--color-brand-blue) 0%,
+    var(--color-brand-blue) ${p => (p.value - 1) / 99 * 100}%,
+    var(--color-gray-200) ${p => (p.value - 1) / 99 * 100}%,
+    var(--color-gray-200) 100%
   );
   outline: none;
   cursor: pointer;
@@ -208,8 +208,8 @@ export const SliderInput = styled.input`
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #0d9488;
-    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    background: var(--color-brand-blue);
+    box-shadow: 0 1px 4px rgba(30, 115, 170,0.4);
     cursor: pointer;
   }
 
@@ -218,8 +218,8 @@ export const SliderInput = styled.input`
     height: 18px;
     border: none;
     border-radius: 50%;
-    background: #0d9488;
-    box-shadow: 0 1px 4px rgba(13,148,136,0.4);
+    background: var(--color-brand-blue);
+    box-shadow: 0 1px 4px rgba(30, 115, 170,0.4);
     cursor: pointer;
   }
 `
@@ -229,5 +229,5 @@ export const SliderValue = styled.span`
   text-align: right;
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #0d9488;
+  color: var(--color-brand-blue);
 `

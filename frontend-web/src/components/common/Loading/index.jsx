@@ -25,7 +25,7 @@ import { LoadingContainer, LoadingText, LoadingOverlay } from './Loading.styles'
  * @param {Object} props
  * @param {string} props.type - Spinner type: 'oval', 'dots', 'circles', 'tailspin', 'puff', 'rings', 'hearts', 'grid', 'audio', 'triangle', 'bars', 'revolving', 'rotating', 'mutating', 'watch', 'color-ring', 'ball-triangle'
  * @param {string} props.size - Spinner size: 'small' (40), 'medium' (60), 'large' (80), or custom number
- * @param {string} props.color - Primary spinner color (default: #6BB9E8)
+ * @param {string} props.color - Primary spinner color (default: var(--color-brand-blue))
  * @param {string} props.secondaryColor - Secondary color for some spinners
  * @param {string} props.text - Loading text to display below spinner
  * @param {string} props.textSize - Text size: 'small', 'medium', 'large'
@@ -43,7 +43,7 @@ import { LoadingContainer, LoadingText, LoadingOverlay } from './Loading.styles'
 function Loading({
   type = 'oval',
   size = 'medium',
-  color = '#6BB9E8',
+  color = 'var(--color-brand-blue)',
   secondaryColor,
   text,
   textSize = 'medium',
@@ -68,7 +68,7 @@ function Loading({
   const spinnerSize = typeof size === 'number' ? size : sizeMap[size] || 60
 
   // Determine secondary color
-  const defaultSecondaryColor = secondaryColor || '#8DC63F'
+  const defaultSecondaryColor = secondaryColor || 'var(--color-brand-green)'
 
   // Render appropriate spinner based on type
   const renderSpinner = () => {

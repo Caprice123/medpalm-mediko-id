@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 
   @media (max-width: 768px) {
     min-height: 100vh;
@@ -20,12 +20,12 @@ export const Container = styled.div`
 export const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin-bottom: 0.5rem;
 `
 
 export const PageSubtitle = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 1.05rem;
   margin-bottom: 2rem;
 `
@@ -33,7 +33,7 @@ export const PageSubtitle = styled.p`
 export const TabBar = styled.div`
   display: flex;
   gap: 0.25rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
   margin-bottom: 1.75rem;
 `
 
@@ -43,11 +43,11 @@ export const TabBtn = styled.button`
   background: none;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: ${({ $active }) => $active ? '#06b6d4' : '#6b7280'};
-  border-bottom: 2px solid ${({ $active }) => $active ? '#06b6d4' : 'transparent'};
+  color: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
+  border-bottom: 2px solid ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'transparent'};
   margin-bottom: -2px;
   cursor: pointer;
   transition: color 0.15s;
 
-  &:hover { color: #06b6d4; }
+  &:hover { color: var(--color-brand-blue); }
 `

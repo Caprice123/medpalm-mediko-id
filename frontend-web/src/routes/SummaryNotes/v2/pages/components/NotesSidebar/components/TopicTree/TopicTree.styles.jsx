@@ -13,7 +13,7 @@ export const SectionLabel = styled.span`
   gap: 0.4rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const NodeRow = styled.div`
@@ -24,13 +24,13 @@ export const NodeRow = styled.div`
   cursor: ${p => p.$clickable ? 'pointer' : 'default'};
   border-radius: 0;
   user-select: none;
-  background: ${p => p.$selected ? '#ccfbf1' : 'transparent'};
-  &:hover { background: ${p => p.$selected ? '#99f6e4' : (p.$clickable ? '#f1f5f9' : 'transparent')}; }
+  background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : 'transparent'};
+  &:hover { background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : (p.$clickable ? 'var(--color-gray-100)' : 'transparent')}; }
 `
 
 export const ChevronIcon = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   width: 0.75rem;
   flex-shrink: 0;
   transform: ${p => p.$open ? 'rotate(90deg)' : 'none'};
@@ -45,7 +45,7 @@ export const NodeIcon = styled.span`
 
 export const NodeLabel = styled.span`
   font-size: 0.9375rem;
-  color: ${p => p.$selected ? '#0f766e' : '#374151'};
+  color: ${p => p.$selected ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   font-weight: ${p => p.$selected ? '600' : '400'};
   flex: 1;
   overflow: hidden;
@@ -56,7 +56,7 @@ export const NodeLabel = styled.span`
 export const LoadingRow = styled.div`
   padding: 0.35rem 1rem 0.35rem ${p => 1 + p.$depth * 1.25}rem;
   font-size: 0.75rem;
-  color: ${p => p.$clickable ? '#0d9488' : '#9ca3af'};
+  color: ${p => p.$clickable ? 'var(--color-brand-blue)' : 'var(--color-gray-400)'};
   cursor: ${p => p.$clickable ? 'pointer' : 'default'};
   &:hover { ${p => p.$clickable && 'text-decoration: underline;'} }
 `

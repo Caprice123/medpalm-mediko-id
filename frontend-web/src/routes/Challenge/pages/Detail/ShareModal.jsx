@@ -27,7 +27,7 @@ const ActionRow = styled.div`
 const DownloadNote = styled.p`
   text-align: center;
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin: 0.75rem 0 0;
 `
 
@@ -54,7 +54,7 @@ function ShareCard({ cardRef, challengeTitle, score, rank, totalParticipants, in
       style={{
         width: 480,
         height: 480,
-        background: 'linear-gradient(145deg, #0d9488 0%, #0891b2 50%, #0369a1 100%)',
+        background: 'linear-gradient(145deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 50%, var(--color-brand-blue-deep) 100%)',
         borderRadius: 20,
         display: 'flex',
         flexDirection: 'column',

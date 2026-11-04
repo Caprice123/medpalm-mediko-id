@@ -14,7 +14,7 @@ export const DetailRow = styled.div`
   flex-direction: column;
   gap: 0.375rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 
   &:last-child { border-bottom: none; padding-bottom: 0; }
 `
@@ -24,12 +24,12 @@ export const DetailLabel = styled.span`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const DetailText = styled.p`
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -42,7 +42,7 @@ export const SpeakerEntry = styled.div`
 export const SpeakerName = styled.p`
   font-size: 0.9rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.125rem;
 `
 
@@ -53,6 +53,6 @@ export const SuitableList = styled.ul`
 
 export const SuitableItem = styled.li`
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.6;
 `

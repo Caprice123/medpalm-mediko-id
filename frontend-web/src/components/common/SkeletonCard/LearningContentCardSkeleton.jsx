@@ -5,8 +5,8 @@ import { Card, CardBody } from '@components/common/Card'
 
 const SkeletonWrapper = styled.div`
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
     line-height: 1;
   }
 
@@ -29,8 +29,8 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
           <Skeleton
             height={20}
             width="80%"
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
             style={{ marginBottom: '1rem' }}
           />
 
@@ -38,8 +38,8 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
           <Skeleton
             count={2}
             height={14}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
             style={{ marginBottom: '0.75rem' }}
           />
 
@@ -47,13 +47,13 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
 
           {/* University Tags */}
           <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-            <Skeleton width={130} height={24} borderRadius={4} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-            <Skeleton width={110} height={24} borderRadius={4} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton width={130} height={24} borderRadius={4} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+            <Skeleton width={110} height={24} borderRadius={4} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
 
           {/* Semester Tags */}
           <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <Skeleton width={120} height={24} borderRadius={4} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton width={120} height={24} borderRadius={4} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
 
           {/* Stats Row */}
@@ -63,12 +63,12 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
             gap: '1rem',
             marginBottom: '1rem',
             paddingTop: '0.5rem',
-            borderTop: '1px solid #e5e7eb'
+            borderTop: '1px solid var(--color-gray-200)'
           }}>
             {Array.from({ length: statsCount }).map((_, index) => (
               <div key={index}>
-                <Skeleton height={12} width={50} baseColor="#e5e7eb" highlightColor="#f3f4f6" style={{ marginBottom: '0.25rem' }} />
-                <Skeleton height={16} width={40} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+                <Skeleton height={12} width={50} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" style={{ marginBottom: '0.25rem' }} />
+                <Skeleton height={16} width={40} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
               </div>
             ))}
           </div>
@@ -79,15 +79,15 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
               <Skeleton
                 height={40}
                 borderRadius={8}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
                 style={{ flex: 1 }}
               />
               <Skeleton
                 height={40}
                 borderRadius={8}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
                 style={{ flex: 1 }}
               />
             </div>
@@ -95,8 +95,8 @@ export function LearningContentCardSkeleton({ hasTwoButtons = false, statsCount 
             <Skeleton
               height={40}
               borderRadius={8}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           )}
         </CardBody>

@@ -8,14 +8,14 @@ export const Container = styled.div`
 
 export const ConversationItem = styled.div`
   padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   cursor: pointer;
   transition: all 0.2s;
   background: ${props => props.$isSelected ? '#ecfeff' : 'white'};
-  border-left: 3px solid ${props => props.$isSelected ? '#06b6d4' : 'transparent'};
+  border-left: 3px solid ${props => props.$isSelected ? 'var(--color-brand-blue)' : 'transparent'};
 
   &:hover {
-    background: ${props => props.$isSelected ? '#ecfeff' : '#f9fafb'};
+    background: ${props => props.$isSelected ? '#ecfeff' : 'var(--color-gray-50)'};
   }
 
   &:active {
@@ -37,7 +37,7 @@ export const ConversationHeader = styled.div`
 export const ConversationTopic = styled.div`
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,7 +51,7 @@ export const ConversationTopic = styled.div`
 
 export const ConversationTime = styled.div`
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
 
   @media (max-width: 768px) {
@@ -61,7 +61,7 @@ export const ConversationTime = styled.div`
 
 export const ConversationPreview = styled.div`
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -77,7 +77,7 @@ export const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   gap: 12px;
 
   @media (max-width: 768px) {
@@ -103,7 +103,7 @@ export const EmptyState = styled.div`
   justify-content: center;
   padding: 40px 20px;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   @media (max-width: 768px) {
     padding: 2rem 1rem;

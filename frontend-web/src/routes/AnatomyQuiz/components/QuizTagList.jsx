@@ -15,8 +15,8 @@ const TAG_CONFIG = {
   media_2d: {
     emoji: '🖼️',
     label: '2D Image',
-    background: '#e0f2fe',
-    color: '#0369a1',
+    background: 'var(--color-brand-blue-tint)',
+    color: 'var(--color-brand-blue-deep)',
   },
 }
 

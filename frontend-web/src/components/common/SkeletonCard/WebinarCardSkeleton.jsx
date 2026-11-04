@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Card = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -28,10 +28,10 @@ const Footer = styled.div`
   display: flex;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 `
 
-const S = { base: '#e5e7eb', highlight: '#f3f4f6' }
+const S = { base: 'var(--color-gray-200)', highlight: 'var(--color-gray-100)' }
 
 export function WebinarCardSkeleton() {
   return (

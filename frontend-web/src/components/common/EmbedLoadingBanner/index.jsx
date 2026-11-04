@@ -7,7 +7,7 @@ const Banner = styled.div`
   gap: 0.625rem;
   padding: 0.625rem 1rem;
   background: #fffbeb;
-  border: 1px solid #f59e0b;
+  border: 1px solid var(--color-warning);
   border-radius: 8px;
   margin-bottom: 1rem;
   font-size: 0.8125rem;

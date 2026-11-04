@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const SectionTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 1rem 0;
@@ -11,7 +11,7 @@ export const SectionTitle = styled.h3`
 
 export const HintText = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0.25rem 0 0.75rem 0;
   line-height: 1.5;
 `
@@ -22,13 +22,13 @@ export const FilterToggleRow = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 8px;
   margin-bottom: 1.25rem;
 
   strong {
     font-size: 0.9375rem;
-    color: #111827;
+    color: var(--color-gray-900);
   }
 `
 
@@ -41,27 +41,27 @@ export const SelectAllRow = styled.div`
 
   span {
     font-size: 0.8125rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
   }
 `
 
 export const SearchInput = styled.input`
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--color-gray-900);
   background: #fff;
   outline: none;
   margin-bottom: 0.75rem;
   box-sizing: border-box;
 
-  &::placeholder { color: #9ca3af; }
+  &::placeholder { color: var(--color-gray-400); }
 
   &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 2px rgba(30, 115, 170, 0.1);
   }
 `
 
@@ -81,17 +81,17 @@ export const DomainCard = styled.button`
   font-size: 0.8125rem;
   text-align: left;
   word-break: break-all;
-  background: ${({ $checked, $disabled }) => $checked ? '#eff6ff' : $disabled ? '#f3f4f6' : '#f9fafb'};
-  border: 1.5px solid ${({ $checked }) => $checked ? '#3b82f6' : '#e5e7eb'};
-  color: ${({ $checked, $disabled }) => $checked ? '#1d4ed8' : $disabled ? '#d1d5db' : '#374151'};
+  background: ${({ $checked, $disabled }) => $checked ? 'var(--color-brand-blue-tint)' : $disabled ? 'var(--color-gray-100)' : 'var(--color-gray-50)'};
+  border: 1.5px solid ${({ $checked }) => $checked ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  color: ${({ $checked, $disabled }) => $checked ? 'var(--color-brand-blue-deep)' : $disabled ? 'var(--color-gray-300)' : 'var(--color-gray-700)'};
   cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.15s;
 
   &:hover {
     ${({ $disabled }) => !$disabled && `
-      border-color: #3b82f6;
-      background: #eff6ff;
-      color: #1d4ed8;
+      border-color: var(--color-brand-blue);
+      background: var(--color-brand-blue-tint);
+      color: var(--color-brand-blue-deep);
     `}
   }
 `
@@ -101,8 +101,8 @@ export const DomainCardCheck = styled.span`
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 1.5px solid ${({ $checked }) => $checked ? '#3b82f6' : '#d1d5db'};
-  background: ${({ $checked }) => $checked ? '#3b82f6' : '#fff'};
+  border: 1.5px solid ${({ $checked }) => $checked ? 'var(--color-brand-blue)' : 'var(--color-gray-300)'};
+  background: ${({ $checked }) => $checked ? 'var(--color-brand-blue)' : '#fff'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,7 +122,7 @@ export const PaginationRow = styled.div`
 
 export const PageInfo = styled.span`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const PageButtons = styled.div`
@@ -135,9 +135,9 @@ export const PageBtn = styled.button`
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: 500;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   background: #fff;
-  color: #374151;
+  color: var(--color-gray-700);
   cursor: pointer;
   transition: all 0.15s;
 
@@ -147,7 +147,7 @@ export const PageBtn = styled.button`
   }
 
   &:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
   }
 `
 
@@ -158,7 +158,7 @@ export const SelectedSummarySection = styled.div`
 export const SelectedSummaryLabel = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.375rem;
@@ -176,34 +176,34 @@ export const AdminDomainChip = styled.div`
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.625rem;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--color-brand-blue-tint);
+  border: 1px solid var(--color-brand-blue-tint-strong);
   border-radius: 99px;
   font-size: 0.75rem;
-  color: #1d4ed8;
+  color: var(--color-brand-blue-deep);
 
   button {
     background: none;
     border: none;
     cursor: pointer;
-    color: #3b82f6;
+    color: var(--color-brand-blue);
     padding: 0;
     line-height: 1;
     font-size: 0.75rem;
-    &:hover { color: #1d4ed8; }
+    &:hover { color: var(--color-brand-blue-deep); }
   }
 `
 
 export const CustomDomainSection = styled.div`
   margin-top: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 `
 
 export const CustomDomainTitle = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.5rem;
 `
 
@@ -216,14 +216,14 @@ export const CustomDomainAddRow = styled.div`
 export const CustomDomainInput = styled.input`
   flex: 1;
   padding: 0.4rem 0.625rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   font-size: 0.8125rem;
-  color: #111827;
+  color: var(--color-gray-900);
   outline: none;
 
-  &::placeholder { color: #9ca3af; }
-  &:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+  &::placeholder { color: var(--color-gray-400); }
+  &:focus { border-color: var(--color-brand-blue); box-shadow: 0 0 0 2px rgba(30, 115, 170,0.1); }
 `
 
 export const CustomDomainChips = styled.div`
@@ -237,7 +237,7 @@ export const CustomDomainChip = styled.div`
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.625rem;
-  background: #fef3c7;
+  background: var(--color-warning-tint);
   border: 1px solid #fde68a;
   border-radius: 99px;
   font-size: 0.75rem;
@@ -258,9 +258,9 @@ export const CustomDomainChip = styled.div`
 export const EmptyDomains = styled.div`
   text-align: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 8px;
   margin-top: 0.75rem;
 `
@@ -268,7 +268,7 @@ export const EmptyDomains = styled.div`
 export const YearFilterSection = styled.div`
   margin-bottom: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 `
 
 export const YearPresetRow = styled.div`
@@ -284,15 +284,15 @@ export const YearPresetBtn = styled.button`
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  border: 1.5px solid ${({ $active }) => $active ? '#3b82f6' : '#e5e7eb'};
-  background: ${({ $active }) => $active ? '#eff6ff' : '#fff'};
-  color: ${({ $active }) => $active ? '#1d4ed8' : '#374151'};
+  border: 1.5px solid ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  background: ${({ $active }) => $active ? 'var(--color-brand-blue-tint)' : '#fff'};
+  color: ${({ $active }) => $active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   transition: all 0.15s;
 
   &:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-    color: #1d4ed8;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
+    color: var(--color-brand-blue-deep);
   }
 `
 
@@ -304,7 +304,7 @@ export const YearRangeRow = styled.div`
 
   span {
     font-size: 0.8125rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     flex-shrink: 0;
   }
 `
@@ -312,13 +312,13 @@ export const YearRangeRow = styled.div`
 export const YearInput = styled.input`
   width: 90px;
   padding: 0.375rem 0.625rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--color-gray-900);
   outline: none;
   text-align: center;
 
-  &::placeholder { color: #9ca3af; }
-  &:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+  &::placeholder { color: var(--color-gray-400); }
+  &:focus { border-color: var(--color-brand-blue); box-shadow: 0 0 0 2px rgba(30, 115, 170,0.1); }
 `

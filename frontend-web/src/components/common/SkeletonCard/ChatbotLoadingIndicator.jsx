@@ -22,8 +22,8 @@ const LoadingContainer = styled.div`
 const Spinner = styled.div`
   width: 20px;
   height: 20px;
-  border: 2px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 2px solid var(--color-gray-200);
+  border-top-color: var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 
@@ -35,7 +35,7 @@ const Spinner = styled.div`
 `
 
 const LoadingText = styled.div`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   animation: ${pulse} 1.5s ease-in-out infinite;
 `
@@ -56,9 +56,9 @@ const MessageRow = styled.div`
 const MessageBubble = styled.div`
   max-width: 60%;
   padding: 0.75rem;
-  background: ${props => props.$isUser ? '#f3f4f6' : '#ffffff'};
+  background: ${props => props.$isUser ? 'var(--color-gray-100)' : '#ffffff'};
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 `
 
 function ChatbotLoadingIndicator({ variant = 'spinner' }) {
@@ -71,8 +71,8 @@ function ChatbotLoadingIndicator({ variant = 'spinner' }) {
             <Skeleton
               count={1}
               height={14}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </MessageBubble>
         </MessageRow>
@@ -81,8 +81,8 @@ function ChatbotLoadingIndicator({ variant = 'spinner' }) {
             <Skeleton
               count={1}
               height={14}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </MessageBubble>
         </MessageRow>

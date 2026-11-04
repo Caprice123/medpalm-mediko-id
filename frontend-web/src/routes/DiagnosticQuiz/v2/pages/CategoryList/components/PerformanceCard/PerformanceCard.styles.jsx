@@ -50,10 +50,10 @@ export const PanelFilterWrap = styled.div`
 export const PanelTitle = styled.span`
   font-size: 1.125rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const PanelSubtitle = styled.span`
   font-size: 0.9375rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `

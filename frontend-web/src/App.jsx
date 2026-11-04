@@ -17,7 +17,7 @@ import '@mantine/dates/styles.css'
 
 const StyledToastContainer = styled(ToastContainer)`
   .Toastify__toast {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, var(--color-danger), var(--color-danger-dark));
     color: white;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);

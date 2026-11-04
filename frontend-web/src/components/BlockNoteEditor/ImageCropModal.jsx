@@ -66,7 +66,7 @@ const ControlGroup = styled.div`
 `
 
 const Label = styled.label`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   font-weight: 500;
   min-width: 80px;
@@ -83,7 +83,7 @@ const Slider = styled.input`
   flex: 1;
   height: 6px;
   border-radius: 3px;
-  background: #374151;
+  background: var(--color-gray-700);
   outline: none;
   -webkit-appearance: none;
 
@@ -93,12 +93,12 @@ const Slider = styled.input`
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: var(--color-brand-blue);
     cursor: pointer;
     transition: all 0.2s;
 
     &:hover {
-      background: #2563eb;
+      background: var(--color-brand-blue-deep);
       transform: scale(1.1);
     }
   }
@@ -107,20 +107,20 @@ const Slider = styled.input`
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: var(--color-brand-blue);
     cursor: pointer;
     border: none;
     transition: all 0.2s;
 
     &:hover {
-      background: #2563eb;
+      background: var(--color-brand-blue-deep);
       transform: scale(1.1);
     }
   }
 `
 
 const SliderValue = styled.span`
-  color: #e5e7eb;
+  color: var(--color-gray-200);
   font-size: 0.875rem;
   font-weight: 500;
   min-width: 50px;
@@ -135,18 +135,18 @@ const AspectRatioButtons = styled.div`
 
 const AspectButton = styled.button`
   padding: 0.5rem 1rem;
-  border: 1px solid ${props => props.$active ? '#3b82f6' : '#374151'};
+  border: 1px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'};
   border-radius: 6px;
-  background: ${props => props.$active ? '#3b82f6' : 'transparent'};
-  color: ${props => props.$active ? 'white' : '#9ca3af'};
+  background: ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
+  color: ${props => props.$active ? 'white' : 'var(--color-gray-400)'};
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.$active ? '#2563eb' : '#1f2937'};
-    border-color: ${props => props.$active ? '#2563eb' : '#4b5563'};
+    background: ${props => props.$active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-800)'};
+    border-color: ${props => props.$active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-600)'};
   }
 `
 
@@ -155,7 +155,7 @@ const ActionButtons = styled.div`
   gap: 1rem;
   justify-content: flex-end;
   padding-top: 0.5rem;
-  border-top: 1px solid #374151;
+  border-top: 1px solid var(--color-gray-700);
 `
 
 const Button = styled.button`
@@ -166,11 +166,11 @@ const Button = styled.button`
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
-  background: ${props => props.$primary ? '#3b82f6' : '#374151'};
+  background: ${props => props.$primary ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'};
   color: white;
 
   &:hover {
-    background: ${props => props.$primary ? '#2563eb' : '#4b5563'};
+    background: ${props => props.$primary ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-600)'};
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
@@ -205,8 +205,8 @@ const LoadingOverlay = styled.div`
 const Spinner = styled.div`
   width: 20px;
   height: 20px;
-  border: 3px solid #374151;
-  border-top-color: #3b82f6;
+  border: 3px solid var(--color-gray-700);
+  border-top-color: var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 

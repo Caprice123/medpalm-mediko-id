@@ -153,7 +153,7 @@ const ChatInputSection = memo(({
         {isStreaming ? (
           <SendButton
             onClick={onStopStreaming}
-            style={{ background: '#ef4444' }}
+            style={{ background: 'var(--color-danger)' }}
             title="Stop streaming"
           >
             <FaStop />

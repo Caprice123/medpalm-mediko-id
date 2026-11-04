@@ -10,8 +10,8 @@ import {
 } from './TopicSection.styles'
 
 const CARD_ICON_BG = [
-  '#ede9fe', '#e0f2fe', '#fce7f3', '#d1fae5',
-  '#fef3c7', '#fee2e2', '#e0e7ff', '#f0fdf4',
+  '#ede9fe', 'var(--color-brand-blue-tint)', '#fce7f3', 'var(--color-brand-green-tint)',
+  'var(--color-warning-tint)', 'var(--color-danger-tint)', '#e0e7ff', 'var(--color-brand-green-tint)',
 ]
 
 export default function TopicSection({ group, title, subtitle, onTopicClick, colorOffset = 0 }) {

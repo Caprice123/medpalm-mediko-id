@@ -1,0 +1,113 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "plus jakarta sans",
+        "createdAt": "2026-10-31T09:40:56.409Z",
+        "reason": "Committed brand typography: landing page's Figma file 6wb6ON3pKs0TwuKS0cHQTN, token fonts.body in frontend-web/src/routes/Home/theme.js. User pinned 'revamp based on landing page', which binds its type."
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/sheet.html"
+        ],
+        "createdAt": "2026-10-31T09:43:10.105Z",
+        "reason": "False positive: the only nested box is div.gbtn, the filled primary action button (plus its Google mark) inside the docked sheet. A standard control, not a card container."
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-a-aurora.html"
+        ],
+        "createdAt": "2026-10-31T09:58:16.805Z",
+        "reason": "False positive: the only nested box is the filled Google action button inside the sign-in card. A standard control, not a card container."
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-b-dark.html"
+        ],
+        "createdAt": "2026-10-31T09:58:17.596Z",
+        "reason": "False positive: the only nested box is the filled Google action button inside the sign-in card. A standard control, not a card container."
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-d-editorial.html"
+        ],
+        "createdAt": "2026-10-31T09:58:18.367Z",
+        "reason": "False positive: the only nested box is the filled Google action button inside the sign-in card. A standard control, not a card container."
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-e-playful.html"
+        ],
+        "createdAt": "2026-10-31T09:58:19.159Z",
+        "reason": "False positive: the only nested box is the filled Google action button inside the sign-in card. A standard control, not a card container."
+      },
+      {
+        "rule": "colored-glow",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-a-aurora.html"
+        ],
+        "createdAt": "2026-10-31T09:58:38.240Z",
+        "reason": "Sanctioned: the soft radial pools are the aurora/mesh background technique this direction is being judged on (researched 2026 pattern: mesh gradient + grain + grid). Light page, ambient lighting, not a chromatic halo on a control."
+      },
+      {
+        "rule": "decorative-stripes",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-a-aurora.html"
+        ],
+        "createdAt": "2026-10-31T09:58:39.039Z",
+        "reason": "Sanctioned: the repeating gradient is the hairline 72/80px grid layer of the researched multi-layer ground (gradient + grain + grid), masked to fade at the edges. Not decorative striping."
+      },
+      {
+        "rule": "decorative-stripes",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-b-dark.html"
+        ],
+        "createdAt": "2026-10-31T09:58:39.719Z",
+        "reason": "Sanctioned: the repeating gradient is the hairline 72/80px grid layer of the researched multi-layer ground (gradient + grain + grid), masked to fade at the edges. Not decorative striping."
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-a-aurora.html"
+        ],
+        "createdAt": "2026-10-31T10:00:24.315Z",
+        "reason": "Sanctioned: the soft radial pools ARE the aurora/mesh ground this direction is being judged on (researched 2026 pattern: mesh gradient + grain + grid). Light page, ambient lighting, not a chromatic halo on a control."
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-a-aurora.html"
+        ],
+        "createdAt": "2026-10-31T10:00:24.997Z",
+        "reason": "Sanctioned: the repeating gradient is the hairline 72/80px grid layer of the researched multi-layer ground, radially masked to fade at the edges. Texture, not decorative striping."
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/dir-b-dark.html"
+        ],
+        "createdAt": "2026-10-31T10:00:25.739Z",
+        "reason": "Sanctioned: the repeating gradient is the hairline 72/80px grid layer of the researched multi-layer ground, radially masked to fade at the edges. Texture, not decorative striping."
+      }
+    ]
+  }
+}

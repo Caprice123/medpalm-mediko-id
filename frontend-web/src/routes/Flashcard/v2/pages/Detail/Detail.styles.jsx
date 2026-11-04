@@ -14,5 +14,5 @@ export const LoadingWrap = styled.div`
   justify-content: center;
   height: 60vh;
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `

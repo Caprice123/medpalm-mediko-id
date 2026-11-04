@@ -59,8 +59,8 @@ function CheckboxField({ field, value, onChange }) {
                 })}
 
                 {selected.length > 0 && (
-                    <div style={{ fontSize: '0.85rem', color: '#6b7280', paddingTop: '4px' }}>
-                        Total terpilih: <strong style={{ color: '#111827' }}>{sum}</strong>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)', paddingTop: '4px' }}>
+                        Total terpilih: <strong style={{ color: 'var(--color-gray-900)' }}>{sum}</strong>
                     </div>
                 )}
             </div>

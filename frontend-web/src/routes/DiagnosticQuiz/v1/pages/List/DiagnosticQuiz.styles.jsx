@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
   display: flex;
@@ -17,8 +17,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -60,7 +60,7 @@ export const QuizCard = styled.div`
   background: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(107, 185, 232, 0.08);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
   cursor: pointer;
@@ -73,7 +73,7 @@ export const QuizCard = styled.div`
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #6BB9E8, #3b82f6);
+    background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.4s ease;
@@ -81,8 +81,8 @@ export const QuizCard = styled.div`
 
   &:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(107, 185, 232, 0.2);
-    border-color: rgba(107, 185, 232, 0.2);
+    box-shadow: 0 20px 40px rgba(30, 115, 170, 0.2);
+    border-color: rgba(30, 115, 170, 0.2);
 
     &::before {
       transform: scaleX(1);
@@ -93,7 +93,7 @@ export const QuizCard = styled.div`
 export const QuizImageContainer = styled.div`
   width: 100%;
   height: 200px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,13 +120,13 @@ export const QuizCardContent = styled.div`
 export const QuizTitle = styled.h2`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.75rem 0;
   line-height: 1.3;
 `
 
 export const QuizDescription = styled.p`
-  color: #64748b;
+  color: var(--color-gray-500);
   font-size: 0.9375rem;
   margin: 0 0 1rem 0;
   line-height: 1.7;
@@ -146,8 +146,8 @@ export const TagContainer = styled.div`
 export const Tag = styled.span`
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: rgba(107, 185, 232, 0.1);
-  color: #6BB9E8;
+  background: rgba(30, 115, 170, 0.1);
+  color: var(--color-brand-blue);
   border-radius: 12px;
   font-size: 0.75rem;
   fontWeight: 600;
@@ -157,13 +157,13 @@ export const QuestionCount = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, rgba(107, 185, 232, 0.1), rgba(59, 130, 246, 0.05));
-  color: #6BB9E8;
+  background: linear-gradient(135deg, rgba(30, 115, 170, 0.1), rgba(30, 115, 170, 0.05));
+  color: var(--color-brand-blue);
   padding: 0.5rem 1rem;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
-  border: 1px solid rgba(107, 185, 232, 0.2);
+  border: 1px solid rgba(30, 115, 170, 0.2);
 
   &::before {
     content: '🩻';
@@ -175,8 +175,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(107, 185, 232, 0.2);
-  border-top: 4px solid #6BB9E8;
+  border: 4px solid rgba(30, 115, 170, 0.2);
+  border-top: 4px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 
@@ -189,10 +189,10 @@ export const LoadingSpinner = styled.div`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 80px 20px;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   background: white;
   border-radius: 20px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--color-gray-200);
 `
 
 export const EmptyIcon = styled.div`
@@ -203,7 +203,7 @@ export const EmptyIcon = styled.div`
 
 export const EmptyText = styled.p`
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   font-weight: 500;
 `

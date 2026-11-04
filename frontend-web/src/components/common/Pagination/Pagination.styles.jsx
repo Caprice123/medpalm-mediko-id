@@ -6,7 +6,7 @@ export const PaginationContainer = styled.div`
   align-items: center;
   padding: 1rem;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   margin-top: 1.5rem;
 
@@ -19,7 +19,7 @@ export const PaginationContainer = styled.div`
 
 export const PaginationInfo = styled.div`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   @media (max-width: 768px) {
     font-size: 0.8125rem;
@@ -40,18 +40,18 @@ export const PageButton = styled.button`
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid #d1d5db;
-  background: ${props => props.active ? 'linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%)' : 'white'};
-  color: ${props => props.active ? 'white' : '#374151'};
+  border: 1px solid var(--color-gray-300);
+  background: ${props => props.active ? 'linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%)' : 'white'};
+  color: ${props => props.active ? 'white' : 'var(--color-gray-700)'};
   transition: all 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 
   &:hover:not(:disabled) {
     background: ${props => props.active
-      ? 'linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%)'
-      : 'rgba(107, 185, 232, 0.08)'};
-    border-color: ${props => props.active ? 'transparent' : '#6BB9E8'};
+      ? 'linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%)'
+      : 'rgba(30, 115, 170, 0.08)'};
+    border-color: ${props => props.active ? 'transparent' : 'var(--color-brand-blue)'};
   }
 
   &:disabled {
@@ -72,6 +72,6 @@ export const PageButton = styled.button`
 
 export const PageEllipsis = styled.span`
   padding: 0.375rem 0.5rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
 `

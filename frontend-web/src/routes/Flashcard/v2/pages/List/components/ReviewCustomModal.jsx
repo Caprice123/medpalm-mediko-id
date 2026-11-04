@@ -14,10 +14,10 @@ import {
 } from '../../Review/Review.styles'
 
 const RATING_OPTIONS = [
-  { key: 'again', label: 'Lagi',  color: '#ef4444' },
+  { key: 'again', label: 'Lagi',  color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit', color: '#f97316' },
-  { key: 'good',  label: 'Baik',  color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah', color: '#22c55e' },
+  { key: 'good',  label: 'Baik',  color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah', color: 'var(--color-brand-green)' },
 ]
 
 export default function ReviewCustomModal({ isOpen, onClose }) {
@@ -151,8 +151,8 @@ export default function ReviewCustomModal({ isOpen, onClose }) {
           }}
           style={{
             width: '3.5rem', textAlign: 'center', fontWeight: 700,
-            fontSize: '0.9375rem', color: '#0d9488',
-            border: '1.5px solid #99f6e4', borderRadius: '8px',
+            fontSize: '0.9375rem', color: 'var(--color-brand-blue)',
+            border: '1.5px solid var(--color-brand-blue-tint-strong)', borderRadius: '8px',
             padding: '0.25rem 0.375rem', outline: 'none',
             flexShrink: 0,
           }}

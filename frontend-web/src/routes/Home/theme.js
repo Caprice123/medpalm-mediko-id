@@ -1,64 +1,71 @@
 // Design tokens for the public landing page.
 //
-// Extracted from Figma file 6wb6ON3pKs0TwuKS0cHQTN, frame 1:2
-// ("Landing Page FIx MedPal.id"). That file defines no Figma Variables, so every
-// value below was read off the individual layers — this module is the single
-// place those raw hex values live. Styled-components in this route import from
-// here instead of hardcoding colours.
+// The brand, surface, text and line colours now come from `theme/palette.js`,
+// which the app behind sign-in reads too — the landing page and the product
+// share one palette, so a colour only ever has to be changed in one place. The
+// keys below are the landing page's own names for those shared values; the
+// remaining literals are roles only this page has.
+//
+// Originally extracted from Figma file 6wb6ON3pKs0TwuKS0cHQTN, frame 1:2
+// ("Landing Page FIx MedPal.id") — that file defines no Figma Variables, so
+// every value was read off the individual layers. Styled-components in this
+// route import from here instead of hardcoding colours.
+
+import { palette } from '../../theme/palette'
 
 export const colors = {
   // Surfaces
-  pageBackground: '#f6fafb',
-  tickerBackground: '#eaf8ff',
-  surface: '#ffffff',
-  eyebrowBackground: '#c5ebff',
+  pageBackground: palette.surfacePage,
+  tickerBackground: palette.brandBlueTint,
+  surface: palette.surface,
+  eyebrowBackground: palette.brandBlueTintStrong,
 
   // Brand
-  brandBlue: '#1e73aa',
-  brandBlueLight: '#2e8fc2',
-  brandBlueMid: '#2682b7',
-  brandBlueDeep: '#044a77',
-  brandGreen: '#7cb342',
+  brandBlue: palette.brandBlue,
+  brandBlueLight: palette.brandBlueLight,
+  brandBlueMid: palette.brandBlueMid,
+  brandBlueDeep: palette.brandBlueDeep,
+  brandGreen: palette.brandGreen,
 
   // Text
-  headingDark: '#15242e',
+  headingDark: palette.gray800,
   headingDarker: '#0e2a38',
   textPrimary: '#111111',
-  textSecondary: '#3d5a68',
+  textSecondary: palette.gray600,
   textMuted: '#555555',
-  textNav: '#2c3b45',
+  textNav: palette.gray700,
 
   // Lines
-  border: '#e7ecef',
+  border: palette.gray200,
   divider: '#e2ecef',
 
   // "Kenapa MedPal.id?" numbered cards
-  cardNumberBackground: '#e7f5e2',
+  cardNumberBackground: palette.brandGreenTint,
   cardNumber: '#759963',
   sectionSubheading: '#325871',
 
   // Body copy in the lower sections (FAQ, testimonials, events, challenges)
-  bodyText: '#5c6b74',
-  metaText: '#8c99a2',
+  bodyText: palette.gray500,
+  metaText: palette.gray400,
 
   // Small surfaces: FAQ toggle chip, testimonial avatar, hairline rules
   chipBackground: '#f4f6f7',
   avatarBackground: '#eef1f3',
-  avatarBorder: '#dde3e6',
-  hairline: '#eff3f5',
+  avatarBorder: palette.gray300,
+  hairline: palette.gray100,
 
   // Event + Challenge cards
   eventBackground: '#f7fafc',
   cardTitle: '#16211d',
   cardBody: '#56635f',
-  freeBadgeBackground: '#699a3d',
+  freeBadgeBackground: palette.brandGreenDark,
   dateBadgeBackground: '#ededed',
   dateBadgeText: '#717171',
   imagePlaceholder: '#eceef2',
   statDivider: '#cfdffa',
   statLabel: '#8a938f',
-  statusBadgeBackground: '#ffdba6',
-  statusBadgeText: '#9d7438',
+  statusBadgeBackground: palette.warningTintStrong,
+  statusBadgeText: palette.warningText,
 }
 
 export const gradients = {

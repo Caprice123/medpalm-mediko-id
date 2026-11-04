@@ -17,7 +17,7 @@ export const HeaderLeft = styled.div`
 export const Title = styled.h1`
   font-size: 1.75rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.25rem;
 
   @media (max-width: 768px) {
@@ -27,6 +27,6 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `

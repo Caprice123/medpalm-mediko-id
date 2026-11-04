@@ -23,7 +23,7 @@ function EmbedVideoPage() {
   if (!src) {
     return (
       <PageRoot>
-        <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>Video tidak tersedia.</span>
+        <span style={{ color: 'var(--color-gray-500)', fontSize: '0.875rem' }}>Video tidak tersedia.</span>
       </PageRoot>
     )
   }

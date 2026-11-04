@@ -136,7 +136,7 @@ function PhysicalExamTab({ sessionId }) {
                   <div style={{
                     textAlign: 'center',
                     padding: '1rem',
-                    color: '#9ca3af',
+                    color: 'var(--color-gray-400)',
                     fontSize: '0.875rem'
                   }}>
                     Memuat pesan lama...

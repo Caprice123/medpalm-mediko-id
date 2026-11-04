@@ -13,7 +13,7 @@ export const MessageBubble = styled.div`
 `
 
 export const UserMessage = styled.div`
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
@@ -34,7 +34,7 @@ export const UserMessage = styled.div`
 
 export const AIMessage = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   padding: 0.875rem 1.125rem;
   border-radius: 12px;
   border-bottom-left-radius: 4px;
@@ -124,10 +124,10 @@ export const MessageContent = styled.div`
   }
 
   blockquote {
-    border-left: 3px solid #e5e7eb;
+    border-left: 3px solid var(--color-gray-200);
     padding-left: 1rem;
     margin: 0.75rem 0;
-    color: #6b7280;
+    color: var(--color-gray-500);
 
     @media (max-width: 768px) {
       padding-left: 0.75rem;
@@ -135,10 +135,10 @@ export const MessageContent = styled.div`
   }
 
   a {
-    color: #3b82f6;
+    color: var(--color-brand-blue);
     text-decoration: underline;
     &:hover {
-      color: #2563eb;
+      color: var(--color-brand-blue-deep);
     }
   }
 
@@ -163,7 +163,7 @@ export const MessageContent = styled.div`
   }
 
   th, td {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-gray-200);
     padding: 0.5rem;
     text-align: left;
 
@@ -173,7 +173,7 @@ export const MessageContent = styled.div`
   }
 
   th {
-    background: #f9fafb;
+    background: var(--color-gray-50);
     font-weight: 600;
   }
 `
@@ -203,13 +203,13 @@ export const ModeBadge = styled.div`
     switch (props.mode) {
       case 'normal':
         return `
-          background: #dbeafe;
-          color: #1e40af;
+          background: var(--color-brand-blue-tint-strong);
+          color: var(--color-brand-blue-deep);
         `
       case 'validated_search':
         return `
-          background: #dcfce7;
-          color: #166534;
+          background: var(--color-brand-green-tint);
+          color: var(--color-brand-green-darker);
         `
       case 'research':
         return `
@@ -218,8 +218,8 @@ export const ModeBadge = styled.div`
         `
       default:
         return `
-          background: #f3f4f6;
-          color: #374151;
+          background: var(--color-gray-100);
+          color: var(--color-gray-700);
         `
     }
   }}
@@ -228,23 +228,23 @@ export const ModeBadge = styled.div`
 export const SourcesSection = styled.div`
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 
   .sources-title {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--color-gray-700);
     margin-bottom: 0.5rem;
   }
 `
 
 export const SourceItem = styled.a`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.25rem;
 
   &:hover {
-    color: #3b82f6;
+    color: var(--color-brand-blue);
   }
 `
 
@@ -257,7 +257,7 @@ export const TypingIndicator = styled.div`
 export const TypingDot = styled.div`
   width: 8px;
   height: 8px;
-  background: #9ca3af;
+  background: var(--color-gray-400);
   border-radius: 50%;
   animation: typing 1.4s infinite;
   animation-delay: ${props => props.delay};
@@ -281,7 +281,7 @@ export const EmptyState = styled.div`
   justify-content: center;
   height: 100%;
   gap: 1rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 
   div:first-child {
     font-size: 3rem;

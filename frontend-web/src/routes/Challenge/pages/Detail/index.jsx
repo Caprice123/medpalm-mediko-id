@@ -159,7 +159,7 @@ export default function ChallengeDetailPage() {
               <DateCardsRow>
                 {challenge.startAt && (
                   <DateCard>
-                    <DateCardIcon $color="#f0fdf4">📅</DateCardIcon>
+                    <DateCardIcon $color="var(--color-brand-green-tint)">📅</DateCardIcon>
                     <DateCardInfo>
                       <DateCardLabel>Mulai</DateCardLabel>
                       <DateCardValue>{formatJakartaDateLong(challenge.startAt)}</DateCardValue>
@@ -184,7 +184,7 @@ export default function ChallengeDetailPage() {
                 <PointsGuideTitle>Cara Mendapat Poin</PointsGuideTitle>
               </PointsGuideHeader>
               <PointsItem>
-                <PointsItemIcon $bg="#d1fae5">⚡</PointsItemIcon>
+                <PointsItemIcon $bg="var(--color-brand-green-tint)">⚡</PointsItemIcon>
                 <span>
                   {challenge.scoringType === 'classic'
                     ? <>Maks <strong>{challenge.basePointsPerCorrect * 2} poin</strong> per soal (tergantung kecepatan &amp; streak)</>
@@ -210,7 +210,7 @@ export default function ChallengeDetailPage() {
               {/* BADGES HIDDEN
               {challengeBadges.length > 0 && (
                 <PointsItem>
-                  <PointsItemIcon $bg="#fef3c7">🏅</PointsItemIcon>
+                  <PointsItemIcon $bg="var(--color-warning-tint)">🏅</PointsItemIcon>
                   <span>
                     Top <strong>{challengeBadges[0].minRank}–{challengeBadges[challengeBadges.length - 1].maxRank}</strong> mendapat{' '}
                     badge eksklusif yang bisa di-download &amp; dibagikan
@@ -219,7 +219,7 @@ export default function ChallengeDetailPage() {
               )}
               */}
               <PointsItem>
-                <PointsItemIcon $bg="#fee2e2">⚠️</PointsItemIcon>
+                <PointsItemIcon $bg="var(--color-danger-tint)">⚠️</PointsItemIcon>
                 <span>Challenge hanya bisa diikuti <strong>1 kali</strong> — tidak bisa diulang</span>
               </PointsItem>
             </PointsGuideCard>
@@ -345,7 +345,7 @@ export default function ChallengeDetailPage() {
               <DateCardsRow>
                 {challenge.startAt && (
                   <DateCard>
-                    <DateCardIcon $color="#f0fdf4">📅</DateCardIcon>
+                    <DateCardIcon $color="var(--color-brand-green-tint)">📅</DateCardIcon>
                     <DateCardInfo>
                       <DateCardLabel>Mulai</DateCardLabel>
                       <DateCardValue>{formatJakartaDateLong(challenge.startAt)}</DateCardValue>
@@ -454,10 +454,10 @@ export default function ChallengeDetailPage() {
                   <Panel>
                     <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                       <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏆</div>
-                      <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--color-gray-900)', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
                         Reward menunggumu!
                       </div>
-                      <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.6, maxWidth: 320, margin: '0 auto' }}>
+                      <div style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', lineHeight: 1.6, maxWidth: 320, margin: '0 auto' }}>
                         Reward akan dianalisa setelah kamu menyelesaikan challenge ini. Selesaikan untuk mengetahui apakah kamu berhak mendapatkannya!
                       </div>
                     </div>
@@ -466,10 +466,10 @@ export default function ChallengeDetailPage() {
                   <Panel>
                     <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                       <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>💪</div>
-                      <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--color-gray-900)', fontSize: '0.9375rem', marginBottom: '0.375rem' }}>
                         Belum berhasil kali ini
                       </div>
-                      <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.6, maxWidth: 340, margin: '0 auto' }}>
+                      <div style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', lineHeight: 1.6, maxWidth: 340, margin: '0 auto' }}>
                         Peringkatmu kali ini belum masuk dalam kriteria penerima reward. Terus tingkatkan kemampuanmu dan raih posisi lebih tinggi di challenge berikutnya!
                       </div>
                     </div>

@@ -23,9 +23,9 @@ const MessageBubbleSkeleton = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  background: ${props => props.$isUser ? '#f3f4f6' : '#ffffff'};
+  background: ${props => props.$isUser ? 'var(--color-gray-100)' : '#ffffff'};
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 `
 
 const MessageFooter = styled.div`
@@ -51,8 +51,8 @@ function ChatbotMessagesSkeleton({ messageCount = 4 }) {
             <Skeleton
               count={message.isUser ? 1 : 2}
               height={16}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* Footer with timestamp and mode badge (only for AI messages) */}
@@ -62,34 +62,34 @@ function ChatbotMessagesSkeleton({ messageCount = 4 }) {
                   width={100}
                   height={20}
                   borderRadius={12}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               )}
               <Skeleton
                 width={60}
                 height={14}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
                 style={{ marginLeft: 'auto' }}
               />
             </MessageFooter>
 
             {/* Sources section (occasionally for AI messages) */}
             {!message.isUser && index % 3 === 0 && (
-              <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
+              <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--color-gray-200)' }}>
                 <Skeleton
                   width={80}
                   height={14}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                   style={{ marginBottom: '0.5rem' }}
                 />
                 <Skeleton
                   count={2}
                   height={12}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               </div>
             )}

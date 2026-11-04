@@ -47,7 +47,7 @@ export const SelectTagContainer = styled.div`
 `
 
 export const AddTagButton = styled.button`
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   padding: 0.625rem 1rem;
@@ -59,7 +59,7 @@ export const AddTagButton = styled.button`
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    background: #2563eb;
+    background: var(--color-brand-blue-deep);
   }
 
   &:disabled {
@@ -69,7 +69,7 @@ export const AddTagButton = styled.button`
 `
 
 export const EmptyTagsMessage = styled.div`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   font-style: italic;
   margin-bottom: 0.75rem;
@@ -78,5 +78,5 @@ export const EmptyTagsMessage = styled.div`
 export const HelpText = styled.p`
   margin: 0.5rem 0 0 0;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `

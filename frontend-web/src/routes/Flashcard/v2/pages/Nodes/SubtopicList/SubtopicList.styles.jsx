@@ -29,13 +29,13 @@ export const PageHeader = styled.div`
 export const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.25rem;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -58,7 +58,7 @@ export const SubtopicCard = styled.div`
 export const SubtopicName = styled.h3`
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   flex: 1;
   line-height: 1.4;
@@ -73,14 +73,14 @@ export const CardMeta = styled.div`
 
 export const CardCount = styled.span`
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-weight: 500;
 `
 
 export const EmptyWrap = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 /* ── Start Session Modal ── */
@@ -94,7 +94,7 @@ export const ModalBody = styled.div`
 export const ModalLabel = styled.p`
   margin: 0;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 600;
 `
 
@@ -107,9 +107,9 @@ export const PresetRow = styled.div`
 export const PresetBtn = styled.button`
   padding: 0.4rem 1rem;
   border-radius: 8px;
-  border: 1.5px solid ${p => p.$active ? '#6366f1' : '#e5e7eb'};
+  border: 1.5px solid ${p => p.$active ? '#6366f1' : 'var(--color-gray-200)'};
   background: ${p => p.$active ? '#ede9fe' : '#fff'};
-  color: ${p => p.$active ? '#4f46e5' : '#374151'};
+  color: ${p => p.$active ? '#4f46e5' : 'var(--color-gray-700)'};
   font-weight: 600;
   font-size: 0.875rem;
   cursor: ${p => p.$disabled ? 'not-allowed' : 'pointer'};
@@ -145,11 +145,11 @@ export const CountBtn = styled.button`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   background: #fff;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   cursor: pointer;
   display: flex;
   align-items: center;

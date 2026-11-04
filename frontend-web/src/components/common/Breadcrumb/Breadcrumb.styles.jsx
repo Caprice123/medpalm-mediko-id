@@ -5,12 +5,12 @@ export const Nav = styled.nav`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   flex-wrap: wrap;
 `
 
 export const Sep = styled.span`
-  color: #d1d5db;
+  color: var(--color-gray-300);
 `
 
 export const Crumb = styled.button`
@@ -18,7 +18,7 @@ export const Crumb = styled.button`
   border: none;
   padding: 0;
   font: inherit;
-  color: #10b981;
+  color: var(--color-brand-green);
   cursor: pointer;
   font-weight: 500;
 
@@ -28,6 +28,6 @@ export const Crumb = styled.button`
 `
 
 export const CurrentCrumb = styled.span`
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 500;
 `

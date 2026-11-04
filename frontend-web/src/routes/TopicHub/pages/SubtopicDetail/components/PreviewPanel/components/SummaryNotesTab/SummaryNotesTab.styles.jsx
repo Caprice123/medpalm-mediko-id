@@ -5,7 +5,7 @@ export const NoteItem = styled.button`
   align-items: center;
   gap: 0.75rem;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 0.75rem 0.875rem;
   cursor: pointer;
@@ -14,8 +14,8 @@ export const NoteItem = styled.button`
   transition: border-color 0.15s, background 0.15s;
 
   &:hover {
-    border-color: #10b981;
-    background: #f0fdf9;
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
 `
 
@@ -26,7 +26,7 @@ export const NoteIcon = styled.span`
   width: 2rem;
   height: 2rem;
   border-radius: 6px;
-  background: #d1fae5;
+  background: var(--color-brand-blue-tint);
   font-size: 0.875rem;
   flex-shrink: 0;
 `
@@ -42,7 +42,7 @@ export const NoteInfo = styled.span`
 export const NoteTitle = styled.span`
   font-size: 0.9rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
@@ -51,12 +51,12 @@ export const NoteTitle = styled.span`
 
 export const NoteReadTime = styled.span`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const NoteExtLink = styled.span`
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   flex-shrink: 0;
 `
 
@@ -66,13 +66,13 @@ export const NoteDetailHeader = styled.div`
   justify-content: flex-end;
   gap: 0.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 `
 
 export const OpenFullBtn = styled.a`
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #10b981;
+  color: var(--color-brand-blue);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -80,13 +80,13 @@ export const OpenFullBtn = styled.a`
   flex-shrink: 0;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
-  &:hover { background: #f0fdf9; }
+  &:hover { background: var(--color-brand-blue-tint); }
 `
 
 export const NoteDetailTitle = styled.h3`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0.75rem 0 0;
   line-height: 1.4;
 `
@@ -94,7 +94,7 @@ export const NoteDetailTitle = styled.h3`
 export const NoteEditorWrap = styled.div`
   font-size: 0.875rem;
   line-height: 1.7;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-top: 0.75rem;
 
   /* keep BlockNote content from overflowing the narrow panel */

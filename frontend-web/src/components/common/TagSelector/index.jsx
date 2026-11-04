@@ -44,23 +44,23 @@ const TagSelector = memo(function TagSelector({
     control: (base, state) => ({
       ...base,
       minHeight: '42px',
-      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+      borderColor: state.isFocused ? 'var(--color-brand-blue)' : 'var(--color-gray-300)',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(30, 115, 170, 0.1)' : 'none',
       '&:hover': {
-        borderColor: '#3b82f6'
+        borderColor: 'var(--color-brand-blue)'
       }
     }),
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected
-        ? '#3b82f6'
+        ? 'var(--color-brand-blue)'
         : state.isFocused
-        ? '#eff6ff'
+        ? 'var(--color-brand-blue-tint)'
         : 'white',
-      color: state.isSelected ? 'white' : '#374151',
+      color: state.isSelected ? 'white' : 'var(--color-gray-700)',
       cursor: 'pointer',
       '&:active': {
-        backgroundColor: '#3b82f6'
+        backgroundColor: 'var(--color-brand-blue)'
       }
     }),
     multiValue: (base) => ({
@@ -105,7 +105,7 @@ const TagSelector = memo(function TagSelector({
         <p style={{
           margin: '0.5rem 0 0 0',
           fontSize: '0.75rem',
-          color: '#6b7280'
+          color: 'var(--color-gray-500)'
         }}>
           {helpText}
         </p>

@@ -4,13 +4,13 @@ const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' }
 
 const MEDAL_BG = {
   1: { bg: '#fffbeb', border: '#fde68a' },
-  2: { bg: '#f8fafc', border: '#e2e8f0' },
+  2: { bg: 'var(--color-surface-page)', border: 'var(--color-gray-200)' },
   3: { bg: '#fff7ed', border: '#fed7aa' },
 }
 
 const Panel = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -24,19 +24,19 @@ const Header = styled.div`
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 const Title = styled.div`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 const RefreshBadge = styled.span`
   font-size: 0.75rem;
-  color: #0e7490;
-  background: #cffafe;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.2rem 0.625rem;
   border-radius: 999px;
   font-weight: 600;
@@ -62,7 +62,7 @@ const Medal = styled.span`
 const RankNum = styled.span`
   font-size: 0.875rem;
   font-weight: 800;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   min-width: 2.25rem;
 `
 
@@ -74,7 +74,7 @@ const NameCol = styled.div`
 
 const Name = styled.div`
   font-size: 0.875rem;
-  color: ${p => p.$isMe ? '#0e7490' : '#374151'};
+  color: ${p => p.$isMe ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   font-weight: ${p => p.$isMe ? 700 : 500};
   white-space: nowrap;
   overflow: hidden;
@@ -83,7 +83,7 @@ const Name = styled.div`
 
 const University = styled.div`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -92,13 +92,13 @@ const University = styled.div`
 const Score = styled.span`
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   white-space: nowrap;
 `
 
 const Empty = styled.div`
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   padding: 1.5rem 0;
 `

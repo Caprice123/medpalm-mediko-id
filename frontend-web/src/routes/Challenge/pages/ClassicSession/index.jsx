@@ -286,7 +286,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
           </QuestionCounter>
 
           {currentQ?.isSpecial && (
-            <div style={{ background: '#fffbeb', border: '1.5px solid #f59e0b', borderRadius: 6, padding: '0.3rem 0.75rem', marginBottom: '1rem', fontSize: '0.8125rem', color: '#92400e', fontWeight: 700 }}>
+            <div style={{ background: '#fffbeb', border: '1.5px solid var(--color-warning)', borderRadius: 6, padding: '0.3rem 0.75rem', marginBottom: '1rem', fontSize: '0.8125rem', color: '#92400e', fontWeight: 700 }}>
               ⭐ Soal Spesial
             </div>
           )}
@@ -336,7 +336,7 @@ export default function ClassicSession({ session, uniqueId, endAt }) {
           )}
 
           {submitting && (
-            <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.875rem', marginTop: '1rem' }}>
+            <div style={{ textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '0.875rem', marginTop: '1rem' }}>
               Mengirim hasil...
             </div>
           )}

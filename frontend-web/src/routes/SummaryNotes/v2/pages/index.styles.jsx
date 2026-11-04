@@ -17,7 +17,7 @@ export const SidebarWrapper = styled.aside`
   width: 270px;
   flex-shrink: 0;
   background: white;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -26,7 +26,7 @@ export const SidebarWrapper = styled.aside`
     width: 100%;
     height: 100vh;
     border-right: none;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--color-gray-200);
     flex-shrink: 0;
   }
 `

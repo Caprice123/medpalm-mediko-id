@@ -13,13 +13,13 @@ export const PageHeader = styled.div`
 export const Title = styled.h1`
   font-size: 1.75rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.25rem;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -68,13 +68,13 @@ export const ClassBadge = styled.span`
 export const CardCount = styled.span`
   font-size: 0.8rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const TopicName = styled.h3`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.4;
 `
@@ -91,5 +91,5 @@ export const CardArrow = styled.div`
 export const EmptyWrap = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `

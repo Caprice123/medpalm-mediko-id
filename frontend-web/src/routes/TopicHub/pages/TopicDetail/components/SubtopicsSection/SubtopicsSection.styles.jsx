@@ -15,7 +15,7 @@ export const SubtopicsHeader = styled.div`
 export const SubtopicsTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   display: flex;
   align-items: center;
@@ -23,7 +23,7 @@ export const SubtopicsTitle = styled.h2`
 `
 
 export const SubtopicsIcon = styled.span`
-  color: #10b981;
+  color: var(--color-brand-blue);
   display: flex;
   align-items: center;
 `
@@ -32,8 +32,8 @@ export const SubtopicsCount = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
   font-size: 0.8125rem;
   font-weight: 600;
   border-radius: 6px;
@@ -42,10 +42,10 @@ export const SubtopicsCount = styled.span`
 
 export const SubtopicsSubtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 1.25rem;
 
-  a { color: #10b981; text-decoration: none; }
+  a { color: var(--color-brand-blue); text-decoration: none; }
 `
 
 export const SubtopicGrid = styled.div`
@@ -64,14 +64,14 @@ export const SubtopicCard = styled.div`
   gap: 0.875rem;
   padding: 1rem 1.125rem;
   background: #fff;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 10px;
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: #a7f3d0;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+    border-color: var(--color-brand-blue-tint-strong);
+    box-shadow: 0 2px 8px rgba(30, 115, 170, 0.08);
   }
 `
 
@@ -79,12 +79,12 @@ export const SubtopicName = styled.span`
   flex: 1;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.4;
 `
 
 export const SubtopicArrow = styled.span`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 1.125rem;
   flex-shrink: 0;
   display: flex;
@@ -92,7 +92,7 @@ export const SubtopicArrow = styled.span`
 `
 
 const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 800px 100%;
   animation: ${shimmer} 1.4s infinite linear;
   border-radius: 8px;
@@ -106,7 +106,7 @@ export const SkeletonCard = styled(SkeletonBase)`
 export const EmptyState = styled.p`
   grid-column: 1 / -1;
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.9375rem;
   padding: 3rem 0;
 `

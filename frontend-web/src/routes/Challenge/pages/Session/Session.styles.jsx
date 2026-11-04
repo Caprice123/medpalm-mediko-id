@@ -1,12 +1,12 @@
 import styled, { keyframes, css } from 'styled-components'
 
 const timerDrain = keyframes`
-  0%   { width: 100%; background: #22C55E; }
-  50%  { background: #22C55E; }
-  51%  { background: #F59E0B; }
-  90%  { background: #F59E0B; }
-  91%  { background: #EF4444; }
-  100% { width: 0%;  background: #EF4444; }
+  0%   { width: 100%; background: var(--color-brand-green); }
+  50%  { background: var(--color-brand-green); }
+  51%  { background: var(--color-warning); }
+  90%  { background: var(--color-warning); }
+  91%  { background: var(--color-danger); }
+  100% { width: 0%;  background: var(--color-danger); }
 `
 
 const overlayIn = keyframes`
@@ -54,8 +54,8 @@ export const SpecialOverlay = styled.div`
 
 export const SpecialCard = styled.div`
   position: relative;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%);
-  border: 3px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, var(--color-warning-tint) 50%, #fffbeb 100%);
+  border: 3px solid var(--color-warning);
   border-radius: 28px;
   padding: 2.75rem 4rem;
   text-align: center;
@@ -68,7 +68,7 @@ export const SpecialCardTitle = styled.div`
   font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: linear-gradient(90deg, #f59e0b, #d97706, #fbbf24, #d97706, #f59e0b);
+  background: linear-gradient(90deg, var(--color-warning), var(--color-warning-dark), var(--color-warning-light), var(--color-warning-dark), var(--color-warning));
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -96,7 +96,7 @@ export const SpecialStar = styled.span`
 
 export const PageWrapper = styled.div`
   min-height: calc(100vh - 44px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   display: flex;
   flex-direction: column;
 
@@ -134,15 +134,15 @@ export const LeftSlot = styled.div`
 export const TopBarTitle = styled.div`
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const TimerBox = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${props => props.$urgent ? '#FEE2E2' : '#EFF6FF'};
-  color: ${props => props.$urgent ? '#DC2626' : '#1E40AF'};
+  background: ${props => props.$urgent ? 'var(--color-danger-tint)' : 'var(--color-brand-blue-tint)'};
+  color: ${props => props.$urgent ? 'var(--color-danger-dark)' : 'var(--color-brand-blue-deep)'};
   border-radius: 8px;
   padding: ${props => props.$compact ? '0.25rem 0.625rem' : '0.5rem 1rem'};
   font-size: ${props => props.$compact ? '0.9375rem' : '1.25rem'};
@@ -158,7 +158,7 @@ export const ProgressBar = styled.div`
 
 export const ProgressFill = styled.div`
   height: 100%;
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   border-radius: 2px;
   transition: width 0.3s;
   width: ${props => props.$pct}%;
@@ -179,10 +179,10 @@ export const QuestionCard = styled.div`
   max-width: 700px;
   width: 100%;
   ${props => props.$isSpecial ? css`
-    border: 2px solid #f59e0b;
+    border: 2px solid var(--color-warning);
     animation: ${goldPulse} 2s ease-in-out infinite;
   ` : css`
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-gray-200);
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   `}
 `
@@ -193,14 +193,14 @@ export const QuestionCounter = styled.div`
   align-items: center;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 1rem;
 `
 
 export const QuestionText = styled.div`
   font-size: 1.125rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin-bottom: 1.75rem;
 `
@@ -218,22 +218,22 @@ export const OptionBtn = styled.button`
   gap: 0.875rem;
   padding: 1rem 1.25rem;
   background: ${props =>
-    props.$correct ? '#D1FAE5' :
-    props.$wrong   ? '#FEE2E2' :
-    props.$selected ? '#EFF6FF' : '#fff'};
+    props.$correct ? 'var(--color-brand-green-tint)' :
+    props.$wrong   ? 'var(--color-danger-tint)' :
+    props.$selected ? 'var(--color-brand-blue-tint)' : '#fff'};
   border: 2px solid ${props =>
-    props.$correct ? '#10B981' :
-    props.$wrong   ? '#EF4444' :
-    props.$selected ? '#3B82F6' : '#e5e7eb'};
+    props.$correct ? 'var(--color-brand-green)' :
+    props.$wrong   ? 'var(--color-danger)' :
+    props.$selected ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
   border-radius: 10px;
   cursor: ${props => props.$locked ? 'default' : 'pointer'};
   text-align: left;
   transition: all 0.15s;
   font-size: 0.9375rem;
-  color: #111827;
+  color: var(--color-gray-900);
 
   &:hover {
-    ${props => !props.$locked && `border-color: #93c5fd; background: #f0f9ff;`}
+    ${props => !props.$locked && `border-color: var(--color-brand-blue-tint-strong); background: var(--color-surface-page);`}
   }
 `
 
@@ -245,10 +245,10 @@ export const OptionLetter = styled.span`
   height: 28px;
   border-radius: 50%;
   background: ${props =>
-    props.$correct ? '#10B981' :
-    props.$wrong   ? '#EF4444' :
-    props.$selected ? '#3B82F6' : '#f3f4f6'};
-  color: ${props => (props.$correct || props.$wrong || props.$selected) ? '#fff' : '#374151'};
+    props.$correct ? 'var(--color-brand-green)' :
+    props.$wrong   ? 'var(--color-danger)' :
+    props.$selected ? 'var(--color-brand-blue)' : 'var(--color-gray-100)'};
+  color: ${props => (props.$correct || props.$wrong || props.$selected) ? '#fff' : 'var(--color-gray-700)'};
   font-size: 0.8125rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -273,9 +273,9 @@ export const StreakBadge = styled.div`
 `
 
 export const ScoreBadge = styled.div`
-  background: #ecfdf5;
-  border: 2px solid #6ee7b7;
-  color: #065f46;
+  background: var(--color-brand-green-tint);
+  border: 2px solid var(--color-brand-green-tint-strong);
+  color: var(--color-brand-green-darker);
   border-radius: 20px;
   padding: ${props => props.$compact ? '0.2rem 0.625rem' : '0.3rem 0.875rem'};
   font-size: ${props => props.$compact ? '0.8125rem' : '0.9375rem'};
@@ -305,7 +305,7 @@ export const SpecialMultBadge = styled.div`
 
 export const QuestionTimerBar = styled.div`
   height: 6px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
   width: 100%;
 `
 
@@ -322,7 +322,7 @@ export const PointsFlash = styled.div`
   margin-top: 1.25rem;
   font-size: 1.5rem;
   font-weight: 800;
-  color: ${props => props.$correct ? '#16a34a' : '#dc2626'};
+  color: ${props => props.$correct ? 'var(--color-brand-green-dark)' : 'var(--color-danger-dark)'};
   animation: fadeInUp 0.2s ease;
 
   @keyframes fadeInUp {
@@ -338,8 +338,8 @@ export const NavRow = styled.div`
 
 export const NextBtn = styled.button`
   padding: 0.75rem 2rem;
-  background: ${props => props.$disabled ? '#e5e7eb' : '#1E40AF'};
-  color: ${props => props.$disabled ? '#9CA3AF' : '#fff'};
+  background: ${props => props.$disabled ? 'var(--color-gray-200)' : 'var(--color-brand-blue-deep)'};
+  color: ${props => props.$disabled ? 'var(--color-gray-400)' : '#fff'};
   border: none;
   border-radius: 8px;
   font-size: 0.9375rem;
@@ -347,5 +347,5 @@ export const NextBtn = styled.button`
   cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
   transition: background 0.15s;
 
-  &:not(:disabled):hover { background: #1e3a8a; }
+  &:not(:disabled):hover { background: var(--color-brand-blue-deep); }
 `

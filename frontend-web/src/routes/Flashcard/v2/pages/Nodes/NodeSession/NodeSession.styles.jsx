@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
 
   min-height: calc(100vh - 44px);
 
@@ -23,7 +23,7 @@ export const ProgressBar = styled.div`
 
 export const ProgressTrack = styled.div`
   height: 6px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
   border-radius: 99px;
   overflow: hidden;
 `
@@ -40,7 +40,7 @@ export const ProgressLabel = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.5rem;
 `
 
@@ -83,7 +83,7 @@ export const CardFront = styled(CardFace)`
 `
 
 export const CardBack = styled(CardFace)`
-  border-top: 4px solid #10b981;
+  border-top: 4px solid var(--color-brand-green);
   transform: rotateY(180deg);
 `
 
@@ -95,13 +95,13 @@ export const CardLabel = styled.span`
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${p => p.$back ? '#10b981' : '#6366f1'};
+  color: ${p => p.$back ? 'var(--color-brand-green)' : '#6366f1'};
 `
 
 export const CardText = styled.p`
   font-size: 1.15rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.5;
   max-width: 100%;
@@ -116,7 +116,7 @@ export const CardImage = styled.img`
 
 export const HintText = styled.p`
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin: -0.75rem 0 0;
 `
 
@@ -132,10 +132,10 @@ export const NavBtn = styled.button`
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   background: #fff;
   font-size: 1.2rem;
-  color: #374151;
+  color: var(--color-gray-700);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -178,12 +178,12 @@ export const DoneCard = styled.div`
 export const DoneTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
 export const DoneSub = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.9rem;
   margin: 0;
 `

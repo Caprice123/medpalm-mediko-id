@@ -17,7 +17,7 @@ export const PageHeader = styled.div`
 export const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
@@ -42,7 +42,7 @@ export const StatsPanel = styled.div`
 
 /* Hero card */
 export const HeroCard = styled.div`
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue) 60%, var(--color-brand-blue-deep) 100%);
   border-radius: 16px;
   padding: 1.75rem 2rem;
   display: flex;
@@ -51,7 +51,7 @@ export const HeroCard = styled.div`
   gap: 1.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
-  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 4px 20px rgba(30, 115, 170, 0.3);
 `
 
 export const HeroLeft = styled.div`
@@ -144,21 +144,21 @@ export const SectionLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   white-space: nowrap;
 `
 
 export const SectionLine = styled.div`
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
 `
 
 /* ── Topic Split Layout ── */
 
 export const TopicSplitLayout = styled.div`
   display: flex;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   overflow: hidden;
   background: white;
@@ -176,7 +176,7 @@ export const TopicScrollList = styled.div`
   width: ${p => p.$width ? `${p.$width}px` : '220px'};
   min-width: ${p => p.$width ? `${p.$width}px` : '220px'};
   flex-shrink: 0;
-  border-right: 1px solid #e5e7eb;
+  border-right: 1px solid var(--color-gray-200);
 
   @media (max-width: 600px) {
     flex-direction: row;
@@ -185,7 +185,7 @@ export const TopicScrollList = styled.div`
     width: 100%;
     min-width: 0;
     border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-gray-200);
     padding: 0.5rem;
     gap: 0.375rem;
     scrollbar-width: none;
@@ -207,8 +207,8 @@ export const TopicResizeHandle = styled.div`
     inset: 0 -4px;
   }
 
-  &:hover { background: rgba(13, 148, 136, 0.35); }
-  &[data-dragging='true'] { background: #0d9488; }
+  &:hover { background: rgba(30, 115, 170, 0.35); }
+  &[data-dragging='true'] { background: var(--color-brand-blue); }
 
   @media (max-width: 600px) {
     display: none;
@@ -223,12 +223,12 @@ export const TopicItem = styled.div`
   cursor: pointer;
   user-select: none;
   transition: background 0.12s;
-  border-bottom: 1px solid ${p => p.$last ? 'transparent' : '#f3f4f6'};
-  border-left: 3px solid ${p => p.$selected ? '#0d9488' : 'transparent'};
-  background: ${p => p.$selected ? '#f0fdfa' : 'transparent'};
+  border-bottom: 1px solid ${p => p.$last ? 'transparent' : 'var(--color-gray-100)'};
+  border-left: 3px solid ${p => p.$selected ? 'var(--color-brand-blue)' : 'transparent'};
+  background: ${p => p.$selected ? 'var(--color-brand-blue-tint)' : 'transparent'};
 
   &:hover {
-    background: ${p => p.$selected ? '#f0fdfa' : '#f9fafb'};
+    background: ${p => p.$selected ? 'var(--color-brand-blue-tint)' : 'var(--color-gray-50)'};
   }
 
   @media (max-width: 600px) {
@@ -237,8 +237,8 @@ export const TopicItem = styled.div`
     border-left: none;
     border-radius: 99px;
     padding: 0.375rem 0.875rem;
-    background: ${p => p.$selected ? '#0d9488' : '#f3f4f6'};
-    &:hover { background: ${p => p.$selected ? '#0f766e' : '#e5e7eb'}; }
+    background: ${p => p.$selected ? 'var(--color-brand-blue)' : 'var(--color-gray-100)'};
+    &:hover { background: ${p => p.$selected ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-200)'}; }
   }
 `
 
@@ -246,14 +246,14 @@ export const TopicName = styled.div`
   flex: 1;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-gray-900);
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
   @media (max-width: 600px) {
-    color: ${p => p.$selected ? 'white' : '#374151'};
+    color: ${p => p.$selected ? 'white' : 'var(--color-gray-700)'};
     font-size: 0.8125rem;
   }
 `
@@ -267,15 +267,15 @@ export const DuePill = styled.div`
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
-  background: ${p => p.$count > 0 ? '#fee2e2' : '#f0fdf4'};
-  color: ${p => p.$count > 0 ? '#b91c1c' : '#166534'};
-  border: 1px solid ${p => p.$count > 0 ? '#fecaca' : '#bbf7d0'};
+  background: ${p => p.$count > 0 ? 'var(--color-danger-tint)' : 'var(--color-brand-green-tint)'};
+  color: ${p => p.$count > 0 ? '#b91c1c' : 'var(--color-brand-green-darker)'};
+  border: 1px solid ${p => p.$count > 0 ? '#fecaca' : 'var(--color-brand-green-tint-strong)'};
 `
 
 /* ── Review All Modal ── */
 
 export const ReviewAllBanner = styled.div`
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue) 60%, var(--color-brand-blue-deep) 100%);
   border-radius: 14px;
   padding: 1.75rem 1.5rem;
   display: flex;
@@ -283,7 +283,7 @@ export const ReviewAllBanner = styled.div`
   justify-content: space-between;
   gap: 1.25rem;
   margin-bottom: 1.25rem;
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.25);
+  box-shadow: 0 4px 16px rgba(30, 115, 170, 0.25);
 `
 
 export const ReviewAllLeft = styled.div`
@@ -350,19 +350,19 @@ export const ReviewAllStatLabel = styled.div`
 
 export const ReviewAllDesc = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.6;
   margin: 0;
 `
 
 export const ReviewAllEmptyBox = styled.div`
   padding: 1.5rem;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   text-align: center;
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const LoadMoreTopicBtn = styled.button`
@@ -371,14 +371,14 @@ export const LoadMoreTopicBtn = styled.button`
   padding: 0.625rem 0.875rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #0d9488;
+  color: var(--color-brand-blue);
   cursor: pointer;
   text-align: center;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
   transition: background 0.12s;
   flex-shrink: 0;
 
-  &:hover { background: #f0fdfa; }
+  &:hover { background: var(--color-brand-blue-tint); }
 `
 
 /* Right panel */
@@ -395,13 +395,13 @@ export const TopicDetailPanel = styled.div`
 export const TopicDetailTitle = styled.div`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.3;
 `
 
 export const TopicStatRow = styled.div`
   display: flex;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 10px;
   overflow: hidden;
   background: #fafafa;
@@ -414,11 +414,11 @@ export const TopicStatRow = styled.div`
       "c d e";
 
     & > * { border-right: none; }
-    & > *:nth-child(1) { grid-area: a; border-right: 1px solid #e5e7eb; }
+    & > *:nth-child(1) { grid-area: a; border-right: 1px solid var(--color-gray-200); }
     & > *:nth-child(2) { grid-area: b; }
-    & > *:nth-child(3) { grid-area: c; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; }
-    & > *:nth-child(4) { grid-area: d; border-top: 1px solid #e5e7eb; }
-    & > *:nth-child(5) { grid-area: e; border-left: 1px solid #e5e7eb; justify-content: center; }
+    & > *:nth-child(3) { grid-area: c; border-top: 1px solid var(--color-gray-200); border-right: 1px solid var(--color-gray-200); }
+    & > *:nth-child(4) { grid-area: d; border-top: 1px solid var(--color-gray-200); }
+    & > *:nth-child(5) { grid-area: e; border-left: 1px solid var(--color-gray-200); justify-content: center; }
   }
 `
 
@@ -430,20 +430,20 @@ export const TopicStat = styled.div`
   gap: 0.25rem;
   padding: 0.875rem 0.5rem;
 
-  &:not(:last-child) { border-right: 1px solid #e5e7eb; }
+  &:not(:last-child) { border-right: 1px solid var(--color-gray-200); }
 `
 
 export const TopicStatNum = styled.span`
   font-size: 1.125rem;
   font-weight: 800;
-  color: ${p => p.$color || '#111827'};
+  color: ${p => p.$color || 'var(--color-gray-900)'};
   line-height: 1;
 `
 
 export const TopicStatLabel = styled.span`
   font-size: 0.625rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 `

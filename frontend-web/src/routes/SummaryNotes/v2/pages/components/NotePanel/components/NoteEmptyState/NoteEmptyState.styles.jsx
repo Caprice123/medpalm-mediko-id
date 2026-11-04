@@ -7,7 +7,7 @@ export const EmptyPanel = styled.div`
   justify-content: center;
   height: 100%;
   gap: 1rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   padding: 3rem;
   text-align: center;
   position: relative;

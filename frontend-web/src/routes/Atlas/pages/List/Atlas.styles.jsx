@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
   display: flex;
@@ -17,8 +17,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -45,7 +45,7 @@ export const ModelsGrid = styled.div`
 `
 
 export const QuizDescription = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.75rem;
@@ -60,9 +60,9 @@ export const QuizStats = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.75rem;
 `
 
@@ -74,20 +74,20 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   font-weight: 600;
 `
 
 export const StatValue = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 700;
 `
 
 export const UpdatedText = styled.div`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 `
@@ -105,13 +105,13 @@ export const Tag = styled.span`
   gap: 0.25rem;
   padding: 0.25rem 0.625rem;
   background: ${props => {
-    if (props.topic) return '#dbeafe'
-    if (props.subtopic) return '#d1fae5'
+    if (props.topic) return 'var(--color-brand-blue-tint-strong)'
+    if (props.subtopic) return 'var(--color-brand-green-tint)'
     return '#ede9fe'
   }};
   color: ${props => {
-    if (props.topic) return '#1e40af'
-    if (props.subtopic) return '#065f46'
+    if (props.topic) return 'var(--color-brand-blue-deep)'
+    if (props.subtopic) return 'var(--color-brand-green-darker)'
     return '#5b21b6'
   }};
   border-radius: 4px;

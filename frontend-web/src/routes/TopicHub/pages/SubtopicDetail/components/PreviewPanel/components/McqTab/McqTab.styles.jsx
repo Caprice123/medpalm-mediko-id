@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const McqQuestion = styled.div`
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 1rem;
   display: flex;
@@ -13,7 +13,7 @@ export const McqQuestion = styled.div`
 export const McqText = styled.p`
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.6;
   margin: 0;
 `
@@ -31,15 +31,15 @@ export const McqOption = styled.button`
   padding: 0.625rem 0.75rem;
   border-radius: 8px;
   border: 2px solid ${p => {
-    if (!p.$answered) return '#e5e7eb'
-    if (p.$correct) return '#22c55e'
-    if (p.$selected) return '#ef4444'
-    return '#e5e7eb'
+    if (!p.$answered) return 'var(--color-gray-200)'
+    if (p.$correct) return 'var(--color-brand-green)'
+    if (p.$selected) return 'var(--color-danger)'
+    return 'var(--color-gray-200)'
   }};
   background: ${p => {
     if (!p.$answered) return '#fff'
-    if (p.$correct) return '#f0fdf4'
-    if (p.$selected) return '#fef2f2'
+    if (p.$correct) return 'var(--color-brand-green-tint)'
+    if (p.$selected) return 'var(--color-danger-tint-soft)'
     return '#fff'
   }};
   cursor: ${p => p.$answered ? 'default' : 'pointer'};
@@ -48,8 +48,8 @@ export const McqOption = styled.button`
   transition: border-color 0.15s, background 0.15s;
 
   &:hover:not([disabled]) {
-    border-color: ${p => !p.$answered ? '#6BB9E8' : 'inherit'};
-    background: ${p => !p.$answered ? '#f0f9ff' : 'inherit'};
+    border-color: ${p => !p.$answered ? 'var(--color-brand-blue)' : 'inherit'};
+    background: ${p => !p.$answered ? 'var(--color-surface-page)' : 'inherit'};
   }
 `
 
@@ -64,18 +64,18 @@ export const McqOptionLabel = styled.span`
   font-size: 0.75rem;
   font-weight: 700;
   background: ${p => {
-    if (!p.$answered) return '#f3f4f6'
-    if (p.$correct) return '#22c55e'
-    if (p.$selected) return '#ef4444'
-    return '#f3f4f6'
+    if (!p.$answered) return 'var(--color-gray-100)'
+    if (p.$correct) return 'var(--color-brand-green)'
+    if (p.$selected) return 'var(--color-danger)'
+    return 'var(--color-gray-100)'
   }};
-  color: ${p => (p.$answered && (p.$correct || p.$selected)) ? '#fff' : '#374151'};
+  color: ${p => (p.$answered && (p.$correct || p.$selected)) ? '#fff' : 'var(--color-gray-700)'};
   transition: all 0.15s;
 `
 
 export const McqOptionText = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   line-height: 1.5;
 `
 
@@ -85,14 +85,14 @@ export const McqImage = styled.img`
   max-height: 200px;
   object-fit: contain;
   border-radius: 8px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
 `
 
 export const McqNewBadge = styled.span`
   align-self: flex-start;
-  background: #dcfce7;
-  color: #16a34a;
-  border: 1px solid #86efac;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
+  border: 1px solid var(--color-brand-blue-tint-strong);
   border-radius: 99px;
   padding: 0.2rem 0.5rem;
   font-size: 0.625rem;
@@ -108,7 +108,7 @@ export const McqActionRow = styled.div`
 
 export const McqNextBtn = styled.button`
   padding: 0.625rem 1.5rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -116,7 +116,7 @@ export const McqNextBtn = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
-  box-shadow: 0 3px 8px rgba(107,185,232,0.3);
+  box-shadow: 0 3px 8px rgba(30, 115, 170,0.3);
 
   &:hover { opacity: 0.9; }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -134,7 +134,7 @@ export const McqResult = styled.div`
 export const McqScore = styled.div`
   font-size: 3.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #6BB9E8, #8DC63F);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
@@ -143,7 +143,7 @@ export const McqScore = styled.div`
 export const McqScoreLabel = styled.div`
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 `
@@ -164,12 +164,12 @@ export const McqResultStat = styled.div`
 export const McqResultNum = styled.div`
   font-size: 1.375rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
 `
 
 export const McqResultLabel = styled.div`
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -183,15 +183,15 @@ export const McqResultActions = styled.div`
 
 export const McqSecondaryBtn = styled.button`
   padding: 0.625rem 1.25rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   background: #fff;
-  color: #374151;
+  color: var(--color-gray-700);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s;
 
-  &:hover { border-color: #6BB9E8; }
+  &:hover { border-color: var(--color-brand-blue); }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 `

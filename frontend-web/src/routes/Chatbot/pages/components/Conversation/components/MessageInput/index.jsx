@@ -68,7 +68,7 @@ function MessageInput({ onSend, onStop, disabled, currentMode, isStreaming }) {
         {isStreaming ? (
           <SendButton
             onClick={handleStopClick}
-            style={{ background: '#ef4444' }}
+            style={{ background: 'var(--color-danger)' }}
             title="Stop streaming"
           >
             ⏹️

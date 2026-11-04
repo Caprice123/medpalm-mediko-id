@@ -60,7 +60,7 @@ export const ImageLoadingOverlay = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--color-gray-500);
   gap: 0.625rem;
   z-index: 2;
   font-size: 0.8125rem;
@@ -70,7 +70,7 @@ export const ImageLoadingOverlay = styled.div`
 export const LoadingSpinnerIcon = styled.span`
   display: flex;
   animation: ${spin} 1s linear infinite;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
 `
 
 export const MainImageOverlay = styled.div`
@@ -111,7 +111,7 @@ export const SliderButton = styled.button`
   justify-content: center;
   width: 34px;
   height: 34px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: white;
   border: none;
   border-radius: 50%;
@@ -163,7 +163,7 @@ export const Dot = styled.button`
   border-radius: 4px;
   border: none;
   background: ${props => props.active
-    ? 'linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%)'
+    ? 'linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%)'
     : '#d0d0d0'};
   cursor: pointer;
   transition: all 0.3s ease;
@@ -171,7 +171,7 @@ export const Dot = styled.button`
 
   &:hover {
     background: ${props => props.active
-      ? 'linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%)'
+      ? 'linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%)'
       : '#b0b0b0'};
   }
 `

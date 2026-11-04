@@ -4,7 +4,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 1.5rem;
   min-height: calc(100vh - 44px);
 
@@ -30,7 +30,7 @@ export const Header = styled.div`
 export const IconCircle = styled.div`
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -38,19 +38,19 @@ export const IconCircle = styled.div`
   margin: 0 auto 1rem;
   font-size: 1.5rem;
   color: white;
-  box-shadow: 0 4px 15px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 4px 15px rgba(30, 115, 170, 0.3);
 `
 
 export const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   margin: 0 0 0.5rem 0;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.875rem;
-  color: #64748B;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.5;
   max-width: 500px;
@@ -58,21 +58,21 @@ export const Subtitle = styled.p`
 `
 
 export const PermissionCard = styled.div`
-  background: #F8FAFC;
+  background: var(--color-surface-page);
   border-radius: 10px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 2px solid ${props => props.granted ? '#10B981' : '#E2E8F0'};
+  border: 2px solid ${props => props.granted ? 'var(--color-brand-green)' : 'var(--color-gray-200)'};
   transition: all 0.3s;
 `
 
 export const PermissionIconCircle = styled.div`
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -89,13 +89,13 @@ export const PermissionContent = styled.div`
 export const PermissionTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1E293B;
+  color: var(--color-gray-800);
   margin: 0 0 0.375rem 0;
 `
 
 export const PermissionDescription = styled.p`
   font-size: 0.8125rem;
-  color: #64748B;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.4;
 `
@@ -108,8 +108,8 @@ export const StatusBadge = styled.div`
   border-radius: 5px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: ${props => props.granted ? '#D1FAE5' : '#64748B'};
-  color: ${props => props.granted ? '#065F46' : 'white'};
+  background: ${props => props.granted ? 'var(--color-brand-green-tint)' : 'var(--color-gray-500)'};
+  color: ${props => props.granted ? 'var(--color-brand-green-darker)' : 'white'};
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -117,7 +117,7 @@ export const StatusBadge = styled.div`
 
 export const PermissionButton = styled.button`
   padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: white;
   border: none;
   border-radius: 7px;
@@ -125,12 +125,12 @@ export const PermissionButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 12px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 3px 12px rgba(30, 115, 170, 0.3);
   flex-shrink: 0;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 18px rgba(107, 185, 232, 0.4);
+    box-shadow: 0 5px 18px rgba(30, 115, 170, 0.4);
   }
 
   &:active:not(:disabled) {
@@ -155,8 +155,8 @@ export const InfoGrid = styled.div`
 `
 
 export const InfoBox = styled.div`
-  background: linear-gradient(135deg, #E0F2FE 0%, #DBEAFE 100%);
-  border: 1px solid #6BB9E8;
+  background: linear-gradient(135deg, var(--color-brand-blue-tint) 0%, var(--color-brand-blue-tint-strong) 100%);
+  border: 1px solid var(--color-brand-blue);
   border-radius: 8px;
   padding: 1rem;
 `
@@ -167,7 +167,7 @@ export const InfoBoxTitle = styled.div`
   gap: 0.375rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   margin-bottom: 0.375rem;
 `
 
@@ -177,7 +177,7 @@ export const InfoBoxIcon = styled.div`
 
 export const InfoBoxText = styled.p`
   font-size: 0.75rem;
-  color: #475569;
+  color: var(--color-gray-600);
   margin: 0;
   line-height: 1.4;
 `
@@ -202,19 +202,19 @@ export const Button = styled.button`
   transition: all 0.3s ease;
 
   ${props => props.variant === 'primary' && `
-    background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+    background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
     color: white;
     border: none;
-    box-shadow: 0 3px 12px rgba(107, 185, 232, 0.3);
+    box-shadow: 0 3px 12px rgba(30, 115, 170, 0.3);
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 5px 18px rgba(107, 185, 232, 0.4);
+      box-shadow: 0 5px 18px rgba(30, 115, 170, 0.4);
     }
 
     &:active:not(:disabled) {
       transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(107, 185, 232, 0.2);
+      box-shadow: 0 2px 8px rgba(30, 115, 170, 0.2);
     }
 
     &:disabled {
@@ -225,22 +225,22 @@ export const Button = styled.button`
 
   ${props => props.variant === 'secondary' && `
     background: white;
-    color: #374151;
-    border: 1px solid #D1D5DB;
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-300);
 
     &:hover {
-      background: #F9FAFB;
+      background: var(--color-gray-50);
     }
 
     &:active {
-      background: #F3F4F6;
+      background: var(--color-gray-100);
     }
   `}
 `
 
 export const ErrorMessage = styled.div`
-  background: #FEF2F2;
-  border-left: 3px solid #EF4444;
+  background: var(--color-danger-tint-soft);
+  border-left: 3px solid var(--color-danger);
   padding: 0.75rem;
   border-radius: 6px;
   margin-bottom: 1rem;
@@ -250,7 +250,7 @@ export const ErrorMessage = styled.div`
 
 export const HelpText = styled.p`
   font-size: 0.8125rem;
-  color: #64748B;
+  color: var(--color-gray-500);
   text-align: center;
   margin: 1rem 0 0 0;
   line-height: 1.4;

@@ -10,8 +10,8 @@ export const ObservationCheckboxItem = styled.label`
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: ${props => props.checked ? colors.success.lighter || '#d1fae5' : colors.neutral.white};
-  border: 2px solid ${props => props.checked ? colors.success.main || '#10b981' : colors.neutral.gray200};
+  background: ${props => props.checked ? colors.success.lighter || 'var(--color-brand-green-tint)' : colors.neutral.white};
+  border: 2px solid ${props => props.checked ? colors.success.main || 'var(--color-brand-green)' : colors.neutral.gray200};
   border-radius: 8px;
   cursor: default;
   transition: all 0.2s;
@@ -20,7 +20,7 @@ export const ObservationCheckboxItem = styled.label`
     width: 18px;
     height: 18px;
     cursor: default;
-    accent-color: ${colors.success.main || '#10b981'};
+    accent-color: ${colors.success.main || 'var(--color-brand-green)'};
   }
 
   span {
@@ -128,7 +128,7 @@ export const SelectedObservationText = styled.div`
 `
 
 export const InterpretationSection = styled.div`
-  background: ${colors.primary.lighter || '#e0f2fe'};
+  background: ${colors.primary.lighter || 'var(--color-brand-blue-tint)'};
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid ${colors.primary.main};

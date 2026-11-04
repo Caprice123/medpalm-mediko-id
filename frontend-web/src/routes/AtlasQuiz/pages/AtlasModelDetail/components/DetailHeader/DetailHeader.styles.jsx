@@ -17,7 +17,7 @@ export const BrandIcon = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  background: linear-gradient(135deg, var(--color-brand-green-tint), var(--color-brand-green-tint-strong));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,12 +27,12 @@ export const BrandIcon = styled.div`
 export const BrandTitle = styled.div`
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
 `
 
 export const BrandSubtitle = styled.div`
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--color-gray-500);
 `
 
 export const BackButton = styled.button`
@@ -43,9 +43,9 @@ export const BackButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
-  color: #475569;
+  color: var(--color-gray-600);
   padding: 0.4rem 0.75rem;
   border-radius: 8px;
   transition: background 0.15s;
-  &:hover { background: #e2e8f0; }
+  &:hover { background: var(--color-gray-200); }
 `

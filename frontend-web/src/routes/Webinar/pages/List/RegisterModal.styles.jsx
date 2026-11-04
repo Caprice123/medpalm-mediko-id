@@ -8,29 +8,29 @@ export const Label = styled.label`
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.5rem;
 `
 
 export const HelpText = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0.375rem 0 0;
 `
 
 export const UploadArea = styled.div`
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-gray-300);
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.15s;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
 
   &:hover {
-    border-color: #2563eb;
-    color: #2563eb;
+    border-color: var(--color-brand-blue-deep);
+    color: var(--color-brand-blue-deep);
   }
 `
 
@@ -46,15 +46,15 @@ export const FileItem = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   font-size: 0.8125rem;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const ErrorText = styled.p`
-  color: #dc2626;
+  color: var(--color-danger-dark);
   font-size: 0.8125rem;
   margin: 0.25rem 0 0;
 `

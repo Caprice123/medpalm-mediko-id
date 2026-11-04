@@ -50,14 +50,14 @@ export const ConfirmIcon = styled.div`
 export const ConfirmTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0 0 0.5rem 0;
   text-align: center;
 `
 
 export const ConfirmMessage = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 1.5rem 0;
   text-align: center;
   line-height: 1.5;
@@ -81,20 +81,20 @@ export const Button = styled.button`
   ${props => {
     if (props.variant === 'danger') {
       return `
-        background: #ef4444;
+        background: var(--color-danger);
         color: white;
         &:hover {
-          background: #dc2626;
+          background: var(--color-danger-dark);
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
       `
     } else {
       return `
-        background: #f3f4f6;
-        color: #374151;
+        background: var(--color-gray-100);
+        color: var(--color-gray-700);
         &:hover {
-          background: #e5e7eb;
+          background: var(--color-gray-200);
         }
       `
     }

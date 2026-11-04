@@ -71,7 +71,7 @@ function AnatomyQuiz() {
               width: '100%',
               padding: '0.5rem',
               borderRadius: '6px',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--color-gray-300)',
               fontSize: '0.875rem'
             }}
           >
@@ -93,7 +93,7 @@ function AnatomyQuiz() {
               width: '100%',
               padding: '0.5rem',
               borderRadius: '6px',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--color-gray-300)',
               fontSize: '0.875rem'
             }}
           >
@@ -122,7 +122,7 @@ function AnatomyQuiz() {
         <EmptyState>
           <EmptyStateIcon>📋</EmptyStateIcon>
           <EmptyStateText>No quizzes available</EmptyStateText>
-          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
+          <p style={{ color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>
             Check back later for new quizzes
           </p>
         </EmptyState>

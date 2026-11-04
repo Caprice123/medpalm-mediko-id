@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   background: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   padding: 1rem 1.5rem;
   width: 100%;
 
@@ -28,7 +28,7 @@ export const InputWrapper = styled.div`
 export const Textarea = styled.textarea`
   flex: 1;
   padding: 0.875rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 0.9375rem;
   font-family: inherit;
@@ -38,16 +38,16 @@ export const Textarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170, 0.1);
   }
 
   &::placeholder {
-    color: #9ca3af;
+    color: var(--color-gray-400);
   }
 
   &:disabled {
-    background: #f9fafb;
+    background: var(--color-gray-50);
     cursor: not-allowed;
   }
 
@@ -61,7 +61,7 @@ export const Textarea = styled.textarea`
 export const SendButton = styled.button`
   width: 48px;
   height: 48px;
-  background: #3b82f6;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -74,11 +74,11 @@ export const SendButton = styled.button`
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background: #2563eb;
+    background: var(--color-brand-blue-deep);
   }
 
   &:disabled {
-    background: #e5e7eb;
+    background: var(--color-gray-200);
     cursor: not-allowed;
   }
 
@@ -92,6 +92,6 @@ export const SendButton = styled.button`
 export const CostIndicator = styled.div`
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-align: center;
 `

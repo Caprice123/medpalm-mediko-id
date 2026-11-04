@@ -36,8 +36,8 @@ function TransactionDetailSkeleton() {
         <Skeleton
           width={180}
           height={20}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Detail Grid */}
@@ -48,8 +48,8 @@ function TransactionDetailSkeleton() {
               <Skeleton
                 width={100}
                 height={14}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
               {/* Value */}
               {index === 2 ? (
@@ -58,15 +58,15 @@ function TransactionDetailSkeleton() {
                   width={90}
                   height={24}
                   borderRadius={12}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               ) : (
                 <Skeleton
                   width="80%"
                   height={16}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               )}
             </DetailItemContainer>
@@ -80,8 +80,8 @@ function TransactionDetailSkeleton() {
         <Skeleton
           width={200}
           height={20}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Detail Grid */}
@@ -92,8 +92,8 @@ function TransactionDetailSkeleton() {
               <Skeleton
                 width={120}
                 height={14}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
               {/* Value */}
               {index === 3 ? (
@@ -102,15 +102,15 @@ function TransactionDetailSkeleton() {
                   width={80}
                   height={24}
                   borderRadius={12}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               ) : (
                 <Skeleton
                   width={index === 1 ? "60%" : "70%"}
                   height={index === 1 ? 18 : 16}
-                  baseColor="#e5e7eb"
-                  highlightColor="#f3f4f6"
+                  baseColor="var(--color-gray-200)"
+                  highlightColor="var(--color-gray-100)"
                 />
               )}
             </DetailItemContainer>
@@ -124,8 +124,8 @@ function TransactionDetailSkeleton() {
         <Skeleton
           width={160}
           height={20}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Evidence List */}
@@ -137,9 +137,9 @@ function TransactionDetailSkeleton() {
               alignItems: 'center',
               gap: '1rem',
               padding: '1rem',
-              border: '1px solid #e5e7eb',
+              border: '1px solid var(--color-gray-200)',
               borderRadius: '8px',
-              background: '#f9fafb'
+              background: 'var(--color-gray-50)'
             }}
           >
             {/* File Icon */}
@@ -147,8 +147,8 @@ function TransactionDetailSkeleton() {
               width={40}
               height={40}
               borderRadius={8}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
 
             {/* File Info */}
@@ -156,14 +156,14 @@ function TransactionDetailSkeleton() {
               <Skeleton
                 width="60%"
                 height={16}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
               <Skeleton
                 width="40%"
                 height={12}
-                baseColor="#e5e7eb"
-                highlightColor="#f3f4f6"
+                baseColor="var(--color-gray-200)"
+                highlightColor="var(--color-gray-100)"
               />
             </div>
 
@@ -172,8 +172,8 @@ function TransactionDetailSkeleton() {
               width={60}
               height={32}
               borderRadius={6}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </div>
         ))}
@@ -185,8 +185,8 @@ function TransactionDetailSkeleton() {
           width={180}
           height={44}
           borderRadius={8}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
       </div>
     </SkeletonContainer>

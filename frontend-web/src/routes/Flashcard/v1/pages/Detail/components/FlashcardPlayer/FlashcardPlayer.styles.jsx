@@ -33,7 +33,7 @@ export const ProgressBadge = styled.div`
   border-radius: 20px;
   font-weight: 700;
   font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(107, 185, 232, 0.3);
+  box-shadow: 0 2px 8px rgba(30, 115, 170, 0.3);
 `
 
 export const TopicInfo = styled.div`
@@ -59,8 +59,8 @@ export const TopicInfo = styled.div`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -68,8 +68,8 @@ export const BackButton = styled.button`
   font-weight: 500;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -92,7 +92,7 @@ export const Tag = styled.span`
   ${props => props.department && `
     background: #FFF7ED;
     color: #92400E;
-    border: 1px solid #F59E0B;
+    border: 1px solid var(--color-warning);
   `}
 
   ${props => props.topic && `
@@ -102,13 +102,13 @@ export const Tag = styled.span`
   `}
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
@@ -139,7 +139,7 @@ export const ProgressBarFill = styled.div`
   transition: width 0.4s ease;
   width: ${props => props.progress}%;
   border-radius: 6px;
-  box-shadow: 0 0 10px rgba(107, 185, 232, 0.4);
+  box-shadow: 0 0 10px rgba(30, 115, 170, 0.4);
 `
 
 export const ProgressPercentage = styled.div`
@@ -315,7 +315,7 @@ export const AnswerInput = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${colors.primary.main};
-    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.2);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.2);
     background: ${colors.neutral.white};
   }
 
@@ -344,11 +344,11 @@ export const ShowAnswerButton = styled.button`
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 12px rgba(141, 198, 63, 0.3);
+  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.3);
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(141, 198, 63, 0.4);
+    box-shadow: 0 6px 16px rgba(124, 179, 66, 0.4);
   }
 
   &:active:not(:disabled) {
@@ -393,11 +393,11 @@ export const NavButton = styled.button`
     background: linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main});
     color: ${colors.text.inverse};
     border: none;
-    box-shadow: 0 4px 12px rgba(107, 185, 232, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(107, 185, 232, 0.4);
+      box-shadow: 0 6px 16px rgba(30, 115, 170, 0.4);
     }
 
     &:active:not(:disabled) {
@@ -451,19 +451,19 @@ export const FeedbackBadge = styled.div`
     switch (props.type) {
       case 'correct':
         return `
-          background: #ECFDF5;
+          background: var(--color-brand-green-tint);
           color: ${colors.success.dark};
           border: 2px solid ${colors.success.main};
         `
       case 'almost':
         return `
-          background: #FEF3C7;
+          background: var(--color-warning-tint);
           color: ${colors.warning.dark};
           border: 2px solid ${colors.warning.main};
         `
       case 'incorrect':
         return `
-          background: #FEF2F2;
+          background: var(--color-danger-tint-soft);
           color: ${colors.error.dark};
           border: 2px solid ${colors.error.main};
         `
@@ -517,14 +517,14 @@ export const ComparisonValue = styled.div`
   ${props => {
     if (props.correct) {
       return `
-        background: #ECFDF5;
+        background: var(--color-brand-green-tint);
         color: ${colors.success.dark};
         border-left: 4px solid ${colors.success.main};
       `
     }
     if (props.wrong) {
       return `
-        background: #FEF2F2;
+        background: var(--color-danger-tint-soft);
         color: ${colors.error.dark};
         border-left: 4px solid ${colors.error.main};
       `

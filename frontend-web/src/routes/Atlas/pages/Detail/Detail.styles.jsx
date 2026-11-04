@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -15,8 +15,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 
@@ -58,7 +58,7 @@ export const TopicInfo = styled.div`
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-gray-900);
     margin: 0 0 0.5rem 0;
 
     @media (max-width: 768px) {
@@ -68,7 +68,7 @@ export const TopicInfo = styled.div`
 
   p {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin: 0;
     line-height: 1.5;
   }
@@ -91,13 +91,13 @@ export const Tag = styled.span`
   font-weight: 600;
 
   ${props => props.topic && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.subtopic && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
@@ -141,8 +141,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(107, 185, 232, 0.2);
-  border-top: 4px solid #6BB9E8;
+  border: 4px solid rgba(30, 115, 170, 0.2);
+  border-top: 4px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 

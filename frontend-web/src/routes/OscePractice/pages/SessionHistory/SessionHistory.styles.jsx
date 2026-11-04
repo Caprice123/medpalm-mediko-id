@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { colors } from '@config/colors'
 
 export const Container = styled.div`
-    background: #f0fdfa;
+    background: var(--color-brand-blue-tint);
 `
 
 export const PageContainer = styled.div`
@@ -62,7 +62,7 @@ export const StartButton = styled.button`
   &:hover {
     background: ${colors.osce.primaryHover};
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   }
 
   &:active {

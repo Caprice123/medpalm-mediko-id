@@ -23,25 +23,25 @@ export const MetaTag = styled.span`
   border-radius: 6px;
   background: ${({ $type }) =>
     $type === 'module' ? '#ede9fe' :
-    $type === 'patologi' ? '#fee2e2' :
-    '#d1fae5'};
+    $type === 'patologi' ? 'var(--color-danger-tint)' :
+    'var(--color-brand-green-tint)'};
   color: ${({ $type }) =>
     $type === 'module' ? '#6d28d9' :
     $type === 'patologi' ? '#b91c1c' :
-    '#047857'};
+    'var(--color-brand-green-darker)'};
 `
 
 export const ModelTitle = styled.h1`
   font-size: 1.45rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.35rem 0;
   line-height: 1.35;
 `
 
 export const ModelDescription = styled.p`
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.6;
 `

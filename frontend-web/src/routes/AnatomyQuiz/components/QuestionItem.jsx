@@ -31,7 +31,7 @@ function QuestionItem({ question, value, onChange, error }) {
       {question.question && (
         <QuestionLabel>
           {question.question}
-          <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>
+          <span style={{ color: 'var(--color-danger)', marginLeft: '4px' }}>*</span>
         </QuestionLabel>
       )}
       {question.answerType === 'multiple_choice' && question.choices?.length > 0 ? (

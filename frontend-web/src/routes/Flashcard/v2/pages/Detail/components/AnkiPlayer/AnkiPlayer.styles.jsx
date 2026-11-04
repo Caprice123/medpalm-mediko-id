@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem 1.5rem;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   min-height: calc(100vh - 44px);
 
   @media (max-width: 768px) {
@@ -21,13 +21,13 @@ export const BackBtn = styled.button`
   gap: 0.375rem;
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   padding: 0;
 
-  &:hover { color: #0d9488; }
+  &:hover { color: var(--color-brand-blue); }
 `
 
 export const DeckContainer = styled.div`
@@ -35,7 +35,7 @@ export const DeckContainer = styled.div`
   max-width: 720px;
   background: white;
   border-radius: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
   padding: 2rem 2.25rem;
   display: flex;
@@ -57,20 +57,20 @@ export const DeckMetaLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin-bottom: 0.25rem;
 `
 
 export const DeckTitle = styled.h1`
   font-size: 1.375rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.25rem;
 `
 
 export const DeckSubtags = styled.div`
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 // ── Stats Row ─────────────────────────────────────────────────────────────────
@@ -83,14 +83,14 @@ export const StatsRow = styled.div`
 
 export const CardCounter = styled.div`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
-  b { color: #111827; }
+  b { color: var(--color-gray-900); }
 `
 
 export const ReviewedCount = styled.div`
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 // ── Progress ──────────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ export const ReviewedCount = styled.div`
 export const ProgressBar = styled.div`
   width: 100%;
   height: 6px;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   border-radius: 99px;
   overflow: hidden;
 `
@@ -106,7 +106,7 @@ export const ProgressBar = styled.div`
 export const ProgressFill = styled.div`
   height: 100%;
   width: ${p => p.$progress}%;
-  background: linear-gradient(90deg, #0d9488, #2dd4bf);
+  background: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-blue-light));
   border-radius: 99px;
   transition: width 0.3s ease;
 `
@@ -123,10 +123,10 @@ export const NodeTag = styled.span`
   font-size: 0.75rem;
   font-weight: 500;
   padding: 0.3125rem 0.75rem;
-  background: #f0fdfa;
-  color: #0d9488;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue);
   border-radius: 99px;
-  border: 1px solid #99f6e4;
+  border: 1px solid var(--color-brand-blue-tint-strong);
 `
 
 // ── Flip Card ─────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ const CardFaceBase = styled.div`
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border-radius: 12px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-gray-300);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -168,14 +168,14 @@ export const CardFront = styled(CardFaceBase)`
   background: white;
 
   ${FlipArea}:hover & {
-    border-color: #2dd4bf;
+    border-color: var(--color-brand-blue-light);
   }
 `
 
 export const CardBack = styled(CardFaceBase)`
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   transform: rotateY(180deg);
-  border-color: #99f6e4;
+  border-color: var(--color-brand-blue-tint-strong);
 `
 
 export const CardLabel = styled.div`
@@ -183,14 +183,14 @@ export const CardLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #0d9488;
+  color: var(--color-brand-blue);
   margin-bottom: 0.625rem;
 `
 
 export const CardText = styled.p`
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.5;
   margin: 0;
   white-space: pre-wrap;
@@ -203,7 +203,7 @@ export const CardImage = styled.img`
   object-fit: contain;
   border-radius: 6px;
   margin-top: 0.75rem;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   flex-shrink: 0;
 `
 
@@ -214,7 +214,7 @@ export const FlipHint = styled.div`
   right: 0;
   text-align: center;
   font-size: 0.75rem;
-  color: #0d9488;
+  color: var(--color-brand-blue);
   opacity: 0.7;
 `
 
@@ -223,7 +223,7 @@ export const FlipHint = styled.div`
 export const ShowAnswerBtn = styled.button`
   width: 100%;
   padding: 1rem;
-  background: #0f766e;
+  background: var(--color-brand-blue-deep);
   color: white;
   border: none;
   border-radius: 12px;
@@ -236,7 +236,7 @@ export const ShowAnswerBtn = styled.button`
   gap: 0.5rem;
   transition: background 0.15s;
 
-  &:hover { background: #0d9488; }
+  &:hover { background: var(--color-brand-blue); }
 `
 
 // ── Rating Buttons ────────────────────────────────────────────────────────────
@@ -277,7 +277,7 @@ export const DoneWrap = styled.div`
 export const DoneBanner = styled.div`
   width: 100%;
   padding: 2.5rem 2rem 2rem;
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   border-radius: 16px 16px 0 0;
   display: flex;
   flex-direction: column;
@@ -312,7 +312,7 @@ export const DoneBody = styled.div`
   gap: 1.5rem;
   background: white;
   border-radius: 0 0 16px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-top: none;
 `
 
@@ -343,7 +343,7 @@ export const SummaryValue = styled.span`
 export const SummaryLabel = styled.span`
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `
@@ -358,8 +358,8 @@ export const DoneSecondaryBtn = styled.button`
   flex: 1;
   padding: 0.875rem;
   background: white;
-  color: #374151;
-  border: 1.5px solid #e5e7eb;
+  color: var(--color-gray-700);
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 12px;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -367,8 +367,8 @@ export const DoneSecondaryBtn = styled.button`
   transition: border-color 0.15s, color 0.15s;
 
   &:hover {
-    border-color: #0d9488;
-    color: #0d9488;
+    border-color: var(--color-brand-blue);
+    color: var(--color-brand-blue);
   }
 `
 
@@ -376,7 +376,7 @@ export const DoneSecondaryBtn = styled.button`
 
 export const RelatedSection = styled.div`
   width: 100%;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   padding-top: 1.25rem;
 `
 
@@ -385,7 +385,7 @@ export const RelatedSectionTitle = styled.h3`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   margin: 0 0 0.875rem;
   text-align: left;
 `
@@ -399,7 +399,7 @@ export const RelatedGroup = styled.div`
 export const RelatedGroupLabel = styled.div`
   font-size: 0.75rem;
   font-weight: 700;
-  color: ${p => p.$type === 'mcq_topic' ? '#7c3aed' : '#d97706'};
+  color: ${p => p.$type === 'mcq_topic' ? '#7c3aed' : 'var(--color-warning-dark)'};
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 0.5rem;
@@ -418,8 +418,8 @@ export const RelatedCard = styled.button`
   gap: 0.75rem;
   padding: 1rem 1.125rem;
   background: white;
-  border: 1.5px solid #e5e7eb;
-  border-left: 4px solid ${p => p.$type === 'mcq_topic' ? '#7c3aed' : '#d97706'};
+  border: 1.5px solid var(--color-gray-200);
+  border-left: 4px solid ${p => p.$type === 'mcq_topic' ? '#7c3aed' : 'var(--color-warning-dark)'};
   border-radius: 10px;
   cursor: pointer;
   text-align: left;
@@ -435,7 +435,7 @@ export const RelatedCard = styled.button`
 export const RelatedCardTitle = styled.span`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.4;
   flex: 1;
   text-align: left;
@@ -443,6 +443,6 @@ export const RelatedCardTitle = styled.span`
 
 export const RelatedCardArrow = styled.span`
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   flex-shrink: 0;
 `

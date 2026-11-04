@@ -53,7 +53,7 @@ export const PanelHeader = styled.div`
 export const PanelTitle = styled.span`
   font-size: 1.05rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
@@ -62,7 +62,7 @@ export const PanelTitle = styled.span`
 
 export const EmptyText = styled.div`
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-align: center;
   padding: 1rem 0;
 `

@@ -7,8 +7,8 @@ export const SearchNoteRow = styled.div`
   gap: 0.5rem;
   padding: 0.4rem 0.75rem 0.4rem 1rem;
   cursor: pointer;
-  background: ${p => p.$selected ? '#ccfbf1' : 'transparent'};
-  &:hover { background: ${p => p.$selected ? '#99f6e4' : '#f1f5f9'}; }
+  background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : 'transparent'};
+  &:hover { background: ${p => p.$selected ? 'var(--color-brand-blue-tint-strong)' : 'var(--color-gray-100)'}; }
 `
 
 export const SearchNoteInfo = styled.div`
@@ -21,7 +21,7 @@ export const SearchNoteInfo = styled.div`
 
 export const SearchNoteTitle = styled.span`
   font-size: 0.8125rem;
-  color: ${p => p.$selected ? '#0f766e' : '#374151'};
+  color: ${p => p.$selected ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
   font-weight: ${p => p.$selected ? '600' : '400'};
   overflow: hidden;
   text-overflow: ellipsis;
@@ -30,7 +30,7 @@ export const SearchNoteTitle = styled.span`
 
 export const SearchNotePath = styled.span`
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

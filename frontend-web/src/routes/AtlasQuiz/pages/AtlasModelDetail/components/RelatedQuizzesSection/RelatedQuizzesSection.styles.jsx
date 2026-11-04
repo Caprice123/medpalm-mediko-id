@@ -14,7 +14,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0 0 0.2rem 0;
   display: flex;
   align-items: center;
@@ -23,7 +23,7 @@ export const SectionTitle = styled.h2`
 
 export const SectionSubtitle = styled.p`
   font-size: 0.825rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -36,7 +36,7 @@ export const QuizGrid = styled.div`
 `
 
 export const QuizCard = styled.div`
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1.1rem 1.25rem;
   cursor: pointer;
@@ -44,7 +44,7 @@ export const QuizCard = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   transition: box-shadow 0.15s, border-color 0.15s;
-  &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #94a3b8; }
+  &:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: var(--color-gray-400); }
 `
 
 export const QuizCardTop = styled.div`
@@ -57,7 +57,7 @@ export const QuizIconBox = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #fef3c7;
+  background: var(--color-warning-tint);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +69,7 @@ export const QuizIconBox = styled.div`
 export const QuizTitle = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-gray-900);
   line-height: 1.4;
 `
 
@@ -88,13 +88,13 @@ export const TagPill = styled.span`
   font-size: 0.75rem;
   font-weight: 500;
   background: ${({ $variant }) =>
-    $variant === 'easy' ? '#dcfce7' :
-    $variant === 'hard' ? '#fee2e2' :
+    $variant === 'easy' ? 'var(--color-brand-green-tint)' :
+    $variant === 'hard' ? 'var(--color-danger-tint)' :
     $variant === 'medium' ? '#fef9c3' :
-    '#f1f5f9'};
+    'var(--color-gray-100)'};
   color: ${({ $variant }) =>
-    $variant === 'easy' ? '#15803d' :
+    $variant === 'easy' ? 'var(--color-brand-green-darker)' :
     $variant === 'hard' ? '#b91c1c' :
     $variant === 'medium' ? '#854d0e' :
-    '#475569'};
+    'var(--color-gray-600)'};
 `

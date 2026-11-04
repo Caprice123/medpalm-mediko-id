@@ -28,7 +28,6 @@ export default function TopicHubPage() {
       <TopicGroupSection
         classification="primary"
         tag="Sistem Blok"
-        title="Topik berbasis sistem organ"
         description="Setiap sistem dipecah menjadi subtopik terurut dari embriologi, anatomi, fisiologi, hingga aplikasi klinis."
         onTopicClick={handleTopicClick}
       />
@@ -36,10 +35,8 @@ export default function TopicHubPage() {
       <TopicGroupSection
         classification="special"
         tag="Ilmu Lintas Sistem"
-        title="Topik lintas-sistem"
         description="Materi preklinik yang tidak terikat pada satu sistem organ."
         onTopicClick={handleTopicClick}
-        colorOffset={5}
       />
     </Container>
   )

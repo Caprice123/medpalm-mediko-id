@@ -37,12 +37,12 @@ export const RegionOverlay = styled.div`
   ${p => p.$revealed
     ? `
       background: rgba(0, 0, 0, 0.15);
-      border: 2px solid #22c55e;
-      color: #15803d;
+      border: 2px solid var(--color-brand-green);
+      color: var(--color-brand-green-darker);
       cursor: default;
     `
     : `
-      background: #6BB9E8;
+      background: var(--color-brand-blue);
       border: 2px solid #3a8fc9;
       color: white;
 
@@ -56,7 +56,7 @@ export const AnswerLabel = styled.div`
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.3;
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-deep) 100%);
   color: #fff;
   padding: 0.375rem 0.75rem;
   border-radius: 8px;
@@ -74,7 +74,7 @@ export const AnswerLabel = styled.div`
 export const RevealButton = styled.button`
   width: 100%;
   padding: 0.75rem 1.5rem;
-  background: #0d9488;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 10px;

@@ -6,7 +6,7 @@ const shimmer = keyframes`
 `
 
 const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 1200px 100%;
   animation: ${shimmer} 1.4s infinite linear;
   border-radius: 8px;
@@ -19,7 +19,7 @@ export const PageHeader = styled.div`
 export const SubtopicName = styled.h1`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.375rem;
   line-height: 1.3;
 `

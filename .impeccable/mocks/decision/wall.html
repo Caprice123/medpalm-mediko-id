@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Fredoka:wght@300..700&family=Plus+Jakarta+Sans:wght@200..800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{width:1440px;height:900px;overflow:hidden;display:grid;grid-template-columns:498px 942px;
+       font-family:"Plus Jakarta Sans",sans-serif;color:#15242e;background:#fff}
+  .auth{padding:44px 56px;display:flex;flex-direction:column;border-right:1px solid #e7ecef}
+  .mark{font-family:Fredoka,sans-serif;font-weight:600;font-size:23px;color:#1e73aa}
+  .body{margin-top:auto;margin-bottom:auto}
+  h1{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:40px;line-height:1.12;
+     letter-spacing:-.8px}
+  .sub{margin-top:16px;font-size:16px;line-height:1.65;color:#5c6b74}
+  .gbtn{margin-top:32px;height:56px;border:1px solid #d9e2e7;border-radius:14px;background:#fff;
+        display:flex;align-items:center;justify-content:center;gap:13px;font-size:16px;
+        font-weight:600;color:#15242e;box-shadow:0 8px 22px rgba(21,36,46,.07)}
+  .g{width:21px;height:21px;border-radius:50%;
+     background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+  .note{margin-top:18px;font-size:13.5px;line-height:1.6;color:#5c6b74}
+  .back{font-size:14px;font-weight:600;color:#3d5a68}
+  .wall{background:#f6fafb;padding:40px 44px;position:relative;overflow:hidden}
+  .wtitle{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+          color:#5c6b74}
+  .grid{margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .tile{background:#fff;border:1px solid #e7ecef;border-radius:16px;padding:18px;height:156px;
+        display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(21,36,46,.04)}
+  .kind{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+        color:#1e73aa}
+  .tname{margin-top:10px;font-family:"Baloo 2",sans-serif;font-weight:700;font-size:20px;
+         line-height:1.2;color:#15242e}
+  .meta{margin-top:auto;font-size:13px;color:#5c6b74}
+  .fade{position:absolute;left:0;right:0;bottom:0;height:150px;
+        background:linear-gradient(to bottom,rgba(246,250,251,0),#f6fafb 72%)}
+</style></head><body>
+  <div class="auth">
+    <div class="mark">MedPal.id</div>
+    <div class="body">
+      <h1>Semua materimu, di satu tempat.</h1>
+      <p class="sub">Masuk untuk membuka seluruh topik, model 3D, kuis, dan kartu kilat di samping ini.</p>
+      <div class="gbtn"><span class="g"></span> Lanjutkan dengan Google</div>
+      <p class="note">Tidak perlu daftar — akunmu dibuat otomatis saat pertama kali masuk.</p>
+    </div>
+    <div class="back">&#8592; Kembali ke beranda</div>
+  </div>
+  <div class="wall">
+    <div class="wtitle">1.940 materi &amp; model 3D siap dibuka</div>
+    <div class="grid">
+      <div class="tile"><span class="kind">Model 3D</span><div class="tname">Neuroanatomi</div><div class="meta">24 struktur &middot; 3 kuis</div></div>
+      <div class="tile"><span class="kind">Kartu kilat</span><div class="tname">Kardiovaskular</div><div class="meta">412 kartu</div></div>
+      <div class="tile"><span class="kind">Soal</span><div class="tname">Respirasi</div><div class="meta">318 soal &middot; pembahasan</div></div>
+      <div class="tile"><span class="kind">Materi</span><div class="tname">Endokrin</div><div class="meta">12 subtopik</div></div>
+      <div class="tile"><span class="kind">Model 3D</span><div class="tname">Muskuloskeletal</div><div class="meta">37 struktur</div></div>
+      <div class="tile"><span class="kind">Kartu kilat</span><div class="tname">Gastrointestinal</div><div class="meta">286 kartu</div></div>
+      <div class="tile"><span class="kind">Soal</span><div class="tname">Hematologi</div><div class="meta">204 soal</div></div>
+      <div class="tile"><span class="kind">Materi</span><div class="tname">Urogenital</div><div class="meta">9 subtopik</div></div>
+      <div class="tile"><span class="kind">Model 3D</span><div class="tname">Kepala &amp; Leher</div><div class="meta">41 struktur</div></div>
+    </div>
+    <div class="fade"></div>
+  </div>
+</body></html>

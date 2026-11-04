@@ -21,7 +21,7 @@ export default function SessionPage() {
     return (
       <Wrapper>
         <DeckContainer style={{ alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-          <span style={{ color: '#0d9488', fontWeight: 600, fontSize: '1rem' }}>Memuat kartu...</span>
+          <span style={{ color: 'var(--color-brand-blue)', fontWeight: 600, fontSize: '1rem' }}>Memuat kartu...</span>
         </DeckContainer>
       </Wrapper>
     )
@@ -33,7 +33,7 @@ export default function SessionPage() {
         <DeckContainer style={{ padding: 0, overflow: 'hidden', gap: 0 }}>
           {/* gradient banner */}
           <div style={{
-            background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0891b2 100%)',
+            background: 'linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue) 60%, var(--color-brand-blue-deep) 100%)',
             padding: '2.5rem 2rem',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem',
           }}>
@@ -58,15 +58,15 @@ export default function SessionPage() {
           <div style={{ padding: '1.75rem 2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{
               display: 'flex', gap: '0.75rem', alignItems: 'flex-start',
-              padding: '1rem', background: '#f0fdfa', borderRadius: '12px',
-              border: '1px solid #99f6e4',
+              padding: '1rem', background: 'var(--color-brand-blue-tint)', borderRadius: '12px',
+              border: '1px solid var(--color-brand-blue-tint-strong)',
             }}>
               <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>💪</span>
               <div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#0d9488', marginBottom: '0.2rem' }}>
+                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-brand-blue)', marginBottom: '0.2rem' }}>
                   Tetap Konsisten!
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.5 }}>
+                <div style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', lineHeight: 1.5 }}>
                   Kembali lagi besok — kartu baru akan jatuh tempo dan siap untuk direview.
                 </div>
               </div>

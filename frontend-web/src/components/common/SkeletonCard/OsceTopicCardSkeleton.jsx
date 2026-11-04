@@ -4,8 +4,8 @@ import styled from 'styled-components'
 
 const SkeletonWrapper = styled.div`
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
     line-height: 1;
   }
 
@@ -36,16 +36,16 @@ export function OsceTopicCardSkeleton() {
         <Skeleton
           height={24}
           width="85%"
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Description - 2 lines */}
         <Skeleton
           count={2}
           height={14}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
           style={{ marginBottom: '0.25rem' }}
         />
 
@@ -53,13 +53,13 @@ export function OsceTopicCardSkeleton() {
 
         {/* Topic Tags */}
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <Skeleton width={130} height={26} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-          <Skeleton width={110} height={26} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+          <Skeleton width={130} height={26} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+          <Skeleton width={110} height={26} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
         </div>
 
         {/* Batch Tags */}
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <Skeleton width={120} height={26} borderRadius={12} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+          <Skeleton width={120} height={26} borderRadius={12} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
         </div>
 
         {/* Stats Row - 3 items */}
@@ -70,16 +70,16 @@ export function OsceTopicCardSkeleton() {
           marginTop: '0.5rem'
         }}>
           <div>
-            <Skeleton height={12} width={50} baseColor="#e5e7eb" highlightColor="#f3f4f6" style={{ marginBottom: '0.25rem' }} />
-            <Skeleton height={14} width={70} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton height={12} width={50} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" style={{ marginBottom: '0.25rem' }} />
+            <Skeleton height={14} width={70} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
           <div>
-            <Skeleton height={12} width={50} baseColor="#e5e7eb" highlightColor="#f3f4f6" style={{ marginBottom: '0.25rem' }} />
-            <Skeleton height={14} width={60} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton height={12} width={50} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" style={{ marginBottom: '0.25rem' }} />
+            <Skeleton height={14} width={60} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
           <div>
-            <Skeleton height={12} width={50} baseColor="#e5e7eb" highlightColor="#f3f4f6" style={{ marginBottom: '0.25rem' }} />
-            <Skeleton height={14} width={70} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+            <Skeleton height={12} width={50} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" style={{ marginBottom: '0.25rem' }} />
+            <Skeleton height={14} width={70} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
           </div>
         </div>
 
@@ -87,8 +87,8 @@ export function OsceTopicCardSkeleton() {
         <Skeleton
           height={40}
           borderRadius={8}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
       </Card>
     </SkeletonWrapper>

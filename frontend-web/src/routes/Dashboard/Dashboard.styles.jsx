@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const DashboardContainer = styled.div`
   min-height: calc(100vh - 90px);
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 `
 
 export const MainContent = styled.main`
@@ -18,7 +18,7 @@ export const MainContent = styled.main`
 export const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
@@ -27,7 +27,7 @@ export const PageTitle = styled.h1`
 `
 
 export const PageSubtitle = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 2rem;
   font-size: 1.05rem;
 `
@@ -42,7 +42,7 @@ export const CatalogGrid = styled.div`
 export const FeatureIcon = styled.div`
   width: 60px;
   height: 60px;
-  background: rgba(6, 182, 212, 0.1);
+  background: rgba(30, 115, 170, 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -54,12 +54,12 @@ export const FeatureIcon = styled.div`
 export const FeatureTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #06b6d4;
+  color: var(--color-brand-blue);
   margin-bottom: 0.5rem;
 `
 
 export const FeatureDescription = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   margin-bottom: 1rem;
   line-height: 1.6;
@@ -70,14 +70,14 @@ export const FeatureFooter = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   margin-top: auto;
 `
 
 export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem 1rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyStateIcon = styled.div`
@@ -104,9 +104,9 @@ export const RequirementBadge = styled.div`
   font-size: 0.8125rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  background: ${props => props.$locked ? '#fee2e2' : '#dcfce7'};
-  color: ${props => props.$locked ? '#dc2626' : '#16a34a'};
-  border: 1px solid ${props => props.$locked ? '#fecaca' : '#bbf7d0'};
+  background: ${props => props.$locked ? 'var(--color-danger-tint)' : 'var(--color-brand-green-tint)'};
+  color: ${props => props.$locked ? 'var(--color-danger-dark)' : 'var(--color-brand-green-dark)'};
+  border: 1px solid ${props => props.$locked ? '#fecaca' : 'var(--color-brand-green-tint-strong)'};
 `
 
 export const LockIcon = styled.span`
@@ -139,7 +139,7 @@ export const BannerCarousel = styled.div`
   }
 
   .swiper-pagination-bullet {
-    background: #06b6d4;
+    background: var(--color-brand-blue);
     opacity: 0.4;
     transition: all 0.25s;
   }
@@ -157,7 +157,7 @@ export const BannerCard = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   background: ${props => props.$gradientStart && props.$gradientEnd
     ? `linear-gradient(135deg, ${props.$gradientStart} 0%, ${props.$gradientEnd} 100%)`
-    : 'linear-gradient(135deg, #0369a1 0%, #15803d 100%)'};
+    : 'linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue-deep) 100%)'};
   padding: 1.75rem 2rem;
   display: flex;
   align-items: center;
@@ -181,7 +181,7 @@ export const BannerButtonPrimary = styled.button`
   white-space: nowrap;
   flex-shrink: 0;
   background: white;
-  color: #0369a1;
+  color: var(--color-brand-blue-deep);
   border: none;
   cursor: pointer;
   pointer-events: all;
@@ -209,7 +209,7 @@ export const RequirementItem = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: ${props => props.$met ? '#16a34a' : '#dc2626'};
+  color: ${props => props.$met ? 'var(--color-brand-green-dark)' : 'var(--color-danger-dark)'};
 
   span:first-child {
     font-size: 1rem;

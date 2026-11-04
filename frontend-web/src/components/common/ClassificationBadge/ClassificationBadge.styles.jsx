@@ -8,8 +8,8 @@ export const PillBadge = styled.span`
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
-  background: ${p => p.$bg || '#d1fae5'};
-  color: ${p => p.$color || '#065f46'};
+  background: ${p => p.$bg || 'var(--color-brand-green-tint)'};
+  color: ${p => p.$color || 'var(--color-brand-green-darker)'};
 `
 
 export const SquareBadge = styled.span`
@@ -21,11 +21,11 @@ export const SquareBadge = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-align: center;
-  background: ${p => p.$bg || '#dbeafe'};
-  color: ${p => p.$color || '#1d4ed8'};
+  background: ${p => p.$bg || 'var(--color-brand-blue-tint-strong)'};
+  color: ${p => p.$color || 'var(--color-brand-blue-deep)'};
 `
 
 export const EmptyText = styled.span`
-  color: #d1d5db;
+  color: var(--color-gray-300);
   font-size: 0.8125rem;
 `

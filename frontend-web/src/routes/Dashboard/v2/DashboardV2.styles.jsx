@@ -1,17 +1,17 @@
 import styled from 'styled-components'
 
-const teal = '#0891b2'
-const tealDark = '#0e7490'
-const tealDeep = '#164e63'
-const slate900 = '#0f172a'
-const slate800 = '#1e293b'
-const slate500 = '#64748b'
-const slate400 = '#94a3b8'
-const slate300 = '#cbd5e1'
-const slate200 = '#e2e8f0'
-const slate100 = '#f1f5f9'
-const slate50 = '#f8fafc'
-const amber = '#f59e0b'
+const teal = 'var(--color-brand-blue-deep)'
+const tealDark = 'var(--color-brand-blue-deep)'
+const tealDeep = 'var(--color-brand-blue-deep)'
+const slate900 = 'var(--color-gray-900)'
+const slate800 = 'var(--color-gray-800)'
+const slate500 = 'var(--color-gray-500)'
+const slate400 = 'var(--color-gray-400)'
+const slate300 = 'var(--color-gray-300)'
+const slate200 = 'var(--color-gray-200)'
+const slate100 = 'var(--color-gray-100)'
+const slate50 = 'var(--color-surface-page)'
+const amber = 'var(--color-warning)'
 
 // ── Page shell ─────────────────────────────────────────────────
 export const PageWrapper = styled.div`
@@ -177,8 +177,8 @@ export const ChecklistLabel = styled.div`
   flex: 1;
   min-width: 0;
   font-size: 0.875rem;
-  color: #374151;
-  strong { color: #111827; }
+  color: var(--color-gray-700);
+  strong { color: var(--color-gray-900); }
 `
 
 export const ChecklistSteps = styled.div`
@@ -195,15 +195,15 @@ export const ChecklistStep = styled.button`
   font-weight: 600;
   padding: 0.3rem 0.75rem;
   border-radius: 8px;
-  border: 1.5px solid ${p => p.$done ? '#bbf7d0' : teal};
-  background: ${p => p.$done ? '#f0fdf4' : 'transparent'};
-  color: ${p => p.$done ? '#16a34a' : teal};
+  border: 1.5px solid ${p => p.$done ? 'var(--color-brand-green-tint-strong)' : teal};
+  background: ${p => p.$done ? 'var(--color-brand-green-tint)' : 'transparent'};
+  color: ${p => p.$done ? 'var(--color-brand-green-dark)' : teal};
   cursor: ${p => p.$done ? 'default' : 'pointer'};
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: ${p => p.$done ? '#f0fdf4' : teal};
-    color: ${p => p.$done ? '#16a34a' : '#fff'};
+    background: ${p => p.$done ? 'var(--color-brand-green-tint)' : teal};
+    color: ${p => p.$done ? 'var(--color-brand-green-dark)' : '#fff'};
   }
 `
 
@@ -253,7 +253,7 @@ export const BannerCard = styled.div`
   overflow: hidden;
   background: ${p => p.$gradientStart && p.$gradientEnd
     ? `linear-gradient(135deg, ${p.$gradientStart} 0%, ${p.$gradientEnd} 100%)`
-    : 'linear-gradient(135deg, #0369a1 0%, #15803d 100%)'};
+    : 'linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue-deep) 100%)'};
   padding: 1.5rem 2rem;
   display: flex;
   align-items: center;
@@ -282,7 +282,7 @@ export const BannerBtn = styled.button`
   font-size: 0.875rem;
   font-weight: 700;
   background: white;
-  color: #0369a1;
+  color: var(--color-brand-blue-deep);
   border: none;
   cursor: pointer;
   white-space: nowrap;
@@ -315,7 +315,7 @@ export const QuickItem = styled.button`
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(8,145,178,0.14);
+    box-shadow: 0 8px 24px rgba(4, 74, 119,0.14);
     border-color: ${teal};
   }
 `
@@ -324,7 +324,7 @@ export const QuickItemIcon = styled.div`
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(8,145,178,0.1);
+  background: rgba(4, 74, 119,0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -332,7 +332,7 @@ export const QuickItemIcon = styled.div`
   transition: background 0.15s;
 
   ${QuickItem}:hover & {
-    background: rgba(8,145,178,0.18);
+    background: rgba(4, 74, 119,0.18);
   }
 `
 
@@ -378,7 +378,7 @@ export const UpcomingCard = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(8,145,178,0.12);
+    box-shadow: 0 8px 24px rgba(4, 74, 119,0.12);
     border-color: ${teal};
   }
 `
@@ -490,15 +490,15 @@ export const StatusActionBtn = styled.button`
   font-size: 0.82rem;
   font-weight: 700;
   color: ${teal};
-  background: rgba(8,145,178,0.08);
-  border: 1px solid rgba(8,145,178,0.2);
+  background: rgba(4, 74, 119,0.08);
+  border: 1px solid rgba(4, 74, 119,0.2);
   border-radius: 8px;
   padding: 0.4rem 0.9rem;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: rgba(8,145,178,0.16);
+    background: rgba(4, 74, 119,0.16);
     color: ${tealDark};
   }
 `

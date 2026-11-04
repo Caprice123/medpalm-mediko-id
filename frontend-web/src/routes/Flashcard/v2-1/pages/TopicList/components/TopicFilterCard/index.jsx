@@ -11,22 +11,22 @@ const selectStyles = {
   control: (base, state) => ({
     ...base,
     borderRadius: '10px',
-    border: `1.5px solid ${state.isFocused ? '#0d9488' : '#e5e7eb'}`,
-    boxShadow: state.isFocused ? '0 0 0 3px rgba(13,148,136,0.12)' : '0 1px 4px rgba(0,0,0,0.04)',
+    border: `1.5px solid ${state.isFocused ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'}`,
+    boxShadow: state.isFocused ? '0 0 0 3px rgba(30, 115, 170,0.12)' : '0 1px 4px rgba(0,0,0,0.04)',
     fontSize: '0.875rem',
     minHeight: '42px',
-    '&:hover': { borderColor: '#0d9488' },
+    '&:hover': { borderColor: 'var(--color-brand-blue)' },
   }),
   option: (base, state) => ({
     ...base,
     fontSize: '0.875rem',
-    backgroundColor: state.isSelected ? '#0d9488' : state.isFocused ? '#f0fdfa' : '#fff',
-    color: state.isSelected ? '#fff' : '#374151',
+    backgroundColor: state.isSelected ? 'var(--color-brand-blue)' : state.isFocused ? 'var(--color-brand-blue-tint)' : '#fff',
+    color: state.isSelected ? '#fff' : 'var(--color-gray-700)',
   }),
-  placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '0.875rem' }),
-  multiValue: (base) => ({ ...base, background: '#ccfbf1', borderRadius: '6px' }),
-  multiValueLabel: (base) => ({ ...base, color: '#0f766e', fontSize: '0.8125rem' }),
-  multiValueRemove: (base) => ({ ...base, color: '#0f766e', ':hover': { background: '#99f6e4', color: '#134e4a' } }),
+  placeholder: (base) => ({ ...base, color: 'var(--color-gray-400)', fontSize: '0.875rem' }),
+  multiValue: (base) => ({ ...base, background: 'var(--color-brand-blue-tint-strong)', borderRadius: '6px' }),
+  multiValueLabel: (base) => ({ ...base, color: 'var(--color-brand-blue-deep)', fontSize: '0.8125rem' }),
+  multiValueRemove: (base) => ({ ...base, color: 'var(--color-brand-blue-deep)', ':hover': { background: 'var(--color-brand-blue-tint-strong)', color: 'var(--color-brand-blue-deep)' } }),
   menu: (base) => ({ ...base, borderRadius: '12px', overflow: 'hidden', zIndex: 50 }),
   menuList: (base) => ({ ...base, maxHeight: '200px', overflowY: 'auto' }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -60,7 +60,7 @@ export default function TopicFilterCard({ index, item, topicOptions, subtopicsMa
         {canRemove && (
           <button
             onClick={onRemove}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: '1.1rem', lineHeight: 1 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-gray-400)', fontSize: '1.1rem', lineHeight: 1 }}
           >
             ×
           </button>

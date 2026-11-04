@@ -14,13 +14,13 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0;
 `
 
 export const SectionSubtitle = styled.p`
   font-size: 0.825rem;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   margin: 0;
 `
 
@@ -35,7 +35,7 @@ export const TopicsGrid = styled.div`
 
 export const TopicCard = styled.div`
   background: #fff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 14px;
   padding: 0;
   cursor: pointer;
@@ -46,7 +46,7 @@ export const TopicCard = styled.div`
 
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    border-color: #a7f3d0;
+    border-color: var(--color-brand-green-tint-strong);
   }
 `
 
@@ -59,7 +59,7 @@ export const CardBody = styled.div`
 `
 
 export const CardDivider = styled.div`
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-gray-100);
   margin: 0 -1.25rem;
 `
 
@@ -73,7 +73,7 @@ export const CardIconWrapper = styled.div`
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: ${({ $bg }) => $bg || '#f1f5f9'};
+  background: ${({ $bg }) => $bg || 'var(--color-gray-100)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,14 +91,14 @@ export const CardTitleBlock = styled.div`
 export const CardTitle = styled.h3`
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.4;
 `
 
 export const CardDescription = styled.p`
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.5;
 `
@@ -124,20 +124,20 @@ export const StatBadge = styled.span`
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: #f8fafc;
-  color: #64748b;
+  background: var(--color-surface-page);
+  color: var(--color-gray-500);
 `
 
 export const CardArrow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   font-size: 1rem;
   transition: color 0.15s, transform 0.15s;
 
   ${TopicCard}:hover & {
-    color: #10b981;
+    color: var(--color-brand-green);
     transform: translateX(2px);
   }
 `

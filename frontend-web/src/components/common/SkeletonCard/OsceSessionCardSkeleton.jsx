@@ -4,8 +4,8 @@ import styled from 'styled-components'
 
 const SkeletonWrapper = styled.div`
   .react-loading-skeleton {
-    --base-color: #e5e7eb;
-    --highlight-color: #f3f4f6;
+    --base-color: var(--color-gray-200);
+    --highlight-color: var(--color-gray-100);
     line-height: 1;
   }
 
@@ -35,8 +35,8 @@ export function OsceSessionCardSkeleton() {
         <Skeleton
           height={24}
           width="80%"
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Status Badge */}
@@ -44,26 +44,26 @@ export function OsceSessionCardSkeleton() {
           width={140}
           height={24}
           borderRadius={12}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Topic tags row */}
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-          <Skeleton width={60} height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-          <Skeleton width={120} height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+          <Skeleton width={60} height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+          <Skeleton width={120} height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
         </div>
 
         {/* Batch tags row */}
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Skeleton width={60} height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-          <Skeleton width={100} height={16} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+          <Skeleton width={60} height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+          <Skeleton width={100} height={16} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
         </div>
 
         {/* Score and time row */}
         <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-          <Skeleton width={80} height={18} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
-          <Skeleton width={90} height={18} baseColor="#e5e7eb" highlightColor="#f3f4f6" />
+          <Skeleton width={80} height={18} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
+          <Skeleton width={90} height={18} baseColor="var(--color-gray-200)" highlightColor="var(--color-gray-100)" />
         </div>
 
         <div style={{ flex: 1 }} />
@@ -72,8 +72,8 @@ export function OsceSessionCardSkeleton() {
         <Skeleton
           height={40}
           borderRadius={8}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
           style={{ marginTop: '0.5rem' }}
         />
       </Card>

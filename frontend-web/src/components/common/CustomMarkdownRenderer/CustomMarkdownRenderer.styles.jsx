@@ -42,7 +42,7 @@ export const ListItem = styled.li`
 `
 
 export const Blockquote = styled.blockquote`
-  border-left: 4px solid #d1d5db;
+  border-left: 4px solid var(--color-gray-300);
   padding-left: 1rem;
   font-style: italic;
   margin-top: 0.5rem;

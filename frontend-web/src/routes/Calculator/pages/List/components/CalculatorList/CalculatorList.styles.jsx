@@ -6,13 +6,13 @@ export const LoadingOverlay = styled.div`
   justify-content: center;
   align-items: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 export const EmptyStateIcon = styled.div`
@@ -40,13 +40,13 @@ export const CalculatorCard = styled.div`
   display: flex;
   flex-direction: column;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 1.25rem;
   transition: all 0.2s;
 
   &:hover {
-    border-color: #d1d5db;
+    border-color: var(--color-gray-300);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 `
@@ -62,13 +62,13 @@ export const CalculatorCardHeader = styled.div`
 export const CalculatorCardTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   flex: 1;
 `
 
 export const CalculatorDescription = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.75rem;
@@ -95,7 +95,7 @@ export const Tag = styled.span`
   font-weight: 600;
 
   ${props => props.kategori && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
@@ -106,9 +106,9 @@ export const CalculatorStats = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.75rem;
 `
 
@@ -120,14 +120,14 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   font-weight: 600;
 `
 
 export const StatValue = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 700;
 `
 
@@ -148,7 +148,7 @@ export const SelectButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
   }
 
   &:disabled {

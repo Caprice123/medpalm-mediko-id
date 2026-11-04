@@ -7,10 +7,10 @@ const BAR_GAP = 24
 const Y_AXIS_OFFSET = 27
 
 const RATING_CONFIG = [
-  { key: 'again', label: 'Ulangi', color: '#ef4444' },
+  { key: 'again', label: 'Ulangi', color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit',  color: '#f97316' },
-  { key: 'good',  label: 'Baik',   color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah',  color: '#22c55e' },
+  { key: 'good',  label: 'Baik',   color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah',  color: 'var(--color-brand-green)' },
 ]
 
 function toChartRow(item) {
@@ -23,17 +23,17 @@ function CustomTooltip({ active, payload }) {
   const row = payload[0].payload
   return (
     <div style={{
-      background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10,
+      background: '#fff', border: '1px solid var(--color-gray-200)', borderRadius: 10,
       padding: '0.6rem 0.875rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     }}>
-      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827', marginBottom: '0.35rem' }}>{row.name}</div>
+      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '0.35rem' }}>{row.name}</div>
       {RATING_CONFIG.map(({ key, label, color }) => (
-        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8125rem', color: '#374151' }}>
+        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8125rem', color: 'var(--color-gray-700)' }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
           {label}: <strong>{row[key]}</strong>
         </div>
       ))}
-      <div style={{ fontSize: '0.8125rem', color: '#6b7280', marginTop: '0.25rem' }}>Total: {row.total}</div>
+      <div style={{ fontSize: '0.8125rem', color: 'var(--color-gray-500)', marginTop: '0.25rem' }}>Total: {row.total}</div>
     </div>
   )
 }
@@ -48,7 +48,7 @@ function CustomTick({ x, y, payload }) {
         style={{
           fontSize: 13,
           fontWeight: 500,
-          color: '#6b7280',
+          color: 'var(--color-gray-500)',
           textAlign: 'center',
           lineHeight: '15px',
           wordBreak: 'break-word',
@@ -107,7 +107,7 @@ function PerformanceChart({ modules, submodulesCache = {}, onRequestSubmodules, 
                 barCategoryGap={BAR_GAP}
                 margin={{ top: 16, right: 16, left: -24, bottom: 8 }}
               >
-                <CartesianGrid vertical={false} stroke="#f3f4f6" />
+                <CartesianGrid vertical={false} stroke="var(--color-gray-100)" />
                 <XAxis
                   dataKey="name"
                   tick={<CustomTick />}
@@ -120,9 +120,9 @@ function PerformanceChart({ modules, submodulesCache = {}, onRequestSubmodules, 
                   allowDecimals={false}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 13, fill: '#9ca3af' }}
+                  tick={{ fontSize: 13, fill: 'var(--color-gray-400)' }}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb', radius: 6 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-gray-50)', radius: 6 }} />
                 {RATING_CONFIG.map(({ key, color }, i) => (
                   <Bar
                     key={key}
@@ -138,7 +138,7 @@ function PerformanceChart({ modules, submodulesCache = {}, onRequestSubmodules, 
                       <LabelList
                         dataKey="total"
                         position="top"
-                        style={{ fontSize: 13, fontWeight: 700, fill: '#374151' }}
+                        style={{ fontSize: 13, fontWeight: 700, fill: 'var(--color-gray-700)' }}
                       />
                     )}
                   </Bar>

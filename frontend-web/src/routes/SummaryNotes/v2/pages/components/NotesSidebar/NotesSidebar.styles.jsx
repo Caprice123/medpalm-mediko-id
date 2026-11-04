@@ -12,7 +12,7 @@ export const SearchBox = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-gray-100);
 `
 
 export const SearchInput = styled.input`
@@ -20,13 +20,13 @@ export const SearchInput = styled.input`
   border: none;
   outline: none;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   background: transparent;
-  &::placeholder { color: #9ca3af; }
+  &::placeholder { color: var(--color-gray-400); }
 `
 
 export const SearchIcon = styled.span`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.875rem;
   flex-shrink: 0;
 `
@@ -45,7 +45,7 @@ export const SectionBlock = styled.div`
 export const EmptyHint = styled.div`
   padding: 0.5rem 1rem;
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `
 
 export const FavoriteBtn = styled.button`
@@ -56,6 +56,6 @@ export const FavoriteBtn = styled.button`
   padding: 0.2rem 0.3rem;
   font-size: 1.25rem;
   line-height: 1;
-  color: ${p => p.$active ? '#f59e0b' : '#d1d5db'};
-  &:hover { color: ${p => p.$active ? '#d97706' : '#9ca3af'}; }
+  color: ${p => p.$active ? 'var(--color-warning)' : 'var(--color-gray-300)'};
+  &:hover { color: ${p => p.$active ? 'var(--color-warning-dark)' : 'var(--color-gray-400)'}; }
 `

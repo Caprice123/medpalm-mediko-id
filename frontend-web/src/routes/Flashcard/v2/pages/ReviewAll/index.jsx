@@ -7,12 +7,12 @@ import { FlashcardRoute } from '../../../routes'
 import styled from 'styled-components'
 
 const HeroCard = styled.div`
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, var(--color-brand-blue) 60%, var(--color-brand-blue-deep) 100%);
   border-radius: 16px;
   padding: 2.5rem 2rem;
   color: white;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgba(13,148,136,0.3);
+  box-shadow: 0 4px 20px rgba(30, 115, 170,0.3);
 `
 
 const HeroTitle = styled.div`
@@ -58,7 +58,7 @@ export default function ReviewAllPage() {
           variant="secondary"
           onClick={handleStart}
           disabled={loading.isFetchingSession}
-          style={{ background: 'white', color: '#0d9488', fontWeight: 700 }}
+          style={{ background: 'white', color: 'var(--color-brand-blue)', fontWeight: 700 }}
         >
           {loading.isFetchingSession ? 'Memuat...' : 'Mulai Sesi'}
         </Button>

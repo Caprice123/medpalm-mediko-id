@@ -77,7 +77,7 @@ const FileUpload = ({
           <UploadText>
             {isUploading ? 'Uploading...' : isDragging ? 'Lepaskan file di sini' : uploadText}
           </UploadText>
-          <UploadText style={{ fontSize: '0.85rem', color: '#9ca3af' }}>
+          <UploadText style={{ fontSize: '0.85rem', color: 'var(--color-gray-400)' }}>
             {acceptedTypesLabel} (max {maxSizeMB}MB)
           </UploadText>
         </UploadArea>
@@ -87,7 +87,7 @@ const FileUpload = ({
           <div style={{ flex: 1 }}>
             <FileName>{file.name}</FileName>
             {file.size && (
-              <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)', marginTop: '0.25rem' }}>
                 {formatFileSize(file.size)}
               </div>
             )}

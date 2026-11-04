@@ -16,8 +16,8 @@ export const NodeChip = styled.span`
   font-weight: 500;
 
   ${p => p.$type === 'department' ? `
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--color-brand-green-tint);
+    color: var(--color-brand-green-darker);
   ` : `
     background: #ede9fe;
     color: #5b21b6;
@@ -28,7 +28,7 @@ export const CardStats = styled.div`
   display: flex;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   margin-bottom: 0.75rem;
 `
 
@@ -41,13 +41,13 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   font-weight: 600;
 `
 
 export const StatValue = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 700;
 `

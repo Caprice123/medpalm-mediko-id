@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@ export const HeaderLeft = styled.div`
 export const Title = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 8px 0;
 
   @media (max-width: 768px) {
@@ -51,7 +51,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 
   @media (max-width: 768px) {
@@ -60,7 +60,7 @@ export const Subtitle = styled.p`
 `
 
 export const CreateButton = styled.button`
-  background: #06b6d4;
+  background: var(--color-brand-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -74,9 +74,9 @@ export const CreateButton = styled.button`
   gap: 8px;
 
   &:hover {
-    background: #0891b2;
+    background: var(--color-brand-blue-deep);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 115, 170, 0.3);
   }
 
   &:active {
@@ -84,7 +84,7 @@ export const CreateButton = styled.button`
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: var(--color-gray-400);
     cursor: not-allowed;
     transform: none;
   }
@@ -132,7 +132,7 @@ export const SetInfo = styled.div`
 export const SetTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 8px 0;
 
   @media (max-width: 768px) {
@@ -144,7 +144,7 @@ export const SetMeta = styled.div`
   display: flex;
   gap: 16px;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-gray-500);
 
   @media (max-width: 768px) {
     font-size: 0.75rem;
@@ -194,7 +194,7 @@ export const OpenButton = styled.button`
 
 export const DeleteButton = styled.button`
   background: transparent;
-  color: #ef4444;
+  color: var(--color-danger);
   border: none;
   padding: 8px;
   font-size: 18px;
@@ -206,7 +206,7 @@ export const DeleteButton = styled.button`
   justify-content: center;
 
   &:hover {
-    background: #fee2e2;
+    background: var(--color-danger-tint);
   }
 
   &:active {
@@ -235,13 +235,13 @@ export const EmptyIcon = styled.div`
 export const EmptyTitle = styled.h3`
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-gray-800);
   margin: 0 0 8px 0;
 `
 
 export const EmptyDescription = styled.p`
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0 0 24px 0;
 `
 
@@ -251,5 +251,5 @@ export const LoadingState = styled.div`
   align-items: center;
   padding: 60px;
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `

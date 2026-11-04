@@ -13,10 +13,10 @@ const fadeSlideUp = keyframes`
 export const EmptyWrap = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   background: #fff;
   border-radius: 16px;
-  border: 1.5px dashed #e5e7eb;
+  border: 1.5px dashed var(--color-gray-200);
 `
 
 export const TopikSection = styled.div`
@@ -34,7 +34,7 @@ export const TopikSectionHeader = styled.div`
 export const TopikSectionTitle = styled.h2`
   font-size: 1rem;
   font-weight: 800;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0;
 `
 
@@ -43,7 +43,7 @@ export const TopikSearchWrap = styled.div`
   align-items: center;
   gap: 0.5rem;
   background: #fff;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 10px;
   padding: 0.45rem 0.875rem;
   max-width: 300px;
@@ -52,13 +52,13 @@ export const TopikSearchWrap = styled.div`
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:focus-within {
-    border-color: #6BB9E8;
-    box-shadow: 0 0 0 3px rgba(107,185,232,0.15);
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 115, 170,0.15);
   }
 `
 
 export const TopikSearchIcon = styled.span`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.9rem;
   flex-shrink: 0;
 `
@@ -67,11 +67,11 @@ export const TopikSearchInput = styled.input`
   border: none;
   outline: none;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   background: transparent;
   flex: 1;
   min-width: 0;
-  &::placeholder { color: #9ca3af; }
+  &::placeholder { color: var(--color-gray-400); }
 `
 
 export const TopikList = styled.div`
@@ -86,7 +86,7 @@ export const SkeletonBlock = styled.div`
   width: ${p => p.$w || '100%'};
   border-radius: ${p => p.$radius || '6px'};
   flex-shrink: 0;
-  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 40%, #f3f4f6 80%);
+  background: linear-gradient(90deg, var(--color-gray-100) 0%, var(--color-gray-200) 40%, var(--color-gray-100) 80%);
   background-size: 600px 100%;
   animation: ${shimmer} 1.5s ease-in-out infinite;
 `
@@ -96,7 +96,7 @@ export const SkeletonCircle = styled.div`
   height: ${p => p.$size || '32px'};
   border-radius: 50%;
   flex-shrink: 0;
-  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 40%, #f3f4f6 80%);
+  background: linear-gradient(90deg, var(--color-gray-100) 0%, var(--color-gray-200) 40%, var(--color-gray-100) 80%);
   background-size: 600px 100%;
   animation: ${shimmer} 1.5s ease-in-out infinite;
 `
@@ -106,12 +106,12 @@ export const SkeletonTopikRow = styled.div`
   align-items: center;
   gap: 0.875rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
   &:last-child { border-bottom: none; }
 `
 
 export const TopikRowWrap = styled.div`
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-gray-100);
   &:last-child { border-bottom: none; }
   opacity: 0;
   animation: ${fadeSlideUp} 0.3s ease forwards;
@@ -129,14 +129,14 @@ export const TopikRowHeader = styled.div`
   user-select: none;
   transition: background 0.12s;
 
-  &:hover { background: #f9fafb; }
-  ${p => p.$open && 'background: #f9fafb;'}
+  &:hover { background: var(--color-gray-50); }
+  ${p => p.$open && 'background: var(--color-gray-50);'}
 `
 
 export const TopikName = styled.span`
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   flex: 1;
   min-width: 0;
   line-height: 1.4;
@@ -184,12 +184,12 @@ export const TopikStatChip = styled.span`
   align-items: baseline;
   gap: 0.25rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   white-space: nowrap;
 `
 
 export const TopikStatNum = styled.strong`
-  color: #111827;
+  color: var(--color-gray-900);
   font-weight: 700;
   font-size: 0.9375rem;
 `
@@ -198,14 +198,14 @@ export const TopikStartBtn = styled.button`
   padding: 0.35rem 1rem;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: opacity 0.15s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(107,185,232,0.35);
+  box-shadow: 0 2px 8px rgba(30, 115, 170,0.35);
 
   &:hover { opacity: 0.9; transform: translateY(-1px); }
   &:active { transform: translateY(0); }
@@ -213,9 +213,9 @@ export const TopikStartBtn = styled.button`
 
 export const TopikChevron = styled.span`
   font-size: 1.1rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   transition: transform 0.22s ease, color 0.15s;
   transform: ${p => p.$open ? 'rotate(-90deg)' : 'rotate(90deg)'};
   line-height: 1;
-  ${p => p.$open && 'color: #6BB9E8;'}
+  ${p => p.$open && 'color: var(--color-brand-blue);'}
 `

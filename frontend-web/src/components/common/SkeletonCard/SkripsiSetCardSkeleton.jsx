@@ -11,7 +11,7 @@ const SkeletonGrid = styled.div`
 
 const SkeletonCard = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
@@ -45,8 +45,8 @@ export function SkripsiSetCardSkeleton() {
         <Skeleton
           width="70%"
           height={24}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
       </CardHeader>
 
@@ -56,8 +56,8 @@ export function SkripsiSetCardSkeleton() {
         <Skeleton
           count={2}
           height={16}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Spacer */}
@@ -67,8 +67,8 @@ export function SkripsiSetCardSkeleton() {
         <Skeleton
           width="60%"
           height={14}
-          baseColor="#e5e7eb"
-          highlightColor="#f3f4f6"
+          baseColor="var(--color-gray-200)"
+          highlightColor="var(--color-gray-100)"
         />
 
         {/* Action buttons */}
@@ -76,16 +76,16 @@ export function SkripsiSetCardSkeleton() {
           <Skeleton
             height={40}
             borderRadius={8}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
             style={{ flex: 1 }}
           />
           <Skeleton
             width={40}
             height={40}
             borderRadius={8}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
         </CardActions>
       </CardBody>

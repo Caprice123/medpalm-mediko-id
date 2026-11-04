@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const FilterContainer = styled.div`
   /* background: white; */
-  /* border: 1px solid #e5e7eb; */
+  /* border: 1px solid var(--color-gray-200); */
   border-radius: 8px;
   /* padding: 1.25rem; */
   margin-bottom: 1rem;
@@ -21,13 +21,13 @@ export const FilterHeader = styled.div`
 export const FilterTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0;
 `
 
 export const ClearButton = styled.button`
   background: transparent;
-  color: #6BB9E8;
+  color: var(--color-brand-blue);
   border: none;
   padding: 0.25rem 0.5rem;
   font-size: 0.8125rem;
@@ -36,7 +36,7 @@ export const ClearButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    color: #4A9ED4;
+    color: var(--color-brand-blue);
     text-decoration: underline;
   }
 `
@@ -60,5 +60,5 @@ export const FilterGroup = styled.div`
 export const FilterLabel = styled.label`
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
 `

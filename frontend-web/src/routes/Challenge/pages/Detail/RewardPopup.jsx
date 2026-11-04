@@ -44,13 +44,13 @@ const BigEmoji = styled.div`
 const Title = styled.div`
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.375rem;
 `
 
 const RankLine = styled.div`
   display: inline-block;
-  background: linear-gradient(135deg, #0d9488, #0369a1);
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-deep));
   color: #fff;
   border-radius: 999px;
   padding: 0.375rem 1.25rem;
@@ -61,20 +61,20 @@ const RankLine = styled.div`
 
 const Divider = styled.hr`
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   margin: 1.25rem 0;
 `
 
 const RewardTitle = styled.div`
   font-size: 1.0625rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.25rem;
 `
 
 const RewardDesc = styled.div`
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.5;
   margin-bottom: 0.875rem;
 `
@@ -83,8 +83,8 @@ const StatusBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background: ${props => props.$completed ? '#d1fae5' : '#fef3c7'};
-  color: ${props => props.$completed ? '#065f46' : '#92400e'};
+  background: ${props => props.$completed ? 'var(--color-brand-green-tint)' : 'var(--color-warning-tint)'};
+  color: ${props => props.$completed ? 'var(--color-brand-green-darker)' : '#92400e'};
   border-radius: 999px;
   padding: 0.25rem 0.875rem;
   font-size: 0.8125rem;
@@ -96,11 +96,11 @@ const ProofImage = styled.img`
   max-width: 100%;
   border-radius: 10px;
   margin-bottom: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 `
 
 const NoRewardNote = styled.div`
-  color: #9ca3af;
+  color: var(--color-gray-400);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 `

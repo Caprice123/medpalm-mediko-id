@@ -10,7 +10,7 @@ export const EmbedCard = styled.div`
   width: 100%;
   max-width: 600px;
   background-color: white;
-  border: 2px solid #6BB9E8;
+  border: 2px solid var(--color-brand-blue);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -18,16 +18,16 @@ export const EmbedCard = styled.div`
 
 export const TabHeader = styled.div`
   display: flex;
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
 `;
 
 export const TabButton = styled.div`
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
-  background-color: #e5e7eb;
+  color: var(--color-gray-500);
+  background-color: var(--color-gray-200);
   border-top-left-radius: 6px;
 `;
 
@@ -56,7 +56,7 @@ export const PlaceholderIcon = styled.span`
 
 export const PlaceholderText = styled.span`
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--color-gray-400);
 `;
 
 export const URLInput = styled.input`
@@ -65,7 +65,7 @@ export const URLInput = styled.input`
   margin-bottom: 8px;
   border: none;
   background-color: transparent;
-  color: #374151;
+  color: var(--color-gray-700);
   font-size: 14px;
   text-align: center;
   outline: none;
@@ -84,13 +84,13 @@ export const CancelButton = styled.button`
   border-radius: 4px;
   border: none;
   background-color: transparent;
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.15s;
 
   &:hover {
-    color: #374151;
+    color: var(--color-gray-700);
   }
 `;
 
@@ -98,15 +98,15 @@ export const EmbedButton = styled.button`
   padding: 6px 16px;
   border-radius: 4px;
   border: none;
-  background-color: ${props => props.disabled ? '#e5e7eb' : '#111827'};
-  color: ${props => props.disabled ? '#9ca3af' : '#ffffff'};
+  background-color: ${props => props.disabled ? 'var(--color-gray-200)' : 'var(--color-gray-900)'};
+  color: ${props => props.disabled ? 'var(--color-gray-400)' : '#ffffff'};
   font-size: 14px;
   font-weight: 500;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.15s;
 
   &:hover:not(:disabled) {
-    background-color: #374151;
+    background-color: var(--color-gray-700);
   }
 `;
 
@@ -192,13 +192,13 @@ export const WidthHandle = styled.div`
     width: 4px;
     height: 32px;
     border-radius: 2px;
-    background-color: rgba(107, 185, 232, 0.7);
+    background-color: rgba(30, 115, 170, 0.7);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     transition: background-color 0.15s;
   }
 
   &:hover::after {
-    background-color: #6BB9E8;
+    background-color: var(--color-brand-blue);
   }
 `;
 
@@ -230,7 +230,7 @@ export const HeightResizeHandle = styled.div`
   }
 
   &:hover span {
-    background-color: #6BB9E8;
+    background-color: var(--color-brand-blue);
   }
 `;
 

@@ -70,8 +70,8 @@ const SkripsiList = () => {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#1f2937' }}>
-              Judul Set <span style={{ color: '#ef4444' }}>*</span>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'var(--color-gray-800)' }}>
+              Judul Set <span style={{ color: 'var(--color-danger)' }}>*</span>
             </label>
             <input
               type="text"
@@ -81,18 +81,18 @@ const SkripsiList = () => {
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--color-gray-300)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
                 transition: 'border 0.2s'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#06b6d4'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--color-brand-blue)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--color-gray-300)'}
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#1f2937' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: 'var(--color-gray-800)' }}>
               Deskripsi (Opsional)
             </label>
             <textarea
@@ -103,15 +103,15 @@ const SkripsiList = () => {
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--color-gray-300)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
                 transition: 'border 0.2s',
                 resize: 'vertical'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#06b6d4'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--color-brand-blue)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--color-gray-300)'}
             />
           </div>
         </div>

@@ -3,7 +3,7 @@ import { colors } from '@config/colors'
 
 export const Container = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
   padding: 3rem 1.5rem;
   position: relative;
 
@@ -19,8 +19,8 @@ export const Container = styled.div`
     right: 0;
     bottom: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(107, 185, 232, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(107, 185, 232, 0.06) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba(30, 115, 170, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 115, 170, 0.06) 0%, transparent 50%);
     pointer-events: none;
   }
 `
@@ -111,8 +111,8 @@ export const NoteDescription = styled.p`
 
 export const BackButton = styled.button`
   background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
@@ -120,8 +120,8 @@ export const BackButton = styled.button`
   font-weight: 500;
 
   &:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
+    background: var(--color-gray-50);
+    border-color: var(--color-gray-400);
   }
 `
 
@@ -142,21 +142,21 @@ export const Tag = styled.span`
   font-weight: 600;
 
   ${props => props.university && `
-    background: #EFF6FF;
+    background: var(--color-brand-blue-tint);
     color: ${colors.primary.dark};
     border: 1px solid ${colors.primary.main};
   `}
 
   ${props => props.semester && `
-    background: #ECFDF5;
+    background: var(--color-brand-green-tint);
     color: ${colors.success.dark};
     border: 1px solid ${colors.success.main};
   `}
 
   ${props => props.topic && `
-    background: #FEF3C7;
+    background: var(--color-warning-tint);
     color: #92400e;
-    border: 1px solid #f59e0b;
+    border: 1px solid var(--color-warning);
   `}
 
   ${props => props.department && `
@@ -189,8 +189,8 @@ export const LoadingSpinner = styled.div`
   display: inline-block;
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(107, 185, 232, 0.2);
-  border-top: 4px solid #6BB9E8;
+  border: 4px solid rgba(30, 115, 170, 0.2);
+  border-top: 4px solid var(--color-brand-blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 
@@ -244,7 +244,7 @@ export const ToggleButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  border: 2px solid ${props => props.active ? colors.primary.main : '#e5e7eb'};
+  border: 2px solid ${props => props.active ? colors.primary.main : 'var(--color-gray-200)'};
   background: ${props => props.active ? colors.primary.main : 'white'};
   color: ${props => props.active ? 'white' : colors.text.secondary};
 
@@ -271,7 +271,7 @@ export const ResourceGrid = styled.div`
 `
 
 export const ResourceDescription = styled.p`
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.75rem;
@@ -286,9 +286,9 @@ export const ResourceStats = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.75rem;
 `
 
@@ -300,14 +300,14 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-gray-400);
   text-transform: uppercase;
   font-weight: 600;
 `
 
 export const StatValue = styled.span`
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-gray-700);
   font-weight: 700;
 `
 

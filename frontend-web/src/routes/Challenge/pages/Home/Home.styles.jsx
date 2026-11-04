@@ -7,7 +7,7 @@ const slideUp = keyframes`
 
 export const PageWrapper = styled.div`
   min-height: 100vh;
-  background: #f0fdfa;
+  background: var(--color-brand-blue-tint);
 `
 
 export const Container = styled.div`
@@ -32,7 +32,7 @@ export const TopSection = styled.div`
 // ─── Hero card ────────────────────────────────────────────────────────────────
 
 export const HeroCard = styled.div`
-  background: linear-gradient(135deg, #134e4a 0%, #0c4a6e 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, #0c4a6e 100%);
   border-radius: 16px;
   padding: 2rem 2rem 1.75rem;
   display: flex;
@@ -85,7 +85,7 @@ export const LiveBadge = styled.div`
 export const LiveDot = styled.span`
   width: 6px;
   height: 6px;
-  background: #4ade80;
+  background: var(--color-brand-green);
   border-radius: 50%;
   flex-shrink: 0;
 `
@@ -99,8 +99,8 @@ export const HeroChip = styled.span`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: ${props => props.$type === 'blitz' ? '#FEF3C7' : '#CFFAFE'};
-  color: ${props => props.$type === 'blitz' ? '#92400E' : '#0e7490'};
+  background: ${props => props.$type === 'blitz' ? 'var(--color-warning-tint)' : 'var(--color-brand-blue-tint)'};
+  color: ${props => props.$type === 'blitz' ? '#92400E' : 'var(--color-brand-blue-deep)'};
 `
 
 export const HeroTitle = styled.h2`
@@ -128,9 +128,9 @@ export const HeroActions = styled.div`
 `
 
 const BTN_COLORS = {
-  completed:   { bg: '#059669', hover: '#047857' },
-  in_progress: { bg: '#d97706', hover: '#b45309' },
-  not_started: { bg: '#0d9488', hover: '#0f766e' },
+  completed:   { bg: 'var(--color-brand-green-dark)', hover: 'var(--color-brand-green-darker)' },
+  in_progress: { bg: 'var(--color-warning-dark)', hover: '#b45309' },
+  not_started: { bg: 'var(--color-brand-blue)', hover: 'var(--color-brand-blue-deep)' },
 }
 
 export const JoinBtn = styled.button`
@@ -154,7 +154,7 @@ export const JoinBtn = styled.button`
 
 export const LeaderPanel = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 16px;
   padding: 1.25rem;
   display: flex;
@@ -173,7 +173,7 @@ export const LeaderPanelHeader = styled.div`
 export const LeaderPanelTitle = styled.div`
   font-size: 0.6875rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 `
@@ -181,7 +181,7 @@ export const LeaderPanelTitle = styled.div`
 export const LeaderPanelLink = styled.button`
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #0d9488;
+  color: var(--color-brand-blue);
   background: none;
   border: none;
   cursor: pointer;
@@ -195,11 +195,11 @@ export const MiniLeaderRow = styled.div`
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 0;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 
   ${props => props.$self && `
     margin-top: 0.5rem;
-    border-top: 2px dashed #e5e7eb;
+    border-top: 2px dashed var(--color-gray-200);
   `}
 `
 
@@ -207,13 +207,13 @@ export const MiniRank = styled.div`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #f3f4f6;
+  background: var(--color-gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   flex-shrink: 0;
 `
 
@@ -221,7 +221,7 @@ export const MiniLeaderName = styled.div`
   flex: 1;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -233,7 +233,7 @@ export const MiniLeaderName = styled.div`
 export const MiniScore = styled.div`
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-gray-700);
   flex-shrink: 0;
   opacity: 0;
   animation: ${slideUp} 0.35s ease forwards;
@@ -243,8 +243,8 @@ export const MiniScore = styled.div`
 export const MyRankBadge = styled.div`
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0e7490;
-  background: #CFFAFE;
+  color: var(--color-brand-blue-deep);
+  background: var(--color-brand-blue-tint);
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   flex-shrink: 0;
@@ -252,7 +252,7 @@ export const MyRankBadge = styled.div`
 
 export const EmptyLeaderMsg = styled.div`
   font-size: 0.8125rem;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
   text-align: center;
   padding: 2rem 0;
 `
@@ -268,7 +268,7 @@ export const StatsRow = styled.div`
 
 export const StatCard = styled.div`
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   padding: 1rem 1.25rem;
 `
@@ -276,7 +276,7 @@ export const StatCard = styled.div`
 export const StatCardLabel = styled.div`
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 0.375rem;
@@ -285,7 +285,7 @@ export const StatCardLabel = styled.div`
 export const StatCardValue = styled.div`
   font-size: 1.5rem;
   font-weight: 800;
-  color: ${props => props.$color || '#111827'};
+  color: ${props => props.$color || 'var(--color-gray-900)'};
   line-height: 1;
   opacity: 0;
   animation: ${slideUp} 0.4s ease forwards;
@@ -304,7 +304,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h3`
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 0 0 0.2rem;
@@ -312,13 +312,13 @@ export const SectionTitle = styled.h3`
 
 export const SectionSub = styled.div`
   font-size: 0.8125rem;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
 `
 
 export const SeeAllBtn = styled.button`
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0d9488;
+  color: var(--color-brand-blue);
   background: none;
   border: none;
   cursor: pointer;
@@ -363,8 +363,8 @@ export const CardTopRow = styled.div`
 `
 
 const CHIP_COLORS = {
-  blitz:   { bg: '#FEF3C7', color: '#92400E' },
-  classic: { bg: '#CFFAFE', color: '#0e7490' },
+  blitz:   { bg: 'var(--color-warning-tint)', color: '#92400E' },
+  classic: { bg: 'var(--color-brand-blue-tint)', color: 'var(--color-brand-blue-deep)' },
 }
 
 export const CategoryChip = styled.span`
@@ -376,20 +376,20 @@ export const CategoryChip = styled.span`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: ${props => CHIP_COLORS[props.$type]?.bg || '#F3F4F6'};
-  color: ${props => CHIP_COLORS[props.$type]?.color || '#374151'};
+  background: ${props => CHIP_COLORS[props.$type]?.bg || 'var(--color-gray-100)'};
+  color: ${props => CHIP_COLORS[props.$type]?.color || 'var(--color-gray-700)'};
 `
 
 export const TimeLeftTag = styled.span`
   font-size: 0.75rem;
   font-weight: 600;
-  color: ${props => props.$urgent ? '#DC2626' : '#9CA3AF'};
+  color: ${props => props.$urgent ? 'var(--color-danger-dark)' : 'var(--color-gray-400)'};
 `
 
 export const CardTitle = styled.h3`
   font-size: 1.0625rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.3;
 `
@@ -399,14 +399,14 @@ export const CardFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
   margin-top: auto;
   gap: 0.5rem;
 `
 
 export const CardDesc = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -428,13 +428,13 @@ export const CardTag = styled.span`
   gap: 0.25rem;
   padding: 0.2rem 0.5rem;
   background: ${props => {
-    if (props.$university) return '#dbeafe';
-    if (props.$semester) return '#d1fae5';
+    if (props.$university) return 'var(--color-brand-blue-tint-strong)';
+    if (props.$semester) return 'var(--color-brand-green-tint)';
     return '#ede9fe';
   }};
   color: ${props => {
-    if (props.$university) return '#1e40af';
-    if (props.$semester) return '#065f46';
+    if (props.$university) return 'var(--color-brand-blue-deep)';
+    if (props.$semester) return 'var(--color-brand-green-darker)';
     return '#5b21b6';
   }};
   border-radius: 4px;
@@ -444,14 +444,14 @@ export const CardTag = styled.span`
 
 export const PlayedCount = styled.span`
   font-size: 0.8rem;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
   white-space: nowrap;
 `
 
 export const PointsLabel = styled.span`
   font-size: 0.8rem;
   font-weight: 700;
-  color: #d97706;
+  color: var(--color-warning-dark);
   white-space: nowrap;
 `
 
@@ -460,9 +460,9 @@ export const PlayBtn = styled.span`
   font-weight: 700;
   white-space: nowrap;
   color: ${props =>
-    props.$status === 'completed'  ? '#059669' :
-    props.$status === 'in_progress' ? '#d97706' :
-    '#0d9488'};
+    props.$status === 'completed'  ? 'var(--color-brand-green-dark)' :
+    props.$status === 'in_progress' ? 'var(--color-warning-dark)' :
+    'var(--color-brand-blue)'};
   margin-left: auto;
 `
 
@@ -476,8 +476,8 @@ export const LatestBadgeCard = styled.div`
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #cffafe 100%);
-  border: 1px solid #a7f3d0;
+  background: linear-gradient(135deg, var(--color-brand-blue-tint) 0%, var(--color-brand-blue-tint) 100%);
+  border: 1px solid var(--color-brand-green-tint-strong);
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
 `
@@ -512,7 +512,7 @@ export const LatestBadgeInfo = styled.div`
 export const LatestBadgeLabel = styled.div`
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 0.2rem;
@@ -521,19 +521,19 @@ export const LatestBadgeLabel = styled.div`
 export const LatestBadgeName = styled.div`
   font-size: 1rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.2rem;
 `
 
 export const LatestBadgeMeta = styled.div`
   font-size: 0.8125rem;
-  color: #374151;
+  color: var(--color-gray-700);
 `
 
 export const LatestBadgeRank = styled.div`
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0e7490;
+  color: var(--color-brand-blue-deep);
   background: #fff;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
@@ -546,7 +546,7 @@ export const NoBadgeCta = styled.div`
   align-items: center;
   gap: 1.25rem;
   background: #fff;
-  border: 1px dashed #d1fae5;
+  border: 1px dashed var(--color-brand-green-tint);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
 `
@@ -563,13 +563,13 @@ export const NoBadgeText = styled.div`
 export const NoBadgeTitle = styled.div`
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin-bottom: 0.2rem;
 `
 
 export const NoBadgeSub = styled.div`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
 `
 
 // ─── How to play ──────────────────────────────────────────────────────────────
@@ -603,8 +603,8 @@ export const HowToPlayIcon = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
+  background: var(--color-brand-blue-tint);
+  border: 1px solid var(--color-brand-blue-tint-strong);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -615,7 +615,7 @@ export const HowToPlayIcon = styled.div`
 export const HowToPlayStep = styled.div`
   font-size: 0.6875rem;
   font-weight: 800;
-  color: #9CA3AF;
+  color: var(--color-gray-400);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 `
@@ -623,20 +623,20 @@ export const HowToPlayStep = styled.div`
 export const HowToPlayTitle = styled.div`
   font-size: 1.0625rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   line-height: 1.3;
 `
 
 export const HowToPlayDesc = styled.div`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   line-height: 1.5;
 `
 
 // ─── Empty hero ───────────────────────────────────────────────────────────────
 
 export const EmptyHero = styled.div`
-  background: linear-gradient(135deg, #134e4a 0%, #0c4a6e 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue-deep) 0%, #0c4a6e 100%);
   border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
@@ -662,7 +662,7 @@ export const EmptyHeroSub = styled.div`
 // ─── Upcoming banner ──────────────────────────────────────────────────────────
 
 export const UpcomingBanner = styled.div`
-  background: linear-gradient(135deg, #0f172a 0%, #1a2744 100%);
+  background: linear-gradient(135deg, var(--color-gray-900) 0%, #1a2744 100%);
   border-radius: 16px;
   padding: 2rem;
   display: flex;
@@ -684,7 +684,7 @@ export const UpcomingInfo = styled.div`
 export const UpcomingLabel = styled.div`
   font-size: 0.6875rem;
   font-weight: 800;
-  color: #f59e0b;
+  color: var(--color-warning);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 `
@@ -718,7 +718,7 @@ export const UpcomingBtn = styled.div`
   padding: 0.625rem 1.25rem;
   border-radius: 999px;
   background: #fff;
-  color: #111827;
+  color: var(--color-gray-900);
   font-size: 0.875rem;
   font-weight: 700;
   margin-top: 0.25rem;

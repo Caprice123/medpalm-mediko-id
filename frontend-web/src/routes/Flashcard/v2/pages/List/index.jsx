@@ -31,10 +31,10 @@ import {
 } from './List.styles'
 
 const DIST = [
-  { key: 'again', label: 'Lagi',  color: '#ef4444' },
+  { key: 'again', label: 'Lagi',  color: 'var(--color-danger)' },
   { key: 'hard',  label: 'Sulit', color: '#f97316' },
-  { key: 'good',  label: 'Baik',  color: '#3b82f6' },
-  { key: 'easy',  label: 'Mudah', color: '#22c55e' },
+  { key: 'good',  label: 'Baik',  color: 'var(--color-brand-blue)' },
+  { key: 'easy',  label: 'Mudah', color: 'var(--color-brand-green)' },
 ]
 
 const PAGE_SIZE = 6
@@ -217,7 +217,7 @@ function FlashcardV2ListPage() {
         <div>
           <Title>{constants?.flashcard_feature_title || 'Flashcard'}</Title>
           {constants?.flashcard_feature_description && (
-            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--color-gray-500)', margin: '0.25rem 0 0' }}>
               {constants.flashcard_feature_description}
             </p>
           )}

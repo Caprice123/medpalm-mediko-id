@@ -10,14 +10,14 @@ const SkeletonContainer = styled.div`
 
 const ConversationItemSkeleton = styled.div`
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   background: white;
 
   &:hover {
-    background: #f9fafb;
+    background: var(--color-gray-50);
   }
 `
 
@@ -39,15 +39,15 @@ function ConversationListSkeleton({ count = 8 }) {
             <Skeleton
               width={150}
               height={18}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
             {/* Time */}
             <Skeleton
               width={80}
               height={14}
-              baseColor="#e5e7eb"
-              highlightColor="#f3f4f6"
+              baseColor="var(--color-gray-200)"
+              highlightColor="var(--color-gray-100)"
             />
           </HeaderRow>
 
@@ -55,8 +55,8 @@ function ConversationListSkeleton({ count = 8 }) {
           <Skeleton
             width="85%"
             height={14}
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
+            baseColor="var(--color-gray-200)"
+            highlightColor="var(--color-gray-100)"
           />
         </ConversationItemSkeleton>
       ))}

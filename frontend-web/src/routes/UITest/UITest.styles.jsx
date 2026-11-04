@@ -9,19 +9,19 @@ export const Container = styled.div`
 export const Header = styled.div`
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
 `
 
 export const Title = styled.h1`
   font-size: 2rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0 0 0.5rem 0;
 `
 
 export const Subtitle = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -32,10 +32,10 @@ export const Section = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 `
 
 export const ComponentGrid = styled.div`
@@ -47,7 +47,7 @@ export const ComponentGrid = styled.div`
 
 export const ComponentCard = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 1.5rem;
 `
@@ -55,7 +55,7 @@ export const ComponentCard = styled.div`
 export const ComponentLabel = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.75rem;
 `
 
@@ -69,7 +69,7 @@ export const ComponentDemo = styled.div`
 
 export const StateLabel = styled.div`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin-bottom: 0.5rem;
 `
 
@@ -88,14 +88,14 @@ export const Badge = styled.span`
   margin-right: 0.5rem;
 
   ${props => props.variant === 'success' ? `
-    background: #dcfce7;
-    color: #16a34a;
+    background: var(--color-brand-green-tint);
+    color: var(--color-brand-green-dark);
   ` : props.variant === 'error' ? `
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--color-danger-tint);
+    color: var(--color-danger-dark);
   ` : props.variant === 'warning' ? `
-    background: #fef3c7;
-    color: #d97706;
+    background: var(--color-warning-tint);
+    color: var(--color-warning-dark);
   ` : `
     background: #e0e7ff;
     color: #4f46e5;
@@ -113,12 +113,12 @@ export const ColorSwatch = styled.div`
   height: 80px;
   border-radius: 6px;
   background: ${props => props.color};
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 0.625rem;
-  color: ${props => props.light ? '#111827' : 'white'};
+  color: ${props => props.light ? 'var(--color-gray-900)' : 'white'};
   font-weight: 600;
 `

@@ -15,7 +15,7 @@ export const FilterField = styled.div``
 export const FilterLabel = styled.label`
   font-size: 0.8rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
   margin-bottom: 0.375rem;
   display: block;
 `
@@ -29,13 +29,13 @@ export const FilterActions = styled.div`
 export const FilterStatusSection = styled.div`
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 `
 
 export const FilterStatusLabel = styled.p`
   font-size: 0.8rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-gray-700);
   margin: 0 0 0.5rem;
 `
 
@@ -48,17 +48,17 @@ export const RegistrationFilterRow = styled.div`
 export const RegistrationFilterTab = styled.button`
   padding: 0.4rem 1rem;
   border-radius: 999px;
-  border: 1.5px solid ${({ $active }) => $active ? '#06b6d4' : '#e5e7eb'};
-  background: ${({ $active }) => $active ? '#06b6d4' : 'white'};
-  color: ${({ $active }) => $active ? 'white' : '#6b7280'};
+  border: 1.5px solid ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  background: ${({ $active }) => $active ? 'var(--color-brand-blue)' : 'white'};
+  color: ${({ $active }) => $active ? 'white' : 'var(--color-gray-500)'};
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
 
   &:hover {
-    border-color: #06b6d4;
-    color: ${({ $active }) => $active ? 'white' : '#06b6d4'};
+    border-color: var(--color-brand-blue);
+    color: ${({ $active }) => $active ? 'white' : 'var(--color-brand-blue)'};
   }
 `
 
@@ -74,7 +74,7 @@ export const Grid = styled.div`
 
 export const WebinarCard = styled.div`
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -82,14 +82,14 @@ export const WebinarCard = styled.div`
   overflow: hidden;
 
   &:hover {
-    border-color: #d1d5db;
+    border-color: var(--color-gray-300);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 `
 
 export const Thumbnail = styled.div`
   height: 160px;
-  background: linear-gradient(135deg, #6BB9E8 0%, #8DC63F 100%);
+  background: linear-gradient(135deg, var(--color-brand-blue) 0%, var(--color-brand-blue-light) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,7 +121,7 @@ export const CardBody = styled.div`
 export const CardTitle = styled.h3`
   font-size: 1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.4;
 `
@@ -135,13 +135,13 @@ export const CardSpeakerName = styled.p`
 
 export const CardDateText = styled.p`
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
 export const CardDescText = styled.p`
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -155,7 +155,7 @@ export const CardFooterRow = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-gray-100);
 
   & > * { flex: 1; }
 `

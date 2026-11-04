@@ -36,8 +36,8 @@ export const ClassificationBadge = styled.span`
   display: inline-flex;
   align-items: center;
   padding: 0.1875rem 0.625rem;
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-brand-blue-tint);
+  color: var(--color-brand-blue-deep);
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 999px;
@@ -47,14 +47,14 @@ export const ClassificationBadge = styled.span`
 export const TopicName = styled.h1`
   font-size: 1.625rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.2;
 `
 
 export const TopicDescription = styled.p`
   font-size: 0.9375rem;
-  color: #6b7280;
+  color: var(--color-gray-500);
   margin: 0;
 `
 
@@ -63,7 +63,7 @@ export const BackButton = styled.button`
   align-items: center;
   gap: 0.375rem;
   font-size: 0.9375rem;
-  color: #374151;
+  color: var(--color-gray-700);
   background: none;
   border: none;
   cursor: pointer;
@@ -71,5 +71,5 @@ export const BackButton = styled.button`
   flex-shrink: 0;
   white-space: nowrap;
 
-  &:hover { color: #111827; }
+  &:hover { color: var(--color-gray-900); }
 `

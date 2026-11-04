@@ -48,7 +48,7 @@ export const Subtitle = styled.p`
 // restyled — only sized and shaped through the component's props, and only
 // `size`, `text` and `width` are set here. The themed variants were tried and
 // dropped: `filled_blue` paints it Google's #1a73e8 against the brand's
-// #1e73aa, and two blues that close together read as a mistake. The default
+// var(--color-brand-blue), and two blues that close together read as a mistake. The default
 // outline is also the button users have been trained to look for.
 export const GoogleSlot = styled.div`
   margin-top: 30px;
