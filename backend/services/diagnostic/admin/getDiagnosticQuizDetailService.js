@@ -22,7 +22,9 @@ export class GetDiagnosticQuizDetailService extends BaseService {
       }
     })
 
-    if (!quiz || quiz.is_deleted) {
+    // version 2 rows in this table are V2 cases, not quizzes — they have no title or
+    // tags and are served by the V2 case endpoints instead.
+    if (!quiz || quiz.is_deleted || quiz.version !== 1) {
       throw new ValidationError('Quiz not found')
     }
 

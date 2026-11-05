@@ -18,7 +18,7 @@ export class GetNodeDiagnosticCasesService extends BaseService {
     const where = { id: { in: caseIds }, is_deleted: false }
     if (search) {
       where.OR = [
-        { vignette: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
         { diagnostic_questions: { some: { is_deleted: false, question: { contains: search, mode: 'insensitive' } } } },
       ]
     }
@@ -26,11 +26,13 @@ export class GetNodeDiagnosticCasesService extends BaseService {
     // List view is lightweight — the vignette snippet plus the questions the row
     // previews. Full detail (image, explanations, references, linked notes) is fetched
     // separately via GetNodeDiagnosticCaseDetailService when a case is opened.
-    const rawCases = await prisma.diagnostic_cases.findMany({
+    // `description` is the case vignette — see the diagnostic_quizzes model comment. No
+    // version filter: the ids come from feature_node_records, which is authoritative.
+    const rawCases = await prisma.diagnostic_quizzes.findMany({
       where,
       select: {
         id: true,
-        vignette: true,
+        description: true,
         diagnostic_questions: {
           where: { is_deleted: false },
           orderBy: { order: 'asc' },
@@ -45,7 +47,7 @@ export class GetNodeDiagnosticCasesService extends BaseService {
       .filter(Boolean)
       .map(c => ({
         id: c.id,
-        vignette: c.vignette,
+        vignette: c.description,
         questionCount: c.diagnostic_questions.length,
         questions: c.diagnostic_questions.map(q => ({
           id: q.id,

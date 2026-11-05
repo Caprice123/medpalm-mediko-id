@@ -6,7 +6,7 @@ const RECORD_TYPE = 'diagnostic_case'
 
 export class MoveLinkedDiagnosticCaseService extends BaseService {
   static async call({ caseId, nodeId }) {
-    const diagnosticCase = await prisma.diagnostic_cases.findUnique({ where: { id: parseInt(caseId) } })
+    const diagnosticCase = await prisma.diagnostic_quizzes.findUnique({ where: { id: parseInt(caseId) } })
     if (!diagnosticCase || diagnosticCase.is_deleted) throw new ValidationError('Kasus tidak ditemukan')
 
     const targetNode = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })

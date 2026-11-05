@@ -11,14 +11,17 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
   static async call({ caseId, vignette, imageBlobId, imageCaption, explanation, references, questions }) {
     const questionRows = normalizeCaseQuestions(questions)
 
-    const existing = await prisma.diagnostic_cases.findUnique({ where: { id: parseInt(caseId) } })
+    // Deliberately not scoped to version 2: the unlinked inbox edits legacy V1 quizzes
+    // through this same form, which is how a V1 quiz is reshaped into a case before being
+    // assigned to a subtopic. Its `version` is left alone — being linked is what matters.
+    const existing = await prisma.diagnostic_quizzes.findUnique({ where: { id: parseInt(caseId) } })
     if (!existing || existing.is_deleted) throw new ValidationError('Kasus tidak ditemukan')
 
     // Review state lives on the case, not on its questions, so the question set can be
     // replaced wholesale without touching anyone's SRS progress: rows the admin kept are
     // updated in place, rows they dropped are soft-deleted, new rows are created.
     const currentQuestions = await prisma.diagnostic_questions.findMany({
-      where: { case_id: parseInt(caseId), is_deleted: false },
+      where: { quiz_id: parseInt(caseId), is_deleted: false },
       select: { id: true },
     })
     const currentIds = new Set(currentQuestions.map(q => q.id))
@@ -28,13 +31,14 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
     const removedIds = [...currentIds].filter(id => !keptIds.has(id))
 
     await prisma.$transaction(async (tx) => {
-      await tx.diagnostic_cases.update({
+      await tx.diagnostic_quizzes.update({
         where: { id: parseInt(caseId) },
         data: {
-          vignette: vignette?.trim() || null,
+          description: vignette?.trim() || null,
           image_caption: imageCaption?.trim() || null,
           explanation: explanation?.trim() || null,
           references: Array.isArray(references) ? references : [],
+          question_count: questionRows.length,
           updated_at: new Date(),
         },
       })
@@ -48,7 +52,7 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
             data: { ...row, updated_at: new Date() },
           })
         } else {
-          await tx.diagnostic_questions.create({ data: { ...row, case_id: parseInt(caseId) } })
+          await tx.diagnostic_questions.create({ data: { ...row, quiz_id: parseInt(caseId) } })
           created++
         }
       }
@@ -86,8 +90,13 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
       }
     }
 
-    const updated = await prisma.diagnostic_cases.findUnique({ where: { id: parseInt(caseId) } })
+    const updated = await prisma.diagnostic_quizzes.findUnique({ where: { id: parseInt(caseId) } })
     const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, parseInt(caseId), 'image')
-    return { ...updated, imageUrl: attachment?.url ?? null, imageBlobId: attachment?.blob_id ?? null }
+    return {
+      ...updated,
+      vignette: updated.description,
+      imageUrl: attachment?.url ?? null,
+      imageBlobId: attachment?.blob_id ?? null,
+    }
   }
 }

@@ -16,7 +16,9 @@ export class GetDiagnosticQuizzesService extends BaseService {
     // Fetch perPage + 1 to determine if there's a next page
     const take = perPage + 1
 
-    const where = { is_deleted: false }
+    // Scoped to version 1: `diagnostic_quizzes` also holds V2 cases (version 2), which are
+    // managed from their subtopic in the Fitur V2 panel and must never surface as quizzes.
+    const where = { is_deleted: false, version: 1 }
 
     if (filters.userRole === 'user') {
       where.status = 'published'

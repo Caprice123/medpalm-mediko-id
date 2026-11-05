@@ -24,6 +24,7 @@ class CasesController {
     const { vignette, imageBlobId, imageCaption, explanation, references, questions } = req.body
     const newCase = await AddNodeDiagnosticCaseService.call({
       nodeId, vignette, imageBlobId, imageCaption, explanation, references, questions,
+      createdBy: req.user.id,
     })
     res.status(201).json({ success: true, data: DiagnosticCaseSerializer.serialize(newCase) })
   }

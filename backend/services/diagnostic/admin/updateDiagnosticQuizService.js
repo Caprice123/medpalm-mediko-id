@@ -24,7 +24,9 @@ export class UpdateDiagnosticQuizService extends BaseService {
       where: { unique_id: quizId }
     })
 
-    if (!existingQuiz) {
+    // A version-2 row here is a V2 case, not a quiz — it has no title or tags and is
+    // edited through the V2 case endpoints, so the V1 panel must not touch it.
+    if (!existingQuiz || existingQuiz.version !== 1) {
       throw new ValidationError('Quiz not found')
     }
 

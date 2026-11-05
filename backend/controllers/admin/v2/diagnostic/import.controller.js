@@ -6,7 +6,7 @@ class ImportController {
     const { nodeId } = req.params
     const buffer = req.file?.buffer
     if (!buffer) return res.status(400).json({ success: false, message: 'File tidak ditemukan' })
-    const result = await ImportDiagnosticCasesService.call({ nodeId, buffer })
+    const result = await ImportDiagnosticCasesService.call({ nodeId, buffer, createdBy: req.user.id })
     res.json({ success: true, data: result })
   }
 

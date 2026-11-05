@@ -12,7 +12,7 @@ export const QUESTION_SHEET = 'Soal'
 const cell = (row, key) => String(row[key] ?? '').trim()
 
 export class ImportDiagnosticCasesService extends BaseService {
-  static async call({ nodeId, buffer }) {
+  static async call({ nodeId, buffer, createdBy }) {
     const workbook = XLSX.read(buffer, { type: 'buffer' })
     const caseSheet = workbook.Sheets[CASE_SHEET]
     const questionSheet = workbook.Sheets[QUESTION_SHEET]
@@ -40,8 +40,10 @@ export class ImportDiagnosticCasesService extends BaseService {
         results.errors.push({ row: rowNum, message: `[${CASE_SHEET}] Case ID "${key}" sudah digunakan di baris lain` })
         return
       }
+      // `description` is where a case keeps its vignette — see the diagnostic_quizzes
+      // model comment in schema.prisma.
       caseByKey.set(key, {
-        vignette: cell(row, 'Vignette') || null,
+        description: cell(row, 'Vignette') || null,
         image_caption: cell(row, 'Keterangan Gambar') || null,
         explanation: cell(row, 'Penjelasan Kasus') || null,
       })
@@ -105,8 +107,17 @@ export class ImportDiagnosticCasesService extends BaseService {
 
       try {
         await prisma.$transaction(async (tx) => {
-          const created = await tx.diagnostic_cases.create({
-            data: { ...caseData, references: [], diagnostic_questions: { create: questions } },
+          const created = await tx.diagnostic_quizzes.create({
+            data: {
+              ...caseData,
+              title: null,
+              references: [],
+              status: 'published',
+              version: 2,
+              question_count: questions.length,
+              created_by: createdBy,
+              diagnostic_questions: { create: questions },
+            },
           })
           await tx.feature_node_records.create({
             data: { node_id: parseInt(nodeId), record_type: RECORD_TYPE, record_id: created.id },

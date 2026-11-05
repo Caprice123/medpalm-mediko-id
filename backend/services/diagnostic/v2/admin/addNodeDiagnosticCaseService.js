@@ -9,19 +9,27 @@ import { normalizeCaseQuestions } from '#services/diagnostic/v2/admin/diagnostic
 const RECORD_TYPE = 'diagnostic_case'
 
 export class AddNodeDiagnosticCaseService extends BaseService {
-  static async call({ nodeId, vignette, imageBlobId, imageCaption, explanation, references, questions }) {
+  static async call({ nodeId, vignette, imageBlobId, imageCaption, explanation, references, questions, createdBy }) {
     const questionRows = normalizeCaseQuestions(questions)
 
     const node = await prisma.feature_nodes.findUnique({ where: { id: parseInt(nodeId) } })
     if (!node) throw new ValidationError('Node tidak ditemukan')
 
     const newCase = await prisma.$transaction(async (tx) => {
-      const created = await tx.diagnostic_cases.create({
+      // A case is a `diagnostic_quizzes` row at version 2: no title and no tags, and the
+      // vignette lives in `description` (see the model comment in schema.prisma). It is
+      // born published because visibility is the node's job, not the row's.
+      const created = await tx.diagnostic_quizzes.create({
         data: {
-          vignette: vignette?.trim() || null,
+          title: null,
+          description: vignette?.trim() || null,
           image_caption: imageCaption?.trim() || null,
           explanation: explanation?.trim() || null,
           references: Array.isArray(references) ? references : [],
+          status: 'published',
+          version: 2,
+          question_count: questionRows.length,
+          created_by: createdBy,
           diagnostic_questions: { create: questionRows },
         },
       })
@@ -48,6 +56,7 @@ export class AddNodeDiagnosticCaseService extends BaseService {
       })
     }
 
-    return newCase
+    // The API speaks `vignette`; the column is `description`.
+    return { ...newCase, vignette: newCase.description }
   }
 }

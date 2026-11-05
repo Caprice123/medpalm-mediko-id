@@ -12,7 +12,7 @@ export class RateDiagnosticCaseService extends BaseService {
 
     // A case deleted mid-session already had its rating removed from progress;
     // rating it now would desync review state from those counts
-    const diagnosticCase = await prisma.diagnostic_cases.findUnique({ where: { id: recordId }, select: { is_deleted: true } })
+    const diagnosticCase = await prisma.diagnostic_quizzes.findUnique({ where: { id: recordId }, select: { is_deleted: true } })
     if (!diagnosticCase || diagnosticCase.is_deleted) return
 
     const existing = await prisma.user_review_states.findUnique({

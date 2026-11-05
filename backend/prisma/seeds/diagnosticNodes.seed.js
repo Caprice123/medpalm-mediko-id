@@ -411,6 +411,15 @@ async function createOrFindNode({ name, slug, parentId, layer, classification })
 export async function seedDiagnosticNodes() {
   console.log('Seeding diagnostic V2 nodes and questions...')
 
+  // A case is a `diagnostic_quizzes` row, whose `created_by` is NOT NULL, so the seed
+  // needs an author to hang them on.
+  const author = await prisma.users.findFirst({ where: { role: 'admin' }, orderBy: { id: 'asc' } })
+    ?? await prisma.users.findFirst({ orderBy: { id: 'asc' } })
+  if (!author) {
+    console.log('  ! No user exists yet — seed the users first, skipping diagnostic nodes')
+    return
+  }
+
   for (const topic of SEED_DATA) {
     const topicNode = await createOrFindNode({
       name: topic.name,
@@ -434,18 +443,25 @@ export async function seedDiagnosticNodes() {
       for (const q of sub.questions) {
         // One seeded question per case: the seed data has no shared vignettes
         const existingQ = await prisma.diagnostic_questions.findFirst({ where: { question: q.question } })
-        if (existingQ?.case_id) {
+        if (existingQ?.quiz_id) {
           const linked = await prisma.feature_node_records.findFirst({
-            where: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: existingQ.case_id },
+            where: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: existingQ.quiz_id },
           })
           if (linked) continue
         }
 
-        const diagnosticCase = await prisma.diagnostic_cases.create({
+        // A case is a version-2 `diagnostic_quizzes` row with the vignette in
+        // `description` — see the model comment in schema.prisma.
+        const diagnosticCase = await prisma.diagnostic_quizzes.create({
           data: {
-            vignette: q.vignette ?? null,
+            title: null,
+            description: q.vignette ?? null,
             explanation: q.explanation ?? null,
             references: [],
+            status: 'published',
+            version: 2,
+            question_count: 1,
+            created_by: author.id,
             diagnostic_questions: {
               create: [{
                 question: q.question,

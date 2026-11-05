@@ -38,7 +38,9 @@ class DiagnosticController {
       }
     })
 
-    if (!quiz) {
+    // version 2 rows in this table are V2 cases, answered through the V2 session
+    // endpoints — a V1 submit must not grade one.
+    if (!quiz || quiz.version !== 1) {
       return res.status(404).json({
         message: 'Quiz not found'
       })

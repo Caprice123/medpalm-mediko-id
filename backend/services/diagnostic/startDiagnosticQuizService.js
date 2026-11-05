@@ -22,7 +22,8 @@ export class StartDiagnosticQuizService extends BaseService {
         }
       })
 
-      if (!quiz || quiz.is_deleted) {
+      // version 2 rows are V2 cases, played through the V2 session endpoints instead
+      if (!quiz || quiz.is_deleted || quiz.version !== 1) {
         throw new ValidationError('Quiz not found')
       }
 

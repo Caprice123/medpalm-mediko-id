@@ -15,7 +15,7 @@ export class GetDiagnosticDueTodayService extends BaseService {
         parent.name   AS topic_name,
         COUNT(*)      AS due_count
       FROM user_review_states urs
-      JOIN diagnostic_cases dc      ON dc.id           = urs.record_id
+      JOIN diagnostic_quizzes dc    ON dc.id           = urs.record_id
       JOIN feature_node_records fnr ON fnr.record_type  = ${RECORD_TYPE} AND fnr.record_id = dc.id
       JOIN feature_nodes fn         ON fn.id            = fnr.node_id
       JOIN feature_nodes parent     ON parent.id        = fn.parent_id

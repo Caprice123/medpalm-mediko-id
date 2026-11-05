@@ -8,7 +8,7 @@ const RECORD_TYPE = 'diagnostic_case'
 export async function buildDiagnosticSessionCards({ selected, newIdSet, node, nodeMap }) {
   if (selected.length === 0) return []
 
-  const cases = await prisma.diagnostic_cases.findMany({
+  const cases = await prisma.diagnostic_quizzes.findMany({
     where: { id: { in: selected }, is_deleted: false },
     include: {
       diagnostic_questions: {
@@ -90,7 +90,7 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
 
     return {
       id: diagnosticCase.id,
-      vignette: diagnosticCase.vignette,
+      vignette: diagnosticCase.description,
       imageUrl: urlMap.get(id) || null,
       imageCaption: diagnosticCase.image_caption,
       explanation: diagnosticCase.explanation ?? '',

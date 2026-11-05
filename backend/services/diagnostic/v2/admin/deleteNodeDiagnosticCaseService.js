@@ -10,11 +10,11 @@ export class DeleteNodeDiagnosticCaseService extends BaseService {
   static async call({ caseId }) {
     const parsedCaseId = parseInt(caseId)
 
-    const diagnosticCase = await prisma.diagnostic_cases.findUnique({ where: { id: parsedCaseId } })
+    const diagnosticCase = await prisma.diagnostic_quizzes.findUnique({ where: { id: parsedCaseId } })
     if (!diagnosticCase || diagnosticCase.is_deleted) throw new ValidationError('Kasus tidak ditemukan')
 
     const questionCount = await prisma.diagnostic_questions.count({
-      where: { case_id: parsedCaseId, is_deleted: false },
+      where: { quiz_id: parsedCaseId, is_deleted: false },
     })
 
     const fnRecord = await prisma.feature_node_records.findFirst({
@@ -31,13 +31,13 @@ export class DeleteNodeDiagnosticCaseService extends BaseService {
     await prisma.$transaction(async (tx) => {
       await bumpContentStat(tx, CONTENT_STAT_KEYS.diagnosticQuestion, -questionCount)
 
-      await tx.diagnostic_cases.update({
+      await tx.diagnostic_quizzes.update({
         where: { id: parsedCaseId },
         data: { is_deleted: true, deleted_at: new Date() },
       })
 
       await tx.diagnostic_questions.updateMany({
-        where: { case_id: parsedCaseId, is_deleted: false },
+        where: { quiz_id: parsedCaseId, is_deleted: false },
         data: { is_deleted: true, deleted_at: new Date() },
       })
 

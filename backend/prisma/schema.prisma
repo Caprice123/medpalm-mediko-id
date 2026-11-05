@@ -1064,17 +1064,33 @@ model blobs {
 
 // ============= Diagnostic Quiz Feature =============
 
+// Shared by V1 quizzes and V2 cases, told apart by `version` (the same split
+// atlas_models and anatomy_quizzes already use):
+//   version 1 — a V1 quiz: a titled, tagged container of many questions, listed and
+//               played from /diagnostic. Every V1 list filters on version = 1.
+//   version 2 — a V2 "case": one shared vignette + image with several questions asked
+//               about it, the unit feature_node_records links to (record_type
+//               'diagnostic_case'), one screen in the player, and the unit SRS state is
+//               tracked against. A case has no title and no tags, so `title` is
+//               nullable here while V1's own service still rejects a blank one.
+// `description` carries the case vignette, `image_caption` the caption under its image,
+// and `explanation`/`references` the case-level wrap-up shown once every question under
+// it is answered. All four stay null on V1 rows.
 model diagnostic_quizzes {
   id             Int      @id @default(autoincrement())
   unique_id      String   @unique @default(uuid())
-  title          String
+  title          String?
   description    String?
+  image_caption  String?
+  explanation    String?
+  references     Json?
   status         String   @default("draft")
   is_deleted     Boolean  @default(false)
   deleted_at     DateTime?
   question_count Int      @default(0)
   embed_url      String?
   media_type     String   @default("2d") // '2d' | '3d'
+  version        Int      @default(1)
   created_by     Int
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
@@ -1087,35 +1103,13 @@ model diagnostic_quizzes {
   @@index([status])
   @@index([is_deleted])
   @@index([media_type])
+  @@index([version])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "diagnostic_quizzes_search_gin_idx")
-}
-
-// A diagnostic "case": one shared vignette + image that several diagnostic_questions
-// are asked about. This is the unit feature_node_records links to (record_type
-// 'diagnostic_case'), the unit shown as one screen in the player, and the unit SRS
-// state is tracked against — rating a case rates every question under it at once.
-// V1 quizzes (diagnostic_quizzes) are a separate, untouched container.
-model diagnostic_cases {
-  id            Int       @id @default(autoincrement())
-  vignette      String?
-  image_caption String?
-  explanation   String?
-  references    Json?
-  order         Int       @default(0)
-  is_deleted    Boolean   @default(false)
-  deleted_at    DateTime?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @default(now())
-
-  diagnostic_questions diagnostic_questions[]
-
-  @@index([is_deleted])
 }
 
 model diagnostic_questions {
   id            Int      @id @default(autoincrement())
   quiz_id       Int?
-  case_id       Int?
   question      String
   vignette      String?
   image_caption String?
@@ -1133,11 +1127,9 @@ model diagnostic_questions {
   updated_at    DateTime @default(now())
 
   diagnostic_quiz         diagnostic_quizzes?       @relation(fields: [quiz_id], references: [id])
-  diagnostic_case         diagnostic_cases?         @relation(fields: [case_id], references: [id])
   diagnostic_quiz_answers diagnostic_quiz_answers[]
 
   @@index([quiz_id])
-  @@index([case_id])
   @@index([order])
   @@index([is_deleted])
 }

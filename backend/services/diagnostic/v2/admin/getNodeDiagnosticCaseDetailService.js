@@ -7,7 +7,8 @@ const RECORD_TYPE = 'diagnostic_case'
 
 export class GetNodeDiagnosticCaseDetailService extends BaseService {
   static async call({ caseId }) {
-    const diagnosticCase = await prisma.diagnostic_cases.findUnique({
+    // Any version: the unlinked inbox opens legacy V1 quizzes in the same case form.
+    const diagnosticCase = await prisma.diagnostic_quizzes.findUnique({
       where: { id: parseInt(caseId) },
       include: {
         diagnostic_questions: {
@@ -41,7 +42,7 @@ export class GetNodeDiagnosticCaseDetailService extends BaseService {
 
     return {
       id: diagnosticCase.id,
-      vignette: diagnosticCase.vignette,
+      vignette: diagnosticCase.description,
       imageCaption: diagnosticCase.image_caption,
       explanation: diagnosticCase.explanation ?? '',
       references: diagnosticCase.references ?? [],
