@@ -188,6 +188,78 @@
         ],
         "createdAt": "2026-11-04T14:40:10.509Z",
         "reason": "Decision-round sketch fixture, not shipping UI: compressed 1440x900 first-viewport sketch served to the decision page, which renders text under 22px as bars. Rule stays live for the real Webinar v2 source."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "frontend-web/src/components/common/RichTextViewer/RichTextViewer.styles.jsx"
+        ],
+        "createdAt": "2026-11-05T11:09:37.215Z",
+        "reason": "Claude: border-left on <blockquote> is standard quotation typography (TipTap/GitHub/Notion default), not a card accent stripe; matches existing VignetteText convention in this repo"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "frontend-web/src/components/common/RichTextEditor/RichTextEditor.styles.jsx"
+        ],
+        "createdAt": "2026-11-05T11:09:40.430Z",
+        "reason": "Claude: border-left on <blockquote> is standard quotation typography (TipTap/GitHub/Notion default), not a card accent stripe; matches existing VignetteText convention in this repo"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-kartu-tugas.html"
+        ],
+        "createdAt": "2026-11-05T11:17:01.381Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-kartu-tugas.html"
+        ],
+        "createdAt": "2026-11-05T11:17:02.752Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-papan-kerja.html"
+        ],
+        "createdAt": "2026-11-05T11:17:03.951Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-papan-kerja.html"
+        ],
+        "createdAt": "2026-11-05T11:17:06.769Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-papan-kerja.html"
+        ],
+        "createdAt": "2026-11-05T11:17:08.320Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/osce-satu-keputusan.html"
+        ],
+        "createdAt": "2026-11-05T11:17:09.416Z",
+        "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
       }
     ]
   }

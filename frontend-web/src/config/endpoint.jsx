@@ -95,6 +95,10 @@ flashcardsV2: "/admin/v2/flashcard/decks",
         recentlyViewed: "/api/v1/recently-viewed",
         favorites: "/api/v1/favorites",
         uploadImage: `/api/v1/upload/image`,
+        // Absolute on purpose: this one goes straight into an <img src> inside stored rich
+        // text, so it cannot rely on the axios base URL. The endpoint redirects to a fresh
+        // presigned URL on every request, so the link never expires.
+        blobImageUrl: (blobId) => `${API_BASE_URL}/api/v1/blobs/${blobId}`,
         uploadFile: `/api/v1/upload/file`,
         mcq: "/api/v1/mcq",
         chatbot: "/api/v1/chatbot",

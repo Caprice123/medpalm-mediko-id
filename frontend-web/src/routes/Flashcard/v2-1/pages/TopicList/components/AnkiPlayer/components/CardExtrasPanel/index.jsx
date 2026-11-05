@@ -1,4 +1,6 @@
 import { generatePath } from 'react-router-dom'
+import RichTextViewer from '@components/common/RichTextViewer'
+import { isRichTextEmpty } from '@utils/richTextUtils'
 import { SummaryNotesRoute } from '@routes/SummaryNotes/routes'
 import { useCardExtrasPanel } from './hooks/useCardExtrasPanel'
 import {
@@ -9,23 +11,29 @@ import {
   RelatedRow, RelatedRowText, RelatedRowIcon,
 } from './CardExtrasPanel.styles'
 
-export default function CardExtrasPanel({ explanationShort, explanationLong, references = [], linkedSummaryNotes = [] }) {
+// `renderHtml` is opt-in: Diagnostic V2 authors its explanations in the TipTap editor and
+// stores HTML, while Flashcard still stores plain text and must keep rendering it verbatim.
+export default function CardExtrasPanel({ explanationShort, explanationLong, references = [], linkedSummaryNotes = [], renderHtml = false }) {
   const { showLong, toggleLong } = useCardExtrasPanel()
 
-  const hasExplanation = !!explanationShort || !!explanationLong
+  const hasShort = renderHtml ? !isRichTextEmpty(explanationShort) : !!explanationShort
+  const hasLong = renderHtml ? !isRichTextEmpty(explanationLong) : !!explanationLong
+  const hasExplanation = hasShort || hasLong
   const hasRelated = references.length > 0 || linkedSummaryNotes.length > 0
   if (!hasExplanation && !hasRelated) return null
 
   return (
     <Wrapper>
-      {explanationShort && (
+      {hasShort && (
         <div>
           <ShortExplanationLabel>Penjelasan Singkat</ShortExplanationLabel>
-          <ShortExplanationBox>{explanationShort}</ShortExplanationBox>
+          <ShortExplanationBox>
+            {renderHtml ? <RichTextViewer html={explanationShort} /> : explanationShort}
+          </ShortExplanationBox>
         </div>
       )}
 
-      {explanationLong && (
+      {hasLong && (
         <div>
           <LongExplanationToggle type="button" onClick={toggleLong} aria-expanded={showLong}>
             {showLong ? 'Sembunyikan Penjelasan Panjang' : 'Lihat Penjelasan Panjang'}
@@ -35,7 +43,9 @@ export default function CardExtrasPanel({ explanationShort, explanationLong, ref
           </LongExplanationToggle>
           <LongExplanationCollapse $open={showLong}>
             <LongExplanationCollapseInner>
-              <LongExplanationBox>{explanationLong}</LongExplanationBox>
+              <LongExplanationBox>
+                {renderHtml ? <RichTextViewer html={explanationLong} /> : explanationLong}
+              </LongExplanationBox>
             </LongExplanationCollapseInner>
           </LongExplanationCollapse>
         </div>
