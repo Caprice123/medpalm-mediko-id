@@ -22,6 +22,10 @@ export const Title = styled.h2`
     font-style: normal;
     font-weight: 800;
     font-size: 1rem;
+    /* GlobalStyles paints every h1-h6 with the dark body text colour, which beat the
+       white text react-toastify sets on its coloured (red) error toast — inherit the
+       toast's own colour instead so the title stays readable. */
+    color: inherit;
 `
 
 export const BodyContent = styled.div`
