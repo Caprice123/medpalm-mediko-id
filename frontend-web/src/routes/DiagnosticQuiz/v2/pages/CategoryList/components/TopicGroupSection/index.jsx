@@ -59,7 +59,7 @@ export default function TopicGroupSection({
             const done = stats
               ? (stats.counts?.again || 0) + (stats.counts?.hard || 0) + (stats.counts?.good || 0) + (stats.counts?.easy || 0)
               : 0
-            const totalQuestions = topic.questionCount
+            const totalCases = topic.caseCount
             const isOpen = openTopicId === topic.id
             const isLoadingSubtopic = loadingTopicId === topic.id
             const subtopicsEntry = subtopicsByTopic[topic.id]
@@ -73,7 +73,7 @@ export default function TopicGroupSection({
                   <TopikStats>
                     <TopikStatsGroup>
                       <TopikStatChip><TopikStatNum>{done}</TopikStatNum> selesai</TopikStatChip>
-                      <TopikStatChip><TopikStatNum>{totalQuestions}</TopikStatNum> soal</TopikStatChip>
+                      <TopikStatChip><TopikStatNum>{totalCases}</TopikStatNum> kasus</TopikStatChip>
                     </TopikStatsGroup>
                     <TopikActions>
                       <TopikStartBtn onClick={e => { e.stopPropagation(); toggle(topic.id) }}>

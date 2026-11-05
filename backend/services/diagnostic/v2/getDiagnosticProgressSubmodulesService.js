@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 const VISIBILITY = 'diagnostic'
 
 export class GetDiagnosticProgressSubmodulesService extends BaseService {
@@ -36,7 +36,7 @@ export class GetDiagnosticProgressSubmodulesService extends BaseService {
       return {
         nodeId: s.id,
         nodeName: s.name,
-        totalQuestions: s.node_statistics[0]?.total_count ?? 0,
+        totalCases: s.node_statistics[0]?.total_count ?? 0,
         counts: {
           again: p?.again_count ?? 0,
           hard: p?.hard_count ?? 0,

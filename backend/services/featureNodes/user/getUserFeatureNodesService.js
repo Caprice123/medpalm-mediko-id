@@ -4,7 +4,7 @@ import bunnyStreamService from '#services/bunnyStream.service'
 import IDriveService from '#services/idrive.service'
 
 // Content types that count as "this subtopic/topic has data" for the shared Materi/TopicHub
-// tree — deliberately excludes diagnostic_question, which lives under a separate visibility.
+// tree — deliberately excludes diagnostic_case, which lives under a separate visibility.
 const ANY_CONTENT_RECORD_TYPES = ['flashcard_card', 'mcq_question', 'summary_note', '3d_atlas', 'anatomy_quiz']
 
 function buildContentFilter(hasContent, layer) {

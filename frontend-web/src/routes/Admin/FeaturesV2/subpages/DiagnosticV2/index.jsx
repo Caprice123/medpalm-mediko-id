@@ -1,21 +1,21 @@
-import UnlinkedQuestionsPage from './pages/UnlinkedQuestionsPage'
+import UnlinkedCasesPage from './pages/UnlinkedCasesPage'
 import NodeListPage from './pages/NodeListPage'
-import QuestionsPage from './pages/QuestionsPage'
+import CasesPage from './pages/CasesPage'
 import { useDiagnosticV2Admin } from './hooks/useDiagnosticV2Admin'
 
 export default function DiagnosticV2({ onBack }) {
   const {
-    path, currentLayer, parentNode, inQuestions, showUnlinked,
+    path, currentLayer, parentNode, inCases, showUnlinked,
     navigate, navigateTo, navigateToRoot, handleViewUnlinked, handleViewTopics,
   } = useDiagnosticV2Admin()
 
   if (showUnlinked) {
-    return <UnlinkedQuestionsPage onBack={handleViewTopics} />
+    return <UnlinkedCasesPage onBack={handleViewTopics} />
   }
 
-  if (inQuestions) {
+  if (inCases) {
     return (
-      <QuestionsPage
+      <CasesPage
         path={path}
         parentNode={parentNode}
         onBack={() => navigateTo(path.length - 1)}

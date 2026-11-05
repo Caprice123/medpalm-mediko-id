@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { buildDiagnosticSessionCards } from '#services/diagnostic/v2/session/buildDiagnosticSessionCards'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 
 export class StartDiagnosticNodeDueSessionService extends BaseService {
   static async call({ userId, nodeId }) {

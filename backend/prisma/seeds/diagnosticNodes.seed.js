@@ -1,6 +1,6 @@
 import prisma from '#prisma/client'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 const VISIBILITY = 'diagnostic'
 
 const SEED_DATA = [
@@ -432,28 +432,35 @@ export async function seedDiagnosticNodes() {
 
       let inserted = 0
       for (const q of sub.questions) {
+        // One seeded question per case: the seed data has no shared vignettes
         const existingQ = await prisma.diagnostic_questions.findFirst({ where: { question: q.question } })
-        if (existingQ) {
+        if (existingQ?.case_id) {
           const linked = await prisma.feature_node_records.findFirst({
-            where: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: existingQ.id },
+            where: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: existingQ.case_id },
           })
           if (linked) continue
         }
 
-        const question = await prisma.diagnostic_questions.create({
+        const diagnosticCase = await prisma.diagnostic_cases.create({
           data: {
-            question: q.question,
             vignette: q.vignette ?? null,
-            answer: q.answer,
-            answer_type: 'multiple_choice',
-            choices: q.choices,
             explanation: q.explanation ?? null,
-            quiz_id: null,
+            references: [],
+            diagnostic_questions: {
+              create: [{
+                question: q.question,
+                answer: q.answer,
+                answer_type: 'multiple_choice',
+                choices: q.choices,
+                references: [],
+                order: 0,
+              }],
+            },
           },
         })
 
         await prisma.feature_node_records.create({
-          data: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: question.id },
+          data: { node_id: subNode.id, record_type: RECORD_TYPE, record_id: diagnosticCase.id },
         })
 
         inserted++
@@ -465,7 +472,7 @@ export async function seedDiagnosticNodes() {
           create: { node_id: subNode.id, record_type: RECORD_TYPE, total_count: inserted },
           update: { total_count: { increment: inserted } },
         })
-        console.log(`      + ${inserted} question(s) seeded`)
+        console.log(`      + ${inserted} case(s) seeded`)
       }
     }
   }

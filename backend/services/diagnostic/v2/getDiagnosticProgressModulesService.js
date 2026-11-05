@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 const VISIBILITY = 'diagnostic'
 const DEFAULT_LIMIT = 20
 
@@ -58,14 +58,14 @@ export class GetDiagnosticProgressModulesService extends BaseService {
     const modules = page
       .map(r => {
         const node = r.feature_nodes
-        const totalQuestions = node.children.reduce(
+        const totalCases = node.children.reduce(
           (sum, child) => sum + (child.node_statistics[0]?.total_count ?? 0),
           0
         )
         return {
           nodeId: node.id,
           nodeName: node.name,
-          totalQuestions,
+          totalCases,
           counts: {
             again: r.again_count,
             hard: r.hard_count,

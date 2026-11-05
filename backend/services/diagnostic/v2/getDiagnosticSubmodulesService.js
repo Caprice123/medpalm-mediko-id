@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 const VISIBILITY = 'diagnostic'
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 const DEFAULT_LIMIT = 50
 
 export class GetDiagnosticSubmodulesService extends BaseService {
@@ -36,7 +36,7 @@ export class GetDiagnosticSubmodulesService extends BaseService {
 
     const submodules = page.map(s => ({
       ...s,
-      questionCount: s.node_statistics[0]?.total_count ?? 0,
+      caseCount: s.node_statistics[0]?.total_count ?? 0,
     }))
 
     return { submodules, nextCursor }

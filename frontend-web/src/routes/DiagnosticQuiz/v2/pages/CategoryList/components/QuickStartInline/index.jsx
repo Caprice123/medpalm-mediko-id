@@ -85,7 +85,7 @@ function SubtopicDropdown({ options, selected, onChange, isLoading, hasMore, onL
             <DropdownItem key={opt.value} onClick={() => toggle(opt.value)}>
               <CheckBox $checked={checked}>{checked && '✓'}</CheckBox>
               <ItemName title={opt.label}>{opt.label}</ItemName>
-              <ItemCount>{opt.questionCount} soal</ItemCount>
+              <ItemCount>{opt.caseCount} kasus</ItemCount>
             </DropdownItem>
           )
         })}
@@ -111,7 +111,7 @@ export default function QuickStartInline({ topic, subtopics, isLoadingSubtopics,
   const [isCustom, setIsCustom] = useState(false)
   const [customVal, setCustomVal] = useState('5')
 
-  const options = subtopics.map(s => ({ value: s.id, label: s.name, questionCount: s.questionCount }))
+  const options = subtopics.map(s => ({ value: s.id, label: s.name, caseCount: s.caseCount }))
 
   const handleStart = () => {
     const nodeIds = selected.length > 0 ? selected : subtopics.map(s => s.id)

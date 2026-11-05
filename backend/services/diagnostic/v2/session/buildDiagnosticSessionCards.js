@@ -1,12 +1,26 @@
 import prisma from '#prisma/client'
 import idriveService from '#services/idrive.service'
 
+const RECORD_TYPE = 'diagnostic_case'
+
+// Builds one card per case: the shared vignette/image on the case, then every question
+// asked about it. `selected` is an ordered list of case ids and the output keeps that order.
 export async function buildDiagnosticSessionCards({ selected, newIdSet, node, nodeMap }) {
-  const questions = await prisma.diagnostic_questions.findMany({ where: { id: { in: selected }, is_deleted: false } })
-  const qMap = new Map(questions.map(q => [q.id, q]))
+  if (selected.length === 0) return []
+
+  const cases = await prisma.diagnostic_cases.findMany({
+    where: { id: { in: selected }, is_deleted: false },
+    include: {
+      diagnostic_questions: {
+        where: { is_deleted: false },
+        orderBy: { order: 'asc' },
+      },
+    },
+  })
+  const caseMap = new Map(cases.map(c => [c.id, c]))
 
   const attachments = await prisma.attachments.findMany({
-    where: { record_type: 'diagnostic_question', record_id: { in: selected }, name: 'image' },
+    where: { record_type: RECORD_TYPE, record_id: { in: selected }, name: 'image' },
   })
   const blobIds = attachments.map(a => a.blob_id)
   const blobs = blobIds.length > 0
@@ -17,12 +31,12 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
   const blobMap = new Map(blobs.map(b => [b.id, b]))
 
   const blobKeys = []
-  const qBlobKeyMap = new Map()
+  const caseBlobKeyMap = new Map()
   selected.forEach(id => {
     const att = attachmentMap.get(id)
     if (att) {
       const blob = blobMap.get(att.blob_id)
-      if (blob) { blobKeys.push(blob.key); qBlobKeyMap.set(id, blob.key) }
+      if (blob) { blobKeys.push(blob.key); caseBlobKeyMap.set(id, blob.key) }
     }
   })
 
@@ -32,11 +46,15 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
 
   const urlMap = new Map()
   let idx = 0
-  selected.forEach(id => { if (qBlobKeyMap.has(id)) urlMap.set(id, presignedUrls[idx++]) })
+  selected.forEach(id => { if (caseBlobKeyMap.has(id)) urlMap.set(id, presignedUrls[idx++]) })
 
-  const noteRelations = await prisma.content_relations.findMany({
-    where: { source_type: 'diagnostic_question', source_id: { in: selected }, target_type: 'summary_note' },
-  })
+  // Summary-note links stay per question, so they are looked up by question id
+  const questionIds = cases.flatMap(c => c.diagnostic_questions.map(q => q.id))
+  const noteRelations = questionIds.length > 0
+    ? await prisma.content_relations.findMany({
+        where: { source_type: 'diagnostic_question', source_id: { in: questionIds }, target_type: 'summary_note' },
+      })
+    : []
   const noteIds = [...new Set(noteRelations.map(r => r.target_id))]
   const notes = noteIds.length > 0
     ? await prisma.summary_notes.findMany({
@@ -54,8 +72,8 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
   })
 
   return selected.map(id => {
-    const q = qMap.get(id)
-    if (!q) return null
+    const diagnosticCase = caseMap.get(id)
+    if (!diagnosticCase || diagnosticCase.diagnostic_questions.length === 0) return null
 
     let subtopicInfo, topicInfo
     if (nodeMap) {
@@ -71,21 +89,26 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
     }
 
     return {
-      id: q.id,
-      question: q.question,
-      vignette: q.vignette,
+      id: diagnosticCase.id,
+      vignette: diagnosticCase.vignette,
       imageUrl: urlMap.get(id) || null,
-      imageCaption: q.image_caption,
-      explanationShort: q.explanation_short ?? '',
-      explanationLong: q.explanation_long ?? '',
-      references: q.references ?? [],
-      linkedSummaryNotes: notesByQuestion.get(q.id) || [],
-      answerType: q.answer_type,
-      choices: q.choices,
-      answer: q.answer,
+      imageCaption: diagnosticCase.image_caption,
+      explanation: diagnosticCase.explanation ?? '',
+      references: diagnosticCase.references ?? [],
       isNew: newIdSet ? newIdSet.has(id) : false,
       subtopic: subtopicInfo,
       topic: topicInfo,
+      questions: diagnosticCase.diagnostic_questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        answer: q.answer,
+        answerType: q.answer_type,
+        choices: q.choices,
+        explanationShort: q.explanation_short ?? '',
+        explanationLong: q.explanation_long ?? '',
+        references: q.references ?? [],
+        linkedSummaryNotes: notesByQuestion.get(q.id) || [],
+      })),
     }
   }).filter(Boolean)
 }

@@ -36,6 +36,7 @@ import profile from "./profile/reducer"
 import featureNodes from "./featureNodes/reducer";
 import nodeCards from "./nodeCards/reducer";
 import nodeQuestions from "./nodeQuestions/reducer";
+import diagnosticCases from "./diagnosticCases/reducer";
 import nodeAtlas from "./nodeAtlas/reducer";
 import nodeAnatomy from "./nodeAnatomy/reducer";
 import unlinkedCards from "./unlinkedCards/reducer";
@@ -87,6 +88,7 @@ export const rootReducer = combineReducers({
     featureNodes,
     nodeCards,
     nodeQuestions,
+    diagnosticCases,
     nodeAtlas,
     nodeAnatomy,
     unlinkedCards,

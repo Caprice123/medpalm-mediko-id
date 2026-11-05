@@ -2,7 +2,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
 const VISIBILITY = 'diagnostic'
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 
 export class GetDiagnosticCategoriesService extends BaseService {
   static async call({ classification } = {}) {
@@ -37,19 +37,19 @@ export class GetDiagnosticCategoriesService extends BaseService {
     })
 
     const subtopicCountByTopic = new Map()
-    const questionCountByTopic = new Map()
+    const caseCountByTopic = new Map()
     for (const s of subtopics) {
       const pid = s.parent_id
       subtopicCountByTopic.set(pid, (subtopicCountByTopic.get(pid) ?? 0) + 1)
-      questionCountByTopic.set(pid, (questionCountByTopic.get(pid) ?? 0) + (s.node_statistics[0]?.total_count ?? 0))
+      caseCountByTopic.set(pid, (caseCountByTopic.get(pid) ?? 0) + (s.node_statistics[0]?.total_count ?? 0))
     }
 
     return topics
-      .filter(t => questionCountByTopic.has(t.id))
+      .filter(t => caseCountByTopic.has(t.id))
       .map(t => ({
         ...t,
         subtopicCount: subtopicCountByTopic.get(t.id) ?? 0,
-        questionCount: questionCountByTopic.get(t.id) ?? 0,
+        caseCount: caseCountByTopic.get(t.id) ?? 0,
       }))
   }
 }

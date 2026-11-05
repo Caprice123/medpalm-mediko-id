@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 
 export class GetDiagnosticDueTodayService extends BaseService {
   static async call({ userId }) {
@@ -15,14 +15,14 @@ export class GetDiagnosticDueTodayService extends BaseService {
         parent.name   AS topic_name,
         COUNT(*)      AS due_count
       FROM user_review_states urs
-      JOIN diagnostic_questions dq  ON dq.id           = urs.record_id
-      JOIN feature_node_records fnr ON fnr.record_type  = ${RECORD_TYPE} AND fnr.record_id = dq.id
+      JOIN diagnostic_cases dc      ON dc.id           = urs.record_id
+      JOIN feature_node_records fnr ON fnr.record_type  = ${RECORD_TYPE} AND fnr.record_id = dc.id
       JOIN feature_nodes fn         ON fn.id            = fnr.node_id
       JOIN feature_nodes parent     ON parent.id        = fn.parent_id
       WHERE urs.user_id     = ${userId}
         AND urs.record_type = ${RECORD_TYPE}
         AND urs.due_date   <= ${now}
-        AND dq.is_deleted   = false
+        AND dc.is_deleted   = false
       GROUP BY fn.id, fn.name, parent.id, parent.name
     `
 

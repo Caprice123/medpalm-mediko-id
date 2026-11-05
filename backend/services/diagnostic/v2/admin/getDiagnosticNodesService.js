@@ -25,7 +25,7 @@ export class GetDiagnosticNodesService extends BaseService {
       include: {
         parent: { select: { id: true, name: true } },
         node_statistics: {
-          where: { record_type: 'diagnostic_question' },
+          where: { record_type: 'diagnostic_case' },
           select: { total_count: true },
         },
         _count: { select: { children: true } },

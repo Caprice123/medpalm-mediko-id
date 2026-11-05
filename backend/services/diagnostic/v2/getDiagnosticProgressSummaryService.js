@@ -1,7 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 
 export class GetDiagnosticProgressSummaryService extends BaseService {
   static async call({ userId }) {

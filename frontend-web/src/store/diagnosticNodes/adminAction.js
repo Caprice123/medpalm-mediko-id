@@ -1,80 +1,94 @@
-import { actions as questionActions } from '@store/nodeQuestions/reducer'
+import { actions as caseActions } from '@store/diagnosticCases/reducer'
 import Endpoints from '@config/endpoint'
 import { getWithToken, postWithToken, putWithToken, deleteWithToken, downloadWithToken } from '@utils/requestUtils'
 
 const BASE = Endpoints.admin.diagnosticNodesV2
 
-export const fetchDiagnosticAdminQuestions = (nodeId, { search = '', append = false } = {}) => async (dispatch, getState) => {
+export const fetchDiagnosticAdminCases = (nodeId, { search = '', append = false } = {}) => async (dispatch, getState) => {
   try {
-    dispatch(questionActions.setLoading({ isFetchingQuestions: true }))
-    const { pagination } = getState().nodeQuestions
+    dispatch(caseActions.setLoading({ isFetchingCases: true }))
+    const { pagination } = getState().diagnosticCases
     const params = { page: pagination.page, perPage: pagination.perPage }
     if (search) params.search = search
-    const res = await getWithToken(`${BASE}/${nodeId}/questions`, params)
-    dispatch(append ? questionActions.appendQuestions(res.data.questions || []) : questionActions.setQuestions(res.data.questions || []))
-    if (res.data.pagination) dispatch(questionActions.setPagination(res.data.pagination))
+    const res = await getWithToken(`${BASE}/${nodeId}/cases`, params)
+    dispatch(append ? caseActions.appendCases(res.data.cases || []) : caseActions.setCases(res.data.cases || []))
+    if (res.data.pagination) dispatch(caseActions.setPagination(res.data.pagination))
   } finally {
-    dispatch(questionActions.setLoading({ isFetchingQuestions: false }))
+    dispatch(caseActions.setLoading({ isFetchingCases: false }))
   }
 }
 
-export const loadMoreDiagnosticAdminQuestions = (nodeId, search = '') => (dispatch, getState) => {
-  const { pagination } = getState().nodeQuestions
+export const loadMoreDiagnosticAdminCases = (nodeId, search = '') => (dispatch, getState) => {
+  const { pagination } = getState().diagnosticCases
   if (pagination.isLastPage) return
-  dispatch(questionActions.setPagination({ page: pagination.page + 1 }))
-  dispatch(fetchDiagnosticAdminQuestions(nodeId, { search, append: true }))
+  dispatch(caseActions.setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchDiagnosticAdminCases(nodeId, { search, append: true }))
 }
 
-// Full question detail (image, explanations, references, linked notes) — fire-and-return,
-// no Redux state. Used by QuestionFormModal, which only gets the list row otherwise.
-export const fetchDiagnosticQuestionDetail = (nodeId, questionId) => async () => {
-  const res = await getWithToken(`${BASE}/${nodeId}/questions/${questionId}`)
+// Full case detail (image, case explanation, references, every question with its own
+// explanations and linked notes) — fire-and-return, no Redux state. Used by
+// CaseFormModal, which only gets the list row otherwise.
+// nodeId is only part of the path for symmetry with the list route — the endpoint
+// resolves a case by its own id, so the unlinked page can pass none.
+export const fetchDiagnosticCaseDetail = (nodeId, caseId) => async () => {
+  const res = await getWithToken(`${BASE}/${nodeId ?? 0}/cases/${caseId}`)
   return res.data.data
 }
 
-export const addDiagnosticQuestion = (nodeId, payload, onSuccess) => async (dispatch) => {
+export const addDiagnosticCase = (nodeId, payload, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isAddingQuestion: true }))
-    await postWithToken(`${BASE}/${nodeId}/questions`, payload)
+    dispatch(caseActions.setLoading({ isAddingCase: true }))
+    await postWithToken(`${BASE}/${nodeId}/cases`, payload)
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isAddingQuestion: false }))
+    dispatch(caseActions.setLoading({ isAddingCase: false }))
   }
 }
 
-export const updateDiagnosticQuestion = (nodeId, questionId, payload, onSuccess) => async (dispatch) => {
+export const updateDiagnosticCase = (nodeId, caseId, payload, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isUpdatingQuestion: true }))
-    await putWithToken(`${BASE}/${nodeId}/questions/${questionId}`, payload)
+    dispatch(caseActions.setLoading({ isUpdatingCase: true }))
+    await putWithToken(`${BASE}/${nodeId}/cases/${caseId}`, payload)
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isUpdatingQuestion: false }))
+    dispatch(caseActions.setLoading({ isUpdatingCase: false }))
   }
 }
 
-export const deleteDiagnosticQuestion = (nodeId, questionId, onSuccess) => async (dispatch) => {
+export const deleteDiagnosticCase = (nodeId, caseId, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isDeletingQuestion: true }))
-    await deleteWithToken(`${BASE}/${nodeId}/questions/${questionId}`)
+    dispatch(caseActions.setLoading({ isDeletingCase: true }))
+    await deleteWithToken(`${BASE}/${nodeId}/cases/${caseId}`)
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isDeletingQuestion: false }))
+    dispatch(caseActions.setLoading({ isDeletingCase: false }))
   }
 }
 
-export const importDiagnosticQuestions = (nodeId, file, onSuccess) => async (dispatch) => {
+export const importDiagnosticCases = (nodeId, file, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isImportingQuestions: true }))
+    dispatch(caseActions.setLoading({ isImportingCases: true }))
     const formData = new FormData()
     formData.append('file', file)
-    const res = await postWithToken(`${BASE}/${nodeId}/questions/import`, formData)
+    const res = await postWithToken(`${BASE}/${nodeId}/cases/import`, formData)
     onSuccess?.(res.data.data)
   } finally {
-    dispatch(questionActions.setLoading({ isImportingQuestions: false }))
+    dispatch(caseActions.setLoading({ isImportingCases: false }))
   }
 }
 
-// diagnostic_question → summary_note content_relations — fire-and-return, no Redux state
+export const downloadDiagnosticTemplate = () => async () => {
+  const res = await downloadWithToken(`${BASE}/cases/template`)
+  const url = URL.createObjectURL(new Blob([res.data]))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'template-kasus-diagnostik.xlsx'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// diagnostic_question → summary_note content_relations. Links stay per question even
+// though the case is the card — fire-and-return, no Redux state.
 export const fetchDiagnosticQuestionSummaryNoteRelations = (questionId) => async () => {
   const res = await getWithToken(Endpoints.admin.contentRelations, {
     sourceType: 'diagnostic_question', sourceId: questionId, targetType: 'summary_note',
@@ -96,76 +110,65 @@ export const removeDiagnosticQuestionSummaryNoteRelation = (relationId) => async
   await deleteWithToken(`${Endpoints.admin.contentRelations}/${relationId}`)
 }
 
-export const downloadDiagnosticTemplate = () => async () => {
-  const res = await downloadWithToken(`${BASE}/questions/template`)
-  const url = URL.createObjectURL(new Blob([res.data]))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'template-soal-diagnostik.xlsx'
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
 const QUIZ_BASE = Endpoints.admin.diagnosticQuizV2
 
-export const fetchUnlinkedDiagnosticQuestions = ({ search = '', append = false } = {}) => async (dispatch, getState) => {
+export const fetchUnlinkedDiagnosticCases = ({ search = '', append = false } = {}) => async (dispatch, getState) => {
   try {
-    dispatch(questionActions.setLoading({ isFetchingQuestions: true }))
-    const { pagination } = getState().nodeQuestions
+    dispatch(caseActions.setLoading({ isFetchingCases: true }))
+    const { pagination } = getState().diagnosticCases
     const params = { page: pagination.page, perPage: pagination.perPage }
     if (search) params.search = search
     const res = await getWithToken(`${QUIZ_BASE}/unlinked`, params)
-    dispatch(append ? questionActions.appendQuestions(res.data.data || []) : questionActions.setQuestions(res.data.data || []))
-    if (res.data.pagination) dispatch(questionActions.setPagination(res.data.pagination))
+    dispatch(append ? caseActions.appendCases(res.data.data || []) : caseActions.setCases(res.data.data || []))
+    if (res.data.pagination) dispatch(caseActions.setPagination(res.data.pagination))
   } finally {
-    dispatch(questionActions.setLoading({ isFetchingQuestions: false }))
+    dispatch(caseActions.setLoading({ isFetchingCases: false }))
   }
 }
 
-export const loadMoreUnlinkedDiagnosticQuestions = (search = '') => (dispatch, getState) => {
-  const { pagination } = getState().nodeQuestions
+export const loadMoreUnlinkedDiagnosticCases = (search = '') => (dispatch, getState) => {
+  const { pagination } = getState().diagnosticCases
   if (pagination.isLastPage) return
-  dispatch(questionActions.setPagination({ page: pagination.page + 1 }))
-  dispatch(fetchUnlinkedDiagnosticQuestions({ search, append: true }))
+  dispatch(caseActions.setPagination({ page: pagination.page + 1 }))
+  dispatch(fetchUnlinkedDiagnosticCases({ search, append: true }))
 }
 
-export const moveUnlinkedDiagnosticQuestion = (questionId, nodeId, onSuccess) => async (dispatch) => {
+export const moveUnlinkedDiagnosticCase = (caseId, nodeId, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isMovingQuestion: true }))
-    await putWithToken(`${QUIZ_BASE}/unlinked/${questionId}/assign`, { nodeId })
+    dispatch(caseActions.setLoading({ isMovingCase: true }))
+    await putWithToken(`${QUIZ_BASE}/unlinked/${caseId}/assign`, { nodeId })
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isMovingQuestion: false }))
+    dispatch(caseActions.setLoading({ isMovingCase: false }))
   }
 }
 
-export const moveLinkedDiagnosticQuestion = (questionId, nodeId, onSuccess) => async (dispatch) => {
+export const moveLinkedDiagnosticCase = (caseId, nodeId, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isMovingQuestion: true }))
-    await putWithToken(`${QUIZ_BASE}/questions/${questionId}/move`, { nodeId })
+    dispatch(caseActions.setLoading({ isMovingCase: true }))
+    await putWithToken(`${QUIZ_BASE}/cases/${caseId}/move`, { nodeId })
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isMovingQuestion: false }))
+    dispatch(caseActions.setLoading({ isMovingCase: false }))
   }
 }
 
-export const updateUnlinkedDiagnosticQuestion = (questionId, payload, onSuccess) => async (dispatch) => {
+export const updateUnlinkedDiagnosticCase = (caseId, payload, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isUpdatingQuestion: true }))
-    await putWithToken(`${QUIZ_BASE}/unlinked/${questionId}`, payload)
+    dispatch(caseActions.setLoading({ isUpdatingCase: true }))
+    await putWithToken(`${QUIZ_BASE}/unlinked/${caseId}`, payload)
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isUpdatingQuestion: false }))
+    dispatch(caseActions.setLoading({ isUpdatingCase: false }))
   }
 }
 
-export const deleteUnlinkedDiagnosticQuestion = (questionId, onSuccess) => async (dispatch) => {
+export const deleteUnlinkedDiagnosticCase = (caseId, onSuccess) => async (dispatch) => {
   try {
-    dispatch(questionActions.setLoading({ isDeletingQuestion: true }))
-    await deleteWithToken(`${QUIZ_BASE}/unlinked/${questionId}`)
+    dispatch(caseActions.setLoading({ isDeletingCase: true }))
+    await deleteWithToken(`${QUIZ_BASE}/unlinked/${caseId}`)
     onSuccess?.()
   } finally {
-    dispatch(questionActions.setLoading({ isDeletingQuestion: false }))
+    dispatch(caseActions.setLoading({ isDeletingCase: false }))
   }
 }
-

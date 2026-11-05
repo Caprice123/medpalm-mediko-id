@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { buildDiagnosticSessionCards } from '#services/diagnostic/v2/session/buildDiagnosticSessionCards'
 
-const RECORD_TYPE = 'diagnostic_question'
+const RECORD_TYPE = 'diagnostic_case'
 
 export class StartDiagnosticCustomSessionService extends BaseService {
   static async call({ userId, nodeIds, count }) {
@@ -19,18 +19,18 @@ export class StartDiagnosticCustomSessionService extends BaseService {
     if (allRefs.length === 0) return []
 
     const refToNodeId = new Map(allRefs.map(r => [r.record_id, r.node_id]))
-    const questionIds = allRefs.map(r => r.record_id)
+    const caseIds = allRefs.map(r => r.record_id)
 
     const seenLogs = await prisma.user_learned_items.findMany({
-      where: { user_id: userId, item_type: RECORD_TYPE, item_id: { in: questionIds } },
+      where: { user_id: userId, item_type: RECORD_TYPE, item_id: { in: caseIds } },
       select: { item_id: true },
     })
     const seenIdSet = new Set(seenLogs.map(l => l.item_id))
 
-    const newIds  = questionIds.filter(id => !seenIdSet.has(id))
-    const seenIds = questionIds.filter(id =>  seenIdSet.has(id))
+    const newIds  = caseIds.filter(id => !seenIdSet.has(id))
+    const seenIds = caseIds.filter(id =>  seenIdSet.has(id))
 
-    const limit = Math.min(parseInt(count) || questionIds.length, questionIds.length)
+    const limit = Math.min(parseInt(count) || caseIds.length, caseIds.length)
     const selected = [
       ...newIds.sort(() => Math.random() - 0.5),
       ...seenIds.sort(() => Math.random() - 0.5),

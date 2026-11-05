@@ -1090,9 +1090,32 @@ model diagnostic_quizzes {
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "diagnostic_quizzes_search_gin_idx")
 }
 
+// A diagnostic "case": one shared vignette + image that several diagnostic_questions
+// are asked about. This is the unit feature_node_records links to (record_type
+// 'diagnostic_case'), the unit shown as one screen in the player, and the unit SRS
+// state is tracked against — rating a case rates every question under it at once.
+// V1 quizzes (diagnostic_quizzes) are a separate, untouched container.
+model diagnostic_cases {
+  id            Int       @id @default(autoincrement())
+  vignette      String?
+  image_caption String?
+  explanation   String?
+  references    Json?
+  order         Int       @default(0)
+  is_deleted    Boolean   @default(false)
+  deleted_at    DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+
+  diagnostic_questions diagnostic_questions[]
+
+  @@index([is_deleted])
+}
+
 model diagnostic_questions {
   id            Int      @id @default(autoincrement())
   quiz_id       Int?
+  case_id       Int?
   question      String
   vignette      String?
   image_caption String?
@@ -1110,9 +1133,11 @@ model diagnostic_questions {
   updated_at    DateTime @default(now())
 
   diagnostic_quiz         diagnostic_quizzes?       @relation(fields: [quiz_id], references: [id])
+  diagnostic_case         diagnostic_cases?         @relation(fields: [case_id], references: [id])
   diagnostic_quiz_answers diagnostic_quiz_answers[]
 
   @@index([quiz_id])
+  @@index([case_id])
   @@index([order])
   @@index([is_deleted])
 }
