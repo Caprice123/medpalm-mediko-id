@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
+import { firstIcon } from '@utils/iconUtils'
 
 export const LAYER_LABELS = { 1: 'Topik', 2: 'Modul' }
 
@@ -27,7 +28,7 @@ export function useNodeFormModal({ layer, node, parentNode, onSuccess }) {
         name: node.name,
         description: node.description ?? '',
         classification: node.classification ?? classificationOptions[0].value,
-        icon: node.icon ?? '',
+        icon: firstIcon(node.icon) ?? '',
       })
     } else {
       setForm({ name: '', description: '', classification: classificationOptions[0].value, icon: '' })

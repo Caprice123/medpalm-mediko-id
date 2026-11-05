@@ -21,7 +21,12 @@ export default function QuizzesPanel({
   const quizzesPagination = useSelector(s => s.atlasQuiz.quizzesPagination)
   const moduleOptions = useSelector(s => s.atlasQuiz.moduleOptions)
   const isLoadingQuizzes = useSelector(s => s.atlasQuiz.loading.isFetchingAnatomyQuizzes)
-  const { searchQuiz, setSearchQuiz, filteredQuizzes } = useQuizzesPanel()
+  const { searchQuiz, setSearchQuiz, filteredQuizzes, hasQuizzes } = useQuizzesPanel()
+
+  /* A topic with no quizzes yet showed a heading, a search field and a filter
+     dropdown over an empty state — three controls for nothing. The section
+     removes itself instead; it reappears as soon as a quiz is published. */
+  if (!isLoadingQuizzes && !hasQuizzes) return null
 
   return (
     <QuizSection>
@@ -55,7 +60,7 @@ export default function QuizzesPanel({
       {isLoadingQuizzes ? (
         <Loading />
       ) : filteredQuizzes.length === 0 ? (
-        <EmptyState icon="📝" title="Belum ada quiz tersedia" />
+        <EmptyState icon="📝" title="Tidak ada quiz yang cocok" />
       ) : (
         <QuizGrid>
           {filteredQuizzes.map(quiz => (

@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { firstIcon } from '@utils/iconUtils'
 import { PiClock, PiCube } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
@@ -25,7 +26,7 @@ export default function ModulesPanel({
   const modulesPagination = useSelector(s => s.atlasQuiz.modulesPagination)
   const moduleOptions = useSelector(s => s.atlasQuiz.moduleOptions)
   const isLoadingModules = useSelector(s => s.atlasQuiz.loading.isFetchingModules)
-  const { search, setSearch, filteredModules } = useModulesPanel()
+  const { search, setSearch, filteredModules, hasModules, isTopicEmpty } = useModulesPanel()
 
   return (
     <ModulesCard>
@@ -36,7 +37,7 @@ export default function ModulesPanel({
               <ClassificationLabel>{classificationLabel(topic.classification)}</ClassificationLabel>
             )}
             <TopicRow>
-              <TopicIconBox>{topic.icon || '🧠'}</TopicIconBox>
+              <TopicIconBox>{firstIcon(topic.icon) || '🧠'}</TopicIconBox>
               <div>
                 <TopicName>{topic.name}</TopicName>
                 {topic.description && <TopicDescription>{topic.description}</TopicDescription>}
@@ -49,28 +50,43 @@ export default function ModulesPanel({
         </TopicSection>
       )}
 
-      <FilterRow>
-        <div style={{ flex: 1 }}>
-          <TextInput
-            placeholder="Cari model 3D pada topik ini..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-        <div style={{ width: '200px', flexShrink: 0 }}>
-          <Dropdown
-            options={moduleOptions.map(m => ({ value: m.name, label: m.name }))}
-            onChange={onModuleFilterChange}
-            placeholder="Semua modul"
-            isClearable
-          />
-        </div>
-      </FilterRow>
+      {/* Search and module filter belong to the list; with no model published
+          under this topic they would sit over an empty state, so the whole
+          block goes and only the topic header above it stays. */}
+      {hasModules && (
+        <FilterRow>
+          <div style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Cari model 3D pada topik ini..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div style={{ width: '200px', flexShrink: 0 }}>
+            <Dropdown
+              options={moduleOptions.map(m => ({ value: m.name, label: m.name }))}
+              onChange={onModuleFilterChange}
+              placeholder="Semua modul"
+              isClearable
+            />
+          </div>
+        </FilterRow>
+      )}
 
       {isLoadingModules ? (
         <Loading />
+      ) : isTopicEmpty ? (
+        <EmptyState
+          icon="🧬"
+          title="Materi 3D belum tersedia"
+          description="Model dan quiz untuk topik ini sedang disiapkan."
+        />
+      ) : !hasModules ? (
+        /* No model here, but the topic still has quizzes — the section below
+           carries the page, so this one renders nothing at all. */
+        null
       ) : filteredModules.length === 0 ? (
-        <EmptyState icon="🧬" title="Belum ada modul" />
+        <EmptyState icon="🧬" title="Tidak ada model yang cocok" />
       ) : (
         <ModulesGrid>
           {filteredModules.map(mod => (
@@ -101,7 +117,7 @@ export default function ModulesPanel({
         </ModulesGrid>
       )}
 
-      {!modulesPagination.isLastPage && (
+      {hasModules && !modulesPagination.isLastPage && (
         <Button
           onClick={onLoadMoreModules}
           disabled={isLoadingModules}

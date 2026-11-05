@@ -73,7 +73,20 @@ export const TopicCard = styled.button`
   }
 `
 
+/* The topic's own emoji, set just above the name's size so it reads as a mark
+   rather than as a character of the label. Only the first emoji is rendered
+   (see @utils/iconUtils) — the admin field is free text, and two or three emoji
+   on a 17.5rem card leave the long system names nowhere to go. */
+export const TopicCardIcon = styled.span`
+  font-size: 1.125rem;
+  line-height: 1;
+  flex-shrink: 0;
+`
+
 export const TopicCardName = styled.span`
+  /* Takes the slack between the icon and the arrow, so cards with an icon and
+     cards without one keep their arrows on the same right edge. */
+  flex: 1;
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1.4;

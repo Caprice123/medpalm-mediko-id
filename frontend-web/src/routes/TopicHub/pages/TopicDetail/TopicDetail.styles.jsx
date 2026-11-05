@@ -83,7 +83,18 @@ export const ItemCard = styled.button`
   }
 `
 
+/* The sub-topic's own emoji, one mark only (see @utils/iconUtils) — the admin
+   field is free text, and a row of emoji would crowd out the name. */
+export const ItemCardIcon = styled.span`
+  font-size: 1.125rem;
+  line-height: 1;
+  flex-shrink: 0;
+`
+
 export const ItemCardName = styled.span`
+  /* Takes the slack between the icon and the arrow, so cards with an icon and
+     cards without one keep their arrows on the same right edge. */
+  flex: 1;
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1.4;

@@ -6,6 +6,7 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
+import { firstIcon, lastIcon } from '@utils/iconUtils'
 
 const CLASSIFICATION_OPTIONS = [
   { value: 'sistem_blok', label: 'Sistem Blok' },
@@ -30,7 +31,7 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
         name: topic.name,
         description: topic.description ?? '',
         classification: topic.classification ?? CLASSIFICATION_OPTIONS[0].value,
-        icon: topic.icon ?? '',
+        icon: firstIcon(topic.icon) ?? '',
       })
     } else {
       setForm({ name: '', description: '', classification: CLASSIFICATION_OPTIONS[0].value, icon: '' })
@@ -96,10 +97,14 @@ function TopicFormModal({ topic, onClose, onSuccess }) {
           value={CLASSIFICATION_OPTIONS.find(o => o.value === form.classification) ?? CLASSIFICATION_OPTIONS[0]}
           onChange={opt => set('classification', opt?.value ?? CLASSIFICATION_OPTIONS[0].value)}
         />
+        {/* One emoji only: the topic and sub-topic lists each render a single
+            mark, so a second emoji would be stored and never shown. Clamped as
+            the admin types rather than rejected on save — typing a new emoji
+            swaps the old one out. */}
         <TextInput
-          label="Ikon (emoji)"
+          label="Ikon (1 emoji)"
           value={form.icon}
-          onChange={e => set('icon', e.target.value)}
+          onChange={e => set('icon', lastIcon(e.target.value) ?? '')}
           placeholder="Contoh: 🫀"
         />
       </div>

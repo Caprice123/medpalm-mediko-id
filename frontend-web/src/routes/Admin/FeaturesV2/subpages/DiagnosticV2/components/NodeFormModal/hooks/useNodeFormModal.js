@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createFeatureNode, updateFeatureNode } from '@store/featureNodes'
+import { firstIcon } from '@utils/iconUtils'
 
 export const CLASSIFICATION_OPTIONS = [
   { value: 'primary', label: 'Modalitas Utama' },
@@ -22,7 +23,7 @@ export function useNodeFormModal({ layer, node, parentNode, onSuccess }) {
     setName(isEdit ? node.name : '')
     setDescription(isEdit ? (node.description ?? '') : '')
     setClassification(isEdit ? (node.classification ?? CLASSIFICATION_OPTIONS[0].value) : CLASSIFICATION_OPTIONS[0].value)
-    setIcon(isEdit ? (node.icon ?? '') : '')
+    setIcon(isEdit ? (firstIcon(node.icon) ?? '') : '')
   }, [isEdit, node])
 
   const handleSubmit = () => {

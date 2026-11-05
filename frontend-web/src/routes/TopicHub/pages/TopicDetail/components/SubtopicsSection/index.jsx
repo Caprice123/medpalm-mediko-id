@@ -3,8 +3,9 @@ import { PiArrowRight } from 'react-icons/pi'
 import EmptyState from '@components/common/EmptyState'
 import {
   Section, SectionHeading, SectionDescription,
-  ItemGrid, ItemCard, ItemCardName, ItemCardArrow, SkeletonCard,
+  ItemGrid, ItemCard, ItemCardIcon, ItemCardName, ItemCardArrow, SkeletonCard,
 } from '../../TopicDetail.styles'
+import { firstIcon } from '@utils/iconUtils'
 
 const SKELETON_COUNT = 8
 
@@ -31,12 +32,18 @@ export default function SubtopicsSection({ onSelectSubtopic }) {
         />
       ) : (
         <ItemGrid>
-          {subtopics.map(sub => (
-            <ItemCard key={sub.id} onClick={() => onSelectSubtopic(sub.slug)}>
-              <ItemCardName>{sub.name}</ItemCardName>
-              <ItemCardArrow><PiArrowRight size={16} /></ItemCardArrow>
-            </ItemCard>
-          ))}
+          {subtopics.map(sub => {
+            const icon = firstIcon(sub.icon)
+            return (
+              <ItemCard key={sub.id} onClick={() => onSelectSubtopic(sub.slug)}>
+                {/* Decorative: the name beside it already identifies the
+                    sub-topic, so the emoji is hidden from screen readers. */}
+                {icon && <ItemCardIcon aria-hidden="true">{icon}</ItemCardIcon>}
+                <ItemCardName>{sub.name}</ItemCardName>
+                <ItemCardArrow><PiArrowRight size={16} /></ItemCardArrow>
+              </ItemCard>
+            )
+          })}
         </ItemGrid>
       )}
     </Section>

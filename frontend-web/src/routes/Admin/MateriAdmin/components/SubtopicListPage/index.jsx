@@ -9,6 +9,7 @@ import SubtopicFormModal from '../SubtopicFormModal'
 import SubtopicAtlasModelModal from '../SubtopicAtlasModelModal'
 import ClassificationBadge from '@components/common/ClassificationBadge'
 import { Header, HeaderLeft, Title, SearchRow, IconPreview } from '../../MateriAdmin.styles'
+import { firstIcon } from '@utils/iconUtils'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -61,11 +62,15 @@ function SubtopicListPage({ topic, onBack }) {
   const columns = [
     {
       header: 'Nama Sub-topik',
-      render: (sub) => <span style={{ fontWeight: 500, color: '#111827' }}>{sub.name}</span>,
+      render: (sub) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          {firstIcon(sub.icon) && <IconPreview>{firstIcon(sub.icon)}</IconPreview>}
+          <span style={{ fontWeight: 500, color: '#111827' }}>{sub.name}</span>
+        </div>
+      ),
     },
     {
       header: 'Aksi',
-      width: '260px',
       align: 'right',
       render: (sub) => (
         <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
@@ -82,7 +87,7 @@ function SubtopicListPage({ topic, onBack }) {
       <Header>
         <HeaderLeft>
           <Button variant="secondary" onClick={onBack}>← Topik</Button>
-          {topic.icon && <IconPreview>{topic.icon}</IconPreview>}
+          {firstIcon(topic.icon) && <IconPreview>{firstIcon(topic.icon)}</IconPreview>}
           <Title>{topic.name}</Title>
           <ClassificationBadge value={topic.classification} labels={CLASSIFICATION_LABELS} colorMap={CLASSIFICATION_COLORS} />
         </HeaderLeft>

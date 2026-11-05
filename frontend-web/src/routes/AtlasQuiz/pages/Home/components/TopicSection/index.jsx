@@ -1,4 +1,5 @@
 import { PiCube, PiMedal } from 'react-icons/pi'
+import { firstIcon } from '@utils/iconUtils'
 import Loading from '@components/common/Loading'
 import Button from '@components/common/Button'
 import { useAtlasTopicSection } from './hooks/useAtlasTopicSection'
@@ -37,7 +38,7 @@ export default function TopicSection({ group, title, subtitle, onTopicClick, col
                   <CardBody>
                     <CardTop>
                       <CardIconWrapper $bg={CARD_ICON_BG[idx]}>
-                        {topic.icon || '🧠'}
+                        {firstIcon(topic.icon) || '🧠'}
                       </CardIconWrapper>
                       <CardTitleBlock>
                         <CardTitle>{topic.name}</CardTitle>

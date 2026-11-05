@@ -6,6 +6,7 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import FileUpload from '@components/common/FileUpload'
+import { firstIcon, lastIcon } from '@utils/iconUtils'
 
 const VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm', 'video/x-ms-wmv']
 
@@ -14,7 +15,7 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
   const { loading } = useSelector(s => s.featureNodes)
   const isEdit = !!subtopic
 
-  const [form, setForm] = useState({ name: '', description: '', videoExplanation: '' })
+  const [form, setForm] = useState({ name: '', description: '', videoExplanation: '', icon: '' })
   const [videoUpload, setVideoUpload] = useState(null) // { blobId, filename, url }
   const [videoFile, setVideoFile] = useState(null)
   const [existingVideoUrl, setExistingVideoUrl] = useState(null)
@@ -26,10 +27,11 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
         name: subtopic.name,
         description: subtopic.description ?? '',
         videoExplanation: subtopic.videoExplanation ?? '',
+        icon: firstIcon(subtopic.icon) ?? '',
       })
       setExistingVideoUrl(subtopic.videoUrl ? { url: subtopic.videoUrl, name: subtopic.videoFilename, size: subtopic.videoByteSize } : null)
     } else {
-      setForm({ name: '', description: '', videoExplanation: '' })
+      setForm({ name: '', description: '', videoExplanation: '', icon: '' })
       setExistingVideoUrl(null)
     }
     setVideoUpload(null)
@@ -63,6 +65,7 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
       parentId: parentTopic.id,
       nodeType: 'subtopic',
       description: form.description || null,
+      icon: form.icon || null,
       videoExplanation: form.videoExplanation || null,
       ...(videoUpload?.blobId && { videoBlobId: videoUpload.blobId }),
     }
@@ -113,6 +116,15 @@ function SubtopicFormModal({ subtopic, parentTopic, onClose, onSuccess }) {
           onChange={e => set('description', e.target.value)}
           placeholder="Deskripsi singkat sub-topik ini..."
           rows={3}
+        />
+
+        {/* One emoji only, like the topic form: the sub-topic list renders a
+            single mark, so a second emoji would be stored and never shown. */}
+        <TextInput
+          label="Ikon (1 emoji)"
+          value={form.icon}
+          onChange={e => set('icon', lastIcon(e.target.value) ?? '')}
+          placeholder="Contoh: 🫁"
         />
 
         <div>

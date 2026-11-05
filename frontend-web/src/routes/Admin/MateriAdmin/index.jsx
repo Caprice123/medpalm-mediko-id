@@ -9,6 +9,7 @@ import TopicFormModal from './components/TopicFormModal'
 import SubtopicListPage from './components/SubtopicListPage'
 import ClassificationBadge from '@components/common/ClassificationBadge'
 import { Container, Header, HeaderLeft, Title, SearchRow, IconPreview } from './MateriAdmin.styles'
+import { firstIcon } from '@utils/iconUtils'
 
 const CLASSIFICATION_LABELS = {
   sistem_blok: 'Sistem Blok',
@@ -71,7 +72,7 @@ function MateriAdmin() {
       header: 'Topik',
       render: (topic) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-          {topic.icon && <IconPreview>{topic.icon}</IconPreview>}
+          {firstIcon(topic.icon) && <IconPreview>{firstIcon(topic.icon)}</IconPreview>}
           <span style={{ fontWeight: 500, color: '#111827' }}>{topic.name}</span>
         </div>
       ),

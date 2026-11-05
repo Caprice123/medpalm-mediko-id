@@ -3,6 +3,7 @@ import Button from '@components/common/Button'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
+import { lastIcon } from '@utils/iconUtils'
 import { useNodeFormModal, CLASSIFICATION_OPTIONS } from './hooks/useNodeFormModal'
 
 function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
@@ -47,9 +48,9 @@ function NodeFormModal({ layer, node, parentNode, onClose, onSuccess }) {
               onChange={opt => set('classification', opt?.value ?? CLASSIFICATION_OPTIONS[0].value)}
             />
             <TextInput
-              label="Ikon (emoji)"
+              label="Ikon (1 emoji)"
               value={form.icon}
-              onChange={e => set('icon', e.target.value)}
+              onChange={e => set('icon', lastIcon(e.target.value) ?? '')}
               placeholder="Contoh: 🫀"
             />
           </>

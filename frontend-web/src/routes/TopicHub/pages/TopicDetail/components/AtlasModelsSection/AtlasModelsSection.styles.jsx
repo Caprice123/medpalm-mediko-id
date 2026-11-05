@@ -1,7 +1,12 @@
 import styled from 'styled-components'
+import { ItemGrid } from '../../TopicDetail.styles'
 
 export const ModuleGroup = styled.div`
-  & + & {
+  /* Spaced from the grid of single-model cards above it as well as from a
+     preceding group — the single-model grid is what the section usually opens
+     with, and without this the first heading sat tight against it. */
+  & + &,
+  ${ItemGrid} + & {
     margin-top: 1.75rem;
   }
 `

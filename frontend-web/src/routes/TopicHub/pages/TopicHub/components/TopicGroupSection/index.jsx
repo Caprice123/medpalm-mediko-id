@@ -2,8 +2,9 @@ import { useSelector } from 'react-redux'
 import { PiArrowRight } from 'react-icons/pi'
 import {
   TopicSection, TopicSectionTag, TopicSectionDesc,
-  TopicGrid, TopicCard, TopicCardName, TopicCardArrow, SkeletonCard,
+  TopicGrid, TopicCard, TopicCardIcon, TopicCardName, TopicCardArrow, SkeletonCard,
 } from './TopicGroupSection.styles'
+import { firstIcon } from '@utils/iconUtils'
 
 // Matches the larger real group, so the grid does not visibly reflow when
 // placeholders resolve to topics — a shift that used to land after the page's
@@ -24,12 +25,18 @@ export default function TopicGroupSection({ classification, tag, description, on
       <TopicGrid>
         {isLoading
           ? Array.from({ length: SKELETON_COUNT }, (_, i) => <SkeletonCard key={i} />)
-          : topics.map((topic) => (
-            <TopicCard key={topic.id} onClick={() => onTopicClick(topic)}>
-              <TopicCardName>{topic.name}</TopicCardName>
-              <TopicCardArrow><PiArrowRight size={16} /></TopicCardArrow>
-            </TopicCard>
-          ))
+          : topics.map((topic) => {
+            const icon = firstIcon(topic.icon)
+            return (
+              <TopicCard key={topic.id} onClick={() => onTopicClick(topic)}>
+                {/* Decorative: the name next to it already says which topic
+                    this is, so the emoji is hidden from screen readers. */}
+                {icon && <TopicCardIcon aria-hidden="true">{icon}</TopicCardIcon>}
+                <TopicCardName>{topic.name}</TopicCardName>
+                <TopicCardArrow><PiArrowRight size={16} /></TopicCardArrow>
+              </TopicCard>
+            )
+          })
         }
       </TopicGrid>
     </TopicSection>
