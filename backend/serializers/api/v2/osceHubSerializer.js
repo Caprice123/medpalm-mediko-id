@@ -1,17 +1,13 @@
 import { toJakartaISO } from '#utils/dateUtils'
 
-// Shapes the OSCE hub rail: the session to resume, the counted states, and the last mark.
+// Shapes the OSCE hub rail: the session to resume, the one count it footnotes, and the last
+// mark. It used to ship a count per session state for the history panel's chips and a count of
+// timed-out sessions for the rail; neither is rendered any more, so neither is built.
 export class OsceHubSerializer {
   static serialize(hub) {
     return {
       resumable: hub.resumable ? this.serializeResumable(hub.resumable) : null,
-      expiredCount: hub.expiredCount,
-      counts: {
-        running: hub.counts.running || 0,
-        created: hub.counts.created || 0,
-        completed: hub.counts.completed || 0,
-        expired: hub.counts.expired || 0,
-      },
+      completedCount: hub.completedCount || 0,
       lastResult: hub.lastResult ? this.serializeLastResult(hub.lastResult) : null,
       totalPracticeSeconds: hub.totalPracticeSeconds,
     }
@@ -29,7 +25,6 @@ export class OsceHubSerializer {
       remainingSeconds: session.remainingSeconds,
       startedAt: toJakartaISO(session.startedAt),
       tags: session.tags,
-      progress: session.progress,
     }
   }
 

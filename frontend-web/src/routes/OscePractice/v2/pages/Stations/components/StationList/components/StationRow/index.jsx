@@ -2,11 +2,16 @@ import { PiSparkle, PiTrophy } from 'react-icons/pi'
 import Button from '@components/common/Button'
 import { formatJakartaDateLong } from '@utils/dateUtils'
 import { recordSummary, scoreColor, topicTags, batchTags } from '../../../../../../utils/sessionState'
-import { Row, Title, Scenario, Tags, Tag, Duration, Record, Action } from './StationRow.styles'
+import { Row, Title, Tags, Tag, Duration, Record, Action } from './StationRow.styles'
 
 // One station as a data row. The record line is the reason this is a row and not a card: a
-// student scanning twelve of these is comparing their own history across them, which a grid of
+// student scanning forty of these is comparing their own history across them, which a grid of
 // equal-weight cards makes harder, not easier.
+//
+// The scenario is deliberately not rendered here, even though the row has the width for it.
+// Reading the brief is the first move of the station itself, and the brief rail holds it there
+// with the clock running — so neither the catalogue nor the start gate shows it. What a student
+// needs to pick a row is the title, the tags, and their own record on it.
 function StationRow({ station, isStarting, onStart }) {
   const record = recordSummary(station.myRecord)
   const tags = [...topicTags(station.tags), ...batchTags(station.tags)]
@@ -15,9 +20,6 @@ function StationRow({ station, isStarting, onStart }) {
     <Row>
       <div>
         <Title>{station.title}</Title>
-        {(station.scenario || station.description) && (
-          <Scenario>{station.scenario || station.description}</Scenario>
-        )}
         <Record $tone={record.tone} $color={scoreColor(record.percentage)}>
           {record.tone === 'new' ? <PiSparkle size={14} /> : <PiTrophy size={14} />}
           {record.label}

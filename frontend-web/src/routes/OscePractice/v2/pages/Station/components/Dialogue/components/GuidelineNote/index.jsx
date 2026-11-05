@@ -46,7 +46,7 @@ function GuidelineNote({ isPhysicalExam }) {
         onClick={() => setOpenByMode((current) => ({ ...current, [mode]: !current[mode] }))}
       >
         {isOpen ? <PiCaretDown size={14} /> : <PiCaretRight size={14} />}
-        {isPhysicalExam ? 'Panduan pemeriksaan fisik' : 'Panduan stasiun'}
+        {isPhysicalExam ? 'Panduan pemeriksaan fisik' : 'Panduan kasus'}
       </Toggle>
       {isOpen && <Body>{text}</Body>}
     </Note>

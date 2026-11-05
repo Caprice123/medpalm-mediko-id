@@ -54,7 +54,7 @@ function EvidencePanel() {
               <CustomMarkdownRenderer item={answerKey} />
             </KeyBlock>
           ) : (
-            <EvidenceEmpty>Stasiun ini tidak menyertakan kunci jawaban.</EvidenceEmpty>
+            <EvidenceEmpty>Kasus ini tidak menyertakan kunci jawaban.</EvidenceEmpty>
           )
         )}
       </Viewport>

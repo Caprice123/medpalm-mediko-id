@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Numeric, HairlineRow } from '../../../../Hub.styles'
+import { Numeric, HairlineRow } from '../../../../../../styles/surface.styles'
 
 export const Row = styled(HairlineRow)`
   display: grid;

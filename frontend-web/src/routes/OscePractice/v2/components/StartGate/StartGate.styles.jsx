@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-// The task card the student reads before the bell. This is the one place on the board where
-// the scenario is shown whole rather than clamped to a line.
+// Which station is about to start — the title and its tags, not its brief. The brief belongs
+// to the station room, so there is no body copy here to style.
 export const TaskCard = styled.div`
   padding: 1rem 1.125rem;
   border-radius: 12px;
@@ -12,19 +12,8 @@ export const TaskCard = styled.div`
     font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.25;
-    margin: 0 0 0.5rem;
-    color: var(--color-brand-blue-deep);
-  }
-
-  p {
     margin: 0;
-    font-size: 0.875rem;
-    line-height: 1.65;
-    color: var(--color-gray-700);
-    /* Long task cards get a scroll of their own rather than pushing the start button out of
-       the modal. */
-    max-height: 9.5rem;
-    overflow-y: auto;
+    color: var(--color-brand-blue-deep);
   }
 `
 

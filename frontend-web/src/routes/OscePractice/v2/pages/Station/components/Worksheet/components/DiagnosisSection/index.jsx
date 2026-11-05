@@ -57,7 +57,7 @@ function DiagnosisSection({ isPsikiatri, answers }) {
             ) : (
               <EmptyEntries>Belum ada diagnosis utama.</EmptyEntries>
             )}
-            <Hint>Stasiun psikiatri dinilai multiaksial, jadi boleh lebih dari satu.</Hint>
+            <Hint>Kasus psikiatri dinilai multiaksial, jadi boleh lebih dari satu.</Hint>
           </>
         ) : (
           <>

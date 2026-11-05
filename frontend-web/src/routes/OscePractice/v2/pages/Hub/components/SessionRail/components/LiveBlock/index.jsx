@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux'
-import { PiCheckCircle, PiCircleDashed, PiWarningCircle } from 'react-icons/pi'
+import { Link } from 'react-router-dom'
 import Button from '@components/common/Button'
-import { formatClock, clockUrgency, worksheetSections, topicTags, batchTags } from '../../../../../../utils/sessionState'
+import { OscePracticeRoute } from '@routes/OscePractice/routes'
+import { formatClock, clockUrgency, topicTags, batchTags } from '../../../../../../utils/sessionState'
 import { useLiveBlock } from './hooks/useLiveBlock'
 import {
   LiveBlock as Block,
@@ -10,21 +11,21 @@ import {
   ClockUnit,
   StationName,
   StationMeta,
-  Marks,
-  Mark,
-  MarkDetail,
   Action,
   EmptyLead,
-  ExpiredNote,
 } from './LiveBlock.styles'
 
-// The lead of the board: the station the student is in the middle of, its clock, and what it
-// still owes the rubric. With nothing running it stays white and says what the board offers.
+// The lead of the page: which station the student is in the middle of, and its clock. With
+// nothing running it stays white and points at the catalogue.
+//
+// It used to also list what the session still owed the rubric — filled/empty marks per
+// worksheet section, with a message count. That is the worksheet's own job, inside the station,
+// where it can still be acted on; out here it was a progress report on a room the student had
+// already left, and it cost four per-session subquery counts to build.
 function LiveBlock({ onRequestStart }) {
   // Read here rather than threaded down from the page: nothing between the page and this block
   // branches on the resumable session, so forwarding it would only add a hop.
   const session = useSelector((state) => state.oscePracticeV2.hub?.resumable) ?? null
-  const expiredCount = useSelector((state) => state.oscePracticeV2.hub?.expiredCount) ?? 0
   const { remaining, open } = useLiveBlock(session, { onRequestStart })
 
   if (!session) {
@@ -34,19 +35,11 @@ function LiveBlock({ onRequestStart }) {
           <h2>Tidak ada sesi berjalan</h2>
         </BlockHead>
         <EmptyLead>
-          Pilih stasiun di papan sebelah untuk mulai. Baris performa di bawah bisa diklik untuk
-          menyaring papan itu ke satu topik — itu cara tercepat menemukan stasiun yang paling
-          layak kamu kerjakan berikutnya.
+          Belum ada yang berjalan. Buka <Link to={OscePracticeRoute.stationsRoute}>daftar kasus</Link>{' '}
+          untuk memilih — atau klik satu baris performa di bawah, dan daftarnya langsung terbuka
+          tersaring ke topik itu. Itu cara tercepat menemukan kasus yang paling layak kamu
+          kerjakan berikutnya.
         </EmptyLead>
-        {expiredCount > 0 && (
-          <ExpiredNote>
-            <PiWarningCircle size={16} />
-            <span>
-              {expiredCount} sesi kehabisan waktu dan belum dinilai. Buka dari riwayat untuk
-              menyelesaikan penilaiannya.
-            </span>
-          </ExpiredNote>
-        )}
       </Block>
     )
   }
@@ -62,27 +55,20 @@ function LiveBlock({ onRequestStart }) {
   return (
     <Block $live>
       <BlockHead $live>
-        <h2>{isStarted ? 'Sesi berjalan' : 'Sesi siap dimulai'}</h2>
+        {/* Three states, not two. A session whose bell has rung is still `started` in the
+            database until the evaluation runs, so branching on `isStarted` alone labelled it
+            "Sesi berjalan" beside a clock reading 00:00. */}
+        <h2>{rang ? 'Waktu habis' : isStarted ? 'Sesi berjalan' : 'Sesi siap dimulai'}</h2>
         <span>
           <Clock $urgency={urgency}>{formatClock(remaining)}</Clock>
-          <ClockUnit>{isStarted ? 'sisa waktu' : `alokasi ${session.durationMinutes} menit`}</ClockUnit>
+          <ClockUnit>
+            {rang ? 'belum dinilai' : isStarted ? 'sisa waktu' : `alokasi ${session.durationMinutes} menit`}
+          </ClockUnit>
         </span>
       </BlockHead>
 
-      <StationName $live>{session.topicTitle}</StationName>
+      <StationName $live title={session.topicTitle}>{session.topicTitle}</StationName>
       {meta && <StationMeta $live>{meta}</StationMeta>}
-
-      {isStarted && (
-        <Marks>
-          {worksheetSections(session.progress).map((section) => (
-            <Mark key={section.key} $filled={section.filled}>
-              {section.filled ? <PiCheckCircle size={16} /> : <PiCircleDashed size={16} />}
-              <strong>{section.label}</strong>
-              <MarkDetail $filled={section.filled}>{section.detail}</MarkDetail>
-            </Mark>
-          ))}
-        </Marks>
-      )}
 
       <Action>
         <Button variant="secondary" fullWidth onClick={open}>

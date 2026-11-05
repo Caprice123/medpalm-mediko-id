@@ -6,16 +6,6 @@ import styled from 'styled-components'
 export const Page = styled.div`
   background: var(--color-surface-app);
 
-  /* The shell's fixed top bar, as a fallback the layout can rely on before useBoardFit has
-     measured anything — and if it never gets to. The hook publishes the exact value as
-     --osce-board-top on the document root and that wins when it exists; this keeps the board
-     and the worksheet drawer below the bar either way. The bar is hidden on mobile. */
-  --osce-shell-top: 44px;
-
-  @media (max-width: 768px) {
-    --osce-shell-top: 0px;
-  }
-
   ::selection {
     background: var(--color-brand-blue-tint-strong);
     color: var(--color-brand-blue-deep);
@@ -31,12 +21,12 @@ export const Board = styled.div`
   align-items: stretch;
   padding: 1rem;
 
-  /* Exactly the screen, never more: the shell's fixed top bar already pushed this element
-     down by --osce-board-top (measured in useBoardFit), so that much has to come off the
-     height or the board hangs past the bottom edge and the page scrolls. */
-  height: calc(100dvh - var(--osce-board-top, var(--osce-shell-top)));
+  /* Exactly the screen. The station is mounted beside the app shell rather than inside it,
+     so there is no top bar to subtract and nothing to measure at runtime: the board owns the
+     viewport outright. */
+  height: 100dvh;
 
-  @media (max-width: 1320px) {
+  @media (max-width: 1180px) {
     grid-template-columns: 276px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
   }
@@ -172,11 +162,7 @@ export const Numeric = styled.span`
 export const WorksheetToggle = styled.button`
   position: fixed;
   right: 0;
-  /* Centred in the board, not in the viewport, so it never rides up under the shell's bar. */
-  top: calc(
-    var(--osce-board-top, var(--osce-shell-top))
-    + (100dvh - var(--osce-board-top, var(--osce-shell-top))) / 2
-  );
+  top: 50%;
   transform: translateY(-50%);
   z-index: 20;
   display: flex;

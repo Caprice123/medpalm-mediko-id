@@ -1,13 +1,13 @@
 import styled from 'styled-components'
-import { Numeric, HairlineRow } from '../../../../Hub.styles'
+import { Numeric, HairlineRow } from '../../../../../../styles/surface.styles'
 
 export const Row = styled(HairlineRow)`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 150px 96px 124px;
+  grid-template-columns: minmax(0, 1fr) 240px 110px 140px;
   align-items: center;
-  gap: 0.875rem;
+  gap: 1rem;
 
-  @media (max-width: 760px) {
+  @media (max-width: 860px) {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.625rem;
   }
@@ -19,19 +19,6 @@ export const Title = styled.h3`
   line-height: 1.3;
   margin: 0;
   color: var(--color-gray-800);
-`
-
-export const Scenario = styled.p`
-  margin: 0.25rem 0 0;
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--color-gray-500);
-  /* One line of the task card. The scenario ships whole, so the clamp is the only place that
-     knows how much of it actually fits. */
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 `
 
 export const Tags = styled.div`
@@ -60,7 +47,7 @@ export const Record = styled.p`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  margin: 0.375rem 0 0;
+  margin: 0.25rem 0 0;
   font-size: 0.75rem;
   font-weight: 600;
   color: ${({ $tone, $color }) => ($tone === 'new' ? 'var(--color-gray-500)' : $color)};

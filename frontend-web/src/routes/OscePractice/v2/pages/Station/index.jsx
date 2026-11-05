@@ -7,7 +7,6 @@ import Dialogue from './components/Dialogue'
 import Worksheet from './components/Worksheet'
 import EndSessionDialog from './components/EndSessionDialog'
 import { useStation } from './hooks/useStation'
-import { useBoardFit } from './hooks/useBoardFit'
 import { useWorksheetDrawer } from './hooks/useWorksheetDrawer'
 import {
   Page,
@@ -30,12 +29,11 @@ function Station() {
   const {
     isWorksheetVisible, hasColumn, isDrawerOpen, openDrawer, closeDrawer,
   } = useWorksheetDrawer()
-  const boardRef = useBoardFit()
 
   if (!isReady) {
     return (
       <Page>
-        <Loading type="oval" text="Membuka stasiun..." height="70vh" />
+        <Loading type="oval" text="Membuka kasus..." height="70vh" />
       </Page>
     )
   }
@@ -51,7 +49,7 @@ function Station() {
 
   return (
     <Page>
-      <Board ref={boardRef}>
+      <Board>
         <BriefRail
           sessionDetail={sessionDetail}
           onEndSession={requestEnd}

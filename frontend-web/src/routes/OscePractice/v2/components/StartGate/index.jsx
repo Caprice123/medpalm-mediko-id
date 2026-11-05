@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import { PiMicrophone, PiCheckCircle, PiWaveform, PiCircleDashed } from 'react-icons/pi'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
-import { topicTags, batchTags } from '../../../../utils/sessionState'
+import { topicTags, batchTags } from '../../utils/sessionState'
 import { useStartGate } from './hooks/useStartGate'
 import {
   TaskCard,
@@ -19,9 +19,14 @@ const PROVIDER_LABELS = {
   whisper: 'Layanan transkripsi siap digunakan',
 }
 
-// The gate between picking a station and the bell: the task card, then the two checks the
+// The gate between picking a station and the bell: which station, then the two checks the
 // browser has to pass. A modal is right here precisely because this is the one moment that
 // does need protected focus — once it closes the clock is running.
+//
+// It names the station and nothing more. The scenario is not here and not in the catalogue
+// either: reading the brief is the first move of the station itself, and the brief rail holds
+// it there, with the clock. Showing it twice beforehand only invites planning the case before
+// the timed part has started.
 function StartGate({ target, onClose }) {
   const {
     microphoneGranted, isRequestingMicrophone, microphoneError,
@@ -57,9 +62,6 @@ function StartGate({ target, onClose }) {
     >
       <TaskCard>
         <h3>{title}</h3>
-        {(subject.scenario || subject.description) && (
-          <p>{subject.scenario || subject.description}</p>
-        )}
         <TaskMeta>
           {tags.map((tag) => <span key={tag.id}>{tag.name}</span>)}
           <span>{subject.durationMinutes || 15} menit</span>

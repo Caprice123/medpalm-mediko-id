@@ -1,4 +1,4 @@
-import { Panel } from '../../Hub.styles'
+import { Panel } from '../../../../styles/surface.styles'
 import LiveBlock from './components/LiveBlock'
 import PerformanceRows from './components/PerformanceRows'
 

@@ -62,7 +62,7 @@ export class GetOsceSessionHistoryV2Service extends BaseService {
       // One state the UI can switch on, rather than a status plus a clock the row has to
       // interpret for itself.
       state: expired ? 'expired' : session.status,
-      topicTitle: snapshot?.title || 'Stasiun tanpa judul',
+      topicTitle: snapshot?.title || 'Kasus tanpa judul',
       scenario: snapshot?.scenario || null,
       durationMinutes,
       remainingSeconds: expired ? 0 : remainingSecondsFor(session, durationMinutes),

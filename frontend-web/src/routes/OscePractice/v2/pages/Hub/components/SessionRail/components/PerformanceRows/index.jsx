@@ -1,11 +1,14 @@
 import { useSelector } from 'react-redux'
+import { PiChartBar } from 'react-icons/pi'
 import Loading from '@components/common/Loading'
-import { MicroLabel, Numeric } from '../../../../Hub.styles'
+import Modal from '@components/common/Modal'
+import { MicroLabel, Numeric } from '../../../../../../styles/surface.styles'
+import PerformanceChart from '../../../../../../components/PerformanceChart'
 import { scoreColor, formatDuration } from '../../../../../../utils/sessionState'
 import { usePerformanceRows } from './hooks/usePerformanceRows'
 import {
   Section,
-  ClearFilter,
+  ChartButton,
   Row,
   Name,
   Bar,
@@ -14,24 +17,32 @@ import {
   Footnotes,
 } from './PerformanceRows.styles'
 
-// Weakest topic first, and every row is the filter for the station panel beside it.
+// The rail carries the top five only. It is 340px of a page about the session in front of the
+// student, not a report: a dozen rows of bar-and-number turns the lead block into a scoreboard
+// and pushes the footnotes off the fold. The chart holds every topic, and the button says so
+// when there are more than the rail is showing.
+const RAIL_ROWS = 5
+
+// Strongest topic first, and every row is a way into the catalogue filtered to that topic.
 function PerformanceRows() {
-  const { selectTopic } = usePerformanceRows()
+  const { selectTopic, isChartOpen, openChart, closeChart } = usePerformanceRows()
   const { performanceTopics, loading } = useSelector((state) => state.oscePractice)
-  const activeTopicTag = useSelector((state) => state.oscePracticeV2.filter.topicTag)
-  const completedCount = useSelector((state) => state.oscePracticeV2.hub?.counts?.completed) ?? 0
+  const completedCount = useSelector((state) => state.oscePracticeV2.hub?.completedCount) ?? 0
   const totalPracticeSeconds = useSelector((state) => state.oscePracticeV2.hub?.totalPracticeSeconds) ?? 0
+
+  // Already sorted strongest first by the service, so the top five is a plain head of the list.
+  const railTopics = performanceTopics.slice(0, RAIL_ROWS)
+  const isTruncated = performanceTopics.length > RAIL_ROWS
 
   return (
     <>
       <Section>
         <h2>Performa per topik</h2>
-        {activeTopicTag ? (
-          <ClearFilter type="button" onClick={() => selectTopic('')}>
-            Tampilkan semua
-          </ClearFilter>
-        ) : (
-          <MicroLabel>Terlemah dulu</MicroLabel>
+        {performanceTopics.length > 0 && (
+          <ChartButton type="button" onClick={openChart}>
+            <PiChartBar size={15} />
+            {isTruncated ? `Semua ${performanceTopics.length} topik` : 'Grafik'}
+          </ChartButton>
         )}
       </Section>
 
@@ -39,24 +50,21 @@ function PerformanceRows() {
         <Loading type="oval" size="small" text="Memuat performa..." height="120px" />
       ) : performanceTopics.length === 0 ? (
         <EmptyRows>
-          Belum ada stasiun yang dinilai. Satu topik muncul di sini begitu sesinya selesai
-          dinilai, dan baris itu langsung bisa dipakai menyaring papan stasiun.
+          Belum ada kasus yang dinilai. Satu topik muncul di sini begitu sesinya selesai
+          dinilai, dan baris itu langsung membuka daftar kasus yang tersaring ke topik itu.
         </EmptyRows>
       ) : (
-        performanceTopics.map((topic) => {
-          const isActive = String(activeTopicTag) === String(topic.tagId)
+        railTopics.map((topic) => {
           const color = scoreColor(topic.averageScore)
 
           return (
             <Row
               key={topic.tagId}
               type="button"
-              $active={isActive}
-              aria-pressed={isActive}
-              onClick={() => selectTopic(isActive ? '' : topic.tagId)}
-              title={`${topic.title} — rata-rata ${topic.averageScore} dari ${topic.sessionCount} stasiun dinilai`}
+              onClick={() => selectTopic(topic.tagId)}
+              title={`${topic.title} — rata-rata ${topic.averageScore} dari ${topic.sessionCount} kasus dinilai. Buka daftar kasus topik ini.`}
             >
-              <Name $active={isActive}>{topic.title}</Name>
+              <Name>{topic.title}</Name>
               <Bar $value={topic.averageScore} $color={color}><i /></Bar>
               <Score $color={color}>{Math.round(topic.averageScore)}</Score>
             </Row>
@@ -66,7 +74,7 @@ function PerformanceRows() {
 
       <Footnotes>
         <div>
-          <MicroLabel as="dt">Stasiun dinilai</MicroLabel>
+          <MicroLabel as="dt">Kasus dinilai</MicroLabel>
           <dd><Numeric>{completedCount}</Numeric></dd>
         </div>
         <div>
@@ -74,6 +82,16 @@ function PerformanceRows() {
           <dd><Numeric>{formatDuration(totalPracticeSeconds)}</Numeric></dd>
         </div>
       </Footnotes>
+
+      <Modal
+        isOpen={isChartOpen}
+        onClose={closeChart}
+        title="Performa per topik"
+        size="large"
+      >
+        {/* The whole ranking, not the rail's five. */}
+        <PerformanceChart topics={performanceTopics} />
+      </Modal>
     </>
   )
 }

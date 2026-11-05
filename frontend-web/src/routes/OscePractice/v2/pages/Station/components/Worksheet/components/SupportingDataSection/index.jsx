@@ -95,7 +95,7 @@ function SupportingDataSection({ answers }) {
 
       {groups.length === 0 ? (
         <EmptyEntries>
-          {search ? 'Tidak ada pemeriksaan yang cocok.' : 'Stasiun ini tidak menyediakan pemeriksaan penunjang.'}
+          {search ? 'Tidak ada pemeriksaan yang cocok.' : 'Kasus ini tidak menyediakan pemeriksaan penunjang.'}
         </EmptyEntries>
       ) : (
         groups.map((group) => (

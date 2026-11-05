@@ -13,30 +13,46 @@ export const useMessageStream = ({ messages, isPhysicalExam, isLoading, paginati
   const dispatch = useDispatch()
 
   const listRef = useRef(null)
-  const bottomRef = useRef(null)
   const previousCountRef = useRef(0)
   const hasAnchoredRef = useRef(false)
   const isPagingRef = useRef(false)
   const wasLoadingRef = useRef(false)
   const modeRef = useRef(isPhysicalExam)
 
+  // Scrolls THIS list and nothing else.
+  //
+  // This used to be `bottomRef.current.scrollIntoView()` on an anchor div at the end of the
+  // transcript, which is not a transcript-local operation: scrollIntoView walks up and scrolls
+  // every scrollable ancestor, the document included, until the element is in view. So opening
+  // the Anamnesis tab in the debrief panel scrolled the whole page to the bottom along with the
+  // list — the tab row, the rubric beside it and all.
+  //
+  // Element.scrollTo touches only the element it is called on, which is what "scroll the chat
+  // to the bottom" actually means.
+  const scrollToBottom = useCallback((behavior) => {
+    const container = listRef.current
+    if (!container) return
+
+    container.scrollTo({ top: container.scrollHeight, behavior })
+  }, [])
+
   // First paint of a transcript lands at the bottom with no animation: a station reopened
   // mid-way should show the last thing the patient said, not scroll there in front of you.
   useEffect(() => {
     if (!hasAnchoredRef.current && messages.length > 0) {
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      scrollToBottom('instant')
       previousCountRef.current = messages.length
       hasAnchoredRef.current = true
     }
-  }, [messages.length])
+  }, [messages.length, scrollToBottom])
 
   useEffect(() => {
     if (wasLoadingRef.current && !isLoading && messages.length > 0) {
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      scrollToBottom('instant')
       previousCountRef.current = messages.length
     }
     wasLoadingRef.current = isLoading
-  }, [isLoading, messages])
+  }, [isLoading, messages, scrollToBottom])
 
   // Only a genuinely new turn scrolls, and smoothly. Streaming tokens must not drag the view
   // down on every chunk while the student is reading further up.
@@ -49,20 +65,20 @@ export const useMessageStream = ({ messages, isPhysicalExam, isLoading, paginati
     if (modeRef.current !== isPhysicalExam) {
       modeRef.current = isPhysicalExam
       previousCountRef.current = messages.length
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      scrollToBottom('instant')
       return
     }
 
     if (messages.length > previousCountRef.current) {
       const id = setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+        scrollToBottom('smooth')
       }, 100)
       previousCountRef.current = messages.length
       return () => clearTimeout(id)
     }
 
     previousCountRef.current = messages.length
-  }, [messages.length, isLoading, isPhysicalExam])
+  }, [messages.length, isLoading, isPhysicalExam, scrollToBottom])
 
   const handleScroll = useCallback(async () => {
     const container = listRef.current
@@ -104,5 +120,5 @@ export const useMessageStream = ({ messages, isPhysicalExam, isLoading, paginati
     return () => container.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
 
-  return { listRef, bottomRef }
+  return { listRef }
 }

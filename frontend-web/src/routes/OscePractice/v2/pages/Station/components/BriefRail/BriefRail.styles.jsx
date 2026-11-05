@@ -1,5 +1,39 @@
 import styled from 'styled-components'
 
+// The station runs outside the app shell, so this is the only way back. It sits at the top
+// of the rail, far from the destructive end-session button at the bottom, and says plainly
+// that the clock does not stop — leaving is not pausing.
+export const ExitRow = styled.div`
+  flex: none;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-100);
+`
+
+export const ExitButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-gray-600);
+
+  &:hover {
+    color: var(--color-brand-blue-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+`
+
+export const ExitNote = styled.p`
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-gray-500);
+`
+
 export const RailBody = styled.div`
   flex: 1;
   min-height: 0;

@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { AdjustOsceTagStatisticsService } from '#services/osce/v2/adjustOsceTagStatisticsService'
+import { AdjustOsceUserStatisticsService } from '#services/osce/v2/adjustOsceUserStatisticsService'
 import { RouterUtils } from '#utils/aiUtils/routerUtils'
 import { DateTime } from 'luxon'
 import { ValidationError } from '#errors/validationError'
@@ -217,6 +218,16 @@ export class EndOsceSessionService extends BaseService {
           status: "completed",
         },
       })
+
+      // The hub rail's two footnote totals. Not behind `calculateStatistics`: they are the only
+      // source for those footnotes, so skipping them would have the hub report zero for work the
+      // user did. Swallowed like the tag counters below, and repairable by
+      // scripts/backfillOsceUserStatistics.js.
+      try {
+        await AdjustOsceUserStatisticsService.call({ userId, timeTaken })
+      } catch (statsError) {
+        console.error('[EndOsceSessionService] Failed to adjust OSCE user statistics:', statsError)
+      }
 
       // After the session row is written, never before: the counters are derived from it, and
       // the backfill script rebuilds them from the same rows. Failure is swallowed on purpose —

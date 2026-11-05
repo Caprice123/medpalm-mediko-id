@@ -8,13 +8,12 @@ export const Chips = styled.div`
   border-bottom: 1px solid var(--color-gray-100);
 `
 
-// A counted filter chip. Not a card and not a badge: the count is the point, so it sits inside
-// the control that filters by it.
+// A filter chip, nothing more. It carried a count until the panel stopped reporting totals, so
+// `align-items: baseline` is gone with the second line of text it was aligning.
 export const Chip = styled.button`
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.4375rem;
-  padding: 0.4375rem 0.75rem;
+  align-items: center;
+  padding: 0.4375rem 0.875rem;
   border-radius: 999px;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -24,11 +23,5 @@ export const Chip = styled.button`
 
   &:hover {
     border-color: var(--color-brand-blue);
-  }
-
-  b {
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    color: ${({ $active }) => ($active ? 'var(--color-surface)' : 'var(--color-gray-800)')};
   }
 `

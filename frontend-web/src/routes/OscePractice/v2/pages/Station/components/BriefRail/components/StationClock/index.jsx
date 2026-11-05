@@ -24,7 +24,7 @@ function StationClock({ sessionDetail, onTimeUp }) {
           onClick={toggleMuted}
           $urgency={urgency}
           aria-pressed={muted}
-          title={muted ? 'Nyalakan bel stasiun' : 'Bisukan bel stasiun'}
+          title={muted ? 'Nyalakan bel' : 'Bisukan bel'}
         >
           {muted ? <PiBellSlash size={17} /> : <PiBell size={17} />}
         </MuteButton>

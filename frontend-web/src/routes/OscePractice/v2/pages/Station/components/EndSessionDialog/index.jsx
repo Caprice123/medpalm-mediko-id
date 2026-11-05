@@ -55,7 +55,7 @@ function EndSessionDialog({ isOpen, auto, isProcessing, status, onClose, onConfi
       closeOnOverlayClick={false}
       footer={askingFirst ? (
         <Actions>
-          <Button variant="secondary" onClick={onClose}>Kembali ke stasiun</Button>
+          <Button variant="secondary" onClick={onClose}>Kembali ke kasus</Button>
           <Button variant="danger" onClick={onConfirm}>Akhiri & nilai</Button>
         </Actions>
       ) : null}

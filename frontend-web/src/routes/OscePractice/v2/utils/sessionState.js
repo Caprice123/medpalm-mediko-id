@@ -76,15 +76,16 @@ export const batchTags = (tags) => tagsInGroup(tags, BATCH_GROUP)
 
 // The station row's own record line — the answer to "is this case worth my next fifteen
 // minutes". Null means never attempted, which is itself the most useful thing a row can say.
+// What a station row says about this student's own history on it. The attempt count used to
+// ride along here; the best score and the date of the last try are what decide whether to open
+// a case again, and "4 percobaan" beside them only reads as a reproach.
 export const recordSummary = (myRecord) => {
   if (!myRecord || myRecord.attemptCount === 0) {
     return { label: 'Belum pernah dicoba', tone: 'new', percentage: null }
   }
 
-  const attempts = myRecord.attemptCount === 1 ? '1 percobaan' : `${myRecord.attemptCount} percobaan`
-
   return {
-    label: `Skor terbaik ${Math.round(myRecord.bestPercentage)} · ${attempts}`,
+    label: `Skor terbaik ${Math.round(myRecord.bestPercentage)}`,
     tone: 'scored',
     percentage: myRecord.bestPercentage,
   }
@@ -92,12 +93,6 @@ export const recordSummary = (myRecord) => {
 
 // How much of the rubric the student has actually touched, for the resumable session's
 // empty-section marks. Observations are excluded: not every station has any.
-export const worksheetSections = (progress) => [
-  { key: 'conversation', label: 'Percakapan', filled: (progress?.messageCount || 0) > 0, detail: `${progress?.messageCount || 0} pesan` },
-  { key: 'diagnosis', label: 'Diagnosis', filled: !!progress?.hasDiagnosis, detail: progress?.hasDiagnosis ? 'terisi' : 'masih kosong' },
-  { key: 'therapy', label: 'Terapi', filled: !!progress?.hasTherapy, detail: progress?.hasTherapy ? 'terisi' : 'masih kosong' },
-]
-
 // Whether the station is still waiting on the patient's reply to even begin.
 //
 // The shared streaming action keeps `isSendingMessage` / `isAssistantTyping` raised for the

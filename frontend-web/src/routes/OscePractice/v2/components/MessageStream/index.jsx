@@ -65,7 +65,7 @@ function MessageStream({ isPhysicalExam }) {
     ? loading.isPhysicalExamAssistantTyping
     : loading.isAssistantTyping
 
-  const { listRef, bottomRef } = useMessageStream({ messages, isPhysicalExam, isLoading, pagination })
+  const { listRef } = useMessageStream({ messages, isPhysicalExam, isLoading, pagination })
 
   const speaker = isPhysicalExam ? 'Temuan fisik' : 'Pasien'
   const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null
@@ -108,8 +108,6 @@ function MessageStream({ isPhysicalExam }) {
               </Bubble>
             </Turn>
           )}
-
-          <div ref={bottomRef} />
         </>
       )}
     </List>

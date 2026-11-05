@@ -12,7 +12,7 @@ function DebriefHeader({ session, rubric }) {
   return (
     <Band $passing={passing}>
       <Station>
-        <h1>{session.topic?.title || session.topicTitle || 'Stasiun'}</h1>
+        <h1>{session.topic?.title || session.topicTitle || 'Kasus'}</h1>
 
         {tags.length > 0 && (
           <Tags>

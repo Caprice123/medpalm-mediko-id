@@ -49,8 +49,8 @@ export class GetOscePerformanceV2Service extends BaseService {
       averageScore: (row.totalScore / row.maxScore) * 100,
     }))
 
-    // Weakest first: this chart is read to decide what to practise next, not to admire.
-    topics.sort((a, b) => a.averageScore - b.averageScore)
+    // Strongest first, so the rail and the chart both read as a ranking from the top down.
+    topics.sort((a, b) => b.averageScore - a.averageScore)
 
     return { topics }
   }

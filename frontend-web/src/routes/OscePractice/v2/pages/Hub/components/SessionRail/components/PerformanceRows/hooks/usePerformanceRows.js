@@ -1,29 +1,35 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { fetchOscePerformance } from '@store/oscePractice/userAction'
-import { actions } from '@store/oscePractice/v2/reducer'
-import { fetchOsceStations } from '@store/oscePractice/v2/userAction'
+import { OscePracticeRoute } from '@routes/OscePractice/routes'
 
-// The rows are a filter, not a statistic. Clicking a topic narrows the station panel to it,
-// which is how a student gets from "aku lemah di Psikiatri" to a station worth opening without
-// reading forty case titles.
+// The rows are a filter, not a statistic. Clicking a topic opens the catalogue already narrowed
+// to it, which is how a student gets from "aku lemah di Psikiatri" to a station worth opening
+// without reading forty case titles.
+//
+// The topic travels in the URL rather than in the slice. It used to be a dispatch, because the
+// list it filtered was the panel beside these rows; now that the catalogue is its own page, a
+// narrowed list is somewhere you navigate to — which also means the filtered view survives a
+// refresh and can be linked.
 //
 // Performance itself still comes from the engine slice's action: the endpoint and its two
-// sources (counters or derived) are unchanged, and only the hub's own reads moved to V2.
+// sources (counters or derived) are unchanged. It arrives sorted strongest first.
 export const usePerformanceRows = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [isChartOpen, setIsChartOpen] = useState(false)
 
   useEffect(() => {
     dispatch(fetchOscePerformance())
   }, [dispatch])
 
   const selectTopic = useCallback((tagId) => {
-    dispatch(actions.updateFilter({ key: 'topicTag', value: tagId }))
-    // Page always resets before the fetch: holding page 3 while the filter changes would open
-    // the panel on a page that no longer exists for the new filter.
-    dispatch(actions.setStationsPagination({ page: 1 }))
-    dispatch(fetchOsceStations())
-  }, [dispatch])
+    navigate(OscePracticeRoute.stationsByTopicRoute(tagId))
+  }, [navigate])
 
-  return { selectTopic }
+  const openChart = useCallback(() => setIsChartOpen(true), [])
+  const closeChart = useCallback(() => setIsChartOpen(false), [])
+
+  return { selectTopic, isChartOpen, openChart, closeChart }
 }

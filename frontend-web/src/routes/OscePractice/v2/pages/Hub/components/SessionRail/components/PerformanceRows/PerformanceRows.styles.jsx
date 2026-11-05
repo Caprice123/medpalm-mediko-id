@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Numeric } from '../../../../Hub.styles'
+import { Numeric } from '../../../../../../styles/surface.styles'
 
 export const Section = styled.div`
   padding: 1rem 1.25rem 0.5rem;
@@ -16,7 +16,12 @@ export const Section = styled.div`
   }
 `
 
-export const ClearFilter = styled.button`
+// A quiet control, not a Button: it opens a second reading of data already on screen, so it
+// must not compete with "Lanjutkan sesi" directly above it in the same rail.
+export const ChartButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
   border: none;
   background: none;
   padding: 0;
@@ -28,9 +33,17 @@ export const ClearFilter = styled.button`
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+
+  svg {
+    flex: none;
+  }
 `
 
 // A row, not a card: the hairline is the only separator, and the whole row is the control.
+//
+// No active state any more. The row used to toggle a filter on the panel beside it and had to
+// stay marked once the pointer left; it is a link into another page now, so it is only ever
+// hovered.
 export const Row = styled.button`
   display: grid;
   grid-template-columns: minmax(0, 1fr) 72px 2rem;
@@ -41,20 +54,16 @@ export const Row = styled.button`
   padding: 0.625rem 1.25rem;
   border: none;
   border-top: 1px solid var(--color-gray-100);
-  background: ${({ $active }) => ($active ? 'var(--color-brand-blue-tint)' : 'transparent')};
+  background: transparent;
 
   &:hover {
     background: var(--color-brand-blue-tint);
   }
-
-  /* The active topic keeps a visible mark after the pointer leaves, so the panel beside it is
-     never filtered by something the rail has stopped showing. */
-  box-shadow: ${({ $active }) => ($active ? 'inset 3px 0 0 var(--color-brand-blue)' : 'none')};
 `
 
 export const Name = styled.span`
   font-size: 0.8125rem;
-  font-weight: ${({ $active }) => ($active ? 700 : 500)};
+  font-weight: 500;
   color: var(--color-gray-700);
   overflow: hidden;
   text-overflow: ellipsis;

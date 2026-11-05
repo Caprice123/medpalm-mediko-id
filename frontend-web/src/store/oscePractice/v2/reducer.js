@@ -8,7 +8,7 @@ import { resetAllState } from '../../globalAction'
 // their last page. Mixing those into the engine's slice would make the archived V1 pages and
 // the live V2 board fight over the same `userTopics` / `userSessions` arrays.
 const initialState = {
-  // { resumable, expiredCount, counts, lastResult } — the left rail's whole content.
+  // { resumable, completedCount, lastResult, totalPracticeSeconds } — the left rail's content.
   hub: null,
   stations: [],
   history: [],

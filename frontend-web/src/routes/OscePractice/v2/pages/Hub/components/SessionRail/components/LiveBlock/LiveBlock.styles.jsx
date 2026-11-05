@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Numeric } from '../../../../Hub.styles'
+import { Numeric } from '../../../../../../styles/surface.styles'
 
 // The one large colour field on the board. It is reserved for a station that is actually
 // live — an empty rail is white, so blue in this slot always means "you are mid-station".
@@ -54,56 +54,22 @@ export const StationName = styled.p`
   line-height: 1.25;
   margin: 0.625rem 0 0.25rem;
   color: ${({ $live }) => ($live ? 'var(--color-surface)' : 'var(--color-gray-800)')};
+
+  /* Station titles are written to describe a case, not to fit a rail — "Interpretasi
+     Pemeriksaan Radiologi Sistem Muskuloskeletal dan Tulang Belakang Abnormal - Pasien 5" is
+     five lines of this type at 340px, which pushes the Lanjutkan button off the fold. Three
+     lines is enough to tell two stations apart; the full title is on hover, and the station's
+     own brief rail shows it whole. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 export const StationMeta = styled.p`
   font-size: 0.8125rem;
   margin: 0;
   color: ${({ $live }) => ($live ? 'var(--color-brand-blue-tint)' : 'var(--color-gray-500)')};
-`
-
-// What the student still owes the rubric, read straight off the live block. An unfilled
-// section is named in danger red on its own line — this is the mark the station room's
-// worksheet repeats, and the reason the bell is never the first warning.
-export const Marks = styled.ul`
-  list-style: none;
-  margin: 1rem 0 0;
-  padding: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.24);
-`
-
-export const Mark = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4375rem 0;
-  font-size: 0.8125rem;
-  color: var(--color-surface);
-
-  & + & {
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-  }
-
-  svg {
-    flex: none;
-    color: ${({ $filled }) => ($filled
-      ? 'var(--color-brand-green-tint-strong)'
-      : 'var(--color-warning-tint-strong)')};
-  }
-
-  strong {
-    font-weight: 600;
-  }
-`
-
-export const MarkDetail = styled(Numeric)`
-  margin-left: auto;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: ${({ $filled }) => ($filled
-    ? 'var(--color-brand-blue-tint)'
-    : 'var(--color-warning-tint-strong)')};
 `
 
 export const Action = styled.div`
@@ -117,22 +83,15 @@ export const EmptyLead = styled.p`
   line-height: 1.6;
   margin: 0.625rem 0 0;
   color: var(--color-gray-600);
-`
 
-export const ExpiredNote = styled.p`
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 0.875rem 0 0;
-  padding: 0.625rem 0.75rem;
-  border-radius: 9px;
-  background: var(--color-warning-tint);
-  color: var(--color-warning-text);
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  a {
+    font-weight: 600;
+    color: var(--color-brand-blue);
 
-  svg {
-    flex: none;
-    margin-top: 0.125rem;
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 `
+
