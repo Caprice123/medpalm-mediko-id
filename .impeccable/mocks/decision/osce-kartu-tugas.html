@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1440px;height:900px;overflow:hidden;background:#f6fafb;font-family:'Plus Jakarta Sans',sans-serif;color:#2c3b45}
+.wrap{padding:24px 48px}
+.head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px}
+.head h1{font-family:'Baloo 2',cursive;font-size:30px;font-weight:700;color:#15242e}
+.head span{font-size:14px;color:#5c6b74}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#5c6b74}
+/* billboard */
+.bill{position:relative;height:286px;border-radius:18px;overflow:hidden;background:linear-gradient(104deg,#033c62 0%,#0d5b8c 52%,#1e73aa 100%);display:grid;grid-template-columns:1fr 332px}
+.deplete{position:absolute;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.22)}
+.deplete i{display:block;height:100%;width:48%;background:#f59e0b}
+.bl{padding:38px 40px 32px}
+.bl .mono{color:#eaf8ff}
+.bl h2{font-family:'Baloo 2',cursive;font-size:36px;line-height:1.1;font-weight:700;color:#fff;margin:12px 0 14px;max-width:560px}
+.bl p{font-size:15px;line-height:1.6;color:#ffffff;max-width:560px}
+.meta{display:flex;gap:10px;margin-top:22px}
+.meta span{font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:6px 12px;border-radius:999px}
+.action{background:#fff;margin:22px;border-radius:14px;padding:24px;display:flex;flex-direction:column;justify-content:center}
+.clock{font-family:'IBM Plex Mono',monospace;font-size:50px;font-weight:500;color:#15242e;line-height:1}
+.action .lbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b74;margin-top:8px}
+.btn{display:block;text-align:center;background:#1e73aa;color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;margin-top:20px}
+.note{font-size:12px;color:#5c6b74;margin-top:12px;line-height:1.5;text-align:center}
+/* band */
+.band{background:#fff;border:1px solid #e7ecef;border-radius:14px;margin-top:16px;padding:16px 22px;display:flex;align-items:center;gap:14px}
+.band h3{font-family:'Baloo 2',cursive;font-size:16px;font-weight:600;color:#15242e;margin-right:6px}
+.cchip{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid #dde3e6;color:#2c3b45}
+.cchip b{font-family:'IBM Plex Mono',monospace}
+.cchip.live{border-color:#c5ebff;background:#eaf8ff;color:#044a77}
+.cchip.done{border-color:#cfe6bf;background:#e7f5e2;color:#3f6b1f}
+.cchip.exp{border-color:#dde3e6;background:#eff3f5;color:#5c6b74}
+.band .last{margin-left:auto;font-size:13px;font-weight:600;color:#1e73aa}
+/* filters + grid */
+.frow{display:flex;gap:10px;margin:18px 0 14px;align-items:center}
+.f{font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #dde3e6;color:#5c6b74}
+.f.on{background:#1e73aa;border-color:#1e73aa;color:#fff}
+.search{margin-left:auto;width:280px;border:1px solid #828e96;background:#fff;border-radius:9px;padding:9px 12px;font-size:13px;color:#5c6b74}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid #e7ecef;border-radius:14px;padding:20px}
+.card h4{font-family:'Baloo 2',cursive;font-size:18px;font-weight:600;color:#15242e;line-height:1.25}
+.card p{font-size:13px;line-height:1.55;color:#5c6b74;margin:8px 0 14px}
+.tags{display:flex;gap:6px;margin-bottom:16px}
+.tag{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;background:#eaf8ff;color:#044a77;border:1px solid #c5ebff}
+.tag.g{background:#e7f5e2;color:#3f6b1f;border-color:#cfe6bf}
+.cfoot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #eff3f5;padding-top:14px}
+.cfoot .d{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5c6b74}
+.cfoot .go{font-size:13px;font-weight:700;color:#1e73aa}
+</style></head><body>
+<div class="wrap">
+  <div class="head"><h1>Latihan OSCE</h1><span>48 stasiun · 14 sudah kamu kerjakan</span></div>
+
+  <section class="bill">
+    <div class="deplete"><i></i></div>
+    <div class="bl">
+      <div class="mono">Sesi berjalan · bel berbunyi otomatis</div>
+      <h2>Angina Pektoris Stabil</h2>
+      <p>Pria 54 tahun datang dengan nyeri dada seperti ditekan saat menaiki tangga, mereda dengan istirahat. Lakukan anamnesis, pemeriksaan fisik, usulkan penunjang, lalu tegakkan diagnosis dan terapinya.</p>
+      <div class="meta"><span>Kardiovaskular</span><span>UKMPPD Mei 2026</span><span>15 menit</span></div>
+    </div>
+    <div class="action">
+      <div class="mono">Sisa waktu</div>
+      <div class="clock">07:12</div>
+      <div class="lbl">dari 15:00</div>
+      <span class="btn">Lanjutkan sesi</span>
+      <div class="note">Percakapan, pemeriksaan, dan diagnosis yang sudah kamu isi tersimpan.</div>
+    </div>
+  </section>
+
+  <section class="band">
+    <h3>Sesi saya</h3>
+    <span class="cchip live">Berjalan <b>1</b></span>
+    <span class="cchip done">Selesai dinilai <b>13</b></span>
+    <span class="cchip exp">Kadaluarsa <b>2</b></span>
+    <span class="last">Hasil terakhir: Pneumonia Komunitas · 78 / 100 →</span>
+  </section>
+
+  <div class="frow">
+    <span class="f on">Semua topik</span>
+    <span class="f">Psikiatri</span>
+    <span class="f">Kardiovaskular</span>
+    <span class="f">Respirasi</span>
+    <span class="f">Tropik Infeksi</span>
+    <span class="f">Obstetri</span>
+    <span class="search">Cari stasiun atau keluhan…</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Skizofrenia Paranoid</h4>
+      <p>Pria 24 tahun dibawa keluarga karena bicara sendiri dan merasa diawasi sejak 3 bulan.</p>
+      <div class="tags"><span class="tag">Psikiatri</span><span class="tag g">Belum pernah</span></div>
+      <div class="cfoot"><span class="d">15 menit · 6 kriteria</span><span class="go">Mulai sesi →</span></div>
+    </div>
+    <div class="card">
+      <h4>Demam Berdarah Dengue Dewasa</h4>
+      <p>Wanita 28 tahun, demam hari ke-4 dengan bintik merah di lengan dan nyeri di belakang mata.</p>
+      <div class="tags"><span class="tag">Tropik Infeksi</span><span class="tag">Skor terbaik 82</span></div>
+      <div class="cfoot"><span class="d">15 menit · 6 kriteria</span><span class="go">Mulai sesi →</span></div>
+    </div>
+    <div class="card">
+      <h4>Preeklampsia Berat</h4>
+      <p>G2P1A0 usia kehamilan 34 minggu dengan tekanan darah 170/110 dan nyeri kepala hebat.</p>
+      <div class="tags"><span class="tag">Obstetri</span><span class="tag g">Belum pernah</span></div>
+      <div class="cfoot"><span class="d">20 menit · 7 kriteria</span><span class="go">Mulai sesi →</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

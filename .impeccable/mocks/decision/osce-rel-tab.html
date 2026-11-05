@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1440px;height:900px;overflow:hidden;background:#f6fafb;font-family:'Plus Jakarta Sans',sans-serif;color:#2c3b45}
+.wrap{padding:26px 44px}
+.head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px}
+.head h1{font-family:'Baloo 2',cursive;font-size:28px;font-weight:700;color:#15242e}
+.head span{font-size:14px;color:#5c6b74}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#5c6b74}
+/* ---------- stepped tab rail + board ---------- */
+.unit{display:grid;grid-template-columns:232px 1fr;align-items:start}
+.rail{display:flex;flex-direction:column;gap:6px;padding-top:10px}
+.tab{position:relative;background:#fff;border:1px solid #dde3e6;border-right:none;border-radius:12px 0 0 12px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center}
+.tab .t{font-family:'Baloo 2',cursive;font-size:16px;font-weight:600;color:#2c3b45}
+.tab .n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5c6b74;margin-top:4px}
+/* height is proportional to each section's extent */
+.tab.s1{height:150px}
+.tab.s2{height:104px}
+.tab.s3{height:188px}
+.tab.s4{height:124px}
+/* selected tab extends and becomes the board */
+.tab.on{background:#1e73aa;border-color:#1e73aa;margin-right:-1px;z-index:2;padding-left:26px}
+.tab.on .t{color:#fff;font-size:18px}
+.tab.on .n{color:#eaf8ff}
+.punch{width:11px;height:11px;border-radius:50%;background:#f6fafb;border:2px solid #c5ebff;margin-bottom:9px}
+.tab.on .punch{background:#fff;border-color:#fff}
+.tab.empty{background:#eff3f5;border-style:dashed}
+.tab.empty .t{color:#5c6b74}
+/* board */
+.board{background:#fff;border:1px solid #1e73aa;border-radius:0 16px 16px 16px;min-height:566px;padding:28px 32px}
+.bh{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #e7ecef;padding-bottom:16px;margin-bottom:22px}
+.bh h2{font-family:'Baloo 2',cursive;font-size:22px;font-weight:700;color:#15242e}
+.bh span{font-size:13px;color:#5c6b74}
+.two{display:grid;grid-template-columns:1fr 300px;gap:28px}
+.sess h3{font-family:'Baloo 2',cursive;font-size:26px;font-weight:700;color:#15242e;line-height:1.2}
+.sess p{font-size:14px;line-height:1.65;color:#2c3b45;margin:12px 0 0;max-width:620px}
+.chips{display:flex;gap:8px;margin-top:16px}
+.chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#eaf8ff;color:#044a77;border:1px solid #c5ebff}
+.ply{margin-top:26px;border-top:1px solid #e7ecef;padding-top:18px}
+.plyrow{display:grid;grid-template-columns:22px 1fr 140px;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #eff3f5}
+.plyrow:last-child{border-bottom:none}
+.mark{width:14px;height:14px;border-radius:50%;border:2px solid #c5ebff;background:#fff}
+.mark.filled{background:#1e73aa;border-color:#1e73aa}
+.mark.open{border-style:dashed;border-color:#8c99a2}
+.plyname{font-size:14px;font-weight:600;color:#15242e}
+.plystate{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-align:right;color:#5c6b74}
+.plystate.warn{color:#dc2626}
+.side{border-left:1px solid #e7ecef;padding-left:24px}
+.clockbox .mono{color:#5c6b74}
+.clock{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:500;color:#15242e;line-height:1;margin:8px 0 4px}
+.of{font-size:12px;color:#5c6b74}
+.btn{display:block;text-align:center;background:#1e73aa;color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:9px;margin-top:20px}
+.btn.ghost{background:#fff;color:#1e73aa;border:1px solid #c5ebff;margin-top:10px}
+.sidenote{font-size:12px;line-height:1.55;color:#5c6b74;margin-top:16px;border-top:1px solid #eff3f5;padding-top:14px}
+</style></head><body>
+<div class="wrap">
+  <div class="head"><h1>Latihan OSCE</h1><span>Rel tab memegang empat bagian · tinggi tab sebanding isinya</span></div>
+
+  <div class="unit">
+    <nav class="rail">
+      <div class="tab s1 on"><div class="punch"></div><div class="t">Sesi Berjalan</div><div class="n">1 sesi · 07:12</div></div>
+      <div class="tab s2"><div class="punch"></div><div class="t">Performa</div><div class="n">5 topik dinilai</div></div>
+      <div class="tab s3"><div class="punch"></div><div class="t">Riwayat</div><div class="n">16 sesi</div></div>
+      <div class="tab s4"><div class="punch"></div><div class="t">Stasiun</div><div class="n">48 tersedia</div></div>
+    </nav>
+
+    <div class="board">
+      <div class="bh"><h2>Sesi Berjalan</h2><span>bel berbunyi otomatis saat waktu habis</span></div>
+      <div class="two">
+        <div class="sess">
+          <div class="mono">Kardiovaskular · UKMPPD Mei 2026</div>
+          <h3>Angina Pektoris Stabil</h3>
+          <p>Pria 54 tahun datang dengan nyeri dada seperti ditekan saat menaiki tangga, mereda dengan istirahat. Lakukan anamnesis, pemeriksaan fisik, usulkan penunjang, lalu tegakkan diagnosis dan terapinya.</p>
+          <div class="chips"><span class="chip">15 menit</span><span class="chip">6 kriteria rubrik</span><span class="chip">11 pesan terkirim</span></div>
+
+          <div class="ply">
+            <div class="mono" style="margin-bottom:6px">Bagian lembar kerja</div>
+            <div class="plyrow"><span class="mark filled"></span><span class="plyname">Percakapan</span><span class="plystate">11 pesan</span></div>
+            <div class="plyrow"><span class="mark filled"></span><span class="plyname">Pemeriksaan fisik</span><span class="plystate">4 tindakan</span></div>
+            <div class="plyrow"><span class="mark open"></span><span class="plyname">Data penunjang</span><span class="plystate">belum dibuka</span></div>
+            <div class="plyrow"><span class="mark open"></span><span class="plyname">Diagnosis</span><span class="plystate warn">masih kosong</span></div>
+            <div class="plyrow"><span class="mark open"></span><span class="plyname">Terapi</span><span class="plystate warn">masih kosong</span></div>
+          </div>
+        </div>
+
+        <aside class="side">
+          <div class="clockbox">
+            <div class="mono">Sisa waktu</div>
+            <div class="clock">07:12</div>
+            <div class="of">dari 15:00</div>
+          </div>
+          <span class="btn">Masuk kembali</span>
+          <span class="btn ghost">Akhiri &amp; nilai sekarang</span>
+          <div class="sidenote">Dua bagian masih kosong. Diagnosis dan terapi yang tidak diisi dihitung nol pada rubrik.</div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

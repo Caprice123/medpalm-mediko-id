@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1440px;height:900px;overflow:hidden;background:#f6fafb;font-family:'Plus Jakarta Sans',sans-serif;color:#2c3b45}
+.wrap{padding:24px 40px}
+.head{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.head h1{font-family:'Baloo 2',cursive;font-size:28px;font-weight:700;color:#15242e}
+.head span{font-size:14px;color:#5c6b74}
+.head .cta{margin-left:auto;background:#1e73aa;color:#fff;font-size:14px;font-weight:700;padding:12px 20px;border-radius:9px}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+/* ---- board ---- */
+.board{border-radius:16px;overflow:hidden;border:1px solid #15242e}
+.bhead{display:grid;grid-template-columns:2.1fr 1fr .9fr .8fr .7fr 140px;gap:18px;background:#15242e;padding:13px 22px}
+.bhead div{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#dde3e6}
+.row{display:grid;grid-template-columns:2.1fr 1fr .9fr .8fr .7fr 140px;gap:18px;align-items:center;background:#fff;padding:15px 22px;border-bottom:1px solid #e7ecef;position:relative}
+.row:last-child{border-bottom:none}
+.row .st{font-size:15px;font-weight:600;color:#15242e}
+.row .sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5c6b74;margin-top:3px}
+.row .topic{font-size:13px;color:#2c3b45}
+.row .time{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:#15242e}
+.row .sc{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600}
+.flag{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px}
+.f-live{background:#fef3c7;color:#7d5a1f}
+.f-done{background:#e7f5e2;color:#3f6b1f}
+.f-exp{background:#eff3f5;color:#5c6b74}
+.f-new{background:#eaf8ff;color:#044a77}
+.lamp{width:8px;height:8px;border-radius:50%;background:currentColor}
+.act{text-align:center;font-size:13px;font-weight:700;padding:9px 0;border-radius:8px;border:1px solid #c5ebff;color:#1e73aa}
+.act.solid{background:#1e73aa;border-color:#1e73aa;color:#fff}
+.act.off{border-color:#dde3e6;color:#5c6b74}
+.row.running{background:#fffdf6;box-shadow:inset 4px 0 0 #f59e0b}
+.row.dim{background:#fafcfc}
+.row.dim .st,.row.dim .topic{color:#5c6b74;font-weight:500}
+/* ---- second board ---- */
+.sub-board{margin-top:20px;border-radius:16px;overflow:hidden;border:1px solid #e7ecef;background:#fff}
+.sbhead{display:grid;grid-template-columns:2.1fr 1fr .9fr .8fr .7fr 140px;gap:18px;padding:13px 22px;border-bottom:1px solid #e7ecef;background:#f6fafb}
+.sbhead div{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#5c6b74}
+.prow{display:grid;grid-template-columns:2.1fr 1fr .9fr .8fr .7fr 140px;gap:18px;align-items:center;padding:13px 22px;border-bottom:1px solid #eff3f5}
+.prow:last-child{border-bottom:none}
+.prow .st{font-size:14px;font-weight:600;color:#15242e}
+.bar{height:8px;border-radius:4px;background:#eff3f5;overflow:hidden;grid-column:span 2}
+.bar i{display:block;height:100%}
+.foot{display:flex;gap:18px;align-items:center;margin-top:16px;padding:0 4px}
+.foot .k{display:flex;align-items:center;gap:7px;font-size:12px;color:#5c6b74}
+.foot .k i{width:9px;height:9px;border-radius:50%;display:block}
+.foot .more{margin-left:auto;font-size:13px;font-weight:600;color:#1e73aa}
+</style></head><body>
+<div class="wrap">
+  <div class="head">
+    <h1>Latihan OSCE</h1><span>16 sesi · diurut dari yang paling mendesak</span>
+    <span class="cta">Mulai stasiun baru</span>
+  </div>
+
+  <div class="board">
+    <div class="bhead">
+      <div>Stasiun</div><div>Topik</div><div>Status</div><div>Sisa waktu</div><div>Skor</div><div></div>
+    </div>
+    <div class="row running">
+      <div><div class="st">Angina Pektoris Stabil</div><div class="sub">UKMPPD MEI 2026 · 11 PESAN</div></div>
+      <div class="topic">Kardiovaskular</div>
+      <div><span class="flag f-live"><i class="lamp"></i>Berjalan</span></div>
+      <div class="time">07:12</div>
+      <div class="sc" style="color:#5c6b74">—</div>
+      <div class="act solid">Lanjutkan</div>
+    </div>
+    <div class="row">
+      <div><div class="st">Preeklampsia Berat</div><div class="sub">UKMPPD MEI 2026 · BELUM DIMULAI</div></div>
+      <div class="topic">Obstetri</div>
+      <div><span class="flag f-new">Siap</span></div>
+      <div class="time">20:00</div>
+      <div class="sc" style="color:#5c6b74">—</div>
+      <div class="act">Mulai</div>
+    </div>
+    <div class="row">
+      <div><div class="st">Pneumonia Komunitas</div><div class="sub">4 NOV 2026 · 13:44 WIB</div></div>
+      <div class="topic">Respirasi</div>
+      <div><span class="flag f-done">Dinilai</span></div>
+      <div class="time" style="color:#5c6b74">14:02</div>
+      <div class="sc" style="color:#3f6b1f">78</div>
+      <div class="act">Lihat hasil</div>
+    </div>
+    <div class="row">
+      <div><div class="st">Skizofrenia Paranoid</div><div class="sub">2 NOV 2026 · 09:10 WIB</div></div>
+      <div class="topic">Psikiatri</div>
+      <div><span class="flag f-done">Dinilai</span></div>
+      <div class="time" style="color:#5c6b74">15:00</div>
+      <div class="sc" style="color:#dc2626">54</div>
+      <div class="act">Lihat hasil</div>
+    </div>
+    <div class="row dim">
+      <div><div class="st">Dermatitis Kontak Alergi</div><div class="sub">30 OKT 2026 · TIDAK DISELESAIKAN</div></div>
+      <div class="topic">Kulit</div>
+      <div><span class="flag f-exp">Kadaluarsa</span></div>
+      <div class="time" style="color:#5c6b74">00:00</div>
+      <div class="sc" style="color:#5c6b74">—</div>
+      <div class="act off">Ulangi</div>
+    </div>
+    <div class="row">
+      <div><div class="st">Demam Berdarah Dengue Dewasa</div><div class="sub">28 OKT 2026 · 16:35 WIB</div></div>
+      <div class="topic">Tropik Infeksi</div>
+      <div><span class="flag f-done">Dinilai</span></div>
+      <div class="time" style="color:#5c6b74">13:21</div>
+      <div class="sc" style="color:#3f6b1f">82</div>
+      <div class="act">Lihat hasil</div>
+    </div>
+  </div>
+
+  <div class="sub-board">
+    <div class="sbhead"><div>Performa per topik</div><div>Stasiun dinilai</div><div colspan="2">Rata-rata</div><div></div><div></div></div>
+    <div class="prow">
+      <div class="st">Psikiatri</div><div class="topic">3 stasiun</div>
+      <div class="bar"><i style="width:54%;background:#ef4444"></i></div>
+      <div class="sc" style="color:#dc2626">54</div><div class="act">Latih lagi</div>
+    </div>
+    <div class="prow">
+      <div class="st">Respirasi</div><div class="topic">4 stasiun</div>
+      <div class="bar"><i style="width:68%;background:#d97706"></i></div>
+      <div class="sc" style="color:#7d5a1f">68</div><div class="act">Latih lagi</div>
+    </div>
+    <div class="prow">
+      <div class="st">Kardiovaskular</div><div class="topic">5 stasiun</div>
+      <div class="bar"><i style="width:78%;background:#699a3d"></i></div>
+      <div class="sc" style="color:#3f6b1f">78</div><div class="act">Latih lagi</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="k"><i style="background:#f59e0b"></i>Berjalan</span>
+    <span class="k"><i style="background:#699a3d"></i>Lulus ≥ 75</span>
+    <span class="k"><i style="background:#d97706"></i>Cukup 60–74</span>
+    <span class="k"><i style="background:#ef4444"></i>Perlu latihan &lt; 60</span>
+    <span class="more">Muat lebih banyak</span>
+  </div>
+</div>
+</body></html>

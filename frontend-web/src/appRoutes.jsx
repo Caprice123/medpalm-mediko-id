@@ -12,7 +12,7 @@ import { exerciseRoutes } from './routes/Exercise/routes';
 import { chatbotRoutes } from './routes/Chatbot/routes';
 import { skripsiRoutes } from './routes/SkripsiBuilder/routes';
 import { topupRoutes } from './routes/Topup/routes';
-import { oscePracticeRoutes } from './routes/OscePractice/routes';
+import { oscePracticeRoutes, oscePracticeStationRoutes } from './routes/OscePractice/routes';
 import { atlasRoutes } from './routes/Atlas/routes';
 import { atlasQuizRoutes } from './routes/AtlasQuiz/routes';
 import { webinarRoutes } from './routes/Webinar/routes';
@@ -53,6 +53,10 @@ const appRoutes = [
                 children: [
                     // Embed pages — no AppLayout (no sidebar), rendered inside an <iframe>
                     { path: '/embed/video', element: <EmbedVideoPage /> },
+
+                    // The OSCE station runs without the shell: it is timed and irreversible,
+                    // so it takes the whole screen and carries its own way out.
+                    ...oscePracticeStationRoutes,
                     {
                         path: "/",
                         element: <AppLayout />,

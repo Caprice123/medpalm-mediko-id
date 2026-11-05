@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1440px;height:900px;overflow:hidden;background:#f6fafb;font-family:'Plus Jakarta Sans',sans-serif;color:#2c3b45}
+.chrome{height:56px;background:#fff;border-bottom:1px solid #e7ecef;display:flex;align-items:center;padding:0 32px;gap:16px}
+.chrome h1{font-family:'Baloo 2',cursive;font-size:20px;font-weight:600;color:#15242e}
+.chrome .crumb{font-size:13px;color:#5c6b74}
+.board{display:grid;grid-template-columns:320px 1fr;gap:20px;padding:20px 32px}
+.panel{background:#fff;border:1px solid #e7ecef;border-radius:14px}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#5c6b74}
+/* ---- left rail ---- */
+.rail{overflow:hidden}
+.live{padding:18px;border-bottom:1px solid #e7ecef;background:linear-gradient(170deg,#1e73aa,#2e8fc2);border-radius:14px 14px 0 0}
+.live .mono{color:#eaf8ff}
+.live h2{font-family:'Baloo 2',cursive;font-size:19px;font-weight:600;color:#fff;margin:8px 0 2px;line-height:1.2}
+.live .sub{font-size:12px;color:#eaf8ff}
+.clock{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:500;color:#fff;letter-spacing:.02em;margin:10px 0 2px}
+.clock small{font-size:11px;letter-spacing:.1em;color:#eaf8ff;display:block;font-family:'Plus Jakarta Sans'}
+.btn{display:block;text-align:center;border-radius:9px;font-size:14px;font-weight:600;padding:11px 14px;margin-top:12px;background:#fff;color:#1e73aa}
+.btn.blue{background:#1e73aa;color:#fff}
+.btn.ghost{background:#fff;color:#1e73aa;border:1px solid #c5ebff}
+.sect{padding:16px 18px 6px}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid #eff3f5}
+.prow:first-of-type{border-top:none}
+.pname{font-size:13px;font-weight:500;flex:1}
+.pbar{width:72px;height:6px;border-radius:3px;background:#eff3f5;overflow:hidden}
+.pbar i{display:block;height:100%}
+.pscore{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;width:26px;text-align:right}
+.foot{padding:14px 18px;border-top:1px solid #e7ecef;display:flex;justify-content:space-between;align-items:baseline}
+.foot b{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:#15242e}
+/* ---- right panels ---- */
+.col{display:flex;flex-direction:column;gap:20px}
+.phead{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid #e7ecef}
+.phead h2{font-family:'Baloo 2',cursive;font-size:18px;font-weight:600;color:#15242e}
+.filters{display:flex;gap:10px;padding:14px 20px;border-bottom:1px solid #eff3f5}
+.inp{flex:1;border:1px solid #828e96;border-radius:9px;padding:9px 12px;font-size:13px;color:#5c6b74;background:#fff}
+.inp.sel{flex:0 0 168px;display:flex;justify-content:space-between;color:#5c6b74}
+.srow{display:grid;grid-template-columns:1fr 150px 92px 112px;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #eff3f5}
+.srow:last-child{border-bottom:none}
+.sname{font-size:15px;font-weight:600;color:#15242e}
+.sdesc{font-size:12px;color:#5c6b74;margin-top:3px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:#eaf8ff;color:#044a77;border:1px solid #c5ebff}
+.dur{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5c6b74}
+.mini{font-size:13px;font-weight:600;text-align:center;padding:8px 0;border-radius:8px;border:1px solid #c5ebff;color:#1e73aa}
+.mini.solid{background:#1e73aa;color:#fff;border-color:#1e73aa}
+.hrow{display:grid;grid-template-columns:1fr 140px 86px 96px;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid #eff3f5}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;padding:4px 9px;border-radius:7px;text-align:center}
+.ok{background:#e7f5e2;color:#3f6b1f}.mid{background:#fef3c7;color:#7d5a1f}.bad{background:#fee2e2;color:#dc2626}
+.link{font-size:13px;font-weight:600;color:#1e73aa}
+</style></head><body>
+<div class="chrome"><h1>Latihan OSCE</h1><span class="crumb">Simulasi stasiun dengan pasien AI · penilaian rubrik</span></div>
+<div class="board">
+  <!-- left working rail -->
+  <aside class="panel rail">
+    <div class="live">
+      <div class="mono">Sesi berjalan</div>
+      <h2>Angina Pektoris Stabil</h2>
+      <div class="sub">Kardiovaskular · UKMPPD Mei 2026</div>
+      <div class="clock">07:12<small>SISA WAKTU</small></div>
+      <span class="btn">Lanjutkan sesi</span>
+    </div>
+    <div class="sect"><div class="mono">Performa per topik</div></div>
+    <div class="prow"><span class="pname">Psikiatri</span><span class="pbar"><i style="width:54%;background:#ef4444"></i></span><span class="pscore">54</span></div>
+    <div class="prow"><span class="pname">Respirasi</span><span class="pbar"><i style="width:68%;background:#d97706"></i></span><span class="pscore">68</span></div>
+    <div class="prow"><span class="pname">Kardiovaskular</span><span class="pbar"><i style="width:78%;background:#699a3d"></i></span><span class="pscore">78</span></div>
+    <div class="prow"><span class="pname">Tropik Infeksi</span><span class="pbar"><i style="width:82%;background:#699a3d"></i></span><span class="pscore">82</span></div>
+    <div class="prow"><span class="pname">Obstetri</span><span class="pbar"><i style="width:71%;background:#d97706"></i></span><span class="pscore">71</span></div>
+    <div class="foot"><span class="mono">Stasiun dinilai</span><b>14</b></div>
+    <div class="foot"><span class="mono">Total waktu latihan</span><b>3j 25m</b></div>
+  </aside>
+
+  <!-- right work area -->
+  <div class="col">
+    <section class="panel">
+      <div class="phead"><h2>Pilih stasiun</h2><span class="mono">48 stasiun tersedia</span></div>
+      <div class="filters">
+        <div class="inp">Cari stasiun, skenario, atau keluhan…</div>
+        <div class="inp sel"><span>Semua topik</span><span>▾</span></div>
+        <div class="inp sel"><span>Semua batch</span><span>▾</span></div>
+      </div>
+      <div class="srow">
+        <div><div class="sname">Skizofrenia Paranoid</div><div class="sdesc">Pria 24 tahun dibawa keluarga karena bicara sendiri sejak 3 bulan</div></div>
+        <div><span class="tag">Psikiatri</span></div><div class="dur">15 menit</div><div class="mini solid">Mulai sesi</div>
+      </div>
+      <div class="srow">
+        <div><div class="sname">Demam Berdarah Dengue Dewasa</div><div class="sdesc">Wanita 28 tahun, demam hari ke-4 dengan bintik merah di lengan</div></div>
+        <div><span class="tag">Tropik Infeksi</span></div><div class="dur">15 menit</div><div class="mini">Mulai sesi</div>
+      </div>
+      <div class="srow">
+        <div><div class="sname">Pneumonia Komunitas</div><div class="sdesc">Pria 61 tahun, sesak dan batuk berdahak kehijauan 5 hari</div></div>
+        <div><span class="tag">Respirasi</span></div><div class="dur">15 menit</div><div class="mini">Mulai sesi</div>
+      </div>
+      <div class="srow">
+        <div><div class="sname">Preeklampsia Berat</div><div class="sdesc">G2P1A0 34 minggu, tekanan darah 170/110 dan nyeri kepala</div></div>
+        <div><span class="tag">Obstetri</span></div><div class="dur">20 menit</div><div class="mini">Mulai sesi</div>
+      </div>
+      <div class="srow">
+        <div><div class="sname">Dermatitis Kontak Alergi</div><div class="sdesc">Wanita 31 tahun, gatal di pergelangan setelah memakai jam baru</div></div>
+        <div><span class="tag">Kulit</span></div><div class="dur">15 menit</div><div class="mini">Mulai sesi</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>Riwayat latihan</h2><span class="link">Lihat semua</span></div>
+      <div class="hrow"><div class="sname">Pneumonia Komunitas</div><div class="dur">4 Nov 2026</div><span class="chip ok">78 / 100</span><span class="link">Lihat hasil</span></div>
+      <div class="hrow"><div class="sname">Skizofrenia Paranoid</div><div class="dur">2 Nov 2026</div><span class="chip bad">54 / 100</span><span class="link">Lihat hasil</span></div>
+      <div class="hrow"><div class="sname">Demam Tifoid</div><div class="dur">31 Okt 2026</div><span class="chip mid">66 / 100</span><span class="link">Lihat hasil</span></div>
+    </section>
+  </div>
+</div>
+</body></html>
