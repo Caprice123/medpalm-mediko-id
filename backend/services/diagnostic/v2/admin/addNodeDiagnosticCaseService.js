@@ -8,6 +8,11 @@ import { normalizeCaseQuestions } from '#services/diagnostic/v2/admin/diagnostic
 
 const RECORD_TYPE = 'diagnostic_case'
 
+// The image is an attachment on the quiz row, which V1 has always filed under
+// 'diagnostic_quiz' — a case and a V1 quiz are the same row, so they share one name for
+// it. Only the node/SRS record type stays 'diagnostic_case' (the unit of study).
+const IMAGE_RECORD_TYPE = 'diagnostic_quiz'
+
 export class AddNodeDiagnosticCaseService extends BaseService {
   static async call({ nodeId, vignette, imageBlobId, imageCaption, explanation, references, questions, createdBy }) {
     const questionRows = normalizeCaseQuestions(questions)
@@ -50,7 +55,7 @@ export class AddNodeDiagnosticCaseService extends BaseService {
     if (imageBlobId) {
       await attachmentService.attach({
         blobId: parseInt(imageBlobId),
-        recordType: RECORD_TYPE,
+        recordType: IMAGE_RECORD_TYPE,
         recordId: newCase.id,
         name: 'image',
       })

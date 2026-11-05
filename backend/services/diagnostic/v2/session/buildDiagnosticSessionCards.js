@@ -1,7 +1,8 @@
 import prisma from '#prisma/client'
 import idriveService from '#services/idrive.service'
 
-const RECORD_TYPE = 'diagnostic_case'
+// See getNodeDiagnosticCaseDetailService: a case's image is filed under the quiz type.
+const IMAGE_RECORD_TYPE = 'diagnostic_quiz'
 
 // Builds one card per case: the shared vignette/image on the case, then every question
 // asked about it. `selected` is an ordered list of case ids and the output keeps that order.
@@ -20,7 +21,7 @@ export async function buildDiagnosticSessionCards({ selected, newIdSet, node, no
   const caseMap = new Map(cases.map(c => [c.id, c]))
 
   const attachments = await prisma.attachments.findMany({
-    where: { record_type: RECORD_TYPE, record_id: { in: selected }, name: 'image' },
+    where: { record_type: IMAGE_RECORD_TYPE, record_id: { in: selected }, name: 'image' },
   })
   const blobIds = attachments.map(a => a.blob_id)
   const blobs = blobIds.length > 0

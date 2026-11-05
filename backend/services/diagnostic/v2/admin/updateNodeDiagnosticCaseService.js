@@ -5,7 +5,7 @@ import attachmentService from '#services/attachment/attachmentService'
 import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
 import { normalizeCaseQuestions } from '#services/diagnostic/v2/admin/diagnosticCaseQuestions'
 
-const RECORD_TYPE = 'diagnostic_case'
+const IMAGE_RECORD_TYPE = 'diagnostic_quiz'
 
 export class UpdateNodeDiagnosticCaseService extends BaseService {
   static async call({ caseId, vignette, imageBlobId, imageCaption, explanation, references, questions }) {
@@ -74,7 +74,7 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
 
     if (imageBlobId !== undefined) {
       const existingAttachment = await prisma.attachments.findFirst({
-        where: { record_type: RECORD_TYPE, record_id: parseInt(caseId), name: 'image' },
+        where: { record_type: IMAGE_RECORD_TYPE, record_id: parseInt(caseId), name: 'image' },
       })
       const currentBlobId = existingAttachment?.blob_id ?? null
       const newBlobId = imageBlobId ? parseInt(imageBlobId) : null
@@ -83,15 +83,15 @@ export class UpdateNodeDiagnosticCaseService extends BaseService {
       // underlying blob/file, so re-running it with the same blobId every save would delete
       // and then recreate an attachment pointing at a blob that no longer exists.
       if (newBlobId !== currentBlobId) {
-        await attachmentService.detachAll({ recordType: RECORD_TYPE, recordId: parseInt(caseId) })
+        await attachmentService.detachAll({ recordType: IMAGE_RECORD_TYPE, recordId: parseInt(caseId) })
         if (newBlobId) {
-          await attachmentService.attach({ blobId: newBlobId, recordType: RECORD_TYPE, recordId: parseInt(caseId), name: 'image' })
+          await attachmentService.attach({ blobId: newBlobId, recordType: IMAGE_RECORD_TYPE, recordId: parseInt(caseId), name: 'image' })
         }
       }
     }
 
     const updated = await prisma.diagnostic_quizzes.findUnique({ where: { id: parseInt(caseId) } })
-    const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, parseInt(caseId), 'image')
+    const attachment = await attachmentService.getAttachmentWithUrl(IMAGE_RECORD_TYPE, parseInt(caseId), 'image')
     return {
       ...updated,
       vignette: updated.description,

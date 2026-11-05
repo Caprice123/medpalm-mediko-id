@@ -3,7 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import attachmentService from '#services/attachment/attachmentService'
 
-const RECORD_TYPE = 'diagnostic_case'
+const IMAGE_RECORD_TYPE = 'diagnostic_quiz'
 
 export class GetNodeDiagnosticCaseDetailService extends BaseService {
   static async call({ caseId }) {
@@ -19,7 +19,9 @@ export class GetNodeDiagnosticCaseDetailService extends BaseService {
     })
     if (!diagnosticCase || diagnosticCase.is_deleted) throw new ValidationError('Kasus tidak ditemukan')
 
-    const attachment = await attachmentService.getAttachmentWithUrl(RECORD_TYPE, diagnosticCase.id, 'image')
+    // Filed under 'diagnostic_quiz': a case and a V1 quiz are the same row and share one
+    // image, which is what lets the unlinked inbox show a legacy quiz's picture.
+    const attachment = await attachmentService.getAttachmentWithUrl(IMAGE_RECORD_TYPE, diagnosticCase.id, 'image')
 
     const questionIds = diagnosticCase.diagnostic_questions.map(q => q.id)
     const noteRelations = questionIds.length > 0
