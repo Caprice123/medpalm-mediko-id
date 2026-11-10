@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import Modal from '@components/common/Modal'
 import Breadcrumb from '@components/common/Breadcrumb'
 import CardFormModal from '../../components/CardFormModal'
@@ -82,21 +83,17 @@ export default function CardsPage({ node, parentNode, onBack }) {
       <Table
         columns={columns}
         data={cards}
-        loading={loading.isFetchingCards}
+        loading={loading.isFetchingCards && cards.length === 0}
         emptyText="Belum ada kartu"
         emptySubtext='Klik "+ Tambah Kartu" untuk memulai.'
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingCards}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingCards ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingCards}
+        itemCount={cards.length}
+        onClick={handleLoadMore}
+      />
 
       {modal.open && (
         <CardFormModal

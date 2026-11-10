@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import AtlasCreateModal from '../ModuleDetailPage/components/AtlasCreateModal'
 import MoveContentModal from '../ModuleDetailPage/components/MoveContentModal'
@@ -72,21 +73,17 @@ export default function UnlinkedAtlasPage({ onBack }) {
       <Table
         columns={columns}
         data={models}
-        loading={loading.isFetchingModels}
+        loading={loading.isFetchingModels && models.length === 0}
         emptyText="Tidak ada Atlas 3D tanpa modul"
         emptySubtext="Semua Atlas 3D sudah terhubung ke modul."
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingModels}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingModels ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingModels}
+        itemCount={models.length}
+        onClick={handleLoadMore}
+      />
 
       {editModal.open && (
         <AtlasCreateModal

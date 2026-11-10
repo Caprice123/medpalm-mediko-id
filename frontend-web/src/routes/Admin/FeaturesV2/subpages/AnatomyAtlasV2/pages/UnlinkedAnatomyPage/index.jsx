@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import QuizCreateModal from '../ModuleDetailPage/components/QuizCreateModal'
 import MoveContentModal from '../ModuleDetailPage/components/MoveContentModal'
@@ -72,21 +73,17 @@ export default function UnlinkedAnatomyPage({ onBack }) {
       <Table
         columns={columns}
         data={quizzes}
-        loading={loading.isFetchingQuizzes}
+        loading={loading.isFetchingQuizzes && quizzes.length === 0}
         emptyText="Tidak ada Quiz Anatomi tanpa modul"
         emptySubtext="Semua Quiz Anatomi sudah terhubung ke modul."
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingQuizzes}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingQuizzes ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingQuizzes}
+        itemCount={quizzes.length}
+        onClick={handleLoadMore}
+      />
 
       {editModal.open && (
         <QuizCreateModal

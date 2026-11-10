@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import Modal from '@components/common/Modal'
 import Breadcrumb from '@components/common/Breadcrumb'
@@ -117,21 +118,17 @@ export default function CasesPage({ path, parentNode, onBack, onNavigateRoot, on
       <Table
         columns={columns}
         data={cases}
-        loading={loading.isFetchingCases}
+        loading={loading.isFetchingCases && cases.length === 0}
         emptyText="Belum ada kasus"
         emptySubtext='Klik "+ Tambah Kasus" untuk memulai.'
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingCases}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingCases ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingCases}
+        itemCount={cases.length}
+        onClick={handleLoadMore}
+      />
 
       {caseModal.open && (
         <CaseFormModal

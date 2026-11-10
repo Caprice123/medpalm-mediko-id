@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import CardFormModal from '../../components/CardFormModal'
 import CardPreviewModal from '../../components/CardPreviewModal'
@@ -80,21 +81,17 @@ export default function UnlinkedCardsPage({ onBack }) {
       <Table
         columns={columns}
         data={cards}
-        loading={loading.isFetchingCards}
+        loading={loading.isFetchingCards && cards.length === 0}
         emptyText="Tidak ada kartu tanpa sub-topik"
         emptySubtext="Semua kartu sudah terhubung ke sub-topik."
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingCards}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingCards ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingCards}
+        itemCount={cards.length}
+        onClick={handleLoadMore}
+      />
 
       {editModal.open && (
         <CardFormModal

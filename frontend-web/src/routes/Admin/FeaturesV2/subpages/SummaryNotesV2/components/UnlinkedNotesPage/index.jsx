@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchAdminSummaryNotesV2, fetchAdminSummaryNoteDetailV2, deleteSummaryNoteV2 } from '@store/summaryNotes/v2/adminAction'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import CreateNoteModalV2 from '../CreateNoteModalV2'
 import NoteDetailPage from '../NoteDetailPage'
@@ -132,24 +133,18 @@ export default function UnlinkedNotesPage({ onBack }) {
       <Table
         columns={columns}
         data={notes}
-        loading={isLoading}
+        loading={isLoading && notes.length === 0}
         hoverable
         emptyText="Semua ringkasan sudah ditugaskan ke sub-topik"
         emptySubtext=""
       />
 
-      {!pagination?.isLastPage && (
-        <div style={{ paddingTop: '0.5rem' }}>
-          <Button
-            variant="secondary"
-            disabled={isLoading}
-            onClick={handleLoadMore}
-            style={{ width: '100%' }}
-          >
-            {isLoading ? 'Memuat...' : 'Muat Lebih Banyak'}
-          </Button>
-        </div>
-      )}
+      <LoadMore
+        isLastPage={pagination?.isLastPage}
+        isLoading={isLoading}
+        itemCount={notes.length}
+        onClick={handleLoadMore}
+      />
 
       {creatingNote && (
         <CreateNoteModalV2

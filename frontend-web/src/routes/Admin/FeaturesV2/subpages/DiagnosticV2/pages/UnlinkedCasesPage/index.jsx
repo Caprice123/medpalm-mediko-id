@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import CaseFormModal from '../../components/CaseFormModal'
 import MoveCaseModal from '../../components/MoveCaseModal'
@@ -72,21 +73,17 @@ export default function UnlinkedCasesPage({ onBack }) {
       <Table
         columns={columns}
         data={cases}
-        loading={loading.isFetchingCases}
+        loading={loading.isFetchingCases && cases.length === 0}
         emptyText="Tidak ada kasus tanpa sub-topik"
         emptySubtext="Semua kasus sudah tertaut ke sub-topik."
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingCases}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingCases ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingCases}
+        itemCount={cases.length}
+        onClick={handleLoadMore}
+      />
 
       {editModal.open && (
         <CaseFormModal

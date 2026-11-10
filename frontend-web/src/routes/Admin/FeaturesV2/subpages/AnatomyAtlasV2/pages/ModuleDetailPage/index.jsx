@@ -1,5 +1,6 @@
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import AtlasCreateModal from './components/AtlasCreateModal'
 import QuizCreateModal from './components/QuizCreateModal'
 import MoveContentModal from './components/MoveContentModal'
@@ -83,20 +84,16 @@ export default function ModuleDetailPage({ module }) {
         <Table
           columns={atlasColumns}
           data={models}
-          loading={atlasLoading.isFetchingModels}
+          loading={atlasLoading.isFetchingModels && models.length === 0}
           emptyText="Belum ada model Atlas 3D di modul ini"
           emptySubtext='Klik "+ Tambah Atlas 3D" untuk menambahkan konten.'
         />
-        {!atlasPagination.isLastPage && (
-          <Button
-            variant="secondary"
-            onClick={handleAtlasLoadMore}
-            disabled={atlasLoading.isFetchingModels}
-            style={{ margin: '0.75rem auto 0', display: 'block' }}
-          >
-            {atlasLoading.isFetchingModels ? 'Memuat...' : 'Muat Lebih Banyak'}
-          </Button>
-        )}
+        <LoadMore
+          isLastPage={atlasPagination.isLastPage}
+          isLoading={atlasLoading.isFetchingModels}
+          itemCount={models.length}
+          onClick={handleAtlasLoadMore}
+        />
       </SectionCard>
 
       <SectionCard>
@@ -109,20 +106,16 @@ export default function ModuleDetailPage({ module }) {
         <Table
           columns={quizColumns}
           data={quizzes}
-          loading={quizLoading.isFetchingQuizzes}
+          loading={quizLoading.isFetchingQuizzes && quizzes.length === 0}
           emptyText="Belum ada Quiz Anatomi di modul ini"
           emptySubtext='Klik "+ Tambah Quiz Anatomi" untuk menambahkan konten.'
         />
-        {!quizPagination.isLastPage && (
-          <Button
-            variant="secondary"
-            onClick={handleQuizLoadMore}
-            disabled={quizLoading.isFetchingQuizzes}
-            style={{ margin: '0.75rem auto 0', display: 'block' }}
-          >
-            {quizLoading.isFetchingQuizzes ? 'Memuat...' : 'Muat Lebih Banyak'}
-          </Button>
-        )}
+        <LoadMore
+          isLastPage={quizPagination.isLastPage}
+          isLoading={quizLoading.isFetchingQuizzes}
+          itemCount={quizzes.length}
+          onClick={handleQuizLoadMore}
+        />
       </SectionCard>
 
       {atlasModal && (

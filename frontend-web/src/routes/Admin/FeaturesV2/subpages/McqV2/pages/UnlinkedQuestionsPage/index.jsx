@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '@components/common/Button'
 import Table from '@components/common/Table'
+import LoadMore from '@components/common/LoadMore'
 import TextInput from '@components/common/TextInput'
 import MoveCardModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/MoveCardModal'
 import QuestionFormModal from '../../components/QuestionFormModal'
 import { updateUnlinkedQuestion, assignQuestionToNode } from '@store/unlinkedQuestions'
 import { useUnlinkedQuestionsPage } from './hooks/useUnlinkedQuestionsPage'
+import { formatCorrectAnswer } from '../../utils/formatCorrectAnswer'
 import { Container, Header, HeaderLeft, PageTitle } from '../../McqV2.styles'
-import { ActionGroup } from '../QuestionsPage/QuestionsPage.styles'
-
-const OPTION_LABELS = ['A', 'B', 'C', 'D']
+import { ActionGroup, CorrectAnswer } from '../QuestionsPage/QuestionsPage.styles'
 
 export default function UnlinkedQuestionsPage({ onBack }) {
   const dispatch = useDispatch()
@@ -37,9 +37,7 @@ export default function UnlinkedQuestionsPage({ onBack }) {
     {
       header: 'Jawaban Benar',
       render: (q) => (
-        <span style={{ fontWeight: 600, color: '#059669' }}>
-          {OPTION_LABELS[q.correctIndex] != null ? `${OPTION_LABELS[q.correctIndex]}: ${q.options?.[q.correctIndex] ?? ''}` : '—'}
-        </span>
+        <CorrectAnswer>{formatCorrectAnswer(q)}</CorrectAnswer>
       ),
     },
     {
@@ -82,21 +80,17 @@ export default function UnlinkedQuestionsPage({ onBack }) {
       <Table
         columns={columns}
         data={questions}
-        loading={loading.isFetchingQuestions}
+        loading={loading.isFetchingQuestions && questions.length === 0}
         emptyText="Tidak ada pertanyaan tanpa sub-topik"
         emptySubtext="Semua pertanyaan sudah terhubung ke sub-topik."
       />
 
-      {!pagination.isLastPage && (
-        <Button
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={loading.isFetchingQuestions}
-          style={{ margin: '0 auto' }}
-        >
-          {loading.isFetchingQuestions ? 'Memuat...' : 'Muat Lebih Banyak'}
-        </Button>
-      )}
+      <LoadMore
+        isLastPage={pagination.isLastPage}
+        isLoading={loading.isFetchingQuestions}
+        itemCount={questions.length}
+        onClick={handleLoadMore}
+      />
 
       {editModal.open && (
         <QuestionFormModal
