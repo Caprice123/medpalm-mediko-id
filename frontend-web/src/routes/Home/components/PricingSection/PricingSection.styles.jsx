@@ -11,9 +11,17 @@ export const SectionWrapper = styled.section`
   overflow: hidden;
 `
 
+// The grid follows immediately after, and the popular plan's badge overhangs
+// 11px above its card — so without a gap here the badge lands on the last line
+// of the description. The margin is the gap we want plus that overhang.
 export const HeaderBlock = styled.div`
   position: relative;
   max-width: 820px;
+  margin-bottom: 51px;
+
+  ${media.tablet} {
+    margin-bottom: 43px;
+  }
 `
 
 export const Description = styled.p`
