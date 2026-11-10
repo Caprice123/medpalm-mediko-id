@@ -68,11 +68,15 @@ export const ViewerBody = styled.div`
     text-decoration: underline;
   }
 
+  /* width/height come from the attributes the admin resized the image to; max-width keeps a
+     large one inside a narrow column, and the attribute pair supplies the ratio height:auto
+     then follows. Clicking opens the lightbox — see RichTextViewer. */
   img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
     margin: 0.375rem 0;
+    cursor: zoom-in;
   }
 
   mark {

@@ -15,7 +15,7 @@ import { EditorContainer, EditorWrapper, ModeToggle, ModeButton } from './BlockN
 import { insertEmbed } from './customBlocks/EmbedSlashMenu'
 import { CropImageButton } from './CropImageButton'
 import ImageCropModal from './ImageCropModal'
-import { PhotoViewerToolbar } from './PhotoViewerToolbar'
+import { PhotoViewerToolbar } from '@components/common/PhotoViewerToolbar'
 import { filterSuggestionItems } from "@blocknote/core/extensions"
 import { editorSchema } from './schema'
 import { actions as commonActions } from '@store/common/reducer'
