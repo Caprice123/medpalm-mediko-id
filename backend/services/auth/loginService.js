@@ -3,6 +3,7 @@ import prisma from '#prisma/client';
 import { ValidationError } from '#errors/validationError';
 import { AuthorizationError } from '#errors/authorizationError';
 import { verifyGoogleToken } from '#utils/googleAuth';
+import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d'; // Access token: 15 minutes
@@ -41,6 +42,11 @@ class AuthService {
           is_active: true
         }
       });
+
+      // Keeps the landing page's member counter in step with the one place a
+      // user row is ever created. The counter only counts active users, which
+      // every new row is.
+      await incrementContentStat(CONTENT_STAT_KEYS.member);
     } else {
       // Update user info from Google if changed
       user = await prisma.users.update({
