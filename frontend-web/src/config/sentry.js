@@ -69,9 +69,13 @@ export const initSentry = () => {
 
     // Strip sensitive data before sending to Sentry
     beforeSend(event, hint) {
-      // Drop 401/403 — expected auth failures, not application bugs
-      const status = hint?.originalException?.response?.status;
-      if (status === 401 || status === 403) {
+      // Only server faults (>= 500) are worth reporting. Every 4xx is the API rejecting
+      // a request — an expired session, a permission check, a validation message the
+      // user already saw on screen — and sending all of them buried the real errors.
+      // An event with no status at all is a genuine JS exception and still goes through.
+      const error = hint?.originalException;
+      const status = error?.response?.status ?? error?.status ?? event.extra?.status;
+      if (typeof status === 'number' && status < 500) {
         return null;
       }
 

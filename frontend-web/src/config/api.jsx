@@ -4,7 +4,7 @@ import endpoints from '@config/endpoint';
 import { handleApiError } from '@utils/errorUtils';
 import { actions as creditActions } from '@store/credit/reducer';
 import { actions as pricingActions } from '@store/pricing/reducer';
-import { captureException, captureMessage } from '@config/sentry';
+import { captureException } from '@config/sentry';
 
 // Define sign-in route directly to avoid circular dependency
 const SIGN_IN_ROUTE = '/sign-in';
@@ -209,17 +209,12 @@ export const setupAxiosInterceptors = (navigate, dispatch) => {
                 return
             }
 
+            // Deliberately not reported to Sentry: a 4xx is the API rejecting this
+            // request — almost always a validation message handleApiError has already
+            // shown the user — not a fault we can fix. Reporting every 400 buried the
+            // real errors. Only >= 500 is captured, above.
             if (error.response && error.response.status >= 400) {
                 handleApiError(error, dispatch);
-                if (error.response.status === 400) {
-                    const message = error.response.data?.error?.message || 'Bad Request'
-                    captureMessage(message, 'warning', {
-                        url: error.config?.url,
-                        method: error.config?.method,
-                        status: 400,
-                        responseData: error.response.data,
-                    })
-                }
             }
 
             return Promise.reject(error);
