@@ -349,6 +349,17 @@ Aturan:
       value: 'Pencarian mendalam dengan multiple sumber dan analisis komprehensif. Cocok untuk topik kompleks yang membutuhkan riset detail.'
     },
 
+    // V2 research mode: which implementation answers a research message.
+    // One of openalex_v3 | perplexity_retrieval_v2 | perplexity_sonar |
+    // perplexity_reformulated — see services/chatbot/v2/chatbotResearchRegistryV2.js.
+    // Only /api/v2/chatbot reads this; V1 remains hardwired to OpenAlex V3.
+    // The registry falls back to openalex_v3 when the key is missing, so an
+    // existing database needs no seed run for V2 to work.
+    {
+      key: 'chatbot_v2_research_implementation',
+      value: 'openalex_v3'
+    },
+
     // Conversation Settings
     {
       key: 'chatbot_max_messages',
