@@ -260,6 +260,15 @@
         ],
         "createdAt": "2026-11-05T11:17:09.416Z",
         "reason": "Spent decision-round sketch, never shipping UI: a compressed 1440x900 first-viewport fixture served to the decision page, which renders text under 22px as bars. The round closed on Papan Kerja; these files are the record of the hand. The shipping surface frontend-web/src/routes/OscePractice/v2 scans clean."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/routes/Chatbot/v2/pages/Chat/components/ConversationList/ConversationList.styles.jsx"
+        ],
+        "createdAt": "2026-11-11T16:29:01.886Z",
+        "reason": "user confirmed: chose 'Restruktur, tampilan sama' for Chatbot V2, so this is a verbatim port of V1's line 15. It is a list-row selection indicator (transparent when unselected, brand blue when the conversation is open), not a decorative card accent."
       }
     ]
   }
