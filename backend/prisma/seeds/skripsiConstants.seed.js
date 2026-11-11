@@ -30,6 +30,15 @@ const skripsiConstants = [
   },
 
   // === RESEARCH MODE (within AI Chat tabs) ===
+  // V2 only: which implementation answers a research message. One of
+  // openalex_v3 | perplexity_retrieval_v2 | perplexity_reformulated — see
+  // services/skripsi/v2/skripsiResearchRegistryV2.js. The registry falls back
+  // to openalex_v3 when the key is missing, so an existing database needs no
+  // seed run for V2 to work, and V1 stays hardwired to OpenAlex V3 regardless.
+  {
+    key: 'skripsi_v2_research_implementation',
+    value: 'openalex_v3',
+  },
   {
     key: 'skripsi_research_enabled',
     value: 'true',

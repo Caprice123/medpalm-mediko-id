@@ -88,6 +88,7 @@ import apiV2ContentRelationsRoutes from '#routes/api/v2/contentRelations.routes'
 import apiV2EventRoutes from '#routes/api/v2/event.routes';
 import apiV2OscePracticeRoutes from '#routes/api/v2/oscePractice.routes';
 import apiV2ChatbotRoutes from '#routes/api/v2/chatbot.routes';
+import apiV2SkripsiRoutes from '#routes/api/v2/skripsi.routes';
 import recentlyViewedRoutes from '#routes/api/v1/recentlyViewed.routes';
 import favoritesRoutes from '#routes/api/v1/favorites.routes';
 import apiFeatureNodesRoutes from '#routes/api/v1/featureNodes.routes';
@@ -201,6 +202,7 @@ app.use('/api/v2/events', apiV2EventRoutes);
 app.use('/api/v2/osce-practice', apiV2OscePracticeRoutes);
 app.use('/api/v2/diagnostic', apiV2DiagnosticRoutes);
 app.use('/api/v2/chatbot', apiV2ChatbotRoutes);
+app.use('/api/v2/skripsi', apiV2SkripsiRoutes);
 app.use('/api/v1/recently-viewed', recentlyViewedRoutes);
 app.use('/api/v1/favorites', favoritesRoutes);
 app.use('/api/v1/feature-nodes', apiFeatureNodesRoutes);
