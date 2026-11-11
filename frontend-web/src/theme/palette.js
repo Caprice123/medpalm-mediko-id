@@ -83,6 +83,17 @@ export const palette = {
   warningText: '#7d5a1f',
   warningTint: '#fef3c7',
   warningTintStrong: '#ffdba6',
+
+  // ----------------------------------------------------------------- code
+  // The dark ground a fenced code block is rendered on, and the text on it.
+  // This pair is not part of the brand ramp — it is the editor-style theme
+  // readers expect for code, and it stays dark in both light and dark UI.
+  // It lives here because the same two values were inlined separately in the
+  // chatbot reader, the Skripsi editor and the Calculator admin modal, which
+  // is exactly the drift this file exists to prevent. Measured, the pair is
+  // 11.6:1, well clear of WCAG AA for body text.
+  codeSurface: '#1e1e1e',
+  codeText: '#d4d4d4',
 }
 
 // camelCase key -> `--color-kebab-case` custom property name.

@@ -1,0 +1,344 @@
+import styled from 'styled-components'
+
+export const Container = styled.div`
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  flex-shrink: 0;
+
+  .desktop-only {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+
+    .desktop-only {
+      display: none;
+    }
+
+    .mobile-only {
+      display: flex;
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
+`
+
+export const ModesWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
+`
+
+export const ModeButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
+  background: ${props => props.$active ? 'var(--color-brand-blue-tint)' : 'var(--color-surface)'};
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-700)'};
+
+  &:hover {
+    border-color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
+  }
+
+  .cost {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .mode-description {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-gray-500);
+    text-align: left;
+    font-weight: 400;
+  }
+
+  &.mode-card {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    gap: 0.375rem;
+    flex: 1;
+
+    .cost {
+      font-size: 0.6875rem;
+    }
+
+    &.mode-card {
+      padding: 0.875rem;
+
+      .mode-description {
+        font-size: 0.75rem;
+      }
+    }
+  }
+`
+
+export const InfoButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: var(--color-brand-blue);
+    color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
+  }
+
+  &.desktop-only {
+    display: flex;
+  }
+
+  @media (max-width: 768px) {
+    &.desktop-only {
+      display: none;
+    }
+  }
+`
+
+export const InfoModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+export const InfoModalOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+`
+
+export const InfoModalContent = styled.div`
+  position: relative;
+  background: var(--color-surface);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  @media (max-width: 768px) {
+    width: 95%;
+    max-height: 90vh;
+  }
+`
+
+export const InfoModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-gray-200);
+
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.25rem;
+
+    h3 {
+      font-size: 1rem;
+    }
+  }
+`
+
+export const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-gray-500);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--color-gray-100);
+    color: var(--color-gray-900);
+  }
+`
+
+export const InfoModalBody = styled.div`
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+`
+
+export const ModeInfo = styled.div`
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--color-gray-50);
+
+  .mode-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    .mode-icon {
+      font-size: 1.25rem;
+    }
+
+    .mode-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-gray-900);
+    }
+  }
+
+  .mode-description {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-gray-500);
+    padding-left: 2rem;
+  }
+
+  &.mode-selector-item {
+    padding: 0;
+    background: transparent;
+
+    .mode-description {
+      padding-left: 0;
+      font-size: 0.8125rem;
+      color: var(--color-gray-500);
+      margin-top: 0.25rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.625rem;
+
+    .mode-header {
+      .mode-icon {
+        font-size: 1.125rem;
+      }
+
+      .mode-label {
+        font-size: 0.9375rem;
+      }
+    }
+
+    .mode-description {
+      font-size: 0.8125rem;
+      padding-left: 1.75rem;
+    }
+
+    &.mode-selector-item {
+      padding: 0;
+      background: transparent;
+
+      .mode-description {
+        padding-left: 0;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+`
+
+// The mobile mode picker lays each option out as a card: identity and price on
+// one row, the description underneath. V1 built this row with inline style
+// objects at the call site.
+export const ModeCardTopRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+`
+
+export const ModeCardIdentity = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+// Marks the collapsed mobile control as openable.
+export const DropdownCaret = styled.span`
+  margin-left: auto;
+`
+
+export const UnavailableNotice = styled.div`
+  padding: 1rem;
+  color: var(--color-gray-500);
+  text-align: center;
+  font-size: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+`
