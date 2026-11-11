@@ -17,7 +17,7 @@ import {
   CardActions,
   UpdatedText
 } from './SetsList.styles'
-import { fetchSets } from '../../../../../../store/skripsi/userAction'
+import { fetchSets } from '../../../../../../../store/skripsi/userAction'
 
 function SetsList() {
   const { sets, loading } = useSelector((state) => state.skripsi)

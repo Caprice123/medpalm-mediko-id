@@ -3,7 +3,7 @@ import { generatePath, useNavigate } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '@store/store'
 import { fetchSets, createSet } from '@store/skripsi/userAction'
 import { actions as commonActions } from '@store/common/reducer'
-import { SkripsiRoute } from '../../../routes'
+import { SkripsiRoute } from '../../../../routes'
 
 export const useSkripsiList = () => {
   const dispatch = useAppDispatch()

@@ -1,6 +1,6 @@
 import { BaseService } from '#services/baseService'
 import { GetSkripsiConfigService } from '#services/skripsi/getSkripsiConfigService'
-import { GetSkripsiSetsService } from '#services/skripsi/getSkripsiSetsService'
+import { GetSkripsiSetsV2Service } from '#services/skripsi/v2/getSkripsiSetsV2Service'
 import { SkripsiSetListV2Serializer } from '#serializers/api/v2/skripsiSetListSerializer'
 import { ValidationError } from '#errors/validationError'
 
@@ -14,7 +14,7 @@ export class GetSkripsiBootstrapV2Service extends BaseService {
 
     const [config, sets] = await Promise.all([
       GetSkripsiConfigService.call(),
-      GetSkripsiSetsService.call({ userId, page: 1, perPage }),
+      GetSkripsiSetsV2Service.call({ userId, page: 1, perPage }),
     ])
 
     return {

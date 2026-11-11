@@ -1,5 +1,5 @@
 import prisma from '#prisma/client'
-import { GetSkripsiSetsService } from '#services/skripsi/getSkripsiSetsService'
+import { GetSkripsiSetsV2Service } from '#services/skripsi/v2/getSkripsiSetsV2Service'
 import { CreateSkripsiSetService } from '#services/skripsi/createSkripsiSetService'
 import { GetSkripsiSetService } from '#services/skripsi/getSkripsiSetService'
 import { UpdateSkripsiSetService } from '#services/skripsi/updateSkripsiSetService'
@@ -43,12 +43,13 @@ class SkripsiSetsV2Controller {
   }
 
   async index(req, res) {
-    const { page, perPage } = req.query
+    const { page, perPage, search } = req.query
 
-    const result = await GetSkripsiSetsService.call({
+    const result = await GetSkripsiSetsV2Service.call({
       userId: req.user.id,
       page: parseInt(page) || 1,
       perPage: parseInt(perPage) || 20,
+      search,
     })
 
     return res.status(200).json({
