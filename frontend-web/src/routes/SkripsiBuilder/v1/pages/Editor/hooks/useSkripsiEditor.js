@@ -7,7 +7,7 @@ import { upload } from '@store/common/action'
 import { exportBlocksToDocx } from '@components/BlockNoteEditor/exportToDocx'
 import { blocksToHTML, htmlToBlocks } from '@utils/blockNoteConversion'
 import { setInterval, clearInterval } from 'worker-timers'
-import { SkripsiRoute } from '../../../routes'
+import { SkripsiRoute } from '../../../../routes'
 import { actions as commonActions } from '@store/common/reducer'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'

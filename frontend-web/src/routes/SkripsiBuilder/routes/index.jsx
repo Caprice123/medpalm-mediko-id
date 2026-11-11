@@ -1,5 +1,5 @@
 import SkripsiList from '../v2/pages/List';
-import SkripsiEditor from '../pages/Editor';
+import SkripsiEditor from '../v2/pages/Editor';
 
 export class SkripsiRoute {
     static moduleRoute = "/sets"
@@ -7,10 +7,9 @@ export class SkripsiRoute {
     static editorRoute = SkripsiRoute.moduleRoute + "/:setId"
 }
 
-// The list is served by the V2 page; its V1 implementation stays on disk under
-// `../v1/pages/List` as the archived original and is no longer mounted. The
-// editor is still V1 and reads `/api/v1/skripsi`, so a set opened from the V2
-// list keeps working while the V2 editor is built.
+// Both pages are served by V2. The V1 implementations stay on disk under
+// `../v1/pages` as the archived originals and are no longer mounted;
+// `/api/v1/skripsi` still serves them if either is ever remounted.
 export const skripsiRoutes = [
     { path: SkripsiRoute.initialRoute, element: <SkripsiList /> },
     { path: SkripsiRoute.editorRoute, element: <SkripsiEditor /> },
