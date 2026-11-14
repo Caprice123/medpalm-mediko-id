@@ -8,6 +8,8 @@ import {
   fetchFlashcardProgress,
   fetchFlashcardProgressSubtopics,
   startFlashcardDueSession,
+  startFlashcardNodeDueSession,
+  startFlashcardCustomSession,
   actions,
 } from '@store/flashcardNodes'
 import { fetchUserNodeByName } from '@store/featureNodes'
@@ -26,6 +28,8 @@ export function useTopicList() {
   const [loadingTopicId, setLoadingTopicId] = useState(null)
   const [customOpen, setCustomOpen] = useState(false)
   const [progressSubtopicsCache, setProgressSubtopicsCache] = useState({})
+  // where the running session is rendered: { type: 'topic', topicId } | { type: 'custom' } | { type: 'due' }
+  const [sessionOrigin, setSessionOrigin] = useState(null)
 
   useEffect(() => {
     dispatch(fetchFlashcardTopics())
@@ -47,16 +51,39 @@ export function useTopicList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLinkSubtopicName, topics])
 
-  const handleStartAllDue = () => dispatch(startFlashcardDueSession(DUE_SESSION_BATCH_SIZE))
+  const handleStartAllDue = () => {
+    setSessionOrigin({ type: 'due' })
+    dispatch(startFlashcardDueSession(DUE_SESSION_BATCH_SIZE))
+  }
 
-  const handleCloseSession = () => {
+  const handleStartNodeDue = (nodeId) => {
+    setSessionOrigin({ type: 'due' })
+    dispatch(startFlashcardNodeDueSession(nodeId))
+  }
+
+  const handleStartTopicSession = (topicId, nodeIds, count) => {
+    setSessionOrigin({ type: 'topic', topicId })
+    dispatch(startFlashcardCustomSession(nodeIds, count))
+  }
+
+  const handleCustomSessionStarted = () => setSessionOrigin({ type: 'custom' })
+
+  const handleCloseSession = useCallback(() => {
+    setSessionOrigin(null)
     dispatch(actions.setSessionCards([]))
     dispatch(fetchFlashcardDueToday())
     dispatch(fetchFlashcardProgress())
-  }
+  }, [dispatch])
 
   const toggle = useCallback(async (topicId) => {
-    setOpenTopicId(prev => (prev === topicId ? null : topicId))
+    const collapsing = openTopicId === topicId
+    setOpenTopicId(collapsing ? null : topicId)
+    // collapsing the topic that hosts the session ends it, so it can't be
+    // resumed half-way with the player's own state already thrown away
+    if (collapsing) {
+      if (sessionOrigin?.type === 'topic' && sessionOrigin.topicId === topicId) handleCloseSession()
+      return
+    }
     if (!subtopicsByTopic[topicId]) {
       setLoadingTopicId(topicId)
       try {
@@ -65,7 +92,7 @@ export function useTopicList() {
         setLoadingTopicId(prev => (prev === topicId ? null : prev))
       }
     }
-  }, [dispatch, subtopicsByTopic])
+  }, [dispatch, subtopicsByTopic, openTopicId, sessionOrigin, handleCloseSession])
 
   const loadProgressSubtopics = useCallback(async (topicId) => {
     const data = await dispatch(fetchFlashcardProgressSubtopics(topicId))
@@ -77,7 +104,11 @@ export function useTopicList() {
     loadingTopicId,
     customOpen,
     setCustomOpen,
+    sessionOrigin,
     handleStartAllDue,
+    handleStartNodeDue,
+    handleStartTopicSession,
+    handleCustomSessionStarted,
     handleCloseSession,
     toggle,
     deepLinkSubtopicId: resolvedDeepLinkSubtopicId,

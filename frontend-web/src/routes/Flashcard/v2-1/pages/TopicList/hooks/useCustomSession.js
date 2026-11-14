@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFlashcardSubtopicsRaw, startFlashcardCustomSession } from '@store/flashcardNodes'
 
-export function useCustomSession(onClose) {
+export function useCustomSession(onClose, onStarted) {
   const dispatch = useDispatch()
   const { loading } = useSelector(s => s.flashcardNodes)
 
@@ -48,7 +48,10 @@ export function useCustomSession(onClose) {
       else nodeIds.push(...f.subtopicIds)
     }
     if (nodeIds.length === 0) return
-    dispatch(startFlashcardCustomSession(nodeIds, totalCount, onClose))
+    dispatch(startFlashcardCustomSession(nodeIds, totalCount, () => {
+      onStarted?.()
+      onClose?.()
+    }))
   }
 
   const canStart = topicFilters.some(f => f.topicId !== null) && !loading.isStartingSession

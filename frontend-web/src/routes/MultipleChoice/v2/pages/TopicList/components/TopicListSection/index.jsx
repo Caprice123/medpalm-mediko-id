@@ -1,4 +1,5 @@
 import QuickStartInline from '../QuickStartInline'
+import SessionPlayer from '../SessionPlayer'
 import { useTopicListSection } from './hooks/useTopicListSection'
 import {
   EmptyWrap,
@@ -7,11 +8,13 @@ import {
   TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats, TopikStatsGroup, TopikActions,
   TopikStatChip, TopikStatNum, TopikStartBtn, TopikChevron,
   SkeletonBlock, SkeletonCircle, SkeletonTopikRow,
+  SessionSlot,
 } from './TopicListSection.styles'
 
 export default function TopicListSection({
   openId, loadingIds, subtopicsCache, toggle,
   onLoadMoreSubtopics, onStart, isStarting, deepLinkSubtopicId,
+  sessionTopicId, onCloseSession,
 }) {
   const { topics, filteredTopics, isLoading, searchQuery, setSearchQuery } = useTopicListSection()
 
@@ -75,16 +78,24 @@ export default function TopicListSection({
                   </TopikStats>
                 </TopikRowHeader>
                 {isOpen && (
-                  <QuickStartInline
-                    topic={topic}
-                    subtopics={subtopics}
-                    isLoadingSubtopics={isLoadingSubtopic}
-                    hasMoreSubtopics={hasMoreSubtopics}
-                    onLoadMoreSubtopics={() => onLoadMoreSubtopics(topic.id)}
-                    onStart={onStart}
-                    isStarting={isStarting}
-                    initialSelectedSubtopicId={deepLinkSubtopicId}
-                  />
+                  <>
+                    <QuickStartInline
+                      topic={topic}
+                      subtopics={subtopics}
+                      isLoadingSubtopics={isLoadingSubtopic}
+                      hasMoreSubtopics={hasMoreSubtopics}
+                      onLoadMoreSubtopics={() => onLoadMoreSubtopics(topic.id)}
+                      onStart={(nodeIds, count) => onStart(topic.id, nodeIds, count)}
+                      isStarting={isStarting}
+                      initialSelectedSubtopicId={deepLinkSubtopicId}
+                    />
+                    {/* a session started here plays right below its own subtopic picker */}
+                    {sessionTopicId === topic.id && (
+                      <SessionSlot>
+                        <SessionPlayer onClose={onCloseSession} />
+                      </SessionSlot>
+                    )}
+                  </>
                 )}
               </TopikRowWrap>
             )

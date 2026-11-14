@@ -27,13 +27,25 @@ export default function AnkiPlayer({ deck, onBack }) {
 
   const hasTopicPath = !!(card.topic || card.subtopic)
 
-  const bodyRef = useRef(null)
+  // Inline player: bring it into view when the session opens, and pull the page
+  // back to the card's top whenever it has scrolled out above the viewport.
+  const wrapperRef = useRef(null)
+  const startedRef = useRef(false)
   useEffect(() => {
-    bodyRef.current?.scrollTo({ top: 0 })
+    const el = wrapperRef.current
+    if (!el) return
+    if (!startedRef.current) {
+      startedRef.current = true
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (el.getBoundingClientRect().top < 0) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }, [card?.id])
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <DeckContainer>
         <HeaderSection>
           <DeckHeader>
@@ -54,7 +66,7 @@ export default function AnkiPlayer({ deck, onBack }) {
           </ProgressBar>
         </HeaderSection>
 
-        <BodySection ref={bodyRef}>
+        <BodySection>
           <CardBody card={card} revealed={revealed} onReveal={handleReveal} />
         </BodySection>
 

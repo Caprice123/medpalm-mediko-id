@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMcqSubtopicsRaw, startMcqCustomSession } from '@store/mcqNodes'
 
-export function useCustomSession(onClose) {
+export function useCustomSession(onClose, onStarted) {
   const dispatch = useDispatch()
   const { loading } = useSelector(s => s.mcqNodes)
 
@@ -48,6 +48,7 @@ export function useCustomSession(onClose) {
       else nodeIds.push(...d.subtopicIds)
     }
     if (nodeIds.length === 0) return
+    onStarted?.()
     dispatch(startMcqCustomSession(nodeIds, totalCount))
     onClose()
   }

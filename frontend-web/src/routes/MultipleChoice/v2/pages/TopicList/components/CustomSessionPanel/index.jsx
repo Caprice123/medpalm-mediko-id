@@ -5,13 +5,13 @@ import TopicSection from '../TopicSection'
 import { Footer, StartButton } from './CustomSessionPanel.styles'
 import { useSelector } from 'react-redux'
 
-export default function CustomSessionPanel({ onClose }) {
+export default function CustomSessionPanel({ onClose, onStarted }) {
     const { topics } = useSelector(state => state.mcqNodes)
   const {
     sectionList, subtopicsMap, loadingTopics,
     updateSection, addSection, removeSection,
     totalCount, handleStart, canStart, loading,
-  } = useCustomSession(onClose)
+  } = useCustomSession(onClose, onStarted)
 
   const topicOptions = topics.map(t => ({ value: t.id, label: t.name }))
 

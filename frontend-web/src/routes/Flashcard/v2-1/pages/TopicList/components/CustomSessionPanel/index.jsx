@@ -5,13 +5,13 @@ import { useCustomSession } from '../../hooks/useCustomSession'
 import TopicFilterCard from '../TopicFilterCard'
 import { Footer, StartButton } from './CustomSessionPanel.styles'
 
-export default function CustomSessionPanel({ onClose }) {
+export default function CustomSessionPanel({ onClose, onStarted }) {
   const { topics, loading } = useSelector(s => s.flashcardNodes)
   const {
     topicFilters, subtopicsMap, loadingTopics,
     updateTopicFilter, addTopicFilter, removeTopicFilter,
     totalCount, handleStart, canStart,
-  } = useCustomSession(onClose)
+  } = useCustomSession(onClose, onStarted)
 
   const topicOptions = topics.map(t => ({ value: t.id, label: t.name }))
 

@@ -31,10 +31,22 @@ export default function McqSession({ onClose }) {
   const isLast = currentIndex === sessionQuestions.length - 1
   const pct = Math.round(((currentIndex + (isAnswered ? 1 : 0)) / sessionQuestions.length) * 100)
 
-  const bodyRef = useRef(null)
+  // Inline session: bring it into view when it opens, and pull the page back to
+  // the question's top whenever it has scrolled out above the viewport.
+  const wrapperRef = useRef(null)
+  const startedRef = useRef(false)
   useEffect(() => {
-    bodyRef.current?.scrollTo({ top: 0 })
-  }, [question?.id])
+    const el = wrapperRef.current
+    if (!el) return
+    if (!startedRef.current) {
+      startedRef.current = true
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (el.getBoundingClientRect().top < 0) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [question?.id, finished])
 
   const handleSelect = (optIdx) => {
     if (isAnswered) return
@@ -82,7 +94,7 @@ export default function McqSession({ onClose }) {
     const totalAnswered = answers.length
     const pctScore = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0
     return (
-      <Wrapper>
+      <Wrapper ref={wrapperRef}>
         <SessionContainer>
           <HeaderSection>
             <SessionHeader>
@@ -124,7 +136,7 @@ export default function McqSession({ onClose }) {
   }
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <SessionContainer>
         <HeaderSection>
           <SessionHeader>
@@ -148,7 +160,7 @@ export default function McqSession({ onClose }) {
           </ProgressBar>
         </HeaderSection>
 
-        <BodySection ref={bodyRef}>
+        <BodySection>
           <QuestionCard>
             {question.isNew && (
               <QuestionMeta>

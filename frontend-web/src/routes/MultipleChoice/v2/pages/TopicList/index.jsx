@@ -5,17 +5,19 @@ import TopicListHeader from './components/TopicListHeader'
 import PerformanceCard from './components/PerformanceCard'
 import TopicListSection from './components/TopicListSection'
 import CustomSessionPanel from './components/CustomSessionPanel'
-import McqSession from './components/Session'
+import SessionPlayer from './components/SessionPlayer'
 import { Container } from './TopicList.styles'
 
 export default function BankSoalPage() {
-  const { sessionQuestions, loading } = useSelector(s => s.mcqNodes)
+  const { loading } = useSelector(s => s.mcqNodes)
   const mcqFeature = useSelector(s => s.feature.features.find(f => f.sessionType === 'mcq'))
   const {
     openId, subtopicsCache, loadingIds,
     customOpen, setCustomOpen,
+    sessionOrigin,
     handleCloseSession,
-    toggle, handleStart, loadSubtopics, loadMoreSubtopics,
+    toggle, handleStart, handleCustomSessionStarted,
+    loadSubtopics, loadMoreSubtopics,
     deepLinkSubtopicId,
   } = useTopicList()
 
@@ -34,6 +36,9 @@ export default function BankSoalPage() {
         onOpenCustomSession={() => setCustomOpen(true)}
       />
 
+      {/* a custom session plays directly under the button that opened it */}
+      {sessionOrigin?.type === 'custom' && <SessionPlayer onClose={handleCloseSession} />}
+
       <PerformanceCard
         subtopicsCache={subtopicsCache}
         onRequestSubtopics={loadSubtopics}
@@ -48,14 +53,15 @@ export default function BankSoalPage() {
         onStart={handleStart}
         isStarting={loading.isStartingSession}
         deepLinkSubtopicId={deepLinkSubtopicId}
+        sessionTopicId={sessionOrigin?.type === 'topic' ? sessionOrigin.topicId : null}
+        onCloseSession={handleCloseSession}
       />
 
-      {sessionQuestions.length > 0 && (
-        <McqSession onClose={handleCloseSession} />
-      )}
-
       {customOpen && (
-        <CustomSessionPanel onClose={() => setCustomOpen(false)} />
+        <CustomSessionPanel
+          onClose={() => setCustomOpen(false)}
+          onStarted={handleCustomSessionStarted}
+        />
       )}
     </Container>
   )

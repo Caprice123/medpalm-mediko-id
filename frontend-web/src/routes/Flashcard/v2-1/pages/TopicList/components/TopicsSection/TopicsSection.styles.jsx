@@ -122,6 +122,17 @@ export const TopikRowWrap = styled.div`
   animation-delay: ${p => p.$delay || '0s'};
 `
 
+// Holds the inline session player under an open topic, continuing the
+// QuickStartInline drawer's surface so the two read as one panel.
+export const SessionSlot = styled.div`
+  background: var(--color-gray-50);
+  padding: 0 1.5rem 0.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0 1rem 0.5rem;
+  }
+`
+
 export const TopikRowHeader = styled.div`
   display: flex;
   align-items: center;

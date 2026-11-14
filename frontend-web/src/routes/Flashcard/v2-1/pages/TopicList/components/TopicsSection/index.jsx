@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { loadMoreFlashcardSubtopics } from '@store/flashcardNodes'
 import QuickStartInline from '../QuickStartInline'
+import SessionPlayer from '../SessionPlayer'
 import { useTopicsSection } from './hooks/useTopicsSection'
 import {
   EmptyWrap,
@@ -9,11 +10,13 @@ import {
   TopikList, TopikRowWrap, TopikRowHeader, TopikName, TopikStats, TopikStatsGroup, TopikActions,
   TopikStatChip, TopikStatNum, TopikPct, TopikStartBtn, TopikChevron,
   SkeletonBlock, SkeletonCircle, SkeletonTopikRow,
+  SessionSlot,
 } from './TopicsSection.styles'
 
 export default function TopicsSection({
   openTopicId, loadingTopicId, toggle,
-  onStartCustomSession, isStartingSession, deepLinkSubtopicId,
+  onStartTopicSession, isStartingSession, deepLinkSubtopicId,
+  sessionTopicId, onCloseSession,
 }) {
   const dispatch = useDispatch()
   const {
@@ -86,16 +89,24 @@ export default function TopicsSection({
                   </TopikStats>
                 </TopikRowHeader>
                 {isOpen && (
-                  <QuickStartInline
-                    topic={topic}
-                    subtopics={subtopics}
-                    isLoadingSubtopics={isLoadingSubtopic}
-                    hasMoreSubtopics={hasMoreSubtopics}
-                    onLoadMoreSubtopics={() => dispatch(loadMoreFlashcardSubtopics(topic.id))}
-                    onStart={onStartCustomSession}
-                    isStarting={isStartingSession}
-                    initialSelectedSubtopicId={deepLinkSubtopicId}
-                  />
+                  <>
+                    <QuickStartInline
+                      topic={topic}
+                      subtopics={subtopics}
+                      isLoadingSubtopics={isLoadingSubtopic}
+                      hasMoreSubtopics={hasMoreSubtopics}
+                      onLoadMoreSubtopics={() => dispatch(loadMoreFlashcardSubtopics(topic.id))}
+                      onStart={(nodeIds, count) => onStartTopicSession(topic.id, nodeIds, count)}
+                      isStarting={isStartingSession}
+                      initialSelectedSubtopicId={deepLinkSubtopicId}
+                    />
+                    {/* a session started here plays right below its own subtopic picker */}
+                    {sessionTopicId === topic.id && (
+                      <SessionSlot>
+                        <SessionPlayer onClose={onCloseSession} />
+                      </SessionSlot>
+                    )}
+                  </>
                 )}
               </TopikRowWrap>
             )

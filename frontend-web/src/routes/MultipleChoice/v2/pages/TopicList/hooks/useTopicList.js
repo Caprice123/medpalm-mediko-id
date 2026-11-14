@@ -19,6 +19,8 @@ export function useTopicList() {
   const [subtopicsCache, setSubtopicsCache] = useState({})
   const [loadingIds, setLoadingIds] = useState(new Set())
   const [customOpen, setCustomOpen] = useState(false)
+  // where the running session is rendered: { type: 'topic', topicId } | { type: 'custom' }
+  const [sessionOrigin, setSessionOrigin] = useState(null)
 
   useEffect(() => {
     dispatch(fetchMcqTopics())
@@ -38,13 +40,21 @@ export function useTopicList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLinkSubtopicName, topics])
 
-  const handleCloseSession = (submitted) => {
+  const handleCloseSession = useCallback((submitted) => {
+    setSessionOrigin(null)
     dispatch(actions.setSessionQuestions([]))
     if (submitted) dispatch(fetchMcqTopics())
-  }
+  }, [dispatch])
 
   const toggle = useCallback(async (topicId) => {
-    setOpenId(prev => prev === topicId ? null : topicId)
+    const collapsing = openId === topicId
+    setOpenId(collapsing ? null : topicId)
+    // collapsing the topic that hosts the session ends it, so it can't be
+    // resumed half-way with the session's own state already thrown away
+    if (collapsing) {
+      if (sessionOrigin?.type === 'topic' && sessionOrigin.topicId === topicId) handleCloseSession(false)
+      return
+    }
     if (!subtopicsCache[topicId]) {
       setLoadingIds(prev => new Set(prev).add(topicId))
       try {
@@ -54,7 +64,7 @@ export function useTopicList() {
         setLoadingIds(prev => { const n = new Set(prev); n.delete(topicId); return n })
       }
     }
-  }, [dispatch, subtopicsCache])
+  }, [dispatch, subtopicsCache, openId, sessionOrigin, handleCloseSession])
 
   // Used by the performance chart drill-down — needs the complete set, not just page 1.
   const loadSubtopics = useCallback(async (topicId) => {
@@ -72,9 +82,12 @@ export function useTopicList() {
     }))
   }, [dispatch, subtopicsCache])
 
-  const handleStart = (nodeIds, count) => {
+  const handleStart = (topicId, nodeIds, count) => {
+    setSessionOrigin({ type: 'topic', topicId })
     dispatch(startMcqCustomSession(nodeIds, count))
   }
+
+  const handleCustomSessionStarted = () => setSessionOrigin({ type: 'custom' })
 
   return {
     openId,
@@ -82,9 +95,11 @@ export function useTopicList() {
     loadingIds,
     customOpen,
     setCustomOpen,
+    sessionOrigin,
     handleCloseSession,
     toggle,
     handleStart,
+    handleCustomSessionStarted,
     loadSubtopics,
     loadMoreSubtopics,
     deepLinkSubtopicId: resolvedDeepLinkSubtopicId,

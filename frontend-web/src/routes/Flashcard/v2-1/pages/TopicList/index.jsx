@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { startFlashcardCustomSession, startFlashcardNodeDueSession } from '@store/flashcardNodes'
-import AnkiPlayer from './components/AnkiPlayer'
+import { useSelector } from 'react-redux'
+import SessionPlayer from './components/SessionPlayer'
 import { useTopicList, DUE_SESSION_BATCH_SIZE } from './hooks/useTopicList'
 import TopicListHeader from './components/TopicListHeader'
 import DueTodayPanel from './components/DueTodayPanel'
@@ -12,13 +11,14 @@ import CustomSessionPanel from './components/CustomSessionPanel'
 import { Container } from './TopicList.styles'
 
 export default function TopicListPage() {
-  const dispatch = useDispatch()
-  const { sessionCards, loading } = useSelector(s => s.flashcardNodes)
+  const { loading } = useSelector(s => s.flashcardNodes)
   const flashcardFeature = useSelector(s => s.feature.features.find(f => f.sessionType === 'flashcard'))
   const {
     openTopicId, loadingTopicId,
     customOpen, setCustomOpen,
-    handleStartAllDue, handleCloseSession,
+    sessionOrigin,
+    handleStartAllDue, handleStartNodeDue, handleStartTopicSession,
+    handleCustomSessionStarted, handleCloseSession,
     toggle,
     deepLinkSubtopicId,
     progressSubtopicsCache, loadProgressSubtopics,
@@ -39,12 +39,17 @@ export default function TopicListPage() {
         onOpenCustomSession={() => setCustomOpen(true)}
       />
 
+      {/* a custom session plays directly under the button that opened it */}
+      {sessionOrigin?.type === 'custom' && <SessionPlayer onClose={handleCloseSession} />}
+
       <DueTodayPanel
         onStartAll={handleStartAllDue}
-        onStartNode={(nodeId) => dispatch(startFlashcardNodeDueSession(nodeId))}
+        onStartNode={handleStartNodeDue}
         isStarting={loading.isStartingSession}
         batchSize={DUE_SESSION_BATCH_SIZE}
       />
+
+      {sessionOrigin?.type === 'due' && <SessionPlayer onClose={handleCloseSession} />}
 
       {/* <ProgressPanel /> — replaced by PerformanceCard below */}
       <PerformanceCard
@@ -56,20 +61,18 @@ export default function TopicListPage() {
         openTopicId={openTopicId}
         loadingTopicId={loadingTopicId}
         toggle={toggle}
-        onStartCustomSession={(nodeIds, count) => dispatch(startFlashcardCustomSession(nodeIds, count))}
+        onStartTopicSession={handleStartTopicSession}
         isStartingSession={loading.isStartingSession}
         deepLinkSubtopicId={deepLinkSubtopicId}
+        sessionTopicId={sessionOrigin?.type === 'topic' ? sessionOrigin.topicId : null}
+        onCloseSession={handleCloseSession}
       />
 
-      {sessionCards.length > 0 && (
-        <AnkiPlayer
-          deck={{ title: 'Sesi Belajar', cards: sessionCards }}
-          onBack={handleCloseSession}
-        />
-      )}
-
       {customOpen && (
-        <CustomSessionPanel onClose={() => setCustomOpen(false)} />
+        <CustomSessionPanel
+          onClose={() => setCustomOpen(false)}
+          onStarted={handleCustomSessionStarted}
+        />
       )}
     </Container>
   )

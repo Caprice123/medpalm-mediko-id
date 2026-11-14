@@ -14,7 +14,8 @@ import FeatureDetailSection from './components/FeatureDetailSection'
 import PricingSection from './components/PricingSection'
 import EventSection from './components/EventSection'
 import ChallengeSection from './components/ChallengeSection'
-import TestimonialSection from './components/TestimonialSection'
+// Testimonials hidden for now — section kept so it can be switched back on.
+// import TestimonialSection from './components/TestimonialSection'
 import FAQSection from './components/FAQSection'
 import CTASection from './components/CTASection'
 import FooterSection from './components/FooterSection'
@@ -25,7 +26,7 @@ function Home() {
     heroTitle,
     heroSubtitle,
     faqItems,
-    testimonialItems,
+    // testimonialItems, — see the hidden TestimonialSection below
     socialItems,
   } = useHome()
 
@@ -51,7 +52,7 @@ function Home() {
 
         <ChallengeSection />
 
-        <TestimonialSection testimonialItems={testimonialItems} />
+        {/* <TestimonialSection testimonialItems={testimonialItems} /> */}
 
         <FAQSection faqItems={faqItems} />
 
