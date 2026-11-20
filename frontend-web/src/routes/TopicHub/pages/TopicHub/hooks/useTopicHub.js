@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserTopics } from '@store/featureNodes'
 
@@ -29,19 +29,43 @@ export function useTopicHub() {
   const error = useSelector(s => s.featureNodes.errors.userTopics)
   const isLoading = useSelector(s => s.featureNodes.loading.isFetchingUserTopics)
   const { primary, special } = useSelector(s => s.featureNodes.userTopics)
+  // Two values, not one: searchQuery is what is typed, appliedQuery is what the
+  // API was actually asked for. The request follows the second, so typing costs
+  // nothing until it is submitted — and the empty states below stay truthful
+  // about the list on screen while the field says something else.
+  const [searchQuery, setSearchQuery] = useState('')
+  const [appliedQuery, setAppliedQuery] = useState('')
 
-  const loadTopics = useCallback(() => { dispatch(fetchUserTopics()) }, [dispatch])
+  const loadTopics = useCallback(() => {
+    dispatch(fetchUserTopics({ search: appliedQuery }))
+  }, [dispatch, appliedQuery])
 
   useEffect(loadTopics, [loadTopics])
+
+  const submitSearch = useCallback(() => { setAppliedQuery(searchQuery.trim()) }, [searchQuery])
+
+  const clearSearch = useCallback(() => {
+    setSearchQuery('')
+    setAppliedQuery('')
+  }, [])
 
   return {
     lastTopic: getLastTopic(),
     error,
     isLoading,
+    searchQuery,
+    setSearchQuery,
+    submitSearch,
+    clearSearch,
     // Each section hides itself when it has no topics, so with both empty the
     // page would render a greeting over nothing at all. The page answers that
     // case; the sections only answer their own.
-    isEmpty: !isLoading && !error && primary.length === 0 && special.length === 0,
+    isEmpty: !isLoading && !error && !appliedQuery && primary.length === 0 && special.length === 0,
+    // Same reason, one step further: with a query on, both sections can hide
+    // while the hub itself does hold topics — that is a failed search, not an
+    // empty hub, and it needs its own message plus a way back out.
+    isNotFound: !isLoading && !error && !!appliedQuery && primary.length === 0 && special.length === 0,
+    appliedQuery,
     retry: loadTopics,
   }
 }

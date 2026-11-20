@@ -3,10 +3,11 @@ import { UserFeatureNodesSerializer } from '#serializers/api/v1/userFeatureNodes
 
 class NodesController {
   async index(req, res) {
-    const { id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page, perPage } = req.query
+    const { id, name, search, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page, perPage } = req.query
     const result = await GetUserFeatureNodesService.call({
       id,
       name,
+      search,
       nodeType,
       parentId: parentId !== undefined ? (parentId === 'null' ? null : parentId) : undefined,
       parentSlug,

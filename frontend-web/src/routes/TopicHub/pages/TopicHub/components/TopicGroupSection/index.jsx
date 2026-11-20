@@ -15,6 +15,11 @@ export default function TopicGroupSection({ classification, tag, description, on
   const { userTopics, loading } = useSelector(s => s.featureNodes)
   const topics = classification === 'primary' ? userTopics.primary : userTopics.special
   const isLoading = loading.isFetchingUserTopics
+  // Placeholders stand in only while there is nothing to stand in for. Once a
+  // search re-queries the API, the topics already on screen stay put until the
+  // new ones land — swapping them for skeletons on every settled keystroke
+  // made the page blink through a loading state the student never asked for.
+  const showSkeletons = isLoading && topics.length === 0
 
   if (!isLoading && topics.length === 0) return null
 
@@ -23,7 +28,7 @@ export default function TopicGroupSection({ classification, tag, description, on
       <TopicSectionTag>{tag}</TopicSectionTag>
       <TopicSectionDesc>{description}</TopicSectionDesc>
       <TopicGrid>
-        {isLoading
+        {showSkeletons
           ? Array.from({ length: SKELETON_COUNT }, (_, i) => <SkeletonCard key={i} />)
           : topics.map((topic) => {
             const icon = firstIcon(topic.icon)

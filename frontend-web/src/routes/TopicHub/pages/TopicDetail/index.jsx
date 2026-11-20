@@ -11,7 +11,11 @@ import { Container } from './TopicDetail.styles'
 
 export default function TopicDetailPage() {
   const navigate = useNavigate()
-  const { topicSlug, topic, error, retry } = useTopicDetail()
+  const {
+    topicSlug, topic, error, retry,
+    subtopicSearch, setSubtopicSearch,
+    submitSubtopicSearch, clearSubtopicSearch, appliedSubtopicSearch,
+  } = useTopicDetail()
 
   return (
     <Container>
@@ -39,6 +43,11 @@ export default function TopicDetailPage() {
         <>
           <SubtopicsSection
             onSelectSubtopic={slug => navigate(generatePath(TopicHubRoute.subtopicRoute, { topicSlug, subtopicSlug: slug }))}
+            searchQuery={subtopicSearch}
+            onSearchChange={setSubtopicSearch}
+            onSearchSubmit={submitSubtopicSearch}
+            onSearchClear={clearSubtopicSearch}
+            appliedQuery={appliedSubtopicSearch}
           />
 
           <AtlasModelsSection

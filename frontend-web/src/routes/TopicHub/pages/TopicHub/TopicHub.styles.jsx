@@ -13,3 +13,10 @@ export const Container = styled.div`
     padding: 1.75rem 1.25rem 3rem;
   }
 `
+
+/* Sits above both topic groups, so it reads as filtering the page rather than
+   belonging to whichever section happens to follow it. */
+export const SearchRow = styled.div`
+  display: flex;
+  margin-bottom: 2rem;
+`

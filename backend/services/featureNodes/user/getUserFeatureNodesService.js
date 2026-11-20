@@ -37,7 +37,7 @@ function buildNodeFilter({ nodeType, visibility, classification, layer, hasConte
 }
 
 export class GetUserFeatureNodesService extends BaseService {
-  static async call({ id, name, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page = 1, perPage = 30, username = null } = {}) {
+  static async call({ id, name, search, nodeType, parentId, parentSlug, slug, visibility, classification, layer, hasContent, includeAdjacent, page = 1, perPage = 30, username = null } = {}) {
     const currentPage = Math.max(1, parseInt(page) || 1)
     const currentPerPage = Math.min(100, Math.max(1, parseInt(perPage) || 30))
     const skip = (currentPage - 1) * currentPerPage
@@ -47,6 +47,20 @@ export class GetUserFeatureNodesService extends BaseService {
     if (id) where.id = parseInt(id)
     if (name) where.name = name
     if (slug) where.slug = slug
+
+    // Free-text search for the student-facing lists. Deliberately NOT part of
+    // buildNodeFilter: that filter also builds the prev/next sibling map, and a
+    // student who opened a subtopic from a search result still needs to page
+    // through every sibling, not only the ones that matched what they typed.
+    // Slug is matched too so a typed "sistem-saraf" finds the same node as
+    // "sistem saraf".
+    const term = search ? String(search).trim() : ''
+    if (term) {
+      where.OR = [
+        { name: { contains: term, mode: 'insensitive' } },
+        { slug: { contains: term, mode: 'insensitive' } },
+      ]
+    }
 
     if (parentSlug) {
       const parent = await prisma.feature_nodes.findUnique({ where: { slug: parentSlug } })

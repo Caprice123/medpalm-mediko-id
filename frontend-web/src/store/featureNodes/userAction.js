@@ -20,13 +20,17 @@ async function fetchAllFeatureNodes(params) {
   return nodes
 }
 
-export const fetchUserTopics = () => async (dispatch) => {
+// `search` is matched by the API against name and slug — the filtering stays on
+// the backend so the list the student sees is the list the query actually
+// selected, not a subset of one page trimmed in the browser.
+export const fetchUserTopics = ({ search = '' } = {}) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingUserTopics: true }))
     dispatch(setError({ userTopics: null }))
+    const searchParams = search.trim() ? { search: search.trim() } : {}
     const [primary, special] = await Promise.all([
-      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok' }),
-      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem' }),
+      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'sistem_blok', ...searchParams }),
+      fetchAllFeatureNodes({ visibility: 'general', layer: 1, nodeType: 'topic', hasContent: true, classification: 'ilmu_lintas_sistem', ...searchParams }),
     ])
     dispatch(setUserTopics({ primary, special }))
   } catch (error) {
@@ -39,11 +43,12 @@ export const fetchUserTopics = () => async (dispatch) => {
   }
 }
 
-export const fetchUserSubtopics = (parentSlug) => async (dispatch) => {
+export const fetchUserSubtopics = (parentSlug, { search = '' } = {}) => async (dispatch) => {
   try {
     dispatch(setLoading({ isFetchingSubtopics: true }))
     dispatch(setError({ topicDetail: null }))
-    const subtopics = await fetchAllFeatureNodes({ parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true })
+    const searchParams = search.trim() ? { search: search.trim() } : {}
+    const subtopics = await fetchAllFeatureNodes({ parentSlug, layer: 2, nodeType: 'subtopic', hasContent: true, ...searchParams })
     dispatch(setSubtopics(subtopics))
     return subtopics
   } catch (error) {
