@@ -1,4 +1,4 @@
-import { FaExclamationTriangle, FaFileAlt, FaAlignLeft, FaListUl, FaQuoteRight } from 'react-icons/fa'
+import { FaExclamationTriangle } from 'react-icons/fa'
 import { TbSparkles } from 'react-icons/tb'
 import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
@@ -6,11 +6,11 @@ import Textarea from '@components/common/Textarea'
 import Loading from '@components/common/Loading'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import RichTextViewer from '@components/common/RichTextViewer'
+import ContextPicker from '../../../../../ContextPicker'
 import { useSectionAssistantModal } from './hooks/useSectionAssistantModal'
 import {
   Warning, Label, SectionName, SelectedText, Chips, Chip, FieldLabel, Revision, Divider,
-  Removed, Added, RevisionHeader, ViewSwitch, ViewOption, NoChangeNote,
-  ContextChips, ContextChip, DraftPreview,
+  Removed, Added, RevisionHeader, ViewSwitch, ViewOption, NoChangeNote, DraftPreview,
 } from './SectionAssistantModal.styles'
 
 // The AI assistant for one section, in two modes.
@@ -24,13 +24,9 @@ import {
 //
 // Both carry the same attachable context, which is the point of the thing: an
 // answer that has read the PBL case and the section around it is about this
-// report rather than about PBL reports in general.
-const CONTEXT_OPTIONS = [
-  { key: 'case', label: 'Kasus', icon: <FaFileAlt />, title: 'Kirim kasus PBL laporan ini' },
-  { key: 'section', label: 'Isi bagian ini', icon: <FaAlignLeft />, title: 'Kirim seluruh isi bagian ini' },
-  { key: 'outline', label: 'Kerangka', icon: <FaListUl />, title: 'Kirim daftar bagian laporan' },
-  { key: 'citations', label: 'Referensi', icon: <FaQuoteRight />, title: 'Kirim daftar referensi tersimpan' },
-]
+// report rather than about PBL reports in general. It is the same picker the
+// chat tab uses, so what "Kasus" sends and how many sections fit are one
+// answer rather than two that drift.
 
 const SectionAssistantModal = ({
   isOpen,
@@ -52,6 +48,11 @@ const SectionAssistantModal = ({
     setInstruction,
     context,
     toggleContext,
+    sections,
+    hasCase,
+    hasCitations,
+    selectedSectionIds,
+    toggleSection,
     result,
     revisionView,
     setRevisionView,
@@ -139,20 +140,17 @@ const SectionAssistantModal = ({
         {!result && (
           <>
             <FieldLabel as="div">Konteks yang dikirim</FieldLabel>
-            <ContextChips>
-              {CONTEXT_OPTIONS.map(option => (
-                <ContextChip
-                  key={option.key}
-                  type="button"
-                  $active={context[option.key]}
-                  disabled={isGenerating}
-                  title={option.title}
-                  onClick={() => toggleContext(option.key)}
-                >
-                  {option.icon} {option.label}
-                </ContextChip>
-              ))}
-            </ContextChips>
+            <ContextPicker
+              context={context}
+              sections={sections}
+              selectedSectionIds={selectedSectionIds}
+              ownSectionId={sectionId}
+              hasCase={hasCase}
+              hasCitations={hasCitations}
+              disabled={isGenerating}
+              onToggle={toggleContext}
+              onToggleSection={toggleSection}
+            />
           </>
         )}
 

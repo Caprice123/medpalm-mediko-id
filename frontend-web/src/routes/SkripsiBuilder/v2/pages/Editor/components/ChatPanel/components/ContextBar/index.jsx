@@ -1,105 +1,55 @@
-import { FaFileAlt, FaListUl, FaQuoteRight, FaTimes } from 'react-icons/fa'
-import Dropdown from '@components/common/Dropdown'
-import { useContextBar, MAX_CONTEXT_SECTIONS } from './hooks/useContextBar'
-import {
-  Bar, BarLabel, Chip, SectionChip, SectionName, RemoveButton, Adder, Hint,
-} from './ContextBar.styles'
+import { FaSlidersH } from 'react-icons/fa'
+import ContextModal from './components/ContextModal'
+import { useContextBar } from './hooks/useContextBar'
+import { Bar, BarLabel, Summary, EditHint } from './ContextBar.styles'
 
 // What the chat is allowed to read from the report before it answers.
 //
 // Without this the model only ever saw the conversation, so "bantu susun
 // pembahasan" was answered from general knowledge about PBL reports rather
-// than from this one. The case and the outline are on by default because they
-// are small and almost always the difference; whole sections are opt-in
-// because they are what actually costs tokens, and there is a cap on them.
+// than from this one.
+//
+// The choice is made in a dialog but summarised here, because it changes both
+// the answer and what the message costs: a student who is about to ask about
+// their case should be able to see, without opening anything, whether the case
+// is going with the question.
 const ContextBar = ({ tabId }) => {
   const {
     context,
+    sections,
     hasCase,
     hasCitations,
-    attachedSections,
-    availableSections,
-    canAddSection,
+    selectedSectionIds,
+    summary,
+    isPickerOpen,
+    openPicker,
+    closePicker,
     toggle,
-    addSection,
-    removeSection,
+    toggleSection,
   } = useContextBar(tabId)
 
-  const sectionOptions = availableSections.map(section => ({
-    value: section.id,
-    label: section.title,
-  }))
-
   return (
-    <Bar>
-      <BarLabel>Konteks</BarLabel>
+    <>
+      <Bar type="button" onClick={openPicker} title="Atur konteks yang dikirim ke AI">
+        <BarLabel>Konteks</BarLabel>
+        <Summary $empty={summary.length === 0}>
+          {summary.length === 0 ? 'Belum ada — AI hanya membaca percakapan ini' : summary.join(' · ')}
+        </Summary>
+        <EditHint><FaSlidersH /> Atur</EditHint>
+      </Bar>
 
-      <Chip
-        type="button"
-        $active={context.case && hasCase}
-        disabled={!hasCase}
-        onClick={() => toggle('case')}
-        title={hasCase
-          ? 'Kirim kasus PBL laporan ini sebagai konteks'
-          : 'Laporan ini dibuat tanpa teks kasus'}
-      >
-        <FaFileAlt /> Kasus
-      </Chip>
-
-      <Chip
-        type="button"
-        $active={context.outline}
-        onClick={() => toggle('outline')}
-        title="Kirim daftar bagian laporan beserta kalimat pertamanya"
-      >
-        <FaListUl /> Kerangka
-      </Chip>
-
-      <Chip
-        type="button"
-        $active={context.citations && hasCitations}
-        disabled={!hasCitations}
-        onClick={() => toggle('citations')}
-        title={hasCitations
-          ? 'Kirim daftar referensi tersimpan beserta nomornya'
-          : 'Belum ada referensi tersimpan'}
-      >
-        <FaQuoteRight /> Referensi
-      </Chip>
-
-      {attachedSections.map(section => (
-        <SectionChip key={section.id}>
-          <SectionName title={section.title}>{section.title}</SectionName>
-          <RemoveButton
-            type="button"
-            aria-label={`Lepas bagian ${section.title}`}
-            title="Lepas dari konteks"
-            onClick={() => removeSection(section.id)}
-          >
-            <FaTimes />
-          </RemoveButton>
-        </SectionChip>
-      ))}
-
-      {canAddSection ? (
-        <Adder>
-          <Dropdown
-            options={sectionOptions}
-            // Always empty: this is an adder, and what was added is already
-            // shown as a chip beside it.
-            value={null}
-            onChange={(option) => addSection(option?.value)}
-            placeholder="+ Tambah bagian"
-            isClearable={false}
-            usePortal
-          />
-        </Adder>
-      ) : (
-        attachedSections.length >= MAX_CONTEXT_SECTIONS && (
-          <Hint>Maksimal {MAX_CONTEXT_SECTIONS} bagian</Hint>
-        )
-      )}
-    </Bar>
+      <ContextModal
+        isOpen={isPickerOpen}
+        onClose={closePicker}
+        context={context}
+        sections={sections}
+        selectedSectionIds={selectedSectionIds}
+        hasCase={hasCase}
+        hasCitations={hasCitations}
+        onToggle={toggle}
+        onToggleSection={toggleSection}
+      />
+    </>
   )
 }
 

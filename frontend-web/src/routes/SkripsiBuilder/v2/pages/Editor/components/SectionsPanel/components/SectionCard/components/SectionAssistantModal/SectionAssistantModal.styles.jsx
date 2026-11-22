@@ -158,40 +158,6 @@ export const Divider = styled.div`
   margin: 1.25rem 0 1rem;
 `
 
-// What the request will carry from the rest of the report. Visually quieter
-// than the quick actions below it: this is a setting on the request, not the
-// request itself.
-export const ContextChips = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-`
-
-export const ContextChip = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid ${props => (props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-300)')};
-  background: ${props => (props.$active ? 'var(--color-brand-blue-tint)' : 'var(--color-surface)')};
-  color: ${props => (props.$active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-600)')};
-  font-size: 0.72rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.15s;
-
-  &:hover:not(:disabled) {
-    border-color: var(--color-brand-blue);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`
-
 // A draft comes back as editor HTML, so it is shown rendered — a student
 // deciding whether to keep it should see what will land in the document, not
 // its markup.

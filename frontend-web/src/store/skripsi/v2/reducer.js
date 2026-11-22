@@ -6,11 +6,16 @@ import { resetAllState } from '../../globalAction'
 // accumulate either.
 const MAX_CACHED_TABS = 10
 
-// What a chat tab attaches before the student touches anything. The case and
-// the outline are cheap and almost always what makes an answer about this
-// report rather than about PBL reports in general; whole sections are opt-in
-// because they are what actually costs tokens.
-export const DEFAULT_CHAT_CONTEXT = { case: true, outline: true, citations: false, sectionIds: [] }
+// What a chat tab attaches before the student touches anything. The case is
+// cheap and is almost always what makes an answer about this report rather
+// than about PBL reports in general; the reference list and whole sections are
+// opt-in because they are what actually costs tokens.
+export const DEFAULT_CHAT_CONTEXT = { case: true, citations: false, sectionIds: [] }
+
+// Matches the cap the server enforces in skripsiReportContextV2. Three whole
+// sections is already most of a model's attention; past that the question
+// itself starts losing.
+export const MAX_CONTEXT_SECTIONS = 3
 
 const emptyStreamingState = {
   isSending: false,
@@ -73,9 +78,9 @@ const initialState = {
   streamingStateByTab: {},
   loadingByTab: {},
   modeByTab: {},
-  // What each chat tab attaches to its next message: the PBL case, the outline,
-  // and up to a few sections in full. Per tab and in memory only — it is a
-  // choice about the next question, not a property of the report.
+  // What each chat tab attaches to its next message: the PBL case, the
+  // reference list, and up to a few sections in full. Per tab and in memory
+  // only: a choice about the next question, not a property of the report.
   chatContextByTab: {},
 
   // Only ever used to label the message that is still streaming: the server
@@ -381,6 +386,34 @@ const skripsiV2Slice = createSlice({
     setChatContext: (state, action) => {
       const { tabId, context } = action.payload
       state.chatContextByTab[tabId] = { ...DEFAULT_CHAT_CONTEXT, ...state.chatContextByTab[tabId], ...context }
+    },
+
+    // Ticking one section on or off, resolved here against the live selection
+    // rather than computed in the component. The shared Checkbox only
+    // re-renders when its own checked state changes, so a row that was left
+    // alone is still holding the selection as it was when that row last
+    // rendered — handing that list back would drop whatever was attached since.
+    toggleChatContextSection: (state, action) => {
+      const { tabId, sectionId } = action.payload
+      const current = state.chatContextByTab[tabId] || DEFAULT_CHAT_CONTEXT
+
+      // A section that was attached and then deleted from the report still
+      // counts against the cap unless it is dropped here, which would leave a
+      // tick that does nothing and never says why.
+      const attachedIds = current.sectionIds.filter(
+        id => state.sections.some(section => section.id === id)
+      )
+      const attached = attachedIds.includes(sectionId)
+
+      if (!attached && attachedIds.length >= MAX_CONTEXT_SECTIONS) return
+
+      state.chatContextByTab[tabId] = {
+        ...DEFAULT_CHAT_CONTEXT,
+        ...current,
+        sectionIds: attached
+          ? attachedIds.filter(id => id !== sectionId)
+          : [...attachedIds, sectionId],
+      }
     },
 
     setPagination: (state, action) => {

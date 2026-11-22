@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { requestSectionAssist } from '@store/skripsi/v2'
 import { actions as commonActions } from '@store/common/reducer'
+import { MAX_CONTEXT_SECTIONS } from '@store/skripsi/v2/reducer'
 import { wordDiff, hasChanges } from '../utils/wordDiff'
 
 // The quick actions. Pressing one writes its wording into the prompt box, so
@@ -24,10 +25,14 @@ export const DRAFT_ACTIONS = [
   { label: 'Uraikan dari kasus', text: 'Uraikan informasi dari kasus PBL yang relevan untuk bagian ini.' },
 ]
 
-// What travels with the request unless the student says otherwise. The case
-// and this section's own text are what make an answer about this report; the
-// outline and the reference list are bigger and are asked for when needed.
-const DEFAULT_CONTEXT = { case: true, section: true, outline: false, citations: false }
+// What travels with the request unless the student says otherwise. The case is
+// what makes an answer about this report rather than about PBL reports, and it
+// is small; the reference list is asked for when the answer has to cite.
+//
+// This section's own text is not a flag here — it is the first row of the same
+// section list, ticked on open, so "bagian ini" and "bagian lain" are picked
+// the same way and share one cap.
+const DEFAULT_CONTEXT = { case: true, citations: false }
 
 // One request, one result, nothing saved.
 //
@@ -46,10 +51,16 @@ export const useSectionAssistantModal = ({
 }) => {
   const dispatch = useDispatch()
   const isGenerating = useSelector(state => state.skripsiV2.loading.isAssistingSection)
+  const sections = useSelector(state => state.skripsiV2.sections, shallowEqual)
+  // The same two checks the chat panel makes, so a tick that would send an
+  // empty string is off and says why in both places.
+  const hasCase = useSelector(state => Boolean(state.skripsiV2.currentSet?.caseText))
+  const hasCitations = useSelector(state => state.skripsiV2.citations.length > 0)
 
   const [instruction, setInstruction] = useState('')
   const [result, setResult] = useState('')
   const [context, setContext] = useState(DEFAULT_CONTEXT)
+  const [selectedSectionIds, setSelectedSectionIds] = useState([])
   // 'changes' marks what the model altered; 'clean' is the revision as it
   // would land in the document. The marked view is the default because the
   // question a student has in front of a revision is "what did it change".
@@ -64,15 +75,23 @@ export const useSectionAssistantModal = ({
     setInstruction('')
     setResult('')
     setContext(DEFAULT_CONTEXT)
+    setSelectedSectionIds([sectionId])
     setRevisionView('changes')
     setIsConfirmingReplace(false)
-  }, [isOpen, mode])
+  }, [isOpen, mode, sectionId])
 
   // A chip replaces whatever is in the box rather than appending to it: two
   // quick actions at once contradict each other more often than they combine.
   const applyQuickAction = (text) => setInstruction(text)
 
   const toggleContext = (key) => setContext(previous => ({ ...previous, [key]: !previous[key] }))
+
+  const toggleSection = (id) => setSelectedSectionIds((previous) => {
+    if (previous.includes(id)) return previous.filter(current => current !== id)
+    if (previous.length >= MAX_CONTEXT_SECTIONS) return previous
+
+    return [...previous, id]
+  })
 
   const handleGenerate = async () => {
     if (!instruction.trim()) {
@@ -84,7 +103,14 @@ export const useSectionAssistantModal = ({
       mode,
       selectedText,
       instruction: instruction.trim(),
-      context,
+      // This section travels as `section` rather than as an id, because the
+      // server resolves it from the section being worked on: the client never
+      // has to name it, and it is the one that survives the cap.
+      context: {
+        ...context,
+        section: selectedSectionIds.includes(sectionId),
+        sectionIds: selectedSectionIds.filter(id => id !== sectionId),
+      },
     }))
 
     if (response?.result) setResult(response.result)
@@ -112,6 +138,11 @@ export const useSectionAssistantModal = ({
     setInstruction: (event) => setInstruction(event.target.value),
     context,
     toggleContext,
+    sections,
+    hasCase,
+    hasCitations,
+    selectedSectionIds,
+    toggleSection,
     result,
     revisionView,
     setRevisionView,

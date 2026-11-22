@@ -2,14 +2,26 @@ import styled from 'styled-components'
 
 // Sits between the thread and the composer, so what will be sent is read on
 // the way to pressing Kirim rather than hidden behind a settings icon.
-export const Bar = styled.div`
+//
+// The whole row is the button: there is nothing else on it, and a separate
+// "Atur" control beside a summary that is not itself clickable is a target the
+// student has to aim at.
+export const Bar = styled.button`
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: 0.45rem;
+  width: 100%;
   padding: 0.5rem 1rem;
+  border: none;
   border-top: 1px solid var(--color-gray-200);
   background: var(--color-gray-50);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--color-gray-100);
+  }
 
   @media (max-width: 768px) {
     padding: 0.5rem 0.75rem;
@@ -17,83 +29,31 @@ export const Bar = styled.div`
 `
 
 export const BarLabel = styled.span`
+  flex-shrink: 0;
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--color-gray-500);
-  margin-right: 0.15rem;
 `
 
-export const Chip = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid ${({ $active }) => ($active ? 'var(--color-brand-blue)' : 'var(--color-gray-300)')};
-  background: ${({ $active }) => ($active ? 'var(--color-brand-blue-tint)' : 'var(--color-surface)')};
-  color: ${({ $active }) => ($active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-600)')};
-  font-size: 0.72rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
-
-  &:hover:not(:disabled) {
-    border-color: var(--color-brand-blue);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-`
-
-// An attached section is not a toggle: it was chosen one at a time and is
-// removed the same way, so it carries its own × rather than switching off.
-export const SectionChip = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  max-width: 11rem;
-  padding: 0.2rem 0.3rem 0.2rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--color-brand-blue);
-  background: var(--color-brand-blue-tint);
-  color: var(--color-brand-blue-deep);
-  font-size: 0.72rem;
-  font-weight: 500;
-`
-
-export const SectionName = styled.span`
+// One line, always: a report with three long section titles attached must not
+// push the composer down the panel.
+export const Summary = styled.span`
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.72rem;
+  color: ${({ $empty }) => ($empty ? 'var(--color-gray-400)' : 'var(--color-gray-800)')};
+  font-style: ${({ $empty }) => ($empty ? 'italic' : 'normal')};
 `
 
-export const RemoveButton = styled.button`
+export const EditHint = styled.span`
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
+  gap: 0.3rem;
   flex-shrink: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  font-size: 0.65rem;
-  cursor: pointer;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.6);
-  }
-`
-
-export const Adder = styled.div`
-  width: 11rem;
-  margin-left: auto;
-`
-
-export const Hint = styled.span`
-  font-size: 0.68rem;
-  color: var(--color-gray-400);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-brand-blue);
 `

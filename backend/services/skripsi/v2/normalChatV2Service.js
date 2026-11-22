@@ -71,7 +71,6 @@ export class NormalChatV2Service extends BaseService {
   // student who attaches a section wants it read, not read back to them.
   static async buildSystemPrompt({ basePrompt, setId, context }) {
     const hasSelection = context.includeCase
-      || context.includeOutline
       || context.includeCitations
       || context.sectionIds.length > 0
 

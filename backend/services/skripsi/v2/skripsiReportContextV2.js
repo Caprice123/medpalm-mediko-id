@@ -21,8 +21,6 @@ const LIMITS = {
   case: 4000,
   // Per section, when its full text was asked for.
   section: 6000,
-  // Per section, for the one-line gist in the outline.
-  outlineExcerpt: 180,
   citations: 30,
   // How many sections may be sent in full at once.
   sectionCount: 3,
@@ -59,7 +57,6 @@ const truncate = (text, limit) => {
  */
 export const normalizeContextSelection = (raw = {}) => ({
   includeCase: raw.case === true,
-  includeOutline: raw.outline === true,
   includeCitations: raw.citations === true,
   sectionIds: Array.isArray(raw.sectionIds)
     ? [...new Set(raw.sectionIds.map(Number).filter(Number.isInteger))].slice(0, LIMITS.sectionCount)
@@ -85,24 +82,12 @@ export async function buildReportContext({ set, selection, alwaysSectionIds = []
   const wantedIds = [...new Set([...alwaysSectionIds, ...selection.sectionIds])]
     .slice(0, LIMITS.sectionCount)
 
-  if (selection.includeOutline || wantedIds.length > 0) {
+  if (wantedIds.length > 0) {
     const sections = await prisma.skripsi_sections.findMany({
       where: { set_id: set.id },
       orderBy: [{ position: 'asc' }, { id: 'asc' }],
       select: { id: true, title: true, content: true },
     })
-
-    if (selection.includeOutline && sections.length > 0) {
-      // Titles plus a first line each: enough for the model to know what
-      // already exists and not repeat it, without sending the whole report.
-      const outline = sections.map((section, index) => {
-        const text = htmlToText(section.content)
-        const gist = text ? ` — ${truncate(text.split('\n')[0], LIMITS.outlineExcerpt)}` : ' — (masih kosong)'
-        return `${index + 1}. ${section.title}${gist}`
-      })
-
-      blocks.push(`Kerangka laporan:\n${outline.join('\n')}`)
-    }
 
     for (const id of wantedIds) {
       const section = sections.find(row => row.id === id)

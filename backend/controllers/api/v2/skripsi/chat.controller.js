@@ -32,8 +32,9 @@ class SkripsiChatV2Controller {
   // user stops a long answer, so a closed socket must abort the upstream AI
   // stream too — otherwise the model keeps generating for nobody.
   async send(req, res) {
-    // `context` is what the student ticked in the panel's context bar — the
-    // case, the outline, specific sections. Absent means "nothing attached".
+    // `context` is what the student ticked in the panel's context dialog — the
+    // case, the reference list, specific sections. Absent means "nothing
+    // attached".
     const { message, modeType = 'research', context = null } = req.body
 
     res.setHeader('Content-Type', 'text/event-stream')

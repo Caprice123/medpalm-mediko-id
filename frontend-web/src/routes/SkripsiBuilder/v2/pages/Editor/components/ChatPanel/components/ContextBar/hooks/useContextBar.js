@@ -1,14 +1,13 @@
+import { useState } from 'react'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { actions, selectChatContext } from '@store/skripsi/v2/reducer'
-
-// Matches the cap the server enforces in skripsiReportContextV2. Three whole
-// sections is already most of a model's attention; past that the question
-// itself starts losing.
-export const MAX_CONTEXT_SECTIONS = 3
 
 // What the next message carries with it. The selection lives in Redux keyed by
 // tab, so switching tabs and coming back keeps it, and `sendMessage` reads it
 // at send time rather than being handed it from here.
+//
+// The bar itself only summarises; the picking happens in a dialog, so the row
+// above the composer stays one line however much is attached.
 export const useContextBar = (tabId) => {
   const dispatch = useDispatch()
 
@@ -19,30 +18,40 @@ export const useContextBar = (tabId) => {
   const hasCase = useSelector(state => Boolean(state.skripsiV2.currentSet?.caseText))
   const hasCitations = useSelector(state => state.skripsiV2.citations.length > 0)
 
-  const attachedSections = context.sectionIds
-    .map(id => sections.find(section => section.id === id))
-    .filter(Boolean)
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
 
-  const availableSections = sections.filter(section => !context.sectionIds.includes(section.id))
+  // A section that was attached and then deleted from the report is simply not
+  // there any more, so it drops out of both the summary and the count.
+  const selectedSectionIds = context.sectionIds.filter(
+    id => sections.some(section => section.id === id)
+  )
+
+  // What the summary line reads, in the order the dialog lists it. Only what
+  // will actually be sent: a tick on a report with no case sends nothing.
+  const summary = [
+    context.case && hasCase ? 'Kasus' : null,
+    context.citations && hasCitations ? 'Referensi' : null,
+    ...selectedSectionIds.map(
+      id => sections.find(section => section.id === id)?.title
+    ),
+  ].filter(Boolean)
 
   const update = (changes) => dispatch(actions.setChatContext({ tabId, context: changes }))
 
   return {
     context,
+    sections,
     hasCase,
     hasCitations,
-    attachedSections,
-    availableSections,
-    canAddSection: context.sectionIds.length < MAX_CONTEXT_SECTIONS && availableSections.length > 0,
+    selectedSectionIds,
+    summary,
+    isPickerOpen,
+    openPicker: () => setIsPickerOpen(true),
+    closePicker: () => setIsPickerOpen(false),
     toggle: (key) => update({ [key]: !context[key] }),
-    addSection: (sectionId) => {
-      if (!sectionId || context.sectionIds.includes(sectionId)) return
-      if (context.sectionIds.length >= MAX_CONTEXT_SECTIONS) return
-
-      update({ sectionIds: [...context.sectionIds, sectionId] })
-    },
-    removeSection: (sectionId) => update({
-      sectionIds: context.sectionIds.filter(id => id !== sectionId),
-    }),
+    // Resolved in the reducer against the live selection — see the action.
+    toggleSection: (sectionId) => dispatch(
+      actions.toggleChatContextSection({ tabId, sectionId })
+    ),
   }
 }
