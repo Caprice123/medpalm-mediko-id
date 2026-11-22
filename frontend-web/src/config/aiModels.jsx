@@ -3,7 +3,7 @@ export const aiModels = {
         "gemini-3-pro": "Gemini 3 Pro",
         "gemini-3-flash": "Gemini 3 Flash",
         "gemini-2.5-flash": "Gemini 2.5 Flash",
-        "gemini-2.5-flash-list":  "Gemini 2.5 Flash Lite",
+        "gemini-2.5-flash-lite": "Gemini 2.5 Flash Lite",
         "gemini-2.5-pro": "Gemini 2.5 Pro",
     },
     perplexity: {
@@ -35,6 +35,30 @@ export const aiModelsGrouped = [
 // Helper to get model label from value
 export const getModelLabel = (value) => {
     return aiModels.gemini[value] || aiModels.perplexity[value] || value
+}
+
+// Models that draw rather than write. Kept apart from the text models above so
+// a picture-generating setting cannot be pointed at a model that only answers
+// in prose.
+export const imageModels = {
+    gemini: {
+        "gemini-3-pro-image-preview": "Gemini 3 Pro Image (preview)",
+        "gemini-2.5-flash-image": "Gemini 2.5 Flash Image",
+    },
+}
+
+export const imageModelsGrouped = [
+    {
+        label: 'GEMINI',
+        options: Object.entries(imageModels.gemini).map(([value, label]) => ({
+            value,
+            label
+        }))
+    },
+]
+
+export const getImageModelLabel = (value) => {
+    return imageModels.gemini[value] || value
 }
 
 export const embeddingModels = {

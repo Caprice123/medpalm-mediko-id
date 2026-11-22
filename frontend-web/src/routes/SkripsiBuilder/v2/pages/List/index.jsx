@@ -1,13 +1,13 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { FaPlus } from 'react-icons/fa'
 import Button from '@components/common/Button'
 import LoadMore from '@components/common/LoadMore'
 import ConfirmationModal from '@components/common/ConfirmationModal'
 import SetFilter from './components/SetFilter'
 import SetsGrid from './components/SetsGrid'
-import CreateSetModal from './components/CreateSetModal'
 import { useSetList } from './hooks/useSetList'
+import { PblBuilderRoute } from '../../../routes'
 import { Container, ContentWrapper, Header, LoadMoreRow } from './List.styles'
 
 const SkripsiList = () => {
@@ -19,8 +19,7 @@ const SkripsiList = () => {
     confirmDeletion,
   } = useSetList()
 
-  // Modal visibility is the one piece of state that stays local by convention.
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const navigate = useNavigate()
 
   const setCount = useSelector(state => state.skripsiV2.sets.length)
   const pagination = useSelector(state => state.skripsiV2.pagination)
@@ -34,8 +33,10 @@ const SkripsiList = () => {
         <SetFilter />
 
         <Header>
-          <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
-            <FaPlus /> Buat Set Baru
+          {/* Creating a report is a page of its own now: a template has to be
+              picked before the set exists, which is more than a modal holds. */}
+          <Button variant="primary" onClick={() => navigate(PblBuilderRoute.createRoute)}>
+            <FaPlus /> Buat Laporan Baru
           </Button>
         </Header>
 
@@ -50,8 +51,6 @@ const SkripsiList = () => {
           />
         </LoadMoreRow>
       </ContentWrapper>
-
-      <CreateSetModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
 
       <ConfirmationModal
         isOpen={Boolean(pendingDeletion)}

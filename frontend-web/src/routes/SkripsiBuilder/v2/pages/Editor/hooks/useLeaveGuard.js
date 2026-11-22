@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { actions as commonActions } from '@store/common/reducer'
-import { SkripsiRoute } from '../../../../routes'
+import { PblBuilderRoute } from '../../../../routes'
 
 // Guards the way out of the editor while the document is dirty. Three answers,
 // which is why this is not the common ConfirmationModal: save and leave, leave
@@ -14,7 +14,7 @@ export const useLeaveGuard = ({ hasUnsavedChanges, save }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSavingBeforeLeave, setIsSavingBeforeLeave] = useState(false)
 
-  const leave = useCallback(() => navigate(SkripsiRoute.moduleRoute), [navigate])
+  const leave = useCallback(() => navigate(PblBuilderRoute.moduleRoute), [navigate])
 
   const requestLeave = useCallback(() => {
     if (hasUnsavedChanges) {

@@ -110,6 +110,20 @@ export const formatDate = (dateString) => {
     return formatLocalDate(dateString)
 }
 
+/**
+ * The order the browser's own date field shows a date in — dd/mm/yyyy,
+ * mm/dd/yyyy, yyyy-mm-dd. `<input type="date">` always stores yyyy-mm-dd but
+ * renders in the browser's locale, which is not ours to choose, so the pattern
+ * is read off Intl rather than hard-coded into a label.
+ * @returns {string}
+ */
+export const localDateInputFormat = () => new Intl.DateTimeFormat(undefined, {
+  day: '2-digit', month: '2-digit', year: 'numeric',
+})
+  .formatToParts(new Date(Date.UTC(2010, 0, 31)))
+  .map(part => ({ day: 'dd', month: 'mm', year: 'yyyy' }[part.type] ?? part.value))
+  .join('')
+
 export const toJakartaInputValue = (isoString) => {
   if (!isoString) return ''
   return moment(isoString).tz('Asia/Jakarta').format('YYYY-MM-DDTHH:mm')

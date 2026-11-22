@@ -51,6 +51,7 @@ export const streamMessage = async ({
   tabId,
   content,
   modeType,
+  context,
   dispatch,
   getState,
   optimisticUserId,
@@ -58,7 +59,7 @@ export const streamMessage = async ({
   finalizeMessage,
 }) => {
   const accessToken = await ensureValidToken()
-  const route = `${API_BASE_URL}${Endpoints.api.skripsiV2}/tabs/${tabId}/messages`
+  const route = `${API_BASE_URL}${Endpoints.api.skripsiV2}/chat/tabs/${tabId}/messages`
 
   const streamingMessageId = `streaming-${Date.now()}`
   const createdAt = new Date().toISOString()
@@ -188,7 +189,7 @@ export const streamMessage = async ({
     const response = await fetch(route, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify({ message: content, modeType }),
+      body: JSON.stringify({ message: content, modeType, context }),
       signal: abortController?.signal,
     })
 

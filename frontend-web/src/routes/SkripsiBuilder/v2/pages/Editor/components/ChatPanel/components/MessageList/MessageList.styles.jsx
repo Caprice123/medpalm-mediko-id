@@ -195,8 +195,9 @@ export const ModeBadge = styled.div`
     switch (props.$mode) {
       // 'validated', not 'validated_search' — the stored mode_type is
       // 'validated', so V1's spelling never matched and this badge always fell
-      // through to the grey default. V1 also carried a 'normal' case, which
-      // skripsi has no mode for: its modes are research and validated only.
+      // through to the grey default. The AI Chat tab answers in normal mode
+      // now, which keeps that grey default; this case is what the messages
+      // answered before the switch still render as.
       case 'validated':
         return `
           background: var(--color-brand-green-tint);

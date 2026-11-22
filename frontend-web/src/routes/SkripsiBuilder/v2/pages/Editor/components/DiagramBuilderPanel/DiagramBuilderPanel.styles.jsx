@@ -1,436 +1,123 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-export const DiagramBuilderContainer = styled.div`
+export const Panel = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 0;
   background: var(--color-surface);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
 
   @media (max-width: 768px) {
-    width: 100%;
-    height: ${props => props.$activeSubTab === 'preview' ? '600px' : '100vh'};
-    flex-shrink: 0;
-    border-right: none;
+    height: auto;
     border-bottom: 1px solid var(--color-gray-200);
   }
-`;
+`
 
-export const SubTabsNav = styled.div`
-  display: flex;
-  background: var(--color-gray-50);
-  border-bottom: 1px solid var(--color-gray-200);
-`;
-
-export const SubTab = styled.button`
-  flex: 1;
-  padding: 12px 16px;
-  background: ${props => props.$active ? 'var(--color-surface)' : 'transparent'};
-  border: none;
-  border-bottom: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'transparent'};
-  color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-500)'};
-  font-size: 14px;
-  font-weight: ${props => props.$active ? '600' : '500'};
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: ${props => props.$active ? 'var(--color-surface)' : 'var(--color-gray-100)'};
-    color: ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-800)'};
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
-    font-size: 0.8125rem;
-  }
-`;
-
-// Form Subtab Styles
-export const FormContainer = styled.div`
-  flex: 1;
+export const Body = styled.div`
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-`;
+  gap: 0.75rem;
+`
 
-export const FormContent = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-gray-300);
-    border-radius: 3px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-  }
-`;
-
-export const ConfigSection = styled.div`
-  overflow: hidden;
-`;
-
-export const ConfigBody = styled.div`
-  background: var(--color-surface);
-`;
-
-export const FormRowGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const FormField = styled.div`
-  margin-bottom: 12px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-export const TipsBox = styled.div`
-  display: flex;
-  gap: 10px;
-  padding: 12px;
-  background: var(--color-warning-tint);
-  border: 1px solid var(--color-warning-light);
-  border-radius: 6px;
-  margin-top: 12px;
-`;
-
-export const TipsIcon = styled.div`
-  font-size: 20px;
-  flex-shrink: 0;
-`;
-
-export const TipsContent = styled.div`
-  flex: 1;
-
-  strong {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 14px;
-    color: var(--color-warning-text);
-  }
-
-  p {
-    margin: 4px 0 0 0;
-    font-size: 13px;
-    color: var(--color-warning-text);
-    line-height: 1.5;
-  }
-`;
-
-export const GenerateButtonWrapper = styled.div`
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-`;
-
-// History Subtab Styles
-export const HistoryContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--color-gray-50);
-`;
-
-export const HistoryHeader = styled.div`
-  padding: 16px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-gray-200);
-`;
-
-export const HistoryTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-gray-800);
-  margin: 0 0 4px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
-`;
-
-export const HistorySubtitle = styled.p`
-  font-size: 13px;
-  color: var(--color-gray-500);
+export const Intro = styled.p`
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
   margin: 0;
+`
 
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-`;
+export const SectionLabel = styled.p`
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+  margin: 0.25rem 0 0;
+`
 
-export const HistoryList = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  align-content: start;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-gray-300);
-    border-radius: 4px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 12px;
-    gap: 10px;
-  }
-`;
-
-export const HistoryCard = styled.div`
+export const QuickPrompts = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+`
+
+export const QuickPrompt = styled.button`
+  border: 1px solid var(--color-gray-200);
   background: var(--color-surface);
-  border: 2px solid ${props => props.$active ? 'var(--color-brand-blue)' : 'var(--color-gray-200)'};
-  border-radius: 8px;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: ${props => props.$active ? '0 4px 6px rgba(30, 115, 170, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 
   &:hover {
     border-color: var(--color-brand-blue);
-    box-shadow: 0 4px 6px rgba(30, 115, 170, 0.1);
-    transform: translateY(-2px);
+    color: var(--color-brand-blue);
+    background: var(--color-brand-blue-tint);
   }
+`
 
-  @media (max-width: 768px) {
-    padding: 12px;
-    gap: 10px;
-  }
-`;
-
-export const HistoryCardHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-`;
-
-export const HistoryIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--color-brand-blue-light) 0%, var(--color-brand-blue) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-`;
-
-export const HistoryCardInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-export const HistoryCardTitle = styled.h4`
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--color-gray-800);
-  margin: 0 0 4px 0;
-  text-transform: capitalize;
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
-`;
-
-export const HistoryCardMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--color-gray-500);
-  flex-wrap: wrap;
-`;
-
-export const HistoryCardMetaItem = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  &:not(:last-child)::after {
-    content: '•';
-    margin-left: 8px;
-    color: var(--color-gray-300);
-  }
-`;
-
-export const HistoryCardDescription = styled.p`
-  font-size: 13px;
-  color: var(--color-gray-600);
+export const Hint = styled.p`
+  font-size: 0.75rem;
+  color: var(--color-brand-green-darker);
   margin: 0;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+`
+
+export const ResultsSection = styled.div`
+  border-top: 1px solid var(--color-gray-200);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`
+
+export const ResultsTitle = styled.h4`
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin: 0;
+`
+
+export const EmptyHint = styled.div`
+  border: 1px dashed var(--color-gray-300);
+  border-radius: 10px;
+  padding: 1rem;
+  font-size: 0.82rem;
+  color: var(--color-gray-500);
+  text-align: center;
+`
+
+export const DiagramCard = styled.figure`
+  margin: 0;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 10px;
   overflow: hidden;
+  background: var(--color-surface);
+`
 
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-`;
+export const DiagramImage = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--color-gray-50);
+`
 
-export const HistoryCardFooter = styled.div`
+export const DiagramMeta = styled.figcaption`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-gray-100);
-`;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid var(--color-gray-200);
+`
 
-export const HistoryCardDate = styled.span`
-  font-size: 12px;
-  color: var(--color-gray-400);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  @media (max-width: 768px) {
-    font-size: 11px;
-  }
-`;
-
-export const HistoryCardActions = styled.div`
-  display: flex;
-  gap: 4px;
-`;
-
-export const EmptyHistory = styled.div`
+export const DiagramCaption = styled.span`
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-
-  svg, span {
-    font-size: 64px;
-    margin-bottom: 16px;
-    opacity: 0.3;
-  }
-
-  h4 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-gray-800);
-    margin: 0 0 8px 0;
-  }
-
-  p {
-    font-size: 14px;
-    color: var(--color-gray-500);
-    margin: 0;
-    line-height: 1.5;
-  }
-
-  @media (max-width: 768px) {
-    padding: 32px 16px;
-
-    svg, span {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-
-    h4 {
-      font-size: 16px;
-    }
-
-    p {
-      font-size: 13px;
-    }
-  }
-`;
-
-// Preview Subtab Styles
-export const PreviewContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  
-  @media (max-width: 768px) {
-    max-height: 600px;
-  }
-`;
-
-export const PreviewToolbar = styled.div`
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--color-gray-50);
-  border-bottom: 1px solid var(--color-gray-200);
-
-  @media (max-width: 768px) {
-    padding: 0.625rem 0.75rem;
-    gap: 0.5rem;
-  }
-`;
-
-export const ExcalidrawWrapper = styled.div`
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  min-height: 500px; /* Ensure enough space for zoom controls */
-
-  .excalidraw {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
-  /* Force zoom controls to always be visible */
-  .excalidraw .App-toolbar__divider,
-  .excalidraw .zoom-container {
-    display: flex !important;
-  }
-
-  /* Force footer with zoom controls to always show, even on small screens */
-  .excalidraw .layer-ui__wrapper__footer-left {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  /* Override media query that hides footer on small screens */
-  @media (max-width: 761px) {
-    .excalidraw .layer-ui__wrapper__footer-left {
-      display: flex !important;
-    }
-  }
-`;
-
-// Full width canvas for preview (used in Editor panel)
+  font-size: 0.78rem;
+  color: var(--color-gray-600);
+  word-break: break-word;
+`

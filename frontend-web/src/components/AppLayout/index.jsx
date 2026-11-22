@@ -74,7 +74,7 @@ import { AnatomyQuizRoute } from '@routes/AnatomyQuiz/routes'
 import { SummaryNotesRoute } from '@routes/SummaryNotes/routes'
 import { MultipleChoiceRoute } from '@routes/MultipleChoice/routes'
 import { ChatbotRoute } from '@routes/Chatbot/routes'
-import { SkripsiRoute } from '@routes/SkripsiBuilder/routes'
+import { skripsiBuilderHomeRoute } from '@routes/SkripsiBuilder/routes'
 import { OscePracticeRoute } from '@routes/OscePractice/routes'
 import { AtlasRoute } from '@routes/Atlas/routes'
 import { AtlasQuizRoute } from '@routes/AtlasQuiz/routes'
@@ -102,7 +102,7 @@ const SESSION_ROUTES = {
   summary_notes: SummaryNotesRoute.moduleRoute,
   mcq: MultipleChoiceRoute.moduleRoute,
   chatbot: ChatbotRoute.moduleRoute,
-  skripsi_builder: SkripsiRoute.moduleRoute,
+  skripsi_builder: skripsiBuilderHomeRoute(),
   osce_practice: OscePracticeRoute.moduleRoute,
   atlas: AtlasRoute.moduleRoute,
   anatomy_atlas: AtlasQuizRoute.moduleRoute,

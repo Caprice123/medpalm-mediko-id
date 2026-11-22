@@ -6,6 +6,12 @@ import { resetAllState } from '../../globalAction'
 // accumulate either.
 const MAX_CACHED_TABS = 10
 
+// What a chat tab attaches before the student touches anything. The case and
+// the outline are cheap and almost always what makes an answer about this
+// report rather than about PBL reports in general; whole sections are opt-in
+// because they are what actually costs tokens.
+export const DEFAULT_CHAT_CONTEXT = { case: true, outline: true, citations: false, sectionIds: [] }
+
 const emptyStreamingState = {
   isSending: false,
   isTyping: false,
@@ -26,6 +32,39 @@ const initialState = {
   currentSet: null,
   activeTabId: null,
 
+  // The report templates offered on "Buat laporan baru", and the sections of
+  // the report currently open in the editor.
+  templates: [],
+  sections: [],
+  // The group the open report belongs to.
+  members: [],
+
+  // The Searcher panel's last run: its results and the raw Perplexity
+  // response behind them, which the panel can show verbatim.
+  searchResults: [],
+  searchRaw: null,
+
+  // The sources kept for the open report's daftar pustaka, each already
+  // formatted by the server in `citationStyle` — the panel never formats a
+  // citation itself, so what it lists is exactly what a generate would write.
+  citations: [],
+  citationStyle: 'vancouver',
+  citationStyles: [],
+
+  // The admin panel's own copy of the templates, with its own paging: it lists
+  // inactive templates too, which the student-facing list never carries.
+  adminTemplates: [],
+  adminTemplatesPagination: { page: 1, perPage: 20, isLastPage: false },
+  // Filtering is the server's job: this is read when the list is fetched, not
+  // applied to rows already on screen.
+  adminTemplatesFilter: { search: '' },
+  // The one template the edit form is open on, with its outline. The listing
+  // rows do not carry sections, so the form reads what it edits.
+  adminTemplateDetail: null,
+  // Each section autosaves on its own, so "is this saving" is per section
+  // rather than one flag for the whole document.
+  savingSectionIds: {},
+
   // All keyed by tab id, so a stream keeps running — and keeps rendering into
   // the right tab — while the student reads or writes in another one.
   messagesByTab: {},
@@ -34,8 +73,14 @@ const initialState = {
   streamingStateByTab: {},
   loadingByTab: {},
   modeByTab: {},
+  // What each chat tab attaches to its next message: the PBL case, the outline,
+  // and up to a few sections in full. Per tab and in memory only — it is a
+  // choice about the next question, not a property of the report.
+  chatContextByTab: {},
 
-  defaultMode: 'validated',
+  // Only ever used to label the message that is still streaming: the server
+  // picks the mode off the tab and the persisted row carries the real one.
+  defaultMode: 'normal',
   availableModes: { research: true, validated: true },
   costs: { research: 0, validated: 0 },
   userInformation: { research: '', validated: '' },
@@ -54,6 +99,25 @@ const initialState = {
     isUpdatingSet: false,
     isDeletingSet: false,
     isSavingContent: false,
+    isFetchingTemplates: false,
+    isFetchingSections: false,
+    isCreatingSection: false,
+    isFetchingMembers: false,
+    isSavingMembers: false,
+    isSearching: false,
+    isFetchingCitations: false,
+    isSavingCitation: false,
+    isUpdatingCitation: false,
+    isDeletingCitation: false,
+    isGeneratingBibliography: false,
+    isDeletingSection: false,
+    isReorderingSections: false,
+    isEditingTextWithAi: false,
+    isAssistingSection: false,
+    isFetchingAdminTemplates: false,
+    isFetchingAdminTemplateDetail: false,
+    isSavingTemplate: false,
+    isDeletingTemplate: false,
     isFetchingMessages: false,
     isFetchingDiagrams: false,
     isSavingDiagram: false,
@@ -119,6 +183,108 @@ const skripsiV2Slice = createSlice({
     setEditorContent: (state, action) => {
       if (state.currentSet) {
         state.currentSet.editorContent = action.payload
+      }
+    },
+
+    // ---- report templates ----
+    setTemplates: (state, action) => {
+      state.templates = action.payload
+    },
+
+    // ---- admin: report templates ----
+    setAdminTemplates: (state, action) => {
+      state.adminTemplates = action.payload
+    },
+    appendAdminTemplates: (state, action) => {
+      state.adminTemplates = [...state.adminTemplates, ...action.payload]
+    },
+    setAdminTemplatesPagination: (state, action) => {
+      state.adminTemplatesPagination = { ...state.adminTemplatesPagination, ...action.payload }
+    },
+    updateAdminTemplatesFilter: (state, action) => {
+      const { key, value } = action.payload
+      state.adminTemplatesFilter[key] = value
+    },
+    setAdminTemplateDetail: (state, action) => {
+      state.adminTemplateDetail = action.payload
+    },
+
+    // ---- group members ----
+    setMembers: (state, action) => {
+      state.members = action.payload
+    },
+
+    // ---- searcher ----
+    setSearchResult: (state, action) => {
+      state.searchResults = action.payload?.results || []
+      state.searchRaw = action.payload?.raw || null
+    },
+    clearSearchResult: (state) => {
+      state.searchResults = []
+      state.searchRaw = null
+    },
+
+    // ============= Citations =============
+
+    setCitations: (state, action) => {
+      state.citations = action.payload?.citations || []
+      if (action.payload?.style) state.citationStyle = action.payload.style
+      if (action.payload?.styles) state.citationStyles = action.payload.styles
+    },
+    // The style the dropdown is on, before a generate has been asked for.
+    setCitationStyle: (state, action) => {
+      state.citationStyle = action.payload
+    },
+
+    // ---- sections ----
+    setSections: (state, action) => {
+      state.sections = action.payload
+    },
+    addSection: (state, action) => {
+      state.sections = [...state.sections, action.payload]
+        .sort((a, b) => a.position - b.position)
+    },
+    updateSection: (state, action) => {
+      const index = state.sections.findIndex(section => section.id === action.payload.id)
+      if (index !== -1) {
+        state.sections[index] = { ...state.sections[index], ...action.payload }
+      }
+    },
+    // A rewrite that did not come from the student's own typing — today only
+    // "Kumpulkan referensi". The bumped revision is what tells that section's
+    // editor to pick the new content up; an ordinary autosave must never do
+    // this, or the cursor would jump on every keystroke.
+    replaceSectionContent: (state, action) => {
+      const index = state.sections.findIndex(section => section.id === action.payload.id)
+      if (index !== -1) {
+        state.sections[index] = {
+          ...state.sections[index],
+          ...action.payload,
+          contentRevision: (state.sections[index].contentRevision ?? 0) + 1,
+        }
+      }
+    },
+    // Swaps the placeholder a new section was shown as for the row the server
+    // actually created. Everything the student may have typed into it in the
+    // meantime is kept: only the id, and whatever the server decided, change.
+    replaceSection: (state, action) => {
+      const { tempId, section } = action.payload
+      const index = state.sections.findIndex(item => item.id === tempId)
+      if (index !== -1) {
+        state.sections[index] = { ...state.sections[index], ...section }
+      }
+    },
+    removeSection: (state, action) => {
+      state.sections = state.sections
+        .filter(section => section.id !== action.payload)
+        .map((section, index) => ({ ...section, position: index }))
+    },
+    setSectionSaving: (state, action) => {
+      const { sectionId, value } = action.payload
+      if (value) {
+        state.savingSectionIds[sectionId] = true
+      } else {
+        delete state.savingSectionIds[sectionId]
       }
     },
 
@@ -211,6 +377,12 @@ const skripsiV2Slice = createSlice({
       state.modeByTab[tabId] = mode
     },
 
+    // ---- chat context ----
+    setChatContext: (state, action) => {
+      const { tabId, context } = action.payload
+      state.chatContextByTab[tabId] = { ...DEFAULT_CHAT_CONTEXT, ...state.chatContextByTab[tabId], ...context }
+    },
+
     setPagination: (state, action) => {
       state.pagination = { ...state.pagination, ...action.payload }
     },
@@ -249,6 +421,10 @@ export const selectStreamingStateForTab = (state, tabId) => (
 
 export const selectModeForTab = (state, tabId) => (
   state.skripsiV2.modeByTab[tabId] || state.skripsiV2.defaultMode
+)
+
+export const selectChatContext = (state, tabId) => (
+  state.skripsiV2.chatContextByTab[tabId] || DEFAULT_CHAT_CONTEXT
 )
 
 export const selectPagingForTab = (state, tabId) => (

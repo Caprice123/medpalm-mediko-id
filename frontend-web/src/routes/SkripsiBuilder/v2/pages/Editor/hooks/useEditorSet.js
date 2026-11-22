@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { fetchSet, openTab } from '@store/skripsi/v2'
+import { fetchSet, fetchSetCitations, openTab } from '@store/skripsi/v2'
 
 // Loads the open set and keeps track of which tab is showing.
 //
@@ -18,7 +18,12 @@ export const useEditorSet = () => {
   useEffect(() => {
     if (!setId) return
 
+    // One request: the set brings its tabs, sections and group with it.
     dispatch(fetchSet(setId))
+    // The kept sources are read here rather than by the Referensi panel: the
+    // Searcher marks a result as already saved, so both ends of the editor
+    // need the list from the moment the report opens.
+    dispatch(fetchSetCitations(setId))
   }, [setId, dispatch])
 
   const tabs = currentSet?.tabs || []

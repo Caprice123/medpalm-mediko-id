@@ -20,7 +20,10 @@ import {
 } from './MessageList.styles'
 
 const MODE_LABELS = {
+  normal: { icon: '🤖', label: 'Normal Mode' },
   research: { icon: '🔍', label: 'Research Mode' },
+  // Still labelled: messages answered before the AI Chat tab moved to normal
+  // mode are in the thread for good.
   validated: { icon: '📚', label: 'Validated' },
 }
 

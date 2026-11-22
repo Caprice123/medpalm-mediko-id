@@ -1,14 +1,12 @@
 import { memo } from 'react'
 import { TabBar as Bar, Tab } from './TabBar.styles'
 
-// Fallback labels, used only when a tab row carries no title of its own. The
-// tab set itself comes from the server, since which tabs exist depends on
-// which ones are enabled in the constants.
+// Fallback labels, used only when a tab row carries no title of its own. V2
+// serves three panels and no more: a chat, a source searcher, and the diagram
+// builder. V1's mode picker inside the chat is gone — the tab is the choice.
 const TAB_LABELS = {
-  ai_researcher_1: 'AI Chat 1',
-  ai_researcher_2: 'AI Chat 2',
-  ai_researcher_3: 'AI Chat 3',
-  paraphraser: 'Paraphraser',
+  ai_chat: 'AI Chat',
+  research: 'Searcher',
   diagram_builder: 'Diagram Builder',
 }
 

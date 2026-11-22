@@ -6,7 +6,7 @@ import Button from '@components/common/Button'
 import EmptyState from '@components/common/EmptyState'
 import { SkripsiSetSkeletonGrid } from '@components/common/SkeletonCard'
 import { formatJakartaDateLong } from '@utils/dateUtils'
-import { SkripsiRoute } from '../../../../../routes'
+import { PblBuilderRoute } from '../../../../../routes'
 import { Grid, SetDescription, UpdatedText, CardActions } from './SetsGrid.styles'
 
 const SetsGrid = ({ onDelete }) => {
@@ -50,7 +50,7 @@ const SetsGrid = ({ onDelete }) => {
               <Button
                 variant="primary"
                 fullWidth
-                onClick={() => navigate(generatePath(SkripsiRoute.editorRoute, { setId: set.uniqueId }))}
+                onClick={() => navigate(generatePath(PblBuilderRoute.editorRoute, { setId: set.uniqueId }))}
               >
                 Buka Set
               </Button>

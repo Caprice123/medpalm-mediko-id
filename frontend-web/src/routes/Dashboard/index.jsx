@@ -44,7 +44,7 @@ import { AnatomyQuizRoute } from '../AnatomyQuiz/routes'
 import { SummaryNotesRoute } from '../SummaryNotes/routes'
 import { MultipleChoiceRoute } from '../MultipleChoice/routes'
 import { ChatbotRoute } from '../Chatbot/routes'
-import { SkripsiRoute } from '../SkripsiBuilder/routes'
+import { skripsiBuilderHomeRoute } from '../SkripsiBuilder/routes'
 import { OscePracticeRoute } from '../OscePractice/routes'
 import { AtlasRoute } from '../Atlas/routes'
 import { WebinarRoute } from '../Webinar/routes'
@@ -80,7 +80,7 @@ function Dashboard() {
       'summary_notes': SummaryNotesRoute.moduleRoute,
       'mcq': MultipleChoiceRoute.moduleRoute,
       'chatbot': ChatbotRoute.moduleRoute,
-      'skripsi_builder': SkripsiRoute.moduleRoute,
+      'skripsi_builder': skripsiBuilderHomeRoute(),
       'osce_practice': OscePracticeRoute.moduleRoute,
       'atlas': AtlasRoute.moduleRoute,
       'challenge': ChallengeRoute.moduleRoute,

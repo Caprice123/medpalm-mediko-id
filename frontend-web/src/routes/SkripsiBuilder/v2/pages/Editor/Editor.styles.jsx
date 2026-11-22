@@ -1,7 +1,16 @@
 import styled from 'styled-components'
 
+// The editor owns the whole viewport below the app's top bar and never scrolls
+// itself: the conversation and the document each scroll inside their own pane.
 export const Wrapper = styled.div`
     background: var(--color-brand-blue-tint);
+    height: calc(100vh - 44px);
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      height: auto;
+      overflow: visible;
+    }
 
     /* Resize handle styles */
     .resize-handle-skripsi {
@@ -53,9 +62,9 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: calc(100vh - 44px);
+  height: 100%;
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
     min-height: 100vh;
     max-width: 100%;
     height: initial;
@@ -65,6 +74,9 @@ export const Container = styled.div`
 
 export const EditorArea = styled.div`
   flex: 1;
+  /* Without this a tall pane (a long document, a long conversation) pushes the
+     row past the viewport instead of scrolling inside it. */
+  min-height: 0;
   display: flex;
   overflow: hidden;
 

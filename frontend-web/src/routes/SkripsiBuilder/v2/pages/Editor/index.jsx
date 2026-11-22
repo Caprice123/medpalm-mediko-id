@@ -1,14 +1,18 @@
+import { useSelector } from 'react-redux'
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
 import TopBar from './components/TopBar'
 import TabBar from './components/TabBar'
 import ChatPanel from './components/ChatPanel'
+import SearcherPanel from './components/SearcherPanel'
 import DiagramBuilderPanel from './components/DiagramBuilderPanel'
-import EditorPanel from './components/EditorPanel'
+import SectionsPanel from './components/SectionsPanel'
 import UnsavedChangesDialog from './components/UnsavedChangesDialog'
+import CitationsModal from './components/TopBar/components/CitationsModal'
 import { useEditorSet } from './hooks/useEditorSet'
-import { useEditorDocument } from './hooks/useEditorDocument'
+import { useCitationsPanel } from './hooks/useCitationsPanel'
+import { useSections } from './hooks/useSections'
 import { useEditorLayout } from './hooks/useEditorLayout'
 import { useLeaveGuard } from './hooks/useLeaveGuard'
 import { Wrapper, Container, EditorArea } from './Editor.styles'
@@ -16,10 +20,18 @@ import { Wrapper, Container, EditorArea } from './Editor.styles'
 const CHAT_PANEL_MIN_PX = 300
 const CHAT_PANEL_MAX_PX = 800
 
+// Both side panes stay mounted and are toggled with CSS. These are the only
+// two style objects they are ever given: passing an inline literal instead
+// would hand the memoised panels a new prop on every render of this page.
+const PANE_SHOWN = { display: 'flex', width: '100%' }
+const PANE_HIDDEN = { display: 'none', width: '100%' }
+
 const SkripsiEditor = () => {
   const { currentSet, tabs, activeTab, activeTabId, isFetchingSet, switchTab } = useEditorSet()
-  const doc = useEditorDocument(currentSet)
+  const isDeletingSection = useSelector(state => state.skripsiV2.loading.isDeletingSection)
+  const doc = useSections(currentSet)
   const { isMobile, chatPanelWidth, persistPanelWidth } = useEditorLayout()
+  const { isCitationsOpen, openCitations, closeCitations } = useCitationsPanel()
   const leaveGuard = useLeaveGuard({
     hasUnsavedChanges: doc.hasUnsavedChanges,
     save: doc.save,
@@ -41,33 +53,45 @@ const SkripsiEditor = () => {
     )
   }
 
-  // Both panes stay mounted and are toggled with CSS rather than unmounted, so
-  // a half-typed message or a diagram in progress survives a tab switch.
-  const isDiagramTab = activeTab?.tabType === 'diagram_builder'
+  // All three panes stay mounted and are toggled with CSS rather than
+  // unmounted, so a half-typed message, a filled-in search form or a diagram in
+  // progress survives a tab switch.
+  const tabType = activeTab?.tabType
 
   const sidePanels = (
     <>
       <DiagramBuilderPanel
         tab={activeTab}
-        style={{ display: isDiagramTab ? 'flex' : 'none', width: '100%' }}
+        style={tabType === 'diagram_builder' ? PANE_SHOWN : PANE_HIDDEN}
+      />
+      <SearcherPanel
+        style={tabType === 'research' ? PANE_SHOWN : PANE_HIDDEN}
       />
       <ChatPanel
         tab={activeTab}
-        style={{ display: isDiagramTab ? 'none' : 'flex', width: '100%' }}
+        style={tabType === 'ai_chat' ? PANE_SHOWN : PANE_HIDDEN}
       />
     </>
   )
 
   const documentPanel = (
-    <EditorPanel
-      blocks={doc.blocks}
-      isLoadingContent={doc.isLoadingContent}
+    <SectionsPanel
+      sections={doc.sections}
+      isLoadingSections={doc.isLoadingSections}
+      isCreatingSection={doc.isCreatingSection}
+      isDeletingSection={isDeletingSection}
+      savingSectionIds={doc.savingSectionIds}
       hasUnsavedChanges={doc.hasUnsavedChanges}
-      isSaving={doc.isSaving}
+      isSaving={doc.isSavingAny}
       onContentChange={doc.handleContentChange}
-      onImageUpload={doc.handleImageUpload}
       onSave={doc.save}
       onExportWord={doc.exportToWord}
+      onOpenCitations={openCitations}
+      onAddSection={doc.addSection}
+      onRenameSection={doc.renameSection}
+      onMoveSection={doc.moveSection}
+      onReorderSections={doc.reorderSections}
+      onDeleteSection={doc.removeSection}
     />
   )
 
@@ -77,9 +101,10 @@ const SkripsiEditor = () => {
         <TopBar
           currentSet={currentSet}
           hasUnsavedChanges={doc.hasUnsavedChanges}
-          isSaving={doc.isSaving}
+          isSaving={doc.isSavingAny}
           onSave={doc.save}
           onExportWord={doc.exportToWord}
+          onOpenCitations={openCitations}
           onBack={leaveGuard.requestLeave}
         />
 
@@ -113,6 +138,8 @@ const SkripsiEditor = () => {
             </PanelGroup>
           )}
         </EditorArea>
+
+        <CitationsModal isOpen={isCitationsOpen} onClose={closeCitations} />
 
         <UnsavedChangesDialog
           isOpen={leaveGuard.isDialogOpen}

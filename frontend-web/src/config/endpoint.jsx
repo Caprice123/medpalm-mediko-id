@@ -39,6 +39,7 @@ export default {
         pricing: "/admin/v1/pricing",
         skripsi: "/admin/v1/skripsi",
         skripsiJournals: "/admin/v1/skripsi/journals",
+        skripsiV2: "/admin/v2/skripsi",
         oscePractice: "/admin/v1/oscePractice",
         webinars: "/admin/v1/webinars",
         events: "/admin/v1/events",

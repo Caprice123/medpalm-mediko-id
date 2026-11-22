@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
-import { sendMessage, stopStreaming, loadOlderMessages, setTabMode } from '@store/skripsi/v2'
-import { selectMessagesForTab, selectModeForTab, selectPagingForTab } from '@store/skripsi/v2/reducer'
+import { sendMessage, stopStreaming, loadOlderMessages } from '@store/skripsi/v2'
+import { selectMessagesForTab, selectPagingForTab } from '@store/skripsi/v2/reducer'
 
 // Distance from the top at which the next page of older messages is fetched.
 const LOAD_TRIGGER_PX = 100
 
-// One tab's conversation: its scroll behaviour, its mode, and sending.
+// One tab's conversation: its scroll behaviour and sending.
+//
+// There is no mode to choose any more — the Research tab asks for research
+// answers and the AI Chat tab for normal ones, which the server reads off the
+// tab itself.
 //
 // The thread reads bottom-up — newest at the bottom, paging back loads older
 // messages above — so two scroll behaviours are needed: stay at the bottom when
@@ -18,7 +22,6 @@ export const useChatPanel = (tab) => {
 
   const messages = useSelector(state => selectMessagesForTab(state, tabId), shallowEqual)
   const paging = useSelector(state => selectPagingForTab(state, tabId), shallowEqual)
-  const currentMode = useSelector(state => selectModeForTab(state, tabId))
   const streaming = useSelector(
     state => (tabId ? state.skripsiV2.streamingStateByTab[tabId] || null : null),
     shallowEqual
@@ -79,8 +82,6 @@ export const useChatPanel = (tab) => {
   const handleSend = useCallback((content) => {
     if (!tabId || !content) return
 
-    // The mode is read fresh from Redux inside the thunk rather than passed in,
-    // so a stale closure cannot send under the previously selected mode.
     return dispatch(sendMessage(tabId, content))
   }, [tabId, dispatch])
 
@@ -90,17 +91,8 @@ export const useChatPanel = (tab) => {
     return dispatch(stopStreaming(tabId))
   }, [tabId, isStreaming, dispatch])
 
-  const handleModeChange = useCallback((mode) => {
-    if (!tabId) return
-
-    dispatch(setTabMode(tabId, mode))
-  }, [tabId, dispatch])
-
   return {
     tabId,
-    // Only the AI researcher tabs have modes; the paraphraser runs one pipeline.
-    isAIChatTab: Boolean(tab?.tabType?.startsWith('ai_researcher')),
-    currentMode,
     isStreaming,
     isInitialLoading,
     isLoadingOlder,
@@ -108,6 +100,5 @@ export const useChatPanel = (tab) => {
     handleScroll,
     handleSend,
     handleStop,
-    handleModeChange,
   }
 }
