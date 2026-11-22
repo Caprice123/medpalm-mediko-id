@@ -9,6 +9,7 @@ import McqV2 from './subpages/McqV2'
 import DiagnosticV2 from './subpages/DiagnosticV2'
 import AnatomyAtlasV2 from './subpages/AnatomyAtlasV2'
 import ChatbotV2 from './subpages/ChatbotV2'
+import PblCaseBuilder from './subpages/PblCaseBuilder'
 import { fetchAdminFeatures } from '@store/feature/adminAction'
 import {
   Container,
@@ -67,6 +68,15 @@ const V2_FEATURE_DEFS = [
     icon: '🩺',
     fallbackName: 'Diagnostik V2',
     fallbackDescription: 'Bank soal diagnostik dengan SRS Anki-style, vignette klinis, dan gambar radiologi',
+  },
+  {
+    routeKey: 'pbl_case_builder',
+    matchSessionType: 'skripsi_builder',
+    // Backend gates /admin/v2/skripsi* with requireFeaturePermission('skripsi') — same key as V1.
+    requiredFeaturePermissions: ['skripsi'],
+    icon: '📋',
+    fallbackName: 'PBL Case Builder',
+    fallbackDescription: 'Template laporan PBL, struktur bagian, dan laporan yang dibuat mahasiswa',
   },
   {
     routeKey: 'chatbot_v2',
@@ -145,6 +155,8 @@ function FeaturesV2() {
         return <AnatomyAtlasV2 onBack={handleBackToList} />
       case 'chatbot_v2':
         return <ChatbotV2 onBack={handleBackToList} />
+      case 'pbl_case_builder':
+        return <PblCaseBuilder onBack={handleBackToList} />
       default:
         return null
     }
