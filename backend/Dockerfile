@@ -28,6 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+
+# onnxruntime-node (pulled in by chromadb) runs a postinstall that, on linux/x64
+# only, downloads the CUDA execution-provider binaries. There is no GPU here, it
+# cannot find nvcc, assumes CUDA 12 and 404s on the artifact — which fails the
+# whole `npm ci`. The CPU provider is what the embedder actually uses, and this
+# is the script's own documented way to skip the GPU half.
+ENV ONNXRUNTIME_NODE_INSTALL_CUDA=skip
 RUN npm ci --omit=dev
 
 # Generate the Prisma client against this image's libc/openssl, so the engine
