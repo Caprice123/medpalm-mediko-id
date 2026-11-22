@@ -13,6 +13,17 @@ const defaultOptions = {
     search_recency_filter: 'month',
 }
 
+// Flipped the first time the Search API answers "search_mode is not supported".
+// The parameter is in the SDK but is not accepted on every key, and a search is
+// worth more than the web/academic split it asks for.
+let isSearchModeSupported = true
+
+const isUnsupportedSearchMode = (error) => {
+    const message = error?.error?.error?.message || error?.error?.message || error?.message || ''
+
+    return error?.status === 400 && /search_mode/i.test(message)
+}
+
 export class PerplexityService extends BaseAiService {
     /**
      * Generate result from text with custom prompt
@@ -165,6 +176,51 @@ export class PerplexityService extends BaseAiService {
         console.log(`[Perplexity] fetchSearchResults: ${searchResults.length} results, ${citations.length} citations`)
 
         return { searchResults, citations }
+    }
+
+    /**
+     * Perplexity Search API: web page results for one or several queries, with
+     * no model answering on top. The raw response comes back too, since the
+     * Searcher panel can show it verbatim.
+     * @param {Object} params - query (string or array), search_mode, max_results, filters
+     * @returns {Promise<{ id: string, results: Array, raw: Object }>}
+     */
+    static async search(params) {
+        const response = await this.createSearch(params)
+
+        return {
+            id: response.id,
+            results: response.results || [],
+            raw: response,
+        }
+    }
+
+    /**
+     * The search request itself, with `search_mode` treated as optional at the
+     * API's discretion: a key whose plan rejects it failed the whole search, so
+     * the first rejection drops the parameter, retries, and is remembered for
+     * the rest of the process rather than paying a failed round trip every
+     * time. Only the web/academic split is lost — every other filter stands.
+     * @param {Object} params - query (string or array), search_mode, max_results, filters
+     */
+    static async createSearch(params) {
+        const withoutMode = { ...params }
+        delete withoutMode.search_mode
+
+        if (!params.search_mode || !isSearchModeSupported) {
+            return perplexity.search.create(withoutMode)
+        }
+
+        try {
+            return await perplexity.search.create(params)
+        } catch (error) {
+            if (!isUnsupportedSearchMode(error)) throw error
+
+            isSearchModeSupported = false
+            console.warn('[Perplexity] search_mode rejected by this API key, searching without it')
+
+            return perplexity.search.create(withoutMode)
+        }
     }
 
     static async buildConversationHistory(conversationHistory, userMessage) {

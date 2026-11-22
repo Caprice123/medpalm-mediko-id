@@ -43,6 +43,35 @@ export class GeminiService extends BaseAiService {
     }
 
     /**
+     * Generate an image from a text prompt.
+     * The image comes back inline as base64 rather than as a URL, so the caller
+     * is the one that stores it.
+     * @param {string} model - Image-capable model (e.g. 'gemini-2.5-flash-image')
+     * @param {string} prompt - What to draw
+     * @returns {Promise<{ buffer: Buffer, mimeType: string }>}
+     */
+    static async generateImage(model, prompt) {
+        const response = await genAI.models.generateContent({
+            model,
+            contents: prompt,
+        });
+
+        const parts = response.candidates?.[0]?.content?.parts || [];
+        const image = parts.find(part => part.inlineData?.data);
+
+        if (!image) {
+            // A refusal or a safety block comes back as text instead of an image.
+            const text = parts.map(part => part.text).filter(Boolean).join(' ').trim();
+            throw new ValidationError(text || 'Model tidak menghasilkan gambar');
+        }
+
+        return {
+            buffer: Buffer.from(image.inlineData.data, 'base64'),
+            mimeType: image.inlineData.mimeType || 'image/png',
+        };
+    }
+
+    /**
      * Generate result from file buffer (PDF, Image, etc.) with custom prompt
      * Uses File API (upload file, use URI reference) - better for large files
      * @param {string} model - Model name (e.g., 'gemini-2.5-flash', 'gemini-2.0-flash')

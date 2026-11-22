@@ -1,7 +1,10 @@
 import prisma from '#prisma/client'
 import { GetSkripsiSetsV2Service } from '#services/skripsi/v2/getSkripsiSetsV2Service'
-import { CreateSkripsiSetService } from '#services/skripsi/createSkripsiSetService'
-import { GetSkripsiSetService } from '#services/skripsi/getSkripsiSetService'
+import { CreateSkripsiSetV2Service } from '#services/skripsi/v2/createSkripsiSetV2Service'
+import { GetSkripsiSetMembersV2Service } from '#services/skripsi/v2/getSkripsiSetMembersV2Service'
+import { UpdateSkripsiSetMembersV2Service } from '#services/skripsi/v2/updateSkripsiSetMembersV2Service'
+import { SkripsiSetMemberV2Serializer } from '#serializers/api/v2/skripsiSetMemberSerializer'
+import { GetSkripsiSetV2Service } from '#services/skripsi/v2/getSkripsiSetV2Service'
 import { UpdateSkripsiSetService } from '#services/skripsi/updateSkripsiSetService'
 import { UpdateSetContentService } from '#services/skripsi/updateSetContentService'
 import { DeleteSkripsiSetService } from '#services/skripsi/deleteSkripsiSetService'
@@ -59,15 +62,20 @@ class SkripsiSetsV2Controller {
   }
 
   // Creating a set also creates its tab row, from whichever tabs are enabled
-  // in the constants — so the full set shape is returned, tabs included, and
-  // the client can open the editor without a second read.
+  // in the constants, and stamps the chosen template's outline onto it as
+  // sections — so the full set shape is returned and the client can open the
+  // editor without a second read.
   async create(req, res) {
-    const { title, description } = req.body
+    const { title, description, templateId, workMode, caseText, members } = req.body
 
-    const set = await CreateSkripsiSetService.call({
+    const set = await CreateSkripsiSetV2Service.call({
       userId: req.user.id,
       title,
       description,
+      templateId,
+      workMode: workMode || 'manual',
+      caseText,
+      members,
     })
 
     return res.status(201).json({
@@ -76,12 +84,9 @@ class SkripsiSetsV2Controller {
   }
 
   async show(req, res) {
-    const set = await GetSkripsiSetService.call({
+    const set = await GetSkripsiSetV2Service.call({
       setId: req.params.uniqueId,
       userId: req.user.id,
-      // Each tab pages its own messages in, so loading them here would pull
-      // every conversation in the set on open.
-      includeMessages: false,
     })
 
     return res.status(200).json({
@@ -123,6 +128,27 @@ class SkripsiSetsV2Controller {
     })
 
     return res.status(200).json({ data: { success: true } })
+  }
+
+  // The group the report belongs to. Edited as one list, so it is written
+  // back as one list rather than row by row.
+  async members(req, res) {
+    const members = await GetSkripsiSetMembersV2Service.call({
+      setId: req.params.uniqueId,
+      userId: req.user.id,
+    })
+
+    return res.status(200).json({ data: SkripsiSetMemberV2Serializer.serialize(members) })
+  }
+
+  async updateMembers(req, res) {
+    const members = await UpdateSkripsiSetMembersV2Service.call({
+      setId: req.params.uniqueId,
+      userId: req.user.id,
+      members: req.body.members,
+    })
+
+    return res.status(200).json({ data: SkripsiSetMemberV2Serializer.serialize(members) })
   }
 
   // Research settings belong to the set, not the user: two sets can search

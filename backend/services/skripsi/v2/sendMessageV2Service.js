@@ -6,8 +6,11 @@ import { SendMessageService } from '#services/skripsi/sendMessageService'
 import { SkripsiAIService } from '#services/skripsi/ai/skripsiAIService'
 import { SkripsiResearchV2Handler } from '#services/skripsi/handlers/skripsiResearchV2Handler'
 import { SkripsiResearchRegistryV2 } from '#services/skripsi/v2/skripsiResearchRegistryV2'
+import { NormalChatV2Service } from '#services/skripsi/v2/normalChatV2Service'
+import { normalizeContextSelection } from '#services/skripsi/v2/skripsiReportContextV2'
 import { GetConstantsService } from '#services/constant/getConstantsService'
 import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeductCreditService'
+import { V2_CHAT_TAB_MODE_TYPES, legacyTabTypeFor } from '#services/skripsi/v2/skripsiTabsV2'
 
 // V2 send path for a skripsi tab. Two differences from V1, and nothing else:
 //   1. research mode resolves its implementation through
@@ -21,7 +24,7 @@ import { checkAccessAndDeductCredit } from '#services/shared/checkAccessAndDeduc
 // handling and abort behaviour keep exactly one implementation. V1's own
 // `call()` is untouched and still serves /api/v1/skripsi.
 export class SendMessageV2Service extends BaseService {
-  static async call({ tabId, userId, message, modeType = 'validated', onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
+  static async call({ tabId, userId, message, modeType = 'validated', context = null, onStream, onComplete, onError, checkClientConnected, streamAbortSignal }) {
     const trimmed = typeof message === 'string' ? message.trim() : ''
     if (!trimmed) {
       throw new ValidationError('Pesan wajib diisi')
@@ -38,24 +41,34 @@ export class SendMessageV2Service extends BaseService {
       throw new NotFoundError('Tab tidak ditemukan')
     }
 
-    // ai_researcher_1/2/3 are three tabs sharing one mode's configuration.
-    const mode = SendMessageService.getMode(tab.tab_type)
+    // V2's two chat tabs ARE the mode choice: the AI Chat tab always answers
+    // in normal mode and the Research tab always in research mode, so
+    // whatever the client sent is ignored for them. Both run the AI-researcher
+    // pipeline underneath, which is why they borrow its tab type — its prompts,
+    // its `skripsi_ai_researcher_*` constants and its access check all apply
+    // unchanged. A legacy tab (V1's ai_researcher_1/2/3, paraphraser) keeps
+    // taking its mode from the request.
+    const tabType = legacyTabTypeFor(tab.tab_type)
+    const answerMode = V2_CHAT_TAB_MODE_TYPES[tab.tab_type] ?? modeType
+    const mode = SendMessageService.getMode(tabType)
 
-    const constants = await GetConstantsService.call([
-      'skripsi_access_type',
-      `skripsi_${mode}_enabled`,
-      `skripsi_${mode}_cost`,
-    ])
+    // A V2 chat tab is gated and priced by V2's own keys; a legacy tab keeps
+    // reading the per-mode keys V1 set up.
+    const isV2ChatTab = tab.tab_type in V2_CHAT_TAB_MODE_TYPES
+    const enabledKey = isV2ChatTab ? 'pbl_ai_chat_enabled' : `skripsi_${mode}_enabled`
+    const costKey = isV2ChatTab ? 'pbl_ai_chat_cost' : `skripsi_${mode}_cost`
 
-    if (constants[`skripsi_${mode}_enabled`] !== 'true') {
-      throw new ValidationError(`Mode ${mode} sedang tidak aktif`)
+    const constants = await GetConstantsService.call(['skripsi_access_type', enabledKey, costKey])
+
+    if (constants[enabledKey] !== 'true') {
+      throw new ValidationError('Fitur AI Chat sedang tidak aktif')
     }
 
     await checkAccessAndDeductCredit(prisma, {
       userId,
       userRole: 'user',
       accessTypeKey: 'skripsi_access_type',
-      creditCostKey: `skripsi_${mode}_cost`,
+      creditCostKey: costKey,
       deductCredit: false,
       description: '',
       featureKey: 'skripsi_builder',
@@ -75,7 +88,7 @@ export class SendMessageV2Service extends BaseService {
       setId: tab.set_id,
       userId,
       userMessageContent: trimmed,
-      modeType,
+      modeType: answerMode,
       messageCost,
       requiresCredits,
       onStream,
@@ -88,13 +101,13 @@ export class SendMessageV2Service extends BaseService {
     try {
       // Only the AI researcher tabs have a research mode; the paraphraser and
       // diagram builder always run their own single pipeline.
-      if (modeType === 'research' && mode === 'ai_researcher' && onStream) {
+      if (answerMode === 'research' && mode === 'ai_researcher' && onStream) {
         const implementation = await SkripsiResearchRegistryV2.resolve()
         const result = await implementation.service.call({
           tabId,
           userId,
           message: trimmed,
-          tabType: tab.tab_type,
+          tabType,
         })
 
         // An implementation that streams straight from Perplexity carries its
@@ -112,12 +125,24 @@ export class SendMessageV2Service extends BaseService {
         })
       }
 
-      const result = await SkripsiAIService.call({
-        tabId,
-        message: trimmed,
-        tabType: tab.tab_type,
-        modeType,
-      })
+      // Normal mode is V2's own: same prompt and model as the generic branch
+      // of SkripsiAIService, plus whatever the student attached from their
+      // report. Everything else — the paraphraser, the diagram builder, and
+      // any legacy tab still asking for validated — stays on the shared
+      // service, which V1 also runs.
+      const result = answerMode === 'normal' && mode === 'ai_researcher'
+        ? await NormalChatV2Service.call({
+          tabId,
+          setId: tab.set_id,
+          message: trimmed,
+          context: normalizeContextSelection(context || {}),
+        })
+        : await SkripsiAIService.call({
+          tabId,
+          message: trimmed,
+          tabType,
+          modeType: answerMode,
+        })
 
       if (onStream && result.stream) {
         if (result.provider === 'perplexity') {

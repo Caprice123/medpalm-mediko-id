@@ -75,6 +75,7 @@ import adminV2AnatomyQuizzesRoutes from '#routes/admin/v2/anatomyQuizzes.routes'
 import adminV2ContentRelationsRoutes from '#routes/admin/v2/contentRelations.routes';
 import adminV2FeatureNodesRoutes from '#routes/admin/v2/featureNodes.routes';
 import adminV2ChatbotRoutes from '#routes/admin/v2/chatbot.routes';
+import adminV2SkripsiRoutes from '#routes/admin/v2/skripsi.routes';
 import apiV2FlashcardRoutes from '#routes/api/v2/flashcard.routes';
 import apiV2DiagnosticRoutes from '#routes/api/v2/diagnostic.routes';
 import apiV21FlashcardRoutes from '#routes/api/v2-1/flashcard.routes';
@@ -275,6 +276,7 @@ app.use('/admin/v2/atlas-quiz/anatomy-quizzes', adminV2AnatomyQuizzesRoutes);
 app.use('/admin/v2/content-relations', adminV2ContentRelationsRoutes);
 app.use('/admin/v2/feature-nodes', adminV2FeatureNodesRoutes);
 app.use('/admin/v2/chatbot', adminV2ChatbotRoutes);
+app.use('/admin/v2/skripsi', adminV2SkripsiRoutes);
 
 // Bull Board - Job Queue Monitoring UI
 const bullBoardAdapter = setupBullBoard();

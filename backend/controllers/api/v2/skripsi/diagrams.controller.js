@@ -1,9 +1,13 @@
 import { GenerateDiagramService } from '#services/skripsi/generateDiagramService'
+import { SaveTabDiagramService } from '#services/skripsi/saveTabDiagramService'
 import { GetDiagramHistoryService } from '#services/skripsi/getDiagramHistoryService'
 import { GetDiagramDetailService } from '#services/skripsi/getDiagramDetailService'
 import { UpdateDiagramService } from '#services/skripsi/updateDiagramService'
 import { CreateDiagramService } from '#services/skripsi/createDiagramService'
 import { ValidationError } from '#errors/validationError'
+import { GenerateSkripsiDiagramImageV2Service } from '#services/skripsi/v2/generateSkripsiDiagramImageV2Service'
+import { GetSkripsiDiagramImagesV2Service } from '#services/skripsi/v2/getSkripsiDiagramImagesV2Service'
+import { SkripsiDiagramImageV2Serializer } from '#serializers/api/v2/skripsiDiagramImageSerializer'
 
 // Diagram business logic is unchanged between V1 and V2 — the same services
 // answer both. What changes is the error handling: V1 wrapped each action in
@@ -82,6 +86,46 @@ class SkripsiDiagramsV2Controller {
 
     const result = await UpdateDiagramService.call({
       diagramId: parseInt(req.params.diagramId),
+      userId: req.user.id,
+      diagramData,
+    })
+
+    return res.status(200).json({ data: result })
+  }
+
+  // The Diagram Builder generates a picture: the student describes what they
+  // want and gets a figure they can put straight into the report.
+  async generateImage(req, res) {
+    const diagram = await GenerateSkripsiDiagramImageV2Service.call({
+      tabId: req.params.tabId,
+      userId: req.user.id,
+      description: req.body.description,
+    })
+
+    return res.status(201).json({ data: SkripsiDiagramImageV2Serializer.serializeOne(diagram) })
+  }
+
+  // Everything generated for this tab so far, newest first.
+  async images(req, res) {
+    const diagrams = await GetSkripsiDiagramImagesV2Service.call({
+      tabId: req.params.tabId,
+      userId: req.user.id,
+    })
+
+    return res.status(200).json({ data: SkripsiDiagramImageV2Serializer.serialize(diagrams) })
+  }
+
+  // The diagram builder autosaves its canvas into the tab's own content, so
+  // an in-progress drawing survives a reload without being saved as a version.
+  async saveCanvas(req, res) {
+    const { diagramData } = req.body
+
+    if (!diagramData) {
+      throw new ValidationError('Data diagram wajib diisi')
+    }
+
+    const result = await SaveTabDiagramService.call({
+      tabId: parseInt(req.params.tabId),
       userId: req.user.id,
       diagramData,
     })
