@@ -1,6 +1,7 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { NotFoundError } from '#errors/notFoundError'
+import { V1_TAB_WHERE } from '#services/skripsi/skripsiTabsV1'
 
 export class GetSkripsiSetService extends BaseService {
   static async call({ setId, userId, includeMessages = true, messageLimit = 50 }) {
@@ -12,6 +13,8 @@ export class GetSkripsiSetService extends BaseService {
       },
       include: {
         tabs: {
+          // Only V1's own tabs: V2 stores its panels on the same report.
+          where: V1_TAB_WHERE,
           orderBy: { id: 'asc' },
           include: includeMessages ? {
             messages: {
