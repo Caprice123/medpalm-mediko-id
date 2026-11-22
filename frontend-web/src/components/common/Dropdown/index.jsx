@@ -96,6 +96,12 @@ const Dropdown = memo(function Dropdown({
       zIndex: 10000,
       marginTop: '4px',
     }),
+    // The portalled menu is a sibling of the modal overlay (z-index 1000), so it
+    // needs to outrank it — react-select's own default here is 1.
+    menuPortal: (provided) => ({
+      ...provided,
+      zIndex: 10000,
+    }),
     menuList: (provided) => ({
       ...provided,
       padding: 0,
