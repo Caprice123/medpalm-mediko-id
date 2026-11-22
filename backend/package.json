@@ -43,6 +43,8 @@
     "db:seed:home-landing": "node prisma/seeds/homeLandingConstants.seed.js",
     "db:seed:flashcard-nodes": "node prisma/seeds/flashcardNodes.seed.js",
     "db:seed:mcq-from-flashcards": "node prisma/seeds/mcqFromFlashcards.seed.js",
+    "db:seed:skripsi-templates": "node prisma/seeds/skripsiTemplates.seed.js",
+    "db:seed:pbl": "node prisma/seeds/pblConstants.seed.js",
     "chromadb:start": "python -m chromadb.cli.cli run --path ./data/chromadb --port 8000",
     "embed:notes": "node scripts/embedAllSummaryNotes.js"
   },

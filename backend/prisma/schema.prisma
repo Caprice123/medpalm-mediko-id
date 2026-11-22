@@ -463,6 +463,7 @@ model users {
   chatbot_conversations         chatbot_conversations[]
   user_chatbot_settings         user_chatbot_settings?
   skripsi_sets                  skripsi_sets[]
+  skripsi_templates             skripsi_templates[]
   osce_sessions                 osce_sessions[]
   user_feature_subscriptions    user_feature_subscriptions[]
   challenge_sessions            challenge_sessions[]
@@ -1603,20 +1604,139 @@ model skripsi_sets {
   id             Int      @id @default(autoincrement())
   unique_id      String   @unique @default(uuid())
   user_id        Int
+  template_id    Int?
+  work_mode      String   @default("manual") // 'manual' or 'generate' — how the student chose to fill the report
   title          String
   description    String?  @db.Text
+  case_text      String?  @db.Text // the PBL case/scenario the report is written about
   editor_content String?  @db.Text
+  // The citation style the daftar pustaka was last generated in, kept per
+  // report so re-generating does not silently switch style on the student.
+  citation_style String   @default("vancouver")
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
   is_deleted     Boolean  @default(false)
 
   users    users               @relation(fields: [user_id], references: [id])
-  tabs     skripsi_tabs[]
-  settings skripsi_set_settings?
+  template skripsi_templates?   @relation(fields: [template_id], references: [id])
+  tabs      skripsi_tabs[]
+  sections  skripsi_sections[]
+  members   skripsi_set_members[]
+  settings  skripsi_set_settings?
+  citations skripsi_citations[]
 
   @@index([user_id])
   @@index([is_deleted])
   @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin, map: "skripsi_sets_search_gin_idx")
+}
+
+// A report template (Laporan Resmi BBDM, Laporan PBL Standar, …) and the section
+// outline it stamps onto a new set. Managed from the admin panel.
+model skripsi_templates {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  // Null for the admin-managed templates everyone sees; set when a student
+  // saves their own outline as a template to reuse.
+  owner_user_id Int?
+  name        String
+  description String?  @db.Text
+  position    Int      @default(0)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  sections skripsi_template_sections[]
+  sets     skripsi_sets[]
+  owner    users?                     @relation(fields: [owner_user_id], references: [id])
+
+  @@index([owner_user_id])
+  @@index([is_active])
+  @@index([position])
+}
+
+model skripsi_template_sections {
+  id                Int      @id @default(autoincrement())
+  template_id       Int
+  title             String
+  position          Int      @default(0)
+  is_reference_slot Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+
+  template skripsi_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@index([template_id])
+}
+
+// One editable section of a report. Replaces the single editor_content blob:
+// each section is written, saved and (later) AI-assisted on its own.
+model skripsi_sections {
+  id                Int      @id @default(autoincrement())
+  set_id            Int
+  title             String
+  content           String?  @db.Text
+  position          Int      @default(0)
+  is_reference_slot Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+
+  skripsi_set skripsi_sets @relation(fields: [set_id], references: [id], onDelete: Cascade)
+
+  @@index([set_id])
+  @@index([position])
+}
+
+// One source the student kept for the daftar pustaka. A Searcher result only
+// carries a title, a URL and a date, which is not enough for an APA or
+// Vancouver entry, so what Crossref/PubMed knows about the URL is resolved once
+// and stored here — the bibliography is then formatted from these columns in
+// whichever style is asked for, with no second lookup.
+//
+// `source_type` says how much was found: 'journal' has the author/journal/
+// volume fields filled, 'web' falls back to the "[Internet]" shape.
+model skripsi_citations {
+  id              Int      @id @default(autoincrement())
+  set_id          Int
+  title           String   @db.Text
+  url             String   @db.Text
+  source_type     String   @default("web")
+  // [{ family, given }] in citation order. Every style prints a name
+  // differently — "Rahman A", "Rahman, A.", "A. Rahman" — so the parts are kept
+  // apart rather than stored as one pre-formatted string.
+  authors         Json?
+  container_title String?  @db.Text // journal or site name
+  publisher       String?
+  volume          String?
+  issue           String?
+  pages           String?
+  doi             String?
+  pmid            String?
+  published_year  String?
+  published_date  String? // yyyy-mm-dd when the day is known
+  position        Int      @default(0)
+  accessed_at     DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  skripsi_set skripsi_sets @relation(fields: [set_id], references: [id], onDelete: Cascade)
+
+  @@unique([set_id, url])
+  @@index([set_id])
+  @@index([position])
+}
+
+model skripsi_set_members {
+  id             Int      @id @default(autoincrement())
+  set_id         Int
+  name           String
+  student_number String?
+  position       Int      @default(0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+
+  skripsi_set skripsi_sets @relation(fields: [set_id], references: [id], onDelete: Cascade)
+
+  @@index([set_id])
 }
 
 model skripsi_set_settings {
