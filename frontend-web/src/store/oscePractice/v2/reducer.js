@@ -8,7 +8,11 @@ import { resetAllState } from '../../globalAction'
 // their last page. Mixing those into the engine's slice would make the archived V1 pages and
 // the live V2 board fight over the same `userTopics` / `userSessions` arrays.
 const initialState = {
-  // { resumable, completedCount, lastResult, totalPracticeSeconds } — the left rail's content.
+  // { resumable, completedCount, lastResult, totalPracticeSeconds } — the hub's payload.
+  // `resumable` feeds the live band and `lastResult` the page heading. `completedCount` and
+  // `totalPracticeSeconds` are not rendered any more: they footnoted the performance rail,
+  // which went when the chart moved onto the page, and the stat row that briefly replaced it
+  // was dropped too. The serializer still sends both, so a future reader costs no endpoint work.
   hub: null,
   stations: [],
   history: [],

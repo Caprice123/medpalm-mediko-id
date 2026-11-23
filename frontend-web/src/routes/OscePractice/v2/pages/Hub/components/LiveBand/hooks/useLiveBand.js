@@ -5,12 +5,12 @@ import { setInterval, clearInterval } from 'worker-timers'
 import { OscePracticeRoute } from '@routes/OscePractice/routes'
 import { actions } from '@store/oscePractice/v2/reducer'
 
-// The rail's clock, and where its one action goes.
+// The band's clock, and where its one action goes.
 //
 // `worker-timers` rather than window.setInterval, the same as the station room's timer: a
-// background tab throttles window timers to once a minute, which would let the rail claim a
+// background tab throttles window timers to once a minute, which would let the band claim a
 // student still has eight minutes after the bell had already rung.
-export const useLiveBlock = (session, { onRequestStart }) => {
+export const useLiveBand = (session, { onRequestStart }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [remaining, setRemaining] = useState(session?.remainingSeconds ?? 0)
@@ -47,7 +47,7 @@ export const useLiveBlock = (session, { onRequestStart }) => {
     if (!session) return
 
     // A station that was created but never started still owes its microphone and
-    // speech-to-text check. V1 spent a whole page on that; here it is a gate the board raises
+    // speech-to-text check. V1 spent a whole page on that; here it is a gate the page raises
     // in place, so resuming never costs a navigation the student has to come back from.
     if (session.status === 'created') {
       onRequestStart(session)
