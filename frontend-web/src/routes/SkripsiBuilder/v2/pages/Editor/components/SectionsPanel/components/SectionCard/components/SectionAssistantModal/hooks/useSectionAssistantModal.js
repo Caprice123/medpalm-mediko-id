@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { requestSectionAssist } from '@store/skripsi/v2'
 import { actions as commonActions } from '@store/common/reducer'
-import { MAX_CONTEXT_SECTIONS } from '@store/skripsi/v2/reducer'
 import { wordDiff, hasChanges } from '../utils/wordDiff'
 
 // The quick actions. Pressing one writes its wording into the prompt box, so
@@ -86,12 +85,11 @@ export const useSectionAssistantModal = ({
 
   const toggleContext = (key) => setContext(previous => ({ ...previous, [key]: !previous[key] }))
 
-  const toggleSection = (id) => setSelectedSectionIds((previous) => {
-    if (previous.includes(id)) return previous.filter(current => current !== id)
-    if (previous.length >= MAX_CONTEXT_SECTIONS) return previous
-
-    return [...previous, id]
-  })
+  const toggleSection = (id) => setSelectedSectionIds((previous) => (
+    previous.includes(id)
+      ? previous.filter(current => current !== id)
+      : [...previous, id]
+  ))
 
   const handleGenerate = async () => {
     if (!instruction.trim()) {

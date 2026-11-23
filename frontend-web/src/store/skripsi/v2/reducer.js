@@ -12,10 +12,9 @@ const MAX_CACHED_TABS = 10
 // opt-in because they are what actually costs tokens.
 export const DEFAULT_CHAT_CONTEXT = { case: true, citations: false, sectionIds: [] }
 
-// Matches the cap the server enforces in skripsiReportContextV2. Three whole
-// sections is already most of a model's attention; past that the question
-// itself starts losing.
-export const MAX_CONTEXT_SECTIONS = 3
+// There is no longer a cap on how many sections may be attached. The server
+// bounds the prompt by total size instead (skripsiReportContextV2), so a long
+// report is trimmed by what it would cost rather than by an arbitrary count.
 
 const emptyStreamingState = {
   isSending: false,
@@ -461,8 +460,6 @@ const skripsiV2Slice = createSlice({
         id => state.sections.some(section => section.id === id)
       )
       const attached = attachedIds.includes(sectionId)
-
-      if (!attached && attachedIds.length >= MAX_CONTEXT_SECTIONS) return
 
       state.chatContextByTab[tabId] = {
         ...DEFAULT_CHAT_CONTEXT,

@@ -14,16 +14,18 @@ import {
 // Nothing here decides what to include; the caller passes a selection and gets
 // back a block of plain text to drop above its own prompt.
 
-// Everything is capped. A long case plus two long sections would otherwise
-// push the actual question out of the model's window, and the cost of a
-// message would grow with the report without anyone choosing that.
+// Everything is capped, but by size rather than by count: a student may
+// attach as many sections as they like, and the budget below is what stops
+// a long report from quietly making every message an expensive one.
 const LIMITS = {
   case: 4000,
   // Per section, when its full text was asked for.
   section: 6000,
   citations: 30,
-  // How many sections may be sent in full at once.
-  sectionCount: 3,
+  // Across every attached section. Only a genuinely long report reaches it
+  // - ten full-length sections fit underneath - and when it is reached the
+  // prompt says so rather than dropping the rest silently.
+  sectionsTotal: 60000,
 }
 
 // Section content is editor HTML. The model reads prose, and the markup is
@@ -59,7 +61,7 @@ export const normalizeContextSelection = (raw = {}) => ({
   includeCase: raw.case === true,
   includeCitations: raw.citations === true,
   sectionIds: Array.isArray(raw.sectionIds)
-    ? [...new Set(raw.sectionIds.map(Number).filter(Number.isInteger))].slice(0, LIMITS.sectionCount)
+    ? [...new Set(raw.sectionIds.map(Number).filter(Number.isInteger))]
     : [],
 })
 
@@ -80,7 +82,6 @@ export async function buildReportContext({ set, selection, alwaysSectionIds = []
   }
 
   const wantedIds = [...new Set([...alwaysSectionIds, ...selection.sectionIds])]
-    .slice(0, LIMITS.sectionCount)
 
   if (wantedIds.length > 0) {
     const sections = await prisma.skripsi_sections.findMany({
@@ -89,12 +90,40 @@ export async function buildReportContext({ set, selection, alwaysSectionIds = []
       select: { id: true, title: true, content: true },
     })
 
+    // Added in the order the caller asked for, so the section an assistant
+    // is working inside - which `alwaysSectionIds` puts first - is never the
+    // one the budget drops.
+    let remaining = LIMITS.sectionsTotal
+    let skipped = 0
+
     for (const id of wantedIds) {
       const section = sections.find(row => row.id === id)
       if (!section) continue
 
       const text = htmlToText(section.content)
-      blocks.push(`Isi bagian "${section.title}":\n${text ? truncate(text, LIMITS.section) : '(masih kosong)'}`)
+
+      // An empty section costs nothing to mention and is worth mentioning:
+      // it tells the model that part of the report is still unwritten.
+      if (!text) {
+        blocks.push(`Isi bagian "${section.title}":\n(masih kosong)`)
+        continue
+      }
+
+      if (remaining <= 0) {
+        skipped += 1
+        continue
+      }
+
+      const body = truncate(text, Math.min(LIMITS.section, remaining))
+      remaining -= body.length
+
+      blocks.push(`Isi bagian "${section.title}":\n${body}`)
+    }
+
+    // Said out loud: a model told the report continues will not treat what
+    // it was given as the whole of it.
+    if (skipped > 0) {
+      blocks.push(`Catatan: ${skipped} bagian lain dilampirkan mahasiswa tetapi tidak muat dan tidak disertakan di sini.`)
     }
   }
 

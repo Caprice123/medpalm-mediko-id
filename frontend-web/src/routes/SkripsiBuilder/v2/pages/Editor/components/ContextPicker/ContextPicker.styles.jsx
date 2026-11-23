@@ -22,7 +22,7 @@ export const GroupLabel = styled.span`
 
 export const Counter = styled.span`
   font-size: 0.72rem;
-  color: ${({ $full }) => ($full ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-500)')};
+  color: ${({ $active }) => ($active ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-500)')};
 `
 
 export const Chips = styled.div`

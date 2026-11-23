@@ -1,6 +1,5 @@
 import { FaFileAlt, FaQuoteRight } from 'react-icons/fa'
 import Checkbox from '@components/common/Checkbox'
-import { MAX_CONTEXT_SECTIONS } from '@store/skripsi/v2/reducer'
 import {
   Group, GroupHeader, GroupLabel, Counter, Chips, Chip, Reason,
   SectionList, SectionRow, SectionIndex, SectionTitle, OwnBadge, EmptyNote,
@@ -9,8 +8,10 @@ import {
 // What the model is allowed to read from the report before it answers.
 //
 // One picker for both places that send a prompt — the AI Chat panel and the
-// per-section assistant — so "Kasus" means the same thing, and the cap on
-// whole sections is the same number, wherever it is ticked.
+// per-section assistant — so "Kasus" means the same thing wherever it is
+// ticked. Any number of sections may go: the server bounds the prompt by its
+// total size, so what trims a very long report is what it would cost rather
+// than a count nobody chose.
 //
 // There used to be a "Kerangka" option that sent every section title plus its
 // first line. It is gone: a gist of the whole report is a worse answer to
@@ -28,8 +29,6 @@ const ContextPicker = ({
   onToggle,
   onToggleSection,
 }) => {
-  const isFull = selectedSectionIds.length >= MAX_CONTEXT_SECTIONS
-
   return (
     <>
       <Group>
@@ -64,8 +63,8 @@ const ContextPicker = ({
       <Group>
         <GroupHeader>
           <GroupLabel>Bagian laporan</GroupLabel>
-          <Counter $full={isFull}>
-            {selectedSectionIds.length}/{MAX_CONTEXT_SECTIONS} bagian
+          <Counter $active={selectedSectionIds.length > 0}>
+            {selectedSectionIds.length} bagian dipilih
           </Counter>
         </GroupHeader>
 
@@ -75,19 +74,16 @@ const ContextPicker = ({
           ) : (
             sections.map((section, index) => {
               const checked = selectedSectionIds.includes(section.id)
-              // At the cap the unticked rows go quiet rather than silently
-              // dropping the extra one on the server.
-              const rowDisabled = disabled || (!checked && isFull)
 
               return (
                 <SectionRow
                   key={section.id}
-                  $disabled={rowDisabled}
+                  $disabled={disabled}
                   title={section.title}
                 >
                   <Checkbox
                     checked={checked}
-                    disabled={rowDisabled}
+                    disabled={disabled}
                     onChange={() => onToggleSection(section.id)}
                     noMargin
                   />
@@ -100,12 +96,10 @@ const ContextPicker = ({
           )}
         </SectionList>
 
-        {isFull && (
-          <Reason>
-            Maksimal {MAX_CONTEXT_SECTIONS} bagian sekaligus — lebih dari itu pertanyaannya
-            sendiri yang tenggelam.
-          </Reason>
-        )}
+        <Reason>
+          Makin banyak bagian yang dikirim, makin lambat dan makin mahal jawabannya —
+          dan pertanyaanmu sendiri makin tenggelam di antaranya.
+        </Reason>
       </Group>
     </>
   )
