@@ -26,6 +26,12 @@ const GENERATION_LABELS = {
   error: 'Gagal — coba lagi dari tombol AI',
 }
 
+// Typing into a section the run has not reached yet would be overwritten the
+// moment its turn came, so both the one being written and the ones still
+// queued are closed for editing. A finished or failed section is the
+// student's again immediately - that is the whole point of watching it land.
+const GENERATION_LOCKED = ['pending', 'writing']
+
 const SectionCard = memo(({
   section,
   isFirst,
@@ -61,6 +67,7 @@ const SectionCard = memo(({
   } = useSectionCard({ section, onRename, onContentChange })
 
   const isLocked = Boolean(section.isReferenceSlot)
+  const isGenerating = GENERATION_LOCKED.includes(generationStatus)
 
   return (
     <Card id={sectionDomId(section.id)}>
@@ -104,11 +111,17 @@ const SectionCard = memo(({
           </LockNote>
         ) : (
           <Actions>
+            {/* Asking for a draft of a section the run is about to write
+                would race it, and whichever answer arrived first would be
+                thrown away by the other. */}
             <IconButton
               type="button"
               $accent
-              title="Tulis bagian ini dengan AI"
+              title={isGenerating
+                ? 'AI sudah mengerjakan bagian ini'
+                : 'Tulis bagian ini dengan AI'}
               aria-label="Tulis bagian ini dengan AI"
+              disabled={isGenerating}
               onClick={requestDraft}
             >
               <TbSparkles />
@@ -117,7 +130,7 @@ const SectionCard = memo(({
               type="button"
               title="Pindah ke atas"
               aria-label="Pindah ke atas"
-              disabled={isFirst}
+              disabled={isFirst || isGenerating}
               onClick={() => onMove(section.id, -1)}
             >
               <FaArrowUp />
@@ -126,16 +139,21 @@ const SectionCard = memo(({
               type="button"
               title="Pindah ke bawah"
               aria-label="Pindah ke bawah"
-              disabled={isLast}
+              disabled={isLast || isGenerating}
               onClick={() => onMove(section.id, 1)}
             >
               <FaArrowDown />
             </IconButton>
+            {/* Deleting a section the run still has queued would send it
+                looking for a row that is gone. */}
             <IconButton
               type="button"
               $danger
-              title="Hapus bagian"
+              title={isGenerating
+                ? 'Tunggu AI selesai dengan bagian ini'
+                : 'Hapus bagian'}
               aria-label="Hapus bagian"
+              disabled={isGenerating}
               onClick={() => onDelete(section)}
             >
               <FaTrash />
@@ -147,7 +165,10 @@ const SectionCard = memo(({
       <RichTextEditor
         value={initialContent}
         onChange={(html) => handleContentChange(section.id, html)}
-        placeholder={`Tulis ${section.title.toLowerCase()} di sini...`}
+        disabled={isGenerating}
+        placeholder={isGenerating
+          ? 'Menunggu AI menulis bagian ini...'
+          : `Tulis ${section.title.toLowerCase()} di sini...`}
         uploadFolder="skripsi-editor"
         minHeight="180px"
         onAiEdit={requestAiEdit}
