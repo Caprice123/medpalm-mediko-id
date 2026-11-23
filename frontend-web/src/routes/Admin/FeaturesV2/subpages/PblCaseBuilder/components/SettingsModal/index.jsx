@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux'
 import SettingsModal from '@components/common/SettingsModal'
 import TextInput from '@components/common/TextInput'
 import NumberInput from '@components/common/NumberInput'
+import Textarea from '@components/common/Textarea'
 import Dropdown from '@components/common/Dropdown'
 import { aiModelsGrouped, getModelLabel, imageModelsGrouped, getImageModelLabel } from '@config/aiModels'
 import { usePblSettings } from './hooks/usePblSettings'
@@ -99,6 +100,35 @@ const PblSettingsModal = ({ isOpen, onClose }) => {
           />
         </FormGroup>
 
+        <FormGroup>
+          <Dropdown
+            label="Model"
+            options={TEXT_MODEL_OPTIONS}
+            value={{
+              value: form.values.pbl_ai_chat_model,
+              label: getModelLabel(form.values.pbl_ai_chat_model),
+            }}
+            onChange={option => form.setFieldValue('pbl_ai_chat_model', option?.value)}
+            isClearable={false}
+          />
+          <HintText>Pilih model Gemini — tab ini percakapan biasa, bukan pencarian.</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Textarea
+            label="System Prompt"
+            value={form.values.pbl_ai_chat_prompt}
+            onChange={field('pbl_ai_chat_prompt')}
+            rows={12}
+            placeholder="Instruksi untuk model yang menjawab di tab AI Chat"
+          />
+          <HintText>
+            Prompt ini dipakai apa adanya. Tab ini tidak melakukan pencarian, jadi
+            jangan menyuruh model menolak menjawab ketika tidak ada referensi — ia
+            tidak akan pernah punya referensi.
+          </HintText>
+        </FormGroup>
+
         <NumberInput
           label="Biaya kredit per pesan"
           value={form.values.pbl_ai_chat_cost}
@@ -133,6 +163,36 @@ const PblSettingsModal = ({ isOpen, onClose }) => {
             isClearable={false}
           />
           <HintText>Pilih model Gemini — penyuntingan teks tidak memakai model pencarian.</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Textarea
+            label="System Prompt — Menyunting Teks"
+            value={form.values.pbl_ai_edit_rewrite_prompt}
+            onChange={field('pbl_ai_edit_rewrite_prompt')}
+            rows={12}
+            placeholder="Instruksi saat AI menyunting teks yang diblok mahasiswa"
+          />
+          <HintText>
+            Dipakai saat mahasiswa memblok teks lalu meminta revisi. Hasilnya langsung
+            mengganti teks di editor, jadi minta model menjawab dengan teks suntingan
+            saja, dan pertahankan aturan soal penanda sitasi.
+          </HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Textarea
+            label="System Prompt — Menulis Draf"
+            value={form.values.pbl_ai_edit_draft_prompt}
+            onChange={field('pbl_ai_edit_draft_prompt')}
+            rows={12}
+            placeholder="Instruksi saat AI menulis draf satu bagian dari nol"
+          />
+          <HintText>
+            Dipakai saat bagian laporan masih kosong dan belum ada yang bisa diblok.
+            Hasilnya masuk ke editor rich text, jadi batasi tag HTML yang diizinkan —
+            tag di luar daftar itu muncul sebagai teks mentah di dokumen.
+          </HintText>
         </FormGroup>
 
         <NumberInput
@@ -201,6 +261,21 @@ const PblSettingsModal = ({ isOpen, onClose }) => {
             isClearable={false}
           />
           <HintText>Hanya model Gemini yang bisa menghasilkan gambar.</HintText>
+        </FormGroup>
+
+        <FormGroup>
+          <Textarea
+            label="Brief Gambar"
+            value={form.values.pbl_diagram_prompt}
+            onChange={field('pbl_diagram_prompt')}
+            rows={12}
+            placeholder="Ketentuan gambar untuk model"
+          />
+          <HintText>
+            Model gambar hanya menerima satu prompt, jadi ini brief-nya secara utuh.
+            Tulis <code>{'{{deskripsi}}'}</code> di tempat permintaan mahasiswa
+            disisipkan — tanpa penanda itu, permintaannya ditambahkan di akhir.
+          </HintText>
         </FormGroup>
 
         <NumberInput

@@ -19,17 +19,17 @@ import {
   TypingDot,
 } from './MessageList.styles'
 
+// Normal mode is deliberately absent. The AI Chat tab answers in normal mode
+// and nothing else, so a badge on every message saying so labels nothing —
+// what remains are the modes a thread can still hold from before that was
+// true, which are worth telling apart. An unrecognised mode shows no badge
+// rather than one reading "Unknown".
 const MODE_LABELS = {
-  normal: { icon: '🤖', label: 'Normal Mode' },
   research: { icon: '🔍', label: 'Research Mode' },
-  // Still labelled: messages answered before the AI Chat tab moved to normal
-  // mode are in the thread for good.
   validated: { icon: '📚', label: 'Validated' },
 }
 
-const UNKNOWN_MODE = { icon: '💬', label: 'Unknown' }
-
-const modeInfo = (mode) => MODE_LABELS[mode] || UNKNOWN_MODE
+const modeInfo = (mode) => MODE_LABELS[mode] || null
 
 // Turns the bare citation markers the model writes — [1], [2] — into links to
 // the matching source, so a claim can be checked without scrolling to the
@@ -96,10 +96,12 @@ const ChatMessage = memo(({ message }) => {
             under a half-written answer read as though it had finished. */}
         {!streaming && (
           <MessageFooter>
-            <ModeBadge $mode={message.modeType}>
-              <span>{mode.icon}</span>
-              <span>{mode.label}</span>
-            </ModeBadge>
+            {mode && (
+              <ModeBadge $mode={message.modeType}>
+                <span>{mode.icon}</span>
+                <span>{mode.label}</span>
+              </ModeBadge>
+            )}
             <Timestamp>{formatLocalTime(message.createdAt)}</Timestamp>
           </MessageFooter>
         )}

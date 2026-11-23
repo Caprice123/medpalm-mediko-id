@@ -93,6 +93,8 @@ export class SectionAssistantV2Service extends BaseService {
       'pbl_ai_edit_enabled',
       'pbl_ai_edit_cost',
       'pbl_ai_edit_model',
+      'pbl_ai_edit_rewrite_prompt',
+      'pbl_ai_edit_draft_prompt',
     ])
 
     if (constants.pbl_ai_edit_enabled !== 'true') {
@@ -141,7 +143,13 @@ export class SectionAssistantV2Service extends BaseService {
     ].filter(Boolean).join('\n')
 
     const model = constants.pbl_ai_edit_model || DEFAULT_MODEL
-    const systemPrompt = mode === 'rewrite' ? REWRITE_PROMPT : DRAFT_PROMPT
+    // The constant is the prompt, used as the admin typed it. The in-file
+    // prompts are only the unseeded fallback — note what they carry, because
+    // an admin replacing them owns those rules too: rewrite must return the
+    // edited text alone, draft may emit only the tags the editor renders.
+    const systemPrompt = mode === 'rewrite'
+      ? (constants.pbl_ai_edit_rewrite_prompt || REWRITE_PROMPT)
+      : (constants.pbl_ai_edit_draft_prompt || DRAFT_PROMPT)
 
     const answer = await GeminiService.generateFromText(model, systemPrompt, [
       { role: 'user', parts: [{ text: userPrompt }] },

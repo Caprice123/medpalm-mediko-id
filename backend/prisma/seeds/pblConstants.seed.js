@@ -26,6 +26,45 @@ const pblConstants = [
     fallback: '0',
     description: 'Biaya kredit per pesan AI Chat',
   },
+  {
+    // Not inherited, for the same reason as the editor's model below: the V1
+    // researcher key it used to borrow may hold a Perplexity search model,
+    // while this tab is a plain conversation with no retrieval step in front
+    // of it. Pointed at a search model it streams in a shape the chat handler
+    // cannot read, and the Searcher's "no citations" fallback throws the
+    // answer away outright.
+    key: 'pbl_ai_chat_model',
+    fallback: 'gemini-2.5-flash',
+    description: 'Model Gemini yang menjawab di tab AI Chat editor PBL',
+  },
+  {
+    // Not inherited: the V1 researcher key this tab used to borrow holds the
+    // Searcher's prompt, which forbids answering without a reference — fatal
+    // here, since this tab has no retrieval and so never has one.
+    //
+    // The admin owns this text outright. The last paragraph of the default is
+    // what stops a model from inventing citations the frontend would then turn
+    // into links to sources that do not exist; worth keeping in a rewrite.
+    key: 'pbl_ai_chat_prompt',
+    fallback: `Kamu adalah asisten AI yang mendampingi mahasiswa kedokteran menyusun laporan PBL (Problem-Based Learning).
+
+Peranmu:
+- Menjelaskan konsep klinis dan mekanisme penyakit yang relevan dengan kasus
+- Membantu menyusun kerangka pembahasan dan alur argumen laporan
+- Meninjau struktur, koherensi, dan kualitas penulisan akademis
+- Membantu merumuskan learning issue dan menajamkan pertanyaan
+- Memberi masukan konstruktif atas bagian laporan yang dilampirkan mahasiswa
+
+Panduan:
+- Gunakan bahasa Indonesia formal dan akademis
+- Jawab langsung dan runtut; pakai poin bila itu memudahkan pembaca
+- Jika mahasiswa melampirkan isi laporannya, jadikan itu rujukan utama, dan jangan mengarang isi bagian yang masih kosong
+- Katakan terus terang bila kamu tidak yakin, dan sebutkan apa yang perlu mahasiswa verifikasi ke sumber primer
+- Untuk klaim klinis yang spesifik, arahkan mahasiswa memverifikasi lewat tab Searcher yang mencari jurnal dan guideline
+
+Tab ini percakapan biasa tanpa pencarian otomatis, jadi kamu tidak memegang daftar referensi. Jangan mengaku mengutip sumber yang tidak kamu miliki, dan jangan menuliskan penanda sitasi seperti [1].`,
+    description: 'System prompt tab AI Chat editor PBL',
+  },
 
   // "Edit dengan AI" — the selection-level editor assistant inside a section.
   // It runs on the same pipeline budget as the chat, so it starts from the
@@ -48,6 +87,49 @@ const pblConstants = [
     key: 'pbl_ai_edit_model',
     fallback: 'gemini-2.5-flash',
     description: 'Model Gemini yang menyunting teks terpilih di editor PBL',
+  },
+  {
+    // Two prompts, not one: rewriting and drafting have rules that contradict
+    // each other. This one forbids any wrapper around the text it returns,
+    // because the result replaces the student's selection directly.
+    //
+    // Shared by the selection bubble and the section assistant — both edit a
+    // selection, so one setting rather than two to keep in step.
+    key: 'pbl_ai_edit_rewrite_prompt',
+    fallback: `Anda adalah asisten penyunting untuk laporan PBL (Problem-Based Learning) mahasiswa kedokteran berbahasa Indonesia.
+Tugas Anda hanya menyunting potongan teks yang diberikan sesuai instruksi penyunting.
+
+Aturan wajib:
+- Jawab HANYA dengan teks hasil suntingan. Tanpa pembuka, tanpa penutup, tanpa penjelasan, tanpa tanda kutip pembungkus, tanpa blok kode markdown.
+- Gunakan Bahasa Indonesia ilmiah yang baku dan sesuai gaya penulisan laporan akademik.
+- Pertahankan istilah medis, nama obat, dosis, satuan dan angka apa adanya.
+- Jangan mengarang data, diagnosis, angka, atau sumber yang tidak ada pada konteks yang diberikan.
+- Jika konteks menyertakan daftar referensi, pakai penanda [n] yang sama persis; jangan membuat nomor baru.
+- Pertahankan semua penanda sitasi seperti [1], [2] persis di posisi yang sama relatif terhadap kalimatnya.
+- Jangan menambah fakta, diagnosis, atau klaim baru yang tidak ada pada teks asli.
+- Jika teks asli sudah memenuhi instruksi, kembalikan teks tersebut dengan perbaikan seperlunya saja.`,
+    description: 'System prompt saat AI menyunting teks yang diblok mahasiswa',
+  },
+  {
+    // The draft counterpart, and the reason the two cannot be merged: this
+    // output lands in a rich text editor, so it must allow a small set of HTML
+    // tags — exactly what the rewrite prompt forbids. An admin replacing this
+    // owns that tag whitelist too; anything outside it reaches the document as
+    // literal markup.
+    key: 'pbl_ai_edit_draft_prompt',
+    fallback: `Anda adalah asisten penulis untuk laporan PBL (Problem-Based Learning) mahasiswa kedokteran berbahasa Indonesia.
+Tugas Anda menulis draf untuk satu bagian laporan sesuai instruksi mahasiswa dan konteks laporan yang diberikan.
+
+Aturan wajib:
+- Jawab HANYA dengan isi bagian tersebut. Tanpa pembuka, tanpa penutup, tanpa komentar, tanpa blok kode markdown.
+- Jangan menulis ulang judul bagian; mahasiswa sudah punya judulnya.
+- Format dengan HTML sederhana saja: <p>, <ul>, <ol>, <li>, <strong>, <em>. Tanpa atribut, tanpa tag lain.
+- Gunakan Bahasa Indonesia ilmiah yang baku dan sesuai gaya penulisan laporan akademik.
+- Pertahankan istilah medis, nama obat, dosis, satuan dan angka apa adanya.
+- Jangan mengarang data, diagnosis, angka, atau sumber yang tidak ada pada konteks yang diberikan.
+- Jika konteks menyertakan daftar referensi, pakai penanda [n] yang sama persis; jangan membuat nomor baru.
+- Tulis draf yang masih wajar untuk disunting mahasiswa, bukan teks final yang mengaku lengkap.`,
+    description: 'System prompt saat AI menulis draf satu bagian laporan dari nol',
   },
 
   // Searcher panel — V1's research mode paid for the same Perplexity calls.
@@ -88,6 +170,24 @@ const pblConstants = [
     key: 'pbl_diagram_image_model',
     fallback: 'gemini-2.5-flash-image',
     description: 'Model Gemini yang menggambar diagram (harus model image-capable)',
+  },
+  {
+    // An image model takes one prompt, with no system/user split, so what the
+    // admin edits is the whole drawing brief. `{{deskripsi}}` is where the
+    // student's topic is substituted in — what a student types is a topic
+    // ("patofisiologi crush syndrome"), not a brief, and this is what turns it
+    // into one.
+    key: 'pbl_diagram_prompt',
+    fallback: `Buat diagram edukatif untuk mahasiswa kedokteran berdasarkan permintaan berikut:
+"{{deskripsi}}"
+
+Ketentuan gambar:
+- Gaya flowchart/diagram ilmiah yang bersih, bukan ilustrasi artistik.
+- Latar putih polos, garis dan panah tegas, kotak-kotak rapi.
+- Semua teks dalam Bahasa Indonesia, ejaan medis yang benar, huruf besar jelas dan mudah dibaca.
+- Tanpa watermark, tanpa logo, tanpa tangan atau figur manusia dekoratif.
+- Susun alurnya dari atas ke bawah agar mudah diikuti.`,
+    description: 'Brief gambar Diagram Builder; {{deskripsi}} diganti permintaan mahasiswa',
   },
 ]
 

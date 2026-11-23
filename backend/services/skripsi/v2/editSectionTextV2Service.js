@@ -61,6 +61,7 @@ export class EditSectionTextV2Service extends BaseService {
       'pbl_ai_edit_enabled',
       'pbl_ai_edit_cost',
       'pbl_ai_edit_model',
+      'pbl_ai_edit_rewrite_prompt',
     ])
 
     if (constants.pbl_ai_edit_enabled !== 'true') {
@@ -97,7 +98,12 @@ export class EditSectionTextV2Service extends BaseService {
 
     const model = constants.pbl_ai_edit_model || DEFAULT_MODEL
 
-    const revised = await GeminiService.generateFromText(model, SYSTEM_PROMPT, [
+    // Shares the rewrite prompt with SectionAssistantV2Service: both edit a
+    // selection, so two settings an admin had to keep in step would be one
+    // setting too many. SYSTEM_PROMPT is the unseeded fallback.
+    const systemPrompt = constants.pbl_ai_edit_rewrite_prompt || SYSTEM_PROMPT
+
+    const revised = await GeminiService.generateFromText(model, systemPrompt, [
       { role: 'user', parts: [{ text: userPrompt }] },
     ])
 

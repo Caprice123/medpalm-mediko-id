@@ -15,8 +15,8 @@ export const V2_TAB_TITLES = {
 
 // The answer style each chat tab asks for. V1 made this a picker inside the
 // chat; V2 has one chat tab and it always answers in normal mode — a plain
-// conversation against the `skripsi_ai_researcher_*` prompt and model, with no
-// retrieval step in front of it. Finding and citing sources is the Searcher's
+// conversation against the `skripsi_ai_researcher_*` prompt and its own
+// `pbl_ai_chat_model`, with no retrieval step in front of it. Finding and citing sources is the Searcher's
 // job, and the Searcher is not a conversation.
 export const V2_CHAT_TAB_MODE_TYPES = {
   ai_chat: 'normal',

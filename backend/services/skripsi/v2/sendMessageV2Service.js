@@ -125,11 +125,11 @@ export class SendMessageV2Service extends BaseService {
         })
       }
 
-      // Normal mode is V2's own: same prompt and model as the generic branch
-      // of SkripsiAIService, plus whatever the student attached from their
-      // report. Everything else — the paraphraser, the diagram builder, and
-      // any legacy tab still asking for validated — stays on the shared
-      // service, which V1 also runs.
+      // Normal mode is V2's own: the same prompt as the generic branch of
+      // SkripsiAIService, its own model key, plus whatever the student
+      // attached from their report. Everything else — the paraphraser, the
+      // diagram builder, and any legacy tab still asking for validated —
+      // stays on the shared service, which V1 also runs.
       const result = answerMode === 'normal' && mode === 'ai_researcher'
         ? await NormalChatV2Service.call({
           tabId,

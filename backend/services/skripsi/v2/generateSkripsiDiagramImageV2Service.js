@@ -17,6 +17,18 @@ const MAX_PROMPT_LENGTH = 1000
 // What the student types is a topic ("patofisiologi crush syndrome"), not a
 // drawing brief. This turns it into one, so the result reads like a textbook
 // figure instead of an illustration.
+const PROMPT_PLACEHOLDER = '{{deskripsi}}'
+
+// The admin owns the whole brief, so the brief has to say where the student's
+// topic goes. A brief edited by hand can lose the placeholder, and one with no
+// topic in it has the model inventing its own subject — so the topic is
+// appended rather than dropped silently.
+const applyTemplate = (template, description) => (
+  template.includes(PROMPT_PLACEHOLDER)
+    ? template.split(PROMPT_PLACEHOLDER).join(description)
+    : `${template}\n\n"${description}"`
+)
+
 const buildImagePrompt = (description) => [
   'Buat diagram edukatif untuk mahasiswa kedokteran berdasarkan permintaan berikut:',
   `"${description}"`,
@@ -63,6 +75,7 @@ export class GenerateSkripsiDiagramImageV2Service extends BaseService {
       'pbl_diagram_enabled',
       'pbl_diagram_cost',
       'pbl_diagram_image_model',
+      'pbl_diagram_prompt',
     ])
 
     if (constants.pbl_diagram_enabled !== 'true') {
@@ -81,7 +94,13 @@ export class GenerateSkripsiDiagramImageV2Service extends BaseService {
     })
 
     const model = constants.pbl_diagram_image_model || DEFAULT_IMAGE_MODEL
-    const { buffer, mimeType } = await GeminiService.generateImage(model, buildImagePrompt(prompt))
+    // buildImagePrompt is the unseeded fallback; otherwise the admin's brief is
+    // the prompt, with only the placeholder substituted.
+    const imagePrompt = constants.pbl_diagram_prompt
+      ? applyTemplate(constants.pbl_diagram_prompt, prompt)
+      : buildImagePrompt(prompt)
+
+    const { buffer, mimeType } = await GeminiService.generateImage(model, imagePrompt)
 
     const diagram = await prisma.skripsi_diagrams.create({
       data: {
