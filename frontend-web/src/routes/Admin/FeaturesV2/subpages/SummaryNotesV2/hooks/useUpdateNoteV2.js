@@ -6,6 +6,7 @@ import { upload } from '@store/common/action'
 import { actions } from '@store/summaryNotes/reducer'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
 import { blocksToMarkdown } from '@utils/blocksToMarkdown'
+import { liftInlineImages } from '../utils/liftInlineImages'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -37,8 +38,13 @@ export const useUpdateNoteV2 = (onClose) => {
       let contentString
       let markdownContent
       if (values.content && values.content.length > 0) {
-        contentString = JSON.stringify(values.content)
-        markdownContent = await blocksToMarkdown(values.content)
+        // Anything pasted out of a web page or a document arrives as base64 inside the block
+        // JSON, because BlockNote only hands the clipboard to `uploadFile` when it carries
+        // nothing but files. Lifting it here covers the markdown too, since that is generated
+        // from these same blocks — otherwise both columns carry a copy of every image.
+        const { blocks } = await liftInlineImages(values.content, handleImageUpload)
+        contentString = JSON.stringify(blocks)
+        markdownContent = await blocksToMarkdown(blocks)
       }
 
       const payload = {

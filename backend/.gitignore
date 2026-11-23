@@ -10,3 +10,7 @@ dist
 build
 
 /generated/prisma
+
+# Column snapshots taken by scripts/ before they rewrite a record. These are verbatim copies of
+# production content — one summary note's two columns is already 33 MB — so they stay local.
+/scripts/backups/

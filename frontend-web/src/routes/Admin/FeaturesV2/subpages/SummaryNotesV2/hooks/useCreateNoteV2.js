@@ -5,6 +5,7 @@ import { upload } from '@store/common/action'
 import { actions } from '@store/summaryNotes/reducer'
 import { markdownToBlocks } from '@utils/markdownToBlocks'
 import { blocksToMarkdown } from '@utils/blocksToMarkdown'
+import { liftInlineImages } from '../utils/liftInlineImages'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
@@ -30,8 +31,11 @@ export function useCreateNoteV2(nodeId, nodeName, onClose) {
       let contentString = JSON.stringify([])
       let markdownContent = ''
       if (values.content && values.content.length > 0) {
-        contentString = JSON.stringify(values.content)
-        markdownContent = await blocksToMarkdown(values.content)
+        // See useUpdateNoteV2: a pasted image arrives as base64 in the blocks, and the markdown
+        // is generated from those same blocks, so lifting once here keeps both columns slim.
+        const { blocks } = await liftInlineImages(values.content, handleImageUpload)
+        contentString = JSON.stringify(blocks)
+        markdownContent = await blocksToMarkdown(blocks)
       }
 
       const note = await dispatch(createSummaryNoteV2({
