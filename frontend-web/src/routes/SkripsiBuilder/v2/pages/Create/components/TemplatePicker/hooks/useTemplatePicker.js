@@ -1,38 +1,40 @@
-import { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { CUSTOM_TEMPLATE } from '../../../hooks/useCreateReport'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { actions } from '@store/skripsi/v2/reducer'
+import { loadMoreSkripsiTemplates, reloadSkripsiTemplates } from '@store/skripsi/v2'
 
-// Whether the grid of cards is showing, and what the collapsed row says in its
-// place.
+// The catalogue, searched and paged.
 //
-// An admin can publish as many templates as they like, so this grid is the one
-// part of the page with no upper bound: left open it buries the two steps under
-// it however short those steps are. Collapsing on pick is what keeps the page
-// from needing to become a three-screen wizard - one step is open at a time
-// either way, without a Lanjut button or the loss of the whole-form view.
-export const useTemplatePicker = (selectedTemplate) => {
+// Server-side, like every other list in this project: an admin can publish any
+// number of templates and each row carries its section list for the card, so
+// filtering in the browser would mean downloading the whole catalogue to throw
+// most of it away. The search runs when asked rather than per keystroke.
+export const useTemplatePicker = () => {
+  const dispatch = useDispatch()
+
   const templates = useSelector(state => state.skripsiV2.templates)
-  const isLoading = useSelector(state => state.skripsiV2.loading.isFetchingTemplates)
+  const search = useSelector(state => state.skripsiV2.templateFilters.search)
+  const pagination = useSelector(state => state.skripsiV2.templatePagination)
+  const isFetching = useSelector(state => state.skripsiV2.loading.isFetchingTemplates)
+  const isLoadingMore = useSelector(state => state.skripsiV2.loading.isLoadingMoreTemplates)
 
-  // Reopening is a deliberate act ("Ganti"), so this is held rather than
-  // derived from whether something is selected.
-  const [isExpanded, setIsExpanded] = useState(true)
-
-  const selectedName = useMemo(() => {
-    if (selectedTemplate === CUSTOM_TEMPLATE) return 'Buat sendiri'
-
-    return templates.find(template => template.id === selectedTemplate)?.name || null
-  }, [templates, selectedTemplate])
+  // The term lives in Redux so the page's own fetch picks it up, which means
+  // it outlives this page. Clearing it on mount keeps "Buat laporan baru" from
+  // opening onto the filtered catalogue of a previous report.
+  useEffect(() => {
+    dispatch(actions.updateTemplateFilter({ key: 'search', value: '' }))
+  }, [dispatch])
 
   return {
     templates,
-    isLoading,
-    // A template deleted while its own card was the chosen one leaves nothing
-    // to summarise, so the grid comes back rather than collapsing onto a name
-    // that is gone.
-    isExpanded: isExpanded || !selectedName,
-    selectedName,
-    expand: () => setIsExpanded(true),
-    collapse: () => setIsExpanded(false),
+    search,
+    pagination,
+    isFetching,
+    isLoadingMore,
+    setSearch: (event) => dispatch(
+      actions.updateTemplateFilter({ key: 'search', value: event.target.value })
+    ),
+    applySearch: () => dispatch(reloadSkripsiTemplates()),
+    loadMore: () => dispatch(loadMoreSkripsiTemplates()),
   }
 }

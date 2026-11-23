@@ -88,32 +88,33 @@ export const DeleteOwn = styled.span`
   }
 `
 
-// What step 1 becomes once a template is picked: the grid folds away to this,
-// so the two steps below it sit at the top of the page instead of under a wall
-// of cards that grows every time an admin publishes another template.
-export const ChosenRow = styled.div`
+// A form, not a div: Enter in the field runs the search, which the submit
+// handler covers without a per-input key handler.
+export const SearchRow = styled.form`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.6rem;
-  padding: 0.7rem 0.9rem;
-  border: 1.5px solid var(--color-brand-blue);
+  margin-bottom: 1rem;
+
+  /* The input is the part that should take the width. */
+  > *:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+`
+
+export const EmptyNote = styled.p`
+  margin: 0;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-gray-500);
+  border: 1px dashed var(--color-gray-300);
   border-radius: 10px;
-  background: var(--color-brand-blue-tint);
 `
 
-export const ChosenIcon = styled.span`
-  display: inline-flex;
-  flex-shrink: 0;
-  color: var(--color-brand-blue);
-`
-
-export const ChosenName = styled.span`
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-brand-blue-deep);
+export const LoadMoreRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
 `

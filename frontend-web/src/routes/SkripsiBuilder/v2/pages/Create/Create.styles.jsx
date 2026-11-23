@@ -32,12 +32,10 @@ export const Subtitle = styled.p`
   margin: 0 0 2rem;
 `
 
-// Shared by TemplatePicker, WorkModePicker and ReportDetailsForm — the
-// numbered step label above each group.
-export const StepLabel = styled.h2`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+// A section heading inside a step, for the second step's two blocks ("Cara
+// mengerjakan" above the form). Shared by WorkModePicker and
+// ReportDetailsForm.
+export const BlockLabel = styled.h2`
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -46,48 +44,22 @@ export const StepLabel = styled.h2`
   margin: 0 0 0.85rem;
 `
 
-export const StepNumber = styled.span`
-  color: var(--color-brand-blue);
-`
-
 export const Footer = styled.div`
   display: flex;
+  align-items: center;
   gap: 0.75rem;
   margin-top: 2rem;
 `
 
-// One numbered step (its label plus the cards under it).
-//
-// A step that is not reachable yet is dimmed rather than hidden: the student
-// can see the whole shape of what they are about to fill in, which is the
-// reason this is one page and not a three-screen wizard. Only step 1 is
-// required, so the later steps unlock together the moment a template is
-// picked — there is nothing to gate them on separately.
-//
-// `pointer-events: none` stops the clicks; the `inert` attribute the page puts
-// on the same element is what takes the controls out of the tab order, so the
-// dimming is not a lie to anyone navigating by keyboard.
-export const StepGroup = styled.section`
+// Back on the left, forward on the right, so the direction of each button
+// matches where it takes you.
+export const FooterSpacer = styled.div`
+  flex: 1;
+`
+
+// One block within a step.
+export const Block = styled.section`
   & + & {
     margin-top: 2rem;
   }
-
-  ${({ $locked }) => $locked && `
-    opacity: 0.45;
-    pointer-events: none;
-    user-select: none;
-  `}
-
-  /* Only the unlocking is animated. Fading on the way in would otherwise also
-     fade every later re-render of an open step. */
-  transition: opacity 0.25s ease;
-`
-
-// Why the steps below are greyed out, next to the label that is waiting.
-export const LockedHint = styled.span`
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--color-gray-400);
 `

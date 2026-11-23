@@ -38,8 +38,12 @@ const initialState = {
   activeTabId: null,
 
   // The report templates offered on "Buat laporan baru", and the sections of
-  // the report currently open in the editor.
+  // the report currently open in the editor. The catalogue is whatever an
+  // admin has published, so the picker searches and pages it rather than
+  // holding all of it - each row carries its section list for the card.
   templates: [],
+  templatePagination: { page: 1, perPage: 12, isLastPage: false },
+  templateFilters: { search: '' },
   sections: [],
   // The group the open report belongs to.
   members: [],
@@ -105,6 +109,7 @@ const initialState = {
     isDeletingSet: false,
     isSavingContent: false,
     isFetchingTemplates: false,
+    isLoadingMoreTemplates: false,
     isFetchingSections: false,
     isCreatingSection: false,
     isFetchingMembers: false,
@@ -194,6 +199,16 @@ const skripsiV2Slice = createSlice({
     // ---- report templates ----
     setTemplates: (state, action) => {
       state.templates = action.payload
+    },
+    appendTemplates: (state, action) => {
+      state.templates = [...state.templates, ...action.payload]
+    },
+    setTemplatePagination: (state, action) => {
+      state.templatePagination = { ...state.templatePagination, ...action.payload }
+    },
+    updateTemplateFilter: (state, action) => {
+      const { key, value } = action.payload
+      state.templateFilters[key] = value
     },
 
     // ---- admin: report templates ----

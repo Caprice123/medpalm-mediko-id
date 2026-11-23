@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { generatePath, useNavigate } from 'react-router-dom'
-import { createSet, deleteOwnTemplate, fetchSkripsiTemplates } from '@store/skripsi/v2'
+import { createSet, deleteOwnTemplate, reloadSkripsiTemplates } from '@store/skripsi/v2'
 import { actions as commonActions } from '@store/common/reducer'
 import { PblBuilderRoute } from '../../../../routes'
 
@@ -10,44 +10,37 @@ import { PblBuilderRoute } from '../../../../routes'
 // the sections themselves.
 export const CUSTOM_TEMPLATE = 'custom'
 
+// Two steps, not three. Picking a template is a screen's worth of work on its
+// own — the catalogue is searched and paged — while everything that follows is
+// optional and fits one form. "Cara mengerjakan" rides along at the top of
+// that form rather than taking a screen of its own, because one of its two
+// cards cannot be chosen yet.
+export const STEPS = [
+  { key: 'template', label: 'Pilih template' },
+  { key: 'details', label: 'Detail laporan' },
+]
+
 const emptyMember = () => ({ name: '', studentNumber: '' })
 
-// What the page owns: which template is picked, how the student wants to fill
-// it in, the PBL case and the group — and the one write that turns all of it
-// into a report.
+// What the page owns: which step is showing, which template is picked, how the
+// student wants to fill it in, the PBL case and the group — and the one write
+// that turns all of it into a report.
 export const useCreateReport = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const [stepIndex, setStepIndex] = useState(0)
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [workMode, setWorkMode] = useState('manual')
   const [form, setForm] = useState({ title: '', caseText: '' })
   const [members, setMembers] = useState([emptyMember()])
 
-  // Where the page scrolls to after a template is picked. Choosing one both
-  // unlocks the steps below and folds the card grid away, so the page can
-  // shrink by most of its height at once - without this the student is left
-  // wherever the browser clamps the old scroll position to.
-  const restRef = useRef(null)
-
+  // Page 1 of the catalogue, with whatever search the student left behind on a
+  // previous visit cleared: reloadSkripsiTemplates resets the page, and the
+  // picker clears the term when it mounts.
   useEffect(() => {
-    dispatch(fetchSkripsiTemplates())
+    dispatch(reloadSkripsiTemplates())
   }, [dispatch])
-
-  // Only step 1 is required, so there is one gate rather than one per step.
-  const isTemplateChosen = Boolean(selectedTemplate)
-
-  const selectTemplate = (templateId) => {
-    setSelectedTemplate(templateId)
-
-    // After the grid has collapsed and the steps have rendered unlocked, so
-    // the scroll lands on where they actually are rather than on where the
-    // dimmed block sat under a full-height card grid. React flushes a click's
-    // updates synchronously, so one frame is enough.
-    requestAnimationFrame(() => {
-      restRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-  }
 
   const setField = (key) => (event) => setForm(prev => ({ ...prev, [key]: event.target.value }))
 
@@ -64,13 +57,35 @@ export const useCreateReport = () => {
 
   const removeOwnTemplate = async (templateId) => {
     await dispatch(deleteOwnTemplate(templateId))
-    // Deleting the template that was picked re-locks the later steps, which is
-    // right: there is no report to configure until something else is chosen.
     setSelectedTemplate(prev => (prev === templateId ? null : prev))
+  }
+
+  const isTemplateChosen = Boolean(selectedTemplate)
+
+  // The template step is the only one that can refuse to advance; the details
+  // step has no required field, so its button is always live.
+  const goNext = () => {
+    if (!isTemplateChosen) {
+      dispatch(commonActions.setError('Pilih template terlebih dahulu'))
+      return
+    }
+
+    setStepIndex(1)
+    // The two steps are different heights, so landing mid-page on the taller
+    // one would start the student halfway down a form they have not read.
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const goBack = () => {
+    setStepIndex(0)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleSubmit = async () => {
     if (!isTemplateChosen) {
+      // Only reachable if the template is unpicked after the fact — deleting
+      // one's own template while standing on step 2 does exactly that.
+      setStepIndex(0)
       dispatch(commonActions.setError('Pilih template terlebih dahulu'))
       return
     }
@@ -94,10 +109,12 @@ export const useCreateReport = () => {
   }
 
   return {
+    stepIndex,
+    goNext,
+    goBack,
     selectedTemplate,
-    selectTemplate,
+    selectTemplate: setSelectedTemplate,
     isTemplateChosen,
-    restRef,
     removeOwnTemplate,
     workMode,
     selectWorkMode: setWorkMode,
@@ -108,7 +125,6 @@ export const useCreateReport = () => {
     setMemberField,
     addMember,
     removeMember,
-    canSubmit: isTemplateChosen,
     handleSubmit,
     handleCancel: () => navigate(PblBuilderRoute.moduleRoute),
   }

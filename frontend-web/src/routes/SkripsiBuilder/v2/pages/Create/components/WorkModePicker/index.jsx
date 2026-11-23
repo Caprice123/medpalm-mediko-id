@@ -1,5 +1,5 @@
 import { FaBolt, FaRegHandPaper } from 'react-icons/fa'
-import { StepLabel, StepNumber, LockedHint } from '../../Create.styles'
+import { BlockLabel, Block } from '../../Create.styles'
 import {
   ModeGrid, ModeCard, ModeHeading, ModeIcon, ModeDescription, SoonBadge,
 } from './WorkModePicker.styles'
@@ -7,12 +7,9 @@ import {
 // "Generate sekaligus" is the AI filling every section in one pass. That half
 // of the feature is not built yet, so the card is shown but cannot be picked —
 // the chosen mode is stored on the set either way, ready for when it lands.
-const WorkModePicker = ({ workMode, onSelect, locked = false }) => (
-  <>
-    <StepLabel>
-      <StepNumber>2</StepNumber> · Cara mengerjakan
-      {locked && <LockedHint>Pilih template dulu</LockedHint>}
-    </StepLabel>
+const WorkModePicker = ({ workMode, onSelect }) => (
+  <Block>
+    <BlockLabel>Cara mengerjakan</BlockLabel>
 
     <ModeGrid>
       <ModeCard type="button" $selected={false} disabled>
@@ -36,7 +33,7 @@ const WorkModePicker = ({ workMode, onSelect, locked = false }) => (
         <ModeDescription>Isi tiap bagian sendiri, AI siap membantu.</ModeDescription>
       </ModeCard>
     </ModeGrid>
-  </>
+  </Block>
 )
 
 export default WorkModePicker

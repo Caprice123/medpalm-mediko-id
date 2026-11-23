@@ -5,12 +5,21 @@ import { SkripsiTemplateV2Serializer } from '#serializers/api/v2/skripsiTemplate
 
 class SkripsiTemplatesV2Controller {
   // The picker on "Buat laporan baru": the admin-managed templates plus the
-  // student's own. A handful of rows, rendered at once, so not paginated.
+  // student's own, searchable and paged - the catalogue is whatever an admin
+  // has published, and every row carries its section list for the card.
   async index(req, res) {
-    const templates = await GetSkripsiTemplatesV2Service.call({ userId: req.user.id })
+    const { page, perPage, search } = req.query
+
+    const { data, pagination } = await GetSkripsiTemplatesV2Service.call({
+      userId: req.user.id,
+      page: page ? parseInt(page) : undefined,
+      perPage: perPage ? parseInt(perPage) : undefined,
+      search,
+    })
 
     return res.status(200).json({
-      data: SkripsiTemplateV2Serializer.serialize(templates, req.user.id),
+      data: SkripsiTemplateV2Serializer.serialize(data, req.user.id),
+      pagination,
     })
   }
 

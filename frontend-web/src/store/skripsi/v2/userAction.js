@@ -166,19 +166,48 @@ export const saveSetContent = (uniqueId, editorContent) => async (dispatch) => {
 
 // ============= Report templates =============
 
-// The picker on "Buat laporan baru". A handful of rows, rendered at once, so
-// there is no pagination to carry.
-export const fetchSkripsiTemplates = () => async (dispatch) => {
+// The picker on "Buat laporan baru", searchable and paged: the catalogue is
+// whatever an admin has published.
+//
+// Reads whichever page the reducer points at; callers reset or advance
+// `templatePagination.page` first. The thunk never decides the page itself.
+export const fetchSkripsiTemplates = ({ append = false } = {}) => async (dispatch, getState) => {
+  const loadingKey = append ? 'isLoadingMoreTemplates' : 'isFetchingTemplates'
+
   try {
-    dispatch(actions.setLoading({ key: 'isFetchingTemplates', value: true }))
+    dispatch(actions.setLoading({ key: loadingKey, value: true }))
 
-    const response = await getWithToken(`${base}/templates`)
-    dispatch(actions.setTemplates(response.data.data || []))
+    const { templatePagination, templateFilters } = getState().skripsiV2
+    const response = await getWithToken(`${base}/templates`, {
+      page: templatePagination.page,
+      perPage: templatePagination.perPage,
+      ...(templateFilters.search ? { search: templateFilters.search } : {}),
+    })
 
-    return response.data.data
+    const templates = response.data.data || []
+    dispatch(append ? actions.appendTemplates(templates) : actions.setTemplates(templates))
+
+    if (response.data.pagination) {
+      dispatch(actions.setTemplatePagination(response.data.pagination))
+    }
+
+    return templates
   } finally {
-    dispatch(actions.setLoading({ key: 'isFetchingTemplates', value: false }))
+    dispatch(actions.setLoading({ key: loadingKey, value: false }))
   }
+}
+
+export const loadMoreSkripsiTemplates = () => (dispatch, getState) => {
+  const { templatePagination, loading } = getState().skripsiV2
+  if (templatePagination.isLastPage || loading.isLoadingMoreTemplates) return
+
+  dispatch(actions.setTemplatePagination({ page: templatePagination.page + 1 }))
+  return dispatch(fetchSkripsiTemplates({ append: true }))
+}
+
+export const reloadSkripsiTemplates = () => (dispatch) => {
+  dispatch(actions.setTemplatePagination({ page: 1 }))
+  return dispatch(fetchSkripsiTemplates())
 }
 
 // Saves the open report's outline as a template the student can start their
@@ -189,7 +218,7 @@ export const saveSetAsTemplate = (uniqueId, name) => async (dispatch) => {
     dispatch(actions.setLoading({ key: 'isSavingTemplate', value: true }))
 
     const response = await postWithToken(`${base}/templates`, { setId: uniqueId, name })
-    await dispatch(fetchSkripsiTemplates())
+    await dispatch(reloadSkripsiTemplates())
 
     return response.data.data
   } finally {
@@ -199,7 +228,7 @@ export const saveSetAsTemplate = (uniqueId, name) => async (dispatch) => {
 
 export const deleteOwnTemplate = (templateId) => async (dispatch) => {
   await deleteWithToken(`${base}/templates/${templateId}`)
-  await dispatch(fetchSkripsiTemplates())
+  await dispatch(reloadSkripsiTemplates())
 }
 
 // ============= Group members =============
