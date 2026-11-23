@@ -3,6 +3,7 @@ import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
 import { bumpContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
+import { sanitizeEmbedUrl } from '#utils/biodigitalUrl'
 
 export class UpdateDiagnosticQuizService extends BaseService {
   static async call({
@@ -56,7 +57,7 @@ export class UpdateDiagnosticQuizService extends BaseService {
           title,
           description: description || '',
           ...(status && { status }),
-          embed_url: embedUrl || null,
+          embed_url: sanitizeEmbedUrl(embedUrl) || null,
           media_type: mediaType || (embedUrl ? '3d' : '2d'),
           updated_at: new Date(),
           diagnostic_questions: {

@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { bumpContentStat, publishedDelta, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
+import { sanitizeEmbedUrl } from '#utils/biodigitalUrl'
 
 export class UpdateAtlasModelService extends BaseService {
   static async call({ modelId, title, description, embedUrl, status, editorContent }) {
@@ -16,7 +17,7 @@ export class UpdateAtlasModelService extends BaseService {
         data: {
           title,
           description: description || null,
-          embed_url: embedUrl,
+          embed_url: sanitizeEmbedUrl(embedUrl),
           editor_content: editorContent !== undefined ? (editorContent ? JSON.stringify(editorContent) : null) : undefined,
           ...(status && { status }),
           updated_at: new Date(),

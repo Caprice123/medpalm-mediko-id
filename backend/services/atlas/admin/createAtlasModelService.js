@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
+import { sanitizeEmbedUrl } from '#utils/biodigitalUrl'
 
 export class CreateAtlasModelService extends BaseService {
   static async call({
@@ -24,7 +25,7 @@ export class CreateAtlasModelService extends BaseService {
       data: {
         title,
         description: description || null,
-        embed_url: embedUrl,
+        embed_url: sanitizeEmbedUrl(embedUrl),
         editor_content: editorContent ? JSON.stringify(editorContent) : null,
         status,
         version,

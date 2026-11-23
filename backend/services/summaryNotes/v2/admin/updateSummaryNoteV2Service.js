@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote, queueDeleteSummaryNoteEmbedding } from '#jobs/queues/summaryNotesQueue'
 import { bumpContentStat, publishedDelta, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
+import { sanitizeEmbedUrlsInText } from '#utils/biodigitalUrl'
 
 export class UpdateSummaryNoteV2Service extends BaseService {
   static async call({ id, title, description, content, markdownContent, blobId, status, tagIds }) {
@@ -20,8 +21,8 @@ export class UpdateSummaryNoteV2Service extends BaseService {
       const updateData = { updated_at: new Date() }
       if (title !== undefined) updateData.title = title
       if (description !== undefined) updateData.description = description
-      if (content !== undefined) updateData.content = content
-      if (markdownContent !== undefined) updateData.markdown_content = markdownContent
+      if (content !== undefined) updateData.content = sanitizeEmbedUrlsInText(content)
+      if (markdownContent !== undefined) updateData.markdown_content = sanitizeEmbedUrlsInText(markdownContent)
       if (status !== undefined) updateData.status = status
 
       const summaryNote = await tx.summary_notes.update({

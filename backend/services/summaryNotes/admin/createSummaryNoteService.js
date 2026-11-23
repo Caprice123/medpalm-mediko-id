@@ -3,6 +3,7 @@ import { BaseService } from '#services/baseService'
 import { ValidationError } from '#errors/validationError'
 import { queueEmbedSummaryNote } from '#jobs/queues/summaryNotesQueue'
 import { incrementContentStat, CONTENT_STAT_KEYS } from '#utils/contentStatsHelper'
+import { sanitizeEmbedUrlsInText } from '#utils/biodigitalUrl'
 
 export class CreateSummaryNoteService extends BaseService {
   static async call({ title, description, content, markdownContent, blobId, status, tagIds, flashcardDeckIds, mcqTopicIds, createdBy }) {
@@ -35,8 +36,8 @@ export class CreateSummaryNoteService extends BaseService {
         data: {
           title,
           description: description || null,
-          content,
-          markdown_content: markdownContent || null,
+          content: sanitizeEmbedUrlsInText(content),
+          markdown_content: sanitizeEmbedUrlsInText(markdownContent) || null,
           status: status || 'draft',
           created_by: createdBy
         }

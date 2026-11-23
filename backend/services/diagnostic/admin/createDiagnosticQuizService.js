@@ -2,6 +2,7 @@ import { ValidationError } from '#errors/validationError'
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
 import attachmentService from '#services/attachment/attachmentService'
+import { sanitizeEmbedUrl } from '#utils/biodigitalUrl'
 
 export class CreateDiagnosticQuizService extends BaseService {
   static async call({
@@ -30,7 +31,7 @@ export class CreateDiagnosticQuizService extends BaseService {
         title,
         description: description || '',
         status,
-        embed_url: embedUrl || null,
+        embed_url: sanitizeEmbedUrl(embedUrl) || null,
         media_type: mediaType || (embedUrl ? '3d' : '2d'),
         created_by: createdBy,
         diagnostic_questions: {
