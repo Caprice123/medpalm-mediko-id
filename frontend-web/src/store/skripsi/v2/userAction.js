@@ -542,6 +542,82 @@ export const requestSectionAssist = (sectionId, { mode, selectedText = '', instr
   }
 }
 
+// ============= Generate sekaligus =============
+
+// What the model is asked for, per section. The same sentence the manual
+// "Tulis draf bagian" quick action sends, because it is the same request -
+// this one just makes it for every empty section in turn.
+const GENERATE_INSTRUCTION = 'Tulis draf lengkap untuk bagian ini berdasarkan kasus dan konteks yang diberikan.'
+
+// Only the case travels. Each section is written against the scenario rather
+// than against its neighbours: attaching the sections already written would
+// grow the prompt with every step of the run, and the cap would start dropping
+// whichever ones happened to be oldest.
+const GENERATE_CONTEXT = { case: true, citations: false, section: false, sectionIds: [] }
+
+// Which sections a run would write: the empty ones, in document order. The
+// cover and the scenario are filled in at creation and the daftar pustaka is
+// generated from the citation list, so all three fall out on their own.
+export const selectGeneratableSections = (state) => (
+  state.skripsiV2.sections.filter(section => (
+    !section.isReferenceSlot && !String(section.content || '').trim()
+  ))
+)
+
+// Writes every empty section, one after another, while the editor shows it.
+//
+// Sequential on purpose: the sections land in reading order, the student can
+// follow along, and a stop takes effect at the next boundary rather than
+// abandoning requests already in flight. A section that fails is marked and
+// the run carries on - one bad section should not cost the other nine, and
+// "Lanjutkan generate" will pick it up again because it is still empty.
+export const generateReportSections = () => async (dispatch, getState) => {
+  const targets = selectGeneratableSections(getState())
+  if (targets.length === 0 || getState().skripsiV2.generation.isRunning) return
+
+  dispatch(actions.startGeneration(targets.map(section => section.id)))
+
+  try {
+    for (const section of targets) {
+      if (getState().skripsiV2.generation.isStopping) break
+
+      dispatch(actions.setGenerationSectionStatus({ sectionId: section.id, status: 'writing' }))
+
+      try {
+        // The same call the ✨ on a single card makes - a run is that request
+        // repeated, not a second way of asking for the same thing.
+        const { result } = await dispatch(requestSectionAssist(section.id, {
+          mode: 'draft',
+          instruction: GENERATE_INSTRUCTION,
+          context: GENERATE_CONTEXT,
+        })) || {}
+
+        if (!result) throw new Error('Jawaban AI kosong')
+
+        // Saved rather than handed to the editor as a draft: the student is
+        // watching this happen and may close the page the moment it looks
+        // done, so nothing may be left sitting in an unsaved buffer.
+        const saved = await dispatch(updateSetSection(section.id, { content: result }))
+
+        // And then announced as an outside change. A card freezes its editor's
+        // content at mount and only takes a new copy when `contentRevision`
+        // moves - without this the text is on the server and in the store but
+        // not on the screen, which is the one thing this whole run is for.
+        dispatch(actions.replaceSectionContent(saved || { id: section.id, content: result }))
+
+        dispatch(actions.setGenerationSectionStatus({ sectionId: section.id, status: 'done' }))
+      } catch (error) {
+        captureException(error)
+        dispatch(actions.setGenerationSectionStatus({ sectionId: section.id, status: 'error' }))
+      }
+    }
+  } finally {
+    dispatch(actions.finishGeneration())
+  }
+}
+
+export const stopReportGeneration = () => (dispatch) => dispatch(actions.requestStopGeneration())
+
 // ============= Research settings (per set) =============
 
 export const fetchSetResearchSettings = (uniqueId) => async () => {

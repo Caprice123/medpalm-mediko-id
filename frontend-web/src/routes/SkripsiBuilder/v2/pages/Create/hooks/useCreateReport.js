@@ -104,7 +104,13 @@ export const useCreateReport = () => {
     }))
 
     if (set?.uniqueId) {
-      navigate(generatePath(PblBuilderRoute.editorRoute, { setId: set.uniqueId }))
+      // "Generate sekaligus" does not run here. The editor opens first and
+      // fills itself in while the student watches, which is both the better
+      // wait and the honest one: the work is the page's, so it lasts exactly
+      // as long as the page does.
+      navigate(generatePath(PblBuilderRoute.editorRoute, { setId: set.uniqueId }), {
+        state: workMode === 'generate' ? { autoGenerate: true } : undefined,
+      })
     }
   }
 

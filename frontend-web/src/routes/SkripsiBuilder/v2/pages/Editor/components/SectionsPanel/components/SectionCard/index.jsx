@@ -9,6 +9,7 @@ import { useSectionCard } from './hooks/useSectionCard'
 import { sectionDomId } from '../../utils/sectionDomId'
 import {
   Card, Header, Title, TitleField, Actions, IconButton, SavingNote, LockNote,
+  GenerationNote,
 } from './SectionCard.styles'
 
 // One section of the report: its heading and its own editor.
@@ -18,11 +19,19 @@ import {
 // can change, by hand or through "Kumpulkan referensi" in the top bar. The
 // server refuses a rename, a delete and any move past it regardless; this only
 // keeps the UI from offering what would be rejected.
+// What a "Generate sekaligus" run says about this section while it runs.
+const GENERATION_LABELS = {
+  pending: 'Menunggu giliran',
+  writing: 'AI sedang menulis...',
+  error: 'Gagal — coba lagi dari tombol AI',
+}
+
 const SectionCard = memo(({
   section,
   isFirst,
   isLast,
   isSaving,
+  generationStatus,
   onContentChange,
   onRename,
   onMove,
@@ -77,6 +86,14 @@ const SectionCard = memo(({
           >
             {section.title}
           </Title>
+        )}
+
+        {/* A finished section says nothing: the text that appeared is the
+            message, and a row of "Selesai" badges would outlive its use. */}
+        {GENERATION_LABELS[generationStatus] && (
+          <GenerationNote $status={generationStatus}>
+            {GENERATION_LABELS[generationStatus]}
+          </GenerationNote>
         )}
 
         {isSaving && <SavingNote>Menyimpan...</SavingNote>}

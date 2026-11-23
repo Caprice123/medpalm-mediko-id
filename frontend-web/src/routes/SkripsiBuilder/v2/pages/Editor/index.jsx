@@ -13,6 +13,7 @@ import CitationsModal from './components/TopBar/components/CitationsModal'
 import { useEditorSet } from './hooks/useEditorSet'
 import { useCitationsPanel } from './hooks/useCitationsPanel'
 import { useSections } from './hooks/useSections'
+import { useReportGeneration } from './hooks/useReportGeneration'
 import { useEditorLayout } from './hooks/useEditorLayout'
 import { useLeaveGuard } from './hooks/useLeaveGuard'
 import { Wrapper, Container, EditorArea } from './Editor.styles'
@@ -30,6 +31,7 @@ const SkripsiEditor = () => {
   const { currentSet, tabs, activeTab, activeTabId, isFetchingSet, switchTab } = useEditorSet()
   const isDeletingSection = useSelector(state => state.skripsiV2.loading.isDeletingSection)
   const doc = useSections(currentSet)
+  const generation = useReportGeneration(currentSet)
   const { isMobile, chatPanelWidth, persistPanelWidth } = useEditorLayout()
   const { isCitationsOpen, openCitations, closeCitations } = useCitationsPanel()
   const leaveGuard = useLeaveGuard({
@@ -83,6 +85,7 @@ const SkripsiEditor = () => {
       savingSectionIds={doc.savingSectionIds}
       hasUnsavedChanges={doc.hasUnsavedChanges}
       isSaving={doc.isSavingAny}
+      generation={generation}
       onContentChange={doc.handleContentChange}
       onSave={doc.save}
       onExportWord={doc.exportToWord}

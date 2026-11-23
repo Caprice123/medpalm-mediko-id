@@ -48,6 +48,22 @@ const initialState = {
   // The group the open report belongs to.
   members: [],
 
+  // "Generate sekaligus": the AI writing every empty section of the open
+  // report, one after another, while the student watches it happen.
+  //
+  // The run is driven by the page, so it stops when the page does. That is the
+  // deal the UI makes - a half-written report keeps whatever landed and offers
+  // "Lanjutkan generate", rather than pretending work continues in a tab that
+  // is closed. `statusBySection` is what each card reads to show itself as
+  // waiting, being written, finished or failed.
+  generation: {
+    isRunning: false,
+    // Set by the stop button and read between sections: the one in flight is
+    // always allowed to finish, so no section is left half-written.
+    isStopping: false,
+    statusBySection: {},
+  },
+
   // The Searcher panel's last run: its results and the raw Perplexity
   // response behind them, which the panel can show verbatim.
   searchResults: [],
@@ -194,6 +210,32 @@ const skripsiV2Slice = createSlice({
       if (state.currentSet) {
         state.currentSet.editorContent = action.payload
       }
+    },
+
+    // ---- generate sekaligus ----
+    startGeneration: (state, action) => {
+      const sectionIds = action.payload || []
+
+      state.generation.isRunning = true
+      state.generation.isStopping = false
+      // Only the queue for this run: a section that failed in an earlier run
+      // and is not being retried now should not still look like it is waiting.
+      state.generation.statusBySection = Object.fromEntries(
+        sectionIds.map(id => [id, 'pending'])
+      )
+    },
+    setGenerationSectionStatus: (state, action) => {
+      const { sectionId, status } = action.payload
+      state.generation.statusBySection[sectionId] = status
+    },
+    requestStopGeneration: (state) => {
+      state.generation.isStopping = true
+    },
+    finishGeneration: (state) => {
+      state.generation.isRunning = false
+      state.generation.isStopping = false
+      // Whatever each section ended as stays on screen: a run that stopped
+      // early should still show which sections it never reached.
     },
 
     // ---- report templates ----

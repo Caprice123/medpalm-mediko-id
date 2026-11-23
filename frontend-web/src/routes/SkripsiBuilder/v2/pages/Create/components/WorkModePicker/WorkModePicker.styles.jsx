@@ -55,15 +55,3 @@ export const ModeDescription = styled.p`
   color: var(--color-gray-500);
   margin: 0;
 `
-
-export const SoonBadge = styled.span`
-  margin-left: auto;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-warning-text);
-  background: var(--color-warning-tint);
-  border-radius: 999px;
-  padding: 0.15rem 0.5rem;
-`

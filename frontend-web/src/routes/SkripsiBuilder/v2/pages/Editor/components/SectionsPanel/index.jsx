@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FaSave, FaFileWord, FaQuoteRight } from 'react-icons/fa'
+import { FaSave, FaFileWord, FaQuoteRight, FaStop } from 'react-icons/fa'
+import { TbSparkles } from 'react-icons/tb'
 import Button from '@components/common/Button'
 import Loading from '@components/common/Loading'
 import EmptyState from '@components/common/EmptyState'
@@ -24,6 +25,7 @@ const SectionsPanel = ({
   savingSectionIds,
   hasUnsavedChanges,
   isSaving,
+  generation,
   onContentChange,
   onSave,
   onExportWord,
@@ -56,6 +58,19 @@ const SectionsPanel = ({
   return (
     <Panel>
       <PanelActions>
+        {/* Only on a report that asked to be generated, and only while
+            something is still empty: a finished one has nothing to resume and
+            a manual one has the per-section assistant instead. */}
+        {generation.isGenerating ? (
+          <Button variant="secondary" onClick={generation.stopGeneration} disabled={generation.isStopping}>
+            <FaStop /> {generation.isStopping ? 'Menghentikan...' : 'Hentikan'}
+          </Button>
+        ) : generation.canGenerate && (
+          <Button variant="primary" onClick={generation.startGeneration}>
+            <TbSparkles /> Lanjutkan generate ({generation.pendingCount} bagian)
+          </Button>
+        )}
+
         <Button
           variant="secondary"
           onClick={onSave}
@@ -112,6 +127,7 @@ const SectionsPanel = ({
                       isFirst={index === 0}
                       isLast={index >= lastMovableIndex}
                       isSaving={Boolean(savingSectionIds[section.id])}
+                      generationStatus={generation.statusBySection[section.id]}
                       onContentChange={onContentChange}
                       onRename={onRenameSection}
                       onMove={onMoveSection}

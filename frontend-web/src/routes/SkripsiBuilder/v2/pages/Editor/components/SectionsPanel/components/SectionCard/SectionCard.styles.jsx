@@ -81,3 +81,38 @@ export const LockNote = styled.span`
   color: var(--color-gray-400);
   white-space: nowrap;
 `
+
+// What the run is doing to this section, shown beside its heading rather than
+// in a progress bar somewhere else: the answer to "is it working" belongs next
+// to the text that is about to change.
+export const GenerationNote = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  ${({ $status }) => {
+    if ($status === 'writing') {
+      return `
+        background: var(--color-brand-blue-tint);
+        color: var(--color-brand-blue-deep);
+      `
+    }
+
+    if ($status === 'error') {
+      return `
+        background: var(--color-danger-tint);
+        color: var(--color-danger-dark);
+      `
+    }
+
+    return `
+      background: var(--color-gray-100);
+      color: var(--color-gray-500);
+    `
+  }}
+`
