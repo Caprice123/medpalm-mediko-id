@@ -1,18 +1,50 @@
-import { useSelector } from 'react-redux'
-import { FaRegFileAlt, FaThList, FaTimes } from 'react-icons/fa'
+import { FaCheck, FaRegFileAlt, FaThList, FaTimes } from 'react-icons/fa'
+import Button from '@components/common/Button'
 import Loading from '@components/common/Loading'
 import { CUSTOM_TEMPLATE } from '../../hooks/useCreateReport'
 import { StepLabel, StepNumber } from '../../Create.styles'
+import { useTemplatePicker } from './hooks/useTemplatePicker'
 import {
   Card, CardHeading, CardIcon, CardDescription, SectionList, CardGrid, OwnBadge, DeleteOwn,
+  ChosenRow, ChosenIcon, ChosenName,
 } from './TemplatePicker.styles'
 
 // The cards are whatever an admin has published, followed by the outlines this
 // student saved themselves. "Buat sendiri" is appended here rather than stored
 // as a template, because it is the absence of one.
+//
+// An admin can publish any number of templates, so this is the one part of the
+// page that grows without bound. Once a template is chosen the grid folds to a
+// single row naming it, which is what lets the two steps below stay on the
+// same page instead of becoming screens of their own.
 const TemplatePicker = ({ selectedTemplate, onSelect, onDeleteOwn }) => {
-  const templates = useSelector(state => state.skripsiV2.templates)
-  const isLoading = useSelector(state => state.skripsiV2.loading.isFetchingTemplates)
+  const {
+    templates,
+    isLoading,
+    isExpanded,
+    selectedName,
+    expand,
+    collapse,
+  } = useTemplatePicker(selectedTemplate)
+
+  const handleSelect = (templateId) => {
+    onSelect(templateId)
+    collapse()
+  }
+
+  if (!isExpanded) {
+    return (
+      <>
+        <StepLabel><StepNumber>1</StepNumber> · Pilih template</StepLabel>
+
+        <ChosenRow>
+          <ChosenIcon><FaCheck /></ChosenIcon>
+          <ChosenName>{selectedName}</ChosenName>
+          <Button variant="secondary" size="small" onClick={expand}>Ganti</Button>
+        </ChosenRow>
+      </>
+    )
+  }
 
   return (
     <>
@@ -27,7 +59,7 @@ const TemplatePicker = ({ selectedTemplate, onSelect, onDeleteOwn }) => {
               key={template.id}
               type="button"
               $selected={selectedTemplate === template.id}
-              onClick={() => onSelect(template.id)}
+              onClick={() => handleSelect(template.id)}
             >
               <CardHeading>
                 <CardIcon><FaThList /></CardIcon>
@@ -66,7 +98,7 @@ const TemplatePicker = ({ selectedTemplate, onSelect, onDeleteOwn }) => {
           <Card
             type="button"
             $selected={selectedTemplate === CUSTOM_TEMPLATE}
-            onClick={() => onSelect(CUSTOM_TEMPLATE)}
+            onClick={() => handleSelect(CUSTOM_TEMPLATE)}
           >
             <CardHeading>
               <CardIcon><FaRegFileAlt /></CardIcon>

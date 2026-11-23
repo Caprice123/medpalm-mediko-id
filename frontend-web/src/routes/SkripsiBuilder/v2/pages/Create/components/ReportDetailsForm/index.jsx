@@ -2,7 +2,7 @@ import { FaPlus, FaTimes } from 'react-icons/fa'
 import TextInput from '@components/common/TextInput'
 import Textarea from '@components/common/Textarea'
 import Button from '@components/common/Button'
-import { StepLabel, StepNumber } from '../../Create.styles'
+import { StepLabel, StepNumber, LockedHint } from '../../Create.styles'
 import {
   Fields, MemberRow, MemberList, RemoveButton, FieldLabel, FieldHint,
 } from './ReportDetailsForm.styles'
@@ -17,9 +17,13 @@ const ReportDetailsForm = ({
   onMemberChange,
   onAddMember,
   onRemoveMember,
+  locked = false,
 }) => (
   <>
-    <StepLabel><StepNumber>3</StepNumber> · Detail laporan</StepLabel>
+    <StepLabel>
+      <StepNumber>3</StepNumber> · Detail laporan
+      {locked && <LockedHint>Pilih template dulu</LockedHint>}
+    </StepLabel>
 
     <Fields>
       <TextInput

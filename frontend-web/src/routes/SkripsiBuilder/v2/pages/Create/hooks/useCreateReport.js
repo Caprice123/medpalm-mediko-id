@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { createSet, deleteOwnTemplate, fetchSkripsiTemplates } from '@store/skripsi/v2'
@@ -24,9 +24,30 @@ export const useCreateReport = () => {
   const [form, setForm] = useState({ title: '', caseText: '' })
   const [members, setMembers] = useState([emptyMember()])
 
+  // Where the page scrolls to after a template is picked. Choosing one both
+  // unlocks the steps below and folds the card grid away, so the page can
+  // shrink by most of its height at once - without this the student is left
+  // wherever the browser clamps the old scroll position to.
+  const restRef = useRef(null)
+
   useEffect(() => {
     dispatch(fetchSkripsiTemplates())
   }, [dispatch])
+
+  // Only step 1 is required, so there is one gate rather than one per step.
+  const isTemplateChosen = Boolean(selectedTemplate)
+
+  const selectTemplate = (templateId) => {
+    setSelectedTemplate(templateId)
+
+    // After the grid has collapsed and the steps have rendered unlocked, so
+    // the scroll lands on where they actually are rather than on where the
+    // dimmed block sat under a full-height card grid. React flushes a click's
+    // updates synchronously, so one frame is enough.
+    requestAnimationFrame(() => {
+      restRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
 
   const setField = (key) => (event) => setForm(prev => ({ ...prev, [key]: event.target.value }))
 
@@ -43,11 +64,13 @@ export const useCreateReport = () => {
 
   const removeOwnTemplate = async (templateId) => {
     await dispatch(deleteOwnTemplate(templateId))
+    // Deleting the template that was picked re-locks the later steps, which is
+    // right: there is no report to configure until something else is chosen.
     setSelectedTemplate(prev => (prev === templateId ? null : prev))
   }
 
   const handleSubmit = async () => {
-    if (!selectedTemplate) {
+    if (!isTemplateChosen) {
       dispatch(commonActions.setError('Pilih template terlebih dahulu'))
       return
     }
@@ -72,7 +95,9 @@ export const useCreateReport = () => {
 
   return {
     selectedTemplate,
-    selectTemplate: setSelectedTemplate,
+    selectTemplate,
+    isTemplateChosen,
+    restRef,
     removeOwnTemplate,
     workMode,
     selectWorkMode: setWorkMode,
@@ -83,7 +108,7 @@ export const useCreateReport = () => {
     setMemberField,
     addMember,
     removeMember,
-    canSubmit: Boolean(selectedTemplate),
+    canSubmit: isTemplateChosen,
     handleSubmit,
     handleCancel: () => navigate(PblBuilderRoute.moduleRoute),
   }

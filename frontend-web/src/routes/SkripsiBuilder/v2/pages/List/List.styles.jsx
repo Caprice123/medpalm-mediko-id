@@ -1,7 +1,10 @@
 import styled from 'styled-components'
 
+// The same ground every other app page stands on, including this feature's own
+// Create page next door - the blue wash here was V1's and made the list look
+// like a different product from the page the "Buat Laporan Baru" button opens.
 export const Container = styled.div`
-  background: var(--color-brand-blue-tint);
+  background: var(--color-surface-app);
   padding: 40px 20px;
   display: flex;
   flex-direction: column;

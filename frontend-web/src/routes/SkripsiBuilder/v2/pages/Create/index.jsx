@@ -13,6 +13,8 @@ const SkripsiCreate = () => {
   const {
     selectedTemplate,
     selectTemplate,
+    isTemplateChosen,
+    restRef,
     removeOwnTemplate,
     workMode,
     selectWorkMode,
@@ -44,12 +46,17 @@ const SkripsiCreate = () => {
           />
         </StepGroup>
 
-        <StepGroup>
-          <WorkModePicker workMode={workMode} onSelect={selectWorkMode} />
+        {/* Everything after the template is dimmed and out of the tab order
+            until one is picked. The steps stay on the page rather than being
+            hidden, so the student can see what they are committing to; only
+            step 1 is required, so one gate covers both. */}
+        <StepGroup ref={restRef} $locked={!isTemplateChosen} inert={!isTemplateChosen}>
+          <WorkModePicker workMode={workMode} onSelect={selectWorkMode} locked={!isTemplateChosen} />
         </StepGroup>
 
-        <StepGroup>
+        <StepGroup $locked={!isTemplateChosen} inert={!isTemplateChosen}>
           <ReportDetailsForm
+            locked={!isTemplateChosen}
             form={form}
             onTitleChange={setTitle}
             onCaseTextChange={setCaseText}

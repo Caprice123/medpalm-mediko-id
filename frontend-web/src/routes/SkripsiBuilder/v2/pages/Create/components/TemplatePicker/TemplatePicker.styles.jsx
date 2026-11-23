@@ -87,3 +87,33 @@ export const DeleteOwn = styled.span`
     background: var(--color-danger-tint-soft);
   }
 `
+
+// What step 1 becomes once a template is picked: the grid folds away to this,
+// so the two steps below it sit at the top of the page instead of under a wall
+// of cards that grows every time an admin publishes another template.
+export const ChosenRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--color-brand-blue);
+  border-radius: 10px;
+  background: var(--color-brand-blue-tint);
+`
+
+export const ChosenIcon = styled.span`
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-brand-blue);
+`
+
+export const ChosenName = styled.span`
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-brand-blue-deep);
+`
