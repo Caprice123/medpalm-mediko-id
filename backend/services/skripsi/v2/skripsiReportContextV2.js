@@ -14,13 +14,11 @@ import {
 // Nothing here decides what to include; the caller passes a selection and gets
 // back a block of plain text to drop above its own prompt.
 
-// Everything is capped, but by size rather than by count: a student may
-// attach as many sections as they like, and the budget below is what stops
-// a long report from quietly making every message an expensive one.
+// One cap across everything a student attaches, rather than a ceiling on each
+// piece: any number of sections may go, any one of them may be as long as it
+// is, and what bounds the prompt is what the whole of it would cost.
 const LIMITS = {
   case: 4000,
-  // Per section, when its full text was asked for.
-  section: 6000,
   citations: 30,
   // Across every attached section. Only a genuinely long report reaches it
   // - ten full-length sections fit underneath - and when it is reached the
@@ -114,10 +112,18 @@ export async function buildReportContext({ set, selection, alwaysSectionIds = []
         continue
       }
 
-      const body = truncate(text, Math.min(LIMITS.section, remaining))
+      // No per-section ceiling: a section attached on its own may use the
+      // whole budget. Only the shared total bounds it, and a section the total
+      // does cut off says so - a block that stops mid-sentence with nothing to
+      // mark it reads to the model as a report that simply ends there.
+      const body = truncate(text, remaining)
       remaining -= body.length
 
-      blocks.push(`Isi bagian "${section.title}":\n${body}`)
+      const cut = body.length < text.length
+        ? '\n(bagian ini dipotong karena konteks sudah penuh)'
+        : ''
+
+      blocks.push(`Isi bagian "${section.title}":\n${body}${cut}`)
     }
 
     // Said out loud: a model told the report continues will not treat what
