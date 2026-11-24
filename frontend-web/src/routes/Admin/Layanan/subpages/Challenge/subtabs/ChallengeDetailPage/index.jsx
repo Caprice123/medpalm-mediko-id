@@ -9,6 +9,8 @@ import {
   fetchAdminDisbursements, updateAdminDisbursement,
 } from '@store/challenge/adminAction'
 import { upload } from '@store/common/action'
+import { fetchAllNodeQuestions, fetchNodeQuestionDetail } from '@store/nodeQuestions/adminAction'
+import McqNodePickerModal from '@routes/Admin/FeaturesV2/subpages/FlashcardV2/components/MoveCardModal'
 import * as XLSX from 'xlsx'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
@@ -30,6 +32,7 @@ import {
   OptionsList, OptionContainer, OptionBadge, OptionInput, AddOptionButton, RemoveOptionButton, BadgeImagePreview,
   BadgeCardGrid, BadgeCard, BadgeCardImage, BadgeCardPlaceholder,
   BadgeCardName, BadgeCardRank, BadgeCardDesc, BadgeCardActions,
+  DraftPanel,
 } from '../../Challenge.styles'
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E']
@@ -110,6 +113,9 @@ function SoalTab({ challenge }) {
   const [form, setForm] = useState(defaultQuestionForm)
   const [importResult, setImportResult] = useState(null)
   const fileInputRef = useRef(null)
+  const [mcqPickerOpen, setMcqPickerOpen] = useState(false)
+  // soal hasil clone ditahan di sini dulu — admin review/edit, baru disimpan ke backend
+  const [pending, setPending] = useState([])
 
   const sensors = useSensors(useSensor(PointerSensor))
 
@@ -155,6 +161,24 @@ function SoalTab({ challenge }) {
       references: Array.isArray(q.references) ? q.references.map(r => ({ label: r.label || '', url: r.url || '' })) : [],
     })
     setModal({ open: true, mode: 'edit', target: q })
+  }
+
+  const openEditPending = (idx) => {
+    const d = pending[idx]
+    setForm({
+      question: d.question || '',
+      questionImageBlobId: d.questionImageBlobId || null,
+      questionImagePreviewUrl: d.questionImagePreviewUrl || null,
+      options: d.options.map((text, i) => ({
+        text,
+        imageBlobId: d.optionImageBlobIds?.[i] || null,
+        imagePreviewUrl: null,
+      })),
+      correctOptionIndex: d.correctOptionIndex,
+      isSpecial: d.isSpecial || false,
+      references: (d.references || []).map(r => ({ label: r.label || '', url: r.url || '' })),
+    })
+    setModal({ open: true, mode: 'pending', target: idx })
   }
 
   const handleQuestionImageSelect = async (file) => {
@@ -238,6 +262,23 @@ function SoalTab({ challenge }) {
         .filter(r => r.label.trim() || r.url.trim())
         .map(r => ({ label: r.label.trim(), url: r.url.trim() || undefined })),
     }
+    if (modal.mode === 'pending') {
+      // explanation tidak ada field-nya di modal ini — pertahankan yang ikut ter-clone
+      setPending(prev => prev.map((d, i) => i === modal.target ? {
+        ...d,
+        question: payload.question,
+        options: payload.options,
+        correctOptionIndex: payload.correctOptionIndex,
+        isSpecial: payload.isSpecial,
+        questionImageBlobId: payload.questionImageBlobId,
+        questionImagePreviewUrl: form.questionImagePreviewUrl || null,
+        optionImageBlobIds: payload.optionImageBlobIds,
+        references: payload.references,
+      } : d))
+      setModal({ open: false, mode: 'create', target: null })
+      return
+    }
+
     const onSuccess = () => {
       setModal({ open: false, mode: 'create', target: null })
       dispatch(fetchAdminQuestions(challenge.uniqueId))
@@ -333,6 +374,108 @@ function SoalTab({ challenge }) {
     dispatch(fetchAdminQuestions(challenge.uniqueId))
   }
 
+  // ── Clone dari MCQ V2 ──────────────────────────────────────
+
+  // Clone cuma memuat ke draft lokal — tidak ada tulis ke backend sampai "Simpan Draft".
+  const handleCloneFromMcqNode = async (nodeId) => {
+    setMcqPickerOpen(false)
+    dispatch(actions.setLoading({ key: 'isImporting', value: true }))
+
+    const drafts = []
+    const errors = []
+    let total = 0
+    try {
+      let rows = []
+      try {
+        rows = await dispatch(fetchAllNodeQuestions(nodeId))
+      } catch (err) {
+        errors.push(`Gagal memuat soal sub-topik: ${err?.message || 'error'}`)
+      }
+
+      for (let i = 0; i < rows.length; i++) {
+        total++
+        // baris list cuma bawa question/options/correct_answer — explanation, references
+        // dan blob gambar ada di endpoint detail
+        let q
+        try {
+          q = await dispatch(fetchNodeQuestionDetail(nodeId, rows[i].id))
+        } catch (err) {
+          errors.push(`Soal ${i + 1}: ${err?.message || 'Gagal memuat detail'}`)
+          continue
+        }
+
+        const options = (q.options || []).map(o => (typeof o === 'string' ? o : o?.text ?? ''))
+        if (options.length < 2 || q.correct_answer == null || q.correct_answer < 0 || q.correct_answer >= options.length) {
+          errors.push(`Soal ${i + 1}: opsi / jawaban benar tidak valid`)
+          continue
+        }
+
+        drafts.push({
+          question: q.question || null,
+          options,
+          correctOptionIndex: q.correct_answer,
+          explanation: q.explanation_long || q.explanation_short || q.explanation || null,
+          references: Array.isArray(q.references) ? q.references : [],
+          // blob gambar MCQ dipakai apa adanya — attachment polymorphic, tanpa upload ulang
+          questionImageBlobId: q.imageBlobId || null,
+          questionImagePreviewUrl: q.imageUrl || null,
+          optionImageBlobIds: [],
+          isSpecial: false,
+        })
+      }
+    } finally {
+      dispatch(actions.setLoading({ key: 'isImporting', value: false }))
+    }
+
+    setPending(prev => [...prev, ...drafts])
+    setImportResult({ created: drafts.length, failed: total - drafts.length, errors })
+  }
+
+  const handleSavePending = async () => {
+    dispatch(actions.setLoading({ key: 'isImporting', value: true }))
+    let created = 0
+    const failedIdx = new Set()
+    const errors = []
+    try {
+      for (let i = 0; i < pending.length; i++) {
+        const d = pending[i]
+        try {
+          await dispatch(createQuestion(challenge.uniqueId, {
+            question: d.question,
+            options: d.options,
+            correctOptionIndex: d.correctOptionIndex,
+            explanation: d.explanation,
+            references: d.references,
+            questionImageBlobId: d.questionImageBlobId,
+            optionImageBlobIds: d.optionImageBlobIds,
+            isSpecial: d.isSpecial,
+            order: orderedQuestions.length + created,
+          }))
+          created++
+        } catch (err) {
+          failedIdx.add(i)
+          errors.push(`Draft ${i + 1}: ${err?.message || 'Gagal disimpan'}`)
+        }
+      }
+    } finally {
+      dispatch(actions.setLoading({ key: 'isImporting', value: false }))
+    }
+
+    // sisakan hanya draft yang gagal, supaya retry tidak menduplikasi yang sudah masuk
+    setPending(prev => prev.filter((_, i) => failedIdx.has(i)))
+    setImportResult({ created, failed: errors.length, errors })
+    dispatch(fetchAdminQuestions(challenge.uniqueId))
+  }
+
+  const handleDiscardPending = () => {
+    if (!window.confirm(`Buang ${pending.length} soal draft hasil clone?`)) return
+    setPending([])
+  }
+
+  const handleDeletePending = (idx) => {
+    setPending(prev => prev.filter((_, i) => i !== idx))
+  }
+
   const isLocked = challenge.status === 'active'
 
   if (loading.isGetQuestionsLoading) return <Loading />
@@ -346,6 +489,9 @@ function SoalTab({ challenge }) {
             <Button onClick={downloadTemplate} style={{ fontSize: '0.8rem' }}>⬇ Template</Button>
             <Button onClick={() => fileInputRef.current?.click()} disabled={loading.isImporting}>
               {loading.isImporting ? 'Mengimpor...' : '📥 Import Excel/CSV'}
+            </Button>
+            <Button onClick={() => setMcqPickerOpen(true)} disabled={loading.isImporting}>
+              📋 Clone dari MCQ V2
             </Button>
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" style={{ display: 'none' }} onChange={handleImportFile} />
             <Button variant="primary" onClick={openCreate}>+ Tambah Soal</Button>
@@ -370,6 +516,50 @@ function SoalTab({ challenge }) {
           )}
           <button onClick={() => setImportResult(null)} style={{ marginTop: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.8rem' }}>Tutup</button>
         </div>
+      )}
+
+      {!isLocked && pending.length > 0 && (
+        <DraftPanel>
+          <SubHeader>
+            <SubTitle>Draft hasil clone ({pending.length} soal) — belum disimpan</SubTitle>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <Button variant="secondary" onClick={handleDiscardPending} disabled={loading.isImporting}>Buang Draft</Button>
+              <Button variant="primary" onClick={handleSavePending} disabled={loading.isImporting}>
+                {loading.isImporting ? 'Menyimpan...' : `Simpan ${pending.length} Soal`}
+              </Button>
+            </div>
+          </SubHeader>
+
+          <Table>
+            <thead>
+              <tr>
+                <Th style={{ width: 40 }}>#</Th>
+                <Th>Pertanyaan</Th>
+                <Th>Tipe</Th>
+                <Th>Opsi</Th>
+                <Th>Benar</Th>
+                <Th>Aksi</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {pending.map((d, i) => (
+                <Tr key={i}>
+                  <Td style={{ color: 'var(--color-gray-400)', fontSize: '0.8rem' }}>{i + 1}</Td>
+                  <Td style={{ maxWidth: 260 }}>{d.question || <em style={{ color: 'var(--color-gray-400)' }}>(gambar)</em>}</Td>
+                  <Td>{d.isSpecial ? '⭐ Spesial' : <span style={{ color: 'var(--color-gray-400)', fontSize: '0.75rem' }}>Regular</span>}</Td>
+                  <Td>{d.options.length} opsi</Td>
+                  <Td>{OPTION_LABELS[d.correctOptionIndex] ?? d.correctOptionIndex}</Td>
+                  <Td>
+                    <ActionCell>
+                      <Button onClick={() => openEditPending(i)}>Edit</Button>
+                      <Button variant="danger" onClick={() => handleDeletePending(i)}>Hapus</Button>
+                    </ActionCell>
+                  </Td>
+                </Tr>
+              ))}
+            </tbody>
+          </Table>
+        </DraftPanel>
       )}
 
       {orderedQuestions.length === 0 ? (
@@ -532,6 +722,17 @@ function SoalTab({ challenge }) {
             </div>
           </FormGroup>
         </Modal>
+      )}
+
+      {mcqPickerOpen && (
+        <McqNodePickerModal
+          nodeTypeFilter="subtopic"
+          title="Clone Soal dari MCQ V2"
+          confirmLabel="Clone Soal dari Sini"
+          isSavingOverride={loading.isImporting}
+          onClose={() => setMcqPickerOpen(false)}
+          onMove={handleCloneFromMcqNode}
+        />
       )}
     </>
   )

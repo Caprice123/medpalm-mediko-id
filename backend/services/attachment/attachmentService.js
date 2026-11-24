@@ -210,13 +210,22 @@ class AttachmentService {
 
     // Delete blob if requested
     if (deleteBlob) {
-      const blob = await blobService.getBlobById(attachment.blob_id);
+      // A blob can be attached to more than one record (e.g. a challenge question cloned
+      // from an MCQ question reuses the same image blob). Deleting the file here would
+      // break those other records, so the last reference is the one that deletes it.
+      const stillReferenced = await prisma.attachments.count({
+        where: { blob_id: attachment.blob_id }
+      });
 
-      // Delete from iDrive
-      await idriveService.deleteFile(blob.key);
+      if (stillReferenced === 0) {
+        const blob = await blobService.getBlobById(attachment.blob_id);
 
-      // Delete blob record
-      await blobService.deleteBlob(attachment.blob_id);
+        // Delete from iDrive
+        await idriveService.deleteFile(blob.key);
+
+        // Delete blob record
+        await blobService.deleteBlob(attachment.blob_id);
+      }
     }
   }
 

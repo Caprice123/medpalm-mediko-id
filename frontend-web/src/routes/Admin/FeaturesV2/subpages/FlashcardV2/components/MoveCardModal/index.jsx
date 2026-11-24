@@ -3,7 +3,7 @@ import Button from '@components/common/Button'
 import { useMoveCardModal } from './hooks/useMoveCardModal'
 import { Nav, NavLink, NavCurrent, NavSep, FolderList, FolderRow, FolderIcon, FolderName, Chevron, EmptyState } from './MoveCardModal.styles'
 
-export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title, nodeTypeFilter = null }) {
+export default function MoveCardModal({ card, currentNode, onClose, onSuccess, onMove, isSavingOverride, title, nodeTypeFilter = null, confirmLabel = 'Pindah ke Sini' }) {
   const {
     nodes, loadingNodes, currentParent, selectedNode,
     handleRowClick, handleBackToRoot, handleConfirm,
@@ -24,7 +24,7 @@ export default function MoveCardModal({ card, currentNode, onClose, onSuccess, o
             onClick={handleConfirm}
             disabled={!selectedNode || isMoving}
           >
-            {isMoving ? 'Memproses...' : 'Pindah ke Sini'}
+            {isMoving ? 'Memproses...' : confirmLabel}
           </Button>
         </div>
       }

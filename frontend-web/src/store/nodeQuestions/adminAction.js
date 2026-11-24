@@ -26,6 +26,14 @@ export const loadMoreNodeQuestions = (nodeId) => (dispatch, getState) => {
   dispatch(fetchNodeQuestions(nodeId, { append: true }))
 }
 
+// Every question of a node in one request — fire-and-return, no Redux state, so it never
+// disturbs the paginated list that drives the admin table. Used when cloning a whole node.
+// shortcut: capped at 500 questions per node, paginate here if a node ever outgrows that
+export const fetchAllNodeQuestions = (nodeId) => async () => {
+  const res = await getWithToken(`${Endpoints.admin.featureNodes}/${nodeId}/questions`, { page: 1, perPage: 500 })
+  return res.data.data || []
+}
+
 // Full question detail (image, explanations, references, linked notes) — fire-and-return,
 // no Redux state. Used by QuestionFormModal, which only gets the list row otherwise.
 export const fetchNodeQuestionDetail = (nodeId, questionId) => async () => {

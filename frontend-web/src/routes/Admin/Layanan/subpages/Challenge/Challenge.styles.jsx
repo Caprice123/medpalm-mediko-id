@@ -345,3 +345,12 @@ export const BadgeCardActions = styled.div`
   width: 100%;
   justify-content: center;
 `
+
+// Soal hasil clone MCQ yang ditahan sebelum disimpan — dibedakan dari tabel soal tersimpan
+export const DraftPanel = styled.div`
+  border: 1px dashed var(--color-warning-dark);
+  background: var(--color-warning-tint);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+`
