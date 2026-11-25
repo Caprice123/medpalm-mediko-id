@@ -461,7 +461,7 @@ model users {
   user_subscription             user_subscriptions[]
   user_purchases                user_purchases[]
   chatbot_conversations         chatbot_conversations[]
-  user_chatbot_settings         user_chatbot_settings?
+  user_chatbot_settings         user_chatbot_settings[]
   skripsi_sets                  skripsi_sets[]
   skripsi_templates             skripsi_templates[]
   osce_sessions                 osce_sessions[]
@@ -679,9 +679,13 @@ model chatbot_journal_names {
   updated_at DateTime @default(now())
 }
 
+// One row per user *per research provider*: OpenAlex is filtered by journal name
+// and Perplexity by domain, so each provider keeps its own pick, its own filter
+// toggle and its own year window. A read always names the provider it belongs to.
 model user_chatbot_settings {
   id                    Int      @id @default(autoincrement())
-  user_id               Int      @unique
+  user_id               Int
+  research_provider     String   @default("openalex") // 'openalex' (filters by journal) | 'perplexity' (filters by domain)
   selected_domains      Json     @default("[]") // Array of domain strings selected from admin list
   selected_journals     Json     @default("[]") // Array of journal name strings for tutor users
   domain_filter_enabled Boolean  @default(true)
@@ -693,6 +697,7 @@ model user_chatbot_settings {
 
   user users @relation(fields: [user_id], references: [id])
 
+  @@unique([user_id, research_provider])
   @@index([user_id])
 }
 

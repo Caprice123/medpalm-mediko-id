@@ -34,6 +34,11 @@ const initialState = {
   availableModes: { normal: true, validated: true, research: true },
   costs: { normal: 5, validated: 8, research: 15 },
   userInformation: { normal: '', validated: '', research: '' },
+  // Which vocabulary research mode trusts: 'openalex' filters by journal name,
+  // 'perplexity' by domain. Decides which list the settings modal lets a user pick.
+  // Matches the backend default so the modal does not flash the journal picker
+  // before the bootstrap response lands.
+  researchProvider: 'perplexity',
   userSettings: {
     selectedDomains: [],
     customDomains: [],
@@ -174,10 +179,11 @@ const chatbotV2Slice = createSlice({
       state.currentMode = action.payload
     },
     setConfig: (state, action) => {
-      const { availableModes, costs, userInformation } = action.payload
+      const { availableModes, costs, userInformation, researchProvider } = action.payload
       if (availableModes) state.availableModes = availableModes
       if (costs) state.costs = costs
       if (userInformation) state.userInformation = userInformation
+      if (researchProvider) state.researchProvider = researchProvider
     },
     setUserSettings: (state, action) => {
       state.userSettings = { ...state.userSettings, ...action.payload }

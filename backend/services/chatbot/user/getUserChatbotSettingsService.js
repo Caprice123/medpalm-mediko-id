@@ -1,10 +1,20 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ChatbotResearchRegistryV2 } from '#services/chatbot/v2/chatbotResearchRegistryV2'
 
 export class GetUserChatbotSettingsService extends BaseService {
-  static async call(userId) {
+  /**
+   * The signed-in user's research settings for one provider. Each provider keeps
+   * its own row, so the caller may name one; left out, the provider research mode
+   * is currently running answers, which is the row the settings modal should show.
+   * @param {number} userId
+   * @param {string|null} researchProvider - 'openalex' | 'perplexity'
+   */
+  static async call(userId, researchProvider = null) {
+    const provider = researchProvider || (await ChatbotResearchRegistryV2.resolve()).retriever
+
     const [userSettings, userRecord] = await Promise.all([
-      prisma.user_chatbot_settings.findUnique({ where: { user_id: userId } }),
+      prisma.user_chatbot_settings.findFirst({ where: { user_id: userId, research_provider: provider } }),
       prisma.users.findUnique({ where: { id: userId }, select: { role: true } })
     ])
 

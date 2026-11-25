@@ -12,10 +12,11 @@ import { ResearchModeWithQueryReformulation } from '#services/chatbot/ai/researc
 //
 // V2 reads that choice from the `chatbot_v2_research_implementation` constant so
 // an admin can move research mode between OpenAlex and Perplexity from the panel.
-// The default is `openalex_v3`, which is exactly what V1 does today — V2 behaves
-// identically until someone changes the constant.
+// The default is `perplexity_retrieval_v2` — Perplexity retrieves, Gemini writes
+// the answer. V1 stays hardcoded to `openalex_v3`, so the two differ on purpose:
+// moving V2 back to OpenAlex is one constant value away.
 export const RESEARCH_IMPLEMENTATION_KEY = 'chatbot_v2_research_implementation'
-export const DEFAULT_RESEARCH_IMPLEMENTATION = 'openalex_v3'
+export const DEFAULT_RESEARCH_IMPLEMENTATION = 'perplexity_retrieval_v2'
 
 // `retriever` is documentation for the admin panel, not behaviour — the handler is
 // picked off the `provider` the service actually returns.
@@ -42,11 +43,26 @@ export const RESEARCH_IMPLEMENTATIONS = {
   },
 }
 
+// A developer can try another implementation without touching the constant the
+// whole environment shares: `CHATBOT_RESEARCH_IMPLEMENTATION` in that machine's
+// own .env wins over the database. Nothing sets it in production, so production
+// keeps answering from the constant.
+export const RESEARCH_IMPLEMENTATION_ENV = 'CHATBOT_RESEARCH_IMPLEMENTATION'
+
 export class ChatbotResearchRegistryV2 {
   // Resolves the configured research implementation. An unknown or unset
   // constant falls back to the default rather than failing the message — a typo
   // in the panel must not take research mode offline.
   static async resolve() {
+    const override = process.env[RESEARCH_IMPLEMENTATION_ENV]
+    if (override) {
+      if (RESEARCH_IMPLEMENTATIONS[override]) {
+        console.log(`[ChatbotResearchRegistryV2] ${RESEARCH_IMPLEMENTATION_ENV}=${override} overrides the constant`)
+        return { key: override, ...RESEARCH_IMPLEMENTATIONS[override] }
+      }
+      console.warn(`[ChatbotResearchRegistryV2] ${RESEARCH_IMPLEMENTATION_ENV}=${override} is not a known implementation, ignoring it`)
+    }
+
     const constants = await GetConstantsService.call([RESEARCH_IMPLEMENTATION_KEY])
     const configured = constants[RESEARCH_IMPLEMENTATION_KEY]
     const key = RESEARCH_IMPLEMENTATIONS[configured] ? configured : DEFAULT_RESEARCH_IMPLEMENTATION

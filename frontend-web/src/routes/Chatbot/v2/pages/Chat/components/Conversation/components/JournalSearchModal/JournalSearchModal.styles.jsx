@@ -75,6 +75,7 @@ export const ResultCard = styled.button`
   display: flex;
   align-items: flex-start;
   align-self: start;
+  min-width: 0;
   gap: 0.5rem;
   padding: 0.625rem 0.75rem;
   border-radius: 8px;
@@ -120,6 +121,9 @@ export const ResultCardName = styled.span`
   font-weight: 500;
   font-size: 0.8125rem;
   color: ${({ $checked }) => $checked ? 'var(--color-brand-blue-deep)' : 'var(--color-gray-700)'};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const ResultCardMeta = styled.span`

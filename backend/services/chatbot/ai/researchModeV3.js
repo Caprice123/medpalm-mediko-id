@@ -81,10 +81,10 @@ export class ResearchModeV3 extends BaseService {
       console.log('🔄 [ResearchV3] Stage 1 reformulation:', queryResult)
 
       // ── STAGE 2: OpenAlex multi-query search with journal filter ──────────
-      const searchOptions = { trustedJournals, fieldsOfStudy, ...yearFilter }
+      const searchOptions = { trustedJournals, ...yearFilter }
       console.log('🔬 [ResearchV3] Stage 2 OpenAlex filter:', {
         trustedJournals: trustedJournals.length > 0 ? trustedJournals : '(none — searching all journals)',
-        fieldsOfStudy: fieldsOfStudy || '(none)',
+        // fieldsOfStudy: fieldsOfStudy || '(none)',
         yearFilter: yearFilter,
         maxResults
       })
@@ -121,8 +121,8 @@ export class ResearchModeV3 extends BaseService {
 
   static async resolveJournalNames(userId) {
     try {
-      const userSettings = await prisma.user_chatbot_settings.findUnique({
-        where: { user_id: userId },
+      const userSettings = await prisma.user_chatbot_settings.findFirst({
+        where: { user_id: userId, research_provider: 'openalex' },
         select: { domain_filter_enabled: true, selected_journals: true }
       })
 
@@ -150,8 +150,8 @@ export class ResearchModeV3 extends BaseService {
 
   static async resolveYearFilter(userId) {
     try {
-      const userSettings = await prisma.user_chatbot_settings.findUnique({
-        where: { user_id: userId },
+      const userSettings = await prisma.user_chatbot_settings.findFirst({
+        where: { user_id: userId, research_provider: 'openalex' },
         select: { latest_years: true, year_from: true, year_to: true }
       })
 

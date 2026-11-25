@@ -38,7 +38,6 @@ export class ResearchModeV2 extends BaseService {
             'chatbot_research_v2_generation_prompt',
             'chatbot_research_v2_generation_model',
             'chatbot_research_last_message_count',
-            'chatbot_research_trusted_domains',
             'chatbot_research_domain_filter_enabled',
           ]
         }
@@ -62,12 +61,13 @@ export class ResearchModeV2 extends BaseService {
     const lastMessageCount    = parseInt(c.chatbot_research_last_message_count) || 10
     const domainFilterEnabled = c.chatbot_research_domain_filter_enabled === 'true'
 
-    const adminDomains = c.chatbot_research_trusted_domains
-      ? c.chatbot_research_trusted_domains.split(',').map(d => d.trim()).filter(Boolean)
-      : []
-
+    // The filter is the user's own pick and nothing else: no selection, or their
+    // own toggle off, means searching the whole web. Falling back to the admin
+    // domain list here used to send all 200+ of its entries on behalf of a user
+    // who had chosen nothing — past the API's cap, and far wider than anything
+    // they asked for.
     const trustedDomains  = await GetTrustedDomainsService.call(userId)
-    const domainsForQuery = trustedDomains.domains.length > 0 ? trustedDomains.domains : adminDomains
+    const domainsForQuery = trustedDomains.enabled ? trustedDomains.domains : []
 
     const dbMessages = await prisma.chatbot_messages.findMany({
       where: { conversation_id: conversationId, is_deleted: false },

@@ -34,12 +34,14 @@ import {
   ToggleSlider,
 } from './JournalSearchModal.styles'
 
-// Research-mode settings for one student: which journals their searches draw
-// from, and how far back. Journals are picked from a live lookup, so a saved
-// name always resolves at chat time.
+// Research-mode settings for one student: which sources their searches draw
+// from, and how far back. The active research provider decides the vocabulary —
+// journal names on OpenAlex, domains on Perplexity — and sources are picked from
+// a live lookup, so a saved pick always resolves at chat time.
 const JournalSearchModal = ({ isOpen, onClose }) => {
   const {
     isSaving,
+    vocabulary,
     domainFilterEnabled,
     setDomainFilterEnabled,
     yearMode,
@@ -51,33 +53,33 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
     currentYear,
     chooseYearPreset,
     chooseCustomYears,
-    myJournals,
-    maxJournals,
+    mySources,
+    maxSources,
     atLimit,
-    journalSearch,
+    sourceSearch,
     searchResults,
     searchPagination,
     isSearching,
     handleSearchChange,
     handleSearchPageChange,
-    addJournal,
-    removeJournal,
+    addSource,
+    removeSource,
     selectAllResults,
-    clearAllJournals,
+    clearAllSources,
     handleSave,
   } = useJournalSearchModal({ isOpen, onClose })
 
   const renderResults = () => {
     if (isSearching) {
-      return <EmptyResults>Memuat jurnal...</EmptyResults>
+      return <EmptyResults>{vocabulary.loadingText}</EmptyResults>
     }
 
     if (searchResults.length === 0) {
       return (
         <EmptyResults>
-          {journalSearch.trim()
-            ? `Tidak ada jurnal yang cocok dengan "${journalSearch}"`
-            : 'Belum ada jurnal yang tersedia.'}
+          {sourceSearch.trim()
+            ? vocabulary.noMatchText(sourceSearch)
+            : vocabulary.emptyText}
         </EmptyResults>
       )
     }
@@ -86,7 +88,7 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
       <>
         <ResultCardGrid>
           {searchResults.map((item) => {
-            const checked = myJournals.includes(item.name)
+            const checked = mySources.includes(item.name)
             // Once the cap is reached, only already-selected cards stay active.
             const disabled = !checked && atLimit
 
@@ -94,17 +96,18 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
               <ResultCard
                 key={item.id}
                 type="button"
+                title={item.meta ? `${item.name} — ${item.meta}` : item.name}
                 $checked={checked}
                 $disabled={disabled}
                 onClick={() => {
                   if (disabled) return
-                  return checked ? removeJournal(item.name) : addJournal(item.name)
+                  return checked ? removeSource(item.name) : addSource(item.name)
                 }}
               >
                 <ResultCardCheck $checked={checked}>{checked ? '✓' : ''}</ResultCardCheck>
                 <ResultCardBody>
                   <ResultCardName $checked={checked}>{item.name}</ResultCardName>
-                  <ResultCardMeta>{item.publisher || 'Penerbit tidak diketahui'}</ResultCardMeta>
+                  <ResultCardMeta>{item.meta || vocabulary.metaFallback}</ResultCardMeta>
                 </ResultCardBody>
               </ResultCard>
             )
@@ -151,12 +154,12 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
         </>
       )}
     >
-      <SectionTitle>Filter Jurnal</SectionTitle>
+      <SectionTitle>{vocabulary.sectionTitle}</SectionTitle>
 
       <FilterToggleRow>
         <div>
-          <strong>Aktifkan Filter Jurnal</strong>
-          <HintText>Batasi hasil pencarian hanya dari jurnal terpercaya</HintText>
+          <strong>{vocabulary.toggleLabel}</strong>
+          <HintText>{vocabulary.toggleHint}</HintText>
         </div>
         <ToggleSwitch>
           <input
@@ -231,12 +234,12 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
         <>
           <SelectAllRow>
             <span>
-              {myJournals.length === 0 ? (
-                'Semua jurnal aktif (default)'
+              {mySources.length === 0 ? (
+                vocabulary.allActive
               ) : (
                 <>
-                  {myJournals.length}
-                  <JournalCount $atLimit={atLimit}>/{maxJournals}</JournalCount> jurnal dipilih
+                  {mySources.length}
+                  <JournalCount $atLimit={atLimit}>/{maxSources}</JournalCount> {vocabulary.countNoun}
                 </>
               )}
             </span>
@@ -246,36 +249,32 @@ const JournalSearchModal = ({ isOpen, onClose }) => {
                   Pilih Halaman Ini
                 </Button>
               )}
-              <Button variant="secondary" size="small" type="button" onClick={clearAllJournals}>
+              <Button variant="secondary" size="small" type="button" onClick={clearAllSources}>
                 Reset
               </Button>
             </SelectAllActions>
           </SelectAllRow>
 
-          <HintText>
-            Cari nama jurnal untuk mempersempit, atau jelajahi daftarnya. Reset untuk menggunakan semua jurnal.
-          </HintText>
+          <HintText>{vocabulary.browseHint}</HintText>
 
           <SearchInput
             type="text"
-            placeholder="Cari jurnal, contoh: Nature Medicine..."
-            value={journalSearch}
+            placeholder={vocabulary.searchPlaceholder}
+            value={sourceSearch}
             onChange={handleSearchChange}
           />
-          <SearchHint>
-            Ketik kata lengkap untuk hasil terbaik (misalnya &quot;Nature&quot;, bukan &quot;Nat&quot;).
-          </SearchHint>
+          <SearchHint>{vocabulary.searchHint}</SearchHint>
 
           {renderResults()}
 
-          {myJournals.length > 0 && (
+          {mySources.length > 0 && (
             <SelectedSummarySection>
-              <SelectedSummaryLabel>Jurnal dipilih</SelectedSummaryLabel>
+              <SelectedSummaryLabel>{vocabulary.selectedLabel}</SelectedSummaryLabel>
               <SelectedChipsRow>
-                {myJournals.map((name) => (
+                {mySources.map((name) => (
                   <SelectedJournalChip key={name}>
                     {name}
-                    <button type="button" onClick={() => removeJournal(name)}>✕</button>
+                    <button type="button" onClick={() => removeSource(name)}>✕</button>
                   </SelectedJournalChip>
                 ))}
               </SelectedChipsRow>

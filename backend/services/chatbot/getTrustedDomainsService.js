@@ -5,7 +5,8 @@ import { GetConstantsService } from '#services/constant/getConstantsService'
 export class GetTrustedDomainsService extends BaseService {
   /**
    * Get trusted domains configuration for research mode.
-   * If userId is provided, merges user's selected domains on top of admin settings.
+   * Reads the user's Perplexity settings row — the domain filter is that
+   * provider's vocabulary, so the OpenAlex row is none of its business.
    * @param {number|null} userId
    */
   static async call(userId = null) {
@@ -19,10 +20,10 @@ export class GetTrustedDomainsService extends BaseService {
       'chatbot_research_updated_before'
     ])
 
-    const timeFilterType = constants.chatbot_research_time_filter_type || 'recency'
+    let timeFilterType = constants.chatbot_research_time_filter_type || 'recency'
     const recencyFilter = constants.chatbot_research_recency_filter || 'month'
-    const publishedAfter = constants.chatbot_research_published_after || ''
-    const publishedBefore = constants.chatbot_research_published_before || ''
+    let publishedAfter = constants.chatbot_research_published_after || ''
+    let publishedBefore = constants.chatbot_research_published_before || ''
     const updatedAfter = constants.chatbot_research_updated_after || ''
     const updatedBefore = constants.chatbot_research_updated_before || ''
 
@@ -31,8 +32,8 @@ export class GetTrustedDomainsService extends BaseService {
 
     // If a user is specified, apply their preferences
     if (userId) {
-      const userSettings = await prisma.user_chatbot_settings.findUnique({
-        where: { user_id: userId }
+      const userSettings = await prisma.user_chatbot_settings.findFirst({
+        where: { user_id: userId, research_provider: 'perplexity' }
       })
 
       if (userSettings) {
@@ -49,6 +50,22 @@ export class GetTrustedDomainsService extends BaseService {
           domainObjects = normalized
         }
         // else: user selected none = use all admin domains (domainObjects stays [])
+
+        // The user's year preference is stored the way OpenAlex wants it
+        // (`latest_years` / `year_from` / `year_to`); Perplexity wants MM/DD/YYYY
+        // date filters, and its recency filter cannot be combined with them.
+        // `latest_years` wins, and is computed now so "last 5 years" stays current.
+        const yearFrom = userSettings.latest_years
+          ? new Date().getFullYear() - userSettings.latest_years
+          : userSettings.year_from
+
+        if (yearFrom || userSettings.year_to) {
+          timeFilterType = 'date_range'
+          publishedAfter = yearFrom ? `1/1/${yearFrom}` : ''
+          publishedBefore = userSettings.latest_years || !userSettings.year_to
+            ? ''
+            : `12/31/${userSettings.year_to}`
+        }
       }
     }
 

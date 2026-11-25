@@ -353,11 +353,12 @@ Aturan:
     // One of openalex_v3 | perplexity_retrieval_v2 | perplexity_sonar |
     // perplexity_reformulated — see services/chatbot/v2/chatbotResearchRegistryV2.js.
     // Only /api/v2/chatbot reads this; V1 remains hardwired to OpenAlex V3.
-    // The registry falls back to openalex_v3 when the key is missing, so an
-    // existing database needs no seed run for V2 to work.
+    // The registry falls back to perplexity_retrieval_v2 when the key is missing.
+    // A database that already holds this key keeps its stored value, so moving an
+    // existing environment means updating that row, not re-seeding.
     {
       key: 'chatbot_v2_research_implementation',
-      value: 'openalex_v3'
+      value: 'perplexity_retrieval_v2'
     },
 
     // Conversation Settings

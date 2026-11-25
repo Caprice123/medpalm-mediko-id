@@ -13,6 +13,54 @@ const defaultOptions = {
     search_recency_filter: 'month',
 }
 
+// The API matches `search_domain_filter` on the host alone and takes at most 200
+// entries: a list carrying schemes, paths or `www.` prefixes quietly matches
+// nothing, and one entry too many fails the whole search with a 400. The admin
+// trusted-domain list is maintained by hand and does overflow both, so every
+// request is normalised here rather than at each call site.
+const MAX_DOMAIN_FILTER = 200
+
+const toHostList = (domains) => {
+    const hosts = []
+    const seen = new Set()
+
+    for (const raw of Array.isArray(domains) ? domains : []) {
+        const host = String(raw ?? '').trim().toLowerCase()
+            .replace(/^https?:\/\//, '')
+            .split('/')[0]
+            .replace(/^www\./, '')
+
+        if (!host || seen.has(host)) continue
+        seen.add(host)
+        hosts.push(host)
+        if (hosts.length >= MAX_DOMAIN_FILTER) break
+    }
+
+    return hosts
+}
+
+// Returns the options with a usable domain filter, or without one when nothing
+// survives normalising — an empty filter array is itself a 400.
+const withNormalizedDomainFilter = (options) => {
+    if (!options.search_domain_filter) return options
+
+    const hosts = toHostList(options.search_domain_filter)
+    const normalized = { ...options }
+
+    if (hosts.length === 0) {
+        delete normalized.search_domain_filter
+        console.warn('[Perplexity] domain filter dropped: no usable host in the configured list')
+        return normalized
+    }
+
+    if (hosts.length < options.search_domain_filter.length) {
+        console.log(`[Perplexity] domain filter normalised: ${options.search_domain_filter.length} entries → ${hosts.length} hosts (cap ${MAX_DOMAIN_FILTER})`)
+    }
+
+    normalized.search_domain_filter = hosts
+    return normalized
+}
+
 // Flipped the first time the Search API answers "search_mode is not supported".
 // The parameter is in the SDK but is not accepted on every key, and a search is
 // worth more than the web/academic split it asks for.
@@ -128,7 +176,7 @@ export class PerplexityService extends BaseAiService {
         const mergedOptions = { ...defaultOptions, ...options }
 
         // Build request params
-        const requestParams = {
+        const requestParams = withNormalizedDomainFilter({
             model: model,
             messages: [
                 { role: 'system', content: systemPrompt },
@@ -136,7 +184,7 @@ export class PerplexityService extends BaseAiService {
             ],
             stream: true,
             ...mergedOptions
-        }
+        })
 
         // Create streaming chat completion
         console.log(requestParams)
@@ -161,14 +209,14 @@ export class PerplexityService extends BaseAiService {
             stream: false
         }
 
-        const response = await perplexity.chat.completions.create({
+        const response = await perplexity.chat.completions.create(withNormalizedDomainFilter({
             model,
             messages: [
                 { role: 'system', content: systemPrompt },
                 ...messages
             ],
             ...mergedOptions
-        })
+        }))
 
         const searchResults = response.search_results || []
         const citations = response.citations || []
@@ -203,7 +251,8 @@ export class PerplexityService extends BaseAiService {
      * time. Only the web/academic split is lost — every other filter stands.
      * @param {Object} params - query (string or array), search_mode, max_results, filters
      */
-    static async createSearch(params) {
+    static async createSearch(rawParams) {
+        const params = withNormalizedDomainFilter(rawParams)
         const withoutMode = { ...params }
         delete withoutMode.search_mode
 

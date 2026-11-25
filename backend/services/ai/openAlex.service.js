@@ -48,7 +48,7 @@ export class OpenAlexService {
       const params = new URLSearchParams({
         filter: `display_name.search:${name.trim()}`,
         'per-page': '5',
-        select: 'id,display_name,type,works_count'
+        select: 'id,display_name,type,works_count,homepage_url'
       })
       if (process.env.OPENALEX_API_KEY) params.set('api_key', process.env.OPENALEX_API_KEY)
       else if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL)
@@ -78,7 +78,8 @@ export class OpenAlexService {
 
       // Extract short ID: "https://openalex.org/S137773608" → "S137773608"
       const shortId = best.id.replace('https://openalex.org/', '')
-      const resolved = { id: shortId, displayName: best.display_name, type: best.type, worksCount: best.works_count || 0 }
+      // homepageUrl is what maps a journal onto the domain Perplexity filters by
+      const resolved = { id: shortId, displayName: best.display_name, type: best.type, worksCount: best.works_count || 0, homepageUrl: best.homepage_url || null }
       sourceIdCache.set(key, resolved)
       console.log(`[OpenAlex] Resolved "${name}" → ${shortId} (${best.display_name}, ${best.type}, ${best.works_count} works)`)
       return resolved

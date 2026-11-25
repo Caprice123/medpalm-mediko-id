@@ -1,12 +1,16 @@
 import prisma from '#prisma/client'
 import { BaseService } from '#services/baseService'
+import { ChatbotResearchRegistryV2 } from '#services/chatbot/v2/chatbotResearchRegistryV2'
 
 export class UpdateUserChatbotSettingsService extends BaseService {
-  static async call(userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals, latestYears, yearFrom, yearTo }) {
+  /**
+   * Saves into the row of one provider — the one research mode is currently
+   * running unless the caller names another. The other provider's row is left
+   * exactly as it was, so switching providers never overwrites a pick.
+   */
+  static async call(userId, { selectedDomains, customDomains, domainFilterEnabled, selectedJournals, customJournals, latestYears, yearFrom, yearTo }, researchProvider = null) {
     const MAX_DOMAINS = 20
-
-    const userRecord = await prisma.users.findUnique({ where: { id: userId }, select: { role: true } })
-    const isTutor = userRecord?.role === 'tutor'
+    const provider = researchProvider || (await ChatbotResearchRegistryV2.resolve()).retriever
 
     // Merge admin-list journals + custom journals, dedup, cap at 20
     const allJournals = [
@@ -17,12 +21,13 @@ export class UpdateUserChatbotSettingsService extends BaseService {
       ? [...new Set(allJournals.map(j => j.trim()).filter(Boolean))].slice(0, 20)
       : (selectedJournals !== undefined || customJournals !== undefined ? [] : undefined)
 
+    // Domains are left untouched when the caller sends neither key, the same way
+    // journals are: the research-mode modal only ever submits the list for the
+    // vocabulary the active provider uses (journal names on OpenAlex, domains on
+    // Perplexity), and submitting one must not wipe the other.
     let domainsToSave
-    if (isTutor) {
-      // Tutors filter by journal — no domain storage needed
-      domainsToSave = []
-    } else {
-      // Non-tutor: store as plain string array (domain URL only)
+    if (selectedDomains !== undefined || customDomains !== undefined) {
+      // Store as plain string array (domain URL only)
       const picked = Array.isArray(selectedDomains) ? selectedDomains : []
       const custom = Array.isArray(customDomains) ? customDomains : []
       const seen = new Set()
@@ -47,23 +52,24 @@ export class UpdateUserChatbotSettingsService extends BaseService {
     const validYearTo      = parsedYearTo   >= 1900 && parsedYearTo   <= currentYear ? parsedYearTo   : null
 
     const settings = await prisma.user_chatbot_settings.upsert({
-      where: { user_id: userId },
+      where: { user_id_research_provider: { user_id: userId, research_provider: provider } },
       update: {
-        selected_domains: domainsToSave,
         domain_filter_enabled: domainFilterEnabled ?? true,
         updated_at: new Date(),
         latest_years: validLatestYears,
         year_from: validLatestYears ? null : validYearFrom,
         year_to:   validLatestYears ? null : validYearTo,
+        ...(domainsToSave !== undefined ? { selected_domains: domainsToSave } : {}),
         ...(journalsData !== undefined ? { selected_journals: journalsData } : {})
       },
       create: {
         user_id: userId,
-        selected_domains: domainsToSave,
+        research_provider: provider,
         domain_filter_enabled: domainFilterEnabled ?? true,
         latest_years: validLatestYears,
         year_from: validLatestYears ? null : validYearFrom,
         year_to:   validLatestYears ? null : validYearTo,
+        ...(domainsToSave !== undefined ? { selected_domains: domainsToSave } : {}),
         ...(journalsData !== undefined ? { selected_journals: journalsData } : {})
       }
     })
