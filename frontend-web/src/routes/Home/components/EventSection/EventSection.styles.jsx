@@ -71,25 +71,35 @@ export const Description = styled.p`
   }
 `
 
-export const ViewAllLink = styled.a`
-  display: inline-flex;
+// One control, two destinations: the row mixes both content types and there is
+// no combined listing page, so the shared "Lihat semua" label carries a link
+// each instead of two near-identical links sitting side by side. One trailing
+// arrow keeps it matching ChallengeSection's single link below it.
+export const ViewAllGroup = styled.div`
+  display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
+  padding-top: 18px;
   font-family: ${fonts.body};
   font-weight: 700;
   font-size: 17px;
   letter-spacing: -0.11px;
-  color: ${colors.brandBlueLight};
-  text-decoration: none;
-  padding-top: 18px;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  color: ${colors.metaText};
 
   ${media.mobile} {
     display: none;
+  }
+`
+
+export const ViewAllLink = styled.a`
+  font: inherit;
+  letter-spacing: inherit;
+  color: ${colors.brandBlueLight};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `
 
