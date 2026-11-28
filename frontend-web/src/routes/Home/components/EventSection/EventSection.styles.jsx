@@ -138,7 +138,8 @@ export const EventCard = styled.article`
 export const BadgeRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
   padding-right: 92px;
 `
 
@@ -155,6 +156,12 @@ export const FreeBadge = styled.span`
   font-size: 10px;
   letter-spacing: 0.16px;
   white-space: nowrap;
+`
+
+// Which list the card came from. Same pill as the status badge, tinted per
+// kind so a visitor can tell the two content types apart at a glance.
+export const KindBadge = styled(FreeBadge)`
+  background: ${props => (props.$kind === 'webinar' ? colors.brandBlue : colors.freeBadgeBackground)};
 `
 
 export const DateBadge = styled.span`

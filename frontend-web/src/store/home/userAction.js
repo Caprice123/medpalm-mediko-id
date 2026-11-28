@@ -18,22 +18,22 @@ export const fetchHomeStats = () => async (dispatch) => {
   }
 }
 
-// Events and challenges come from the ordinary user endpoints, whose list
-// routes are readable without a token. They are fetched into the home store
-// rather than the webinar/challenge stores so the landing page cannot clobber
-// the filters and pagination those stores hold for their own pages.
+// The event list and the challenge list come from the ordinary user endpoints,
+// whose list routes are readable without a token. They are fetched into the home
+// store rather than the webinar/challenge stores so the landing page cannot
+// clobber the filters and pagination those stores hold for their own pages.
 //
 // A failure is swallowed on purpose: a landing page that renders an honest
 // empty state beats one that breaks because an optional list did not load.
+
+// Free events and webinars arrive already merged and sorted by the backend, so
+// the section does not have to reconcile two paginated lists in the browser.
 export const fetchHomeEvents = () => async (dispatch) => {
   try {
     dispatch(setLoading({ key: 'isFetchingEvents', value: true }))
-    const response = await getPublic(Endpoints.api.events, {
-      // Registration already open, plus the ones opening within the next week.
-      // The backend caps that window; the card badge counts the days down.
+    const response = await getPublic(Endpoints.api.homeLandingEventsV2, {
       // Three is what the landing row fits across.
-      registrationStatus: 'open_or_upcoming',
-      perPage: 3,
+      limit: 3,
     })
     dispatch(setEvents(response.data.data || []))
   } catch (err) {

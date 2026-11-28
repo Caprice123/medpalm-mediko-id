@@ -1,17 +1,20 @@
 import { useSelector } from 'react-redux'
 import { formatJakartaDateLong } from '@utils/dateUtils'
+import { EventRoute } from '../../../../Event/routes'
+import { WebinarRoute } from '../../../../Webinar/routes'
 import { countdownLabel } from '../../../utils/countdown'
 
-// Shapes the event listing into the fields the card renders.
+// Shapes the landing event list into the fields the card renders.
 //
-// The list comes from GET /api/v1/events, which the landing page can read
-// without a login. It holds two kinds of event at once: registration already
-// open, and registration opening within the next week. The badge is what tells
-// them apart, so it carries the countdown for the ones not open yet.
+// The list comes from GET /api/v2/home/landing-events, which the landing page
+// can read without a login. It holds free events and webinars at once, already
+// merged and sorted by when registration opens, so the only thing left to do
+// here is label them: `kindLabel` says which is which, and `status` carries the
+// countdown for the ones whose registration is not open yet.
 //
-// The event's own start date is not in the payload — the serializer exposes
-// only the registration window — so the date badge shows that window, which is
-// the date a visitor can act on anyway.
+// The item's own start date is not in the payload — the serializer exposes only
+// the registration window — so the date badge shows that window, which is the
+// date a visitor can act on anyway.
 export function useHomeEvents() {
   const events = useSelector((state) => state.home.events)
 
@@ -24,9 +27,13 @@ export function useHomeEvents() {
   const items = (events || []).map((event) => {
     const opensAt = event.registrationStartAt
     const isUpcoming = Boolean(opensAt) && new Date(opensAt).getTime() > now
+    const isWebinar = event.kind === 'webinar'
 
     return {
-      code: event.code,
+      code: `${event.kind}-${event.ref}`,
+      kind: event.kind,
+      kindLabel: isWebinar ? 'Webinar' : 'Free Event',
+      href: isWebinar ? WebinarRoute.moduleRoute : EventRoute.moduleRoute,
       title: event.title,
       description: event.description,
       status: isUpcoming ? `Buka ${countdownLabel(opensAt)}` : 'Pendaftaran Dibuka',

@@ -7,5 +7,6 @@ const router = express.Router()
 // Public — the landing page at "/" is reachable without a login, so this route
 // deliberately has no authenticateToken middleware.
 router.get('/stats', asyncHandler(homeV2Controller.stats.bind(homeV2Controller)))
+router.get('/landing-events', asyncHandler(homeV2Controller.landingEvents.bind(homeV2Controller)))
 
 export default router

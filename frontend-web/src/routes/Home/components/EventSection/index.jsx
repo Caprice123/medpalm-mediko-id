@@ -18,6 +18,7 @@ import {
   Mascot,
   EventCard,
   BadgeRow,
+  KindBadge,
   FreeBadge,
   DateBadge,
   Thumbnail,
@@ -27,10 +28,13 @@ import {
   CardLinkArrow,
 } from './EventSection.styles'
 import { useHomeEvents } from './hooks/useHomeEvents'
+import { EventRoute } from '../../../Event/routes'
 
-// Real events, read live from the event listing — the ones this section
-// advertises are the same ones /events shows, so there is nothing for an admin
-// to retype in Pengaturan Global.
+// Real events and webinars, read live from GET /api/v2/home/landing-events —
+// the ones this section advertises are the same ones /events and /webinar show,
+// so there is nothing for an admin to retype in Pengaturan Global. Both kinds
+// share one row sorted by when registration opens; the first badge says which
+// kind each card is and its button links to that kind's own page.
 //
 // There is deliberately no placeholder fallback: Figma's "Nama Event" cards are
 // a design mockup, and shipping them would show visitors fake events with a
@@ -46,14 +50,14 @@ function EventSection() {
       <ContentWidth>
         <SectionTop>
           <HeaderBlock>
-            <GradientHeading>Free Event</GradientHeading>
+            <GradientHeading>Free Event &amp; Webinar</GradientHeading>
             <Description>
-              Periode mencoba fitur MedPal tanpa biaya. Daftar selama pendaftarannya
-              masih dibuka.
+              Periode mencoba fitur MedPal tanpa biaya dan webinar bersama praktisi.
+              Daftar selama pendaftarannya masih dibuka.
             </Description>
           </HeaderBlock>
 
-          <ViewAllLink href="/events">
+          <ViewAllLink href={EventRoute.moduleRoute}>
             Lihat semua event
             <ViewAllIcon src={arrowCircle} alt="" />
           </ViewAllLink>
@@ -68,6 +72,7 @@ function EventSection() {
                 <Col key={item.code} xs={12} md={6} xl={4}>
                   <EventCard data-aos="fade-up" data-aos-delay={index * 80}>
                     <BadgeRow>
+                      <KindBadge $kind={item.kind}>{item.kindLabel}</KindBadge>
                       <FreeBadge>{item.status}</FreeBadge>
                       <DateBadge>{item.date}</DateBadge>
                     </BadgeRow>
@@ -76,8 +81,8 @@ function EventSection() {
                     <CardTitle>{item.title}</CardTitle>
                     <CardDescription>{item.description}</CardDescription>
 
-                    <CardLink href="/events">
-                      Lihat Event
+                    <CardLink href={item.href}>
+                      {item.kind === 'webinar' ? 'Lihat Webinar' : 'Lihat Event'}
                       <CardLinkArrow src={arrowRight} alt="" />
                     </CardLink>
                   </EventCard>
@@ -87,10 +92,10 @@ function EventSection() {
           ) : (
             isLoaded && <LandingEmptyState
               icon="🗓️"
-              title="Belum ada event yang dibuka"
+              title="Belum ada event atau webinar yang dibuka"
               description="Periode berikutnya sedang disiapkan tim MedPal. Cek halaman event untuk yang sudah lewat."
               actionLabel="Lihat semua event"
-              onAction={() => { window.location.href = '/events' }}
+              onAction={() => { window.location.href = EventRoute.moduleRoute }}
             />
           )}
         </CardsArea>
